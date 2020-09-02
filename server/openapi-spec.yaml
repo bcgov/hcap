@@ -47,12 +47,12 @@ components:
       required:
       - consent
       - eligibility
-      - email
+      - emailAddress
       - firstName
       - lastName
       - postalCode
       - preferredLocation
-      - telephone
+      - phoneNumber
       type: object
       properties:
         eligibility:
@@ -61,10 +61,10 @@ components:
           type: string
         lastName:
           type: string
-        telephone:
+        phoneNumber:
           type: string
           pattern: ^\d{10}$
-        email:
+        emailAddress:
           type: string
           pattern: ^.+@.+\..+$
         postalCode:

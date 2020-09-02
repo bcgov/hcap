@@ -1,0 +1,14 @@
+FROM node:12-alpine
+
+# Allow node modules to be called directly
+ENV PATH $PATH:/client/node_modules/.bin
+
+# Build client
+RUN apk add --no-cache git python g++ make
+WORKDIR /client
+COPY package*.json ./
+RUN npm set progress=false && npm ci --no-cache
+
+# Run dev client
+EXPOSE 4000
+CMD [ "npm", "run", "start" ]

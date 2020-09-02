@@ -1,0 +1,32 @@
+# Elastic Beanstalk Files
+farm-operator-screening*.zip
+
+# Dependencies
+node_modules
+
+# Client
+client/.pnp
+client/.pnp.js
+client/build
+
+# Server
+server/*.pdf
+server/pdfs/*
+server/db/.migrate
+
+# Misc.
+docs
+Dockerrun.aws.json
+audit-report.*
+.DS_Store
+.ebextensions/*
+!.ebextensions/.keep
+.env
+test-results
+bcfs-web-*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.idea
+.vscode
+.eslintcache

@@ -1,0 +1,65 @@
+version: '3.7'
+
+services:
+  client:
+    image: ${PROJECT}-client
+    container_name: ${PROJECT}-client
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./client:/client # Use client dir in host for hot reloading
+      - /client/node_modules # Use node_modules in container
+    depends_on:
+      - server
+    networks:
+      - fos-dev
+
+  server:
+    image: ${PROJECT}-server
+    container_name: ${PROJECT}-server
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+      args:
+        VERSION: ${COMMIT_SHA}
+    environment:
+      - DB_SERVER=${DB_SERVER}
+      - VERSION=${COMMIT_SHA}
+    ports:
+      - "80:80"
+      - "9229:9229"
+    volumes:
+      - ./server:/server # Use server dir in host for hot reloading
+      - /server/node_modules # Use node_modules in container
+    depends_on:
+      - mongodb
+    networks:
+      - fos-dev
+
+  mongodb:
+    container_name: ${PROJECT}-mongodb
+    image: mongo:3.6-xenial
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+      - MONGO_INITDB_DATABASE=${DB_NAME}
+    volumes:
+      - ./.docker/mongo/databaseInit:/docker-entrypoint-initdb.d
+      - fos-mongo-data-configdb:/data/configdb
+      - fos-mongo-data-db:/data/db
+    networks:
+      - fos-dev
+
+networks:
+  fos-dev:
+    driver: "bridge"
+
+volumes:
+    fos-mongo-data-configdb:
+    fos-mongo-data-db:

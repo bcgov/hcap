@@ -1,0 +1,90 @@
+openapi: 3.0.1
+info:
+  title: Health Career Access Program
+  description: Spec for Health Career Access Program (HCAP) API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://healthcareeraccessprogram.gov.bc.ca/api/v1
+paths:
+  /form:
+    post:
+      summary: Submit a new form with contact information
+      requestBody:
+        description: Form data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Form'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormResponse'
+  /version:
+    get:
+      summary: Version hash
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionResponse'
+components:
+  schemas:
+    VersionResponse:
+      type: object
+      properties:
+        version:
+          type: string
+    Form:
+      required:
+      - consent
+      - eligibility
+      - emailAddress
+      - firstName
+      - lastName
+      - postalCode
+      - preferredLocation
+      - phoneNumber
+      type: object
+      properties:
+        eligibility:
+          type: boolean
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phoneNumber:
+          type: string
+          pattern: ^\d{10}$
+        emailAddress:
+          type: string
+          pattern: ^.+@.+\..+$
+        postalCode:
+          type: string
+        preferredLocation:
+          type: array
+          items:
+            type: string
+            enum:
+            - interior
+            - fraser
+            - vanCoastal
+            - vanIsland
+            - northern
+          uniqueItems: true
+          minItems: 1
+        consent:
+          type: boolean
+    FormResponse:
+      type: object
+      properties:
+        id:
+          type: string

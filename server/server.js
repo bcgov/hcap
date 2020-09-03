@@ -4,7 +4,7 @@ const path = require('path');
 const { randomBytes } = require('crypto');
 const { passport } = require('./auth.js');
 const requireHttps = require('./require-https.js');
-const { validate, FormSchema, DeterminationSchema } = require('./validation.js');
+const { validate, FormSchema } = require('./validation.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 
@@ -54,60 +54,6 @@ app.post(`${apiBaseUrl}/form`,
     await formsCollection.insertOne(formItem);
 
     return res.json({ id, determination });
-  }));
-
-// Edit existing form
-app.patch(`${apiBaseUrl}/form/:id`,
-  passport.authenticate('jwt', { session: false }),
-  asyncMiddleware(async (req, res) => {
-    await validate(DeterminationSchema, req.body);
-    const { id } = req.params;
-    const formsCollection = dbClient.db.collection(collections.FORMS);
-
-    await formsCollection.updateOne(
-      { id }, // Query
-      { // UpdateQuery
-        $set: {
-          notes: req.body.notes,
-          determination: req.body.determination,
-          updatedAt: new Date().toISOString(),
-        },
-      },
-    );
-    return res.json({ id });
-  }));
-
-// Get existing form by ID
-app.get(`${apiBaseUrl}/form/:id`,
-  passport.authenticate('jwt', { session: false }),
-  asyncMiddleware(async (req, res) => {
-    const { id } = req.params;
-    const formsCollection = dbClient.db.collection(collections.FORMS);
-    const formItem = await formsCollection.findOne({ id });
-
-    if (!formItem) return res.status(404).json({ error: `No submission with ID ${id}` });
-
-    const { _id, ...result } = formItem;
-
-    return res.json(result);
-  }));
-
-// Get all forms
-app.get(`${apiBaseUrl}/forms`,
-  passport.authenticate('jwt', { session: false }),
-  asyncMiddleware(async (req, res) => {
-    const formsCollection = dbClient.db.collection(collections.FORMS);
-
-    const forms = await formsCollection.find({}).toArray();
-
-    if (forms.length === 0) return res.status(404).json({ error: 'No submissions found' });
-
-    const results = forms.map((form) => {
-      const { _id, ...result } = form;
-      return result;
-    });
-
-    return res.json(results);
   }));
 
 // Validate JWT

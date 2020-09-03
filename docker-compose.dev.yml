@@ -15,7 +15,7 @@ services:
     depends_on:
       - server
     networks:
-      - fos-dev
+      - hcap-dev
 
   server:
     image: ${PROJECT}-server
@@ -37,7 +37,7 @@ services:
     depends_on:
       - mongodb
     networks:
-      - fos-dev
+      - hcap-dev
 
   mongodb:
     container_name: ${PROJECT}-mongodb
@@ -51,15 +51,15 @@ services:
       - MONGO_INITDB_DATABASE=${DB_NAME}
     volumes:
       - ./.docker/mongo/databaseInit:/docker-entrypoint-initdb.d
-      - fos-mongo-data-configdb:/data/configdb
-      - fos-mongo-data-db:/data/db
+      - hcap-mongo-data-configdb:/data/configdb
+      - hcap-mongo-data-db:/data/db
     networks:
-      - fos-dev
+      - hcap-dev
 
 networks:
-  fos-dev:
+  hcap-dev:
     driver: "bridge"
 
 volumes:
-    fos-mongo-data-configdb:
-    fos-mongo-data-db:
+    hcap-mongo-data-configdb:
+    hcap-mongo-data-db:

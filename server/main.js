@@ -38,7 +38,7 @@ process.on('SIGTERM', () => {
 (async () => {
   try {
     await dbClient.connect();
-    server = app.listen(port, async () => {
+    server = app.listen(port, '0.0.0.0', async () => {
       logger.info(`Listening on port ${port}`);
     });
   } catch (err) {

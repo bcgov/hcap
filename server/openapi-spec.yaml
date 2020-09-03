@@ -73,6 +73,13 @@ components:
           type: array
           items:
             type: string
+            enum:
+            - interior
+            - fraser
+            - vanCoastal
+            - vanIsland
+            - northern
+          uniqueItems: true
           minItems: 1
         consent:
           type: boolean

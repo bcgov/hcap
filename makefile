@@ -105,10 +105,12 @@ tag-prod:
 # OpenShift aliases
 
 add-deploy-key:
+	@oc project rupaog-dev
 	@oc create secret generic hcap-gh-key --from-file=ssh-privatekey=key --type=kubernetes.io/ssh-auth
 	@oc secrets link builder hcap-gh-key
 
 create-server:
-	@oc process -f openshift/server.bc.yml -p NAMESPACE=apdwlc-dev APP_NAME=hcap-server IMAGE_TAG=latest REPO=git@github.com:FreshworksStudio/bc-ets-internal.git BRANCH=openshift | oc apply -n apdwlc-dev -f -
-	@oc process -f openshift/server.dc.yml -p NAMESPACE=apdwlc-dev APP_NAME=hcap-server IMAGE_TAG=latest SERVER_PORT=80 | oc apply -n apdwlc-dev -f -
-	@oc rollout status dc/hcap-server-server -n apdwlc-dev
+	@oc project rupaog-dev
+	@oc process -f openshift/server.bc.yml -p NAMESPACE=rupaog-dev APP_NAME=hcap-server IMAGE_TAG=latest REPO=git@github.com:bcgov-c/hcap.git BRANCH=master | oc apply -n rupaog-dev -f -
+	@oc process -f openshift/server.dc.yml -p NAMESPACE=rupaog-dev APP_NAME=hcap-server IMAGE_TAG=latest SERVER_PORT=80 | oc apply -n rupaog-dev -f -
+	@oc rollout status dc/hcap-server-server -n rupaog-dev

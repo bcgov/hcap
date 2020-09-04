@@ -3,7 +3,6 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
 const { passport } = require('./auth.js');
-const requireHttps = require('./require-https.js');
 const { validate, FormSchema } = require('./validation.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
@@ -11,7 +10,6 @@ const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 const apiBaseUrl = '/api/v1';
 const app = express();
 
-app.use(requireHttps);
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 

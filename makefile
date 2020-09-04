@@ -6,18 +6,16 @@ export $(shell sed 's/=.*//' .env)
 export COMMIT_SHA?=$(shell git rev-parse --short=7 HEAD)
 export IMAGE_TAG=${COMMIT_SHA}
 
-##############################################################
-# Define default environment variables for local development #
-##############################################################
+# Define default environment variables for local development
+
 export PROJECT:=health-career-access-program
 export ENV_PREFIX?=hcap
 export ENV_SUFFIX?=dev
 export VERSION_LABEL:=$(ENV_PREFIX)-$(ENV_SUFFIX)-$(IMAGE_TAG)
 .DEFAULT_GOAL:=print-status
 
-#################
-# Status Output #
-#################
+# Status Output
+
 print-status:
 	@echo "Current Settings:"
 	@echo "ACCOUNT ID: $(ACCOUNT_ID)"
@@ -29,9 +27,8 @@ print-status:
 	@echo "IMAGE_TAG: $(IMAGE_TAG)"
 	@echo "VERSION_LABEL: $(VERSION_LABEL)"
 
-#####################
-# Local Development #
-#####################
+# Local Development
+
 local:  | build-local run-local ## Task-Alias -- Run the steps for local development
 
 build-local:
@@ -58,9 +55,8 @@ local-server-tests:
 	@echo "Running tests in local app container"
 	@docker exec -it $(PROJECT)-server npm test
 
-##########################################
-# Pipeline build and deployment commands #
-##########################################
+# Pipeline build and deployment commands
+
 get-latest-env-name:
 	@aws elasticbeanstalk describe-environments | jq -cr '.Environments | .[] | select(.Status == "Ready" and (.EnvironmentName | test("^$(ENV_PREFIX)-$(ENV_SUFFIX)(-[0-9]+)?$$"))) | .EnvironmentName' | sort | tail -n 1
 
@@ -89,9 +85,8 @@ promote-image:
 	@aws elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(VERSION_LABEL) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(VERSION_LABEL).zip" || :
 	@aws elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(DESTINATION_ENV) --version-label $(VERSION_LABEL)
 
-##########################################
-# Git tagging aliases #
-##########################################
+# Git tagging aliases
+
 tag-dev:
 	@echo "Deploying $(PROJECT):$(IMAGE_TAG) to dev env"
 	@git tag -fa dev -m "Deploying $(PROJECT):$(IMAGE_TAG) to dev env" $(IMAGE_TAG)
@@ -107,9 +102,8 @@ tag-prod:
 	@git tag -fa prod -m "Deploying $(PROJECT):$(IMAGE_TAG) to prod env" $(IMAGE_TAG)
 	@git push --force origin refs/tags/prod:refs/tags/prod
 
-##########################################
-# OpenShift aliases #
-##########################################
+# OpenShift aliases
+
 add-deploy-key:
 	@oc create secret generic hcap-gh-key --from-file=ssh-privatekey=key --type=kubernetes.io/ssh-auth
 	@oc secrets link builder hcap-gh-key

@@ -1,4 +1,4 @@
-# Farm Operator Screening
+# Health Career Access Program
 
 ### A component of the COVID-19 response
 
@@ -6,7 +6,7 @@
 
 ## Introduction
 
-This is a digital service built in partnership with the Ministry of Health and the Ministry of Agriculture which supports British Columbian farmers to apply for authorization from the BC Provincial Health Officer to receive temporary foreign workers and protect workers during the COVID-19 pandemic.
+This is a digital service built for the Ministry of Health which supports British Columbian residents to apply for the Health Career Access Program (HCAP) during the COVID-19 pandemic.
 
 ## Table of Contents
 
@@ -19,22 +19,18 @@ This is a digital service built in partnership with the Ministry of Health and t
 
 ## Project Status
 
-This application has been released and is in active feature development.
+This application is in active development.
 
 ## Features
 
 This project includes the following features:
 
-1. Public web form for farm operators
+1. Public web form for BC residents
 1. Ability to download a form submission as a PDF
-1. Admin portal with login
-1. Secure lookup of submissions
-1. Tracking notes and determinations associated with submissions and inspections
-1. Real-time analytics
 
 ## Getting Help or Reporting an Issue
 
-To report bugs/issues/feature requests, please file an [issue](https://github.com/bcgov/Foreign-Farm-Workers-Permitting-System/issues).
+To report bugs/issues/feature requests, please file an [issue](https://github.com/bcgov-c/hcap/issues).
 
 ## How to Contribute
 
@@ -55,14 +51,6 @@ To set up and run database, backend (server), and frontend (client) applications
 
 To tear down your environment:
 - Run `make close-local`
-
-To migrate from dynamoDB to MongoDB/DocumentDB database:
-- Run DynamoDB 
-  - `docker run -p 8000:8000 --name dynamoDB --network=enhanced-travel-screening_frontend amazon/dynamodb-local`
-  - `enhanced-travel-screening` represents the folder name of your project directory
-  - Keep in mind if you were not using
-- Run the migration script
-  - `make local-db-migration`
 
 To seed database, run:
 - `make local-db-seed`
@@ -96,29 +84,19 @@ Communication from front end to back end is facilitated by [the proxy field](htt
 ### Front End Views
 
 ##### /form
- - allows a traveller to submit their traveller data and receive a confirmation number
+ - allows a user to submit their data and receive a confirmation number
 
 ##### /confirmation/:formId
- - redirect here after form submission, display confirmation number and retrieve the health status and isolation plan status from the server's response to the form submission.
- - display statuses as friendly icons
- - button to download a PDF version of traveller submission
+ - redirect here after form submission and display confirmation number
+ - button to download a PDF version of submission
 
 ##### /login
 - allows an admin to login
-
-##### /lookup
-- single input field to search for a form submission by confirmation number
-
-##### /form/:formId
-- render a static version of a form submission
-- allow the admin to set a status for this submission: ["accepted", "support", "rejected"] and add notes
 
 ### API Routes
 
 - /login [POST] validate login creds, isssue token
 - /form [POST] submit new form
-- /form/:id [POST] edits an existing form
-- /form/:id [GET] retrieves an existing form
 - In production: / [GET] serves the built client app
 
 ## Database

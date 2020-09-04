@@ -13,7 +13,7 @@ export const Fields = ({ isDisabled }) => {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Typography variant="subtitle2">
-            Information
+            Provide Your Contact Information
           </Typography>
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -42,17 +42,17 @@ export const Fields = ({ isDisabled }) => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
-            name="alternatePhoneNumber"
+            name="emailAddress"
             component={RenderTextField}
-            label="Alternate phone number (optional)"
+            label="Email Address"
             disabled={isDisabled}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
-            name="emailAddress"
+            name="postalCode"
             component={RenderTextField}
-            label="E-mail Address"
+            label="Postal Code"
             disabled={isDisabled}
           />
         </Grid>

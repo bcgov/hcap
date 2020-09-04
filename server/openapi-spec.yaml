@@ -74,11 +74,11 @@ components:
           items:
             type: string
             enum:
-            - interior
-            - fraser
-            - vanCoastal
-            - vanIsland
-            - northern
+            - Interior
+            - Fraser
+            - Vancouver Coastal
+            - Vancouver Island
+            - Northern
           uniqueItems: true
           minItems: 1
         consent:

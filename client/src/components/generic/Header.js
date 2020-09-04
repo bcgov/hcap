@@ -71,7 +71,7 @@ export const Header = () => {
               onClick={handleLogoClick}
             />
             <Typography className={classes.title} variant="subtitle1" gutterBottom>
-              Health Care Access Program
+              Health Career Access Program
             </Typography>
           </div>
           {isSubmissionDetailsScreen && (

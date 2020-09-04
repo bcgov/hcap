@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   title: {
     color: theme.palette.headerText.primary,
     textAlign: 'center',
-    marginLeft: theme.spacing(1.4),
+    marginLeft: theme.spacing(1.0),
     marginTop: theme.spacing(1.4),
   },
   logo: {

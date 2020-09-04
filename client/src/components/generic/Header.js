@@ -2,12 +2,11 @@ import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
-import Hidden from '@material-ui/core/Hidden';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
+import BcLogo from '../../assets/images/bc-logo.svg';
 
-import DesktopLogo from '../../assets/images/desktop-logo.svg';
-import MobileLogo from '../../assets/images/mobile-logo.svg';
 import { Routes } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
@@ -24,7 +23,14 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
   },
   logoWrapper: {
-    flexGrow: 1,
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  title: {
+    color: theme.palette.headerText.primary,
+    textAlign: 'center',
+    marginLeft: theme.spacing(1.0),
+    marginTop: theme.spacing(1.4),
   },
   logo: {
     height: '48px',
@@ -58,22 +64,15 @@ export const Header = () => {
       <AppBar className={classes.appBar} position="static">
         <Toolbar className={classes.toolbar}>
           <div className={classes.logoWrapper}>
-            <Hidden smDown>
-              <img
-                className={classes.logo}
-                src={DesktopLogo}
-                alt="Logo"
-                onClick={handleLogoClick}
-              />
-            </Hidden>
-            <Hidden mdUp>
-              <img
-                className={classes.logo}
-                src={MobileLogo}
-                alt="Logo"
-                onClick={handleLogoClick}
-              />
-            </Hidden>
+            <img
+              className={classes.logo}
+              src={BcLogo}
+              alt="Logo"
+              onClick={handleLogoClick}
+            />
+            <Typography className={classes.title} variant="subtitle1" gutterBottom>
+              Health Career Access Program
+            </Typography>
           </div>
           {isSubmissionDetailsScreen && (
             <Button

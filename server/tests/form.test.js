@@ -41,6 +41,20 @@ describe('Server V1 Form Endpoints', () => {
     expect(res.statusCode).toEqual(400);
   });
 
+  it('Create new empty form, receive 400', async () => {
+    const res = await request.agent(app)
+      .post(formEndpoint)
+      .send({ });
+    expect(res.statusCode).toEqual(400);
+  });
+
+  it('Create new form that fails validation, receive 400', async () => {
+    const res = await request.agent(app)
+      .post(formEndpoint)
+      .send({ ...form, consent: false });
+    expect(res.statusCode).toEqual(400);
+  });
+
   afterAll(() => {
     server.close();
   });

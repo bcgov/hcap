@@ -27,7 +27,7 @@ export const Form = ({ initialValues, isDisabled }) => {
     emailAddress: '',
     postalCode: '',
     preferredLocation: [],
-    consent: true, //TODO HCAP-11 remove default, change to radio button
+    consent: '',
   };
 
   const handleSubmit = async (values) => {

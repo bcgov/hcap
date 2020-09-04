@@ -60,7 +60,10 @@ objects:
           name: "${APP_NAME}-server"
       spec:
         containers:
-        - name: "${APP_NAME}-server"
+        - envFrom:
+            - configMapRef:
+                name: hcap-config
+          name: "${APP_NAME}-server"
           image: " "
           ports:
           - containerPort: "${{SERVER_PORT}}"

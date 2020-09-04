@@ -16,6 +16,7 @@ export const Fields = ({ isDisabled }) => {
           <Typography variant="subtitle2">
             Check Your Eligibility
           </Typography>
+          <Divider />
         </Grid>
         <Grid item xs={12}>
           <Typography>

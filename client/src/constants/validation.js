@@ -1,5 +1,17 @@
 import * as yup from 'yup';
 
+const healthRegions = [
+  'Interior',
+  'Fraser',
+  'Vancouver Coastal',
+  'Vancouver Island',
+  'Northern',
+];
+
+const validateUniqueArray = (a) => (
+  Array.isArray(a) && new Set(a).size === a.length
+);
+
 export const LoginSchema = yup.object().shape({
   username: yup.string().required('Username is required'),
   password: yup.string().required('Password is required'),
@@ -22,6 +34,9 @@ const errorMessage = ({ path }) => {
     emailAddress: 'Email address is required',
     postalCode: 'Postal code is required',
 
+    // Preferred location
+    preferredLocation: 'Please select at least one location you\'d like to work in.',
+
     // Consent
     consent: 'We\'re sorry, but we cannot process your request without permission.',
   };
@@ -38,6 +53,11 @@ export const FormSchema = yup.object().noUnknown('Unknown field for form').shape
   phoneNumber: yup.string().required(errorMessage).matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
   emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
   postalCode: yup.string().required(errorMessage).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
+
+  // Preferred location
+  preferredLocation: yup.array().required(errorMessage).of(
+    yup.string().oneOf(healthRegions, 'Invalid location'),
+  ).test('is-unique-array', 'Preferred locations must be unique', validateUniqueArray),
 
   // Consent
   consent: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),

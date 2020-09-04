@@ -20,12 +20,13 @@ export const Form = ({ initialValues, isDisabled }) => {
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const formValues = initialValues ? initialValues : {
-    eligibility: true, //TODO HCAP-8 remove default, change to radio button
+    eligibility: '',
     firstName: '',
     lastName: '',
     phoneNumber: '',
     emailAddress: '',
     postalCode: '',
+    preferredLocation: [],
     consent: true, //TODO HCAP-11 remove default, change to radio button
   };
 

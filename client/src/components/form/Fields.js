@@ -4,8 +4,8 @@ import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { FastField } from 'formik';
 
-import { Card } from '../generic';
-import { RenderTextField, RenderRadioGroup } from '../fields';
+import { Card, Divider } from '../generic';
+import { RenderCheckboxGroup, RenderTextField, RenderRadioGroup } from '../fields';
 
 export const Fields = ({ isDisabled }) => {
 
@@ -16,6 +16,7 @@ export const Fields = ({ isDisabled }) => {
           <Typography variant="subtitle2">
             Check Your Eligibility
           </Typography>
+          <Divider />
         </Grid>
         <Grid item xs={12}>
           <Typography>
@@ -44,6 +45,7 @@ export const Fields = ({ isDisabled }) => {
           <Typography variant="subtitle2">
             Provide Your Contact Information
           </Typography>
+          <Divider />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
@@ -83,6 +85,91 @@ export const Fields = ({ isDisabled }) => {
             component={RenderTextField}
             label="Postal Code"
             disabled={isDisabled}
+          />
+        </Grid>
+      </Grid>
+      
+      {/** Preferred Work Location */}
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Typography variant="subtitle2">
+            Select Your Preferred Work Location(s)
+          </Typography>
+          <Divider />
+        </Grid>
+        <Grid item xs={12}>
+          <FastField
+            name="preferredLocation"
+            component={RenderCheckboxGroup}
+            label="Please select your preferred health region(s)"
+            disabled={isDisabled}
+            options={[
+              { value: 'Interior', label: (
+                <span>
+                  Interior (
+                  <Link 
+                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/1_interior_health_authority.pdf" 
+                    target="__blank" 
+                    rel="noreferrer noopener"
+                  >
+                    PDF map
+                  </Link>
+                  )
+                </span>
+              ) },
+              { value: 'Fraser', label: (
+                <span>
+                  Fraser (
+                  <Link 
+                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/2_fraser_health_authority.pdf" 
+                    target="__blank" 
+                    rel="noreferrer noopener"
+                  >
+                    PDF map
+                  </Link>
+                  )
+                </span>
+              ) },
+              { value: 'Vancouver Coastal', label: (
+                <span>
+                  Vancouver Coastal (
+                  <Link 
+                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/3_vancouver_coastal_health_authority.pdf" 
+                    target="__blank" 
+                    rel="noreferrer noopener"
+                  >
+                    PDF map
+                  </Link>
+                  )
+                </span>
+              ) },
+              { value: 'Vancouver Island', label: (
+                <span>
+                  Vancouver Island (
+                  <Link 
+                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/4_vancouver_island_health_authority.pdf" 
+                    target="__blank" 
+                    rel="noreferrer noopener"
+                  >
+                    PDF map
+                  </Link>
+                  )
+                </span>
+              ) },
+              { value: 'Northern', label: (
+                <span>
+                  Northern (
+                  <Link 
+                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/5_northern_health_authority.pdf" 
+                    target="__blank" 
+                    rel="noreferrer noopener"
+                  >
+                    PDF map
+                  </Link>
+                  )
+                </span>
+              ) },
+            ]}
           />
         </Grid>
       </Grid>

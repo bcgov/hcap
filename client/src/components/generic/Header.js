@@ -5,6 +5,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
+import BcLogo from '../../assets/images/bc-logo.svg';
 
 import { Routes } from '../../constants';
 
@@ -65,7 +66,7 @@ export const Header = () => {
           <div className={classes.logoWrapper}>
             <img
               className={classes.logo}
-              src="https://continuinged.sd73.bc.ca/en/our-schools-programs/resources/BC-Gov-Logo-Color.jpg"
+              src={BcLogo}
               alt="Logo"
               onClick={handleLogoClick}
             />

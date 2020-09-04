@@ -2,7 +2,7 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import { FastField, Field } from 'formik';
+import { FastField } from 'formik';
 
 import { Card } from '../generic';
 import { RenderTextField, RenderRadioGroup } from '../fields';
@@ -28,7 +28,7 @@ export const Fields = ({ isDisabled }) => {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <Field
+          <FastField
             name="eligibility"
             component={RenderRadioGroup}
             disabled={isDisabled}

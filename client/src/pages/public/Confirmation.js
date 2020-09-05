@@ -2,13 +2,15 @@ import React from 'react';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Redirect } from 'react-router-dom';
+import { Routes } from '../../constants';
 
 import { PDFButton, Divider, Page } from '../../components/generic';
 import { Form } from '../../components/form';
 
 export default () => {
   const location = useLocation();
+  if (!location.state) return <Redirect to={Routes.Form} />
   return (
     <div id="confirmation">
       <Page>

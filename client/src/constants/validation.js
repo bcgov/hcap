@@ -17,11 +17,6 @@ export const LoginSchema = yup.object().shape({
   password: yup.string().required('Password is required'),
 });
 
-export const DeterminationSchema = yup.object().shape({
-  determination: yup.string().nullable().oneOf(['followup', 'passed', 'failed'], 'Invalid decision').required('Decision is required'),
-  notes: yup.string().required('Notes are required'),
-});
-
 const errorMessage = ({ path }) => {
   const errorMessages = {
     // Eligibility

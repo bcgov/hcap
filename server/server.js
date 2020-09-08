@@ -37,13 +37,10 @@ app.post(`${apiBaseUrl}/form`,
 
     // Form ID
     const id = await generateRandomHexId();
-    const determination = 'pending';
 
     const currentISODate = new Date().toISOString();
     const formItem = {
       id,
-      determination,
-      notes: null,
       ...req.body,
       createdAt: currentISODate,
       updatedAt: currentISODate,
@@ -51,7 +48,7 @@ app.post(`${apiBaseUrl}/form`,
 
     await formsCollection.insertOne(formItem);
 
-    return res.json({ id, determination });
+    return res.json({ id });
   }));
 
 // Validate JWT

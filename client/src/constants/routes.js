@@ -4,11 +4,4 @@ export default Object.freeze({
   Form: '/',
   Login: '/login',
   Confirmation: '/confirmation',
-
-  // Private routes
-  Submissions: '/submissions',
-  SubmissionDetails: {
-    staticRoute: '/submission/:confirmationNumber',
-    dynamicRoute: (confirmationNumber) => `/submission/${confirmationNumber}`,
-  },
 });

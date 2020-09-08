@@ -36,37 +36,6 @@ export const getVersionCopy = (version = CURRENT_VERSION, fieldName) => {
 };
 
 /**
- * Map determination values to view names.
- *
- * @param {Object} determination - The determination values.
- * @returns {Object} The view name.
- */
-export const mapDetermination = (determination) => {
-  switch (determination) {
-    case 'followup':
-      return {
-        buttonText: 'Follow-up Required',
-        listViewText: 'Follow-up',
-      };
-    case 'passed':
-      return {
-        buttonText: 'Passed Inspection',
-        listViewText: 'Passed',
-      };
-    case 'failed':
-      return {
-        buttonText: 'Failed Inspection',
-        listViewText: 'Failed',
-      };
-    default:
-      return {
-        buttonText: null,
-        listViewText: 'Submitted',
-      };
-  }
-};
-
-/**
  * Intended to modify form values before submitting to the backend.
  *
  * @param {Object} submission - The form values.

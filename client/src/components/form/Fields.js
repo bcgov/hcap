@@ -117,9 +117,9 @@ export const Fields = ({ isDisabled }) => {
               { value: 'Interior', label: (
                 <span>
                   Interior (
-                  <Link 
-                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/1_interior_health_authority.pdf" 
-                    target="__blank" 
+                  <Link
+                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/1_interior_health_authority.pdf"
+                    target="__blank"
                     rel="noreferrer noopener"
                   >
                     PDF map
@@ -130,9 +130,9 @@ export const Fields = ({ isDisabled }) => {
               { value: 'Fraser', label: (
                 <span>
                   Fraser (
-                  <Link 
-                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/2_fraser_health_authority.pdf" 
-                    target="__blank" 
+                  <Link
+                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/2_fraser_health_authority.pdf"
+                    target="__blank"
                     rel="noreferrer noopener"
                   >
                     PDF map
@@ -143,9 +143,9 @@ export const Fields = ({ isDisabled }) => {
               { value: 'Vancouver Coastal', label: (
                 <span>
                   Vancouver Coastal (
-                  <Link 
-                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/3_vancouver_coastal_health_authority.pdf" 
-                    target="__blank" 
+                  <Link
+                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/3_vancouver_coastal_health_authority.pdf"
+                    target="__blank"
                     rel="noreferrer noopener"
                   >
                     PDF map
@@ -156,9 +156,9 @@ export const Fields = ({ isDisabled }) => {
               { value: 'Vancouver Island', label: (
                 <span>
                   Vancouver Island (
-                  <Link 
-                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/4_vancouver_island_health_authority.pdf" 
-                    target="__blank" 
+                  <Link
+                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/4_vancouver_island_health_authority.pdf"
+                    target="__blank"
                     rel="noreferrer noopener"
                   >
                     PDF map
@@ -169,9 +169,9 @@ export const Fields = ({ isDisabled }) => {
               { value: 'Northern', label: (
                 <span>
                   Northern (
-                  <Link 
-                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/5_northern_health_authority.pdf" 
-                    target="__blank" 
+                  <Link
+                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/5_northern_health_authority.pdf"
+                    target="__blank"
                     rel="noreferrer noopener"
                   >
                     PDF map
@@ -183,7 +183,7 @@ export const Fields = ({ isDisabled }) => {
           />
         </Grid>
       </Grid>
-      
+
       {/** Disclaimer and submission */}
       <Grid container spacing={2}>
         <Grid item xs={12}>
@@ -211,25 +211,27 @@ export const Fields = ({ isDisabled }) => {
             >
               sections 26(c) and (e) of the Freedom of Information and Protection of Privacy Act
             </Link>
-            &nbsp;(FOIPPA) for the purposes of administering the Health Career Access Program and Health 
+            &nbsp;(FOIPPA) for the purposes of administering the Health Career Access Program and Health
              Careers Recruitment Initiative.
           </Typography>
           <Typography variant="body2" paragraph>
-            Personal information will only be used by authorized personnel to fulfill the purpose for 
-            which it was originally collected or for a use consistent with that purpose unless you 
-            expressly consent otherwise. We do not disclose your information to other public bodies or 
+            Personal information will only be used by authorized personnel to fulfill the purpose for
+            which it was originally collected or for a use consistent with that purpose unless you
+            expressly consent otherwise. We do not disclose your information to other public bodies or
             individuals except as authorized by FOIPPA.
           </Typography>
           <Typography variant="body2" paragraph>
-            If you have any questions about our collection or use of personal information, please direct 
-            your inquiries to the Manager, Opportunity Development and Evaluation, Suite 250, 4170 Still 
+            If you have any questions about our collection or use of personal information, please direct
+            your inquiries to the Manager, Opportunity Development and Evaluation, Suite 250, 4170 Still
             Creek Dr, Burnaby, British Columbia, V5C 6C6, (604) 215-7173.
           </Typography>
+        </Grid>
+        <Grid item xs={12}>
           <Typography variant="body1" gutterBottom>
             <b>Submit Your Form</b>
           </Typography>
           <Typography variant="body2" paragraph>
-            Use the submit button to complete your expression of interest. We will contact you within 3 
+            Use the submit button to complete your expression of interest. We will contact you within 3
             weeks with more information.
           </Typography>
         </Grid>

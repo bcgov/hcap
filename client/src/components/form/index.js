@@ -9,6 +9,7 @@ import { useToast } from '../../hooks';
 import { handleSubmission, scrollUp } from '../../utils';
 
 import { Button } from '../generic';
+import { Summary } from './Summary';
 import { Fields } from './Fields';
 import { Footer } from './Footer';
 
@@ -65,6 +66,10 @@ export const Form = ({ initialValues, isDisabled }) => {
       >
         {({ submitForm, setTouched, values }) => (
           <FormikForm>
+
+            <Box pt={4} pb={4} pl={2} pr={2}>
+              <Summary />
+            </Box>
 
             <Box pt={2} pb={4} pl={2} pr={2}>
               <Fields isDisabled={isDisabled} />

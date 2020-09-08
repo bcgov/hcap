@@ -68,7 +68,7 @@ export const Form = ({ initialValues, isDisabled }) => {
           <FormikForm>
 
             <Box pt={4} pb={4} pl={2} pr={2}>
-              <Summary isDisabled={isDisabled} />
+              <Summary />
             </Box>
 
             <Box pt={2} pb={4} pl={2} pr={2}>

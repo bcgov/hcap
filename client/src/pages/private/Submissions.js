@@ -11,8 +11,6 @@ import { dateToString, mapDetermination } from '../../utils';
 import { Button, Page, Table } from '../../components/generic';
 
 export default () => {
-  const history = useHistory();
-
   const [lookupError, setLookupError] = useState(null);
   const [order, setOrder] = useState('asc');
   const [isLoading, setLoading] = useState(false);
@@ -33,6 +31,7 @@ export default () => {
   useEffect(() => {
     (async () => {
       setLoading(true);
+      const history = useHistory();
       const jwt = window.localStorage.getItem('jwt');
       const response = await fetch(`/api/v1/forms`, {
         headers: { 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${jwt}` },

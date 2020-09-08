@@ -113,3 +113,7 @@ create-server:
 	@oc process -f openshift/server.bc.yml -p NAMESPACE=rupaog-dev APP_NAME=hcap-server IMAGE_TAG=latest REPO=git@github.com:bcgov-c/hcap.git BRANCH=master | oc apply -n rupaog-dev -f -
 	@oc process -f openshift/server.dc.yml -p NAMESPACE=rupaog-dev APP_NAME=hcap-server IMAGE_TAG=latest SERVER_PORT=8080 | oc apply -n rupaog-dev -f -
 	@oc rollout status dc/hcap-server-server -n rupaog-dev
+
+create-db:
+	@oc project rupaog-dev
+	@oc process -f openshift/server.bc.yml -p MEMORY_REQUEST=2Gi MEMORY_LIMIT=5Gi CPU_REQUEST=500m CPU_LIMIT=2 VOLUME_CAPACITY=10Gi SC_MONGO=netapp-file-standard | oc create -n rupaog-dev -f -

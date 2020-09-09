@@ -192,6 +192,7 @@ export const Fields = ({ isDisabled }) => {
             <Grid item xs={12}>
               <FastField
                 name="consent"
+                disabled={isDisabled}
                 component={RenderCheckbox}
                 label="I consent to have my personal information shared with the Health Career Access Program and Health Careers Recruitment Initiative."
               />

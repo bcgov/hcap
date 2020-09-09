@@ -1,6 +1,4 @@
-const { randomBytes } = require('crypto');
-const { dbClient, schema, collections } = require('../../db');
-const { hashPassword } = require('../../auth.js');
+const { dbClient, schema } = require('../../db');
 
 async function seedDatabase() {
   // Create collections if needed
@@ -18,15 +16,6 @@ async function seedDatabase() {
   });
 
   await Promise.all(results); // Wait for all synchronous operations to pass/fail
-
-  // Create default user
-  const usersCollection = dbClient.db.collection(collections.USERS);
-  const salt = randomBytes(16).toString('hex');
-  await usersCollection.insertOne({
-    username: 'username',
-    password: hashPassword('password', salt),
-    salt,
-  });
 }
 
 async function clearDB() {

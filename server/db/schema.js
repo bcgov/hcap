@@ -3,22 +3,14 @@
  */
 
 const collections = {
-  FORMS: 'fos-forms',
-  USERS: 'fos-users',
+  FORMS: 'hcap-forms',
 };
 
 const schema = [
   {
-    collection: collections.USERS,
-    indexes: [
-      { key: 'username', options: { unique: true } },
-    ],
-  },
-  {
     collection: collections.FORMS,
     indexes: [
       { key: 'id', options: { unique: true } },
-      { key: 'lastName', options: {} },
       { key: 'createdAt', options: {} },
       { key: 'serviceResponse.processedAt', options: {} },
     ],

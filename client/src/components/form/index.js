@@ -37,7 +37,7 @@ export const Form = ({ initialValues, isDisabled }) => {
     const response = await fetch('/api/v1/form', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
-      body: JSON.stringify({ values }),
+      body: JSON.stringify(values),
     });
 
     if (response.ok) {

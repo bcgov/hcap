@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 
 import { FormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
-import { handleSubmission, scrollUp } from '../../utils';
+import { scrollUp } from '../../utils';
 
 import { Button } from '../generic';
 import { Summary } from './Summary';
@@ -34,11 +34,10 @@ export const Form = ({ initialValues, isDisabled }) => {
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
 
-    const modifiedValues = handleSubmission(values);
     const response = await fetch('/api/v1/form', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
-      body: JSON.stringify({ ...modifiedValues }),
+      body: JSON.stringify({ values }),
     });
 
     if (response.ok) {

@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
-const { passport } = require('./auth.js');
 const { validate, FormSchema } = require('./validation.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
@@ -12,11 +11,6 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
-
-// Login using username and password, receive JWT
-app.post(`${apiBaseUrl}/login`,
-  passport.authenticate('login', { session: false }),
-  (req, res) => res.json({ token: req.user.token }));
 
 // Create new form, not secured
 app.post(`${apiBaseUrl}/form`,
@@ -37,13 +31,10 @@ app.post(`${apiBaseUrl}/form`,
 
     // Form ID
     const id = await generateRandomHexId();
-    const determination = 'pending';
 
     const currentISODate = new Date().toISOString();
     const formItem = {
       id,
-      determination,
-      notes: null,
       ...req.body,
       createdAt: currentISODate,
       updatedAt: currentISODate,
@@ -51,13 +42,8 @@ app.post(`${apiBaseUrl}/form`,
 
     await formsCollection.insertOne(formItem);
 
-    return res.json({ id, determination });
+    return res.json({ id });
   }));
-
-// Validate JWT
-app.get(`${apiBaseUrl}/validate`,
-  passport.authenticate('jwt', { session: false }),
-  (req, res) => res.json({}));
 
 // Version number
 app.get(`${apiBaseUrl}/version`,

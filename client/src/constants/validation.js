@@ -12,16 +12,6 @@ const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
 );
 
-export const LoginSchema = yup.object().shape({
-  username: yup.string().required('Username is required'),
-  password: yup.string().required('Password is required'),
-});
-
-export const DeterminationSchema = yup.object().shape({
-  determination: yup.string().nullable().oneOf(['followup', 'passed', 'failed'], 'Invalid decision').required('Decision is required'),
-  notes: yup.string().required('Notes are required'),
-});
-
 const errorMessage = ({ path }) => {
   const errorMessages = {
     // Eligibility

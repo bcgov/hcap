@@ -22,8 +22,8 @@ describe('Server V1 Form Endpoints', () => {
     lastName: 'Smith',
     phoneNumber: '1234567890',
     emailAddress: 'a@b.c',
-    postalCode: 'V1V1V1',
-    preferredLocation: ['fraser'],
+    postalCode: 'V1V 1V1',
+    preferredLocation: ['Fraser'],
     consent: true,
   };
 

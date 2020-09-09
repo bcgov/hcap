@@ -13,11 +13,6 @@ const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
 );
 
-const LoginSchema = yup.object().shape({
-  username: yup.string().required('Username is required'),
-  password: yup.string().required('Password is required'),
-});
-
 const errorMessage = ({ path }) => {
   const errorMessages = {
     // Eligibility
@@ -62,5 +57,5 @@ const FormSchema = yup.object().noUnknown('Unknown field for form').shape({
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
-  LoginSchema, FormSchema, validate,
+  FormSchema, validate,
 };

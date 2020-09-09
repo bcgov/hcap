@@ -59,7 +59,7 @@ To run server tests:
 - Make sure containers are running
   - `make local`
 - Shell into the server container by running
-  - `make local-server-workspace` 
+  - `make local-server-workspace`
   - `npm test`
 - or by running
   - `make local-server-tests`
@@ -90,12 +90,8 @@ Communication from front end to back end is facilitated by [the proxy field](htt
  - redirect here after form submission and display confirmation number
  - button to download a PDF version of submission
 
-##### /login
-- allows an admin to login
-
 ### API Routes
 
-- /login [POST] validate login creds, isssue token
 - /form [POST] submit new form
 - In production: / [GET] serves the built client app
 
@@ -103,7 +99,7 @@ Communication from front end to back end is facilitated by [the proxy field](htt
 
 The application uses Amazon DocumentDB, a non-relational database, fully managed, that emulates the MongoDB 3.6 API and utilizes a distributed, fault-tolerant, self-healing storage system.
 
-You can find more information at: 
+You can find more information at:
 - https://aws.amazon.com/documentdb/
 - https://docs.aws.amazon.com/documentdb/latest/developerguide/what-is.html
 

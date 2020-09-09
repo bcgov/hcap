@@ -1,10 +1,6 @@
 /* eslint-disable */
-const { randomBytes } = require('crypto');
-const { hashPassword } = require('../../auth.js');
 const { dbClient } = require('../db.js');
-const { schema, collections } = require('../schema.js');
-
-const nodeEnv = process.env.NODE_ENV || 'development';
+const { schema } = require('../schema.js');
 
 // If run directly, will set up local DB
 /* eslint-disable no-console */
@@ -50,33 +46,9 @@ const nodeEnv = process.env.NODE_ENV || 'development';
         }
       }
 
-      // Create local user if needed
-      if (nodeEnv === 'development') {
-        console.log('Verifying user');
-
-        const usersCollection = dbClient.db.collection(collections.USERS);
-        const defaultUser = await usersCollection.findOne({ username: 'username' });
-
-        // Creates default user
-        if (!defaultUser) {
-          const salt = randomBytes(16).toString('hex');
-          console.log('Creating default username');
-
-          const queryResult = await usersCollection.insertOne({
-            username: 'username',
-            password: hashPassword('password', salt),
-            salt,
-          });
-
-          console.log(`Created user 'username' with ID ${queryResult.insertedId}`);
-        } else {
-          console.log('Default username exists', defaultUser._id);
-        }
-      }
-
       return process.exit();
     } catch (error) {
-      console.error(`Failed to create collections, indexes or default username, ${error}`);
+      console.error(`Failed to create collections or indexes, ${error}`);
     }
   }
 })();

@@ -22,7 +22,7 @@ export default () => {
               <Grid container alignItems="center" justify="space-between">
                 <Grid item>
                   <Typography variant="subtitle1" paragraph>
-                    Thank you for your submission. Write down this confirmation number and print this page for your records.
+                    Thank you for your submission. Write down this confirmation number and print this page for your records. We will contact you within 3 weeks with more information.
                   </Typography>
                 </Grid>
                 <Grid container

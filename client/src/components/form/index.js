@@ -73,7 +73,7 @@ export const Form = ({ initialValues, isDisabled }) => {
             </Box>
 
             {!isDisabled && (
-              <Box display="flex" justifyContent="center" pl={2} pr={2} pb={6}>
+              <Box display="flex" justifyContent="center" pt={0} pb={4} pl={2} pr={2}>
                 <Button
                   onClick={() => submitForm()}
                   variant="contained"

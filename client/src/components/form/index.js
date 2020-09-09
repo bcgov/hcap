@@ -11,8 +11,6 @@ import { scrollUp } from '../../utils';
 import { Button } from '../generic';
 import { Summary } from './Summary';
 import { Fields } from './Fields';
-import { Footer } from './Footer';
-
 
 export const Form = ({ initialValues, isDisabled }) => {
   const history = useHistory();
@@ -77,7 +75,7 @@ export const Form = ({ initialValues, isDisabled }) => {
             </Box>
 
             {!isDisabled && (
-              <Box display="flex" justifyContent="center" pl={2} pr={2}>
+              <Box display="flex" justifyContent="center" pl={2} pr={2} pb={6}>
                 <Button
                   onClick={() => submitForm()}
                   variant="contained"
@@ -87,10 +85,6 @@ export const Form = ({ initialValues, isDisabled }) => {
                   text="Submit"
                 />
               </Box>)}
-
-            <Box pt={4} pb={4} pl={2} pr={2}>
-              <Footer />
-            </Box>
           </FormikForm>
         )}
       </Formik>

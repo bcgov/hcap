@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 export const Fields = ({ isDisabled }) => {
   const classes = useStyles();
   return (
-    <Card noPadding={isDisabled} noShadow={isDisabled}>
+    <Card noShadow={isDisabled}>
       <Grid container spacing={2}>
 
         {/** Eligibility */}

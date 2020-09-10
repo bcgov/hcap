@@ -116,3 +116,11 @@ create-server:
 create-db:
 	@oc project rupaog-dev
 	@oc process -f openshift/server.bc.yml -p MEMORY_REQUEST=2Gi MEMORY_LIMIT=5Gi CPU_REQUEST=500m CPU_LIMIT=2 VOLUME_CAPACITY=10Gi SC_MONGO=netapp-file-standard | oc create -n rupaog-dev -f -
+
+tunnel-db:
+	@oc project rupaog-dev
+	@oc port-forward hcap-mongodb-0 27017
+
+server-build:
+	@oc project rupaog-dev
+	@oc start-build hcap-server

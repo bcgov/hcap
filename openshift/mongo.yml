@@ -63,7 +63,7 @@ parameters:
   - name: MONGODB_DATABASE
     displayName: "MongoDB Database Name"
     description: "Name of the MongoDB database accessed."
-    value: rocketdb
+    value: hcap
     required: true
 
   - name: MONGODB_ADMIN_PASSWORD

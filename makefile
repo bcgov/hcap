@@ -123,4 +123,5 @@ tunnel-db:
 
 server-build:
 	@oc project rupaog-dev
+	@oc cancel-build bc/hcap-server
 	@oc start-build hcap-server

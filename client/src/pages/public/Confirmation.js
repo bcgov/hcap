@@ -39,15 +39,20 @@ export default () => {
                 </Grid>
               </Grid>
             </Box>
-            <Typography variant="body1" paragraph>
-              Thank you. Your form has been submitted.
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              Confirmation number:
-            </Typography>
-            <Typography variant="subtitle2" paragraph>
-              <b>{location.state?.id || 'Failed to retrieve'}</b>
-            </Typography>
+            <Grid container
+              direction="column"
+              alignItems="center"
+              justify="center" item>
+              <Typography variant="body1" paragraph>
+                Your form has been submitted.
+                  </Typography>
+              <Typography variant="body1" gutterBottom>
+                Confirmation number:
+                  </Typography>
+              <Typography variant="subtitle2" paragraph>
+                <b>{location.state?.id || 'Failed to retrieve'}</b>
+              </Typography>
+            </Grid>
             <Divider />
           </Box>
 

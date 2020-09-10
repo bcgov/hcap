@@ -44,6 +44,7 @@ export const Fields = ({ isDisabled }) => {
             name="eligibility"
             component={RenderRadioGroup}
             disabled={isDisabled}
+            setTouched
             row
             options={[
               { value: true, label: 'Yes' },
@@ -63,7 +64,7 @@ export const Fields = ({ isDisabled }) => {
           <FastField
             name="firstName"
             component={RenderTextField}
-            label="First Name"
+            label="* First Name"
             disabled={isDisabled}
           />
         </Grid>
@@ -71,7 +72,7 @@ export const Fields = ({ isDisabled }) => {
           <FastField
             name="lastName"
             component={RenderTextField}
-            label="Last Name"
+            label="* Last Name"
             disabled={isDisabled}
           />
         </Grid>
@@ -79,7 +80,7 @@ export const Fields = ({ isDisabled }) => {
           <FastField
             name="phoneNumber"
             component={RenderTextField}
-            label="Phone Number"
+            label="* Phone Number"
             disabled={isDisabled}
           />
         </Grid>
@@ -87,7 +88,7 @@ export const Fields = ({ isDisabled }) => {
           <FastField
             name="emailAddress"
             component={RenderTextField}
-            label="Email Address"
+            label="* Email Address"
             disabled={isDisabled}
           />
         </Grid>
@@ -95,7 +96,7 @@ export const Fields = ({ isDisabled }) => {
           <FastField
             name="postalCode"
             component={RenderTextField}
-            label="Postal Code"
+            label="* Postal Code"
             disabled={isDisabled}
           />
         </Grid>
@@ -111,7 +112,7 @@ export const Fields = ({ isDisabled }) => {
           <FastField
             name="preferredLocation"
             component={RenderCheckboxGroup}
-            label="Please select your preferred health region(s)"
+            label="* Please select your preferred health region(s)"
             disabled={isDisabled}
             options={[
               { value: 'Interior', label: (

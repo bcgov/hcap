@@ -3,7 +3,6 @@ name: OpenShift Build
 on:
   push:
     branches:
-      - db-template
       - master
 
 env:

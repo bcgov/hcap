@@ -18,8 +18,6 @@ export VERSION_LABEL:=$(ENV_PREFIX)-$(ENV_SUFFIX)-$(IMAGE_TAG)
 
 print-status:
 	@echo "Current Settings:"
-	@echo "ACCOUNT ID: $(ACCOUNT_ID)"
-	@echo "S3 BUCKET: $(S3_BUCKET)"
 	@echo "PROJECT: $(PROJECT)"
 	@echo "REGION: $(REGION)"
 	@echo "COMMIT_SHA: $(COMMIT_SHA)"
@@ -54,74 +52,27 @@ local-server-tests:
 	@echo "Running tests in local app container"
 	@docker exec -it $(PROJECT)-server npm test
 
-# Pipeline build and deployment commands
+# OpenShift Aliases
 
-get-latest-env-name:
-	@aws elasticbeanstalk describe-environments | jq -cr '.Environments | .[] | select(.Status == "Ready" and (.EnvironmentName | test("^$(ENV_PREFIX)-$(ENV_SUFFIX)(-[0-9]+)?$$"))) | .EnvironmentName' | sort | tail -n 1
-
-create-new-env-name:
-	@echo $(ENV_PREFIX)-$(ENV_SUFFIX)-$(shell date '+%Y%m%d%H%M')
-
-build-image:
-	@echo "Building image $(PROJECT):$(IMAGE_TAG)"
-	@docker build -t $(PROJECT):$(IMAGE_TAG) --build-arg VERSION=$(IMAGE_TAG) .
-
-push-image:
-	@echo "Pushing image $(PROJECT):$(IMAGE_TAG) to ECR"
-	@aws ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
-	@docker tag $(PROJECT):$(IMAGE_TAG) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
-	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
-
-validate-image:
-	@echo "Ensuring $(PROJECT):$(IMAGE_TAG) is in container registry"
-	@aws ecr describe-images --repository-name=$(PROJECT) --image-ids=imageTag=$(IMAGE_TAG)
-
-promote-image:
-	@echo "Creating deployment artifact for commit $(IMAGE_TAG) and promoting image to $(ENV_SUFFIX)"
-	@echo '{"AWSEBDockerrunVersion": 2, "containerDefinitions": [{ "essential": true, "name": "application", "image": "$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)", "memory": 256, "portMappings": [{ "containerPort": 80, "hostPort": 80 }] }] }' > Dockerrun.aws.json
-	@zip -r $(VERSION_LABEL).zip  Dockerrun.aws.json
-	@aws s3 cp $(VERSION_LABEL).zip s3://$(S3_BUCKET)/$(PROJECT)/$(VERSION_LABEL).zip
-	@aws elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(VERSION_LABEL) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(VERSION_LABEL).zip" || :
-	@aws elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(DESTINATION_ENV) --version-label $(VERSION_LABEL)
-
-# Git tagging aliases
-
-tag-dev:
-	@echo "Deploying $(PROJECT):$(IMAGE_TAG) to dev env"
-	@git tag -fa dev -m "Deploying $(PROJECT):$(IMAGE_TAG) to dev env" $(IMAGE_TAG)
-	@git push --force origin refs/tags/dev:refs/tags/dev
-
-tag-staging:
-	@echo "Deploying $(PROJECT):$(IMAGE_TAG) to staging env"
-	@git tag -fa staging -m "Deploying $(PROJECT):$(IMAGE_TAG) to staging env" $(IMAGE_TAG)
-	@git push --force origin refs/tags/staging:refs/tags/staging
-
-tag-prod:
-	@echo "Deploying $(PROJECT):$(IMAGE_TAG) to prod env"
-	@git tag -fa prod -m "Deploying $(PROJECT):$(IMAGE_TAG) to prod env" $(IMAGE_TAG)
-	@git push --force origin refs/tags/prod:refs/tags/prod
-
-# OpenShift aliases
-
-add-deploy-key:
+server-pull-key:
 	@oc project rupaog-dev
 	@oc create secret generic hcap-gh-key --from-file=ssh-privatekey=key --type=kubernetes.io/ssh-auth
 	@oc secrets link builder hcap-gh-key
 
-create-server:
+server-create:
 	@oc project rupaog-dev
 	@oc process -f openshift/server.bc.yml --param-file=openshift/dev.env --ignore-unknown-parameters | oc apply -f -
 	@oc process -f openshift/server.dc.yml --param-file=openshift/dev.env --ignore-unknown-parameters | oc apply -f -
-
-create-db:
-	@oc project rupaog-dev
-	@oc process -f openshift/server.bc.yml -p MEMORY_REQUEST=2Gi MEMORY_LIMIT=5Gi CPU_REQUEST=500m CPU_LIMIT=2 VOLUME_CAPACITY=10Gi SC_MONGO=netapp-file-standard | oc create -n rupaog-dev -f -
-
-tunnel-db:
-	@oc project rupaog-dev
-	@oc port-forward hcap-mongodb-0 27017
 
 server-build:
 	@oc project rupaog-dev
 	@oc cancel-build bc/hcap-server
 	@oc start-build hcap-server
+
+db-create:
+	@oc project rupaog-dev
+	@oc process -f openshift/server.bc.yml -p MEMORY_REQUEST=2Gi MEMORY_LIMIT=5Gi CPU_REQUEST=500m CPU_LIMIT=2 VOLUME_CAPACITY=10Gi SC_MONGO=netapp-file-standard | oc create -n rupaog-dev -f -
+
+db-tunnel:
+	@oc project rupaog-dev
+	@oc port-forward hcap-mongodb-0 27017

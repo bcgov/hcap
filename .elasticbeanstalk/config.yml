@@ -1,5 +1,5 @@
 global:
-  application_name: farm-operator-screening
+  application_name: health-career-access-program
   default_ec2_keyname: null
   default_platform: Docker running on 64bit Amazon Linux
   default_region: ca-central-1

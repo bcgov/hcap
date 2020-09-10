@@ -1,6 +1,3 @@
-# Elastic Beanstalk Files
-farm-operator-screening*.zip
-
 # Dependencies
 node_modules
 
@@ -23,7 +20,6 @@ audit-report.*
 !.ebextensions/.keep
 .env
 test-results
-bcfs-web-*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

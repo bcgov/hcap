@@ -4,7 +4,7 @@ echo 'Creating application user and db'
 
 mongo ${MONGO_INITDB_DATABASE} \
         --host localhost \
-        --port 27017 \
+        --port ${MONGO_INITDB_PORT} \
         -u ${MONGO_INITDB_ROOT_USERNAME} \
         -p ${MONGO_INITDB_ROOT_PASSWORD} \
         --authenticationDatabase admin \

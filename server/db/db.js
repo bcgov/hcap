@@ -39,7 +39,7 @@ class DBClient {
       dbUser: process.env.DB_USER || 'development',
       dbPassword: process.env.DB_PASSWORD || 'development',
       dbName: process.env.DB_NAME || 'development',
-      dbTLSEnabled: process.env.DB_AWS_TLS_ENABLED === 'true',
+      dbTLSEnabled: process.env.DB_TLS_ENABLED === 'true',
       useReplicaSet: process.env.DB_USE_REPLICA_SET === 'true',
     };
   }

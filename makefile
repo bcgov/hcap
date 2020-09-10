@@ -110,9 +110,8 @@ add-deploy-key:
 
 create-server:
 	@oc project rupaog-dev
-	@oc process -f openshift/server.bc.yml -p NAMESPACE=rupaog-dev APP_NAME=hcap-server IMAGE_TAG=latest REPO=git@github.com:bcgov-c/hcap.git BRANCH=master | oc apply -n rupaog-dev -f -
-	@oc process -f openshift/server.dc.yml -p NAMESPACE=rupaog-dev APP_NAME=hcap-server IMAGE_TAG=latest SERVER_PORT=8080 | oc apply -n rupaog-dev -f -
-	@oc rollout status dc/hcap-server-server -n rupaog-dev
+	@oc process -f openshift/server.bc.yml --param-file=openshift/dev.env --ignore-unknown-parameters | oc apply -f -
+	@oc process -f openshift/server.dc.yml --param-file=openshift/dev.env --ignore-unknown-parameters | oc apply -f -
 
 create-db:
 	@oc project rupaog-dev

@@ -2,7 +2,7 @@ kind: Template
 apiVersion: v1
 labels:
   app: "${APP_NAME}"
-  template: "${APP_NAME}-server"
+  template: "${APP_NAME}"
 parameters:
 - name: NAMESPACE
   description: The OpenShift namespace in which to deploy the server
@@ -21,20 +21,20 @@ objects:
 - apiVersion: v1
   kind: Route
   metadata:
-    name: "${APP_NAME}-server"
+    name: "${APP_NAME}"
   spec:
     host: ''
     port:
       targetPort: web
     to:
       kind: Service
-      name: "${APP_NAME}-server"
+      name: "${APP_NAME}"
       weight: 100
     wildcardPolicy: None
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
-    name: "${APP_NAME}-server"
+    name: "${APP_NAME}"
   spec:
     strategy:
       type: Rolling
@@ -43,27 +43,27 @@ objects:
     - imageChangeParams:
         automatic: true
         containerNames:
-        - "${APP_NAME}-server"
+        - "${APP_NAME}"
         from:
           kind: ImageStreamTag
-          name: "${APP_NAME}-server:${IMAGE_TAG}"
+          name: "${APP_NAME}:${IMAGE_TAG}"
           namespace: "${NAMESPACE}"
       type: ImageChange
     - type: ConfigChange
     replicas: 1
     selector:
-      name: "${APP_NAME}-server"
+      name: "${APP_NAME}"
     template:
       metadata:
-        name: "${APP_NAME}-server"
+        name: "${APP_NAME}"
         labels:
-          name: "${APP_NAME}-server"
+          name: "${APP_NAME}"
       spec:
         containers:
         - envFrom:
             - configMapRef:
                 name: hcap-config
-          name: "${APP_NAME}-server"
+          name: "${APP_NAME}"
           image: " "
           ports:
           - containerPort: "${{SERVER_PORT}}"
@@ -83,7 +83,7 @@ objects:
 - kind: Service
   apiVersion: v1
   metadata:
-    name: "${APP_NAME}-server"
+    name: "${APP_NAME}"
   spec:
     ports:
     - name: web
@@ -91,6 +91,6 @@ objects:
       port: "${{SERVER_PORT}}"
       targetPort: "${{SERVER_PORT}}"
     selector:
-      name: "${APP_NAME}-server"
+      name: "${APP_NAME}"
     type: ClusterIP
     sessionAffinity: None

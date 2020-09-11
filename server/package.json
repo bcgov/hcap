@@ -22,7 +22,6 @@
     "mongodb": "3.6.0",
     "node-cache": "5.1.2",
     "winston": "3.3.3",
-    "winston-cloudwatch": "2.3.2",
     "yup": "0.29.3"
   },
   "devDependencies": {

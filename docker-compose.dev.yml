@@ -27,6 +27,12 @@ services:
         VERSION: ${COMMIT_SHA}
     environment:
       - DB_SERVER=${DB_SERVER}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_TLS_ENABLED=${DB_TLS_ENABLED}
+      - DB_USE_REPLICA_SET=${DB_USE_REPLICA_SET}
       - VERSION=${COMMIT_SHA}
     ports:
       - "80:80"
@@ -43,12 +49,15 @@ services:
     container_name: ${PROJECT}-mongodb
     image: mongo:3.6-xenial
     restart: always
+    expose:
+      - ${DB_PORT}
     ports:
-      - "27017:27017"
+      - ${DB_PORT}:${DB_PORT}
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
       - MONGO_INITDB_DATABASE=${DB_NAME}
+      - MONGO_INITDB_PORT=${DB_PORT}
     volumes:
       - ./.docker/mongo/databaseInit:/docker-entrypoint-initdb.d
       - hcap-mongo-data-configdb:/data/configdb

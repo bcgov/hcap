@@ -22,7 +22,6 @@ print-status:
 	@echo "S3 BUCKET: $(S3_BUCKET)"
 	@echo "PROJECT: $(PROJECT)"
 	@echo "REGION: $(REGION)"
-	@echo "PROFILE: $(PROFILE)"
 	@echo "COMMIT_SHA: $(COMMIT_SHA)"
 	@echo "IMAGE_TAG: $(IMAGE_TAG)"
 	@echo "VERSION_LABEL: $(VERSION_LABEL)"

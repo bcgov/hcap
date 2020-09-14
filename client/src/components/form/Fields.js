@@ -44,6 +44,7 @@ export const Fields = ({ isDisabled }) => {
             name="eligibility"
             component={RenderRadioGroup}
             disabled={isDisabled}
+            setTouched
             row
             options={[
               { value: true, label: 'Yes' },
@@ -63,7 +64,7 @@ export const Fields = ({ isDisabled }) => {
           <FastField
             name="firstName"
             component={RenderTextField}
-            label="First Name"
+            label="* First Name"
             disabled={isDisabled}
           />
         </Grid>
@@ -71,23 +72,25 @@ export const Fields = ({ isDisabled }) => {
           <FastField
             name="lastName"
             component={RenderTextField}
-            label="Last Name"
+            label="* Last Name"
             disabled={isDisabled}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
             name="phoneNumber"
+            type="tel"
             component={RenderTextField}
-            label="Phone Number"
+            label="* Phone Number"
             disabled={isDisabled}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
             name="emailAddress"
+            type="email"
             component={RenderTextField}
-            label="Email Address"
+            label="* Email Address"
             disabled={isDisabled}
           />
         </Grid>
@@ -95,7 +98,7 @@ export const Fields = ({ isDisabled }) => {
           <FastField
             name="postalCode"
             component={RenderTextField}
-            label="Postal Code"
+            label="* Postal Code"
             disabled={isDisabled}
           />
         </Grid>
@@ -111,7 +114,7 @@ export const Fields = ({ isDisabled }) => {
           <FastField
             name="preferredLocation"
             component={RenderCheckboxGroup}
-            label="Please select your preferred health region(s)"
+            label="* Please select your preferred health region(s)"
             disabled={isDisabled}
             options={[
               { value: 'Interior', label: (
@@ -204,7 +207,7 @@ export const Fields = ({ isDisabled }) => {
             <b>Collection Notice</b>
           </Typography>
           <Typography variant="body2" paragraph>
-            Your personal information is collected via this form under&nbsp;
+            Personal information is collected via this form under&nbsp;
             <Link
               href="https://www.bclaws.ca/civix/document/id/complete/statreg/96165_03#section26"
               target="__blank"
@@ -212,8 +215,7 @@ export const Fields = ({ isDisabled }) => {
             >
               sections 26(c) and (e) of the Freedom of Information and Protection of Privacy Act
             </Link>
-            &nbsp;(FOIPPA) for the purposes of administering the Health Career Access Program and Health
-             Careers Recruitment Initiative.
+            &nbsp;(FOIPPA) for the purposes of administering the Health Career Access Program.
           </Typography>
           <Typography variant="body2" paragraph>
             Personal information will only be used by authorized personnel to fulfill the purpose for
@@ -222,9 +224,10 @@ export const Fields = ({ isDisabled }) => {
             individuals except as authorized by FOIPPA.
           </Typography>
           <Typography variant="body2" paragraph>
-            If you have any questions about our collection or use of personal information, please direct
-            your inquiries to the Manager, Opportunity Development and Evaluation, Suite 250, 4170 Still
-            Creek Dr, Burnaby, British Columbia, V5C 6C6, (604) 215-7173.
+            If you have any questions about our collection or use of personal information, please direct 
+            your inquiries to the Director, Planning, Integration and Partnerships, 1515 Blanshard Street, 
+            Victoria, British Columbia, V8W 3C8. Telephone: <Link href="tel:+12364783520">236-478-3520</Link>, 
+            Email: <Link href="mailto:HCAPInfoQuery@gov.bc.ca">HCAPInfoQuery@gov.bc.ca</Link>.
           </Typography>
         </Grid>
         <Grid item xs={12}>

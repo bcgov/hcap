@@ -23,18 +23,28 @@ const useStyles = makeStyles((theme) => ({
   },
   logoWrapper: {
     display: 'flex',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
   title: {
     color: theme.palette.headerText.primary,
     textAlign: 'center',
-    marginLeft: theme.spacing(1.0),
+    fontWeight: 'bold',
     marginTop: theme.spacing(1.4),
   },
   logo: {
-    height: '48px',
+    height: '40px',
+    marginBottom: theme.spacing(1.1),
     cursor: 'pointer',
   },
+  verticalDivider: {
+    marginLeft: theme.spacing(1.5),
+    marginRight: theme.spacing(1.5),
+    height: '48px',
+    backgroundColor: '#E2A014',
+    color: '#E2A014',
+    borderStyle: 'solid',
+  }
 }));
 
 export const Header = () => {
@@ -54,7 +64,8 @@ export const Header = () => {
               alt="Logo"
               onClick={handleLogoClick}
             />
-            <Typography className={classes.title} variant="subtitle1" gutterBottom>
+            <hr className={classes.verticalDivider} />
+            <Typography className={classes.title} variant="h2" gutterBottom>
               Health Career Access Program
             </Typography>
           </div>

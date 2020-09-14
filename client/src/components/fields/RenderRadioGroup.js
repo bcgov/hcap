@@ -12,11 +12,17 @@ export const RenderRadioGroup = ({
   label,
   options,
   disabled,
+  setTouched,
   hiddenCheckbox,
   ...props
 }) => {
   const handleChange = (e) => {
     const value = e.target.value;
+
+    if (setTouched) {
+      form.setFieldTouched(field.name, true);
+    }
+
     if (value === 'true' || value === 'false') {
       field.onChange({ target: { name: field.name, value: value === 'true' } });
     } else {

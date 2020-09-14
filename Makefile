@@ -16,11 +16,11 @@ print-status:
 
 # Local Development
 
-build-local:
+local-build:
 	@echo "Building local app image"
 	@docker-compose -f docker-compose.dev.yml build
 
-run-local:
+local-run:
 	@echo "Running local app container"
 	@docker-compose -f docker-compose.dev.yml up
 
@@ -28,7 +28,7 @@ run-local-db:
 	@echo "Running local DB container"
 	@docker-compose -f docker-compose.dev.yml up mongodb
 
-close-local:
+local-close:
 	@echo "Stopping local app container"
 	@docker-compose -f docker-compose.dev.yml down
 
@@ -42,10 +42,12 @@ local-server-tests:
 
 # OpenShift Aliases
 
-server-pull-key:
+os-permissions:
 	@oc project $(OS_NAMESPACE)
-	@oc create secret generic hcap-gh-key --from-file=ssh-privatekey=key --type=kubernetes.io/ssh-auth
-	@oc secrets link builder hcap-gh-key
+	@oc create sa github-$(OS_NAMESPACE_SUFFIX)
+	@oc policy add-role-to-user system:image-builder -z github-$(OS_NAMESPACE_SUFFIX)
+	@oc create secret generic $(APP_NAME)-github-key --from-file=ssh-privatekey=key --type=kubernetes.io/ssh-auth
+	@oc secrets link builder $(APP_NAME)-github-key
 
 server-create:
 	@oc project $(OS_NAMESPACE)

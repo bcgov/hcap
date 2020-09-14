@@ -36,9 +36,13 @@ class DBClient {
 
     const database = process.env.MONGODB_DATABASE || 'development';
     const uri = process.env.MONGODB_URI || `mongodb://development:development@localhost:27017/${database}`;
+    const options = {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    };
 
     try {
-      this._connection = await MongoClient.connect(uri);
+      this._connection = await MongoClient.connect(uri, options);
       this.db = this._connection.db(database);
     } catch (err) {
       logger.error(`Failed to connect to database: ${err}`);

@@ -88,6 +88,7 @@ export const Fields = ({ isDisabled }) => {
         <Grid item xs={12} sm={6}>
           <FastField
             name="emailAddress"
+            type="email"
             component={RenderTextField}
             label="* Email Address"
             disabled={isDisabled}

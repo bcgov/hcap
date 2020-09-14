@@ -19,7 +19,6 @@ export VERSION_LABEL:=$(ENV_PREFIX)-$(ENV_SUFFIX)-$(IMAGE_TAG)
 print-status:
 	@echo "Current Settings:"
 	@echo "PROJECT: $(PROJECT)"
-	@echo "REGION: $(REGION)"
 	@echo "COMMIT_SHA: $(COMMIT_SHA)"
 	@echo "IMAGE_TAG: $(IMAGE_TAG)"
 	@echo "VERSION_LABEL: $(VERSION_LABEL)"

@@ -1,8 +1,7 @@
 kind: Template
 apiVersion: v1
 labels:
-  app: "${APP_NAME}"
-  template: "${APP_NAME}-server"
+  app: ${APP_NAME}
 parameters:
 - name: NAMESPACE
   description: The OpenShift namespace in which to deploy the server
@@ -12,29 +11,30 @@ parameters:
   required: true
 - name: IMAGE_TAG
   description: ImageStream tag for build and deploy
+  value: latest
   required: true
 - name: SERVER_PORT
   description: Port the server will be exposed on
-  value: '5000'
+  value: "8080"
   required: true
 objects:
 - apiVersion: v1
   kind: Route
   metadata:
-    name: "${APP_NAME}-server"
+    name: ${APP_NAME}-server
   spec:
-    host: ''
+    host: ""
     port:
       targetPort: web
     to:
       kind: Service
-      name: "${APP_NAME}-server"
+      name: ${APP_NAME}-server
       weight: 100
     wildcardPolicy: None
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
-    name: "${APP_NAME}-server"
+    name: ${APP_NAME}-server
   spec:
     strategy:
       type: Rolling
@@ -43,27 +43,35 @@ objects:
     - imageChangeParams:
         automatic: true
         containerNames:
-        - "${APP_NAME}-server"
+        - ${APP_NAME}-server
         from:
           kind: ImageStreamTag
-          name: "${APP_NAME}-server:${IMAGE_TAG}"
-          namespace: "${NAMESPACE}"
+          name: ${APP_NAME}-server:${IMAGE_TAG}
+          namespace: ${NAMESPACE}
       type: ImageChange
     - type: ConfigChange
     replicas: 1
     selector:
-      name: "${APP_NAME}-server"
+      name: ${APP_NAME}-server
     template:
       metadata:
-        name: "${APP_NAME}-server"
+        name: ${APP_NAME}-server
         labels:
-          name: "${APP_NAME}-server"
+          name: ${APP_NAME}-server
       spec:
         containers:
-        - envFrom:
-            - configMapRef:
-                name: hcap-config
-          name: "${APP_NAME}-server"
+        - env:
+          - name: MONGODB_DATABASE
+            valueFrom:
+              secretKeyRef:
+                key: database
+                name: ${APP_NAME}-mongodb
+          - name: MONGODB_URI
+            valueFrom:
+              secretKeyRef:
+                key: mongo-url
+                name: ${APP_NAME}-mongodb
+          name: ${APP_NAME}-server
           image: " "
           ports:
           - containerPort: "${{SERVER_PORT}}"
@@ -75,7 +83,7 @@ objects:
             requests:
               cpu: 100m
               memory: 512Mi
-          terminationMessagePath: "/dev/termination-log"
+          terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           imagePullPolicy: IfNotPresent
         restartPolicy: Always
@@ -83,14 +91,14 @@ objects:
 - kind: Service
   apiVersion: v1
   metadata:
-    name: "${APP_NAME}-server"
+    name: ${APP_NAME}-server
   spec:
     ports:
     - name: web
       protocol: TCP
-      port: "${{SERVER_PORT}}"
-      targetPort: "${{SERVER_PORT}}"
+      port: ${{SERVER_PORT}}
+      targetPort: ${{SERVER_PORT}}
     selector:
-      name: "${APP_NAME}-server"
+      name: ${APP_NAME}-server
     type: ClusterIP
     sessionAffinity: None

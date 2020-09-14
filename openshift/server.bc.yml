@@ -1,8 +1,7 @@
 kind: Template
 apiVersion: v1
 labels:
-  app: "${APP_NAME}"
-  template: "${APP_NAME}-server"
+  app: ${APP_NAME}
 parameters:
 - name: NAMESPACE
   description: The OpenShift namespace in which to deploy the server
@@ -12,22 +11,25 @@ parameters:
   required: true
 - name: REPO
   description: URL of boilerplate repository
+  value: git@github.com:bcgov-c/hcap.git
   required: true
 - name: BRANCH
   description: Branch of the boilerplate repository that should be built
+  value: master
   required: true
 - name: IMAGE_TAG
   description: ImageStream tag for build and deploy
+  value: latest
   required: true
 objects:
 - kind: ImageStream
   apiVersion: v1
   metadata:
-    name: "${APP_NAME}-server"
+    name: ${APP_NAME}-server
 - kind: BuildConfig
   apiVersion: v1
   metadata:
-    name: "${APP_NAME}-server"
+    name: ${APP_NAME}-server
   spec:
     completionDeadlineSeconds: 600
     triggers:
@@ -37,7 +39,7 @@ objects:
     source:
       type: Git
       git:
-        uri: "${REPO}"
+        uri: ${REPO}
         ref: origin/${BRANCH}
       sourceSecret:
         name: hcap-gh-key
@@ -46,9 +48,9 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: "${APP_NAME}-server:${IMAGE_TAG}"
-        namespace: "${NAMESPACE}"
+        name: ${APP_NAME}-server:${IMAGE_TAG}
+        namespace: ${NAMESPACE}
     resources:
       limits:
-        cpu: '2'
+        cpu: "2"
         memory: 4Gi

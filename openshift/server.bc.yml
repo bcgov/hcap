@@ -45,7 +45,7 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: ${APP_NAME}:${IMAGE_TAG}
+        name: ${APP_NAME}-server:${IMAGE_TAG}
         namespace: ${NAMESPACE}
     resources:
       limits:

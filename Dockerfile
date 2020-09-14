@@ -26,5 +26,5 @@ RUN npm set progress=false && npm ci --no-cache
 COPY server/. .
 
 # Run app
-EXPOSE 80
+EXPOSE 8080
 CMD [ "npm", "run", "start" ]

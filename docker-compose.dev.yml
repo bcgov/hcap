@@ -26,9 +26,11 @@ services:
       args:
         VERSION: ${COMMIT_SHA}
     environment:
+    - MONGODB_DATABASE=development
+    - MONGODB_URI=mongodb://development:development@mongodb:27017/development
     - VERSION=${COMMIT_SHA}
     ports:
-    - "80:80"
+    - "8080:8080"
     - "9229:9229"
     volumes:
     - ./server:/server # Use server dir in host for hot reloading

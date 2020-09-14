@@ -70,7 +70,7 @@ server-build:
 
 db-create:
 	@oc project rupaog-dev
-	@oc process -f openshift/mongo.yml -p MEMORY_REQUEST=2Gi MEMORY_LIMIT=5Gi CPU_REQUEST=500m CPU_LIMIT=2 VOLUME_CAPACITY=10Gi SC_MONGO=netapp-file-standard | oc create -n rupaog-dev -f -
+	@oc process -f openshift/mongo.yml --param-file=openshift/dev.env --ignore-unknown-parameters | oc create -n rupaog-dev -f -
 
 db-tunnel:
 	@oc project rupaog-dev

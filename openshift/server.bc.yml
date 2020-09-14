@@ -8,15 +8,19 @@ parameters:
   required: true
 - name: APP_NAME
   description: App name that OpenShift objects will be prefixed with
+  value: hcap
   required: true
 - name: REPO
   description: URL of boilerplate repository
+  value: git@github.com:bcgov-c/hcap.git
   required: true
 - name: BRANCH
   description: Branch of the boilerplate repository that should be built
+  value: master
   required: true
 - name: IMAGE_TAG
   description: ImageStream tag for build and deploy
+  value: latest
   required: true
 objects:
 - kind: ImageStream

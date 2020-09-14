@@ -8,13 +8,15 @@ parameters:
   required: true
 - name: APP_NAME
   description: App name that OpenShift objects will be prefixed with
+  value: hcap
   required: true
 - name: IMAGE_TAG
   description: ImageStream tag for build and deploy
+  value: latest
   required: true
 - name: SERVER_PORT
   description: Port the server will be exposed on
-  value: "5000"
+  value: "8080"
   required: true
 objects:
 - apiVersion: v1

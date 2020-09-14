@@ -5,6 +5,7 @@ labels:
 parameters:
 - name: APP_NAME
   description: App name that OpenShift objects will be prefixed with
+  value: hcap
   required: true
 - name: MEMORY_REQUEST
   description: Amount of Memory to Request.

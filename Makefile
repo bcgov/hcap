@@ -70,7 +70,7 @@ server-build:
 
 db-create:
 	@oc project rupaog-dev
-	@oc process -f openshift/mongo.yml --param-file=openshift/dev.env --ignore-unknown-parameters | oc create -n rupaog-dev -f -
+	@oc process -f openshift/mongo.yml --param-file=openshift/dev.env --ignore-unknown-parameters | oc apply -f -
 
 db-tunnel:
 	@oc project rupaog-dev

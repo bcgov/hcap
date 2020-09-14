@@ -97,7 +97,7 @@ objects:
 - kind: Service
   apiVersion: v1
   metadata:
-    name: ${MONGODB_SERVICE_NAME}-internal
+    name: ${APP_NAME}-mongodb-internal
     labels:
       name: ${APP_NAME}-mongodb
     annotations:
@@ -114,7 +114,7 @@ objects:
   metadata:
     name: ${APP_NAME}-mongodb
   spec:
-    serviceName: ${MONGODB_SERVICE_NAME}-internal
+    serviceName: ${APP_NAME}-mongodb-internal
     replicas: ${MONGODB_REPLICAS}
     template:
       metadata:
@@ -129,7 +129,7 @@ objects:
                 - key: name
                   operator: In
                   values: 
-                  - ${MONGODB_SERVICE_NAME}
+                  - ${APP_NAME}-mongodb
               topologyKey: kubernetes.io/hostname
         containers:
         - name: mongo-container
@@ -175,7 +175,7 @@ objects:
           - name: MONGODB_KEYFILE_VALUE
             value: ${MONGODB_KEYFILE_VALUE}
           - name: MONGODB_SERVICE_NAME
-            value: ${MONGODB_SERVICE_NAME}-internal
+            value: ${APP_NAME}-mongodb-internal
           resources:
             limits:
               memory: ${MEMORY_LIMIT}

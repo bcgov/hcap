@@ -7,8 +7,6 @@ client/.pnp.js
 client/build
 
 # Server
-server/*.pdf
-server/pdfs/*
 server/db/.migrate
 
 # Misc.
@@ -16,8 +14,6 @@ docs
 Dockerrun.aws.json
 audit-report.*
 .DS_Store
-.ebextensions/*
-!.ebextensions/.keep
 .env
 test-results
 npm-debug.log*

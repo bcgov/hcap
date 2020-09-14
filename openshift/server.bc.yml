@@ -42,7 +42,7 @@ objects:
         uri: ${REPO}
         ref: origin/${BRANCH}
       sourceSecret:
-        name: hcap-gh-key
+        name: ${APP_NAME}-github-key
     strategy:
       type: Docker
     output:

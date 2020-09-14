@@ -24,7 +24,7 @@ local-run:
 	@echo "Running local app container"
 	@docker-compose -f docker-compose.dev.yml up
 
-run-local-db:
+local-run-db:
 	@echo "Running local DB container"
 	@docker-compose -f docker-compose.dev.yml up mongodb
 

@@ -50,6 +50,7 @@ const getUserInput = async () => { // Prompt user for query, output format
 const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint, d);
 
 // run: node parse-xml ./folder-containing-xml-files
+/* eslint-disable no-console */
 (async () => {
   try {
     const xmlStrings = getDirContent(process.argv[2]);

@@ -1,5 +1,4 @@
 const { MongoClient } = require('mongodb');
-const fs = require('fs');
 const logger = require('../logger.js');
 
 /**
@@ -27,32 +26,6 @@ class DBClient {
   }
 
   /**
-   * Return config variables
-   *
-   * @returns
-   * @memberof DBClient
-   */
-  static config() {
-    return {
-      dbServer: process.env.DB_SERVER || 'localhost',
-      dbPort: process.env.DB_PORT || '27017',
-      dbUser: process.env.DB_USER || 'development',
-      dbPassword: process.env.DB_PASSWORD || 'development',
-      dbName: process.env.DB_NAME || 'development',
-      dbTLSEnabled: process.env.DB_TLS_ENABLED === 'true',
-      useReplicaSet: process.env.DB_USE_REPLICA_SET === 'true',
-    };
-  }
-
-  /**
-   * Console log current configuration but password
-   */
-  static printConfig() {
-    const { dbPassword, ...config } = DBClient.config();
-    console.log(config); // eslint-disable-line no-console
-  }
-
-  /**
    * Connect to database
    *
    * @returns {Promise<void>}
@@ -61,44 +34,12 @@ class DBClient {
   async connect() {
     if (this._connection) return;
 
-    const {
-      dbServer,
-      dbPort,
-      dbUser,
-      dbPassword,
-      dbName,
-      dbTLSEnabled,
-      useReplicaSet,
-    } = DBClient.config();
-
-    // https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html
-
-    const uri = `mongodb://${dbUser}:${dbPassword}@${dbServer}:${dbPort}/${dbName}?replicaSet=rs0`;
-
-    /** @type {MongoClientOptions} */
-    const options = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    };
-
-    if (dbTLSEnabled) {
-      options.ssl = true;
-      options.sslValidate = true;
-      // Specify the Amazon DocumentDB cert
-      options.sslCA = [fs.readFileSync(`${__dirname}/certificates/rds-combined-ca-bundle.pem`)];
-    }
-
-    // Create a MongoDB client opening a connection to Amazon DocumentDB as a replica set,
-    // and specify the read preference as secondary preferred following AWS best practices
-    // https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-to-replica-set.html
-    if (useReplicaSet) {
-      options.readPreference = 'secondaryPreferred';
-      options.replicaSet = 'rs0';
-    }
+    const database = process.env.MONGODB_DATABASE || 'development';
+    const uri = process.env.MONGODB_URI || `mongodb://development:development@localhost:27017/${database}`;
 
     try {
-      this._connection = await MongoClient.connect(uri, options);
-      this.db = this._connection.db(dbName);
+      this._connection = await MongoClient.connect(uri);
+      this.db = this._connection.db(database);
     } catch (err) {
       logger.error(`Failed to connect to database: ${err}`);
       throw new Error('DBError');

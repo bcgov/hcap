@@ -26,13 +26,6 @@ services:
       args:
         VERSION: ${COMMIT_SHA}
     environment:
-      - DB_SERVER=${DB_SERVER}
-      - DB_PORT=${DB_PORT}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - DB_TLS_ENABLED=${DB_TLS_ENABLED}
-      - DB_USE_REPLICA_SET=${DB_USE_REPLICA_SET}
       - VERSION=${COMMIT_SHA}
     ports:
       - "80:80"

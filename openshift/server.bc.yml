@@ -11,7 +11,7 @@ parameters:
   required: true
 - name: REPO
   description: URL of boilerplate repository
-  value: git@github.com:bcgov-c/hcap.git
+  value: git@github.com:bcgov/hcap.git
   required: true
 - name: BRANCH
   description: Branch of the boilerplate repository that should be built

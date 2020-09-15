@@ -12,7 +12,6 @@ const schema = [
     indexes: [
       { key: 'id', options: { unique: true } },
       { key: 'createdAt', options: {} },
-      { key: 'serviceResponse.processedAt', options: {} },
     ],
   },
 ];

@@ -46,8 +46,6 @@ os-permissions:
 	@oc project $(OS_NAMESPACE)
 	@oc create sa github-$(OS_NAMESPACE_SUFFIX)
 	@oc policy add-role-to-user system:image-builder -z github-$(OS_NAMESPACE_SUFFIX)
-	@oc create secret generic $(APP_NAME)-github-key --from-file=ssh-privatekey=key --type=kubernetes.io/ssh-auth
-	@oc secrets link builder $(APP_NAME)-github-key
 
 server-create:
 	@oc project $(OS_NAMESPACE)
@@ -55,9 +53,8 @@ server-create:
 	@oc process -f openshift/server.dc.yml -p NAMESPACE=$(OS_NAMESPACE) APP_NAME=$(APP_NAME) | oc apply -f -
 
 server-build:
-	@oc project $(OS_NAMESPACE)
-	@oc cancel-build bc/$(APP_NAME)-server
-	@oc start-build $(APP_NAME)-server
+	@oc cancel-build bc/$(APP_NAME)-server -n $(OS_NAMESPACE)
+	@oc start-build $(APP_NAME)-server -n $(OS_NAMESPACE)
 
 db-create:
 	@oc project $(OS_NAMESPACE)

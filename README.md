@@ -30,7 +30,7 @@ This project includes the following features:
 
 ## Getting Help or Reporting an Issue
 
-To report bugs/issues/feature requests, please file an [issue](https://github.com/bcgov-c/hcap/issues).
+To report bugs/issues/feature requests, please file an [issue](https://github.com/bcgov/hcap/issues).
 
 ## How to Contribute
 

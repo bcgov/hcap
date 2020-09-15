@@ -7,18 +7,14 @@ const _ = require('lodash');
 const asyncPool = require('tiny-async-pool');
 
 const endpoints = [
-  { name: 'Local', value: 'http://localhost' },
-  { name: 'Dev', value: 'http://hcap-server-server-rupaog-dev.pathfinder.gov.bc.ca' },
+  { name: 'Local', value: 'http://localhost:4000' },
+  { name: 'Dev', value: 'http://hcap-server-rupaog-dev.pathfinder.gov.bc.ca' },
 ];
 
 const postHcapSubmission = async (endpoint, data) => {
   const apiUrl = `${endpoint}/api/v1`;
-  try {
-    const response = await axios.post(`${apiUrl}/form`, data);
-    return response.data;
-  } catch (e) {
-    return null;
-  }
+  const response = await axios.post(`${apiUrl}/form`, data);
+  return response.data;
 };
 
 const getDirContent = (pathString) => {
@@ -28,7 +24,7 @@ const getDirContent = (pathString) => {
 
     fileNames.forEach((name) => {
       const filePath = path.join(pathString, name);
-      filesString.push(fs.readFileSync(filePath).toString());
+      filesString.push({ name, content: fs.readFileSync(filePath).toString() });
     });
 
     return filesString;
@@ -50,15 +46,18 @@ const getUserInput = async () => { // Prompt user for query, output format
 const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint, d);
 
 // run: node parse-xml ./folder-containing-xml-files
+// run mocks: node parse-xml ../../tests/mock/xml
 /* eslint-disable no-console */
 (async () => {
+  let currentFile;
   try {
     const xmlStrings = getDirContent(process.argv[2]);
     const parsedJsonObjs = [];
     xmlStrings.forEach((xml) => {
-      const jsonObj = fromXmlStrings(xml);
+      currentFile = xml;
+      const jsonObj = fromXmlStrings(xml.content);
       const parsedJsonObj = {
-        // number: _.get(jsonObj, 'form.formControl.grid-4.number'),
+        orbeonId: xml.name.match(/^Health Career Access Program - Expression of Interest - ([\w-]{16}).xml$/)[1],
         eligibility: _.get(jsonObj, 'form.section-3.grid-7.legallyEligible') === 'Yes',
         firstName: _.get(jsonObj, 'form.contactInformation.grid-1.firstName'),
         lastName: _.get(jsonObj, 'form.contactInformation.grid-1.lastName'),
@@ -74,9 +73,11 @@ const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint
     const { endpoint } = await getUserInput();
     const interactor = makeTransactionIterator(endpoint);
     const results = await asyncPool(10, parsedJsonObjs, interactor);
-    console.log(results);
+    console.log(results.map((item) => (item ? item.id : null)));
     console.log(`Sent ${results.filter((item) => item).length} items to HCAP.`);
   } catch (error) {
+    console.error('\x1b[31m', `File error: ${currentFile.name}`);
+    console.log('\x1b[0m');
     console.error(error.isAxiosError ? error.message : error);
   }
 })();

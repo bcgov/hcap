@@ -15,6 +15,9 @@ const validateUniqueArray = (a) => (
 
 const errorMessage = ({ path }) => {
   const errorMessages = {
+    // Orbeon ID from the XML file name
+    orbeonId: 'Invalid Orbeon ID format.',
+
     // Eligibility
     eligibility: 'We\'re sorry, but current eligibility to work in Canada is a requirement to submit this form.',
 
@@ -35,6 +38,9 @@ const errorMessage = ({ path }) => {
 };
 
 const FormSchema = yup.object().noUnknown('Unknown field for form').shape({
+  // Orbeon Id
+  orbeonId: yup.string().typeError(errorMessage),
+
   // Eligibility
   eligibility: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 

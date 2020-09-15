@@ -11,6 +11,7 @@ const schema = [
     collection: collections.FORMS,
     indexes: [
       { key: 'id', options: { unique: true } },
+      { key: 'orbeonId', options: { unique: true, sparse: true } },
       { key: 'createdAt', options: {} },
     ],
   },

@@ -7,6 +7,8 @@ client/.pnp.js
 client/build
 
 # Server
+server/*.pdf
+server/pdfs/*
 server/db/.migrate
 
 # Misc.

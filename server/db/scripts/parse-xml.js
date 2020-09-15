@@ -5,6 +5,7 @@ const inquirer = require('inquirer');
 const parser = require('fast-xml-parser');
 const _ = require('lodash');
 const asyncPool = require('tiny-async-pool');
+const { validate, FormSchema } = require('../../validation');
 
 const endpoints = [
   { name: 'Local', value: 'http://localhost:4000' },
@@ -67,7 +68,9 @@ const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint
   try {
     const xmlStrings = getDirContent(process.argv[2]);
     const parsedJsonObjs = [];
-    xmlStrings.forEach((xml) => {
+    /* eslint-disable no-await-in-loop */
+    /* eslint-disable no-restricted-syntax */
+    for (const xml of xmlStrings) {
       currentFile = xml;
       const jsonObj = fromXmlStrings(xml.content);
       const parsedJsonObj = {
@@ -81,8 +84,9 @@ const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint
         preferredLocation: extracPreferredLocations(_.get(jsonObj, 'form.locationPreference.grid-2.healthRegion')),
         consent: _.get(jsonObj, 'form.consent.grid-3.confirmed') === 'Yes',
       };
+      await validate(FormSchema, parsedJsonObj);
       parsedJsonObjs.push(parsedJsonObj);
-    });
+    }
     console.log(`Parsed ${parsedJsonObjs.length} files.`);
     const { endpoint } = await getUserInput();
     const interactor = makeTransactionIterator(endpoint);
@@ -92,6 +96,6 @@ const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint
   } catch (error) {
     console.error('\x1b[31m', `File error: ${currentFile.name}`);
     console.log('\x1b[0m');
-    console.error(error.isAxiosError ? error.message : error);
+    console.error(error.isAxiosError || error.ValidationError ? error.message : error);
   }
 })();

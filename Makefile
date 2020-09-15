@@ -55,9 +55,8 @@ server-create:
 	@oc process -f openshift/server.dc.yml -p NAMESPACE=$(OS_NAMESPACE) APP_NAME=$(APP_NAME) | oc apply -f -
 
 server-build:
-	@oc project $(OS_NAMESPACE)
-	@oc cancel-build bc/$(APP_NAME)-server
-	@oc start-build $(APP_NAME)-server
+	@oc cancel-build bc/$(APP_NAME)-server -n $(OS_NAMESPACE)
+	@oc start-build $(APP_NAME)-server -n $(OS_NAMESPACE)
 
 db-create:
 	@oc project $(OS_NAMESPACE)

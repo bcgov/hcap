@@ -41,8 +41,6 @@ objects:
       git:
         uri: ${REPO}
         ref: origin/${BRANCH}
-      sourceSecret:
-        name: ${APP_NAME}-github-key
     strategy:
       type: Docker
     output:

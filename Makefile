@@ -46,8 +46,6 @@ os-permissions:
 	@oc project $(OS_NAMESPACE)
 	@oc create sa github-$(OS_NAMESPACE_SUFFIX)
 	@oc policy add-role-to-user system:image-builder -z github-$(OS_NAMESPACE_SUFFIX)
-	@oc create secret generic $(APP_NAME)-github-key --from-file=ssh-privatekey=key --type=kubernetes.io/ssh-auth
-	@oc secrets link builder $(APP_NAME)-github-key
 
 server-create:
 	@oc project $(OS_NAMESPACE)

@@ -8,7 +8,7 @@ const asyncPool = require('tiny-async-pool');
 
 const endpoints = [
   { name: 'Local', value: 'http://localhost:4000' },
-  { name: 'Dev', value: 'http://hcap-server-rupaog-dev.pathfinder.gov.bc.ca' },
+  { name: 'Dev', value: 'https://hcap-server-rupaog-dev.pathfinder.gov.bc.ca' },
 ];
 
 const postHcapSubmission = async (endpoint, data) => {
@@ -43,6 +43,20 @@ const getUserInput = async () => { // Prompt user for query, output format
   return { endpoint };
 };
 
+const extracPreferredLocations = (preferredLocationString) => {
+  const preferredLocations = preferredLocationString.split(' ');
+  return preferredLocations.map((item) => {
+    switch (item) {
+      case 'Coastal':
+        return 'Vancouver Coastal';
+      case 'Island':
+        return 'Vancouver Island';
+      default:
+        return item;
+    }
+  });
+};
+
 const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint, d);
 
 // run: node parse-xml ./folder-containing-xml-files
@@ -64,7 +78,7 @@ const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint
         phoneNumber: _.get(jsonObj, 'form.contactInformation.grid-1.primaryPhone').toString(),
         emailAddress: _.get(jsonObj, 'form.formControl.grid-4.recipient'),
         postalCode: _.get(jsonObj, 'form.contactInformation.grid-1.postalCode'),
-        preferredLocation: [_.get(jsonObj, 'form.locationPreference.grid-2.healthRegion')],
+        preferredLocation: extracPreferredLocations(_.get(jsonObj, 'form.locationPreference.grid-2.healthRegion')),
         consent: _.get(jsonObj, 'form.consent.grid-3.confirmed') === 'Yes',
       };
       parsedJsonObjs.push(parsedJsonObj);

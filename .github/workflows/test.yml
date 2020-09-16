@@ -31,11 +31,7 @@ jobs:
       - name: NPM Test
         working-directory: ./server
         env:
-          DB_SERVER: localhost
-          DB_USER: development
-          DB_PASSWORD: development
-          DB_NAME: development
-          DB_PORT: 27017
+          MONGODB_URI: mongodb://localhost:27017/test
         run: |
           npm ci
           npm test

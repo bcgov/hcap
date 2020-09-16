@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
+import Collapse from '@material-ui/core/Collapse';
+import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { FastField } from 'formik';
@@ -18,6 +20,8 @@ const useStyles = makeStyles((theme) => ({
 
 export const Fields = ({ isDisabled }) => {
   const classes = useStyles();
+  const [isCollectionNoticeExpanded, setCollectionNoticeExpanded] = useState(window.innerWidth > 750);
+
   return (
     <Card noShadow={isDisabled}>
       <Grid container spacing={2}>
@@ -117,71 +121,81 @@ export const Fields = ({ isDisabled }) => {
             label="* Please select your preferred health region(s)"
             disabled={isDisabled}
             options={[
-              { value: 'Interior', label: (
-                <span>
-                  Interior (
-                  <Link
-                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/1_interior_health_authority.pdf"
-                    target="__blank"
-                    rel="noreferrer noopener"
-                  >
-                    PDF map
+              {
+                value: 'Interior', label: (
+                  <span>
+                    Interior (
+                    <Link
+                      href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/1_interior_health_authority.pdf"
+                      target="__blank"
+                      rel="noreferrer noopener"
+                    >
+                      PDF map
                   </Link>
                   )
-                </span>
-              ) },
-              { value: 'Fraser', label: (
-                <span>
-                  Fraser (
-                  <Link
-                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/2_fraser_health_authority.pdf"
-                    target="__blank"
-                    rel="noreferrer noopener"
-                  >
-                    PDF map
+                  </span>
+                )
+              },
+              {
+                value: 'Fraser', label: (
+                  <span>
+                    Fraser (
+                    <Link
+                      href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/2_fraser_health_authority.pdf"
+                      target="__blank"
+                      rel="noreferrer noopener"
+                    >
+                      PDF map
                   </Link>
                   )
-                </span>
-              ) },
-              { value: 'Vancouver Coastal', label: (
-                <span>
-                  Vancouver Coastal (
-                  <Link
-                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/3_vancouver_coastal_health_authority.pdf"
-                    target="__blank"
-                    rel="noreferrer noopener"
-                  >
-                    PDF map
+                  </span>
+                )
+              },
+              {
+                value: 'Vancouver Coastal', label: (
+                  <span>
+                    Vancouver Coastal (
+                    <Link
+                      href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/3_vancouver_coastal_health_authority.pdf"
+                      target="__blank"
+                      rel="noreferrer noopener"
+                    >
+                      PDF map
                   </Link>
                   )
-                </span>
-              ) },
-              { value: 'Vancouver Island', label: (
-                <span>
-                  Vancouver Island (
-                  <Link
-                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/4_vancouver_island_health_authority.pdf"
-                    target="__blank"
-                    rel="noreferrer noopener"
-                  >
-                    PDF map
+                  </span>
+                )
+              },
+              {
+                value: 'Vancouver Island', label: (
+                  <span>
+                    Vancouver Island (
+                    <Link
+                      href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/4_vancouver_island_health_authority.pdf"
+                      target="__blank"
+                      rel="noreferrer noopener"
+                    >
+                      PDF map
                   </Link>
                   )
-                </span>
-              ) },
-              { value: 'Northern', label: (
-                <span>
-                  Northern (
-                  <Link
-                    href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/5_northern_health_authority.pdf"
-                    target="__blank"
-                    rel="noreferrer noopener"
-                  >
-                    PDF map
+                  </span>
+                )
+              },
+              {
+                value: 'Northern', label: (
+                  <span>
+                    Northern (
+                    <Link
+                      href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/5_northern_health_authority.pdf"
+                      target="__blank"
+                      rel="noreferrer noopener"
+                    >
+                      PDF map
                   </Link>
                   )
-                </span>
-              ) },
+                  </span>
+                )
+              },
             ]}
           />
         </Grid>
@@ -217,20 +231,31 @@ export const Fields = ({ isDisabled }) => {
             </Link>
             &nbsp;(FOIPPA) for the purposes of administering the Health Career Access Program.
           </Typography>
-          <Typography variant="body2" paragraph>
-            Personal information will only be used by authorized personnel to fulfill the purpose for
-            which it was originally collected or for a use consistent with that purpose unless you
-            expressly consent otherwise. We do not disclose your information to other public bodies or
-            individuals except as authorized by FOIPPA.
-          </Typography>
-          <Typography variant="body2" paragraph>
-            If you have any questions about our collection or use of personal information, please direct 
-            your inquiries to the Director, Planning, Integration and Partnerships, 1515 Blanshard Street, 
-            Victoria, British Columbia, V8W 3C8. Telephone: <Link href="tel:+12364783520">236-478-3520</Link>, 
-            Email: <Link href="mailto:HCAPInfoQuery@gov.bc.ca">HCAPInfoQuery@gov.bc.ca</Link>.
-          </Typography>
+          <Collapse in={isCollectionNoticeExpanded || isDisabled}>
+            <Typography variant="body2" paragraph>
+              Personal information will only be used by authorized personnel to fulfill the purpose for
+              which it was originally collected or for a use consistent with that purpose unless you
+              expressly consent otherwise. We do not disclose your information to other public bodies or
+              individuals except as authorized by FOIPPA.
+            </Typography>
+            <Typography variant="body2" paragraph>
+              If you have any questions about our collection or use of personal information, please direct
+              your inquiries to the Director, Planning, Integration and Partnerships, 1515 Blanshard Street,
+              Victoria, British Columbia, V8W 3C8. Telephone: <Link href="tel:+12364783520">236-478-3520</Link>,
+              Email: <Link href="mailto:HCAPInfoQuery@gov.bc.ca">HCAPInfoQuery@gov.bc.ca</Link>.
+            </Typography>
+          </Collapse>
+          {
+            !isDisabled && <Box
+              mt={0.25}
+              style={{ cursor: 'pointer', textDecoration: 'underline' }}
+              onClick={() => setCollectionNoticeExpanded(prevState => !prevState)}
+            >
+              {!isCollectionNoticeExpanded ? 'Show More' : 'Show Less'}
+            </Box>
+          }
         </Grid>
-        <Grid item xs={12}>
+        {!isDisabled && <Grid item xs={12}>
           <Typography variant="body1" gutterBottom>
             <b>Submit Your Form</b>
           </Typography>
@@ -238,7 +263,7 @@ export const Fields = ({ isDisabled }) => {
             Use the submit button to complete your expression of interest. We will contact you within 3
             weeks with more information.
           </Typography>
-        </Grid>
+        </Grid>}
       </Grid>
     </Card>
   );

@@ -3,8 +3,8 @@
                         <grid-4>
                             <number>HLTH 8102</number>
                             <owner>Health Careers Access Program</owner>
-                            <approver>Jess Bossert</approver>
-                            <recipient>charles.ormiston@gov.bc.ca</recipient>
+                            <approver>John Smith</approver>
+                            <recipient>john.smith@test.bc.ca</recipient>
                             
                         </grid-4>
                     </formControl>
@@ -21,10 +21,10 @@
                     </eligibility>
                     <contactInformation>
                         <grid-1>
-                            <firstName>Charles</firstName><lastNameCopy>Ormiston</lastNameCopy>
-                            <lastName>Ormiston</lastName>
-                            <phoneNumber>7786982828</phoneNumber><emailAddressCopy>charles.ormiston@gov.bc.ca</emailAddressCopy><emailAddress>charles.ormiston@gov.bc.ca</emailAddress>
-                            <postalCode>V8W 9V1</postalCode>
+                            <firstName>Charles</firstName><lastNameCopy>Doe</lastNameCopy>
+                            <lastName>Doe</lastName>
+                            <phoneNumber>1111111111</phoneNumber><emailAddressCopy>charles.doe@test.bc.ca</emailAddressCopy><emailAddress>charles.doe@test.bc.ca</emailAddress>
+                            <postalCode>A1A 1A1</postalCode>
                         </grid-1>
                     </contactInformation><locationPreference>
                         <grid-2>

@@ -34,8 +34,8 @@ class DBClient {
   async connect() {
     if (this._connection) return;
 
-    const database = process.env.MONGODB_DATABASE || 'development';
-    const uri = process.env.MONGODB_URI || `mongodb://development:development@localhost:27017/${database}`;
+    const database = process.env.MONGODB_DATABASE;
+    const uri = process.env.MONGODB_URI;
     const options = {
       useNewUrlParser: true,
       useUnifiedTopology: true,

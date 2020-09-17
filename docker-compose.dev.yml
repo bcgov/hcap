@@ -26,8 +26,8 @@ services:
       args:
         VERSION: ${COMMIT_SHA}
     environment:
-    - MONGODB_DATABASE=development
-    - MONGODB_URI=mongodb://development:development@mongodb:27017/development
+    - MONGODB_DATABASE=${MONGODB_DATABASE}
+    - MONGODB_URI=${MONGODB_URI}
     - VERSION=${COMMIT_SHA}
     ports:
     - "8080:8080"
@@ -49,9 +49,9 @@ services:
     ports:
     - 27017:27017
     environment:
-    - MONGO_INITDB_ROOT_USERNAME=development
-    - MONGO_INITDB_ROOT_PASSWORD=development
-    - MONGO_INITDB_DATABASE=development
+    - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USER}
+    - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+    - MONGO_INITDB_DATABASE=${MONGODB_DATABASE}
     - MONGO_INITDB_PORT=27017
     volumes:
     - ./.docker/mongo/databaseInit:/docker-entrypoint-initdb.d

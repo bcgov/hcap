@@ -5,6 +5,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
+    "parse-xml": "cd scripts && node parse-xml.js xml",
     "db:seed": "node db/scripts/seed.js",
     "db:migrate-up": "cd db && migrate up",
     "db:migrate-down": "cd db && migrate down",

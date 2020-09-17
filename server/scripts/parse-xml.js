@@ -5,7 +5,7 @@ const inquirer = require('inquirer');
 const parser = require('fast-xml-parser');
 const _ = require('lodash');
 const asyncPool = require('tiny-async-pool');
-const { validate, FormSchema } = require('../../validation');
+const { validate, FormSchema } = require('../validation');
 
 const endpoints = [
   { name: 'Local', value: 'http://localhost:4000' },
@@ -44,7 +44,7 @@ const getUserInput = async () => { // Prompt user for query, output format
   return { endpoint };
 };
 
-const extracPreferredLocations = (preferredLocationString) => {
+const extractPreferredLocations = (preferredLocationString) => {
   const preferredLocations = preferredLocationString.split(' ');
   return preferredLocations.map((item) => {
     switch (item) {
@@ -58,43 +58,67 @@ const extracPreferredLocations = (preferredLocationString) => {
   });
 };
 
+const extractOrbeonId = (name) => name.match(/^Health Career Access Program - Expression of Interest - ([\w-]{16})( \([0-9]+\))?.xml$/)[1];
+
 const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint, d);
 
 // run: node parse-xml ./folder-containing-xml-files
-// run mocks: node parse-xml ../../tests/mock/xml
+// run mocks: node parse-xml ../tests/mock/xml
 /* eslint-disable no-console */
 (async () => {
   let currentFile;
   try {
     const xmlStrings = getDirContent(process.argv[2]);
     const parsedJsonObjs = [];
+    const validationErrors = [];
     /* eslint-disable no-await-in-loop */
     /* eslint-disable no-restricted-syntax */
     for (const xml of xmlStrings) {
       currentFile = xml;
       const jsonObj = fromXmlStrings(xml.content);
       const parsedJsonObj = {
-        orbeonId: xml.name.match(/^Health Career Access Program - Expression of Interest - ([\w-]{16}).xml$/)[1],
-        eligibility: _.get(jsonObj, 'form.section-3.grid-7.legallyEligible') === 'Yes',
+        orbeonId: extractOrbeonId(xml.name),
+        eligibility: _.get(jsonObj, 'form.eligibility.grid-7.legallyEligible') === 'Yes',
         firstName: _.get(jsonObj, 'form.contactInformation.grid-1.firstName'),
         lastName: _.get(jsonObj, 'form.contactInformation.grid-1.lastName'),
-        phoneNumber: _.get(jsonObj, 'form.contactInformation.grid-1.primaryPhone').toString(),
-        emailAddress: _.get(jsonObj, 'form.formControl.grid-4.recipient'),
+        phoneNumber: _.get(jsonObj, 'form.contactInformation.grid-1.phoneNumber').toString(),
+        emailAddress: _.get(jsonObj, 'form.contactInformation.grid-1.emailAddress'),
         postalCode: _.get(jsonObj, 'form.contactInformation.grid-1.postalCode'),
-        preferredLocation: extracPreferredLocations(_.get(jsonObj, 'form.locationPreference.grid-2.healthRegion')),
+        preferredLocation: extractPreferredLocations(_.get(jsonObj, 'form.locationPreference.grid-2.healthRegion')),
         consent: _.get(jsonObj, 'form.consent.grid-3.confirmed') === 'Yes',
       };
-      await validate(FormSchema, parsedJsonObj);
-      parsedJsonObjs.push(parsedJsonObj);
+      try {
+        await validate(FormSchema, parsedJsonObj);
+        parsedJsonObjs.push(parsedJsonObj);
+      } catch (e) {
+        validationErrors.push({ fileName: xml.name, error: e.message });
+      }
     }
-    console.log(`Parsed ${parsedJsonObjs.length} files.`);
+
+    console.log(`Parsed ${parsedJsonObjs.length} file(s) of ${xmlStrings.length}.`);
+
+    if (parsedJsonObjs.length === 0) {
+      console.error('No XML files to parse.');
+      return;
+    }
+
+    if (validationErrors.length > 0) {
+      console.error(`Found ${validationErrors.length} invalid file(s) of ${xmlStrings.length}.`);
+      validationErrors.forEach((item) => console.error(`---\nFile: ${item.fileName}\nError: ${item.error}`));
+      return;
+    }
+
     const { endpoint } = await getUserInput();
     const interactor = makeTransactionIterator(endpoint);
     const results = await asyncPool(10, parsedJsonObjs, interactor);
     console.log(results.map((item) => (item ? item.id : null)));
-    console.log(`Sent ${results.filter((item) => item).length} items to HCAP.`);
+    console.log(`Sent ${results.filter((item) => item).length} item(s) to HCAP.`);
   } catch (error) {
-    console.error('\x1b[31m', `File error: ${currentFile.name}`);
+    if (!currentFile) {
+      console.error('\x1b[31m', 'Invalid XML folder.');
+    } else {
+      console.error('\x1b[31m', `File error: ${currentFile.name}`);
+    }
     console.log('\x1b[0m');
     console.error(error.isAxiosError || error.ValidationError ? error.message : error);
   }

@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import { Formik, Form as FormikForm } from 'formik';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
 
 import { FormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
@@ -14,17 +12,8 @@ import { Button } from '../generic';
 import { Summary } from './Summary';
 import { Fields } from './Fields';
 
-const useStyles = makeStyles((theme) => ({
-  title: {
-    textAlign: 'center',
-    color: 'red',
-    marginBottom: theme.spacing(3),
-  },
-}));
-
 export const Form = ({ initialValues, isDisabled }) => {
   const history = useHistory();
-  const classes = useStyles();
   const { openToast } = useToast();
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -54,7 +43,6 @@ export const Form = ({ initialValues, isDisabled }) => {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
       } else {
         history.push(Routes.Confirmation, { formValues: values, id });
-        scrollUp();
         return;
       }
     } else {
@@ -62,6 +50,11 @@ export const Form = ({ initialValues, isDisabled }) => {
     }
 
     setSubmitLoading(false);
+  };
+
+  const handleSubmitButton = (submitForm) => {
+    scrollUp();
+    submitForm();
   };
 
   return (
@@ -82,14 +75,10 @@ export const Form = ({ initialValues, isDisabled }) => {
               <Fields isDisabled={isDisabled} />
             </Box>
 
-            {Object.keys(errors).length !== 0 && <Typography className={classes.title} noWrap>
-              Your form contains errors.
-              </Typography>}
-
             {!isDisabled && (
               <Box display="flex" justifyContent="center" pt={0} pb={4} pl={2} pr={2}>
                 <Button
-                  onClick={() => submitForm()}
+                  onClick={() => handleSubmitButton(submitForm)}
                   variant="contained"
                   color="primary"
                   fullWidth={false}

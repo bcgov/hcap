@@ -5,7 +5,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import BcLogo from '../../assets/images/bc-logo.svg';
-
+import BcLogoMini from '../../assets/images/bc-logo-mini.svg';
+import Hidden from '@material-ui/core/Hidden';
 import { Routes } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
@@ -58,12 +59,22 @@ export const Header = () => {
       <AppBar className={classes.appBar} position="static">
         <Toolbar className={classes.toolbar}>
           <div className={classes.logoWrapper}>
-            <img
-              className={classes.logo}
-              src={BcLogo}
-              alt="Logo"
-              onClick={handleLogoClick}
-            />
+            <Hidden smDown>
+              <img
+                className={classes.logo}
+                src={BcLogo}
+                alt="Logo"
+                onClick={handleLogoClick}
+              />
+            </Hidden>
+            <Hidden mdUp>
+              <img
+                className={classes.logo}
+                src={BcLogoMini}
+                alt="Logo Mini"
+                onClick={handleLogoClick}
+              />
+            </Hidden>
             <hr className={classes.verticalDivider} />
             <Typography className={classes.title} variant="h2" gutterBottom>
               Health Career Access Program

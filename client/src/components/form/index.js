@@ -14,7 +14,6 @@ import { Fields } from './Fields';
 
 export const Form = ({ initialValues, isDisabled }) => {
   const history = useHistory();
-
   const { openToast } = useToast();
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -44,7 +43,6 @@ export const Form = ({ initialValues, isDisabled }) => {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
       } else {
         history.push(Routes.Confirmation, { formValues: values, id });
-        scrollUp();
         return;
       }
     } else {
@@ -54,6 +52,11 @@ export const Form = ({ initialValues, isDisabled }) => {
     setSubmitLoading(false);
   };
 
+  const handleSubmitButton = (submitForm) => {
+    scrollUp();
+    submitForm();
+  };
+
   return (
     <Grid item xs={12} sm={isDisabled ? 12 : 11} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8} xl={isDisabled ? 12 : 6}>
       <Formik
@@ -61,7 +64,7 @@ export const Form = ({ initialValues, isDisabled }) => {
         validationSchema={FormSchema}
         onSubmit={handleSubmit}
       >
-        {({ submitForm, setTouched, values }) => (
+        {({ errors, submitForm, setTouched, values }) => (
           <FormikForm>
 
             <Box pt={4} pb={4} pl={2} pr={2}>
@@ -75,7 +78,7 @@ export const Form = ({ initialValues, isDisabled }) => {
             {!isDisabled && (
               <Box display="flex" justifyContent="center" pt={0} pb={4} pl={2} pr={2}>
                 <Button
-                  onClick={() => submitForm()}
+                  onClick={() => handleSubmitButton(submitForm)}
                   variant="contained"
                   color="primary"
                   fullWidth={false}

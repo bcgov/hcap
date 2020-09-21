@@ -16,19 +16,7 @@ window.onload = function() {
     document.body.appendChild(tag);
 
     var style = document.createElement('style');
-    style.innerHTML = `#ie-browser {
-      background-color: #fff4e5;
-      color: #663c00;
-      padding: 2rem;
-      font-weight: bold;
-      font-size: 16px;
-      position: absolute;
-      top: 0px;
-      width: 100%;
-      margin: 0;
-      text-align: center;
-      border-bottom: solid 2px #663c00;
-    }`;
+    style.innerHTML = '#ie-browser { background-color: #fff4e5; color: #663c00; padding: 2rem; font-weight: bold; font-size: 16px; position: absolute; top: 0px; width: 100%; margin: 0; text-align: center; border-bottom: solid 2px #663c00; }';
     document.head.appendChild(style);
   }
 }

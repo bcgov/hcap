@@ -107,41 +107,46 @@ Communication from front end to back end is facilitated by [the proxy field](htt
 - /form [POST] submit new form
 - In production: / [GET] serves the built client app
 
-## Database
+## OpenShift Deployment
 
-The application uses Amazon DocumentDB, a non-relational database, fully managed, that emulates the MongoDB 3.6 API and utilizes a distributed, fault-tolerant, self-healing storage system.
+### Application
 
-You can find more information at:
-- https://aws.amazon.com/documentdb/
-- https://docs.aws.amazon.com/documentdb/latest/developerguide/what-is.html
+The Dockerized application is deployed to OpenShift using Makefile targets and YAML templates defined in the `openshift` directory.
 
-Keep in mind that DocumentDB does not support all MongoDB 3.6 features and APIs. Check the link below to explore the differences:
-- https://docs.aws.amazon.com/documentdb/latest/developerguide/mongo-apis.html
-- https://docs.aws.amazon.com/documentdb/latest/developerguide/functional-differences.html
+To create the resources required to run the application in OpenShift, run `make server-create`. Optionally, a namespace prefix and/or suffix can be provided to target a namespace other than the default `rupaog-dev` e.g. `NAMESPACE_SUFFIX=test make server-create`.
 
-For this project, there are 2 database clusters configured under private subnets inside a custom VPC. One to be used for development and staging environments and the other for the production environment.
+The OpenShift objects created are defined in the [openshift/server.bc.yml](openshift/server.bc.yml) and [openshift/server.dc.yml](openshift/server.dc.yml). At a hight level, these objects include the following.
+- Build Config
+- Image Stream
+- Service
+- Route
+- Deployment Config
 
-For local development, a MongoDB 3.6 container is being used.
+At a high level, the functions of each of these objects are as follows.
 
-### Shelling into the Database [Development/Production]
+The *Build Config* defines how an image is built. Properties such as build strategy (Docker), repository (the very repository you're looking at), and rebuild triggers are defined within this object.
 
-Because the database clusters are not exposed to the web, we need to create a SSH tunnel to bridge a connection with the database. To do that, we need to use a bastion host inside the same VPC but exposed to the web.
+The *Image Stream* defines a stream of built images. Essentially, this is an image repository similar to Dockerhub. Images sent to the Image Stream must be tagged (e.g. `latest`).
 
+The *Service* defines a hostname for a particular service exposed by a pod or set of pods. Services can only be seen and consumed by pods within the same OpenShift namespace. The service published by the HCAP application is the backend API endpoint. Similarly, the database will expose a service that is to be consumed by the application backend.
 
-```bash
-ssh -i "~/.ssh/ets-bastion-host.pem" -L 27017:DOCUMENT_DB_CLUSTER_URL:27017 ec2-user@BASTION_HOST_URL -N
-```
+A *Route* exposes a service to the Internet. Routes differ from services in that they may only transmit HTTP traffic. As such, the database service could not be directly exposed to the Internet.
 
-- Replace DOCUMENT_DB_CLUSTER_URL with the url the document db cluster.
-- Replace BASTION_HOST_URL with the IP address or url of the bastion host.
-- Now you can connect to the database using mongo shell or any mongo client as if the server was running from your localhost.
-- Keep in mind, our DocumentDB clusters have TLS enabled and will require a public key to connect. You can downloaded it [here](https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem).
+Finally, a *Deployment Config* defines how a new version of an application is to be deployed. Additionally, trigger for redeployment are defined wihtin this object. For the HCAP application, we've used a rolling deployment triggered by new images pushed to the image stream and tagged with the `latest` tag.
 
+### GitHub Actions
 
-You can find the cluster URLS, credentials, and certificates on the project folder on TeamPass.
+A service account must be created and assigned permissions to trigger a build. Run `make os-permissons` to create a service account with admin credentials. The access token for this service account (accessible via Cluster Console > Administration > Service Accounts > Secrets) can be used to login and trigger a build and thus, a new deployment. GutHub Actions has been configured to trigger a new build in a specific namespace (`rupaog-dev` at the time of writing) in OpenShift. Save the TOKEN secret associated with the service account as a GitHub secret with the name `AUTH_TOKEN`.
 
-Find supplementary reference on the link below:
-- https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html
+### Database
+
+The database used is based off of the OCIO RocketChat configureation found [here](https://github.com/BCDevOps/platform-services/blob/master/apps/rocketchat/template-mongodb.yaml). This defines a stateful set object with a default of three replicas. Database credentials are stored in a secret (HCAP uses the secret name of `hcap-mongodb`). The template also defines a persisten volume claim with the storage class `netapp-file-standard`.
+
+To deploy the database to OpenShift, use the Makefile target `make db-create`.
+
+To shell into the database, find the name of one of the pods created by the deployment (e.g. `hcap-mongodb-0`). The use the OpenShift CLI to remote shell into the pod `oc rsh hcap-mongodb-0`. This will allow the user to use standard Mongo CLI commands (`mongo -u USERNAME -p PASSWORD DATABASE`) to interact with the data within the MongoDB replica set. This is far from an ideal way to access the data within the cluster and should be corrected.
+
+At the time of writing, the DB schema was applied to the database by remote shelling into one of the applicaiton pods (`oc rsh hcap-server`) and running the relevant NPM script (`cd server && npm run db:seed`).
 
 ## License
 

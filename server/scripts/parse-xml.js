@@ -76,8 +76,14 @@ const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint
     for (const xml of xmlStrings) {
       currentFile = xml;
       const jsonObj = fromXmlStrings(xml.content);
+      let orbeonId;
+      try {
+        orbeonId = extractOrbeonId(xml.name);
+      } catch (e) {
+        validationErrors.push({ fileName: xml.name, error: 'Invalid file name.' });
+      }
       const parsedJsonObj = {
-        orbeonId: extractOrbeonId(xml.name),
+        orbeonId,
         eligibility: _.get(jsonObj, 'form.eligibility.grid-7.legallyEligible') === 'Yes',
         firstName: _.get(jsonObj, 'form.contactInformation.grid-1.firstName'),
         lastName: _.get(jsonObj, 'form.contactInformation.grid-1.lastName'),

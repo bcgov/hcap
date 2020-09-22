@@ -5,6 +5,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
+    "parse-xml": "cd scripts && node parse-xml.js xml",
     "db:seed": "node db/scripts/seed.js",
     "db:migrate-up": "cd db && migrate up",
     "db:migrate-down": "cd db && migrate down",
@@ -22,6 +23,10 @@
     "migrate": "1.7.0",
     "mongodb": "3.6.0",
     "node-cache": "5.1.2",
+    "fast-xml-parser": "3.17.4",
+    "inquirer": "7.3.3",
+    "lodash": "4.17.20",
+    "tiny-async-pool": "1.1.0",
     "winston": "3.3.3",
     "yup": "0.29.3"
   },

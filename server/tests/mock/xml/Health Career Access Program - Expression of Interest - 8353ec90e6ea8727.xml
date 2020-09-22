@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><form>
+                    <formControl>
+                        <grid-4>
+                            <number>HLTH 8102</number>
+                            <owner>Health Careers Access Program</owner>
+                            <approver>John Smith</approver>
+                            <recipient>john.smith@test.bc.ca</recipient>
+                            
+                        </grid-4>
+                    </formControl>
+                    <formIntroduction>
+                        <grid-6>
+                            <formPurpose/>
+                        </grid-6>
+                    </formIntroduction>
+                    <eligibility>
+                        <grid-7>
+                            <recordsCheck/>
+                            <legallyEligible>Yes</legallyEligible>
+                        </grid-7>
+                    </eligibility>
+                    <contactInformation>
+                        <grid-1>
+                            <firstName>Charles</firstName><lastNameCopy>Doe</lastNameCopy>
+                            <lastName>Doe</lastName>
+                            <phoneNumber>1111111111</phoneNumber><emailAddressCopy>charles.doe@test.bc.ca</emailAddressCopy><emailAddress>charles.doe@test.bc.ca</emailAddress>
+                            <postalCode>A1A 1A1</postalCode>
+                        </grid-1>
+                    </contactInformation><locationPreference>
+                        <grid-2>
+                            <healthRegion>Fraser Coastal</healthRegion>
+                        </grid-2>
+                    </locationPreference><consent><grid-3><control-1/><confirmed>Yes</confirmed></grid-3></consent><finalInstruction><grid-5><control-2/></grid-5></finalInstruction><submission><grid-9><instructions/></grid-9></submission><thankYou><grid-8><contactYou/></grid-8></thankYou>
+                    
+                    
+                    
+                    
+                    
+                    
+                </form>

@@ -107,41 +107,116 @@ Communication from front end to back end is facilitated by [the proxy field](htt
 - /form [POST] submit new form
 - In production: / [GET] serves the built client app
 
-## Database
+## OpenShift Deployment
 
-The application uses Amazon DocumentDB, a non-relational database, fully managed, that emulates the MongoDB 3.6 API and utilizes a distributed, fault-tolerant, self-healing storage system.
+### Application
 
-You can find more information at:
-- https://aws.amazon.com/documentdb/
-- https://docs.aws.amazon.com/documentdb/latest/developerguide/what-is.html
+The Dockerized application is deployed to OpenShift using Makefile targets and YAML templates defined in the `openshift` directory.
 
-Keep in mind that DocumentDB does not support all MongoDB 3.6 features and APIs. Check the link below to explore the differences:
-- https://docs.aws.amazon.com/documentdb/latest/developerguide/mongo-apis.html
-- https://docs.aws.amazon.com/documentdb/latest/developerguide/functional-differences.html
+To create the resources required to run the application in OpenShift, run `make server-create`. Optionally, a namespace prefix and/or suffix can be provided to target a namespace other than the default `rupaog-dev` e.g. `NAMESPACE_SUFFIX=test make server-create`.
 
-For this project, there are 2 database clusters configured under private subnets inside a custom VPC. One to be used for development and staging environments and the other for the production environment.
+The OpenShift objects created are defined in the [openshift/server.bc.yml](openshift/server.bc.yml) and [openshift/server.dc.yml](openshift/server.dc.yml). At a hight level, these objects include the following.
+- Build Config
+- Image Stream
+- Service
+- Route
+- Deployment Config
+- Secret
 
-For local development, a MongoDB 3.6 container is being used.
+At a high level, the functions of each of these objects are as follows.
 
-### Shelling into the Database [Development/Production]
+The *Build Config* defines how an image is built. Properties such as build strategy (Docker), repository (the very repository you're looking at), and rebuild triggers are defined within this object.
 
-Because the database clusters are not exposed to the web, we need to create a SSH tunnel to bridge a connection with the database. To do that, we need to use a bastion host inside the same VPC but exposed to the web.
+The *Image Stream* defines a stream of built images. Essentially, this is an image repository similar to DockerHub. Images sent to the Image Stream must be tagged (e.g. `latest`).
 
+The *Service* defines a hostname for a particular service exposed by a pod or set of pods. Services can only be seen and consumed by pods within the same OpenShift namespace. The service published by the HCAP application is the backend API endpoint. Similarly, the database will expose a service that is to be consumed by the application backend.
 
+A *Route* exposes a service to the Internet. Routes differ from services in that they may only transmit HTTP(S) traffic. As such, the database service could not be directly exposed to the Internet.
+
+A *Deployment Config* defines how a new version of an application is to be deployed. Additionally, triggers for redeployment are defined within this object. For the HCAP application, we've used a rolling deployment triggered by new images pushed to the image stream and tagged with the `latest` tag.
+
+Finally, a *Secret* defines values that can be used by pods within in the same namespace. While there are no secrets defined in our server application, there is a reference to a secret defined by the [MongoDB database template](openshift/mongo.yml). In order for the server to access the DB, it must be provided with `MONGODB_DATABASE` and `MONGODB_URI` environment variables. The definition for these environment variables can be found in the [server deployment config template](openshift/server.dc.yml). Note that they are referencing the `${APP_NAME}-mongodb` (resolves to `hcap-mongodb`) secret and the `mongo-url` and `database` keys within this secret.
+
+### GitHub Actions
+
+A service account must be created and assigned permissions to trigger a build. Run `make os-permissions` to create a service account with admin credentials. The access token for this service account (accessible via Cluster Console > Administration > Service Accounts > Secrets) can be used to login and trigger a build and thus, a new deployment. GitHub Actions has been configured to trigger a new build in a specific namespace (`rupaog-dev` at the time of writing) in OpenShift. Save the TOKEN secret associated with the service account as a GitHub secret with the name `AUTH_TOKEN`.
+
+### Database
+
+The database used is based off of the OCIO RocketChat configuration found [here](https://github.com/BCDevOps/platform-services/blob/master/apps/rocketchat/template-mongodb.yaml). This defines a stateful set object with a default of three replicas. Database credentials are stored in a secret (HCAP uses the secret name of `hcap-mongodb`). The template also defines a persistent volume claim with the storage class `netapp-file-standard`.
+
+To deploy the database to OpenShift, use the Makefile target `make db-create`.
+
+To shell into the database, find the name of one of the pods created by the deployment (e.g. `hcap-mongodb-0`). Use the OpenShift CLI to remote shell into the pod via `oc rsh hcap-mongodb-0`. This will allow the user to use standard Mongo CLI commands (`mongo -u USERNAME -p PASSWORD DATABASE`) to interact with the data within the MongoDB replica set. This is far from an ideal way to access the data within the cluster and should be corrected.
+
+At the time of writing, the DB schema was applied to the database by remote shelling into one of the application pods (`oc rsh hcap-server`) and running the relevant NPM script (`cd server && npm run db:seed`).
+
+### Database Backups
+
+Backups are enabled for the MongoDB database by means of the [backup-container](https://github.com/BCDevOps/backup-container) project published by the OCIO LabOps team. This method of backing up data was recommended instead of the [backup template](https://github.com/BCDevOps/platform-services/blob/master/apps/rocketchat/template-mongodb-backup.yaml) found in the OCIO RocketChat project.
+
+For an in-depth explanation of the backup-container project, see the [project README](https://github.com/BCDevOps/backup-container/blob/master/README.md). In short, backups will be persisted to off-site storage as well as validated. Validation is accomplished by restoring the database backup to a temporary database and running one or more trivial queries against the DB.
+
+At the time of writing, a [pull request](https://github.com/BCDevOps/backup-container/pull/63) has been created that provides an example of deploying a backup container for a MongoDB instance in OpenShift. The example is copied below for posterity.
+
+1. Decide on amount of backup storage required (5Gi is currently the maximum)
+2. Provision the nfs-backup PVC, following the [docs](https://github.com/BCDevOps/provision-nfs-apb/blob/master/docs/usage-gui.md). This provisioning may take several minutes to an hour, and if using the GUI, will result in a PVC with a name similar to `bk-abc123-dev-v9k7xgyvwdxm`, where `abc123-dev` is your project namespace and the last portion is randomly generated.
+3. `git clone https://github.com/BCDevOps/backup-container.git && cd backup-container`.
+4. Determine the OpenShift namespace for the image (e.g. `abc123-dev`), the app name (e.g. `myapp-backup`), and the image tag (e.g. `v1`). Then build the image in your the namespace.
 ```bash
-ssh -i "~/.ssh/ets-bastion-host.pem" -L 27017:DOCUMENT_DB_CLUSTER_URL:27017 ec2-user@BASTION_HOST_URL -N
+oc -n abc123-dev process -f ./openshift/templates/backup/backup-build.json \
+  -p DOCKER_FILE_PATH=Dockerfile_Mongo
+  -p NAME=myapp-backup OUTPUT_IMAGE_TAG=v1 | oc -n abc123-dev create -f -
 ```
+5. Configure `./config/backup.conf`. This defines the database(s) to backup and the schedule that backups are to follow. Additionally, this sets up backup validation (identified by `-v all` flag).
+```bash
+# Database(s)
+mongo=myapp-mongodb:27017/mydb
 
-- Replace DOCUMENT_DB_CLUSTER_URL with the url the document db cluster.
-- Replace BASTION_HOST_URL with the IP address or url of the bastion host.
-- Now you can connect to the database using mongo shell or any mongo client as if the server was running from your localhost.
-- Keep in mind, our DocumentDB clusters have TLS enabled and will require a public key to connect. You can downloaded it [here](https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem).
+# Cron Schedule(s)
+0 1 * * * default ./backup.sh -s
+0 4 * * * default ./backup.sh -s -v all
+```
+6. Configure references to your DB credentials in [backup-deploy.json](https://github.com/BCDevOps/backup-container/blob/master/openshift/templates/backup/backup-deploy.json), replacing the boilerplate `DATABASE_USER` and `DATABASE_PASSWORD` environment variable names. Note the hostname of the database to be backed up. This example uses a hostname of `myapp-mongodb` which maps to environment variables named `MYAPP_MONGODB_USER` and `MYAPP_MONGODB_PASSWORD`. See the [backup.conf](https://github.com/BCDevOps/backup-container/blob/master/README.md#backupconf) section  above for more in depth instructions. This example also assumes that the name of the secret containing your database username and password is the same as the provided `DATABASE_DEPLOYMENT_NAME` parameter. If that's not the case for your service, the secret name can be overridden.
+```json
+{
+  "name": "MYAPP_MONGODB_USER",
+  "valueFrom": {
+    "secretKeyRef": {
+      "name": "${DATABASE_DEPLOYMENT_NAME}",
+      "key": "${DATABASE_USER_KEY_NAME}"
+    }
+  }
+},
+{
+  "name": "MYAPP_MONGODB_PASSWORD",
+  "valueFrom": {
+    "secretKeyRef": {
+      "name": "${DATABASE_DEPLOYMENT_NAME}",
+      "key": "${DATABASE_PASSWORD_KEY_NAME}"
+    }
+  }
+},
+```
+8. Deploy the app. In this example, the namespace is `abc123-dev` and the app name is `myapp-backup`. Note that the key names within the database secret referencing database username and password are `username` and `password`, respectively. If this is not the case for your deployment, specify the correct key names as parameters `DATABASE_USER_KEY_NAME` and `DATABASE_PASSWORD_KEY_NAME`. Also note that `BACKUP_VOLUME_NAME` is from Step 2 above.
+```bash
+oc -n abc123-dev create configmap backup-conf --from-file=./config/backup.conf
+oc -n abc123-dev label configmap backup-conf app=myapp-backup
 
-
-You can find the cluster URLS, credentials, and certificates on the project folder on TeamPass.
-
-Find supplementary reference on the link below:
-- https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html
+oc -n abc123-dev process -f ./openshift/templates/backup/backup-deploy.json \
+  -p NAME=myapp-backup \
+  -p IMAGE_NAMESPACE=abc123-dev \
+  -p SOURCE_IMAGE_NAME=myapp-backup \
+  -p TAG_NAME=v1 \
+  -p BACKUP_VOLUME_NAME=bk-abc123-dev-v9k7xgyvwdxm \
+  -p BACKUP_VOLUME_SIZE=5Gi \
+  -p VERIFICATION_VOLUME_SIZE=10Gi \
+  -p VERIFICATION_VOLUME_CLASS=netapp-block-standard \
+  -p DATABASE_DEPLOYMENT_NAME=myapp-mongodb \
+  -p DATABASE_USER_KEY_NAME=username \
+  -p DATABASE_PASSWORD_KEY_NAME=password \
+  -p ENVIRONMENT_FRIENDLY_NAME='My App MongoDB Backups' | oc -n abc123-dev create -f -
+```
 
 ## License
 

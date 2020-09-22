@@ -45,7 +45,7 @@ local-server-tests:
 os-permissions:
 	@oc project $(OS_NAMESPACE)
 	@oc create sa github-$(OS_NAMESPACE_SUFFIX)
-	@oc policy add-role-to-user system:image-builder -z github-$(OS_NAMESPACE_SUFFIX)
+	@oc policy add-role-to-user admin -z github-$(OS_NAMESPACE_SUFFIX)
 
 server-create:
 	@oc project $(OS_NAMESPACE)

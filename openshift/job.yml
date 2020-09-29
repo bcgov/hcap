@@ -1,0 +1,32 @@
+kind: Template
+apiVersion: v1
+labels:
+  app: ${APP_NAME}
+parameters:
+- name: NAMESPACE
+  description: The OpenShift namespace in which to deploy the server
+  required: true
+- name: APP_NAME
+  description: App name that OpenShift objects will be prefixed with
+  required: true
+- name: IMAGE_REGISTRY
+  description: Image registry from which to pull the image run by the job
+  value: docker-registry.default.svc:5000
+  required: true
+objects:
+- kind: Job
+  apiVersion: batch/v1
+  metadata:
+    name: ${APP_NAME}-job
+  spec:
+    parallelism: 1
+    completions: 1
+    activeDeadlineSeconds: 1800
+    backoffLimit: 6
+    template:
+      spec:
+        containers:
+        - name: ${APP_NAME}-job
+          image: ${IMAGE_REGISTRY}/${NAMESPACE}/${APP_NAME}-server
+          command: [echo, hello]
+        restartPolicy: OnFailure

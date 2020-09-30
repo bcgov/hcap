@@ -25,12 +25,49 @@ objects:
     backoffLimit: 6
     template:
       spec:
-        envFrom:
-          - configMapRef: 
-            name: ets-aws-documentdb
         containers:
-          - name: ${APP_NAME}-docdb-test-job
-            image: ${IMAGE_REGISTRY}/${NAMESPACE}/${APP_NAME}-server
-            command: ["/bin/sh","-c"]
-            args: ["cd job; npm i; node docdb-test.js"]
+        - env:
+          - name: AWS_SSH_USERNAME
+            valueFrom:
+              secretKeyRef:
+                key: AWS_SSH_USERNAME
+                name: ets-aws-documentdb
+          - name: AWS_SSH_KEY
+            valueFrom:
+              secretKeyRef:
+                key: AWS_SSH_KEY
+                name: ets-aws-documentdb
+          - name: AWS_SSH_HOST
+            valueFrom:
+              secretKeyRef:
+                key: AWS_SSH_HOST
+                name: ets-aws-documentdb
+          - name: DB_SERVER
+            valueFrom:
+              secretKeyRef:
+                key: DB_SERVER
+                name: ets-aws-documentdb
+          - name: DB_PORT
+            valueFrom:
+              secretKeyRef:
+                key: DB_PORT
+                name: ets-aws-documentdb
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                key: DB_USER
+                name: ets-aws-documentdb
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: DB_PASSWORD
+                name: ets-aws-documentdb
+          - name: DB_NAME
+            valueFrom:
+              secretKeyRef:
+                key: DB_NAME
+                name: ets-aws-documentdb
+          name: ${APP_NAME}-docdb-test-job
+          image: ${IMAGE_REGISTRY}/${NAMESPACE}/${APP_NAME}-server
+          command: [/bin/ash, -c, "cd job && node docdb-test.js"]
         restartPolicy: OnFailure

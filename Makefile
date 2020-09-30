@@ -63,3 +63,6 @@ db-create:
 db-tunnel:
 	@oc project $(OS_NAMESPACE)
 	@oc port-forward $(APP_NAME)-mongodb-0 27017
+
+docdb-test-job-create:
+	@oc process -f openshift/docdb-test.job.yml -p NAMESPACE=$(OS_NAMESPACE) APP_NAME=$(APP_NAME) | oc apply -f -

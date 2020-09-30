@@ -24,6 +24,7 @@ WORKDIR /server
 COPY server/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 COPY server/. .
+RUN cd job && npm ci --no-cache && cd ..
 
 # Run app
 EXPOSE 8080

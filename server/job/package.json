@@ -1,0 +1,16 @@
+{
+  "name": "docdb-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "docdb-test.js",
+  "dependencies": {
+    "tunnel-ssh": "4.1.4",
+    "mongodb": "3.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

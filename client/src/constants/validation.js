@@ -33,6 +33,11 @@ const errorMessage = ({ path }) => {
   return errorMessages[path] || `Failed validation on ${path}`;
 };
 
+export const LoginSchema = yup.object().noUnknown().shape({
+  username: yup.string().required('Username is required'),
+  password: yup.string().required('Password is required'),
+});
+
 export const FormSchema = yup.object().noUnknown('Unknown field for form').shape({
   // Eligibility
   eligibility: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),

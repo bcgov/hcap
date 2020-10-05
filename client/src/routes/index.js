@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Routes } from '../constants';
 
 const Form = lazy(() => import('../pages/public/Form'));
+const Login = lazy(() => import('../pages/public/Login'));
 const Confirmation = lazy(() => import('../pages/public/Confirmation'));
 
 export default () => {
@@ -12,6 +13,7 @@ export default () => {
     <BrowserRouter>
       <Suspense fallback={<LinearProgress />}>
         <Switch>
+          <Route exact path={Routes.Login} component={Login} />
           <Route exact path={Routes.Form} component={Form} />
           <Route exact path={Routes.Confirmation} component={Confirmation} />
           {/* Remove after default route is defined <Route component={Form} /> */}

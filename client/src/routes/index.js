@@ -14,7 +14,7 @@ export default () => {
         <Switch>
           <Route exact path={Routes.Form} component={Form} />
           <Route exact path={Routes.Confirmation} component={Confirmation} />
-          <Route component={Form} />
+          {/* Remove after default route is defined <Route component={Form} /> */}
         </Switch>
       </Suspense>
     </BrowserRouter>

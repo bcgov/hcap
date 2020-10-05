@@ -13,7 +13,7 @@ import { Routes } from '../../constants';
 export default () => {
   const history = useHistory();
 
-  const handleProceed = async () => {
+  const handleProceed = () => {
     history.push(Routes.Login);
   }
 
@@ -44,7 +44,7 @@ export default () => {
         </Box>
         <Box display="flex" justifyContent="center" pt={0} pb={4} pl={2} pr={2}>
           <Button
-            onClick={() => handleProceed()}
+            onClick={handleProceed}
             variant="contained"
             color="primary"
             fullWidth={false}

@@ -21,7 +21,6 @@ export default () => {
           <Route exact path={Routes.EmployeeForm} component={EmployeeForm} />
           <Route exact path={Routes.EmployeeConfirmation} component={EmployeeConfirmation} />
           <Route component={EmployerLanding} />
-          {/* Remove after default route is defined <Route component={Form} /> */}
         </Switch>
       </Suspense>
     </BrowserRouter>

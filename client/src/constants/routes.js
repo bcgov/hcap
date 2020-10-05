@@ -2,6 +2,7 @@ export default Object.freeze({
   // Public routes
   EmployerLanding: '/',
   Login: '/login',
-  Form: '/publiceoi',
-  Confirmation: '/publiceoi/confirmation',
+  EmployerForm: '/employer-form',
+  EmployeeForm: '/publiceoi',
+  EmployeeConfirmation: '/publiceoi/confirmation',
 });

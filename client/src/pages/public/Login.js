@@ -18,7 +18,7 @@ export default () => {
   };
 
   const handleSubmit = async (values) => {
-    history.push(Routes.Form); //Remove once we have an endpoint
+    history.push(Routes.EmployerForm); //Remove once we have an endpoint
 
     //Uncomment once we have an endpoint
 
@@ -32,7 +32,7 @@ export default () => {
     // if (response.ok) {
     //   const { token } = await response.json();
     //   window.localStorage.setItem('jwt', token);
-    //   history.push(Routes.Form);
+    //   history.push(Routes.EmployerForm);
     //   return;
     // } else {
     //   setSubmitError(response.error || response.statusText || response);

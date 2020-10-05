@@ -5,9 +5,10 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Routes } from '../constants';
 
 const EmployerLanding = lazy(() => import('../pages/public/EmployerLanding'));
-const Form = lazy(() => import('../pages/public/Form'));
+const EmployeeForm = lazy(() => import('../pages/public/EmployeeForm'));
+const EmployerForm = lazy(() => import('../pages/public/EmployerForm'));
 const Login = lazy(() => import('../pages/public/Login'));
-const Confirmation = lazy(() => import('../pages/public/Confirmation'));
+const EmployeeConfirmation = lazy(() => import('../pages/public/EmployeeConfirmation'));
 
 export default () => {
   return (
@@ -16,9 +17,11 @@ export default () => {
         <Switch>
           <Route exact path={Routes.EmployerLanding} component={EmployerLanding} />
           <Route exact path={Routes.Login} component={Login} />
-          <Route exact path={Routes.Form} component={Form} />
-          <Route exact path={Routes.Confirmation} component={Confirmation} />
+          <Route exact path={Routes.EmployerForm} component={EmployerForm} />
+          <Route exact path={Routes.EmployeeForm} component={EmployeeForm} />
+          <Route exact path={Routes.EmployeeConfirmation} component={EmployeeConfirmation} />
           <Route component={EmployerLanding} />
+          {/* Remove after default route is defined <Route component={Form} /> */}
         </Switch>
       </Suspense>
     </BrowserRouter>

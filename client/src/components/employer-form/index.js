@@ -42,7 +42,7 @@ export const Form = ({ initialValues, isDisabled }) => {
       if (error) {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
       } else {
-        history.push(Routes.Confirmation, { formValues: values, id });
+        history.push(Routes.EmployeeConfirmation, { formValues: values, id });
         return;
       }
     } else {
@@ -67,7 +67,7 @@ export const Form = ({ initialValues, isDisabled }) => {
         {({ errors, submitForm, setTouched, values }) => (
           <FormikForm>
 
-            <Box pt={4} pb={4} pl={2} pr={2}>
+            <Box pt={4} pb={2} pl={2} pr={2}>
               <Summary />
             </Box>
 

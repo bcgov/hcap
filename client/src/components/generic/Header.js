@@ -52,7 +52,7 @@ export const Header = () => {
   const history = useHistory();
   const classes = useStyles();
 
-  const handleLogoClick = () => history.push(Routes.Form);
+  const handleLogoClick = () => history.push(Routes.EmployeeForm);
 
   return (
     <div className={classes.root}>

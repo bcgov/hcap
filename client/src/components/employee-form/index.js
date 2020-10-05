@@ -42,7 +42,7 @@ export const Form = ({ initialValues, isDisabled }) => {
       if (error) {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
       } else {
-        history.push(Routes.Confirmation, { formValues: values, id });
+        history.push(Routes.EmployeeConfirmation, { formValues: values, id });
         return;
       }
     } else {

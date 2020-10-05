@@ -6,11 +6,11 @@ import { useLocation, Redirect } from 'react-router-dom';
 import { Routes } from '../../constants';
 
 import { PDFButton, Divider, Page } from '../../components/generic';
-import { Form } from '../../components/form';
+import { Form } from '../../components/employee-form';
 
 export default () => {
   const location = useLocation();
-  if (!location.state) return <Redirect to={Routes.Form} />
+  if (!location.state) return <Redirect to={Routes.EmployeeForm} />
   return (
     <div id="confirmation">
       <Page>

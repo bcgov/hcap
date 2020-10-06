@@ -46,8 +46,7 @@ export const Form = ({ initialValues, isDisabled }) => {
     //   if (error) {
     //     openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
     //   } else {
-    const id = '123ABC';
-    history.push(Routes.EmployerConfirmation, { formValues: values, id });
+    history.push(Routes.EmployerConfirmation, { formValues: values });
     //     return;
     //   }
     // } else {

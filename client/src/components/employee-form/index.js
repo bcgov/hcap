@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { Formik, Form as FormikForm } from 'formik';
 import { useHistory } from 'react-router-dom';
 
-import { FormSchema, Routes, ToastStatus } from '../../constants';
+import { EmployeeFormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 import { scrollUp } from '../../utils';
 
@@ -61,7 +61,7 @@ export const Form = ({ initialValues, isDisabled }) => {
     <Grid item xs={12} sm={isDisabled ? 12 : 11} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8} xl={isDisabled ? 12 : 6}>
       <Formik
         initialValues={formValues}
-        validationSchema={FormSchema}
+        validationSchema={EmployeeFormSchema}
         onSubmit={handleSubmit}
       >
         {({ errors, submitForm, setTouched, values }) => (

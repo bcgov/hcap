@@ -15,6 +15,7 @@
     "@material-ui/lab": "4.0.0-alpha.49",
     "@material-ui/pickers": "3.2.10",
     "classnames": "2.2.6",
+    "cross-fetch": "^3.0.6",
     "dom-to-image": "2.6.0",
     "formik": "2.1.5",
     "jspdf": "1.5.3",

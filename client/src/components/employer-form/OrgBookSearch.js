@@ -20,7 +20,7 @@ export const OrgBookSearch = ({
   const touched = form.touched[name];
   const error = form.errors[name];
 
-  async function searchOrgbook(value) {
+  const searchOrgbook = async (value) => {
     if (!value || value.length < 1) return;
 
     setLoading(true);
@@ -37,7 +37,7 @@ export const OrgBookSearch = ({
 
     setLoading(false);
     setOptions(mappedEntries);
-  }
+  };
 
   return (
     <Fragment>

@@ -8,27 +8,22 @@ const healthRegions = [
   'Northern',
 ];
 
-const validateUniqueArray = (a) => (
-  Array.isArray(a) && new Set(a).size === a.length
-);
-
 const errorMessage = ({ path }) => {
   const errorMessages = {
-    // Eligibility
-    eligibility: 'We\'re sorry, but current eligibility to work in Canada is a requirement to submit this form.',
-
-    // Contact info
+    // Basic info
+    registeredBusinessName: 'Business name is required',
+    address: 'Address is required',
+    postalCode: 'Postal code is required',
+    location: 'Location is required',
     firstName: 'First name is required',
     lastName: 'Last name is required',
     phoneNumber: 'Phone number is required',
     emailAddress: 'Email address is required',
-    postalCode: 'Postal code is required',
 
-    // Preferred location
-    preferredLocation: 'Please select at least one location you\'d like to work in.',
-
-    // Consent
-    consent: 'We\'re sorry, but we cannot process your request without permission.',
+    // Business details
+    businessKind: 'Business kind is required',
+    workersSize: 'Number of workers is required',
+    employerType: 'Employer type is required',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
@@ -38,22 +33,21 @@ export const LoginSchema = yup.object().noUnknown().shape({
   password: yup.string().required('Password is required'),
 });
 
-export const FormSchema = yup.object().noUnknown('Unknown field for form').shape({
-  // Eligibility
-  eligibility: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
-
-  // Contact info
+export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shape({
+  // Basic info
+  registeredBusinessName: yup.string().required(errorMessage),
+  address: yup.string().required(errorMessage),
+  postalCode: yup.string().required(errorMessage).matches(/^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/, 'Format as A1A 1A1'),
+  location: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid location'),
   firstName: yup.string().required(errorMessage),
   lastName: yup.string().required(errorMessage),
   phoneNumber: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
   emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
-  postalCode: yup.string().required(errorMessage).matches(/^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/, 'Format as A1A 1A1'),
 
-  // Preferred location
-  preferredLocation: yup.array().required(errorMessage).of(
-    yup.string().oneOf(healthRegions, 'Invalid location'),
-  ).test('is-unique-array', 'Preferred locations must be unique', validateUniqueArray),
-
-  // Consent
-  consent: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
+  // Business details
+  businessKind: yup.string().required(errorMessage),
+  workersSize: yup.number().required(errorMessage).integer('Number of workers must be an integer'),
+  employerType: yup.string().required(errorMessage),
 });
+
+export const EmployeeFormSchema = yup.object().noUnknown('Unknown field for form').shape({});

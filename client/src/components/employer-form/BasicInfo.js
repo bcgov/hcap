@@ -35,7 +35,7 @@ export const BasicInfo = ({ isDisabled }) => {
         <FastField
             name="registeredBusinessName"
             component={OrgBookSearch}
-            label="Registered Business Name"
+            label="* Registered Business Name"
             disabled={isDisabled}
           />
         </Grid>

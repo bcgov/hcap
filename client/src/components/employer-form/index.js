@@ -10,6 +10,7 @@ import { scrollUp } from '../../utils';
 
 import { Button } from '../generic';
 import { Summary } from './Summary';
+import { BasicInfo} from './BasicInfo';
 import { BusinessDetailsFields } from './BusinessDetailsFields';
 
 export const Form = ({ initialValues, isDisabled }) => {
@@ -18,13 +19,17 @@ export const Form = ({ initialValues, isDisabled }) => {
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const formValues = initialValues ? initialValues : {
+    registeredBusinessName: '',
+    address: '',
+    postalCode: '',
+    location: '',
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    emailAddress: '',
     businessKind: '',
     workersSize: 0,
     employerType: '',
-    phoneNumber: '',
-    emailAddress: '',
-    postalCode: '',
-    preferredLocation: [],
     consent: '',
   };
 
@@ -70,6 +75,10 @@ export const Form = ({ initialValues, isDisabled }) => {
 
             <Box pt={4} pb={2} pl={2} pr={2}>
               <Summary />
+            </Box>
+
+            <Box pt={4} pb={2} pl={2} pr={2}>
+              <BasicInfo isDisabled={isDisabled} />
             </Box>
 
             <Box pt={2} pb={4} pl={2} pr={2}>

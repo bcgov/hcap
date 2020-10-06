@@ -19,13 +19,17 @@ export const Form = ({ initialValues, isDisabled }) => {
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const formValues = initialValues ? initialValues : {
+    registeredBusinessName: '',
+    address: '',
+    postalCode: '',
+    location: '',
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    emailAddress: '',
     businessKind: '',
     workersSize: 0,
     employerType: '',
-    phoneNumber: '',
-    emailAddress: '',
-    postalCode: '',
-    preferredLocation: [],
     consent: '',
   };
 

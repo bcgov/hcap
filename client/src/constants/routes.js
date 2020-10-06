@@ -3,6 +3,7 @@ export default Object.freeze({
   EmployerLanding: '/',
   Login: '/login',
   EmployerForm: '/employer-form',
-  EmployeeForm: '/publiceoi',
-  EmployeeConfirmation: '/publiceoi/confirmation',
+  EmployeeForm: '/employee-form',
+  EmployeeConfirmation: '/employee-confirmation',
+  EmployerConfirmation: '/employer-confirmation',
 });

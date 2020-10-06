@@ -9,6 +9,7 @@ const EmployeeForm = lazy(() => import('../pages/public/EmployeeForm'));
 const EmployerForm = lazy(() => import('../pages/public/EmployerForm'));
 const Login = lazy(() => import('../pages/public/Login'));
 const EmployeeConfirmation = lazy(() => import('../pages/public/EmployeeConfirmation'));
+const EmployerConfirmation = lazy(() => import('../pages/public/EmployerConfirmation'));
 
 export default () => {
   return (
@@ -20,6 +21,7 @@ export default () => {
           <Route exact path={Routes.EmployerForm} component={EmployerForm} />
           <Route exact path={Routes.EmployeeForm} component={EmployeeForm} />
           <Route exact path={Routes.EmployeeConfirmation} component={EmployeeConfirmation} />
+          <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />
           <Route component={EmployerLanding} />
         </Switch>
       </Suspense>

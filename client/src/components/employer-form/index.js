@@ -10,7 +10,7 @@ import { scrollUp } from '../../utils';
 
 import { Button } from '../generic';
 import { Summary } from './Summary';
-import { Fields } from './Fields';
+import { BusinessDetailsFields } from './BusinessDetailsFields';
 
 export const Form = ({ initialValues, isDisabled }) => {
   const history = useHistory();
@@ -72,7 +72,7 @@ export const Form = ({ initialValues, isDisabled }) => {
             </Box>
 
             <Box pt={2} pb={4} pl={2} pr={2}>
-              <Fields isDisabled={isDisabled} />
+              <BusinessDetailsFields isDisabled={isDisabled} />
             </Box>
 
             {!isDisabled && (

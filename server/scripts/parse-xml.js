@@ -14,7 +14,7 @@ const endpoints = [
 
 const postHcapSubmission = async (endpoint, data) => {
   const apiUrl = `${endpoint}/api/v1`;
-  const response = await axios.post(`${apiUrl}/form`, data);
+  const response = await axios.post(`${apiUrl}/employee-form`, data);
   return response.data;
 };
 

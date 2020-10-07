@@ -3,7 +3,9 @@ const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
-const { validate, EmployeeFormSchema } = require('./validation.js');
+const {
+  validate, LoginSchema, EmployerFormSchema, EmployeeFormSchema,
+} = require('./validation.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 
@@ -31,8 +33,31 @@ app.use(helmet({
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-// Create new form, not secured
-app.post(`${apiBaseUrl}/form`,
+// Login endpoint
+// TODO not implemented
+app.post(`${apiBaseUrl}/login`,
+  asyncMiddleware(async (req, res) => {
+    await validate(LoginSchema, req.body);
+
+    // TODO implement login, success mocked
+    const result = 'success';
+    return res.json({ result });
+  }));
+
+// Create new employer form
+// TODO needs to be secured if/when login implemented
+// TODO not implemented
+app.post(`${apiBaseUrl}/employer-form`,
+  asyncMiddleware(async (req, res) => {
+    await validate(EmployerFormSchema, req.body); // Validate submitted form against schema
+
+    // TODO implement DB communication, success mocked
+    const result = 'success';
+    return res.json({ result });
+  }));
+
+// Create new employee form, not secured
+app.post(`${apiBaseUrl}/employee-form`,
   asyncMiddleware(async (req, res) => {
     await validate(EmployeeFormSchema, req.body); // Validate submitted form against schema
     const formsCollection = dbClient.db.collection(collections.FORMS);

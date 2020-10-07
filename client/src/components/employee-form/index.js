@@ -31,7 +31,7 @@ export const Form = ({ initialValues, isDisabled }) => {
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
 
-    const response = await fetch('/api/v1/form', {
+    const response = await fetch('/api/v1/employee-form', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
       body: JSON.stringify(values),

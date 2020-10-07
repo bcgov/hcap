@@ -14,7 +14,7 @@ describe('Server V1 Form Endpoints', () => {
     await closeDB();
   });
 
-  const formEndpoint = '/api/v1/form';
+  const formEndpoint = '/api/v1/employee-form';
 
   const form = {
     eligibility: true,

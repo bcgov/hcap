@@ -18,26 +18,24 @@ export default () => {
   };
 
   const handleSubmit = async (values) => {
-    history.push(Routes.EmployerForm); //Remove once we have an endpoint
+    setSubmitLoading(true);
 
-    //Uncomment once we have an endpoint
+    const response = await fetch('/api/v1/login', {
+      headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
+      method: 'POST',
+      body: JSON.stringify({ ...values })
+    });
 
-    // setSubmitLoading(true);
-    // const response = await fetch('/api/v1/login', {
-    //   headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
-    //   method: 'POST',
-    //   body: JSON.stringify({ ...values })
-    // });
-
-    // if (response.ok) {
-    //   const { token } = await response.json();
-    //   window.localStorage.setItem('jwt', token);
-    //   history.push(Routes.EmployerForm);
-    //   return;
-    // } else {
-    //   setSubmitError(response.error || response.statusText || response);
-    // }
-    // setSubmitLoading(false);
+    if (response.ok) {
+      // TODO Uncomment once we have auth implemented
+      // const { token } = await response.json();
+      // window.localStorage.setItem('jwt', token);
+      history.push(Routes.EmployerForm);
+      return;
+    } else {
+      setSubmitError(response.error || response.statusText || response);
+    }
+    setSubmitLoading(false);
   };
 
   return (

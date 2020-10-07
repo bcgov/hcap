@@ -15,29 +15,57 @@ const validateUniqueArray = (a) => (
 
 const errorMessage = ({ path }) => {
   const errorMessages = {
-    // Orbeon ID from the XML file name
-    orbeonId: 'Invalid Orbeon ID format.',
-
-    // Eligibility
-    eligibility: 'We\'re sorry, but current eligibility to work in Canada is a requirement to submit this form.',
-
-    // Contact info
+    // Common fields
     firstName: 'First name is required',
     lastName: 'Last name is required',
     phoneNumber: 'Phone number is required',
     emailAddress: 'Email address is required',
     postalCode: 'Postal code is required',
 
-    // Preferred location
-    preferredLocation: 'Please select at least one location you\'d like to work in.',
+    // Employer basic info
+    registeredBusinessName: 'Business name is required',
+    address: 'Address is required',
+    location: 'Location is required',
 
-    // Consent
+    // Business details
+    businessKind: 'Business kind is required',
+    workersSize: 'Number of workers is required',
+    employerType: 'Employer type is required',
+
+    // Orbeon ID from the XML file name
+    orbeonId: 'Invalid Orbeon ID format.',
+
+    // Employee info
+    eligibility: 'We\'re sorry, but current eligibility to work in Canada is a requirement to submit this form.',
+    preferredLocation: 'Please select at least one location you\'d like to work in.',
     consent: 'We\'re sorry, but we cannot process your request without permission.',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
 
-const FormSchema = yup.object().noUnknown('Unknown field for form').shape({
+const LoginSchema = yup.object().noUnknown().shape({
+  username: yup.string().required('Username is required'),
+  password: yup.string().required('Password is required'),
+});
+
+const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shape({
+  // Basic info
+  registeredBusinessName: yup.string().required(errorMessage),
+  address: yup.string().required(errorMessage),
+  postalCode: yup.string().required(errorMessage).matches(/^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/, 'Format as A1A 1A1'),
+  location: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid location'),
+  firstName: yup.string().required(errorMessage),
+  lastName: yup.string().required(errorMessage),
+  phoneNumber: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+
+  // Business details
+  businessKind: yup.string().required(errorMessage),
+  workersSize: yup.number().required(errorMessage).integer('Number of workers must be an integer').moreThan(0, 'Number must be greater than 0'),
+  employerType: yup.string().required(errorMessage),
+});
+
+const EmployeeFormSchema = yup.object().noUnknown('Unknown field for form').shape({
   // Orbeon Id
   orbeonId: yup.string().typeError(errorMessage),
 
@@ -63,5 +91,5 @@ const FormSchema = yup.object().noUnknown('Unknown field for form').shape({
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
-  FormSchema, validate,
+  LoginSchema, EmployerFormSchema, EmployeeFormSchema, validate,
 };

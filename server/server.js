@@ -3,7 +3,7 @@ const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
-const { validate, FormSchema } = require('./validation.js');
+const { validate, EmployeeFormSchema } = require('./validation.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 
@@ -34,7 +34,7 @@ app.use(express.static(path.join(__dirname, '../client/build')));
 // Create new form, not secured
 app.post(`${apiBaseUrl}/form`,
   asyncMiddleware(async (req, res) => {
-    await validate(FormSchema, req.body); // Validate submitted form against schema
+    await validate(EmployeeFormSchema, req.body); // Validate submitted form against schema
     const formsCollection = dbClient.db.collection(collections.FORMS);
 
     // Generate unique random hex id

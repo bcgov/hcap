@@ -28,7 +28,7 @@ export const Form = ({ initialValues, isDisabled }) => {
     phoneNumber: '',
     emailAddress: '',
     businessKind: '',
-    workersSize: 0,
+    workersSize: '',
     employerType: '',
   };
 

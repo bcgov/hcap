@@ -5,7 +5,7 @@ const inquirer = require('inquirer');
 const parser = require('fast-xml-parser');
 const _ = require('lodash');
 const asyncPool = require('tiny-async-pool');
-const { validate, FormSchema } = require('../validation');
+const { validate, EmployeeFormSchema } = require('../validation');
 
 const endpoints = [
   { name: 'Local', value: 'http://localhost:4000' },
@@ -94,7 +94,7 @@ const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint
         consent: _.get(jsonObj, 'form.consent.grid-3.confirmed') === 'Yes',
       };
       try {
-        await validate(FormSchema, parsedJsonObj);
+        await validate(EmployeeFormSchema, parsedJsonObj);
         parsedJsonObjs.push(parsedJsonObj);
       } catch (e) {
         validationErrors.push({ fileName: xml.name, error: e.message });

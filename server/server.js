@@ -59,7 +59,7 @@ app.post(`${apiBaseUrl}/employee-form`,
   asyncMiddleware(async (req, res) => {
     await validate(EmployeeFormSchema, req.body); // Validate submitted form against schema
 
-    const result = await dbClient.db.saveDoc(collections.FORMS, req.body);
+    const result = await dbClient.db.saveDoc(collections.EMPLOYEE_FORMS, req.body);
 
     return res.json({ id: result.id });
   }));

@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import Box from '@material-ui/core/Box';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
@@ -16,7 +15,6 @@ const Summary = ({ isDisabled }) => {
       </Typography>
       <Divider />
 
-      <Box pt={2}>
         {/** First Block */}
         <ExpansionPanel defaultExpanded={!isDisabled}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -111,7 +109,6 @@ const Summary = ({ isDisabled }) => {
             </Typography>
           </ExpansionPanelDetails>
         </ExpansionPanel>
-      </Box>
     </Fragment>
   );
 };

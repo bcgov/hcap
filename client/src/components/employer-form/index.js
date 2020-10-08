@@ -8,7 +8,7 @@ import { EmployerFormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 import { scrollUp } from '../../utils';
 
-import { Button } from '../generic';
+import { Card, Button } from '../generic';
 import { Summary } from './Summary';
 import { BasicInfo} from './BasicInfo';
 import { BusinessDetailsFields } from './BusinessDetailsFields';
@@ -70,17 +70,20 @@ export const Form = ({ initialValues, isDisabled }) => {
       >
         {({ errors, submitForm, setTouched, values }) => (
           <FormikForm>
+            <Box pt={4} pb={1} pl={2} pr={2}>
+              <Card>
+                <Box pt={0} pb={0} pl={2} pr={2}>
+                  <Summary isDisabled={isDisabled} />
+                </Box>
 
-            <Box pt={4} pb={0} pl={2} pr={2}>
-              <Summary isDisabled={isDisabled} />
-            </Box>
+                <Box pt={4} pb={2} pl={2} pr={2}>
+                  <BasicInfo isDisabled={isDisabled} />
+                </Box>
 
-            <Box pt={4} pb={2} pl={2} pr={2}>
-              <BasicInfo isDisabled={isDisabled} />
-            </Box>
-
-            <Box pt={2} pb={4} pl={2} pr={2}>
-              <BusinessDetailsFields isDisabled={isDisabled} />
+                <Box pt={2} pb={4} pl={2} pr={2}>
+                  <BusinessDetailsFields isDisabled={isDisabled} />
+                </Box>
+              </Card>
             </Box>
 
             {!isDisabled && (

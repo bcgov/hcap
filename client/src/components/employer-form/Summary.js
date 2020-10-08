@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { Divider } from '../generic';
 
-const Summary = () => {
+const Summary = ({ isDisabled }) => {
   return (
     <Fragment>
       <Typography variant="h2" color="primary" gutterBottom>
@@ -18,7 +18,7 @@ const Summary = () => {
 
       <Box pt={2}>
         {/** First Block */}
-        <ExpansionPanel>
+        <ExpansionPanel defaultExpanded={!isDisabled}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="body1">
               <b>
@@ -73,7 +73,7 @@ const Summary = () => {
         </ExpansionPanel>
 
         {/** Second Block */}
-        <ExpansionPanel>
+        <ExpansionPanel defaultExpanded={!isDisabled}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="body1">
               <b>

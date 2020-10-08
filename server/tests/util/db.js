@@ -9,6 +9,8 @@ async function seedDatabase() {
       await dbClient.db.query(index);
     }
   }
+  /* eslint-enable no-await-in-loop */
+  /* eslint-enable no-restricted-syntax */
 }
 
 async function clearDB() {
@@ -17,6 +19,8 @@ async function clearDB() {
   for (const schemaItem of schema) {
     await dbClient.db.dropTable(schemaItem.collection, { cascade: true });
   }
+  /* eslint-enable no-await-in-loop */
+  /* eslint-enable no-restricted-syntax */
 }
 
 /**

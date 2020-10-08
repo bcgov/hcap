@@ -38,11 +38,11 @@ export const Form = ({ initialValues, isDisabled }) => {
     });
 
     if (response.ok) {
-      const { formId, error } = await response.json();
+      const { id, error } = await response.json();
       if (error) {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
       } else {
-        history.push(Routes.EmployeeConfirmation, { formValues: values, id: formId });
+        history.push(Routes.EmployeeConfirmation, { formValues: values, id });
         return;
       }
     } else {

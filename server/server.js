@@ -2,7 +2,6 @@ const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
-const { randomBytes } = require('crypto');
 const {
   validate, LoginSchema, EmployerFormSchema, EmployeeFormSchema,
 } = require('./validation.js');
@@ -61,28 +60,9 @@ app.post(`${apiBaseUrl}/employee-form`,
   asyncMiddleware(async (req, res) => {
     await validate(EmployeeFormSchema, req.body); // Validate submitted form against schema
 
-    // Generate unique random hex id
-    async function generateRandomHexId() {
-      const randomHexId = randomBytes(4).toString('hex').toUpperCase();
+    const result = await dbClient.db.saveDoc(collections.FORMS, req.body);
 
-      // Query database do make sure id does not exist, avoiding collision
-      if (await dbClient.db[collections.FORMS].countDoc({ body: { formId: randomHexId } }) > 0) {
-        return generateRandomHexId();
-      }
-      return randomHexId;
-    }
-
-    // Form ID
-    const formId = await generateRandomHexId();
-
-    const formItem = {
-      formId,
-      ...req.body,
-    };
-
-    await dbClient.db.saveDoc(collections.FORMS, formItem);
-
-    return res.json({ formId });
+    return res.json({ id: result.id });
   }));
 
 // Version number

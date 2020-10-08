@@ -3,14 +3,15 @@
  */
 
 const collections = {
-  FORMS: 'hcap_forms',
+  EMPLOYEE_FORMS: 'employee_forms',
+  EMPLOYER_FORMS: 'employer_forms',
 };
 
 const schema = [
   {
-    collection: collections.FORMS,
+    collection: collections.EMPLOYEE_FORMS,
     indexes: [
-      `CREATE UNIQUE INDEX orbeonId ON ${collections.FORMS}( (body->>'orbeonId') ) ;`,
+      `CREATE UNIQUE INDEX orbeonId ON ${collections.EMPLOYEE_FORMS}( (body->>'orbeonId') ) ;`,
     ],
   },
 ];

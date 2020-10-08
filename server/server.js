@@ -45,14 +45,13 @@ app.post(`${apiBaseUrl}/login`,
 
 // Create new employer form
 // TODO needs to be secured if/when login implemented
-// TODO not implemented
 app.post(`${apiBaseUrl}/employer-form`,
   asyncMiddleware(async (req, res) => {
     await validate(EmployerFormSchema, req.body); // Validate submitted form against schema
 
-    // TODO implement DB communication, success mocked
-    const result = 'success';
-    return res.json({ result });
+    const result = await dbClient.db.saveDoc(collections.EMPLOYER_FORMS, req.body);
+
+    return res.json({ id: result.id });
   }));
 
 // Create new employee form, not secured

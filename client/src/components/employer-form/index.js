@@ -33,27 +33,27 @@ export const Form = ({ initialValues, isDisabled }) => {
   };
 
   const handleSubmit = async (values) => {
-    // setSubmitLoading(true);
+    setSubmitLoading(true);
 
-    // const response = await fetch('/api/v1/form', {
-    //   method: 'POST',
-    //   headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
-    //   body: JSON.stringify(values),
-    // });
+    const response = await fetch('/api/v1/employer-form', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
+      body: JSON.stringify(values),
+    });
 
-    // if (response.ok) {
-    //   const { id, error } = await response.json();
-    //   if (error) {
-    //     openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
-    //   } else {
-    history.push(Routes.EmployerConfirmation, { formValues: values });
-    //     return;
-    //   }
-    // } else {
-    //   openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
-    // }
+    if (response.ok) {
+      const { error } = await response.json();
+      if (error) {
+        openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
+      } else {
+        history.push(Routes.EmployerConfirmation, { formValues: values });
+        return;
+      }
+    } else {
+      openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
+    }
 
-    // setSubmitLoading(false);
+    setSubmitLoading(false);
   };
 
   const handleSubmitButton = (submitForm) => {

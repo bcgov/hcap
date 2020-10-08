@@ -2,7 +2,6 @@ const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
-const { randomBytes } = require('crypto');
 const {
   validate, LoginSchema, EmployerFormSchema, EmployeeFormSchema,
 } = require('./validation.js');
@@ -60,33 +59,10 @@ app.post(`${apiBaseUrl}/employer-form`,
 app.post(`${apiBaseUrl}/employee-form`,
   asyncMiddleware(async (req, res) => {
     await validate(EmployeeFormSchema, req.body); // Validate submitted form against schema
-    const formsCollection = dbClient.db.collection(collections.FORMS);
 
-    // Generate unique random hex id
-    async function generateRandomHexId() {
-      const randomHexId = randomBytes(4).toString('hex').toUpperCase();
+    const result = await dbClient.db.saveDoc(collections.FORMS, req.body);
 
-      // Query database do make sure id does not exist, avoiding collision
-      if (await formsCollection.countDocuments({ id: randomHexId }, { limit: 1 }) > 0) {
-        return generateRandomHexId();
-      }
-      return randomHexId;
-    }
-
-    // Form ID
-    const id = await generateRandomHexId();
-
-    const currentISODate = new Date().toISOString();
-    const formItem = {
-      id,
-      ...req.body,
-      createdAt: currentISODate,
-      updatedAt: currentISODate,
-    };
-
-    await formsCollection.insertOne(formItem);
-
-    return res.json({ id });
+    return res.json({ id: result.id });
   }));
 
 // Version number

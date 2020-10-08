@@ -8,14 +8,14 @@ services:
       context: ./client
       dockerfile: Dockerfile.dev
     ports:
-    - 4000:4000
+      - 4000:4000
     volumes:
-    - ./client:/client # Use client dir in host for hot reloading
-    - /client/node_modules # Use node_modules in container
+      - ./client:/client # Use client dir in host for hot reloading
+      - /client/node_modules # Use node_modules in container
     depends_on:
-    - server
+      - server
     networks:
-    - network
+      - network
 
   server:
     image: ${APP_NAME}-server
@@ -26,39 +26,38 @@ services:
       args:
         VERSION: ${COMMIT_SHA}
     environment:
-    - MONGODB_DATABASE=${MONGODB_DATABASE}
-    - MONGODB_URI=${MONGODB_URI}
-    - VERSION=${COMMIT_SHA}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - VERSION=${COMMIT_SHA}
     ports:
-    - "8080:8080"
-    - "9229:9229"
+      - "8080:8080"
+      - "9229:9229"
     volumes:
-    - ./server:/server # Use server dir in host for hot reloading
-    - /server/node_modules # Use node_modules in container
+      - ./server:/server # Use server dir in host for hot reloading
+      - /server/node_modules # Use node_modules in container
     depends_on:
-    - mongodb
+      - postgres
     networks:
-    - network
+      - network
 
-  mongodb:
-    container_name: ${APP_NAME}-mongodb
-    image: mongo:3.6-xenial
+  postgres:
+    image: postgres:13-alpine
+    container_name: ${APP_NAME}-postgres
     restart: always
     expose:
-    - "27017"
-    ports:
-    - 27017:27017
+      - "5432"
     environment:
-    - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USER}
-    - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
-    - MONGO_INITDB_DATABASE=${MONGODB_DATABASE}
-    - MONGO_INITDB_PORT=27017
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-    - ./.docker/mongo/databaseInit:/docker-entrypoint-initdb.d
-    - mongo-data-configdb:/data/configdb
-    - mongo-data-db:/data/db
+      - postgres-data-db:/var/lib/postgresql/data
+      - ./.docker/postgres/sql-init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
     networks:
-    - network
+      - network
 
 networks:
   network:
@@ -66,7 +65,5 @@ networks:
     driver: bridge
 
 volumes:
-  mongo-data-configdb:
-    name: ${APP_NAME}-mongo-data-configdb
-  mongo-data-db:
-    name: ${APP_NAME}-mongo-data-db
+  postgres-data-db:
+    name: ${APP_NAME}-postgres-data-db

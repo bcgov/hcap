@@ -9,8 +9,6 @@ let server;
 
 // shut down server
 async function shutdown() {
-  await dbClient.disconnect();
-
   if (server) {
     server.close((err) => {
       if (err) {

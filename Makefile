@@ -26,7 +26,7 @@ local-run:
 
 local-run-db:
 	@echo "Running local DB container"
-	@docker-compose -f docker-compose.dev.yml up mongodb
+	@docker-compose -f docker-compose.dev.yml up postgres
 
 local-close:
 	@echo "Stopping local app container"

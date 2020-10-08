@@ -60,33 +60,29 @@ app.post(`${apiBaseUrl}/employer-form`,
 app.post(`${apiBaseUrl}/employee-form`,
   asyncMiddleware(async (req, res) => {
     await validate(EmployeeFormSchema, req.body); // Validate submitted form against schema
-    const formsCollection = dbClient.db.collection(collections.FORMS);
 
     // Generate unique random hex id
     async function generateRandomHexId() {
       const randomHexId = randomBytes(4).toString('hex').toUpperCase();
 
       // Query database do make sure id does not exist, avoiding collision
-      if (await formsCollection.countDocuments({ id: randomHexId }, { limit: 1 }) > 0) {
+      if (await dbClient.db[collections.FORMS].countDoc({ body: { formId: randomHexId } }) > 0) {
         return generateRandomHexId();
       }
       return randomHexId;
     }
 
     // Form ID
-    const id = await generateRandomHexId();
+    const formId = await generateRandomHexId();
 
-    const currentISODate = new Date().toISOString();
     const formItem = {
-      id,
+      formId,
       ...req.body,
-      createdAt: currentISODate,
-      updatedAt: currentISODate,
     };
 
-    await formsCollection.insertOne(formItem);
+    await dbClient.db.saveDoc(collections.FORMS, formItem);
 
-    return res.json({ id });
+    return res.json({ formId });
   }));
 
 // Version number

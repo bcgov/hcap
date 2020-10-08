@@ -1,46 +1,34 @@
 const { dbClient, schema } = require('../../db');
 
 async function seedDatabase() {
-  // Create collections if needed
-  await Promise.all(schema.map(async (schemaItem) => {
-    await dbClient.db.createCollection(schemaItem.collection);
-  }));
-
-  // Create collection indexes if needed
-  const results = [];
-  schema.forEach((schemaItem) => {
-    const schemaItemCollection = dbClient.db.collection(schemaItem.collection);
-    schemaItem.indexes.forEach((index) => {
-      results.push(schemaItemCollection.createIndex({ [index.key]: 1 }, index.options));
-    });
-  });
-
-  await Promise.all(results); // Wait for all synchronous operations to pass/fail
+  /* eslint-disable no-await-in-loop */
+  /* eslint-disable no-restricted-syntax */
+  for (const schemaItem of schema) {
+    await dbClient.db.createDocumentTable(schemaItem.collection);
+    for (const index of schemaItem.indexes) {
+      await dbClient.db.query(index);
+    }
+  }
 }
 
 async function clearDB() {
-  const collectionsToDelete = await dbClient.db.collections();
-
-  const results = [];
-  collectionsToDelete.forEach((collection) => {
-    results.push(collection.deleteOne());
-  });
-
-  return Promise.all(results); // Wait for all synchronous operations to pass/fail
+  /* eslint-disable no-await-in-loop */
+  /* eslint-disable no-restricted-syntax */
+  for (const schemaItem of schema) {
+    await dbClient.db.dropTable(schemaItem.collection, { cascade: true });
+  }
 }
 
 /**
- * Connect to Mongo DB, and seed it
+ * Connect to database, and seed it
  */
 async function startDB() {
-  await dbClient.connect();
-  dbClient.useDB('TEST_DB');
+  await dbClient.connect(true);
   await clearDB();
   await seedDatabase();
 }
 
 async function closeDB() {
-  await dbClient.disconnect();
   await clearDB();
 }
 

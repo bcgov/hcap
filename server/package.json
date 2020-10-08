@@ -12,20 +12,20 @@
     "db:migrate-create": "cd db && migrate create",
     "watch": "NODE_ENV=development nodemon main.js",
     "start": "NODE_ENV=production node main.js",
-    "test": "NODE_ENV=test jest --runInBand"
+    "test": "NODE_ENV=test jest --runInBand --detectOpenHandles"
   },
   "dependencies": {
     "axios": "0.20.0",
     "body-parser": "1.19.0",
     "crypto": "1.0.1",
     "express": "4.17.1",
-    "helmet": "4.1.1",
-    "migrate": "1.7.0",
-    "mongodb": "3.6.0",
-    "node-cache": "5.1.2",
     "fast-xml-parser": "3.17.4",
+    "helmet": "4.1.1",
     "inquirer": "7.3.3",
     "lodash": "4.17.20",
+    "massive": "6.6.0",
+    "migrate": "1.7.0",
+    "node-cache": "5.1.2",
     "tiny-async-pool": "1.1.0",
     "winston": "3.3.3",
     "yup": "0.29.3"

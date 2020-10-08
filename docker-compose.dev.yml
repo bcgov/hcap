@@ -26,8 +26,9 @@ services:
       args:
         VERSION: ${COMMIT_SHA}
     environment:
-      - MONGODB_DATABASE=${MONGODB_DATABASE}
-      - MONGODB_URI=${MONGODB_URI}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - VERSION=${COMMIT_SHA}
     ports:
       - "8080:8080"
@@ -36,27 +37,7 @@ services:
       - ./server:/server # Use server dir in host for hot reloading
       - /server/node_modules # Use node_modules in container
     depends_on:
-      - mongodb
-    networks:
-      - network
-
-  mongodb:
-    container_name: ${APP_NAME}-mongodb
-    image: mongo:3.6-xenial
-    restart: always
-    expose:
-      - "27017"
-    ports:
-      - 27017:27017
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
-      - MONGO_INITDB_DATABASE=${MONGODB_DATABASE}
-      - MONGO_INITDB_PORT=27017
-    volumes:
-      - ./.docker/mongo/databaseInit:/docker-entrypoint-initdb.d
-      - mongo-data-configdb:/data/configdb
-      - mongo-data-db:/data/db
+      - postgres
     networks:
       - network
 
@@ -67,35 +48,14 @@ services:
     expose:
       - "5432"
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - postgres-data-db:/var/lib/postgresql/data
       - ./.docker/postgres/sql-init:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
-    networks:
-      - network
-
-  keycloak:
-    container_name: ${APP_NAME}-keycloak
-    image: jboss/keycloak:11.0.2
-    restart: always
-    expose:
-      - "5000" # web console: http://localhost:5000/auth/admin
-    ports:
-      - 5000:8080
-    environment:
-      - KEYCLOAK_USER=${KEYCLOAK_USER} 
-      - KEYCLOAK_PASSWORD=${KEYCLOAK_PASSWORD}
-      - DB_ADDR=postgres
-      - DB_VENDOR=postgres
-      - DB_DATABASE=keycloak
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-    depends_on:
-      - postgres
     networks:
       - network
 
@@ -105,9 +65,5 @@ networks:
     driver: bridge
 
 volumes:
-  mongo-data-configdb:
-    name: ${APP_NAME}-mongo-data-configdb
-  mongo-data-db:
-    name: ${APP_NAME}-mongo-data-db
   postgres-data-db:
     name: ${APP_NAME}-postgres-data-db

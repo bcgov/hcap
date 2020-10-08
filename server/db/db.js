@@ -1,20 +1,12 @@
-const { MongoClient } = require('mongodb');
+const massive = require('massive');
 const logger = require('../logger.js');
 
 /**
  * This utility module provides helper methods to allow the application
- * to easily interact with a DocumentDB/MongoDB database
+ * to easily interact with a Postgres database
  */
 class DBClient {
   constructor() {
-    /**
-     * DB Connection
-     *
-     * @type {MongoClient|null}
-     * @memberof DB
-     */
-    this._connection = null;
-
     /**
      * Current Database
      *
@@ -27,52 +19,26 @@ class DBClient {
 
   /**
    * Connect to database
+   * You don't need to worry about closing the connection in your code.
+   * The underlying pg lib worries about it for you.
    *
    * @returns {Promise<void>}
    * @memberof DB
    */
-  async connect() {
-    if (this._connection) return;
-
-    const database = process.env.MONGODB_DATABASE;
-    const uri = process.env.MONGODB_URI;
-    const options = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    };
+  async connect(useTestDb) {
+    if (this.db) return;
 
     try {
-      this._connection = await MongoClient.connect(uri, options);
-      this.db = this._connection.db(database);
+      this.db = await massive({
+        host: process.env.POSTGRES_HOST || 'postgres',
+        port: process.env.POSTGRES_PORT || 5432,
+        database: useTestDb ? 'db_test' : process.env.POSTGRES_DB,
+        user: process.env.POSTGRES_USER,
+        password: process.env.POSTGRES_PASSWORD,
+      });
     } catch (err) {
       logger.error(`Failed to connect to database: ${err}`);
       throw new Error('DBError');
-    }
-  }
-
-  /**
-   * Change database being used
-   *
-   * @param {*} database
-   * @memberof DBClient
-   */
-  useDB(database) {
-    this.db = this._connection.db(database);
-  }
-
-  /**
-     * Disconnect from database
-     *
-     * @returns
-     * @memberof DB
-     */
-  async disconnect() {
-    if (!this._connection) return;
-
-    try {
-      await this._connection.close();
-    } catch (err) {
-      logger.error(`Failed to disconnect from database: ${err}`);
     }
   }
 }

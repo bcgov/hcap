@@ -12,6 +12,7 @@ describe('Server V1 Form Endpoints', () => {
 
   afterAll(async () => {
     await closeDB();
+    server.close();
   });
 
   const formEndpoint = '/api/v1/employee-form';
@@ -53,9 +54,5 @@ describe('Server V1 Form Endpoints', () => {
       .post(formEndpoint)
       .send({ ...form, consent: false });
     expect(res.statusCode).toEqual(400);
-  });
-
-  afterAll(() => {
-    server.close();
   });
 });

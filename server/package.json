@@ -12,7 +12,7 @@
     "db:migrate-create": "cd db && migrate create",
     "watch": "NODE_ENV=development nodemon main.js",
     "start": "NODE_ENV=production node main.js",
-    "test": "NODE_ENV=test jest --runInBand --detectOpenHandles"
+    "test": "NODE_ENV=test jest --runInBand --forceExit"
   },
   "dependencies": {
     "axios": "0.20.0",

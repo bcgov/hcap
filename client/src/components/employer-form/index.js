@@ -71,7 +71,7 @@ export const Form = ({ initialValues, isDisabled }) => {
         {({ errors, submitForm, setTouched, values }) => (
           <FormikForm>
 
-            <Box pt={4} pb={2} pl={2} pr={2}>
+            <Box pt={4} pb={0} pl={2} pr={2}>
               <Summary />
             </Box>
 

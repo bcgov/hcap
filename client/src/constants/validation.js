@@ -18,7 +18,8 @@ const errorMessage = ({ path }) => {
     hcswFteNumber: 'Number of HCSW FTEs is required',
 
     // Operator Information
-    operatorName: 'Operator name is required',
+    operatorFirstName: 'Operator first name is required',
+    operatorLastName: 'Operator last name is required',
     operatorEmail: 'Operator email is required',
     operatorPhone: 'Operator phone is required',
 
@@ -60,7 +61,8 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
   hcswFteNumber: yup.number().required(errorMessage).moreThan(0, 'Number must be greater than 0'),
 
   // Operator Information
-  operatorName: yup.string().required(errorMessage),
+  operatorFirstName: yup.string().required(errorMessage),
+  operatorLastName: yup.string().required(errorMessage),
   operatorEmail: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
   operatorPhone: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
 

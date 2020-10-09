@@ -11,8 +11,9 @@ import { scrollUp } from '../../utils';
 import { Card, Button } from '../generic';
 import { Summary } from './Summary';
 import { BasicInfo} from './BasicInfo';
-import { BusinessDetailsFields } from './BusinessDetailsFields';
 import { HcapRequest } from './HcapRequest';
+import { BusinessDetails } from './BusinessDetails';
+import { OperatorInfo } from './OperatorInfo';
 
 export const Form = ({ initialValues, isDisabled }) => {
   const history = useHistory();
@@ -21,6 +22,9 @@ export const Form = ({ initialValues, isDisabled }) => {
 
   const formValues = initialValues ? initialValues : {
     hcswFteNumber: '',
+    operatorName: '',
+    operatorEmail: '',
+    operatorPhone: '',
     registeredBusinessName: '',
     address: '',
     postalCode: '',
@@ -79,6 +83,10 @@ export const Form = ({ initialValues, isDisabled }) => {
                 </Box>
 
                 <Box pt={4} pb={2} pl={2} pr={2}>
+                  <OperatorInfo isDisabled={isDisabled} />
+                </Box>
+
+                <Box pt={2} pb={2} pl={2} pr={2}>
                   <BasicInfo isDisabled={isDisabled} />
                 </Box>
 
@@ -87,7 +95,7 @@ export const Form = ({ initialValues, isDisabled }) => {
                 </Box>
 
                 <Box pt={2} pb={4} pl={2} pr={2}>
-                  <BusinessDetailsFields isDisabled={isDisabled} />
+                  <BusinessDetails isDisabled={isDisabled} />
                 </Box>
               </Card>
             </Box>

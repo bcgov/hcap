@@ -17,6 +17,11 @@ const errorMessage = ({ path }) => {
     // HCAP Request
     hcswFteNumber: 'Number of HCSW FTEs is required',
 
+    // Operator Information
+    operatorName: 'Operator name is required',
+    operatorEmail: 'Operator email is required',
+    operatorPhone: 'Operator phone is required',
+
     // Common fields
     firstName: 'First name is required',
     lastName: 'Last name is required',
@@ -53,6 +58,11 @@ export const LoginSchema = yup.object().noUnknown().shape({
 export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shape({
   // HCAP Request
   hcswFteNumber: yup.number().required(errorMessage).moreThan(0, 'Number must be greater than 0'),
+
+  // Operator Information
+  operatorName: yup.string().required(errorMessage),
+  operatorEmail: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  operatorPhone: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
 
   // Basic info
   registeredBusinessName: yup.string().required(errorMessage),

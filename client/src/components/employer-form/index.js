@@ -12,6 +12,7 @@ import { Card, Button } from '../generic';
 import { Summary } from './Summary';
 import { BasicInfo} from './BasicInfo';
 import { BusinessDetailsFields } from './BusinessDetailsFields';
+import { HcapRequest } from './HcapRequest';
 
 export const Form = ({ initialValues, isDisabled }) => {
   const history = useHistory();
@@ -19,6 +20,7 @@ export const Form = ({ initialValues, isDisabled }) => {
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const formValues = initialValues ? initialValues : {
+    hcswFteNumber: '',
     registeredBusinessName: '',
     address: '',
     postalCode: '',
@@ -78,6 +80,10 @@ export const Form = ({ initialValues, isDisabled }) => {
 
                 <Box pt={4} pb={2} pl={2} pr={2}>
                   <BasicInfo isDisabled={isDisabled} />
+                </Box>
+
+                <Box pt={4} pb={2} pl={2} pr={2}>
+                  <HcapRequest isDisabled={isDisabled} />
                 </Box>
 
                 <Box pt={2} pb={4} pl={2} pr={2}>

@@ -1,0 +1,83 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+labels:
+  app: ${APP_NAME}
+parameters:
+  - name: APP_NAME
+    description: App name that OpenShift objects will be prefixed with
+    required: true
+  - name: PATRONI_SUPERUSER_USERNAME
+    description: Username of the superuser account for initialization.
+    generate: expression
+    from: super-[a-zA-Z0-9]{6}
+    required: true
+  - name: PATRONI_SUPERUSER_PASSWORD
+    description: Password of the superuser account for initialization.
+    generate: expression
+    from: "[a-zA-Z0-9]{32}"
+    required: true
+  - name: PATRONI_REPLICATION_USERNAME
+    description: Username of the replication account for initialization.
+    generate: expression
+    from: rep-[a-zA-Z0-9]{6}
+    required: true
+  - name: PATRONI_REPLICATION_PASSWORD
+    description: Password of the replication account for initialization.
+    generate: expression
+    from: '[a-zA-Z0-9]{32}'
+    required: true
+  - name: DB_USERNAME
+    description: Username for Postgres user that will be used for accessing the database
+    generate: expression
+    from: "[a-zA-Z0-9]{5}"
+    required: true
+  - name: DB_PASSWORD
+    description: Password for the Postgres connection user
+    generate: expression
+    from: "[a-zA-Z0-9]{16}"
+    required: true
+objects:
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-patroni
+    stringData:
+      replication-username: ${PATRONI_REPLICATION_USERNAME}
+      replication-password: ${PATRONI_REPLICATION_PASSWORD}
+      superuser-username: ${PATRONI_SUPERUSER_USERNAME}
+      superuser-password: ${PATRONI_SUPERUSER_PASSWORD}
+      db-name: ${APP_NAME}
+      db-username: ${DB_USERNAME}
+      db-password: ${DB_PASSWORD}
+  - kind: ServiceAccount
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-patroni
+  - kind: Role
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: ${APP_NAME}-patroni
+    rules:
+      - apiGroups: [""]
+        resources: [services]
+        verbs: [create, get, list, patch, update, watch, delete]
+      - apiGroups: [""]
+        resources: [configmaps]
+        verbs: [create, get, list, patch, update, watch, delete]
+      - apiGroups: [""]
+        resources: [endpoints]
+        verbs: [get, patch, update, create, list, watch, delete]
+      - apiGroups: [""]
+        resources: [pods]
+        verbs: [get, list, patch, update, watch]
+  - kind: RoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: ${APP_NAME}-patroni
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: Role
+      name: ${APP_NAME}-patroni
+    subjects:
+      - kind: ServiceAccount
+        name: ${APP_NAME}-patroni

@@ -5,13 +5,15 @@ export APP_NAME:=hcap
 export OS_NAMESPACE_PREFIX:=rupaog
 export OS_NAMESPACE_SUFFIX?=dev
 export COMMIT_SHA:=$(shell git rev-parse --short=7 HEAD)
-export OS_NAMESPACE=$(OS_NAMESPACE_PREFIX)-$(OS_NAMESPACE_SUFFIX)
+export TARGET_NAMESPACE=$(OS_NAMESPACE_PREFIX)-$(OS_NAMESPACE_SUFFIX)
+export TOOLS_NAMESPACE=$(OS_NAMESPACE_PREFIX)-tools
 
 # Status Output
 
 print-status:
 	@echo "APP_NAME: $(APP_NAME)"
-	@echo "OS_NAMESPACE: $(OS_NAMESPACE)"
+	@echo "TARGET_NAMESPACE: $(TARGET_NAMESPACE)"
+	@echo "TOOLS_NAMESPACE: $(TOOLS_NAMESPACE)"
 	@echo "COMMIT_SHA: $(COMMIT_SHA)"
 
 # Local Development
@@ -42,24 +44,25 @@ local-server-tests:
 
 # OpenShift Aliases
 
-os-permissions:
-	@oc project $(OS_NAMESPACE)
-	@oc create sa github-$(OS_NAMESPACE_SUFFIX)
-	@oc policy add-role-to-user admin -z github-$(OS_NAMESPACE_SUFFIX)
+server-prep: # This should be a template similar to DB prep
+	@oc project $(TOOLS_NAMESPACE)
+	@oc create sa github-builder
+	@oc policy add-role-to-user admin -z github-builder
 
 server-create:
-	@oc project $(OS_NAMESPACE)
-	@oc process -f openshift/server.bc.yml -p NAMESPACE=$(OS_NAMESPACE) APP_NAME=$(APP_NAME) | oc apply -f -
-	@oc process -f openshift/server.dc.yml -p NAMESPACE=$(OS_NAMESPACE) APP_NAME=$(APP_NAME) | oc apply -f -
+	@oc process -f openshift/server.bc.yml -p APP_NAME=$(APP_NAME) | oc apply -n $(TOOLS_NAMESPACE) -f -
+	@oc process -f openshift/server.dc.yml -p IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) APP_NAME=$(APP_NAME) | oc apply -n $(TARGET_NAMESPACE) -f -
 
 server-build:
-	@oc cancel-build bc/$(APP_NAME)-server -n $(OS_NAMESPACE)
-	@oc start-build $(APP_NAME)-server -n $(OS_NAMESPACE)
+	@oc cancel-build bc/$(APP_NAME)-server -n $(TOOLS_NAMESPACE)
+	@oc start-build $(APP_NAME)-server -n $(TOOLS_NAMESPACE)
+
+db-prep:
+	@oc process -f openshift/patroni.prep.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -
 
 db-create:
-	@oc project $(OS_NAMESPACE)
-	@oc process -f openshift/mongo.yml -p APP_NAME=$(APP_NAME) | oc apply -f -
+	@oc process -f openshift/patroni.dc.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -
 
 db-tunnel:
-	@oc project $(OS_NAMESPACE)
+	@oc project $(TARGET_NAMESPACE)
 	@oc port-forward $(APP_NAME)-mongodb-0 27017

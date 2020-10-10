@@ -13,7 +13,8 @@ import { Summary } from './Summary';
 import { OperatorInfo } from './OperatorInfo';
 import { SiteInfo } from './SiteInfo';
 import { HcapRequest } from './HcapRequest';
-import { BusinessDetails } from './BusinessDetails';
+
+import { WorkforceBaseline } from './WorkforceBaseline';
 
 export const Form = ({ initialValues, isDisabled }) => {
   const history = useHistory();
@@ -110,12 +111,16 @@ export const Form = ({ initialValues, isDisabled }) => {
                   <SiteInfo isDisabled={isDisabled} />
                 </Box>
 
+                <Box pt={4} pb={2} pl={2} pr={2}>
+                  <BasicInfo isDisabled={isDisabled} />
+                </Box>
+
                 <Box pt={2} pb={2} pl={2} pr={2}>
                   <HcapRequest isDisabled={isDisabled} />
                 </Box>
 
                 <Box pt={2} pb={4} pl={2} pr={2}>
-                  <BusinessDetails isDisabled={isDisabled} />
+                  <WorkforceBaseline isDisabled={isDisabled} />
                 </Box>
               </Card>
             </Box>

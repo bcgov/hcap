@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect } from 'react';
+import { Box } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { FastField, useFormikContext } from 'formik';
@@ -27,11 +28,13 @@ export const SiteInfo = ({ isDisabled }) => {
             Site Information
           </Typography>
           <Divider />
+        </Grid>
+        <Box pt={1} pb={2} pl={2} pr={2}>
           <Typography variant="body1">
             This section collects general business information on the site including location, type, and size. Operators/managers
             must submit one form per site.
           </Typography>
-        </Grid>
+        </Box>
         <Grid item xs={12} sm={6}>
           <FastField
             name="siteName"

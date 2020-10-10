@@ -11,7 +11,7 @@ import { scrollUp } from '../../utils';
 import { Card, Button } from '../generic';
 import { Summary } from './Summary';
 import { OperatorInfo } from './OperatorInfo';
-import { SiteInfo} from './SiteInfo';
+import { SiteInfo } from './SiteInfo';
 import { HcapRequest } from './HcapRequest';
 import { BusinessDetails } from './BusinessDetails';
 

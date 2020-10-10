@@ -29,6 +29,7 @@ const errorMessage = ({ path }) => {
     postalCode: 'Postal code is required',
 
     // Employer operator info
+    registeredBusinessName: 'Business name is required',
     operatorFirstName: 'Operator first name is required',
     operatorLastName: 'Operator last name is required',
     operatorContactFirstName: 'Operator contact first name is required',
@@ -74,6 +75,7 @@ export const LoginSchema = yup.object().noUnknown().shape({
 
 export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shape({
   // Operator Information
+  registeredBusinessName: yup.string().required(errorMessage),
   operatorFirstName: yup.string().required(errorMessage),
   operatorLastName: yup.string().required(errorMessage),
   operatorContactFirstName: yup.string().required(errorMessage),

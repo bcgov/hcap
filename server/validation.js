@@ -15,6 +15,9 @@ const validateUniqueArray = (a) => (
 
 const errorMessage = ({ path }) => {
   const errorMessages = {
+    // HCAP Request
+    hcswFteNumber: 'Number of HCSW FTEs is required',
+
     // Common fields
     firstName: 'First name is required',
     lastName: 'Last name is required',
@@ -49,6 +52,9 @@ const LoginSchema = yup.object().noUnknown().shape({
 });
 
 const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shape({
+  // HCAP Request
+  hcswFteNumber: yup.number().required(errorMessage).moreThan(0, 'Number must be greater than 0'),
+
   // Basic info
   registeredBusinessName: yup.string().required(errorMessage),
   address: yup.string().required(errorMessage),

@@ -10,10 +10,10 @@ import { scrollUp } from '../../utils';
 
 import { Card, Button } from '../generic';
 import { Summary } from './Summary';
-import { BasicInfo} from './BasicInfo';
+import { OperatorInfo } from './OperatorInfo';
+import { SiteInfo} from './SiteInfo';
 import { HcapRequest } from './HcapRequest';
 import { BusinessDetails } from './BusinessDetails';
-import { OperatorInfo } from './OperatorInfo';
 
 export const Form = ({ initialValues, isDisabled }) => {
   const history = useHistory();
@@ -21,21 +21,37 @@ export const Form = ({ initialValues, isDisabled }) => {
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const formValues = initialValues ? initialValues : {
-    hcswFteNumber: '',
+    // Operator info
     operatorFirstName: '',
     operatorLastName: '',
     operatorContactFirstName: '',
     operatorContactLastName: '',
     operatorEmail: '',
     operatorPhone: '',
-    registeredBusinessName: '',
+
+    // Site info
+    siteName: '',
     address: '',
     postalCode: '',
-    location: '',
-    firstName: '',
-    lastName: '',
+    geographicRegion: '',
+    siteType: '',
+    otherSite: {
+      type: '',
+    },
+    numPublicLongTermCare: '',
+    numPrivateLongTermCare: '',
+    numPublicAssistedLiving: '',
+    numPrivateAssistedLiving: '',
+    comment: '',
+    siteFirstName: '',
+    siteLastName: '',
     phoneNumber: '',
     emailAddress: '',
+
+    // Site HCAP request
+    hcswFteNumber: '',
+
+    // TODO - business detail info from mockup
     businessKind: '',
     workersSize: '',
     employerType: '',
@@ -90,7 +106,7 @@ export const Form = ({ initialValues, isDisabled }) => {
                 </Box>
 
                 <Box pt={2} pb={2} pl={2} pr={2}>
-                  <BasicInfo isDisabled={isDisabled} />
+                  <SiteInfo isDisabled={isDisabled} />
                 </Box>
 
                 <Box pt={4} pb={2} pl={2} pr={2}>

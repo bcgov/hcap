@@ -162,7 +162,7 @@ export const SiteInfo = ({ isDisabled }) => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
-            name="siteFirstName"
+            name="siteContactFirstName"
             component={RenderTextField}
             label="* First name"
             disabled={isDisabled}
@@ -170,7 +170,7 @@ export const SiteInfo = ({ isDisabled }) => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
-            name="siteLastName"
+            name="siteContactLastName"
             component={RenderTextField}
             label="* Last name"
             disabled={isDisabled}

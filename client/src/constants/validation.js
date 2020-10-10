@@ -21,23 +21,20 @@ const validateUniqueArray = (a) => (
 
 const errorMessage = ({ path }) => {
   const errorMessages = {
-    // HCAP Request
-    hcswFteNumber: 'Number of HCSW FTEs is required',
-
-    // Operator Information
-    operatorFirstName: 'Operator first name is required',
-    operatorLastName: 'Operator last name is required',
-    operatorContactFirstName: 'Operator contact first name is required',
-    operatorContactLastName: 'Operator contact last name is required',
-    operatorEmail: 'Operator email is required',
-    operatorPhone: 'Operator phone is required',
-
     // Common fields
     firstName: 'First name is required',
     lastName: 'Last name is required',
     phoneNumber: 'Phone number is required',
     emailAddress: 'Email address is required',
     postalCode: 'Postal code is required',
+
+    // Employer operator info
+    operatorFirstName: 'Operator first name is required',
+    operatorLastName: 'Operator last name is required',
+    operatorContactFirstName: 'Operator contact first name is required',
+    operatorContactLastName: 'Operator contact last name is required',
+    operatorEmail: 'Operator email is required',
+    operatorPhone: 'Operator phone is required',
 
     // Employer site info
     siteName: 'Site name is required',
@@ -48,10 +45,13 @@ const errorMessage = ({ path }) => {
     numPrivateLongTermCare: 'Number of privately funded long-term care beds is required',
     numPublicAssistedLiving: 'Number of publicly funded assisted living beds is required',
     numPrivateAssistedLiving: 'Number of privately funded assisted living beds is required',
-    siteFirstName: 'First name is required',
-    siteLastName: 'Last name is required',
+    siteContactFirstName: 'First name is required',
+    siteContactLastName: 'Last name is required',
 
-    // Business details
+    // Employer HCAP request
+    hcswFteNumber: 'Number of HCSW FTEs is required',
+
+    // TODO - Business details from mock
     businessKind: 'Business kind is required',
     workersSize: 'Number of workers is required',
     employerType: 'Employer type is required',
@@ -73,9 +73,6 @@ export const LoginSchema = yup.object().noUnknown().shape({
 });
 
 export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shape({
-  // HCAP Request
-  hcswFteNumber: yup.number().required(errorMessage).moreThan(0, 'Number must be greater than 0'),
-
   // Operator Information
   operatorFirstName: yup.string().required(errorMessage),
   operatorLastName: yup.string().required(errorMessage),
@@ -104,12 +101,15 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
   comment: yup.string().nullable(),
 
   // Site contact info
-  siteFirstName: yup.string().required(errorMessage),
-  siteLastName: yup.string().required(errorMessage),
+  siteContactFirstName: yup.string().required(errorMessage),
+  siteContactLastName: yup.string().required(errorMessage),
   phoneNumber: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
   emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
 
-  // Business details
+  // HCAP Request
+  hcswFteNumber: yup.number().required(errorMessage).moreThan(0, 'Number must be greater than 0'),
+
+  // TODO - Business details from mock
   businessKind: yup.string().required(errorMessage),
   workersSize: yup.number().required(errorMessage).integer('Number of workers must be an integer').moreThan(0, 'Number must be greater than 0'),
   employerType: yup.string().required(errorMessage),

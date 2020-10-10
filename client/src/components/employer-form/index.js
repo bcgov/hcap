@@ -43,8 +43,8 @@ export const Form = ({ initialValues, isDisabled }) => {
     numPublicAssistedLiving: '',
     numPrivateAssistedLiving: '',
     comment: '',
-    siteFirstName: '',
-    siteLastName: '',
+    siteContactFirstName: '',
+    siteContactLastName: '',
     phoneNumber: '',
     emailAddress: '',
 
@@ -101,7 +101,7 @@ export const Form = ({ initialValues, isDisabled }) => {
                   <Summary isDisabled={isDisabled} />
                 </Box>
 
-                <Box pt={4} pb={2} pl={2} pr={2}>
+                <Box pt={2} pb={2} pl={2} pr={2}>
                   <OperatorInfo isDisabled={isDisabled} />
                 </Box>
 
@@ -109,7 +109,7 @@ export const Form = ({ initialValues, isDisabled }) => {
                   <SiteInfo isDisabled={isDisabled} />
                 </Box>
 
-                <Box pt={4} pb={2} pl={2} pr={2}>
+                <Box pt={2} pb={2} pl={2} pr={2}>
                   <HcapRequest isDisabled={isDisabled} />
                 </Box>
 

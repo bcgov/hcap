@@ -6,7 +6,7 @@ import { FastField } from 'formik';
 import { Card, Divider } from '../generic';
 import { RenderTextField, RenderSelectField } from '../fields';
 
-export const BusinessDetailsFields = ({ isDisabled }) => {
+export const BusinessDetails = ({ isDisabled }) => {
 
   return (
     <Card noShadow={isDisabled}>

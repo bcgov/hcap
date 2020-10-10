@@ -37,6 +37,24 @@ export const OperatorInfo = ({ isDisabled }) => {
           />
         </Grid>
 
+        <Grid item xs={6}>
+          <FastField
+            name="operatorContactFirstName"
+            component={RenderTextField}
+            label="* Operator contact first name:"
+            disabled={isDisabled}
+          />
+        </Grid>
+
+        <Grid item xs={6}>
+          <FastField
+            name="operatorContactLastName"
+            component={RenderTextField}
+            label="* Operator contact last name:"
+            disabled={isDisabled}
+          />
+        </Grid>
+
         <Grid item xs={12}>
           <FastField
             name="operatorEmail"

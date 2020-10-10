@@ -21,6 +21,8 @@ const errorMessage = ({ path }) => {
     // Operator Information
     operatorFirstName: 'Operator first name is required',
     operatorLastName: 'Operator last name is required',
+    operatorContactFirstName: 'Operator contact first name is required',
+    operatorContactLastName: 'Operator contact last name is required',
     operatorEmail: 'Operator email is required',
     operatorPhone: 'Operator phone is required',
 
@@ -64,6 +66,8 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shap
   // Operator Information
   operatorFirstName: yup.string().required(errorMessage),
   operatorLastName: yup.string().required(errorMessage),
+  operatorContactFirstName: yup.string().required(errorMessage),
+  operatorContactLastName: yup.string().required(errorMessage),
   operatorEmail: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
   operatorPhone: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
 

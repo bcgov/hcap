@@ -24,6 +24,8 @@ export const Form = ({ initialValues, isDisabled }) => {
     hcswFteNumber: '',
     operatorFirstName: '',
     operatorLastName: '',
+    operatorContactFirstName: '',
+    operatorContactLastName: '',
     operatorEmail: '',
     operatorPhone: '',
     registeredBusinessName: '',

@@ -30,13 +30,13 @@ parameters:
     description: Registry from which the Patroni and Postgres images will be pulled
     value: image-registry.openshift-image-registry.svc:5000
     required: true
-  - name: IMAGE_STREAM_NAMESPACE
+  - name: IMAGE_NAMESPACE
     description: The OpenShift Namespace where the Patroni and Postgres image streams reside
     value: bcgov
     required: true
-  - name: IMAGE_STREAM_TAG
-    description: Patroni image tag
-    value: patroni:v11-stable
+  - name: IMAGE_TAG
+    description: Patroni image tag to pull from image stream
+    value: v11-stable
     required: true
   - name: PVC_SIZE
     description: The size of the persistent volume to create
@@ -157,7 +157,7 @@ objects:
                 value: 0.0.0.0:5432
               - name: PATRONI_RESTAPI_LISTEN
                 value: 0.0.0.0:8008
-              image: ${IMAGE_REGISTRY}/${IMAGE_STREAM_NAMESPACE}/${IMAGE_STREAM_TAG}
+              image: ${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/patroni:${IMAGE_TAG}
               imagePullPolicy: Always
               name: postgresql
               ports:

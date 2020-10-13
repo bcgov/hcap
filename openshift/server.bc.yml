@@ -23,6 +23,9 @@ objects:
     apiVersion: v1
     metadata:
       name: ${APP_NAME}-server
+    spec:
+      lookupPolicy:
+        local: false
   - kind: BuildConfig
     apiVersion: v1
     metadata:

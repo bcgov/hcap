@@ -1,10 +1,12 @@
 import React from 'react';
+import { Box } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { FastField } from 'formik';
 
 import { Card, Divider } from '../generic';
 import { RenderTextField } from '../fields';
+import { OrgBookSearch } from './OrgBookSearch';
 
 export const OperatorInfo = ({ isDisabled }) => {
 
@@ -19,11 +21,28 @@ export const OperatorInfo = ({ isDisabled }) => {
           <Divider />
         </Grid>
 
+        <Box pt={1} pb={2} pl={2} pr={2}>
+          <Typography variant="body1">
+            This section collects data on the site operator. Expressions of Interest should be made at the site level but an operator
+            with multiple sites may submit more than one EOI which will be consolidated according to the data entered in this
+            section.
+          </Typography>
+        </Box>
+
+        <Grid item xs={12}>
+          <FastField
+            name="registeredBusinessName"
+            component={OrgBookSearch}
+            label="* Registered business name"
+            disabled={isDisabled}
+          />
+        </Grid>
+
         <Grid item xs={6}>
           <FastField
             name="operatorFirstName"
             component={RenderTextField}
-            label="* Operator first name:"
+            label="* Operator first name"
             disabled={isDisabled}
           />
         </Grid>
@@ -32,7 +51,7 @@ export const OperatorInfo = ({ isDisabled }) => {
           <FastField
             name="operatorLastName"
             component={RenderTextField}
-            label="* Operator last name:"
+            label="* Operator last name"
             disabled={isDisabled}
           />
         </Grid>
@@ -41,7 +60,7 @@ export const OperatorInfo = ({ isDisabled }) => {
           <FastField
             name="operatorContactFirstName"
             component={RenderTextField}
-            label="* Operator contact first name:"
+            label="* Operator contact first name"
             disabled={isDisabled}
           />
         </Grid>
@@ -50,7 +69,7 @@ export const OperatorInfo = ({ isDisabled }) => {
           <FastField
             name="operatorContactLastName"
             component={RenderTextField}
-            label="* Operator contact last name:"
+            label="* Operator contact last name"
             disabled={isDisabled}
           />
         </Grid>
@@ -60,7 +79,7 @@ export const OperatorInfo = ({ isDisabled }) => {
             name="operatorEmail"
             type="email"
             component={RenderTextField}
-            label="* Operator contact email address:"
+            label="* Operator contact email"
             disabled={isDisabled}
           />
         </Grid>
@@ -70,7 +89,7 @@ export const OperatorInfo = ({ isDisabled }) => {
             name="operatorPhone"
             type="tel"
             component={RenderTextField}
-            label="* Operator contact phone number:"
+            label="* Operator contact phone number"
             disabled={isDisabled}
           />
         </Grid>

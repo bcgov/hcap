@@ -9,23 +9,19 @@ const healthRegions = [
   'Northern',
 ];
 
+const siteTypes = [
+  'Long-term care',
+  'Assisted living',
+  'Both',
+  'Other',
+];
+
 const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
 );
 
 const errorMessage = ({ path }) => {
   const errorMessages = {
-    // HCAP Request
-    hcswFteNumber: 'Number of HCSW FTEs is required',
-
-    // Operator Information
-    operatorFirstName: 'Operator first name is required',
-    operatorLastName: 'Operator last name is required',
-    operatorContactFirstName: 'Operator contact first name is required',
-    operatorContactLastName: 'Operator contact last name is required',
-    operatorEmail: 'Operator email is required',
-    operatorPhone: 'Operator phone is required',
-
     // Common fields
     firstName: 'First name is required',
     lastName: 'Last name is required',
@@ -33,12 +29,30 @@ const errorMessage = ({ path }) => {
     emailAddress: 'Email address is required',
     postalCode: 'Postal code is required',
 
-    // Employer basic info
-    registeredBusinessName: 'Business name is required',
-    address: 'Address is required',
-    location: 'Location is required',
+    // Employer operator info
+    operatorFirstName: 'Operator first name is required',
+    operatorLastName: 'Operator last name is required',
+    operatorContactFirstName: 'Operator contact first name is required',
+    operatorContactLastName: 'Operator contact last name is required',
+    operatorEmail: 'Operator email is required',
+    operatorPhone: 'Operator phone is required',
 
-    // Business details
+    // Employer site info
+    siteName: 'Site name is required',
+    address: 'Address is required',
+    geographicRegion: 'Geographic region is required',
+    siteType: 'Site type is required',
+    numPublicLongTermCare: 'Number of publicly funded long-term care beds is required',
+    numPrivateLongTermCare: 'Number of privately funded long-term care beds is required',
+    numPublicAssistedLiving: 'Number of publicly funded assisted living beds is required',
+    numPrivateAssistedLiving: 'Number of privately funded assisted living beds is required',
+    siteContactFirstName: 'First name is required',
+    siteContactLastName: 'Last name is required',
+
+    // Employer HCAP request
+    hcswFteNumber: 'Number of HCSW FTEs is required',
+
+    // TODO - Business details from mock
     businessKind: 'Business kind is required',
     workersSize: 'Number of workers is required',
     employerType: 'Employer type is required',
@@ -60,9 +74,6 @@ const LoginSchema = yup.object().noUnknown().shape({
 });
 
 const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shape({
-  // HCAP Request
-  hcswFteNumber: yup.number().required(errorMessage).moreThan(0, 'Number must be greater than 0'),
-
   // Operator Information
   operatorFirstName: yup.string().required(errorMessage),
   operatorLastName: yup.string().required(errorMessage),
@@ -71,17 +82,35 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shap
   operatorEmail: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
   operatorPhone: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
 
-  // Basic info
-  registeredBusinessName: yup.string().required(errorMessage),
+  // Site info
+  siteName: yup.string().required(errorMessage),
   address: yup.string().required(errorMessage),
   postalCode: yup.string().required(errorMessage).matches(/^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/, 'Format as A1A 1A1'),
-  location: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid location'),
-  firstName: yup.string().required(errorMessage),
-  lastName: yup.string().required(errorMessage),
+  geographicRegion: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid location'),
+  siteType: yup.string().required(errorMessage).oneOf(siteTypes, 'Invalid site type'),
+  otherSite: yup.string().when('siteType', {
+    is: 'Other',
+    then: yup.string().required('Must specify other site type'),
+    otherwise: yup.string().nullable().test('is-null', 'Other site type must be null', (v) => v == null),
+  }),
+
+  // Site size info
+  numPublicLongTermCare: yup.number().required(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+  numPrivateLongTermCare: yup.number().required(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+  numPublicAssistedLiving: yup.number().required(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+  numPrivateAssistedLiving: yup.number().required(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+  comment: yup.string().nullable(),
+
+  // Site contact info
+  siteContactFirstName: yup.string().required(errorMessage),
+  siteContactLastName: yup.string().required(errorMessage),
   phoneNumber: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
   emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
 
-  // Business details
+  // HCAP Request
+  hcswFteNumber: yup.number().required(errorMessage).moreThan(0, 'Number must be greater than 0'),
+
+  // TODO - Business details from mock
   businessKind: yup.string().required(errorMessage),
   workersSize: yup.number().required(errorMessage).integer('Number of workers must be an integer').moreThan(0, 'Number must be greater than 0'),
   employerType: yup.string().required(errorMessage),

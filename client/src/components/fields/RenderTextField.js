@@ -19,7 +19,7 @@ export const RenderTextField = ({
         variant="filled"
         fullWidth
         error={touched && !!error}
-        value={value || ''}
+        value={typeof value === "undefined" ? '' : value}
         {...fieldRest}
         {...props}
       />

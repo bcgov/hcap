@@ -8,13 +8,11 @@ import { useHistory } from 'react-router-dom';
 import { EmployerFormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 import { scrollUp } from '../../utils';
-
 import { Card, Button } from '../generic';
 import { Summary } from './Summary';
 import { OperatorInfo } from './OperatorInfo';
 import { SiteInfo } from './SiteInfo';
 import { HcapRequest } from './HcapRequest';
-
 import { WorkforceBaseline } from './WorkforceBaseline';
 
 export const Form = ({ initialValues, isDisabled }) => {

@@ -112,11 +112,11 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
     .shape(
       mapValues(obj, (value, key) => {
         if (!value.add) {
-          return yup.object().noUnknown('Unknown field for work baseline').shape({
+          return yup.object().noUnknown('Unknown field for workforce baseline').shape({
             add: yup.boolean().required()
           });
         }
-        return yup.object().noUnknown('Unknown field for work baseline').shape({
+        return yup.object().noUnknown('Unknown field for workforce baseline').shape({
           add: yup.boolean().required(),
           currentFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
           currentPartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),

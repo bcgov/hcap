@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
+import mapValues from 'lodash/mapValues';
 import { Formik, Form as FormikForm } from 'formik';
 import { useHistory } from 'react-router-dom';
 
 import { EmployerFormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 import { scrollUp } from '../../utils';
-
 import { Card, Button } from '../generic';
 import { Summary } from './Summary';
 import { OperatorInfo } from './OperatorInfo';
 import { SiteInfo } from './SiteInfo';
 import { HcapRequest } from './HcapRequest';
-import { BusinessDetails } from './BusinessDetails';
+import { WorkforceBaseline } from './WorkforceBaseline';
 
 export const Form = ({ initialValues, isDisabled }) => {
   const history = useHistory();
@@ -52,11 +52,29 @@ export const Form = ({ initialValues, isDisabled }) => {
     // Site HCAP request
     hcswFteNumber: '',
 
-    // TODO - business detail info from mockup
-    businessKind: '',
-    workersSize: '',
-    employerType: '',
+    // Workforce Baseline
+    workforceBaseline: {},
   };
+
+  const mapBaselineList = (values) => {
+    let newWorkforceBaseline = [];
+
+    mapValues(values.workforceBaseline, (value, key) => {
+      if (value.add) {
+        newWorkforceBaseline.push({
+          role: key,
+          currentFullTime: value.currentFullTime,
+          currentPartTime: value.currentPartTime,
+          currentCasual: value.currentCasual,
+          vacancyFullTime: value.vacancyFullTime,
+          vacancyPartTime: value.vacancyPartTime,
+          vacancyCasual: value.vacancyCasual,
+        })
+      }
+    });
+
+    return { ...values, workforceBaseline: newWorkforceBaseline }
+  }
 
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
@@ -64,7 +82,7 @@ export const Form = ({ initialValues, isDisabled }) => {
     const response = await fetch('/api/v1/employer-form', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
-      body: JSON.stringify(values),
+      body: JSON.stringify(mapBaselineList(values)),
     });
 
     if (response.ok) {
@@ -115,7 +133,7 @@ export const Form = ({ initialValues, isDisabled }) => {
                 </Box>
 
                 <Box pt={2} pb={4} pl={2} pr={2}>
-                  <BusinessDetails isDisabled={isDisabled} />
+                  <WorkforceBaseline isDisabled={isDisabled} />
                 </Box>
               </Card>
             </Box>

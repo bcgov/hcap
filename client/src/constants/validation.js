@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import mapValues from 'lodash/mapValues';
 
 const healthRegions = [
   'Interior',
@@ -51,11 +52,6 @@ const errorMessage = ({ path }) => {
 
     // Employer HCAP request
     hcswFteNumber: 'Number of HCSW FTEs is required',
-
-    // TODO - Business details from mock
-    businessKind: 'Business kind is required',
-    workersSize: 'Number of workers is required',
-    employerType: 'Employer type is required',
 
     // Orbeon ID from the XML file name
     orbeonId: 'Invalid Orbeon ID format.',
@@ -111,10 +107,26 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
   // HCAP Request
   hcswFteNumber: yup.number().required(errorMessage).moreThan(0, 'Number must be greater than 0'),
 
-  // TODO - Business details from mock
-  businessKind: yup.string().required(errorMessage),
-  workersSize: yup.number().required(errorMessage).integer('Number of workers must be an integer').moreThan(0, 'Number must be greater than 0'),
-  employerType: yup.string().required(errorMessage),
+  // Workforce Baseline
+  workforceBaseline: yup.lazy(obj => yup.object()
+    .shape(
+      mapValues(obj, (value, key) => {
+        if (!value.add) {
+          return yup.object().noUnknown('Unknown field for workforce baseline').shape({
+            add: yup.boolean().required()
+          });
+        }
+        return yup.object().noUnknown('Unknown field for workforce baseline').shape({
+          add: yup.boolean().required(),
+          currentFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          currentPartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          currentCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          vacancyFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          vacancyPartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          vacancyCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+        });
+      })
+    )),
 });
 
 export const EmployeeFormSchema = yup.object().noUnknown('Unknown field for form').shape({

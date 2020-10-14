@@ -9,6 +9,15 @@ const healthRegions = [
   'Northern',
 ];
 
+const roles = [
+  'Registered Nurse',
+  'Licensed Practical Nurse',
+  'Health Care Assistant',
+  'Food Services Worker',
+  'Housekeeping',
+  'COVID-19 IPC Response',
+];
+
 const siteTypes = [
   'Long-term care',
   'Assisted living',
@@ -52,11 +61,6 @@ const errorMessage = ({ path }) => {
 
     // Employer HCAP request
     hcswFteNumber: 'Number of HCSW FTEs is required',
-
-    // TODO - Business details from mock
-    businessKind: 'Business kind is required',
-    workersSize: 'Number of workers is required',
-    employerType: 'Employer type is required',
 
     // Orbeon ID from the XML file name
     orbeonId: 'Invalid Orbeon ID format.',
@@ -112,10 +116,16 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shap
   // HCAP Request
   hcswFteNumber: yup.number().required(errorMessage).moreThan(0, 'Number must be greater than 0'),
 
-  // TODO - Business details from mock
-  businessKind: yup.string().required(errorMessage),
-  workersSize: yup.number().required(errorMessage).integer('Number of workers must be an integer').moreThan(0, 'Number must be greater than 0'),
-  employerType: yup.string().required(errorMessage),
+  // Workforce Baseline
+  workforceBaseline: yup.array().of(yup.object().shape({
+    role: yup.string().oneOf(roles, 'Invalid role'),
+    currentFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+    currentPartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+    currentCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+    vacancyFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+    vacancyPartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+    vacancyCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+  })),
 });
 
 const EmployeeFormSchema = yup.object().noUnknown('Unknown field for form').shape({

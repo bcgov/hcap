@@ -56,11 +56,6 @@ export const Form = ({ initialValues, isDisabled }) => {
 
     // Workforce Baseline
     workforceBaseline: {},
-
-    // TODO - business detail info from mockup
-    // businessKind: '',
-    // workersSize: '',
-    // employerType: '',
   };
 
   const mapBaselineList = (values) => {

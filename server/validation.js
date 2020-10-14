@@ -62,11 +62,6 @@ const errorMessage = ({ path }) => {
     // Employer HCAP request
     hcswFteNumber: 'Number of HCSW FTEs is required',
 
-    // TODO - Business details from mock
-    businessKind: 'Business kind is required',
-    workersSize: 'Number of workers is required',
-    employerType: 'Employer type is required',
-
     // Orbeon ID from the XML file name
     orbeonId: 'Invalid Orbeon ID format.',
 
@@ -131,11 +126,6 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shap
     vacanciePartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
     vacancieCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
   })),
-
-  // TODO - Business details from mock
-  // businessKind: yup.string().required(errorMessage),
-  // workersSize: yup.number().required(errorMessage).integer('Number of workers must be an integer').moreThan(0, 'Number must be greater than 0'),
-  // employerType: yup.string().required(errorMessage),
 });
 
 const EmployeeFormSchema = yup.object().noUnknown('Unknown field for form').shape({

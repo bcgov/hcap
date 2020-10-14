@@ -65,22 +65,22 @@ objects:
           containers:
             - env:
                 - name: POSTGRES_HOST
-                  value: patroni-master-001 # ${APP_NAME}-patroni
+                  value: ${APP_NAME}-patroni
                 - name: POSTGRES_DB
                   valueFrom:
                     secretKeyRef:
-                      key: app-db-name # db-name
-                      name: patroni-001 # ${APP_NAME}-patroni
+                      key: db-name
+                      name: ${APP_NAME}-patroni
                 - name: POSTGRES_USER
                   valueFrom:
                     secretKeyRef:
-                      key: app-db-username # db-username
-                      name: patroni-001 # ${APP_NAME}-patroni
+                      key: db-username
+                      name: ${APP_NAME}-patroni
                 - name: POSTGRES_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      key: app-db-password # db-password
-                      name: patroni-001 # ${APP_NAME}-patroni
+                      key: db-password
+                      name: ${APP_NAME}-patroni
               name: ${APP_NAME}-server
               image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
               ports:

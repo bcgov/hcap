@@ -17,8 +17,7 @@ parameters:
     required: true
   - name: PATRONI_REPLICATION_USERNAME
     description: Username of the replication account for initialization.
-    generate: expression
-    from: rep-[a-zA-Z0-9]{6}
+    value: replication
     required: true
   - name: PATRONI_REPLICATION_PASSWORD
     description: Password of the replication account for initialization.

@@ -1,0 +1,80 @@
+kind: Template
+apiVersion: v1
+labels:
+  app: ${APP_NAME}
+parameters:
+  - name: APP_NAME
+    description: App name that OpenShift objects will be prefixed with
+    required: true
+  - name: IMAGE_TAG
+    description: ImageStream tag for build and deploy
+    value: latest
+    required: true
+  - name: GIT_URI
+    description: Source for Postgres repository with Dockerfile
+    required: true
+    value: https://github.com/BCDevOps/platform-services.git
+  - name: BRANCH
+    description: Branch of the boilerplate repository that should be built
+    value: master
+    required: true
+  - name: PG_VERSION
+    description: The version of Postgres to pull from DockerHub
+    value: "11"
+    required: true
+objects:
+  - kind: ImageStream
+    apiVersion: image.openshift.io/v1
+    metadata:
+      name: ${APP_NAME}-postgres
+    spec:
+      lookupPolicy:
+        local: false
+  - kind: ImageStreamTag
+    apiVersion: v1
+    lookupPolicy:
+      local: false
+    metadata:
+      name: ${APP_NAME}-postgres:${PG_VERSION}
+    tag:
+      from:
+        kind: DockerImage
+        name: registry.hub.docker.com/library/postgres:${PG_VERSION}
+      importPolicy:
+        scheduled: true
+      name: ${PG_VERSION}
+      referencePolicy:
+        type: Source
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-patroni
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: ""
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-patroni
+    spec:
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${APP_NAME}-patroni:${IMAGE_TAG}
+      source:
+        contextDir: apps/pgsql/patroni/docker
+        git:
+          ref: ${BRANCH}
+          uri: ${GIT_URI}
+        type: Git
+      strategy:
+        dockerStrategy:
+          from:
+            kind: ImageStreamTag
+            name: ${APP_NAME}-postgres:${PG_VERSION}
+        type: Docker
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange

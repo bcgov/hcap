@@ -1,0 +1,201 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+labels:
+  app: ${APP_NAME}
+parameters:
+  - name: APP_NAME
+    description: App name that OpenShift objects will be prefixed with
+    required: true
+  - name: REPLICAS
+    description: The number of stateful set replicas to use
+    value: "3"
+    required: true
+  - name: CPU_REQUEST
+    description: Starting amount of CPU the container can use
+    value: 250m
+    required: true
+  - name: CPU_LIMIT
+    description: Maximum amount of CPU the container can use
+    value: "1"
+    required: true
+  - name: MEMORY_REQUEST
+    description: Starting amount of memory the container can use
+    value: 512Mi
+    required: true
+  - name: MEMORY_LIMIT
+    description: Maximum amount of memory the container can use
+    value: 512Mi
+    required: true
+  - name: IMAGE_NAMESPACE
+    description: Namespace from which to pull the image
+    required: true
+  - name: IMAGE_TAG
+    description: Patroni image tag to pull from image stream
+    value: latest
+    required: true
+  - name: PVC_SIZE
+    description: The size of the persistent volume to create
+    value: 1Gi
+    required: true
+  - name: STORAGE_CLASS
+    description: Type of storage used by the PVC
+    value: netapp-block-standard
+    required: true
+objects:
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-patroni
+    spec:
+      ports:
+        - port: 5432
+          protocol: TCP
+          targetPort: 5432
+      selector:
+        cluster-name: ${APP_NAME}-patroni
+        role: master
+        app.kubernetes.io/name: patroni
+      sessionAffinity: None
+      type: ClusterIP
+  - kind: StatefulSet
+    apiVersion: apps/v1
+    metadata:
+      name: ${APP_NAME}-patroni
+    spec:
+      podManagementPolicy: OrderedReady
+      replicas: ${{REPLICAS}}
+      revisionHistoryLimit: 10
+      selector:
+        matchLabels:
+          statefulset: ${APP_NAME}-patroni
+      serviceName: ${APP_NAME}-patroni
+      template:
+        metadata:
+          labels:
+            statefulset: ${APP_NAME}-patroni
+            cluster-name: ${APP_NAME}-patroni
+            app.kubernetes.io/name: patroni
+        spec:
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: statefulset
+                    operator: In
+                    values:
+                    - ${APP_NAME}-patroni
+                topologyKey: "kubernetes.io/hostname"
+          containers:
+            - env:
+              - name: POD_IP
+                valueFrom:
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: status.podIP
+              - name: PATRONI_KUBERNETES_NAMESPACE
+                valueFrom:
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+              - name: PATRONI_KUBERNETES_LABELS
+                value: '{"cluster-name": "${APP_NAME}-patroni", "app.kubernetes.io/name": "patroni"}'
+              - name: PATRONI_SUPERUSER_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    key: superuser-username
+                    name: ${APP_NAME}-patroni
+              - name: PATRONI_SUPERUSER_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    key: superuser-password
+                    name: ${APP_NAME}-patroni
+              - name: PATRONI_REPLICATION_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    key: replication-username
+                    name: ${APP_NAME}-patroni
+              - name: PATRONI_REPLICATION_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    key: replication-password
+                    name: ${APP_NAME}-patroni
+              - name: APP_USER
+                valueFrom:
+                  secretKeyRef:
+                    key: db-username
+                    name: ${APP_NAME}-patroni
+              - name: APP_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    key: db-password
+                    name: ${APP_NAME}-patroni
+              - name: APP_DATABASE
+                valueFrom:
+                  secretKeyRef:
+                    key: db-name
+                    name: ${APP_NAME}-patroni
+              - name: PATRONI_SCOPE
+                value: ${APP_NAME}-patroni
+              - name: PATRONI_NAME
+                valueFrom:
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.name
+              - name: PATRONI_LOG_LEVEL
+                value: WARNING
+              - name: PATRONI_POSTGRESQL_DATA_DIR
+                value: /home/postgres/pgdata/pgroot/data
+              - name: PATRONI_POSTGRESQL_PGPASS
+                value: /tmp/pgpass
+              - name: PATRONI_POSTGRESQL_LISTEN
+                value: 0.0.0.0:5432
+              - name: PATRONI_RESTAPI_LISTEN
+                value: 0.0.0.0:8008
+              image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-patroni:${IMAGE_TAG}
+              imagePullPolicy: Always
+              name: postgresql
+              ports:
+                - containerPort: 8008
+                  protocol: TCP
+                - containerPort: 5432
+                  protocol: TCP
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              readinessProbe:
+                initialDelaySeconds: 5
+                timeoutSeconds: 5
+                failureThreshold: 4
+                exec:
+                  command:
+                    - /usr/share/scripts/patroni/health_check.sh
+              volumeMounts:
+                - mountPath: /home/postgres/pgdata
+                  name: postgresql
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          serviceAccountName: ${APP_NAME}-patroni
+          terminationGracePeriodSeconds: 0
+      updateStrategy:
+        type: RollingUpdate
+      volumeClaimTemplates:
+        - metadata:
+            annotations:
+              volume.beta.kubernetes.io/storage-class: ${STORAGE_CLASS}
+            name: postgresql
+          spec:
+            storageClassName: ${STORAGE_CLASS}
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: ${PVC_SIZE}

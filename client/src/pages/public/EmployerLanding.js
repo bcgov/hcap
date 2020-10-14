@@ -13,7 +13,7 @@ export default () => {
   const history = useHistory();
 
   const handleProceed = () => {
-    history.push(Routes.Login);
+    history.push(Routes.EmployerForm);
   }
 
   return (
@@ -76,7 +76,7 @@ export default () => {
             variant="contained"
             color="primary"
             fullWidth={false}
-            text="Proceed to employer login"
+            text="Proceed to employer expression of interest"
           />
         </Box>
       </Grid>

@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import mapValues from 'lodash/mapValues';
 
 const healthRegions = [
   'Interior',
@@ -111,10 +112,31 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
   // HCAP Request
   hcswFteNumber: yup.number().required(errorMessage).moreThan(0, 'Number must be greater than 0'),
 
+  // Workforce Baseline
+  workforceBaseline: yup.lazy(obj => yup.object()
+    .shape(
+      mapValues(obj, (value, key) => {
+        if (!value.add) {
+          return yup.object().noUnknown('Unknown field for work baseline').shape({
+            add: yup.boolean().required()
+          });
+        }
+        return yup.object().noUnknown('Unknown field for work baseline').shape({
+          add: yup.boolean().required(),
+          currentFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          currentPartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          currentCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          vacancieFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          vacanciePartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          vacancieCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+        });
+      })
+    )),
+
   // TODO - Business details from mock
-  businessKind: yup.string().required(errorMessage),
-  workersSize: yup.number().required(errorMessage).integer('Number of workers must be an integer').moreThan(0, 'Number must be greater than 0'),
-  employerType: yup.string().required(errorMessage),
+  // businessKind: yup.string().required(errorMessage),
+  // workersSize: yup.number().required(errorMessage).integer('Number of workers must be an integer').moreThan(0, 'Number must be greater than 0'),
+  // employerType: yup.string().required(errorMessage),
 });
 
 export const EmployeeFormSchema = yup.object().noUnknown('Unknown field for form').shape({

@@ -9,6 +9,15 @@ const healthRegions = [
   'Northern',
 ];
 
+const roles = [
+  'Registered Nurse',
+  'Licensed Practical Nurse',
+  'Health Care Assistant',
+  'Food Services Worker',
+  'Housekeeping',
+  'COVID-19 IPC Response',
+];
+
 const siteTypes = [
   'Long-term care',
   'Assisted living',
@@ -112,10 +121,21 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shap
   // HCAP Request
   hcswFteNumber: yup.number().required(errorMessage).moreThan(0, 'Number must be greater than 0'),
 
+  // Workforce Baseline
+  workforceBaseline: yup.array().of(yup.object().shape({
+    role: yup.string().oneOf(roles, 'Invalid role'),
+    currentFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+    currentPartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+    currentCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+    vacancieFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+    vacanciePartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+    vacancieCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+  })),
+
   // TODO - Business details from mock
-  businessKind: yup.string().required(errorMessage),
-  workersSize: yup.number().required(errorMessage).integer('Number of workers must be an integer').moreThan(0, 'Number must be greater than 0'),
-  employerType: yup.string().required(errorMessage),
+  // businessKind: yup.string().required(errorMessage),
+  // workersSize: yup.number().required(errorMessage).integer('Number of workers must be an integer').moreThan(0, 'Number must be greater than 0'),
+  // employerType: yup.string().required(errorMessage),
 });
 
 const EmployeeFormSchema = yup.object().noUnknown('Unknown field for form').shape({

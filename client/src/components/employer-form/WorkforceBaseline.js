@@ -4,8 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import { FastField } from 'formik';
 
 import { Card, Divider } from '../generic';
-import { RenderTextField } from '../fields';
-import { OrgBookSearch } from './OrgBookSearch';
+import { BaselineList } from './BaselineList';
 import { Box } from '@material-ui/core';
 
 export const WorkforceBaseline = ({ isDisabled }) => {
@@ -15,7 +14,7 @@ export const WorkforceBaseline = ({ isDisabled }) => {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Typography variant="subtitle2">
-            Provide Your Business Information
+            Workforce Baseline
           </Typography>
           <Divider />
         </Grid>
@@ -29,9 +28,17 @@ export const WorkforceBaseline = ({ isDisabled }) => {
 
         <Grid item xs={12}>
           <FastField
-            name="registeredBusinessName"
-            component={OrgBookSearch}
-            label="* Registered Business Name"
+            name="workforceBaseline"
+            component={BaselineList}
+            label="* Workforce baseline"
+            options={[
+              { value: 'Registered Nurse', label: 'Registered Nurse' },
+              { value: 'Licensed Practical Nurse', label: 'Licensed Practical Nurse' },
+              { value: 'Health Care Assistant', label: 'Health Care Assistant' },
+              { value: 'Food Services Worker', label: 'Food Services Worker' },
+              { value: 'Housekeeping', label: 'Housekeeping' },
+              { value: 'COVID-19 IPC Response', label: 'COVID-19 IPC Response' },
+            ]}
             disabled={isDisabled}
           />
         </Grid>

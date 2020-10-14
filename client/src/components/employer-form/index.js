@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
+import mapValues from 'lodash/mapValues';
 import { Formik, Form as FormikForm } from 'formik';
 import { useHistory } from 'react-router-dom';
 
@@ -53,11 +54,34 @@ export const Form = ({ initialValues, isDisabled }) => {
     // Site HCAP request
     hcswFteNumber: '',
 
+    // Workforce Baseline
+    workforceBaseline: {},
+
     // TODO - business detail info from mockup
-    businessKind: '',
-    workersSize: '',
-    employerType: '',
+    // businessKind: '',
+    // workersSize: '',
+    // employerType: '',
   };
+
+  const mapBaselineList = (values) => {
+    let newWorkforceBaseline = [];
+
+    mapValues(values.workforceBaseline, (value, key) => {
+      if (value.add) {
+        newWorkforceBaseline.push({
+          role: key,
+          currentFullTime: value.currentFullTime,
+          currentPartTime: value.currentPartTime,
+          currentCasual: value.currentCasual,
+          vacancieFullTime: value.vacancieFullTime,
+          vacanciePartTime: value.vacanciePartTime,
+          vacancieCasual: value.vacancieCasual,
+        })
+      }
+    });
+
+    return { ...values, workforceBaseline: newWorkforceBaseline }
+  }
 
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
@@ -65,7 +89,7 @@ export const Form = ({ initialValues, isDisabled }) => {
     const response = await fetch('/api/v1/employer-form', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
-      body: JSON.stringify(values),
+      body: JSON.stringify(mapBaselineList(values)),
     });
 
     if (response.ok) {
@@ -109,10 +133,6 @@ export const Form = ({ initialValues, isDisabled }) => {
 
                 <Box pt={2} pb={2} pl={2} pr={2}>
                   <SiteInfo isDisabled={isDisabled} />
-                </Box>
-
-                <Box pt={4} pb={2} pl={2} pr={2}>
-                  <BasicInfo isDisabled={isDisabled} />
                 </Box>
 
                 <Box pt={2} pb={2} pl={2} pr={2}>

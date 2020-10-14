@@ -6,6 +6,9 @@ parameters:
   - name: APP_NAME
     description: App name that OpenShift objects will be prefixed with
     required: true
+  - name: IMAGE_NAMESPACE
+    description: Namespace from which to pull the image
+    required: true
   - name: IMAGE_TAG
     description: Image tag from image stream
     value: latest
@@ -47,6 +50,7 @@ objects:
             from:
               kind: ImageStreamTag
               name: ${APP_NAME}-server:${IMAGE_TAG}
+              namespace: ${IMAGE_NAMESPACE}
           type: ImageChange
         - type: ConfigChange
       replicas: 1
@@ -78,7 +82,7 @@ objects:
                       key: app-db-password # db-password
                       name: patroni-001 # ${APP_NAME}-patroni
               name: ${APP_NAME}-server
-              image: ${APP_NAME}-server:${IMAGE_TAG}
+              image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
               ports:
                 - containerPort: "${{SERVER_PORT}}"
                   protocol: TCP

@@ -122,9 +122,9 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shap
     currentFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
     currentPartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
     currentCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-    vacancieFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-    vacanciePartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-    vacancieCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+    vacancyFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+    vacancyPartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+    vacancyCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
   })),
 });
 

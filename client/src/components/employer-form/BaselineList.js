@@ -142,15 +142,15 @@ export const BaselineList = ({
                         variant="filled"
                         fullWidth
                         type="number"
-                        value={convertValue(value[option.value]?.vacancieFullTime)}
+                        value={convertValue(value[option.value]?.vacancyFullTime)}
                         onChange={(e) => setValue(option, {
                           ...value[option.value],
-                          vacancieFullTime: e.target.value,
+                          vacancyFullTime: e.target.value,
                         })}
                         {...props}
                       />
                       {error && <InputFieldError
-                        error={error[option.value]?.vacancieFullTime} />}
+                        error={error[option.value]?.vacancyFullTime} />}
                     </Grid>
                     <Grid item>
                       <InputFieldLabel label="Part Time" />
@@ -158,15 +158,15 @@ export const BaselineList = ({
                         variant="filled"
                         fullWidth
                         type="number"
-                        value={convertValue(value[option.value]?.vacanciePartTime)}
+                        value={convertValue(value[option.value]?.vacancyPartTime)}
                         onChange={(e) => setValue(option, {
                           ...value[option.value],
-                          vacanciePartTime: e.target.value,
+                          vacancyPartTime: e.target.value,
                         })}
                         {...props}
                       />
                       {error && <InputFieldError
-                        error={error[option.value]?.vacanciePartTime} />}
+                        error={error[option.value]?.vacancyPartTime} />}
                     </Grid>
                     <Grid item>
                       <InputFieldLabel label="Casual" />
@@ -174,15 +174,15 @@ export const BaselineList = ({
                         variant="filled"
                         fullWidth
                         type="number"
-                        value={convertValue(value[option.value]?.vacancieCasual)}
+                        value={convertValue(value[option.value]?.vacancyCasual)}
                         onChange={(e) => setValue(option, {
                           ...value[option.value],
-                          vacancieCasual: e.target.value,
+                          vacancyCasual: e.target.value,
                         })}
                         {...props}
                       />
                       {error && <InputFieldError
-                        error={error[option.value]?.vacancieCasual} />}
+                        error={error[option.value]?.vacancyCasual} />}
                     </Grid>
                   </Grid>
                 </Grid>

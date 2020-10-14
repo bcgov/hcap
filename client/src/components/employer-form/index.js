@@ -68,9 +68,9 @@ export const Form = ({ initialValues, isDisabled }) => {
           currentFullTime: value.currentFullTime,
           currentPartTime: value.currentPartTime,
           currentCasual: value.currentCasual,
-          vacancieFullTime: value.vacancieFullTime,
-          vacanciePartTime: value.vacanciePartTime,
-          vacancieCasual: value.vacancieCasual,
+          vacancyFullTime: value.vacancyFullTime,
+          vacancyPartTime: value.vacancyPartTime,
+          vacancyCasual: value.vacancyCasual,
         })
       }
     });

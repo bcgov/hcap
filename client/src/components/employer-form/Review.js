@@ -9,8 +9,9 @@ import { OperatorInfo } from './OperatorInfo';
 import { SiteInfo } from './SiteInfo';
 import { HcapRequest } from './HcapRequest';
 import { WorkforceBaseline } from './WorkforceBaseline';
+import { CollectionNotice } from './CollectionNotice';
 
-export const Review = ({ handleEditClick, isDisabled }) => {
+export const Review = ({ handleEditClick, isDisabled, activeStep }) => {
 
   return (
     <Fragment>
@@ -113,6 +114,11 @@ export const Review = ({ handleEditClick, isDisabled }) => {
               </Grid>
             </Box>
             <WorkforceBaseline isDisabled />
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <CollectionNotice />
           </Card>
         </Grid>
       </Grid>

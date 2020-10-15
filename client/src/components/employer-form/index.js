@@ -72,6 +72,10 @@ const getStepFields = (step) => {
       return [
         'workforceBaseline',
       ];
+    case 5:
+      return [
+        'consent',
+      ];
     default:
       return [];
   }
@@ -238,7 +242,7 @@ export const Form = ({ initialValues, isDisabled }) => {
             )}
 
             <Box pt={2} pb={4} pl={2} pr={2}>
-              
+
               {/** Form Sections */}
               {!isDisabled ? (
                 <Fragment>

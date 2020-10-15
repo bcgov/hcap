@@ -38,8 +38,9 @@ export const BaselineList = ({
   const classes = useStyles();
   const error = form.errors[name];
 
-  const convertValue = (value) => {
-    return typeof value === "undefined" ? '' : value
+  const sanitizeValue = (value) => {
+    if (value === '') return value;
+    return typeof value === 'undefined' ? '' : Number(value);
   }
 
   return (
@@ -88,10 +89,10 @@ export const BaselineList = ({
                       variant="filled"
                       fullWidth
                       type="number"
-                      value={convertValue(value[option.value]?.currentFullTime)}
+                      value={sanitizeValue(value[option.value]?.currentFullTime)}
                       onChange={(e) => setValue(option, {
                         ...value[option.value],
-                        currentFullTime: e.target.value,
+                        currentFullTime: sanitizeValue(e.target.value),
                       })}
                       {...props}
                     />
@@ -104,10 +105,10 @@ export const BaselineList = ({
                       variant="filled"
                       fullWidth
                       type="number"
-                      value={convertValue(value[option.value]?.currentPartTime)}
+                      value={sanitizeValue(value[option.value]?.currentPartTime)}
                       onChange={(e) => setValue(option, {
                         ...value[option.value],
-                        currentPartTime: e.target.value,
+                        currentPartTime: sanitizeValue(e.target.value),
                       })}
                       {...props}
                     />
@@ -120,10 +121,10 @@ export const BaselineList = ({
                       variant="filled"
                       fullWidth
                       type="number"
-                      value={convertValue(value[option.value]?.currentCasual)}
+                      value={sanitizeValue(value[option.value]?.currentCasual)}
                       onChange={(e) => setValue(option, {
                         ...value[option.value],
-                        currentCasual: e.target.value,
+                        currentCasual: sanitizeValue(e.target.value),
                       })}
                       {...props}
                     />
@@ -142,10 +143,10 @@ export const BaselineList = ({
                         variant="filled"
                         fullWidth
                         type="number"
-                        value={convertValue(value[option.value]?.vacancyFullTime)}
+                        value={sanitizeValue(value[option.value]?.vacancyFullTime)}
                         onChange={(e) => setValue(option, {
                           ...value[option.value],
-                          vacancyFullTime: e.target.value,
+                          vacancyFullTime: sanitizeValue(e.target.value),
                         })}
                         {...props}
                       />
@@ -158,10 +159,10 @@ export const BaselineList = ({
                         variant="filled"
                         fullWidth
                         type="number"
-                        value={convertValue(value[option.value]?.vacancyPartTime)}
+                        value={sanitizeValue(value[option.value]?.vacancyPartTime)}
                         onChange={(e) => setValue(option, {
                           ...value[option.value],
-                          vacancyPartTime: e.target.value,
+                          vacancyPartTime: sanitizeValue(e.target.value),
                         })}
                         {...props}
                       />
@@ -174,10 +175,10 @@ export const BaselineList = ({
                         variant="filled"
                         fullWidth
                         type="number"
-                        value={convertValue(value[option.value]?.vacancyCasual)}
+                        value={sanitizeValue(value[option.value]?.vacancyCasual)}
                         onChange={(e) => setValue(option, {
                           ...value[option.value],
-                          vacancyCasual: e.target.value,
+                          vacancyCasual: sanitizeValue(e.target.value),
                         })}
                         {...props}
                       />

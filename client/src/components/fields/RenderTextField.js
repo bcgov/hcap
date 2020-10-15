@@ -12,6 +12,12 @@ export const RenderTextField = ({
 }) => {
   const touched = form.touched[fieldRest.name];
   const error = form.errors[fieldRest.name];
+
+  const sanitizeValue = (value) => {
+    if (value === null) return '';
+    return typeof value === 'undefined' ? '' : value;
+  }
+
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} />}
@@ -19,7 +25,7 @@ export const RenderTextField = ({
         variant="filled"
         fullWidth
         error={touched && !!error}
-        value={typeof value === "undefined" ? '' : value}
+        value={sanitizeValue(value)}
         {...fieldRest}
         {...props}
       />

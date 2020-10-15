@@ -37,6 +37,7 @@ const errorMessage = ({ path }) => {
     phoneNumber: 'Phone number is required',
     emailAddress: 'Email address is required',
     postalCode: 'Postal code is required',
+    consent: 'We\'re sorry, but we cannot process your request without permission.',
 
     // Employer operator info
     registeredBusinessName: 'Business name is required',
@@ -68,7 +69,6 @@ const errorMessage = ({ path }) => {
     // Employee info
     eligibility: 'We\'re sorry, but current eligibility to work in Canada is a requirement to submit this form.',
     preferredLocation: 'Please select at least one location you\'d like to work in.',
-    consent: 'We\'re sorry, but we cannot process your request without permission.',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
@@ -126,6 +126,9 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shap
     vacancyPartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
     vacancyCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
   })),
+
+  // Consent
+  consent: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 });
 
 const EmployeeFormSchema = yup.object().noUnknown('Unknown field for form').shape({

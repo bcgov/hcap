@@ -14,6 +14,7 @@ import { OperatorInfo } from './OperatorInfo';
 import { SiteInfo } from './SiteInfo';
 import { HcapRequest } from './HcapRequest';
 import { WorkforceBaseline } from './WorkforceBaseline';
+import { CollectionNotice } from './CollectionNotice';
 
 export const Form = ({ initialValues, isDisabled }) => {
   const history = useHistory();
@@ -52,6 +53,9 @@ export const Form = ({ initialValues, isDisabled }) => {
 
     // Workforce Baseline
     workforceBaseline: {},
+
+    // Collection consent
+    consent: false,
   };
 
   const mapBaselineList = (values) => {
@@ -132,6 +136,10 @@ export const Form = ({ initialValues, isDisabled }) => {
 
                 <Box pt={2} pb={4} pl={2} pr={2}>
                   <WorkforceBaseline isDisabled={isDisabled} />
+                </Box>
+
+                <Box pt={2} pb={4} pl={2} pr={2}>
+                  <CollectionNotice isDisabled={isDisabled} />
                 </Box>
               </Card>
             </Box>

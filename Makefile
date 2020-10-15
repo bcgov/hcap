@@ -53,7 +53,8 @@ server-create:
 
 server-build:
 	@oc cancel-build bc/$(APP_NAME)-server -n $(TOOLS_NAMESPACE)
-	@oc start-build $(APP_NAME)-server -n $(TOOLS_NAMESPACE)
+	@oc start-build $(APP_NAME)-server -n $(TOOLS_NAMESPACE) --wait
+	@oc tag $(APP_NAME)-server:latest $(APP_NAME)-server:$(OS_NAMESPACE_SUFFIX)
 
 db-prep:
 	@oc process -f openshift/patroni.prep.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -

@@ -2,8 +2,10 @@ name: OpenShift Build
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - dev
+      - test
+      - prod
 
 env:
   CLUSTER: https://console.pathfinder.gov.bc.ca:8443
@@ -18,6 +20,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Extract Tag, Set OpenShift Namespace Suffix
+        run: |
+          echo ::set-env name=OS_NAMESPACE_SUFFIX::${GITHUB_REF#refs/*/}
 
       - name: Install OpenShift CLI
         run: |
@@ -34,4 +40,5 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           oc login "$CLUSTER" --token="$AUTH_TOKEN"
+          export OS_NAMESPACE_SUFFIX=${{ env.OS_NAMESPACE_SUFFIX }}
           make server-build

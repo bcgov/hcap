@@ -8,15 +8,7 @@ import { Card, Divider } from '../generic';
 import { RenderRadioGroup, RenderSelectField, RenderTextField } from '../fields';
 
 export const SiteInfo = ({ isDisabled }) => {
-  const { values, setFieldValue } = useFormikContext();
-
-  useEffect(() => {
-    if (values.siteType === 'Other') {
-      if (values.otherSite === null) setFieldValue('otherSite', { type: '' });
-    } else {
-      setFieldValue('otherSite', null);
-    }
-  }, [setFieldValue, values.siteType, values.otherSite]);
+  const { values } = useFormikContext();
 
   return (
     <Card noShadow={isDisabled}>
@@ -93,7 +85,7 @@ export const SiteInfo = ({ isDisabled }) => {
           <Fragment>
             <Grid item xs={12} md={6}>
               <FastField
-                name="otherSite.type"
+                name="otherSite"
                 component={RenderTextField}
                 label="* Please specify"
                 disabled={isDisabled}

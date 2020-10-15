@@ -36,9 +36,7 @@ export const Form = ({ initialValues, isDisabled }) => {
     postalCode: '',
     geographicRegion: '',
     siteType: '',
-    otherSite: {
-      type: '',
-    },
+    otherSite: '',
     numPublicLongTermCare: '',
     numPrivateLongTermCare: '',
     numPublicAssistedLiving: '',

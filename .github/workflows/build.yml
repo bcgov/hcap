@@ -9,11 +9,10 @@ env:
   CLUSTER: https://console.pathfinder.gov.bc.ca:8443
   AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
   PROJECT: hcap
-  NAMESPACE: rupaog-dev
 
 jobs:
   build:
-    name: Trigger OpenShift Build
+    name: OpenShift Build & Deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,7 +29,7 @@ jobs:
           sudo mv "$FILE" /usr/local/bin/oc
           rm -rf oc.tar.gz openshift-origin-client-tools-v*
 
-      - name: Trigger Build
+      - name: Build & Deploy
         run: |
           cd "$GITHUB_WORKSPACE"
           oc login "$CLUSTER" --token="$AUTH_TOKEN"

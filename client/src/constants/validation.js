@@ -88,7 +88,7 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
   otherSite: yup.string().when('siteType', {
     is: 'Other',
     then: yup.string().required('Must specify other site type'),
-    otherwise: yup.string().nullable().test('is-null', 'Other site type must be null', (v) => v == null),
+    otherwise: yup.string().nullable().test('is-null', 'Other site type must be null', (v) => v == null || v === ''),
   }),
 
   // Site size info

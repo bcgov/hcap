@@ -22,8 +22,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Extract Tag, Set OpenShift Namespace Suffix
-        run: |
-          echo ::set-env name=OS_NAMESPACE_SUFFIX::${GITHUB_REF#refs/*/}
+        run: echo "OS_NAMESPACE_SUFFIX=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Install OpenShift CLI
         run: |

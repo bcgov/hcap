@@ -42,6 +42,23 @@ local-server-tests:
 	@echo "Running tests in local app container"
 	@docker exec -it $(APP_NAME)-server npm test
 
+# Git Tagging Aliases
+
+tag-dev:
+	@echo "Deploying $(PROJECT):$(COMMIT_SHA) to dev env"
+	@git tag -fa dev -m "Deploying $(PROJECT):$(COMMIT_SHA) to dev env" $(COMMIT_SHA)
+	@git push --force origin refs/tags/dev:refs/tags/dev
+
+tag-test:
+	@echo "Deploying $(PROJECT):$(COMMIT_SHA) to test env"
+	@git tag -fa test -m "Deploying $(PROJECT):$(COMMIT_SHA) to test env" $(COMMIT_SHA)
+	@git push --force origin refs/tags/test:refs/tags/test
+
+tag-prod:
+	@echo "Deploying $(PROJECT):$(COMMIT_SHA) to prod env"
+	@git tag -fa prod -m "Deploying $(PROJECT):$(COMMIT_SHA) to prod env" $(COMMIT_SHA)
+	@git push --force origin refs/tags/prod:refs/tags/prod
+
 # OpenShift Aliases
 
 server-prep: # This should be a template similar to DB prep

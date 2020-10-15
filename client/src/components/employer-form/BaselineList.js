@@ -26,6 +26,7 @@ export const BaselineList = ({
   form,
   label,
   options,
+  disabled,
   ...props
 }) => {
   const { setFieldValue } = useFormikContext();
@@ -43,9 +44,11 @@ export const BaselineList = ({
     return typeof value === 'undefined' ? '' : Number(value);
   }
 
+
   return (
     <Fragment>
       {options.map((option) => (
+        (!disabled || (disabled && value[option.value]?.add)) &&
         <Fragment key={option.value}>
           <Accordion
             expanded={value[option.value]?.add ? true : false}
@@ -55,6 +58,7 @@ export const BaselineList = ({
                 add: !value[option.value]?.add,
               });
             }}
+            disabled={disabled}
             {...props}
           >
             <AccordionSummary expandIcon={
@@ -94,6 +98,7 @@ export const BaselineList = ({
                         ...value[option.value],
                         currentFullTime: sanitizeValue(e.target.value),
                       })}
+                      disabled={disabled}
                       {...props}
                     />
                     {error && <InputFieldError
@@ -110,6 +115,7 @@ export const BaselineList = ({
                         ...value[option.value],
                         currentPartTime: sanitizeValue(e.target.value),
                       })}
+                      disabled={disabled}
                       {...props}
                     />
                     {error && <InputFieldError
@@ -126,6 +132,7 @@ export const BaselineList = ({
                         ...value[option.value],
                         currentCasual: sanitizeValue(e.target.value),
                       })}
+                      disabled={disabled}
                       {...props}
                     />
                     {error && <InputFieldError
@@ -148,6 +155,7 @@ export const BaselineList = ({
                           ...value[option.value],
                           vacancyFullTime: sanitizeValue(e.target.value),
                         })}
+                        disabled={disabled}
                         {...props}
                       />
                       {error && <InputFieldError
@@ -164,6 +172,7 @@ export const BaselineList = ({
                           ...value[option.value],
                           vacancyPartTime: sanitizeValue(e.target.value),
                         })}
+                        disabled={disabled}
                         {...props}
                       />
                       {error && <InputFieldError
@@ -180,6 +189,7 @@ export const BaselineList = ({
                           ...value[option.value],
                           vacancyCasual: sanitizeValue(e.target.value),
                         })}
+                        disabled={disabled}
                         {...props}
                       />
                       {error && <InputFieldError

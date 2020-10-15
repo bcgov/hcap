@@ -42,6 +42,23 @@ local-server-tests:
 	@echo "Running tests in local app container"
 	@docker exec -it $(APP_NAME)-server npm test
 
+# Git Tagging Aliases
+
+tag-dev:
+	@echo "Deploying $(APP_NAME):$(COMMIT_SHA) to dev env"
+	@git tag -fa dev -m "Deploying $(APP_NAME):$(COMMIT_SHA) to dev env" $(COMMIT_SHA)
+	@git push --force origin refs/tags/dev:refs/tags/dev
+
+tag-test:
+	@echo "Deploying $(APP_NAME):$(COMMIT_SHA) to test env"
+	@git tag -fa test -m "Deploying $(APP_NAME):$(COMMIT_SHA) to test env" $(COMMIT_SHA)
+	@git push --force origin refs/tags/test:refs/tags/test
+
+tag-prod:
+	@echo "Deploying $(APP_NAME):$(COMMIT_SHA) to prod env"
+	@git tag -fa prod -m "Deploying $(APP_NAME):$(COMMIT_SHA) to prod env" $(COMMIT_SHA)
+	@git push --force origin refs/tags/prod:refs/tags/prod
+
 # OpenShift Aliases
 
 server-prep: # This should be a template similar to DB prep
@@ -49,11 +66,15 @@ server-prep: # This should be a template similar to DB prep
 
 server-create:
 	@oc process -f openshift/server.bc.yml -p APP_NAME=$(APP_NAME) | oc apply -n $(TOOLS_NAMESPACE) -f -
-	@oc process -f openshift/server.dc.yml -p APP_NAME=$(APP_NAME) IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f -
+	@oc process -f openshift/server.dc.yml -p APP_NAME=$(APP_NAME) IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) IMAGE_TAG=$(OS_NAMESPACE_SUFFIX) | oc apply -n $(TARGET_NAMESPACE) -f -
 
 server-build:
 	@oc cancel-build bc/$(APP_NAME)-server -n $(TOOLS_NAMESPACE)
-	@oc start-build $(APP_NAME)-server -n $(TOOLS_NAMESPACE)
+	@oc start-build $(APP_NAME)-server -n $(TOOLS_NAMESPACE) --wait
+	@oc tag $(APP_NAME)-server:latest $(APP_NAME)-server:$(COMMIT_SHA)
+
+server-deploy:
+	@oc tag $(APP_NAME)-server:$(COMMIT_SHA) $(APP_NAME)-server:$(OS_NAMESPACE_SUFFIX)
 
 db-prep:
 	@oc process -f openshift/patroni.prep.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -

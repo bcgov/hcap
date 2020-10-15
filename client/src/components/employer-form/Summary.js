@@ -1,8 +1,12 @@
 import React, { Fragment } from 'react';
+import Alert from '@material-ui/lab/Alert';
+import Box from '@material-ui/core/Box';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Link from '@material-ui/core/Link';
+import PhoneIcon from '@material-ui/icons/Phone';
 import Typography from '@material-ui/core/Typography';
 
 import { Divider } from '../generic';
@@ -14,6 +18,29 @@ const Summary = ({ isDisabled }) => {
         Employer Expression of Interest (EOI)
       </Typography>
       <Divider />
+
+      <Box mt={3} mb={2}>
+        <Alert severity="info" icon={<PhoneIcon />}>
+          <Typography variant="body2" gutterBottom>
+            <b>
+              If you need assistance, please contact a Health Career Access Program agent for help.
+            </b>
+          </Typography>
+          <Typography variant="body2" component="span">
+            <b>
+              Toll-free:&nbsp;
+              <Link href="tel:+18773740463">
+                1-877-374-0463
+              </Link>
+            </b>
+          </Typography>
+          <Typography variant="body2" component="span">
+            <b>
+              &nbsp;| Service is available from 8:00 am – 4:30 pm Pacific Time
+            </b>
+          </Typography>
+        </Alert>
+      </Box>
 
         {/** First Block */}
         <ExpansionPanel defaultExpanded={!isDisabled}>

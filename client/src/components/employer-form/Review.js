@@ -132,7 +132,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
                       startIcon={<EditIcon />}
                       fullWidth={false}
                       size="small"
-                      onClick={() => handleEditClick(4)}
+                      onClick={() => handleEditClick(5)}
                       text="Edit"
                     />
                   </Grid>

@@ -59,7 +59,10 @@ Make sure you have Docker and Docker-compose installed in your local environment
 - https://docs.docker.com/compose/install/
 
 To set up and run database, backend (server), and frontend (client) applications:
-- Run `make local` within the root folder of the project
+- Run `make local-build` within the root folder of the project to build the application
+- Run `make local-run` within the root folder of the project to run the application
+- In a new tab in your terminal, run `make local-db-seed` within the root folder of the project to create the table
+- You should see the application running at `localhost:4000`
 
 To tear down your environment:
 - Run `make close-local`

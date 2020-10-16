@@ -83,7 +83,7 @@ const getStepFields = (step) => {
       ];
     case 7:
       return [
-        'consent',
+        'doesCertify',
       ];
     default:
       return [];
@@ -143,8 +143,8 @@ export const Form = ({ initialValues, isDisabled }) => {
     // Staffing Challenges
     staffingChallenges: '',
 
-    // Collection consent
-    consent: false,
+    // Collection certification
+    doesCertify: false,
   };
 
   const mapBaselineList = (values) => {

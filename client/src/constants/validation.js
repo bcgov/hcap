@@ -28,7 +28,6 @@ const errorMessage = ({ path }) => {
     phoneNumber: 'Phone number is required',
     emailAddress: 'Email address is required',
     postalCode: 'Postal code is required',
-    consent: 'We\'re sorry, but we cannot process your request without permission.',
 
     // Employer operator contact info
     registeredBusinessName: 'Business name is required',
@@ -58,12 +57,16 @@ const errorMessage = ({ path }) => {
     // Employer HCAP request
     hcswFteNumber: 'A number is required',
 
+    // Employer certification
+    doesCertify: 'Must certify this',
+
     // Orbeon ID from the XML file name
     orbeonId: 'Invalid Orbeon ID format.',
 
     // Employee info
     eligibility: 'We\'re sorry, but current eligibility to work in Canada is a requirement to submit this form.',
     preferredLocation: 'Please select at least one location you\'d like to work in.',
+    consent: 'We\'re sorry, but we cannot process your request without permission.',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
@@ -125,8 +128,8 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
   // Staffing Challenges
   staffingChallenges: yup.string().nullable(),
 
-  // Consent
-  consent: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
+  // Certification
+  doesCertify: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 });
 
 export const EmployeeFormSchema = yup.object().noUnknown('Unknown field for form').shape({

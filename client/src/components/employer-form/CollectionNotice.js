@@ -15,12 +15,12 @@ const CollectionNotice = ({ isDisabled }) => {
     <Grid item xs={12}>
       <Grid container spacing={2}>
 
-        {/** Consent */}
+        {/** Certification */}
         <Grid item xs={12}>
           <Field
-            name="consent"
+            name="doesCertify"
             component={RenderCheckbox}
-            label="I consent to have my personal information shared with the Health Career Access Program."
+            label="I certify this information to be accurate"
             disabled={isDisabled || location.pathname === Routes.EmployerConfirmation}
           />
         </Grid>

@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
-import CancelIcon from '@material-ui/icons/Cancel';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -44,29 +43,17 @@ export const BaselineList = ({
     return typeof value === 'undefined' ? '' : Number(value);
   }
 
-
   return (
     <Fragment>
       {options.map((option) => (
-        (!disabled || (disabled && value[option.value]?.add)) &&
+        !disabled &&
         <Fragment key={option.value}>
           <Accordion
-            expanded={value[option.value]?.add ? true : false}
-            onChange={() => {
-              setValue(option, {
-                ...value[option.value],
-                add: !value[option.value]?.add,
-              });
-            }}
+            defaultExpanded={true}
             disabled={disabled}
             {...props}
           >
-            <AccordionSummary expandIcon={
-              !value[option.value]?.add ?
-                <AddCircleIcon color="primary" />
-                :
-                <CancelIcon color="error" />
-            }>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Grid container justify="space-between">
                 <Grid item>
                   <Typography variant="body1">
@@ -74,11 +61,6 @@ export const BaselineList = ({
                       {option.label}
                     </b>
                   </Typography>
-                </Grid>
-                <Grid item>
-                  {!value[option.value]?.add ?
-                    <Typography variant="body1" color="primary">Add</Typography> :
-                    <Typography variant="body1" color="error">Remove</Typography>}
                 </Grid>
               </Grid>
             </AccordionSummary>

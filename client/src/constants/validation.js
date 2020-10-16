@@ -52,6 +52,9 @@ const errorMessage = ({ path }) => {
     numPublicAssistedLiving: 'Number of publicly funded assisted living beds is required',
     numPrivateAssistedLiving: 'Number of privately funded assisted living beds is required',
 
+    // Workforce Baseline
+    workforceBaseline: 'All Workforce Baseline fields are required',
+
     // Employer HCAP request
     hcswFteNumber: 'A number is required',
 
@@ -108,19 +111,13 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
   workforceBaseline: yup.lazy(obj => yup.object()
     .shape(
       mapValues(obj, (value, key) => {
-        if (!value.add) {
-          return yup.object().noUnknown('Unknown field for workforce baseline').shape({
-            add: yup.boolean().required()
-          });
-        }
         return yup.object().noUnknown('Unknown field for workforce baseline').shape({
-          add: yup.boolean().required(),
-          currentFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          currentPartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          currentCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          vacancyFullTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          vacancyPartTime: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          vacancyCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          currentFullTime: yup.number().required('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          currentPartTime: yup.number().required('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          currentCasual: yup.number().required('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          vacancyFullTime: yup.number().required('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          vacancyPartTime: yup.number().required('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          vacancyCasual: yup.number().required('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
         });
       })
     )),

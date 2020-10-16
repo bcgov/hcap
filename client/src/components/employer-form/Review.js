@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import Alert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
@@ -16,6 +17,18 @@ export const Review = ({ handleEditClick, isDisabled }) => {
   return (
     <Fragment>
       <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <Box mb={2}>
+            <Alert severity="info">
+              <Typography variant="body2" gutterBottom>
+                <b>
+                  Please review your information for accuracy and completeness.
+                </b>
+              </Typography>
+            </Alert>
+          </Box>
+        </Grid>
+
         <Grid item xs={12}>
           <Card>
             <Box mb={2}>

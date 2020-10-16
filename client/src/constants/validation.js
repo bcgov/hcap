@@ -7,6 +7,7 @@ const healthRegions = [
   'Vancouver Coastal',
   'Vancouver Island',
   'Northern',
+  '',
 ];
 
 const siteTypes = [
@@ -14,6 +15,7 @@ const siteTypes = [
   'Assisted living',
   'Both',
   'Other',
+  '',
 ]
 
 const validateUniqueArray = (a) => (
@@ -78,49 +80,49 @@ export const LoginSchema = yup.object().noUnknown().shape({
 
 export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shape({
   // Operator Contact Information
-  registeredBusinessName: yup.string().required(errorMessage),
-  operatorName: yup.string().required(errorMessage),
-  operatorContactFirstName: yup.string().required(errorMessage),
-  operatorContactLastName: yup.string().required(errorMessage),
-  operatorEmail: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
-  operatorPhone: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  registeredBusinessName: yup.string().nullable(errorMessage),
+  operatorName: yup.string().nullable(errorMessage),
+  operatorContactFirstName: yup.string().nullable(errorMessage),
+  operatorContactLastName: yup.string().nullable(errorMessage),
+  operatorEmail: yup.string().nullable(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  operatorPhone: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
 
   // Site contact info
-  siteName: yup.string().required(errorMessage),
-  address: yup.string().required(errorMessage),
-  postalCode: yup.string().required(errorMessage).matches(/^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/, 'Format as A1A 1A1'),
-  geographicRegion: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid location'),
-  siteContactFirstName: yup.string().required(errorMessage),
-  siteContactLastName: yup.string().required(errorMessage),
-  phoneNumber: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
-  emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  siteName: yup.string().nullable(errorMessage),
+  address: yup.string().nullable(errorMessage),
+  postalCode: yup.string().nullable(errorMessage).matches(/^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/, 'Format as A1A 1A1'),
+  geographicRegion: yup.string().nullable(errorMessage).oneOf(healthRegions, 'Invalid location'),
+  siteContactFirstName: yup.string().nullable(errorMessage),
+  siteContactLastName: yup.string().nullable(errorMessage),
+  phoneNumber: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  emailAddress: yup.string().nullable(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
 
   // Site type and size info
-  siteType: yup.string().required(errorMessage).oneOf(siteTypes, 'Invalid site type'),
+  siteType: yup.string().nullable(errorMessage).oneOf(siteTypes, 'Invalid site type'),
   otherSite: yup.string().when('siteType', {
     is: 'Other',
-    then: yup.string().required('Must specify other site type'),
+    then: yup.string().nullable('Must specify other site type'),
     otherwise: yup.string().nullable().test('is-null', 'Other site type must be null', (v) => v == null || v === ''),
   }),
-  numPublicLongTermCare: yup.number().required(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-  numPrivateLongTermCare: yup.number().required(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-  numPublicAssistedLiving: yup.number().required(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-  numPrivateAssistedLiving: yup.number().required(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+  numPublicLongTermCare: yup.number().nullable(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+  numPrivateLongTermCare: yup.number().nullable(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+  numPublicAssistedLiving: yup.number().nullable(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+  numPrivateAssistedLiving: yup.number().nullable(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
 
   // HCAP Request
-  hcswFteNumber: yup.number().required(errorMessage).moreThan(0, 'Number must be greater than 0'),
+  hcswFteNumber: yup.number().nullable(errorMessage).moreThan(0, 'Number must be greater than 0'),
 
   // Workforce Baseline
   workforceBaseline: yup.lazy(obj => yup.object()
     .shape(
       mapValues(obj, (value, key) => {
         return yup.object().noUnknown('Unknown field for workforce baseline').shape({
-          currentFullTime: yup.number().required('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          currentPartTime: yup.number().required('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          currentCasual: yup.number().required('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          vacancyFullTime: yup.number().required('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          vacancyPartTime: yup.number().required('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          vacancyCasual: yup.number().required('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          currentFullTime: yup.number().nullable('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          currentPartTime: yup.number().nullable('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          currentCasual: yup.number().nullable('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          vacancyFullTime: yup.number().nullable('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          vacancyPartTime: yup.number().nullable('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          vacancyCasual: yup.number().nullable('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
         });
       })
     )),

@@ -22,6 +22,10 @@ const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
 );
 
+const validateBlankOrPositiveInteger = (n) => (
+  n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n >= 0)
+);
+
 const errorMessage = ({ path }) => {
   const errorMessages = {
     // Common fields
@@ -108,25 +112,25 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
     then: yup.string().nullable('Must specify other site type'),
     otherwise: yup.string().nullable().test('is-null', 'Other site type must be null', (v) => v == null || v === ''),
   }),
-  numPublicLongTermCare: yup.number().nullable(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-  numPrivateLongTermCare: yup.number().nullable(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-  numPublicAssistedLiving: yup.number().nullable(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-  numPrivateAssistedLiving: yup.number().nullable(errorMessage).integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+  numPublicLongTermCare: yup.number().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+  numPrivateLongTermCare: yup.number().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+  numPublicAssistedLiving: yup.number().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+  numPrivateAssistedLiving: yup.number().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
 
   // HCAP Request
-  hcswFteNumber: yup.number().nullable(errorMessage).moreThan(0, 'Number must be greater than 0'),
+  hcswFteNumber: yup.number().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
 
   // Workforce Baseline
   workforceBaseline: yup.lazy(obj => yup.object()
     .shape(
       mapValues(obj, (value, key) => {
         return yup.object().noUnknown('Unknown field for workforce baseline').shape({
-          currentFullTime: yup.number().nullable('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          currentPartTime: yup.number().nullable('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          currentCasual: yup.number().nullable('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          vacancyFullTime: yup.number().nullable('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          vacancyPartTime: yup.number().nullable('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
-          vacancyCasual: yup.number().nullable('A number is required').integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
+          currentFullTime: yup.number().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+          currentPartTime: yup.number().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+          currentCasual: yup.number().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+          vacancyFullTime: yup.number().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+          vacancyPartTime: yup.number().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+          vacancyCasual: yup.number().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
         });
       })
     )),

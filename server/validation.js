@@ -103,7 +103,7 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shap
   operatorEmail: yup.string().nullable(errorMessage).matches(/(^(.+@.+\..+)?)?$/, 'Invalid email address'),
   operatorPhone: yup.string().matches(/(^[0-9]{10})?$/, 'Phone number must be provided as 10 digits').nullable(true),
   operatorAddress: yup.string().nullable(errorMessage),
-  operatorPostalCode: yup.string().nullable(errorMessage).matches(/^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/, 'Format as A1A 1A1'),
+  operatorPostalCode: yup.string().nullable(errorMessage).matches(/(^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)?$/, 'Format as A1A 1A1'),
 
   // Site contact info
   siteName: yup.string().nullable(errorMessage),
@@ -122,24 +122,24 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shap
     then: yup.string().nullable('Must specify other site type'),
     otherwise: yup.string().nullable().test('is-null', 'Other site type must be null', (v) => v == null || v === ''),
   }),
-  numPublicLongTermCare: yup.string().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
-  numPrivateLongTermCare: yup.string().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
-  numPublicAssistedLiving: yup.string().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
-  numPrivateAssistedLiving: yup.string().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+  numPublicLongTermCare: yup.mixed().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+  numPrivateLongTermCare: yup.mixed().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+  numPublicAssistedLiving: yup.mixed().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+  numPrivateAssistedLiving: yup.mixed().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
 
   // HCAP Request
-  hcswFteNumber: yup.string().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+  hcswFteNumber: yup.mixed().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
 
   // Workforce Baseline
   workforceBaseline: yup.array().min(roles.length).max(roles.length).nullable(errorMessage)
     .of(yup.object().shape({
       role: yup.string().nullable().oneOf(roles, 'Invalid role'),
-      currentFullTime: yup.string().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
-      currentPartTime: yup.string().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
-      currentCasual: yup.string().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
-      vacancyFullTime: yup.string().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
-      vacancyPartTime: yup.string().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
-      vacancyCasual: yup.string().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+      currentFullTime: yup.mixed().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+      currentPartTime: yup.mixed().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+      currentCasual: yup.mixed().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+      vacancyFullTime: yup.mixed().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+      vacancyPartTime: yup.mixed().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+      vacancyCasual: yup.mixed().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
     })),
 
   // Staffing Challenges

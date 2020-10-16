@@ -137,6 +137,7 @@ export const Form = ({ initialValues, isDisabled }) => {
       'Food Services Worker': {},
       'Housekeeping': {},
       'COVID-19 IPC Response': {},
+      'Site Administrative Support Staff': {},
     },
 
     // Staffing Challenges

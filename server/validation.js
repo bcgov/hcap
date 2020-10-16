@@ -16,6 +16,7 @@ const roles = [
   'Food Services Worker',
   'Housekeeping',
   'COVID-19 IPC Response',
+  'Site Administrative Support Staff',
 ];
 
 const siteTypes = [

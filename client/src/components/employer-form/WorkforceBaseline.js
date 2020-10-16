@@ -14,15 +14,15 @@ export const WorkforceBaseline = ({ isDisabled }) => {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Typography variant="subtitle2">
-            Workforce Baseline
+            Site Workforce Baseline
           </Typography>
           <Divider />
         </Grid>
 
         <Box pt={1} pb={2} pl={2} pr={2}>
           <Typography variant="body1">
-            This section collects baseline workforce data for the purpose of supporting equitable allocation of Health Care Support
-            Workers (HCSW). The data will also support efforts to ensure that HCAP is utilized by net new health sector employees.
+            Baseline workforce data is necessary to ensure equitable allocation of Health Care Support Workers (HCSW) and
+            HCAP resources across the province.
           </Typography>
         </Box>
 
@@ -38,6 +38,7 @@ export const WorkforceBaseline = ({ isDisabled }) => {
               { value: 'Food Services Worker', label: 'Food Services Worker' },
               { value: 'Housekeeping', label: 'Housekeeping' },
               { value: 'COVID-19 IPC Response', label: 'COVID-19 IPC Response' },
+              { value: 'Site Administrative Support Staff', label: 'Site Administrative Support Staff' },
             ]}
             disabled={isDisabled}
           />

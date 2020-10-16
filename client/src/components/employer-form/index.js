@@ -24,7 +24,6 @@ import { SiteInfo } from './SiteInfo';
 import { HcapRequest } from './HcapRequest';
 import { WorkforceBaseline } from './WorkforceBaseline';
 import { Review } from './Review';
-import { StaffingChallenges } from './StaffingChallenges';
 
 const steps = [
   'Before You Begin',
@@ -32,7 +31,6 @@ const steps = [
   'Site Information',
   'Site Workforce Baseline',
   'Expression of Interest',
-  'Staffing Challenges',
   'Review',
 ];
 
@@ -71,12 +69,9 @@ const getStepFields = (step) => {
     case 4:
       return [
         'hcswFteNumber',
-      ];
-    case 5:
-      return [
         'staffingChallenges',
       ];
-    case 6:
+    case 5:
       return [
         'doesCertify',
       ];
@@ -132,8 +127,6 @@ export const Form = ({ initialValues, isDisabled }) => {
 
     // Site HCAP request
     hcswFteNumber: '',
-
-    // Staffing Challenges
     staffingChallenges: '',
 
     // Collection certification
@@ -262,8 +255,7 @@ export const Form = ({ initialValues, isDisabled }) => {
                   {activeStep === 2 && <SiteInfo isDisabled={isDisabled} />}
                   {activeStep === 3 && <WorkforceBaseline isDisabled={isDisabled} />}
                   {activeStep === 4 && <HcapRequest isDisabled={isDisabled} />}
-                  {activeStep === 5 && <StaffingChallenges isDisabled={isDisabled} />}
-                  {activeStep === 6 && <Review handleEditClick={moveStepper} />}
+                  {activeStep === 5 && <Review handleEditClick={moveStepper} />}
                 </Fragment>
               ) : (
                   <Review isDisabled />

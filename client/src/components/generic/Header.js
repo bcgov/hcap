@@ -77,7 +77,7 @@ export const Header = () => {
             </Hidden>
             <hr className={classes.verticalDivider} />
             <Typography className={classes.title} variant="h2" gutterBottom>
-              Health Career Access Program
+              Employer Expression of Interest
             </Typography>
           </div>
         </Toolbar>

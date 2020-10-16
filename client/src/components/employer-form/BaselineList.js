@@ -70,7 +70,7 @@ export const BaselineList = ({
                 <Divider className={classes.dividerSpacing} />
                 <Grid container justify="space-between">
                   <Grid item>
-                    <InputFieldLabel label="Full Time" />
+                    <InputFieldLabel label="* Full Time" />
                     <TextField
                       variant="filled"
                       fullWidth
@@ -87,7 +87,7 @@ export const BaselineList = ({
                       error={error[option.value]?.currentFullTime} />}
                   </Grid>
                   <Grid item>
-                    <InputFieldLabel label="Part Time" />
+                    <InputFieldLabel label="* Part Time" />
                     <TextField
                       variant="filled"
                       fullWidth
@@ -104,7 +104,7 @@ export const BaselineList = ({
                       error={error[option.value]?.currentPartTime} />}
                   </Grid>
                   <Grid item>
-                    <InputFieldLabel label="Casual" />
+                    <InputFieldLabel label="* Casual" />
                     <TextField
                       variant="filled"
                       fullWidth
@@ -127,7 +127,7 @@ export const BaselineList = ({
                   <Divider className={classes.dividerSpacing} />
                   <Grid container justify="space-between">
                     <Grid item>
-                      <InputFieldLabel label="Full Time" />
+                      <InputFieldLabel label="* Full Time" />
                       <TextField
                         variant="filled"
                         fullWidth
@@ -144,7 +144,7 @@ export const BaselineList = ({
                         error={error[option.value]?.vacancyFullTime} />}
                     </Grid>
                     <Grid item>
-                      <InputFieldLabel label="Part Time" />
+                      <InputFieldLabel label="* Part Time" />
                       <TextField
                         variant="filled"
                         fullWidth
@@ -161,7 +161,7 @@ export const BaselineList = ({
                         error={error[option.value]?.vacancyPartTime} />}
                     </Grid>
                     <Grid item>
-                      <InputFieldLabel label="Casual" />
+                      <InputFieldLabel label="* Casual" />
                       <TextField
                         variant="filled"
                         fullWidth

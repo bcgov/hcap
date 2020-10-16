@@ -24,6 +24,7 @@ import { SiteInfo } from './SiteInfo';
 import { HcapRequest } from './HcapRequest';
 import { WorkforceBaseline } from './WorkforceBaseline';
 import { Review } from './Review';
+import { StaffingChallenges } from './StaffingChallenges';
 
 const steps = [
   'Before You Begin',
@@ -31,6 +32,7 @@ const steps = [
   'Site Information',
   'HCAP request',
   'Workforce Baseline',
+  'Staffing Challenges',
   'Review',
 ];
 
@@ -73,6 +75,10 @@ const getStepFields = (step) => {
         'workforceBaseline',
       ];
     case 5:
+      return [
+        'staffingChallenges',
+      ];
+    case 6:
       return [
         'consent',
       ];
@@ -122,6 +128,9 @@ export const Form = ({ initialValues, isDisabled }) => {
 
     // Workforce Baseline
     workforceBaseline: {},
+
+    // Staffing Challenges
+    staffingChallenges: '',
 
     // Collection consent
     consent: false,
@@ -251,7 +260,8 @@ export const Form = ({ initialValues, isDisabled }) => {
                   {activeStep === 2 && <SiteInfo isDisabled={isDisabled} />}
                   {activeStep === 3 && <HcapRequest isDisabled={isDisabled} />}
                   {activeStep === 4 && <WorkforceBaseline isDisabled={isDisabled} />}
-                  {activeStep === 5 && <Review handleEditClick={moveStepper} />}
+                  {activeStep === 5 && <StaffingChallenges isDisabled={isDisabled} />}
+                  {activeStep === 6 && <Review handleEditClick={moveStepper} />}
                 </Fragment>
               ) : (
                   <Review isDisabled />

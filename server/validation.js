@@ -127,6 +127,9 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shap
     vacancyCasual: yup.number().integer('Number must be an integer').moreThan(-1, 'Number must be positive'),
   })),
 
+  // Staffing Challenges
+  staffingChallenges: yup.string().nullable(),
+
   // Consent
   consent: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 });

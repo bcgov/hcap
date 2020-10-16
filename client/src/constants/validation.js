@@ -128,6 +128,9 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
       })
     )),
 
+  // Staffing Challenges
+  staffingChallenges: yup.string().nullable(),
+
   // Consent
   consent: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 });

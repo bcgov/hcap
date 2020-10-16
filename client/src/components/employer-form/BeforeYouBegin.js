@@ -10,12 +10,8 @@ import { Card, Divider } from '../generic';
 const BeforeYouBegin = () => {
   return (
     <Fragment>
-      <Typography variant="h2" color="primary" gutterBottom>
-        Employer Expression of Interest (EOI)
-      </Typography>
-      <Divider />
 
-      <Box mt={3} mb={2}>
+      <Box mb={2}>
         <Alert severity="info" icon={<PhoneIcon />}>
           <Typography variant="body2" gutterBottom>
             <b>
@@ -40,6 +36,10 @@ const BeforeYouBegin = () => {
 
       <Box mb={2}>
         <Card>
+          <Typography variant="subtitle2" gutterBottom>
+            The Health Career Access Program
+          </Typography>
+          <Divider/>
           <Typography variant="body1">
             The Health Career Access Program (HCAP) is a 12-month paid work and training initiative for individuals seeking an entry point to employment in health. New hires will start as a Health Care Support Worker providing non-direct care at a long-term care or assisted living site and receive paid training to become a Health Care Assistant upon successful completion of the program.
           </Typography>
@@ -66,6 +66,10 @@ const BeforeYouBegin = () => {
 
       <Box>
         <Card>
+          <Typography variant="subtitle2" gutterBottom>
+            Employer Expression of Interest (EOI)
+          </Typography>
+          <Divider/>
           <Typography variant="body1" paragraph>
             This Expression of Interest does not commit employers to participation in the Health Career Access Program.
             Rather, the form is a first step for employers who want to be considered or are interested in knowing more

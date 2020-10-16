@@ -20,7 +20,8 @@ import { scrollUp, mapObjectProps } from '../../utils';
 import { Card, Button } from '../generic';
 import { Summary } from './Summary';
 import { OperatorInfo } from './OperatorInfo';
-import { SiteInfo } from './SiteInfo';
+import { SiteContactInfo } from './SiteContactInfo';
+import { SiteTypeSizeInfo } from './SiteTypeSizeInfo';
 import { HcapRequest } from './HcapRequest';
 import { WorkforceBaseline } from './WorkforceBaseline';
 import { Review } from './Review';
@@ -29,7 +30,8 @@ import { StaffingChallenges } from './StaffingChallenges';
 const steps = [
   'Before You Begin',
   'Operator Information',
-  'Site Information',
+  'Site Contact Information',
+  'Site Type and Size',
   'Expression of Interest',
   'Site Workforce Baseline',
   'Staffing Challenges',
@@ -54,13 +56,6 @@ const getStepFields = (step) => {
         'address',
         'postalCode',
         'geographicRegion',
-        'siteType',
-        'otherSite',
-        'numPublicLongTermCare',
-        'numPrivateLongTermCare',
-        'numPublicAssistedLiving',
-        'numPrivateAssistedLiving',
-        'comment',
         'siteContactFirstName',
         'siteContactLastName',
         'phoneNumber',
@@ -68,13 +63,22 @@ const getStepFields = (step) => {
       ];
     case 3:
       return [
-        'hcswFteNumber',
+        'siteType',
+        'otherSite',
+        'numPublicLongTermCare',
+        'numPrivateLongTermCare',
+        'numPublicAssistedLiving',
+        'numPrivateAssistedLiving',
       ];
     case 4:
       return [
-        'workforceBaseline',
+        'hcswFteNumber',
       ];
     case 5:
+      return [
+        'workforceBaseline',
+      ];
+    case 6:
       return [
         'staffingChallenges',
       ];
@@ -106,22 +110,23 @@ export const Form = ({ initialValues, isDisabled }) => {
     operatorEmail: '',
     operatorPhone: '',
 
-    // Site info
+    // Site contact info
     siteName: '',
     address: '',
     postalCode: '',
     geographicRegion: '',
+    siteContactFirstName: '',
+    siteContactLastName: '',
+    phoneNumber: '',
+    emailAddress: '',
+
+    // Site type and size info
     siteType: '',
     otherSite: '',
     numPublicLongTermCare: '',
     numPrivateLongTermCare: '',
     numPublicAssistedLiving: '',
     numPrivateAssistedLiving: '',
-    comment: '',
-    siteContactFirstName: '',
-    siteContactLastName: '',
-    phoneNumber: '',
-    emailAddress: '',
 
     // Site HCAP request
     hcswFteNumber: '',
@@ -257,11 +262,12 @@ export const Form = ({ initialValues, isDisabled }) => {
                 <Fragment>
                   {activeStep === 0 && <Summary />}
                   {activeStep === 1 && <OperatorInfo isDisabled={isDisabled} />}
-                  {activeStep === 2 && <SiteInfo isDisabled={isDisabled} />}
-                  {activeStep === 3 && <HcapRequest isDisabled={isDisabled} />}
-                  {activeStep === 4 && <WorkforceBaseline isDisabled={isDisabled} />}
-                  {activeStep === 5 && <StaffingChallenges isDisabled={isDisabled} />}
-                  {activeStep === 6 && <Review handleEditClick={moveStepper} />}
+                  {activeStep === 2 && <SiteContactInfo isDisabled={isDisabled} />}
+                  {activeStep === 3 && <SiteTypeSizeInfo isDisabled={isDisabled} />}
+                  {activeStep === 4 && <HcapRequest isDisabled={isDisabled} />}
+                  {activeStep === 5 && <WorkforceBaseline isDisabled={isDisabled} />}
+                  {activeStep === 6 && <StaffingChallenges isDisabled={isDisabled} />}
+                  {activeStep === 7 && <Review handleEditClick={moveStepper} />}
                 </Fragment>
               ) : (
                   <Review isDisabled />

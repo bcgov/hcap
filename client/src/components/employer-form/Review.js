@@ -10,7 +10,6 @@ import { SiteInfo } from './SiteInfo';
 import { HcapRequest } from './HcapRequest';
 import { WorkforceBaseline } from './WorkforceBaseline';
 import { CollectionNotice } from './CollectionNotice';
-import { StaffingChallenges } from './StaffingChallenges';
 
 export const Review = ({ handleEditClick, isDisabled }) => {
 
@@ -115,31 +114,6 @@ export const Review = ({ handleEditClick, isDisabled }) => {
               </Grid>
             </Box>
             <HcapRequest isDisabled />
-          </Card>
-        </Grid>
-        <Grid item xs={12}>
-          <Card>
-            <Box mb={2}>
-              <Grid container alignItems="center" justify="space-between" spacing={2}>
-                <Grid item>
-                  <Typography variant="subtitle1">
-                    5. Comments and Description of Staffing Challenges
-                  </Typography>
-                </Grid>
-                {!isDisabled && (
-                  <Grid item>
-                    <Button
-                      startIcon={<EditIcon />}
-                      fullWidth={false}
-                      size="small"
-                      onClick={() => handleEditClick(5)}
-                      text="Edit"
-                    />
-                  </Grid>
-                )}
-              </Grid>
-            </Box>
-            <StaffingChallenges isDisabled />
           </Card>
         </Grid>
         <Grid item xs={12}>

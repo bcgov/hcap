@@ -36,6 +36,17 @@ export const HcapRequest = ({ isDisabled }) => {
           />
         </Grid>
 
+        <Grid item xs={12}>
+          <FastField
+            name="staffingChallenges"
+            component={RenderTextField}
+            label="Please use this space to explain any staffing challenges you may be facing at this site and to provide any additional information relevant to your expression of interest"
+            multiline
+            rows={5}
+            disabled={isDisabled}
+          />
+        </Grid>
+
       </Grid>
     </Card>
   );

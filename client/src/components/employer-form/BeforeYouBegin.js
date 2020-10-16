@@ -5,7 +5,7 @@ import Link from '@material-ui/core/Link';
 import PhoneIcon from '@material-ui/icons/Phone';
 import Typography from '@material-ui/core/Typography';
 
-import { Divider } from '../generic';
+import { Card, Divider } from '../generic';
 
 const BeforeYouBegin = () => {
   return (
@@ -38,17 +38,47 @@ const BeforeYouBegin = () => {
         </Alert>
       </Box>
 
-      <Typography variant="body1" paragraph>
-        This Expression of Interest does not commit employers to participation in the Health Career Access Program.
-        Rather, the form is a first step for employers who want to be considered or are interested in knowing more
-        about the HCAP opportunity. After the form has been submitted, operators will be contacted with more
-        information and next steps.
-      </Typography>
-      <Typography variant="body1" paragraph>
-        Operators must complete&nbsp;
-        <b>one Expression of Interest form for each site</b>
-         &nbsp;that may be interested in participating in the Health Career Access Program.
-      </Typography>
+      <Box mb={2}>
+        <Card>
+          <Typography variant="body1">
+            The Health Career Access Program (HCAP) is a 12-month paid work and training initiative for individuals seeking an entry point to employment in health. New hires will start as a Health Care Support Worker providing non-direct care at a long-term care or assisted living site and receive paid training to become a Health Care Assistant upon successful completion of the program.
+          </Typography>
+          <br />
+          <Typography variant="body1">
+            A significant number of applicants have already expressed interest in the program through the provincial expression of interest - <Link href="https://www2.gov.bc.ca/gov/content/economic-recovery/work-in-health-care" target="_blank">(https://www2.gov.bc.ca/gov/content/economic-recovery/work-in-health-care)</Link>. As HCAP positions are posted externally, a provincial matching process will connect these individuals to employers that are hiring.
+          </Typography>
+          <br />
+          <Typography variant="body1">
+            HCAP has many benefits for employers who will have the opportunity to access new provincially funded staffing and training resources and play a key role in building capacity in the BC health sector and economy.
+          </Typography>
+          <br />
+          <Typography variant="body1">
+            Participating employers will be provided with funding to cover education and salary costs for hire Health Care Support Workers who will provide critical non-clinical support while enrolled in a new modular Health Care Assistant training program.
+          </Typography>
+          <br />
+          <Typography variant="body1">
+          <b>
+            The Employer Expression of Interest is available to operators of long-term care and/or assisted living sites with publicly funded beds.
+          </b>
+          </Typography>
+        </Card>
+      </Box>
+
+      <Box>
+        <Card>
+          <Typography variant="body1" paragraph>
+            This Expression of Interest does not commit employers to participation in the Health Career Access Program.
+            Rather, the form is a first step for employers who want to be considered or are interested in knowing more
+            about the HCAP opportunity. After the form has been submitted, operators will be contacted with more
+            information and next steps.
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Operators must complete&nbsp;
+            <b>one Expression of Interest form for each site</b>
+            &nbsp;that may be interested in participating in the Health Career Access Program.
+          </Typography>
+        </Card>
+      </Box>
 
     </Fragment>
   );

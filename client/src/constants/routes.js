@@ -1,8 +1,7 @@
 export default Object.freeze({
   // Public routes
-  EmployerLanding: '/',
   Login: '/login',
-  EmployerForm: '/employer-form',
+  EmployerForm: '/',
   EmployeeForm: '/employee-form',
   EmployeeConfirmation: '/employee-confirmation',
   EmployerConfirmation: '/employer-confirmation',

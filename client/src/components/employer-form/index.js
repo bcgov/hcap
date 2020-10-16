@@ -30,8 +30,8 @@ const steps = [
   'Before You Begin',
   'Operator Contact Information',
   'Site Information',
-  'Expression of Interest',
   'Site Workforce Baseline',
+  'Expression of Interest',
   'Staffing Challenges',
   'Review',
 ];
@@ -66,11 +66,11 @@ const getStepFields = (step) => {
       ];
     case 3:
       return [
-        'hcswFteNumber',
+        'workforceBaseline',
       ];
     case 4:
       return [
-        'workforceBaseline',
+        'hcswFteNumber',
       ];
     case 5:
       return [
@@ -119,9 +119,6 @@ export const Form = ({ initialValues, isDisabled }) => {
     numPublicAssistedLiving: '',
     numPrivateAssistedLiving: '',
 
-    // Site HCAP request
-    hcswFteNumber: '',
-
     // Workforce Baseline
     workforceBaseline: {
       'Registered Nurse': {},
@@ -132,6 +129,9 @@ export const Form = ({ initialValues, isDisabled }) => {
       'COVID-19 IPC Response': {},
       'Site Administrative Support Staff': {},
     },
+
+    // Site HCAP request
+    hcswFteNumber: '',
 
     // Staffing Challenges
     staffingChallenges: '',
@@ -260,8 +260,8 @@ export const Form = ({ initialValues, isDisabled }) => {
                   {activeStep === 0 && <BeforeYouBegin />}
                   {activeStep === 1 && <OperatorInfo isDisabled={isDisabled} />}
                   {activeStep === 2 && <SiteInfo isDisabled={isDisabled} />}
-                  {activeStep === 3 && <HcapRequest isDisabled={isDisabled} />}
-                  {activeStep === 4 && <WorkforceBaseline isDisabled={isDisabled} />}
+                  {activeStep === 3 && <WorkforceBaseline isDisabled={isDisabled} />}
+                  {activeStep === 4 && <HcapRequest isDisabled={isDisabled} />}
                   {activeStep === 5 && <StaffingChallenges isDisabled={isDisabled} />}
                   {activeStep === 6 && <Review handleEditClick={moveStepper} />}
                 </Fragment>

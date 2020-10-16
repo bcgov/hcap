@@ -73,7 +73,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
               <Grid container alignItems="center" justify="space-between" spacing={2}>
                 <Grid item>
                   <Typography variant="subtitle1">
-                    3. Expression of Interest
+                    3. Site Workforce Baseline
                   </Typography>
                 </Grid>
                 {!isDisabled && (
@@ -89,7 +89,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
                 )}
               </Grid>
             </Box>
-            <HcapRequest isDisabled />
+            <WorkforceBaseline isDisabled />
           </Card>
         </Grid>
         <Grid item xs={12}>
@@ -98,7 +98,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
               <Grid container alignItems="center" justify="space-between" spacing={2}>
                 <Grid item>
                   <Typography variant="subtitle1">
-                    4. Site Workforce Baseline
+                    4. Expression of Interest
                   </Typography>
                 </Grid>
                 {!isDisabled && (
@@ -114,7 +114,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
                 )}
               </Grid>
             </Box>
-            <WorkforceBaseline isDisabled />
+            <HcapRequest isDisabled />
           </Card>
         </Grid>
         <Grid item xs={12}>

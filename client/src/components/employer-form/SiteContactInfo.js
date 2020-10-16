@@ -82,19 +82,19 @@ export const SiteContactInfo = ({ isDisabled }) => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
-            name="phoneNumber"
-            type="tel"
+            name="emailAddress"
+            type="email"
             component={RenderTextField}
-            label="* Phone number"
+            label="* Email address"
             disabled={isDisabled}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
-            name="emailAddress"
-            type="email"
+            name="phoneNumber"
+            type="tel"
             component={RenderTextField}
-            label="* Email address"
+            label="* Phone number"
             disabled={isDisabled}
           />
         </Grid>

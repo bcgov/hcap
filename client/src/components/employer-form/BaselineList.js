@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
-import CancelIcon from '@material-ui/icons/Cancel';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -44,29 +43,16 @@ export const BaselineList = ({
     return typeof value === 'undefined' ? '' : Number(value);
   }
 
-
   return (
     <Fragment>
       {options.map((option) => (
-        (!disabled || (disabled && value[option.value]?.add)) &&
         <Fragment key={option.value}>
           <Accordion
-            expanded={value[option.value]?.add ? true : false}
-            onChange={() => {
-              setValue(option, {
-                ...value[option.value],
-                add: !value[option.value]?.add,
-              });
-            }}
+            defaultExpanded={true}
             disabled={disabled}
             {...props}
           >
-            <AccordionSummary expandIcon={
-              !value[option.value]?.add ?
-                <AddCircleIcon color="primary" />
-                :
-                <CancelIcon color="error" />
-            }>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Grid container justify="space-between">
                 <Grid item>
                   <Typography variant="body1">
@@ -74,11 +60,6 @@ export const BaselineList = ({
                       {option.label}
                     </b>
                   </Typography>
-                </Grid>
-                <Grid item>
-                  {!value[option.value]?.add ?
-                    <Typography variant="body1" color="primary">Add</Typography> :
-                    <Typography variant="body1" color="error">Remove</Typography>}
                 </Grid>
               </Grid>
             </AccordionSummary>
@@ -88,7 +69,7 @@ export const BaselineList = ({
                 <Divider className={classes.dividerSpacing} />
                 <Grid container justify="space-between">
                   <Grid item>
-                    <InputFieldLabel label="Full Time" />
+                    <InputFieldLabel label="* Full Time" />
                     <TextField
                       variant="filled"
                       fullWidth
@@ -105,7 +86,7 @@ export const BaselineList = ({
                       error={error[option.value]?.currentFullTime} />}
                   </Grid>
                   <Grid item>
-                    <InputFieldLabel label="Part Time" />
+                    <InputFieldLabel label="* Part Time" />
                     <TextField
                       variant="filled"
                       fullWidth
@@ -122,7 +103,7 @@ export const BaselineList = ({
                       error={error[option.value]?.currentPartTime} />}
                   </Grid>
                   <Grid item>
-                    <InputFieldLabel label="Casual" />
+                    <InputFieldLabel label="* Casual" />
                     <TextField
                       variant="filled"
                       fullWidth
@@ -145,7 +126,7 @@ export const BaselineList = ({
                   <Divider className={classes.dividerSpacing} />
                   <Grid container justify="space-between">
                     <Grid item>
-                      <InputFieldLabel label="Full Time" />
+                      <InputFieldLabel label="* Full Time" />
                       <TextField
                         variant="filled"
                         fullWidth
@@ -162,7 +143,7 @@ export const BaselineList = ({
                         error={error[option.value]?.vacancyFullTime} />}
                     </Grid>
                     <Grid item>
-                      <InputFieldLabel label="Part Time" />
+                      <InputFieldLabel label="* Part Time" />
                       <TextField
                         variant="filled"
                         fullWidth
@@ -179,7 +160,7 @@ export const BaselineList = ({
                         error={error[option.value]?.vacancyPartTime} />}
                     </Grid>
                     <Grid item>
-                      <InputFieldLabel label="Casual" />
+                      <InputFieldLabel label="* Casual" />
                       <TextField
                         variant="filled"
                         fullWidth

@@ -130,7 +130,15 @@ export const Form = ({ initialValues, isDisabled }) => {
     hcswFteNumber: '',
 
     // Workforce Baseline
-    workforceBaseline: {},
+    workforceBaseline: {
+      'Registered Nurse': {},
+      'Licensed Practical Nurse': {},
+      'Health Care Assistant': {},
+      'Food Services Worker': {},
+      'Housekeeping': {},
+      'COVID-19 IPC Response': {},
+      'Site Administrative Support Staff': {},
+    },
 
     // Staffing Challenges
     staffingChallenges: '',
@@ -143,17 +151,15 @@ export const Form = ({ initialValues, isDisabled }) => {
     let newWorkforceBaseline = [];
 
     mapValues(values.workforceBaseline, (value, key) => {
-      if (value.add) {
-        newWorkforceBaseline.push({
-          role: key,
-          currentFullTime: value.currentFullTime,
-          currentPartTime: value.currentPartTime,
-          currentCasual: value.currentCasual,
-          vacancyFullTime: value.vacancyFullTime,
-          vacancyPartTime: value.vacancyPartTime,
-          vacancyCasual: value.vacancyCasual,
-        })
-      }
+      newWorkforceBaseline.push({
+        role: key,
+        currentFullTime: value.currentFullTime,
+        currentPartTime: value.currentPartTime,
+        currentCasual: value.currentCasual,
+        vacancyFullTime: value.vacancyFullTime,
+        vacancyPartTime: value.vacancyPartTime,
+        vacancyCasual: value.vacancyCasual,
+      })
     });
 
     return { ...values, workforceBaseline: newWorkforceBaseline }

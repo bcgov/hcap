@@ -16,6 +16,7 @@ export default () => {
       <Suspense fallback={<LinearProgress />}>
         <Switch>
           <Route exact path={Routes.Login} component={Login} />
+          <Route exact path={Routes.EmployerForm} component={EmployerForm} />
           <Route exact path={Routes.EmployeeForm} component={EmployeeForm} />
           <Route exact path={Routes.EmployeeConfirmation} component={EmployeeConfirmation} />
           <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />

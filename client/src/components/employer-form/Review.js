@@ -11,7 +11,7 @@ import { HcapRequest } from './HcapRequest';
 import { WorkforceBaseline } from './WorkforceBaseline';
 import { CollectionNotice } from './CollectionNotice';
 
-export const Review = ({ handleEditClick, isDisabled, activeStep }) => {
+export const Review = ({ handleEditClick, isDisabled }) => {
 
   return (
     <Fragment>

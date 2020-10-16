@@ -31,7 +31,7 @@ const steps = [
   'Operator Information',
   'Site Information',
   'HCAP request',
-  'Workforce Baseline',
+  'Site Workforce Baseline',
   'Staffing Challenges',
   'Review',
 ];

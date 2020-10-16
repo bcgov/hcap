@@ -30,7 +30,7 @@ const steps = [
   'Before You Begin',
   'Operator Information',
   'Site Information',
-  'HCAP request',
+  'Expression of Interest',
   'Site Workforce Baseline',
   'Staffing Challenges',
   'Review',

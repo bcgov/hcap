@@ -61,7 +61,7 @@ const errorMessage = ({ path }) => {
     siteContactLastName: 'Last name is required',
 
     // Employer HCAP request
-    hcswFteNumber: 'Number of HCSW FTEs is required',
+    hcswFteNumber: 'A number is required',
 
     // Orbeon ID from the XML file name
     orbeonId: 'Invalid Orbeon ID format.',

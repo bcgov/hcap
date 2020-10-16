@@ -20,8 +20,7 @@ import { scrollUp, mapObjectProps } from '../../utils';
 import { Card, Button } from '../generic';
 import { BeforeYouBegin } from './BeforeYouBegin';
 import { OperatorInfo } from './OperatorInfo';
-import { SiteContactInfo } from './SiteContactInfo';
-import { SiteTypeSizeInfo } from './SiteTypeSizeInfo';
+import { SiteInfo } from './SiteInfo';
 import { HcapRequest } from './HcapRequest';
 import { WorkforceBaseline } from './WorkforceBaseline';
 import { Review } from './Review';
@@ -30,8 +29,7 @@ import { StaffingChallenges } from './StaffingChallenges';
 const steps = [
   'Before You Begin',
   'Operator Contact Information',
-  'Site Contact Information',
-  'Site Type and Size',
+  'Site Information',
   'Expression of Interest',
   'Site Workforce Baseline',
   'Staffing Challenges',
@@ -59,9 +57,6 @@ const getStepFields = (step) => {
         'siteContactLastName',
         'phoneNumber',
         'emailAddress',
-      ];
-    case 3:
-      return [
         'siteType',
         'otherSite',
         'numPublicLongTermCare',
@@ -69,19 +64,19 @@ const getStepFields = (step) => {
         'numPublicAssistedLiving',
         'numPrivateAssistedLiving',
       ];
-    case 4:
+    case 3:
       return [
         'hcswFteNumber',
       ];
-    case 5:
+    case 4:
       return [
         'workforceBaseline',
       ];
-    case 6:
+    case 5:
       return [
         'staffingChallenges',
       ];
-    case 7:
+    case 6:
       return [
         'doesCertify',
       ];
@@ -117,8 +112,6 @@ export const Form = ({ initialValues, isDisabled }) => {
     siteContactLastName: '',
     phoneNumber: '',
     emailAddress: '',
-
-    // Site type and size info
     siteType: '',
     otherSite: '',
     numPublicLongTermCare: '',
@@ -266,12 +259,11 @@ export const Form = ({ initialValues, isDisabled }) => {
                 <Fragment>
                   {activeStep === 0 && <BeforeYouBegin />}
                   {activeStep === 1 && <OperatorInfo isDisabled={isDisabled} />}
-                  {activeStep === 2 && <SiteContactInfo isDisabled={isDisabled} />}
-                  {activeStep === 3 && <SiteTypeSizeInfo isDisabled={isDisabled} />}
-                  {activeStep === 4 && <HcapRequest isDisabled={isDisabled} />}
-                  {activeStep === 5 && <WorkforceBaseline isDisabled={isDisabled} />}
-                  {activeStep === 6 && <StaffingChallenges isDisabled={isDisabled} />}
-                  {activeStep === 7 && <Review handleEditClick={moveStepper} />}
+                  {activeStep === 2 && <SiteInfo isDisabled={isDisabled} />}
+                  {activeStep === 3 && <HcapRequest isDisabled={isDisabled} />}
+                  {activeStep === 4 && <WorkforceBaseline isDisabled={isDisabled} />}
+                  {activeStep === 5 && <StaffingChallenges isDisabled={isDisabled} />}
+                  {activeStep === 6 && <Review handleEditClick={moveStepper} />}
                 </Fragment>
               ) : (
                   <Review isDisabled />

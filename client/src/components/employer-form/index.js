@@ -82,7 +82,7 @@ const getStepFields = (step) => {
       return [
         'staffingChallenges',
       ];
-    case 6:
+    case 7:
       return [
         'consent',
       ];

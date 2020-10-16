@@ -83,7 +83,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
                       startIcon={<EditIcon />}
                       fullWidth={false}
                       size="small"
-                      onClick={() => handleEditClick(2)}
+                      onClick={() => handleEditClick(3)}
                       text="Edit"
                     />
                   </Grid>
@@ -108,7 +108,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
                       startIcon={<EditIcon />}
                       fullWidth={false}
                       size="small"
-                      onClick={() => handleEditClick(3)}
+                      onClick={() => handleEditClick(4)}
                       text="Edit"
                     />
                   </Grid>
@@ -124,7 +124,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
               <Grid container alignItems="center" justify="space-between" spacing={2}>
                 <Grid item>
                   <Typography variant="subtitle1">
-                    4. Site Workforce Baseline
+                    5. Site Workforce Baseline
                   </Typography>
                 </Grid>
                 {!isDisabled && (
@@ -133,7 +133,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
                       startIcon={<EditIcon />}
                       fullWidth={false}
                       size="small"
-                      onClick={() => handleEditClick(4)}
+                      onClick={() => handleEditClick(5)}
                       text="Edit"
                     />
                   </Grid>
@@ -149,7 +149,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
               <Grid container alignItems="center" justify="space-between" spacing={2}>
                 <Grid item>
                   <Typography variant="subtitle1">
-                    5. Comments and Description of Staffing Challenges
+                    6. Comments and Description of Staffing Challenges
                   </Typography>
                 </Grid>
                 {!isDisabled && (
@@ -158,7 +158,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
                       startIcon={<EditIcon />}
                       fullWidth={false}
                       size="small"
-                      onClick={() => handleEditClick(5)}
+                      onClick={() => handleEditClick(6)}
                       text="Edit"
                     />
                   </Grid>

@@ -52,9 +52,9 @@ export const SiteInfo = ({ isDisabled }) => {
         </Grid>
         <Grid item xs={12} md={6}>
           <FastField
-            name="geographicRegion"
+            name="healthAuthority"
             component={RenderSelectField}
-            label="* Geographic region"
+            label="* Health authority"
             disabled={isDisabled}
             options={[
               { value: 'Interior', label: 'Interior Health' },

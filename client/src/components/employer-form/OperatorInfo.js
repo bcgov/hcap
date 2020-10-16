@@ -85,6 +85,24 @@ export const OperatorInfo = ({ isDisabled }) => {
           />
         </Grid>
 
+        <Grid item xs={6} sm={6}>
+          <FastField
+            name="operatorAddress"
+            component={RenderTextField}
+            label="* Operator address"
+            disabled={isDisabled}
+          />
+        </Grid>
+
+        <Grid item xs={6} sm={6}>
+          <FastField
+            name="operatorPostalCode"
+            component={RenderTextField}
+            label="* Postal code"
+            disabled={isDisabled}
+          />
+        </Grid>
+
       </Grid>
     </Card>
   );

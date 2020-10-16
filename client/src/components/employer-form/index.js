@@ -18,7 +18,7 @@ import { EmployerFormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 import { scrollUp, mapObjectProps } from '../../utils';
 import { Card, Button } from '../generic';
-import { Summary } from './Summary';
+import { BeforeYouBegin } from './BeforeYouBegin';
 import { OperatorInfo } from './OperatorInfo';
 import { SiteContactInfo } from './SiteContactInfo';
 import { SiteTypeSizeInfo } from './SiteTypeSizeInfo';
@@ -29,7 +29,7 @@ import { StaffingChallenges } from './StaffingChallenges';
 
 const steps = [
   'Before You Begin',
-  'Operator Information',
+  'Operator Contact Information',
   'Site Contact Information',
   'Site Type and Size',
   'Expression of Interest',
@@ -43,8 +43,7 @@ const getStepFields = (step) => {
     case 1:
       return [
         'registeredBusinessName',
-        'operatorFirstName',
-        'operatorLastName',
+        'operatorName',
         'operatorContactFirstName',
         'operatorContactLastName',
         'operatorEmail',
@@ -101,10 +100,9 @@ export const Form = ({ initialValues, isDisabled }) => {
   const isLastStep = activeStep === steps.length - 1;
 
   const formValues = initialValues ? initialValues : {
-    // Operator info
+    // Operator contact info
     registeredBusinessName: '',
-    operatorFirstName: '',
-    operatorLastName: '',
+    operatorName: '',
     operatorContactFirstName: '',
     operatorContactLastName: '',
     operatorEmail: '',
@@ -260,7 +258,7 @@ export const Form = ({ initialValues, isDisabled }) => {
               {/** Form Sections */}
               {!isDisabled ? (
                 <Fragment>
-                  {activeStep === 0 && <Summary />}
+                  {activeStep === 0 && <BeforeYouBegin />}
                   {activeStep === 1 && <OperatorInfo isDisabled={isDisabled} />}
                   {activeStep === 2 && <SiteContactInfo isDisabled={isDisabled} />}
                   {activeStep === 3 && <SiteTypeSizeInfo isDisabled={isDisabled} />}

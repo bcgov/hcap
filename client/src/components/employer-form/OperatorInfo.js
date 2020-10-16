@@ -16,7 +16,7 @@ export const OperatorInfo = ({ isDisabled }) => {
 
         <Grid item xs={12}>
           <Typography variant="subtitle2">
-            Operator Information
+            Operator Contact Information
           </Typography>
           <Divider />
         </Grid>
@@ -38,20 +38,11 @@ export const OperatorInfo = ({ isDisabled }) => {
           />
         </Grid>
 
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <FastField
-            name="operatorFirstName"
+            name="operatorName"
             component={RenderTextField}
-            label="* Operator first name"
-            disabled={isDisabled}
-          />
-        </Grid>
-
-        <Grid item xs={6}>
-          <FastField
-            name="operatorLastName"
-            component={RenderTextField}
-            label="* Operator last name"
+            label="* Operator name"
             disabled={isDisabled}
           />
         </Grid>
@@ -74,7 +65,7 @@ export const OperatorInfo = ({ isDisabled }) => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <FastField
             name="operatorEmail"
             type="email"
@@ -84,7 +75,7 @@ export const OperatorInfo = ({ isDisabled }) => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <FastField
             name="operatorPhone"
             type="tel"

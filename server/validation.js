@@ -39,10 +39,9 @@ const errorMessage = ({ path }) => {
     postalCode: 'Postal code is required',
     consent: 'We\'re sorry, but we cannot process your request without permission.',
 
-    // Employer operator info
+    // Employer operator contact info
     registeredBusinessName: 'Business name is required',
-    operatorFirstName: 'Operator first name is required',
-    operatorLastName: 'Operator last name is required',
+    operatorName: 'Operator name is required',
     operatorContactFirstName: 'Operator contact first name is required',
     operatorContactLastName: 'Operator contact last name is required',
     operatorEmail: 'Operator email is required',
@@ -81,10 +80,9 @@ const LoginSchema = yup.object().noUnknown().shape({
 });
 
 const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shape({
-  // Operator Information
+  // Operator Contact Information
   registeredBusinessName: yup.string().required(errorMessage),
-  operatorFirstName: yup.string().required(errorMessage),
-  operatorLastName: yup.string().required(errorMessage),
+  operatorName: yup.string().required(errorMessage),
   operatorContactFirstName: yup.string().required(errorMessage),
   operatorContactLastName: yup.string().required(errorMessage),
   operatorEmail: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),

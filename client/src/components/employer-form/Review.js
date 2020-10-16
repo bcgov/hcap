@@ -48,7 +48,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
               <Grid container alignItems="center" justify="space-between" spacing={2}>
                 <Grid item>
                   <Typography variant="subtitle1">
-                    2. Site Contact Information
+                    2. Site Information
                   </Typography>
                 </Grid>
                 {!isDisabled && (

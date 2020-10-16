@@ -1,25 +1,94 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import mapValues from 'lodash/mapValues';
 import { Formik, Form as FormikForm } from 'formik';
 import { useHistory } from 'react-router-dom';
+import Stepper from '@material-ui/core/Stepper';
+import MobileStepper from '@material-ui/core/MobileStepper';
+import Step from '@material-ui/core/Step';
+import StepButton from '@material-ui/core/StepButton';
+import StepLabel from '@material-ui/core/StepLabel';
+import Hidden from '@material-ui/core/Hidden';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import Typography from '@material-ui/core/Typography';
 
 import { EmployerFormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
-import { scrollUp } from '../../utils';
+import { scrollUp, mapObjectProps } from '../../utils';
 import { Card, Button } from '../generic';
 import { Summary } from './Summary';
 import { OperatorInfo } from './OperatorInfo';
 import { SiteInfo } from './SiteInfo';
 import { HcapRequest } from './HcapRequest';
 import { WorkforceBaseline } from './WorkforceBaseline';
-import { CollectionNotice } from './CollectionNotice';
+import { Review } from './Review';
+
+const steps = [
+  'Before You Begin',
+  'Operator Information',
+  'Site Information',
+  'HCAP request',
+  'Workforce Baseline',
+  'Review',
+];
+
+const getStepFields = (step) => {
+  switch (step) {
+    case 1:
+      return [
+        'registeredBusinessName',
+        'operatorFirstName',
+        'operatorLastName',
+        'operatorContactFirstName',
+        'operatorContactLastName',
+        'operatorEmail',
+        'operatorPhone',
+      ];
+    case 2:
+      return [
+        'siteName',
+        'address',
+        'postalCode',
+        'geographicRegion',
+        'siteType',
+        'otherSite',
+        'numPublicLongTermCare',
+        'numPrivateLongTermCare',
+        'numPublicAssistedLiving',
+        'numPrivateAssistedLiving',
+        'comment',
+        'siteContactFirstName',
+        'siteContactLastName',
+        'phoneNumber',
+        'emailAddress',
+      ];
+    case 3:
+      return [
+        'hcswFteNumber',
+      ];
+    case 4:
+      return [
+        'workforceBaseline',
+      ];
+    case 5:
+      return [
+        'consent',
+      ];
+    default:
+      return [];
+  }
+}
 
 export const Form = ({ initialValues, isDisabled }) => {
   const history = useHistory();
   const { openToast } = useToast();
   const [submitLoading, setSubmitLoading] = useState(false);
+
+  const [activeStep, setActiveStep] = useState(0);
+  const isFirstStep = activeStep === 0;
+  const isLastStep = activeStep === steps.length - 1;
 
   const formValues = initialValues ? initialValues : {
     // Operator info
@@ -102,9 +171,30 @@ export const Form = ({ initialValues, isDisabled }) => {
     setSubmitLoading(false);
   };
 
-  const handleSubmitButton = (submitForm) => {
-    scrollUp();
-    submitForm();
+  const moveStepper = (index) => {
+    setActiveStep(index);
+  };
+
+  const handleBackClicked = () => {
+    moveStepper(activeStep - 1);
+  };
+
+  const handleNextClicked = async (submitForm, setTouched, values) => {
+    if (isLastStep) {
+      await submitForm();
+    } else {
+      const fieldsForCurrentStep = getStepFields(activeStep);
+      const filtered = Object.keys(values)
+        .filter((k) => fieldsForCurrentStep.includes(k))
+        .reduce((a, v) => ({ ...a, [v]: values[v] }), {});
+      const fieldsToTouch = mapObjectProps(filtered, () => true);
+      const errors = await setTouched(fieldsToTouch);
+      const hasOutstandingErrors = Object.keys(errors).some((key) => fieldsForCurrentStep.includes(key));
+      if (!hasOutstandingErrors) {
+        scrollUp();
+        moveStepper(activeStep + 1);
+      }
+    }
   };
 
   return (
@@ -116,45 +206,128 @@ export const Form = ({ initialValues, isDisabled }) => {
       >
         {({ errors, submitForm, setTouched, values }) => (
           <FormikForm>
-            <Box pt={4} pb={1} pl={2} pr={2}>
-              <Card>
-                <Box pt={0} pb={0} pl={2} pr={2}>
-                  <Summary isDisabled={isDisabled} />
-                </Box>
+            {!isDisabled && (
+              <Box pt={4} pb={1} pl={2} pr={2}>
+                <Card noPadding>
 
-                <Box pt={2} pb={2} pl={2} pr={2}>
-                  <OperatorInfo isDisabled={isDisabled} />
-                </Box>
+                  {/** Desktop Stepper */}
+                  <Hidden xsDown>
+                    <Stepper
+                      alternativeLabel
+                      activeStep={activeStep}
+                    >
+                      {steps.map((label, index) => (
+                        <Step key={label}>
+                          <StepButton onClick={() => moveStepper(index)}>
+                            <StepLabel>{label}</StepLabel>
+                          </StepButton>
+                        </Step>
+                      ))}
+                    </Stepper>
+                  </Hidden>
 
-                <Box pt={2} pb={2} pl={2} pr={2}>
-                  <SiteInfo isDisabled={isDisabled} />
-                </Box>
+                  {/** Mobile Stepper - Text */}
+                  <Hidden smUp>
+                    <Box p={2}>
+                      <Typography variant="body1" color="primary" gutterBottom>
+                        Step {activeStep + 1} of {steps.length}
+                      </Typography>
+                      <Typography variant="body1">
+                        <b>{activeStep + 1}. {steps[activeStep]}</b>
+                      </Typography>
+                    </Box>
+                  </Hidden>
+                </Card>
+              </Box>
+            )}
 
-                <Box pt={2} pb={2} pl={2} pr={2}>
-                  <HcapRequest isDisabled={isDisabled} />
-                </Box>
+            <Box pt={2} pb={4} pl={2} pr={2}>
 
-                <Box pt={2} pb={4} pl={2} pr={2}>
-                  <WorkforceBaseline isDisabled={isDisabled} />
-                </Box>
+              {/** Form Sections */}
+              {!isDisabled ? (
+                <Fragment>
+                  {activeStep === 0 && <Summary />}
+                  {activeStep === 1 && <OperatorInfo isDisabled={isDisabled} />}
+                  {activeStep === 2 && <SiteInfo isDisabled={isDisabled} />}
+                  {activeStep === 3 && <HcapRequest isDisabled={isDisabled} />}
+                  {activeStep === 4 && <WorkforceBaseline isDisabled={isDisabled} />}
+                  {activeStep === 5 && <Review handleEditClick={moveStepper} />}
+                </Fragment>
+              ) : (
+                  <Review isDisabled />
+                )}
 
-                <Box pt={2} pb={4} pl={2} pr={2}>
-                  <CollectionNotice isDisabled={isDisabled} />
-                </Box>
-              </Card>
+              {/** Desktop Prev / Next */}
+              {!isDisabled && (
+                <Hidden xsDown>
+                  <Box mt={3}>
+                    <Grid container spacing={2}>
+                      {activeStep > 0 && (
+                        <Grid item>
+                          <Button
+                            disabled={isFirstStep}
+                            onClick={handleBackClicked}
+                            text="Back"
+                            fullWidth={false}
+                          />
+                        </Grid>
+                      )}
+                      <Grid item>
+                        <Button
+                          onClick={() => handleNextClicked(submitForm, setTouched, values)}
+                          variant="contained"
+                          color="primary"
+                          fullWidth={false}
+                          loading={submitLoading}
+                          text={isLastStep ? 'Submit' : 'Next'}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Hidden>
+              )}
             </Box>
 
+            {/** Mobile Stepper - Prev / Next */}
             {!isDisabled && (
-              <Box display="flex" justifyContent="center" pt={0} pb={4} pl={2} pr={2}>
-                <Button
-                  onClick={() => handleSubmitButton(submitForm)}
-                  variant="contained"
-                  color="primary"
-                  fullWidth={false}
-                  loading={submitLoading}
-                  text="Submit"
-                />
-              </Box>)}
+              <Hidden smUp>
+                <Box pb={4} pl={2} pr={2}>
+                  <Card noPadding>
+                    <MobileStepper
+                      style={{ backgroundColor: '#FFFFFF' }}
+                      steps={steps.length}
+                      variant="text"
+                      position="static"
+                      activeStep={activeStep}
+                      backButton={(
+                        <Button
+                          fullWidth={false}
+                          disabled={isFirstStep}
+                          onClick={handleBackClicked}
+                          text={(
+                            <Fragment>
+                              <KeyboardArrowLeft /> Back
+                            </Fragment>
+                          )}
+                        />
+                      )}
+                      nextButton={(
+                        <Button
+                          fullWidth={false}
+                          loading={submitLoading}
+                          onClick={() => handleNextClicked(submitForm, setTouched, values)}
+                          text={isLastStep ? 'Submit' : (
+                            <Fragment>
+                              Next <KeyboardArrowRight />
+                            </Fragment>
+                          )}
+                        />
+                      )}
+                    />
+                  </Card>
+                </Box>
+              </Hidden>
+            )}
           </FormikForm>
         )}
       </Formik>

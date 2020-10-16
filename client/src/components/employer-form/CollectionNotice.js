@@ -3,23 +3,16 @@ import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { Field } from 'formik';
-import { makeStyles } from '@material-ui/core/styles';
 import { RenderCheckbox } from '../fields';
+import { useLocation } from 'react-router-dom'
+import { Routes } from '../../constants';
 
-const useStyles = makeStyles((theme) => ({
-  line: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-    borderTop: '2px solid rgb(204, 204, 204)',
-  },
-}));
 
 const CollectionNotice = ({ isDisabled }) => {
-  const classes = useStyles();
+  const location = useLocation();
 
   return (
     <Grid item xs={12}>
-      <hr className={classes.line} />
       <Grid container spacing={2}>
 
         {/** Consent */}
@@ -28,7 +21,7 @@ const CollectionNotice = ({ isDisabled }) => {
             name="consent"
             component={RenderCheckbox}
             label="I consent to have my personal information shared with the Health Career Access Program."
-            disabled={isDisabled}
+            disabled={isDisabled || location.pathname === Routes.EmployerConfirmation}
           />
         </Grid>
 

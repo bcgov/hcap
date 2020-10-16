@@ -82,7 +82,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
                       startIcon={<EditIcon />}
                       fullWidth={false}
                       size="small"
-                      onClick={() => handleEditClick(4)}
+                      onClick={() => handleEditClick(3)}
                       text="Edit"
                     />
                   </Grid>
@@ -107,7 +107,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
                       startIcon={<EditIcon />}
                       fullWidth={false}
                       size="small"
-                      onClick={() => handleEditClick(5)}
+                      onClick={() => handleEditClick(4)}
                       text="Edit"
                     />
                   </Grid>
@@ -132,7 +132,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
                       startIcon={<EditIcon />}
                       fullWidth={false}
                       size="small"
-                      onClick={() => handleEditClick(6)}
+                      onClick={() => handleEditClick(5)}
                       text="Edit"
                     />
                   </Grid>

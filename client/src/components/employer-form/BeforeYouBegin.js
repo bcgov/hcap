@@ -41,11 +41,11 @@ const BeforeYouBegin = () => {
           </Typography>
           <Divider/>
           <Typography variant="body1">
-            The Health Career Access Program (HCAP) is a 12-month paid work and training initiative for individuals seeking an entry point to employment in health. New hires will start as a Health Care Support Worker providing non-direct care at a long-term care or assisted living site and receive paid training to become a Health Care Assistant upon successful completion of the program.
+            The Health Career Access Program (HCAP) is a 12-18 month paid work and training initiative for individuals seeking an entry point to employment in health. New hires will start as a Health Care Support Worker providing non-direct care at a long-term care or assisted living site and receive paid training to become a Health Care Assistant upon successful completion of the program.
           </Typography>
           <br />
           <Typography variant="body1">
-            A significant number of applicants have already expressed interest in the program through the provincial expression of interest - <Link href="https://www2.gov.bc.ca/gov/content/economic-recovery/work-in-health-care" target="_blank">(https://www2.gov.bc.ca/gov/content/economic-recovery/work-in-health-care)</Link>. As HCAP positions are posted externally, a provincial matching process will connect these individuals to employers that are hiring.
+            A significant number of applicants have already expressed interest in the program through the provincial expression of interest - <Link href="https://www2.gov.bc.ca/gov/content/economic-recovery/work-in-health-care" target="_blank">(https://www2.gov.bc.ca/gov/content/economic-recovery/work-in-health-care)</Link>. HCAP positions will be posted both internally and externally, followed by a provincial matching process to connect applicants to employers.
           </Typography>
           <br />
           <Typography variant="body1">
@@ -53,12 +53,12 @@ const BeforeYouBegin = () => {
           </Typography>
           <br />
           <Typography variant="body1">
-            Participating employers will be provided with funding to cover education and salary costs for hire Health Care Support Workers who will provide critical non-clinical support while enrolled in a new modular Health Care Assistant training program.
+            Participating employers will be provided with funding to cover education and salary costs for hire Health Care Support Workers who will provide critical non-clinical support while enrolled in a new modular Health Care Assistant training program. The HCAP will roll out as a partnership between candidates and employers to work through onboarding, orientation, employer-based training, and the HCA employer-sponsored training program.
           </Typography>
           <br />
           <Typography variant="body1">
           <b>
-            The Employer Expression of Interest is available to operators of long-term care and/or assisted living sites with publicly funded beds.
+            The Employer Expression of Interest is available to operators of long-term care and/or assisted living sites with both public and privately funded beds.
           </b>
           </Typography>
         </Card>

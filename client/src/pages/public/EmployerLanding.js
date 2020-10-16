@@ -1,3 +1,4 @@
+import Link from '@material-ui/core/Link';
 import React, { Fragment } from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -27,46 +28,26 @@ export default () => {
               </Typography>
               <Divider />
               <Typography variant="body1">
-                The Health Career Access Program (HCAP) is a 12-month paid work and training opportunity which provides a path for applicants with no health care experience to get hired into non-direct care roles (Health Care Support Worker, HCSW) and train to become a Health Care Assistants (HCA).
+              The Health Career Access Program (HCAP) is a 12-month paid work and training initiative for individuals seeking an entry point to employment in health. New hires will start as a Health Care Support Worker providing non-direct care at a long-term care or assisted living site and receive paid training to become a Health Care Assistant upon successful completion of the program.
               </Typography>
               <br />
               <Typography variant="body1">
-                Employers participating in the Health Career Access Program will have the opportunity to access additional provincially funded staffing and training resources and play a key role in building capacity in the British Columbia health sector and economy.
+              A significant number of applicants have already expressed interest in the program through the provincial expression of interest - <Link href="https://www2.gov.bc.ca/gov/content/economic-recovery/work-in-health-care" target="_blank">(https://www2.gov.bc.ca/gov/content/economic-recovery/work-in-health-care)</Link>. As HCAP positions are posted externally, a provincial matching process will connect these individuals to employers that are hiring.
               </Typography>
               <br />
-              <Typography variant="subtitle2" color="primary" gutterBottom>
-                Program Goals
-              </Typography>
               <Typography variant="body1">
-                The Health Career Access Program (HCAP) has been designed to meet a number of high-priority goals in the B.C. Health Sector and in the province more generally:
+              HCAP has many benefits for employers who will have the opportunity to access new provincially funded staffing and training resources and play a key role in building capacity in the BC health sector and economy.
               </Typography>
-              <ul>
-                <li>
-                  <Typography variant="body1" gutterBottom>
-                    Increase staffing of health care assistants at long-term care and assisted living sites in BC.
-                    </Typography>
-                </li>
-                <li>
-                  <Typography variant="body1" gutterBottom>
-                    Support the COVID-19 response at long-term care and assisted living sites by staffing critical non-clinical non-direct care roles to assist patients, residents, and staff.
-                    </Typography>
-                </li>
-                <li>
-                  <Typography variant="body1" gutterBottom>
-                    Support BC’s COVID-19 recovery efforts by offering stable employment at long-term care and assisted living across the province.
-                    </Typography>
-                </li>
-                <li>
-                  <Typography variant="body1" gutterBottom>
-                    Reduce the barriers to entry into health care careers by providing applicants with an opportunity to train to become health care assistants (HCAs) through the course of their employment.
-                    </Typography>
-                </li>
-                <li>
-                  <Typography variant="body1" gutterBottom>
-                    Improve retention of new employees and existing in the health sector and health care assistants by providing an appealing and standardized pathway to long-term employment as a health care assistant.
-                    </Typography>
-                </li>
-              </ul>
+              <br />
+              <Typography variant="body1">
+              Participating employers will be provided with funding to cover education and salary costs for hire Health Care Support Workers who will provide critical non-clinical support while enrolled in a new modular Health Care Assistant training program.
+              </Typography>
+              <br />
+              <Typography variant="body1">
+              <b>
+                The Employer Expression of Interest is available to operators of long-term care and/or assisted living sites with publicly funded beds.
+              </b>
+              </Typography>
             </Fragment>
           </Card>
         </Box>

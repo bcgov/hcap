@@ -46,7 +46,6 @@ export const BaselineList = ({
   return (
     <Fragment>
       {options.map((option) => (
-        !disabled &&
         <Fragment key={option.value}>
           <Accordion
             defaultExpanded={true}

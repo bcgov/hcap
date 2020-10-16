@@ -38,11 +38,13 @@ const errorMessage = ({ path }) => {
     operatorContactLastName: 'Operator contact last name is required',
     operatorEmail: 'Operator email is required',
     operatorPhone: 'Operator phone is required',
+    operatorAddress: 'Operator address is required',
+    operatorPostalCode: 'Operator postal code is required',
 
     // Employer site contact info
     siteName: 'Site name is required',
     address: 'Address is required',
-    geographicRegion: 'Geographic region is required',
+    healthAuthority: 'Health authority is required',
     siteContactFirstName: 'First name is required',
     siteContactLastName: 'Last name is required',
 
@@ -86,12 +88,14 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
   operatorContactLastName: yup.string().nullable(errorMessage),
   operatorEmail: yup.string().nullable(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
   operatorPhone: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  operatorAddress: yup.string().nullable(errorMessage),
+  operatorPostalCode: yup.string().nullable(errorMessage).matches(/^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/, 'Format as A1A 1A1'),
 
   // Site contact info
   siteName: yup.string().nullable(errorMessage),
   address: yup.string().nullable(errorMessage),
   postalCode: yup.string().nullable(errorMessage).matches(/^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/, 'Format as A1A 1A1'),
-  geographicRegion: yup.string().nullable(errorMessage).oneOf(healthRegions, 'Invalid location'),
+  healthAuthority: yup.string().nullable(errorMessage).oneOf(healthRegions, 'Invalid location'),
   siteContactFirstName: yup.string().nullable(errorMessage),
   siteContactLastName: yup.string().nullable(errorMessage),
   phoneNumber: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),

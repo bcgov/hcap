@@ -44,13 +44,15 @@ const getStepFields = (step) => {
         'operatorContactLastName',
         'operatorEmail',
         'operatorPhone',
+        'operatorAddress',
+        'operatorPostalCode',
       ];
     case 2:
       return [
         'siteName',
         'address',
         'postalCode',
-        'geographicRegion',
+        'healthAuthority',
         'siteContactFirstName',
         'siteContactLastName',
         'phoneNumber',
@@ -97,12 +99,14 @@ export const Form = ({ initialValues, isDisabled }) => {
     operatorContactLastName: '',
     operatorEmail: '',
     operatorPhone: '',
+    operatorAddress: '',
+    operatorPostalCode: '',
 
     // Site contact info
     siteName: '',
     address: '',
     postalCode: '',
-    geographicRegion: '',
+    healthAuthority: '',
     siteContactFirstName: '',
     siteContactLastName: '',
     phoneNumber: '',

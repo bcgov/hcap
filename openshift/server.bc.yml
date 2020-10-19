@@ -42,7 +42,10 @@ objects:
           uri: ${REPO}
           ref: origin/${BRANCH}
       strategy:
-        type: Docker
+        dockerStrategy:
+          buildArgs:
+            - name: VERSION
+              value: TEST_VERSION
       output:
         to:
           kind: ImageStreamTag

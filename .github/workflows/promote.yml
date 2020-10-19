@@ -22,7 +22,15 @@ jobs:
       - name: Extract Tag, Set OpenShift Namespace Suffix
         run: echo "OS_NAMESPACE_SUFFIX=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
+      - name: Cache OpenShift CLI
+        id: cache-oc
+        uses: actions/cache@v2
+        with:
+          path: /usr/local/bin/oc
+          key: ${{ runner.os }}-oc
+
       - name: Install OpenShift CLI
+        if: steps.cache-oc.outputs.cache-hit != 'true'
         run: |
           OC_VERSION=3.11.0
           sudo apt-get update

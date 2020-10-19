@@ -76,6 +76,9 @@ const BeforeYouBegin = () => {
             <b>one Expression of Interest form for each site</b>
             &nbsp;that may be interested in participating in the Health Career Access Program.
           </Typography>
+          <Typography variant="body1" paragraph>
+            <b>Submitted forms must be received by Tuesday, November 3, 2020.</b>
+          </Typography>
         </Card>
       </Box>
 

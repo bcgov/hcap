@@ -18,6 +18,10 @@ parameters:
     description: ImageStream tag for build and deploy
     value: latest
     required: true
+  - name: VERSION
+    description: The application version returned by the API version endpoint
+    value: VERSION_UNDEFINED
+    required: true
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -45,7 +49,7 @@ objects:
         dockerStrategy:
           buildArgs:
             - name: VERSION
-              value: TEST_VERSION
+              value: ${VERSION}
       output:
         to:
           kind: ImageStreamTag

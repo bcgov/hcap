@@ -14,7 +14,7 @@ const BeforeYouBegin = () => {
         <Alert severity="info">
           <Typography variant="body2" gutterBottom>
             <b>
-              If you have any questions, please contact the Health Care Access Program at:&nbsp;
+              If you have any questions, please contact the Health Career Access Program at:&nbsp;
               <Link href="mailto:HCAPInfoQuery@gov.bc.ca">
                 HCAPInfoQuery@gov.bc.ca
               </Link>

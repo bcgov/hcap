@@ -38,7 +38,7 @@ export const WorkforceBaseline = ({ isDisabled }) => {
               { value: 'Food Services Worker', label: 'Food Services Worker' },
               { value: 'Housekeeping', label: 'Housekeeping' },
               { value: 'COVID-19 IPC Response', label: 'COVID-19 IPC Response' },
-              { value: 'Site Administrative Support Staff', label: 'Site Administrative Support Staff' },
+              { value: 'Site Administrative Staff', label: 'Site Administrative Staff' },
             ]}
             disabled={isDisabled}
           />

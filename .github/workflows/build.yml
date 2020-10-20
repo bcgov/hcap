@@ -11,6 +11,19 @@ env:
   PROJECT: hcap
 
 jobs:
+  audit:
+    name: Run NPM Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: NPM Audit
+        run: |
+          cd "$GITHUB_WORKSPACE/client" && npm audit
+          cd "$GITHUB_WORKSPACE/server" && npm audit
+          cd "$GITHUB_WORKSPACE"
+          
   build:
     name: OpenShift Build & Deploy
     runs-on: ubuntu-latest
@@ -35,3 +48,10 @@ jobs:
           oc login "$CLUSTER" --token="$AUTH_TOKEN"
           make server-build
           make server-deploy
+
+      # TODO make wait for server-deploy and run the ZAP Scan
+      # - name: ZAP Scan
+      #   uses: zaproxy/action-baseline@v0.4.0
+      #   with:
+      #     target: ${{ env.DEV_URL }}
+      #     cmd_options: '-I'

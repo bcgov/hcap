@@ -10,7 +10,7 @@ import { Routes } from '../../constants';
 import { Card, Button } from '../generic';
 import { OperatorInfo } from './OperatorInfo';
 import { SiteInfo } from './SiteInfo';
-import { HcapRequest } from './HcapRequest';
+import { ExpressionOfInt } from './ExpressionOfInt';
 import { WorkforceBaseline } from './WorkforceBaseline';
 import { CollectionNotice } from './CollectionNotice';
 
@@ -131,7 +131,7 @@ export const Review = ({ handleEditClick, isDisabled }) => {
                 )}
               </Grid>
             </Box>
-            <HcapRequest isDisabled />
+            <ExpressionOfInt isDisabled />
           </Card>
         </Grid>
         <Grid item xs={12}>

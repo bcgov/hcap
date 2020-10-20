@@ -21,7 +21,7 @@ import { Card, Button } from '../generic';
 import { BeforeYouBegin } from './BeforeYouBegin';
 import { OperatorInfo } from './OperatorInfo';
 import { SiteInfo } from './SiteInfo';
-import { HcapRequest } from './HcapRequest';
+import { ExpressionOfInt } from './ExpressionOfInt';
 import { WorkforceBaseline } from './WorkforceBaseline';
 import { Review } from './Review';
 
@@ -179,6 +179,7 @@ export const Form = ({ initialValues, isDisabled }) => {
 
   const moveStepper = (index) => {
     setActiveStep(index);
+    scrollUp();
   };
 
   const handleBackClicked = () => {
@@ -197,7 +198,6 @@ export const Form = ({ initialValues, isDisabled }) => {
       const errors = await setTouched(fieldsToTouch);
       const hasOutstandingErrors = Object.keys(errors).some((key) => fieldsForCurrentStep.includes(key));
       if (!hasOutstandingErrors) {
-        scrollUp();
         moveStepper(activeStep + 1);
       }
     }
@@ -256,7 +256,7 @@ export const Form = ({ initialValues, isDisabled }) => {
                   {activeStep === 1 && <OperatorInfo isDisabled={isDisabled} />}
                   {activeStep === 2 && <SiteInfo isDisabled={isDisabled} />}
                   {activeStep === 3 && <WorkforceBaseline isDisabled={isDisabled} />}
-                  {activeStep === 4 && <HcapRequest isDisabled={isDisabled} />}
+                  {activeStep === 4 && <ExpressionOfInt isDisabled={isDisabled} />}
                   {activeStep === 5 && <Review handleEditClick={moveStepper} />}
                 </Fragment>
               ) : (

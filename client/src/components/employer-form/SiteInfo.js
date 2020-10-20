@@ -26,7 +26,7 @@ export const SiteInfo = ({ isDisabled }) => {
             interested in participating in the Health Career Access Program.
           </Typography>
         </Box>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={12}>
           <FastField
             name="siteName"
             component={RenderTextField}
@@ -39,14 +39,6 @@ export const SiteInfo = ({ isDisabled }) => {
             name="address"
             component={RenderTextField}
             label="* Site address"
-            disabled={isDisabled}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <FastField
-            name="postalCode"
-            component={RenderTextField}
-            label="* Postal code"
             disabled={isDisabled}
           />
         </Grid>

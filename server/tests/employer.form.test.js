@@ -32,7 +32,6 @@ describe('Server V1 Form Endpoints', () => {
     // Site contact info
     siteName: 'Site Name',
     address: '1111 Aaa St.',
-    postalCode: 'A1A 1A1',
     healthAuthority: 'Interior',
     siteContactFirstName: 'John',
     siteContactLastName: 'Doe',
@@ -107,7 +106,7 @@ describe('Server V1 Form Endpoints', () => {
         vacancyCasual: 2,
       },
       {
-        role: 'Site Administrative Support Staff',
+        role: 'Site Administrative Staff',
         currentFullTime: 3,
         currentPartTime: 1,
         currentCasual: 2,

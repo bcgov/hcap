@@ -30,9 +30,9 @@ const BeforeYouBegin = () => {
           </Typography>
           <Divider/>
           <Typography variant="body1">
-            The Health Career Access Program (HCAP) is a 12-18 month paid work and training initiative for
-            individuals seeking an entry point to employment in health. New hires will start as a Health Care Support
-            Worker providing non-direct care at a long-term care or assisted living site and receive paid training to
+            The Health Career Access Program (HCAP) is a paid work and training initiative for individuals
+            seeking an entry point to employment in health. New hires will start as a Health Care Support Worker
+            providing non-direct care at a long-term care or assisted living site and receive paid training to
             become a Health Care Assistant upon successful completion of the program.
           </Typography>
           <br />
@@ -66,7 +66,7 @@ const BeforeYouBegin = () => {
           </Typography>
           <Divider/>
           <Typography variant="body1" paragraph>
-            This Expression of Interest does not commit employers to participation in the Health Career Access
+            Submission of an EOI does not commit employers to participation in the Health Career Access
             Program. Rather, the form is a first step for employers who want to be considered or are interested in
             knowing more about the HCAP opportunity. After the form has been submitted, operators will be
             contacted with more information and next steps.

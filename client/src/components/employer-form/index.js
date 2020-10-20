@@ -51,7 +51,6 @@ const getStepFields = (step) => {
       return [
         'siteName',
         'address',
-        'postalCode',
         'healthAuthority',
         'siteContactFirstName',
         'siteContactLastName',
@@ -105,7 +104,6 @@ export const Form = ({ initialValues, isDisabled }) => {
     // Site contact info
     siteName: '',
     address: '',
-    postalCode: '',
     healthAuthority: '',
     siteContactFirstName: '',
     siteContactLastName: '',
@@ -126,7 +124,7 @@ export const Form = ({ initialValues, isDisabled }) => {
       'Food Services Worker': {},
       'Housekeeping': {},
       'COVID-19 IPC Response': {},
-      'Site Administrative Support Staff': {},
+      'Site Administrative Staff': {},
     },
 
     // Site HCAP request

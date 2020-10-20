@@ -17,7 +17,7 @@ const roles = [
   'Food Services Worker',
   'Housekeeping',
   'COVID-19 IPC Response',
-  'Site Administrative Support Staff',
+  'Site Administrative Staff',
 ];
 
 const siteTypes = [
@@ -108,7 +108,6 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shap
   // Site contact info
   siteName: yup.string().nullable(errorMessage),
   address: yup.string().nullable(errorMessage),
-  postalCode: yup.string().nullable(errorMessage).matches(/(^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)?$/, 'Format as A1A 1A1'),
   healthAuthority: yup.string().nullable(errorMessage).oneOf(healthRegions, 'Invalid location'),
   siteContactFirstName: yup.string().nullable(errorMessage),
   siteContactLastName: yup.string().nullable(errorMessage),

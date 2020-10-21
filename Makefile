@@ -1,5 +1,7 @@
 #!make
+-include .env
 
+export $(shell sed 's/=.*//' .env)
 .DEFAULT_GOAL:=print-status
 export APP_NAME:=hcap
 export OS_NAMESPACE_PREFIX:=rupaog

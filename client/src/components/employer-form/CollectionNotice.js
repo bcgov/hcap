@@ -32,7 +32,8 @@ const CollectionNotice = ({ isDisabled }) => {
           </Typography>
           <Typography variant="body2" paragraph>
             Personal information is collected via this form under&nbsp;
-            <Link href="https://www.bclaws.ca/civix/document/id/complete/statreg/96165_03#section26">
+            <Link href="https://www.bclaws.ca/civix/document/id/complete/statreg/96165_03#section26"
+             target="__blank" rel="noreferrer noopener">
                 sections 26(c) and (e) of the Freedom of Information and Protection of Privacy Act
             </Link>
             &nbsp;(FOIPPA) for the purposes of administering the Health Career Access Program.

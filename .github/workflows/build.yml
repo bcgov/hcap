@@ -41,5 +41,4 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           oc login "$CLUSTER" --token="$AUTH_TOKEN"
-          make server-build
-          make server-deploy
+          make server-create

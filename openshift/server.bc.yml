@@ -10,9 +10,9 @@ parameters:
     description: URL of boilerplate repository
     value: https://github.com/bcgov/hcap.git
     required: true
-  - name: BRANCH
-    description: Branch of the boilerplate repository that should be built
-    value: master
+  - name: REF
+    description: Git ref of the repository that should be built
+    value: origin/master
     required: true
   - name: IMAGE_TAG
     description: ImageStream tag for build and deploy
@@ -44,7 +44,7 @@ objects:
         type: Git
         git:
           uri: ${REPO}
-          ref: origin/${BRANCH}
+          ref: ${REF}
       strategy:
         dockerStrategy:
           buildArgs:

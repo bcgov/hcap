@@ -65,7 +65,7 @@ server-prep: # This should be a template similar to DB prep
 	@oc policy add-role-to-user system:image-puller system:serviceaccount:$(TARGET_NAMESPACE):default -n $(TOOLS_NAMESPACE)
 
 server-create:
-	@oc process -f openshift/server.bc.yml -p APP_NAME=$(APP_NAME) | oc apply -n $(TOOLS_NAMESPACE) -f -
+	@oc process -f openshift/server.bc.yml -p APP_NAME=$(APP_NAME) VERSION=$(COMMIT_SHA) REF=$(COMMIT_SHA) | oc apply -n $(TOOLS_NAMESPACE) -f -
 	@oc process -f openshift/server.dc.yml -p APP_NAME=$(APP_NAME) IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) IMAGE_TAG=$(OS_NAMESPACE_SUFFIX) | oc apply -n $(TARGET_NAMESPACE) -f -
 
 server-build:

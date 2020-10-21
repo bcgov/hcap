@@ -7,7 +7,7 @@ import { Card, Divider } from '../generic';
 import { RenderTextField } from '../fields';
 import { Box } from '@material-ui/core';
 
-export const HcapRequest = ({ isDisabled }) => {
+export const ExpressionOfInt = ({ isDisabled }) => {
 
   return (
     <Card noShadow={isDisabled}>

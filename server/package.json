@@ -30,6 +30,7 @@
     "node-cache": "5.1.2",
     "tiny-async-pool": "1.1.0",
     "winston": "3.3.3",
+    "winston-mongodb": "5.0.5",
     "yup": "0.29.3"
   },
   "devDependencies": {

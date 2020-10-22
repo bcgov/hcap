@@ -22,7 +22,7 @@ and then submits to the /form endpoint. Example of file names:
 
 ### `npm run stats`
 
-Shows the submissions stats of a given day.
+Shows the submissions stats of a given period of days.
 
 ## Table of Contents
 

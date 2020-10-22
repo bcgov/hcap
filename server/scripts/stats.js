@@ -35,7 +35,7 @@ const toPostgresDate = (date) => {
         default: dayjs().format('YYYY-MM-DD')
       }]));
 
-      ({ 'End Date': endDate } = await inquirer.prompt([{
+      ({ 'End Date (not inclusive)': endDate } = await inquirer.prompt([{
         name: 'End Date (not inclusive)',
         type: 'input',
         default: dayjs().add(1, 'day').format('YYYY-MM-DD')

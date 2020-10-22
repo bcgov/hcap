@@ -6,8 +6,8 @@ winston.add(new winston.transports.Console(nodeEnv === 'test' && { silent: true 
 
 const dbServer = process.env.MONGO_HOST || 'mongodb';
 const dbPort = process.env.MONGO_PORT || '27017';
-const dbUser = process.env.MONGO_USER || 'admin';
-const dbPassword = process.env.MONGO_PASSWORD || 'development';
+const dbUser = process.env.MONGO_USER;
+const dbPassword = process.env.MONGO_PASSWORD;
 const dbName = process.env.MONGO_DB || 'logs';
 
 winston.add(new winston.transports.MongoDB({

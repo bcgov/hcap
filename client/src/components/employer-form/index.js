@@ -182,6 +182,22 @@ export const Form = ({ initialValues, isDisabled }) => {
     scrollUp();
   };
 
+  const handleStepClicked = async (index, setTouched, values) => {
+    if (index <= activeStep) { // Can go backwards despite errors
+      return moveStepper(index);
+    }
+    const fieldsForCurrentStep = getStepFields(activeStep);
+    const filtered = Object.keys(values)
+      .filter((k) => fieldsForCurrentStep.includes(k))
+      .reduce((a, v) => ({ ...a, [v]: values[v] }), {});
+    const fieldsToTouch = mapObjectProps(filtered, () => true);
+    const errors = await setTouched(fieldsToTouch);
+    const hasOutstandingErrors = Object.keys(errors).some((key) => fieldsForCurrentStep.includes(key));
+    if (!hasOutstandingErrors) {
+      moveStepper(index);
+    }
+  };
+
   const handleBackClicked = () => {
     moveStepper(activeStep - 1);
   };
@@ -219,12 +235,13 @@ export const Form = ({ initialValues, isDisabled }) => {
                   {/** Desktop Stepper */}
                   <Hidden xsDown>
                     <Stepper
+                      nonLinear
                       alternativeLabel
                       activeStep={activeStep}
                     >
                       {steps.map((label, index) => (
                         <Step key={label}>
-                          <StepButton onClick={() => moveStepper(index)}>
+                          <StepButton onClick={() => handleStepClicked(index, setTouched, values)}>
                             <StepLabel>{label}</StepLabel>
                           </StepButton>
                         </Step>

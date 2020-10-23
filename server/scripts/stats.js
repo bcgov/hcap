@@ -19,6 +19,7 @@ const toPostgresDate = (date) => {
       await dbClient.connect();
 
       const healthAuthorities = [
+        '',
         'Interior',
         'Fraser',
         'Vancouver Coastal',
@@ -41,7 +42,7 @@ const toPostgresDate = (date) => {
         default: dayjs().add(1, 'day').format('YYYY-MM-DD')
       }]));
 
-      const todayResults = await dbClient.db[collections.EMPLOYER_FORMS]
+      const queryResults = await dbClient.db[collections.EMPLOYER_FORMS]
         .find({
           'created_at BETWEEN': [toPostgresDate(startDate), toPostgresDate(endDate)],
         });
@@ -49,7 +50,7 @@ const toPostgresDate = (date) => {
       const healthAuthorityCount = healthAuthorities.map((authority) => {
         return {
           name: authority,
-          submissions: todayResults.reduce(
+          submissions: queryResults.reduce(
             (total, result) => {
               if (result.body.healthAuthority === authority) {
                 return total + 1;
@@ -69,7 +70,7 @@ const toPostgresDate = (date) => {
 
       return process.exit();
     } catch (error) {
-      console.error(`Failed to retrive stats, ${error}`);
+      console.error(`Failed to retrieve stats, ${error}`);
     }
   }
 })();

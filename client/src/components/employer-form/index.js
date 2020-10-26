@@ -177,15 +177,7 @@ export const Form = ({ initialValues, isDisabled }) => {
     setSubmitLoading(false);
   };
 
-  const moveStepper = (index) => {
-    setActiveStep(index);
-    scrollUp();
-  };
-
-  const handleStepClicked = async (index, setTouched, values) => {
-    if (index <= activeStep) { // Can go backwards despite errors
-      return moveStepper(index);
-    }
+  const moveStepper = async (index, setTouched, values) => {
     const fieldsForCurrentStep = getStepFields(activeStep);
     const filtered = Object.keys(values)
       .filter((k) => fieldsForCurrentStep.includes(k))
@@ -194,7 +186,8 @@ export const Form = ({ initialValues, isDisabled }) => {
     const errors = await setTouched(fieldsToTouch);
     const hasOutstandingErrors = Object.keys(errors).some((key) => fieldsForCurrentStep.includes(key));
     if (!hasOutstandingErrors) {
-      moveStepper(index);
+      setActiveStep(index);
+      scrollUp();
     }
   };
 
@@ -206,16 +199,7 @@ export const Form = ({ initialValues, isDisabled }) => {
     if (isLastStep) {
       await submitForm();
     } else {
-      const fieldsForCurrentStep = getStepFields(activeStep);
-      const filtered = Object.keys(values)
-        .filter((k) => fieldsForCurrentStep.includes(k))
-        .reduce((a, v) => ({ ...a, [v]: values[v] }), {});
-      const fieldsToTouch = mapObjectProps(filtered, () => true);
-      const errors = await setTouched(fieldsToTouch);
-      const hasOutstandingErrors = Object.keys(errors).some((key) => fieldsForCurrentStep.includes(key));
-      if (!hasOutstandingErrors) {
-        moveStepper(activeStep + 1);
-      }
+      moveStepper(activeStep + 1, setTouched, values);
     }
   };
 
@@ -241,7 +225,7 @@ export const Form = ({ initialValues, isDisabled }) => {
                     >
                       {steps.map((label, index) => (
                         <Step key={label}>
-                          <StepButton onClick={() => handleStepClicked(index, setTouched, values)}>
+                          <StepButton onClick={() => moveStepper(index, setTouched, values)}>
                             <StepLabel>{label}</StepLabel>
                           </StepButton>
                         </Step>

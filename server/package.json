@@ -11,6 +11,7 @@
     "db:migrate-down": "cd db && migrate down",
     "db:migrate-create": "cd db && migrate create",
     "stats": "node scripts/stats.js",
+    "export": "node scripts/export.js",
     "watch": "NODE_ENV=development nodemon main.js",
     "start": "NODE_ENV=production node main.js",
     "test": "NODE_ENV=test jest --runInBand --forceExit"
@@ -21,6 +22,7 @@
     "dayjs": "1.9.3",
     "dotenv": "8.2.0",
     "express": "4.17.1",
+    "fast-csv": "4.3.2",
     "fast-xml-parser": "3.17.4",
     "helmet": "4.1.1",
     "inquirer": "7.3.3",

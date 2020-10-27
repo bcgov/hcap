@@ -89,6 +89,6 @@ db-mongo-tunnel:
 	@oc port-forward $(APP_NAME)-mongodb-0 27017
 
 db-postgres-tunnel:
-	@oc project $(TARGET_NAMESPACE)
+	@oc project
 	@oc port-forward $(APP_NAME)-patroni-0 5432
 	

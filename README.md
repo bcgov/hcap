@@ -22,7 +22,7 @@ and then submits to the /form endpoint. Example of file names:
 
 ### `npm run stats`
 
-Shows the submissions stats of a given period of days.
+Shows the submissions stats of a given period of days. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`)
 
 ## Table of Contents
 

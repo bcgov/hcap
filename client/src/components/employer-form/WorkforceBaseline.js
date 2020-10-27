@@ -37,7 +37,7 @@ export const WorkforceBaseline = ({ isDisabled }) => {
               { value: 'Health Care Assistant', label: 'Health Care Assistant' },
               { value: 'Food Services Worker', label: 'Food Services Worker' },
               { value: 'Housekeeping', label: 'Housekeeping' },
-              { value: 'COVID-19 IPC Response', label: 'COVID-19 IPC Response' },
+              { value: 'COVID-19 IPC Response', label: 'COVID-19 FTEs for Visitation funded by the Ministry of Health' },
               { value: 'Site Administrative Staff', label: 'Site Administrative Staff (please only include site administrative staff that are physically located at your site)' },
             ]}
             disabled={isDisabled}

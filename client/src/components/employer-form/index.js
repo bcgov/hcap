@@ -187,6 +187,11 @@ export const Form = ({ initialValues, isDisabled }) => {
     }
   };
 
+  const handleEditClicked = (index) => {
+    setActiveStep(index);
+    scrollUp();
+  }
+
   const handleBackClicked = (setTouched, values) => {
     moveStepper(activeStep - 1, setTouched, values);
   };
@@ -254,7 +259,7 @@ export const Form = ({ initialValues, isDisabled }) => {
                   {activeStep === 2 && <SiteInfo isDisabled={isDisabled} />}
                   {activeStep === 3 && <WorkforceBaseline isDisabled={isDisabled} />}
                   {activeStep === 4 && <ExpressionOfInt isDisabled={isDisabled} />}
-                  {activeStep === 5 && <Review handleEditClick={setActiveStep} />}
+                  {activeStep === 5 && <Review handleEditClick={handleEditClicked} />}
                 </Fragment>
               ) : (
                   <Review isDisabled />

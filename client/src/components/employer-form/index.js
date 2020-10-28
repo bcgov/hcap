@@ -72,10 +72,6 @@ const getStepFields = (step) => {
         'hcswFteNumber',
         'staffingChallenges',
       ];
-    case 5:
-      return [
-        'doesCertify',
-      ];
     default:
       return [];
   }
@@ -191,8 +187,13 @@ export const Form = ({ initialValues, isDisabled }) => {
     }
   };
 
-  const handleBackClicked = () => {
-    moveStepper(activeStep - 1);
+  const handleEditClicked = (index) => {
+    setActiveStep(index);
+    scrollUp();
+  }
+
+  const handleBackClicked = (setTouched, values) => {
+    moveStepper(activeStep - 1, setTouched, values);
   };
 
   const handleNextClicked = async (submitForm, setTouched, values) => {
@@ -258,7 +259,7 @@ export const Form = ({ initialValues, isDisabled }) => {
                   {activeStep === 2 && <SiteInfo isDisabled={isDisabled} />}
                   {activeStep === 3 && <WorkforceBaseline isDisabled={isDisabled} />}
                   {activeStep === 4 && <ExpressionOfInt isDisabled={isDisabled} />}
-                  {activeStep === 5 && <Review handleEditClick={moveStepper} />}
+                  {activeStep === 5 && <Review handleEditClick={handleEditClicked} />}
                 </Fragment>
               ) : (
                   <Review isDisabled />
@@ -273,7 +274,7 @@ export const Form = ({ initialValues, isDisabled }) => {
                         <Grid item>
                           <Button
                             disabled={isFirstStep}
-                            onClick={handleBackClicked}
+                            onClick={() => handleBackClicked(setTouched, values)}
                             text="Back"
                             fullWidth={false}
                           />

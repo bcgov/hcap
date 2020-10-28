@@ -5,6 +5,7 @@ const path = require('path');
 const {
   validate, LoginSchema, EmployerFormSchema, EmployeeFormSchema,
 } = require('./validation.js');
+const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 
@@ -48,10 +49,14 @@ app.post(`${apiBaseUrl}/login`,
 app.post(`${apiBaseUrl}/employer-form`,
   asyncMiddleware(async (req, res) => {
     await validate(EmployerFormSchema, req.body); // Validate submitted form against schema
-
-    const result = await dbClient.db.saveDoc(collections.EMPLOYER_FORMS, req.body);
-
-    return res.json({ id: result.id });
+    try {
+      const result = await dbClient.db.saveDoc(collections.EMPLOYER_FORMS, req.body);
+      logger.info(`Form ${result.id} successfully created.`);
+      return res.json({ id: result.id });
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
   }));
 
 // Create new employee form, not secured

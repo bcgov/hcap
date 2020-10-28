@@ -22,7 +22,13 @@ const roles = [
     try {
       await dbClient.connect();
       const db = await dbClient.db[collections.EMPLOYER_FORMS];
-      const results = await db.find({});
+      const results = await db.find({}, {
+        order: [{
+          field: 'created_at',
+          direction: 'desc',
+          nulls: 'first'
+        }]
+      });
 
       console.log(`Found ${results.length} record(s), writing CSV file...`);
 
@@ -73,13 +79,13 @@ const roles = [
 
       const chunks = [];
       csvStream
-      .on('data', (chunk) => chunks.push(chunk))
-      .on('error', (error) => console.log(error))
-      .on('end', () => {
-        const string = Buffer.concat(chunks).toString();
-        writeFileSync(path.join(__dirname, 'export.csv'), string);
-        console.log(`Done.`);
-      });
+        .on('data', (chunk) => chunks.push(chunk))
+        .on('error', (error) => console.log(error))
+        .on('end', () => {
+          const string = Buffer.concat(chunks).toString();
+          writeFileSync(path.join(__dirname, 'export.csv'), string);
+          console.log(`Done.`);
+        });
 
       csvStream.end();
     } catch (error) {

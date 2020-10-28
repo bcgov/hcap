@@ -12,13 +12,17 @@ This is a digital service built for the Ministry of Health which supports Britis
 
 In the server directory, you can run:
 
-### `npm parse-xml`
+### `npm run parse-xml`
 
 Parses all xml files containing in the scripts/xml directory that follows the Orbeon format, including the file name,
 and then submits to the /form endpoint. Example of file names:
 
 - Health Career Access Program - Expression of Interest - 8353ec90e6ea8727.xml
 - Health Career Access Program - Expression of Interest - 91113c10e0xx872x (1).xml
+
+### `npm run stats`
+
+Shows the submissions stats of a given period of days. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`)
 
 ## Table of Contents
 

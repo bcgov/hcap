@@ -84,6 +84,11 @@ db-create:
 	@oc process -f openshift/patroni.bc.yml -p APP_NAME=$(APP_NAME) | oc apply -n $(TOOLS_NAMESPACE) -f -
 	@oc process -f openshift/patroni.dc.yml -p APP_NAME=$(APP_NAME) IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f -
 
-db-tunnel:
+db-mongo-tunnel:
 	@oc project $(TARGET_NAMESPACE)
 	@oc port-forward $(APP_NAME)-mongodb-0 27017
+
+db-postgres-tunnel:
+	@oc project
+	@oc port-forward $(APP_NAME)-patroni-0 5432
+	

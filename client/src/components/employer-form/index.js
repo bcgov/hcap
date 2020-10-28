@@ -72,10 +72,6 @@ const getStepFields = (step) => {
         'hcswFteNumber',
         'staffingChallenges',
       ];
-    case 5:
-      return [
-        'doesCertify',
-      ];
     default:
       return [];
   }

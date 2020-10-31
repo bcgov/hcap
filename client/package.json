@@ -14,6 +14,7 @@
     "@material-ui/icons": "4.9.1",
     "@material-ui/lab": "4.0.0-alpha.49",
     "@material-ui/pickers": "3.2.10",
+    "@react-keycloak/web": "3.4.0",
     "classnames": "2.2.6",
     "cross-fetch": "^3.0.6",
     "dom-to-image": "2.6.0",
@@ -28,6 +29,6 @@
     "yup": "0.29.3"
   },
   "devDependencies": {
-    "react-scripts": "3.4.3"
+    "react-scripts": "4.0.0"
   }
 }

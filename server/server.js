@@ -8,6 +8,7 @@ const {
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
+const keycloak = require('./keycloak-config.js').initKeycloak();
 
 const apiBaseUrl = '/api/v1';
 const app = express();
@@ -32,6 +33,14 @@ app.use(helmet({
 }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(keycloak.middleware());
+
+app.post(`${apiBaseUrl}/user`,
+  keycloak.protect('user'),
+  asyncMiddleware(async (req, res) => {
+    const result = 'user';
+    return res.json({ result });
+  }));
 
 // Login endpoint
 // TODO not implemented

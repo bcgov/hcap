@@ -35,6 +35,14 @@ app.use(helmet({
 app.use(keycloak.middleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(keycloak.middleware());
+
+app.post(`${apiBaseUrl}/user`,
+  keycloak.protect('user'),
+  asyncMiddleware(async (req, res) => {
+    const result = 'user';
+    return res.json({ result });
+  }));
 
 app.get(`${apiBaseUrl}/admin`,
   keycloak.protect('admin'),

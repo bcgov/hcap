@@ -53,6 +53,30 @@ services:
     networks:
       - network
 
+  keycloak:
+    container_name: ${APP_NAME}-keycloak
+    image: jboss/keycloak:9.0.3
+    restart: always
+    expose:
+      - "5000" # web console: http://localhost:5000/auth/admin
+    ports:
+      - 5000:8080
+    environment:
+      - KEYCLOAK_USER=${KEYCLOAK_USER} 
+      - KEYCLOAK_PASSWORD=${KEYCLOAK_PASSWORD}
+      - DB_ADDR=postgres
+      - DB_VENDOR=postgres
+      - DB_DATABASE=keycloak
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - KEYCLOAK_IMPORT=/tmp/local.json -Dkeycloak.profile.feature.upload_scripts=enabled
+    volumes:
+      - ./.docker/keycloak/local.json:/tmp/local.json
+    depends_on:
+      - postgres
+    networks:
+      - network
+
   postgres:
     image: postgres:13-alpine
     container_name: ${APP_NAME}-postgres

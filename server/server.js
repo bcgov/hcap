@@ -35,10 +35,10 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(keycloak.middleware());
 
-app.post(`${apiBaseUrl}/user`,
-  keycloak.protect('user'),
+app.get(`${apiBaseUrl}/admin`,
+  keycloak.protect('admin'),
   asyncMiddleware(async (req, res) => {
-    const result = 'user';
+    const result = 'hello admin';
     return res.json({ result });
   }));
 

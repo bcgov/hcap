@@ -5,7 +5,7 @@ let keycloak;
 
 const keycloakConfig = {
   realm: 'HCAP',
-  'auth-server-url': 'http://localhost:5000/auth/realms/HCAP/account/',
+  'auth-server-url': 'http://localhost:5000/auth/',
   'ssl-required': 'external',
   resource: 'hcap-app',
   'public-client': true,

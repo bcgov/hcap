@@ -7,6 +7,10 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile.dev
+    environment:
+      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
+      - BASE_KEYCLOAK_URL=${BASE_KEYCLOAK_URL}
+      - KEYCLOAK_CLIENTID=${KEYCLOAK_CLIENTID}
     ports:
       - 4000:4000
     volumes:
@@ -33,6 +37,9 @@ services:
       - MONGO_USER=${MONGO_USER}
       - MONGO_PASSWORD=${MONGO_PASSWORD}
       - VERSION=${COMMIT_SHA}
+      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
+      - BASE_KEYCLOAK_URL=${BASE_KEYCLOAK_URL}
+      - KEYCLOAK_CLIENTID=${KEYCLOAK_CLIENTID}
     ports:
       - "8080:8080"
       - "9229:9229"

@@ -643,19 +643,19 @@
     {
       "id": "0176d8c4-5528-47ca-9a37-fd644dfb7feb",
       "clientId": "hcap-app",
-      "rootUrl": "${authBaseUrl}",
+      "rootUrl": "http://localhost:4000",
       "adminUrl": "",
-      "baseUrl": "",
+      "baseUrl": "http://localhost:4000",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
       "redirectUris": [
-        "${authBaseUrl}/*"
+        "http://localhost:8080/*"
       ],
       "webOrigins": [
-        "${authBaseUrl}"
+        "*"
       ],
       "notBefore": 0,
       "bearerOnly": false,

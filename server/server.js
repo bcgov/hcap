@@ -31,9 +31,9 @@ app.use(helmet({
     },
   },
 }));
+app.use(keycloak.middleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
-app.use(keycloak.middleware());
 
 app.get(`${apiBaseUrl}/admin`,
   keycloak.protect('admin'),

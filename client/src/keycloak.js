@@ -9,7 +9,7 @@ import Keycloak from 'keycloak-js';
 const keycloak = new Keycloak({
   realm: 'HCAP',
   url: 'http://localhost:5000/auth/',
-  clientId: '65e27a28-4db2-4ac3-86ac-09a29cbce24f',
+  clientId: 'hcap-app',
 });
 
 export default keycloak;

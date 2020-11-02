@@ -11,6 +11,7 @@ const keycloakConfig = {
   'public-client': true,
   'confidential-port': 0,
   'verify-token-audience': true,
+  'use-resource-role-mappings': true,
   credentials: {
     secret: '65e27a28-4db2-4ac3-86ac-09a29cbce24f',
   },

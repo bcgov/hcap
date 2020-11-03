@@ -26,6 +26,18 @@ const PrivateRoute = ({ component, ...rest }) => {
   );
 };
 
+const PublicRoute = ({ component, ...rest }) => {
+  const [keycloak] = useKeycloak();
+  return (
+    <Route
+      {...rest}
+      render={props =>
+        !keycloak.authenticated ? <Component {...props} /> : <Redirect to='/' />
+      }
+    />
+  );
+};
+
 export default () => {
   return (
     <KeycloakProvider

@@ -64,18 +64,18 @@ const mapToObject = (m) => {
         columns.set('Number of Public Long Term Care Beds', result.body.numPublicLongTermCare);
         columns.set('Number of Private Long Term Care Beds', result.body.numPrivateLongTermCare);
         columns.set('Number Public Assisted Living Beds', result.body.numPublicAssistedLiving);
-        columns.set('Number of Private Assisted Living Beds', result.body.numPrivateAssistedLiving);
-        columns.set('Health Care Support Workers for Site', result.body.hcswFteNumber);
 
         roles.forEach((role) => {
-          columns.set(`${role} Current Casual`, result.body.workforceBaseline.find((i) => i.role === role).currentCasual);
           columns.set(`${role} Current Full Time`, result.body.workforceBaseline.find((i) => i.role === role).currentFullTime);
           columns.set(`${role} Current Part Time`, result.body.workforceBaseline.find((i) => i.role === role).currentPartTime);
-          columns.set(`${role} Vacancy Casual`, result.body.workforceBaseline.find((i) => i.role === role).vacancyCasual);
+          columns.set(`${role} Current Casual`, result.body.workforceBaseline.find((i) => i.role === role).currentCasual);
           columns.set(`${role} Vacancy Full Time`, result.body.workforceBaseline.find((i) => i.role === role).vacancyFullTime);
           columns.set(`${role} Vacancy Part Time`, result.body.workforceBaseline.find((i) => i.role === role).vacancyPartTime);
+          columns.set(`${role} Vacancy Casual`, result.body.workforceBaseline.find((i) => i.role === role).vacancyCasual);
         });
 
+        columns.set('Number of Private Assisted Living Beds', result.body.numPrivateAssistedLiving);
+        columns.set('Health Care Support Workers for Site', result.body.hcswFteNumber);
         columns.set('Staffing Challenges', result.body.staffingChallenges);
 
         csvStream.write(mapToObject(columns));

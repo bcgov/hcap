@@ -8,6 +8,8 @@ import { Page, Button } from '../../components/generic';
 export default () => {
   const [keycloak] = useKeycloak();
 
+  console.log('aaaaaaaaaaa')
+
   return (
     <Page >
       <Grid container alignItems="center" justify="center" >
@@ -18,7 +20,7 @@ export default () => {
                 type="submit"
                 text="Login"
                 size="large"
-                onClick={() => keycloak.login({ redirectUri: 'http://localhost:4000/admin' })}
+                onClick={() => keycloak.login({ redirectUri: 'http://localhost:4000/keycloak' })}
               />
             </Grid>
           </Box>

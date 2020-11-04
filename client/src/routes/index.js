@@ -13,6 +13,7 @@ const EmployerForm = lazy(() => import('../pages/public/EmployerForm'));
 const Login = lazy(() => import('../pages/public/Login'));
 const EmployeeConfirmation = lazy(() => import('../pages/public/EmployeeConfirmation'));
 const EmployerConfirmation = lazy(() => import('../pages/public/EmployerConfirmation'));
+const KeycloackRedirect = lazy(() => import('../pages/public/Keycloak'));
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const [keycloak] = useKeycloak();
@@ -49,6 +50,7 @@ export default () => {
             <Route exact path={Routes.EmployeeConfirmation} component={EmployeeConfirmation} />
             <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />
             <PrivateRoute exact path={Routes.Admin} component={Admin} />
+            <Route exact path={Routes.Keycloak} component={KeycloackRedirect} />
             <Route component={EmployerForm} />
           </Switch>
         </Suspense>

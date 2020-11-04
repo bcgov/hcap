@@ -12,7 +12,7 @@ export default function KeycloakRedirect () {
   }, []);
   return keycloak.authenticated
     ?
-      <Redirect to='/' />
+      <Redirect to='/admin' />
     :
       keycloak.loginRequired
     ?

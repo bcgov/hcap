@@ -8,8 +8,6 @@ import { Page, Button } from '../../components/generic';
 export default () => {
   const [keycloak] = useKeycloak();
 
-  console.log('aaaaaaaaaaa')
-
   return (
     <Page >
       <Grid container alignItems="center" justify="center" >

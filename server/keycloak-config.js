@@ -5,14 +5,14 @@ let keycloak;
 
 const keycloakConfig = {
   realm: process.env.KEYCLOAK_REALM,
-  'auth-server-url': process.env.BASE_KEYCLOAK_URL,
+  'auth-server-url': process.env.KEYCLOAK_AUTH_URL,
   'ssl-required': 'external',
-  resource: process.env.KEYCLOAK_CLIENTID,
+  resource: process.env.KEYCLOAK_API_CLIENTID,
   'confidential-port': 0,
   'verify-token-audience': true,
   'use-resource-role-mappings': true,
   credentials: {
-    secret: process.env.KEYCLOAK_SECRET,
+    secret: process.env.KEYCLOAK_API_SECRET,
   },
   'policy-enforcer': {},
 };

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, Component } from 'react';
+import React, { Suspense, lazy } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import { useKeycloak, KeycloakProvider } from '@react-keycloak/web';
@@ -14,25 +14,13 @@ const Login = lazy(() => import('../pages/public/Login'));
 const EmployeeConfirmation = lazy(() => import('../pages/public/EmployeeConfirmation'));
 const EmployerConfirmation = lazy(() => import('../pages/public/EmployerConfirmation'));
 
-const PrivateRoute = ({ component, ...rest }) => {
+const PrivateRoute = ({ component: Component, ...rest }) => {
   const [keycloak] = useKeycloak();
   return (
     <Route
       {...rest}
       render={props =>
         keycloak.authenticated && !keycloak.loginRequired ? <Component {...props} /> : <Redirect to='/login' />
-      }
-    />
-  );
-};
-
-const PublicRoute = ({ component, ...rest }) => {
-  const [keycloak] = useKeycloak();
-  return (
-    <Route
-      {...rest}
-      render={props =>
-        !keycloak.authenticated ? <Component {...props} /> : <Redirect to='/' />
       }
     />
   );

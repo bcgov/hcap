@@ -1,15 +1,9 @@
 import Keycloak from 'keycloak-js';
 
-// const keycloak = new Keycloak({
-//   realm: process.env.KEYCLOAK_REALM,
-//   url: process.env.KEYCLOAK_AUTH_URL,
-//   clientId: process.env.KEYCLOAK_FE_CLIENTID
-// });
-
 const keycloak = new Keycloak({
-  realm: '4qjrpzzl',
-  url: 'https://dev.oidc.gov.bc.ca/auth/',
-  clientId: 'hcap-fe',
+  realm: process.env.REACT_APP_KEYCLOAK_REALM,
+  url: process.env.REACT_APP_KEYCLOAK_AUTH_URL,
+  clientId: process.env.REACT_APP_KEYCLOAK_FE_CLIENTID
 });
 
 export default keycloak;

@@ -55,7 +55,7 @@ export const OrgBookSearch = ({
         renderInput={(params) => (
           <TextField
             {...params}
-            placeholder="Start typing to search the OrgBook database"
+            placeholder="Start typing to search the OrgBook database. If your business name does not appear, please enter your business name manually."
             variant="filled"
             error={touched && !!error}
             InputProps={{

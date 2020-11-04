@@ -29,6 +29,8 @@ export default () => {
     keycloak.login({ idpHint, redirectUri: `${window.location.origin}${Routes.Keycloak}` });
   }, [keycloak, state]);
 
+  console.log('aaaaaaaaaaa')
+
   return (
     <Page >
       <Grid container alignItems="center" justify="center" >

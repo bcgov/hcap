@@ -6,8 +6,8 @@ import store from 'store';
 
 import keycloak from '../keycloak';
 import { Routes } from '../constants';
-import Admin from '../pages/private/Admin';
 
+const Admin = lazy(() => import('../pages/private/Admin'));
 const EmployeeForm = lazy(() => import('../pages/public/EmployeeForm'));
 const EmployerForm = lazy(() => import('../pages/public/EmployerForm'));
 const Login = lazy(() => import('../pages/public/Login'));
@@ -38,6 +38,7 @@ const PublicRoute = ({ component, ...rest }) => {
   );
 };
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   return (
     <KeycloakProvider

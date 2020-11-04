@@ -4,8 +4,9 @@ import Box from '@material-ui/core/Box';
 import { useKeycloak } from '@react-keycloak/web';
 import { Page, Button } from '../../components/generic';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
-  const [keycloak, initialized] = useKeycloak();
+  const [keycloak] = useKeycloak();
 
   return (
     <Page >

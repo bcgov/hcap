@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import { Page, Button } from '../../components/generic';
 import store from 'store';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
 
   const handleSubmit = async () => {

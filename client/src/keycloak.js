@@ -7,8 +7,8 @@ import Keycloak from 'keycloak-js';
 // });
 
 const keycloak = new Keycloak({
-  realm: 'HCAP',
-  url: 'http://localhost:5000/auth/',
+  realm: '4qjrpzzl',
+  url: 'https://dev.oidc.gov.bc.ca/auth/',
   clientId: 'hcap-app',
 });
 

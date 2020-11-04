@@ -64,6 +64,7 @@ const mapToObject = (m) => {
         columns.set('Number of Public Long Term Care Beds', result.body.numPublicLongTermCare);
         columns.set('Number of Private Long Term Care Beds', result.body.numPrivateLongTermCare);
         columns.set('Number Public Assisted Living Beds', result.body.numPublicAssistedLiving);
+        columns.set('Number of Private Assisted Living Beds', result.body.numPrivateAssistedLiving);
 
         roles.forEach((role) => {
           columns.set(`${role} Current Full Time`, result.body.workforceBaseline.find((i) => i.role === role).currentFullTime);
@@ -74,7 +75,6 @@ const mapToObject = (m) => {
           columns.set(`${role} Vacancy Casual`, result.body.workforceBaseline.find((i) => i.role === role).vacancyCasual);
         });
 
-        columns.set('Number of Private Assisted Living Beds', result.body.numPrivateAssistedLiving);
         columns.set('Health Care Support Workers for Site', result.body.hcswFteNumber);
         columns.set('Staffing Challenges', result.body.staffingChallenges);
 

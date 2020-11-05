@@ -26,7 +26,7 @@ export default () => {
         break;
     }
     store.set('REDIRECT', redirect);
-    keycloak.login({ idpHint, redirectUri: 'http://localhost:4000/keycloak' });
+    keycloak.login({ idpHint, redirectUri: `${window.location.origin}/keycloak` });
   }, [keycloak, state]);
 
   return (

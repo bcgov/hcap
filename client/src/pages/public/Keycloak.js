@@ -12,7 +12,6 @@ export default () => {
     if (keycloak.authenticated) {
       store.set('TOKEN', keycloak.token);
     }
-
   }, [keycloak.authenticated, keycloak.token]);
 
 
@@ -24,5 +23,5 @@ export default () => {
       ?
       <Redirect to={Routes.Login} />
       :
-      <h4>Authenticating...</h4>
+      'Authenticating...';
 };

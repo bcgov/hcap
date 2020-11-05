@@ -15,13 +15,21 @@ const EmployeeConfirmation = lazy(() => import('../pages/public/EmployeeConfirma
 const EmployerConfirmation = lazy(() => import('../pages/public/EmployerConfirmation'));
 const KeycloackRedirect = lazy(() => import('../pages/public/Keycloak'));
 
-const PrivateRoute = ({ component: Component, ...rest }) => {
+const PrivateRoute = ({ component: Component, path, ...rest }) => {
   const [keycloak] = useKeycloak();
   return (
     <Route
+      path={path}
       {...rest}
       render={props =>
-        keycloak.authenticated && !keycloak.loginRequired ? <Component {...props} /> : <Redirect to='/login' />
+        keycloak.authenticated && !keycloak.loginRequired ?
+          <Component {...props} />
+          :
+          <Redirect
+            to={{
+              pathname: Routes.Login,
+              state: { redirectOnLogin: path }
+            }} />
       }
     />
   );
@@ -57,4 +65,4 @@ export default () => {
       </BrowserRouter>
     </KeycloakProvider>
   );
-}
+};

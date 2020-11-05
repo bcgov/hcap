@@ -1,28 +1,40 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
+import { useLocation } from 'react-router-dom';
+import Typography from '@material-ui/core/Typography';
 import { useKeycloak } from '@react-keycloak/web';
-import { Page, Button } from '../../components/generic';
+import { Page, } from '../../components/generic';
+import { Routes } from '../../constants';
+import store from 'store';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   const [keycloak] = useKeycloak();
+  const { state } = useLocation();
+
+  useEffect(() => {
+    let idpHint;
+
+    const redirect = state ? state.redirectOnLogin : '/';
+
+    switch (redirect) {
+      case Routes.Admin:
+        idpHint = 'idir';
+        break;
+      default:
+        idpHint = 'bceid';
+        break;
+    }
+    store.set('REDIRECT', redirect);
+    keycloak.login({ idpHint, redirectUri: 'http://localhost:4000/keycloak' });
+  }, [keycloak, state]);
 
   return (
     <Page >
       <Grid container alignItems="center" justify="center" >
-        <Grid item xs={12} sm={8} md={6} lg={4} xl={3}>
-          <Box m={2}>
-            <Grid item xs={12}>
-              <Button
-                type="submit"
-                text="Login"
-                size="large"
-                onClick={() => keycloak.login({ redirectUri: 'http://localhost:4000/keycloak' })}
-              />
-            </Grid>
-          </Box>
-        </Grid>
+        <Typography variant="subtitle2">
+          Redirecting...
+        </Typography>
       </Grid>
     </Page>
   );

@@ -19,6 +19,7 @@ export default () => {
 
     switch (redirect) {
       case Routes.Admin:
+      case Routes.EmployeeUpload:
         idpHint = 'idir';
         break;
       default:

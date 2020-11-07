@@ -36,17 +36,10 @@ app.use(keycloak.middleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-app.get(`${apiBaseUrl}/admin`,
+app.post(`${apiBaseUrl}/employee-upload-file`,
   keycloak.protect('admin'),
   asyncMiddleware(async (req, res) => {
-    const result = 'hello admin';
-    return res.json({ result });
-  }));
-
-app.get(`${apiBaseUrl}/admin`,
-  keycloak.protect('admin'),
-  asyncMiddleware(async (req, res) => {
-    const result = 'hello admin';
+    const result = 'upload';
     return res.json({ result });
   }));
 

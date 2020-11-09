@@ -94,7 +94,7 @@ const LoginSchema = yup.object().noUnknown().shape({
   password: yup.string().required('Password is required'),
 });
 
-const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shape({
+const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape({
   // Operator Contact Information
   registeredBusinessName: yup.string().nullable(errorMessage),
   operatorName: yup.string().nullable(errorMessage),
@@ -148,7 +148,7 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shap
   doesCertify: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 });
 
-const EmployeeFormSchema = yup.object().noUnknown('Unknown field for form').shape({
+const EmployeeFormSchema = yup.object().noUnknown('Unknown field in form').shape({
   // Orbeon Id
   orbeonId: yup.string().typeError(errorMessage),
 
@@ -171,8 +171,15 @@ const EmployeeFormSchema = yup.object().noUnknown('Unknown field for form').shap
   consent: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 });
 
+const EmployeeBatchSchema = yup.array().of(
+  yup.object().noUnknown('Unknown field in XLSX upload').shape({
+    name: yup.string().required('name is required'),
+    date: yup.number().required('date is required').positive().integer(),
+  }),
+);
+
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
-  LoginSchema, EmployerFormSchema, EmployeeFormSchema, validate,
+  LoginSchema, EmployerFormSchema, EmployeeFormSchema, EmployeeBatchSchema, validate,
 };

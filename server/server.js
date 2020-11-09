@@ -2,9 +2,11 @@ const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
+const { Readable } = require('stream');
 const multer = require('multer');
+const readXlsxFile = require('read-excel-file/node');
 const {
-  validate, LoginSchema, EmployerFormSchema, EmployeeFormSchema,
+  validate, LoginSchema, EmployerFormSchema, EmployeeFormSchema, EmployeeBatchSchema,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -81,6 +83,24 @@ app.post(`${apiBaseUrl}/employee-form`,
     const result = await dbClient.db.saveDoc(collections.EMPLOYEE_FORMS, req.body);
 
     return res.json({ id: result.id });
+  }));
+
+// Create employee records from uploaded XLSX file
+app.post(`${apiBaseUrl}/employees`, multer().single('file'),
+  asyncMiddleware(async (req, res) => {
+    const bufferToStream = (binary) => new Readable({
+      read() {
+        this.push(binary);
+        this.push(null);
+      },
+    });
+    const columnMap = {
+      NAME: 'name',
+      DATE: 'date',
+    };
+    const { rows } = await readXlsxFile(bufferToStream(req.file.buffer), { map: columnMap });
+    await validate(EmployeeBatchSchema, rows); // Validate submitted batch against schema
+    return res.json({ message: `Found ${rows.length} rows` });
   }));
 
 // Version number

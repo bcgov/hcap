@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
+const multer = require('multer');
 const {
   validate, LoginSchema, EmployerFormSchema, EmployeeFormSchema,
 } = require('./validation.js');
@@ -9,6 +10,8 @@ const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 const keycloak = require('./keycloak-config.js').initKeycloak();
+
+const upload = multer({ dest: 'uploads/' });
 
 const apiBaseUrl = '/api/v1';
 const app = express();
@@ -38,9 +41,10 @@ app.use(express.static(path.join(__dirname, '../client/build')));
 
 app.post(`${apiBaseUrl}/employee-upload-file`,
   keycloak.protect('admin'),
+  upload.single('file'),
   asyncMiddleware(async (req, res) => {
-    const result = 'upload';
-    return res.json({ result });
+    const { file } = req;
+    return res.json({ result: file });
   }));
 
 // Login endpoint

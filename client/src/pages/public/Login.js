@@ -18,7 +18,6 @@ export default () => {
     const redirect = state ? state.redirectOnLogin : '/';
 
     switch (redirect) {
-      case Routes.Admin:
       case Routes.EmployeeUpload:
         idpHint = 'idir';
         break;

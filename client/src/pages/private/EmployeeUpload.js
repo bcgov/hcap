@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
 import { makeStyles } from '@material-ui/core/styles';
 import { Page, Button } from '../../components/generic';
 import store from 'store';
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
   dropzone: {
@@ -25,29 +26,38 @@ const useStyles = makeStyles((theme) => ({
 // eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
 
+  const [file, setFile] = useState();
+  const [success, setSuccess] = useState();
+  const [errors, setErrors] = useState([]);
   const classes = useStyles();
 
   const handleSubmit = async () => {
-
+    const data = new FormData();
+    data.append('file', file);
     const response = await fetch('/api/v1/employee-upload-file', {
       headers: {
-        'Accept': 'application/json',
-        'Content-type': 'application/json',
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },
       method: 'POST',
+      body: data,
     });
 
     if (response.ok) {
-      const { result } = await response.json();
-      console.log(result);
+      const { error } = await response.json();
+      if (error) {
+        setErrors(error);
+      } else {
+        setFile(null);
+        setSuccess('Employees successfully uploaded.');
+      }
       return;
     }
   };
 
   const handleChange = (files) => {
-    const file = files[0];
-    console.log(file);
+    setFile(files[0]);
+    setSuccess(null);
+    setErrors([]);
   };
 
   return (
@@ -56,7 +66,7 @@ export default () => {
         <Typography variant="subtitle1" gutterBottom>
           Please upload pre-screened applicants:
         </Typography>
-        <Box pt={4} pb={4} pl={4} pr={4}>
+        <Box pt={4} pl={4} pr={4}>
           <DropzoneArea
             useChipsForPreview
             previewText="Selected file:"
@@ -72,10 +82,23 @@ export default () => {
             dropzoneText="Drop your employee sheet here or click"
           />
         </Box>
-        <Box pb={4} pl={4} pr={4}>
+        <Box pl={4} pr={4} pt={2}>
+          {
+            errors.length > 0 ?
+              errors.map(
+                (item, index) => <Alert key={index} severity="error">{item}</Alert>
+              )
+              :
+              success ?
+                <Alert severity="success">{success}</Alert>
+                : null
+          }
+        </Box>
+        <Box pb={4} pl={4} pr={4} pt={2}>
           <Button
             onClick={handleSubmit}
             variant="contained"
+            disabled={!file || errors.length > 0}
             color="primary"
             fullWidth={false}
             text="Upload"

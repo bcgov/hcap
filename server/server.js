@@ -6,7 +6,7 @@ const { Readable } = require('stream');
 const multer = require('multer');
 const readXlsxFile = require('read-excel-file/node');
 const {
-  validate, LoginSchema, EmployerFormSchema, EmployeeFormSchema, EmployeeBatchSchema,
+  validate, LoginSchema, EmployerFormSchema, EmployeeBatchSchema,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -75,18 +75,10 @@ app.post(`${apiBaseUrl}/employer-form`,
     }
   }));
 
-// Create new employee form, not secured
-app.post(`${apiBaseUrl}/employee-form`,
-  asyncMiddleware(async (req, res) => {
-    await validate(EmployeeFormSchema, req.body); // Validate submitted form against schema
-
-    const result = await dbClient.db.saveDoc(collections.EMPLOYEE_FORMS, req.body);
-
-    return res.json({ id: result.id });
-  }));
-
 // Create employee records from uploaded XLSX file
-app.post(`${apiBaseUrl}/employees`, multer().single('file'),
+app.post(`${apiBaseUrl}/employees`,
+  keycloak.protect('admin'),
+  multer().single('file'),
   asyncMiddleware(async (req, res) => {
     const bufferToStream = (binary) => new Readable({
       read() {

@@ -22,7 +22,7 @@
     "jspdf": "1.5.3",
     "keycloak-js": "9.0.2",
     "lodash.orderby": "4.6.0",
-    "material-ui-dropzone": "^3.5.0",
+    "material-ui-dropzone": "3.5.0",
     "moment": "2.27.0",
     "react": "16.13.1",
     "react-app-polyfill": "1.0.6",

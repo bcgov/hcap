@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { useLocation, Redirect } from 'react-router-dom';
 import { Routes } from '../../constants';
 
-import { PDFButton, Divider, Page } from '../../components/generic';
+import { Page } from '../../components/generic';
 import { Form } from '../../components/employer-form';
 
 export default () => {

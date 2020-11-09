@@ -4,7 +4,6 @@ import { useKeycloak } from '@react-keycloak/web';
 import { Routes } from '../../constants';
 import store from 'store';
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   const [keycloak] = useKeycloak();
 

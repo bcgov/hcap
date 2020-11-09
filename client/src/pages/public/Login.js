@@ -7,7 +7,6 @@ import { Page, } from '../../components/generic';
 import { Routes } from '../../constants';
 import store from 'store';
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   const [keycloak] = useKeycloak();
   const { state } = useLocation();

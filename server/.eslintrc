@@ -5,6 +5,7 @@
     "jest/globals": true
   },
   "rules": {
-    "no-underscore-dangle": ["error", { "allowAfterThis": true }]
+    "no-underscore-dangle": ["error", { "allowAfterThis": true }],
+    "import/no-anonymous-default-export": [2, {"allowArrowFunction": true}]
   }
 }

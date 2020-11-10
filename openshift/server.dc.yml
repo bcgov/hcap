@@ -17,6 +17,21 @@ parameters:
     description: Port the server will be exposed on
     value: "8080"
     required: true
+  - name: KEYCLOAK_REALM
+    description: Keycloak realm identifier
+    required: true
+  - name: KEYCLOAK_AUTH_URL
+    description: URL used to request authentication actions with Keycloak
+    required: true
+  - name: KEYCLOAK_FE_CLIENTID
+    description: Client ID for the application frontend
+    required: true
+  - name: KEYCLOAK_API_CLIENTID
+    description: Client ID for the application server
+    required: true
+  - name: KEYCLOAK_API_SECRET
+    description: Secret required to access the Keycloak API
+    required: true
 objects:
   - apiVersion: v1
     kind: Route
@@ -81,6 +96,31 @@ objects:
                     secretKeyRef:
                       key: db-password
                       name: ${APP_NAME}-patroni
+                - name: KEYCLOAK_REALM
+                  valueFrom:
+                    secretKeyRef:
+                      key: realm
+                      name: ${APP_NAME}-keycloak
+                - name: KEYCLOAK_AUTH_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: auth-url
+                      name: ${APP_NAME}-keycloak
+                - name: KEYCLOAK_FE_CLIENTID
+                  valueFrom:
+                    secretKeyRef:
+                      key: fe-client-id
+                      name: ${APP_NAME}-keycloak
+                - name: KEYCLOAK_API_CLIENTID
+                  valueFrom:
+                    secretKeyRef:
+                      key: be-client-id
+                      name: ${APP_NAME}-keycloak
+                - name: KEYCLOAK_API_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: api-secret
+                      name: ${APP_NAME}-keycloak
               name: ${APP_NAME}-server
               image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
               ports:

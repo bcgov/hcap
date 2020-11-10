@@ -63,7 +63,8 @@ tag-prod:
 
 # OpenShift Aliases
 
-server-prep: # This should be a template similar to DB prep
+server-prep: # TODO: Move role binding command to a server prep template
+	@oc process -f openshift/keycloak.prep.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -
 	@oc policy add-role-to-user system:image-puller system:serviceaccount:$(TARGET_NAMESPACE):default -n $(TOOLS_NAMESPACE)
 
 server-create:
@@ -93,4 +94,3 @@ db-mongo-tunnel:
 db-postgres-tunnel:
 	@oc project
 	@oc port-forward $(APP_NAME)-patroni-0 5432
-	

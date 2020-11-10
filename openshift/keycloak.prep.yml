@@ -1,0 +1,39 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+labels:
+  app: ${APP_NAME}
+parameters:
+  - name: APP_NAME
+    description: App name that OpenShift objects will be prefixed with
+    required: true
+  - name: KEYCLOAK_REALM
+    description: Keycloak realm identifier
+    value: 4qjrpzzl
+    required: true
+  - name: KEYCLOAK_AUTH_URL
+    description: URL used to request authentication actions with Keycloak
+    value: " "
+    required: true
+  - name: KEYCLOAK_FE_CLIENTID
+    description: Client ID for the application frontend
+    value: ${APP_NAME}-fe
+    required: true
+  - name: KEYCLOAK_API_CLIENTID
+    description: Client ID for the application server
+    value: ${APP_NAME}-api
+    required: true
+  - name: KEYCLOAK_API_SECRET
+    description: Secret required to access the Keycloak API
+    value: " "
+    required: true
+objects:
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-keycloak
+    stringData:
+      realm: ${KEYCLOAK_REALM}
+      auth-url: ${KEYCLOAK_AUTH_URL}
+      fe-client-id: ${KEYCLOAK_FE_CLIENTID}
+      be-client-id: ${KEYCLOAK_API_CLIENTID}
+      api-secret: ${KEYCLOAK_API_SECRET}

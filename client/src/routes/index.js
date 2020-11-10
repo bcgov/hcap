@@ -7,7 +7,7 @@ import store from 'store';
 import keycloak from '../keycloak';
 import { Routes } from '../constants';
 
-const Admin = lazy(() => import('../pages/private/Admin'));
+const EmployeeUpload = lazy(() => import('../pages/private/EmployeeUpload'));
 const EmployeeForm = lazy(() => import('../pages/public/EmployeeForm'));
 const EmployerForm = lazy(() => import('../pages/public/EmployerForm'));
 const Login = lazy(() => import('../pages/public/Login'));
@@ -57,7 +57,7 @@ export default () => {
             <Route exact path={Routes.EmployeeForm} component={EmployeeForm} />
             <Route exact path={Routes.EmployeeConfirmation} component={EmployeeConfirmation} />
             <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />
-            <PrivateRoute exact path={Routes.Admin} component={Admin} />
+            <PrivateRoute exact path={Routes.EmployeeUpload} component={EmployeeUpload} />
             <Route exact path={Routes.Keycloak} component={KeycloackRedirect} />
             <Route component={EmployerForm} />
           </Switch>

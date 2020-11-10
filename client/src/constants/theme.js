@@ -45,6 +45,9 @@ export default createMuiTheme({
     },
     headerText: {
       primary: '#FFFFFF',
+    },
+    gray: {
+      primary: '#F0F0F0',
     }
   },
 

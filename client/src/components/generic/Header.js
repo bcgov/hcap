@@ -69,9 +69,6 @@ export const Header = () => {
     await keycloak.logout({ redirectUri: window.location.origin });
   };
 
-  console.log(keycloak.authenticated);
-  console.log(keycloak.loginRequired);
-
   return (
     <div className={classes.root}>
       <AppBar className={classes.appBar} position="static">

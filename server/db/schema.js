@@ -3,20 +3,17 @@
  */
 
 const collections = {
-  EMPLOYEE_FORMS: 'employee_forms',
+  APPLICANTS: 'applicants',
   EMPLOYER_FORMS: 'employer_forms',
 };
 
 const schema = [
   {
-    collection: collections.EMPLOYEE_FORMS,
+    collection: collections.APPLICANTS,
     indexes: [
-      `CREATE UNIQUE INDEX orbeonId ON ${collections.EMPLOYEE_FORMS}( (body->>'orbeonId') ) ;`,
+      `CREATE UNIQUE INDEX maximusId ON ${collections.APPLICANTS}( (body->>'maximusId') ) ;`,
     ],
   },
 ];
 
-module.exports = {
-  collections,
-  schema,
-};
+module.exports = { collections, schema };

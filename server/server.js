@@ -39,7 +39,7 @@ app.use(keycloak.middleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-const allowRoles = (roles) => (token) => roles.some((role) => token.hasRole(role));
+const allowRoles = (...roles) => (token) => roles.some((role) => token.hasRole(role));
 
 // Create new employer form
 app.post(`${apiBaseUrl}/employer-form`,
@@ -79,7 +79,8 @@ app.post(`${apiBaseUrl}/employees`,
     };
     const { rows } = await readXlsxFile(bufferToStream(req.file.buffer), { map: columnMap });
     await validate(EmployeeBatchSchema, rows);
-    return res.json({ message: `Found ${rows.length} rows` });
+    await dbClient.db.saveDocs(collections.APPLICANTS, rows);
+    return res.json({ message: `Added ${rows.length} rows` });
   }));
 
 // Version number

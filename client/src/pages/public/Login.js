@@ -1,100 +1,40 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
+import { useLocation } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
-import { Formik, Form, Field } from 'formik';
-import { useHistory } from 'react-router-dom';
-import { Routes, LoginSchema } from '../../constants';
-import { Page, Button, Card } from '../../components/generic';
-import { RenderTextField } from '../../components/fields';
+import { useKeycloak } from '@react-keycloak/web';
+import { Page, } from '../../components/generic';
+import { Routes } from '../../constants';
+import store from 'store';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
-  const history = useHistory();
-  const [submitLoading, setSubmitLoading] = useState(false);
-  const [submitError, setSubmitError] = useState(null);
-  const initialValues = {
-    username: '',
-    password: '',
-  };
+  const [keycloak] = useKeycloak();
+  const { state } = useLocation();
 
-  const handleSubmit = async (values) => {
-    setSubmitLoading(true);
+  useEffect(() => {
+    let idpHint;
 
-    const response = await fetch('/api/v1/login', {
-      headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
-      method: 'POST',
-      body: JSON.stringify({ ...values })
-    });
+    const redirect = state ? state.redirectOnLogin : '/';
 
-    if (response.ok) {
-      // TODO Uncomment once we have auth implemented
-      // const { token } = await response.json();
-      // window.localStorage.setItem('jwt', token);
-      history.push(Routes.EmployerForm);
-      return;
-    } else {
-      setSubmitError(response.error || response.statusText || response);
+    switch (redirect) {
+      case Routes.Admin:
+        idpHint = 'idir';
+        break;
+      default:
+        idpHint = 'bceid';
+        break;
     }
-    setSubmitLoading(false);
-  };
+    store.set('REDIRECT', redirect);
+    keycloak.login({ idpHint, redirectUri: `${window.location.origin}${Routes.Keycloak}` });
+  }, [keycloak, state]);
 
   return (
     <Page >
       <Grid container alignItems="center" justify="center" >
-        <Grid item xs={12} sm={8} md={6} lg={4} xl={3}>
-          <Box m={2}>
-            <Card title="Employer Login">
-              <Formik
-                initialValues={initialValues}
-                validationSchema={LoginSchema}
-                onSubmit={handleSubmit}
-              >
-                <Form>
-                  <Grid container spacing={3}>
-
-                    {/** Username */}
-                    <Grid item xs={12}>
-                      <Field
-                        name="username"
-                        component={RenderTextField}
-                        label="Username"
-                      />
-                    </Grid>
-
-                    {/** Password */}
-                    <Grid item xs={12}>
-                      <Field
-                        name="password"
-                        component={RenderTextField}
-                        label="Password"
-                        type="password"
-                      />
-                    </Grid>
-
-                    {/** Submit */}
-                    <Grid item xs={12}>
-                      <Button
-                        type="submit"
-                        text="Login"
-                        size="large"
-                        loading={submitLoading}
-                      />
-                    </Grid>
-
-                    {/** Submit Errors */}
-                    {submitError && (
-                      <Grid item xs={12}>
-                        <Typography color="error">
-                          Login failed... {submitError.message || submitError}
-                        </Typography>
-                      </Grid>
-                    )}
-                  </Grid>
-                </Form>
-              </Formik>
-            </Card>
-          </Box>
-        </Grid>
+        <Typography variant="subtitle2">
+          Redirecting...
+        </Typography>
       </Grid>
     </Page>
   );

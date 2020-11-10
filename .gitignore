@@ -5,6 +5,7 @@ node_modules
 client/.pnp
 client/.pnp.js
 client/build
+!client/.env
 
 # Server
 server/*.pdf
@@ -16,7 +17,7 @@ docs
 Dockerrun.aws.json
 audit-report.*
 .DS_Store
-.env
+/.env
 test-results
 npm-debug.log*
 yarn-debug.log*

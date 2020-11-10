@@ -17,21 +17,6 @@ parameters:
     description: Port the server will be exposed on
     value: "8080"
     required: true
-  - name: KEYCLOAK_REALM
-    description: Keycloak realm identifier
-    required: true
-  - name: KEYCLOAK_AUTH_URL
-    description: URL used to request authentication actions with Keycloak
-    required: true
-  - name: KEYCLOAK_FE_CLIENTID
-    description: Client ID for the application frontend
-    required: true
-  - name: KEYCLOAK_API_CLIENTID
-    description: Client ID for the application server
-    required: true
-  - name: KEYCLOAK_API_SECRET
-    description: Secret required to access the Keycloak API
-    required: true
 objects:
   - apiVersion: v1
     kind: Route

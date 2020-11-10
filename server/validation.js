@@ -85,11 +85,6 @@ const errorMessage = ({ path }) => {
   return errorMessages[path] || `Failed validation on ${path}`;
 };
 
-const LoginSchema = yup.object().noUnknown().shape({
-  username: yup.string().required('Username is required'),
-  password: yup.string().required('Password is required'),
-});
-
 const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape({
   // Operator Contact Information
   registeredBusinessName: yup.string().nullable(errorMessage),
@@ -170,5 +165,5 @@ const EmployeeBatchSchema = yup.array().of(
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
-  LoginSchema, EmployerFormSchema, EmployeeBatchSchema, validate,
+  EmployerFormSchema, EmployeeBatchSchema, validate,
 };

@@ -6,7 +6,7 @@ const { Readable } = require('stream');
 const multer = require('multer');
 const readXlsxFile = require('read-excel-file/node');
 const {
-  validate, LoginSchema, EmployerFormSchema, EmployeeBatchSchema,
+  validate, EmployerFormSchema, EmployeeBatchSchema,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -39,22 +39,12 @@ app.use(keycloak.middleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-// Login endpoint
-// TODO not implemented
-app.post(`${apiBaseUrl}/login`,
-  asyncMiddleware(async (req, res) => {
-    await validate(LoginSchema, req.body);
-
-    // TODO implement login, success mocked
-    const result = 'success';
-    return res.json({ result });
-  }));
+const allowRoles = (roles) => (token) => roles.some((role) => token.hasRole(role));
 
 // Create new employer form
-// TODO needs to be secured if/when login implemented
 app.post(`${apiBaseUrl}/employer-form`,
   asyncMiddleware(async (req, res) => {
-    await validate(EmployerFormSchema, req.body); // Validate submitted form against schema
+    await validate(EmployerFormSchema, req.body);
     try {
       const result = await dbClient.db.saveDoc(collections.EMPLOYER_FORMS, req.body);
       logger.info(`Form ${result.id} successfully created.`);
@@ -67,7 +57,7 @@ app.post(`${apiBaseUrl}/employer-form`,
 
 // Create employee records from uploaded XLSX file
 app.post(`${apiBaseUrl}/employees`,
-  keycloak.protect('admin'),
+  keycloak.protect(allowRoles('admin', 'maximus')),
   multer().single('file'),
   asyncMiddleware(async (req, res) => {
     const bufferToStream = (binary) => new Readable({
@@ -88,7 +78,7 @@ app.post(`${apiBaseUrl}/employees`,
       consent: 'consent',
     };
     const { rows } = await readXlsxFile(bufferToStream(req.file.buffer), { map: columnMap });
-    await validate(EmployeeBatchSchema, rows); // Validate submitted batch against schema
+    await validate(EmployeeBatchSchema, rows);
     return res.json({ message: `Found ${rows.length} rows` });
   }));
 

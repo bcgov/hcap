@@ -34,7 +34,7 @@ export default () => {
   const handleSubmit = async () => {
     const data = new FormData();
     data.append('file', file);
-    const response = await fetch('/api/v1/employee-upload-file', {
+    const response = await fetch('/api/v1/employees', {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },

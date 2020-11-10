@@ -13,8 +13,6 @@ const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 const keycloak = require('./keycloak-config.js').initKeycloak();
 
-const upload = multer({ dest: 'uploads/' });
-
 const apiBaseUrl = '/api/v1';
 const app = express();
 
@@ -40,14 +38,6 @@ app.use(helmet({
 app.use(keycloak.middleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
-
-app.post(`${apiBaseUrl}/employee-upload-file`,
-  keycloak.protect('admin'),
-  upload.single('file'),
-  asyncMiddleware(async (req, res) => {
-    const { file } = req;
-    return res.json({ result: file });
-  }));
 
 // Login endpoint
 // TODO not implemented

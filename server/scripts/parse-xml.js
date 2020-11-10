@@ -1,3 +1,4 @@
+/* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
@@ -64,15 +65,12 @@ const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint
 
 // run: node parse-xml ./folder-containing-xml-files
 // run mocks: node parse-xml ../tests/mock/xml
-/* eslint-disable no-console */
 (async () => {
   let currentFile;
   try {
     const xmlStrings = getDirContent(process.argv[2]);
     const parsedJsonObjs = [];
     const validationErrors = [];
-    /* eslint-disable no-await-in-loop */
-    /* eslint-disable no-restricted-syntax */
     for (const xml of xmlStrings) {
       currentFile = xml;
       const jsonObj = fromXmlStrings(xml.content);

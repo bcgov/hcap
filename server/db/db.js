@@ -13,7 +13,6 @@ class DBClient {
      * @type {Db|null}
      * @memberof DB
      */
-    /** eslint-disable-next-line */
     this.db = null;
   }
 

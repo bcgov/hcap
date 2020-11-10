@@ -77,8 +77,15 @@ app.post(`${apiBaseUrl}/employees`,
       },
     });
     const columnMap = {
-      NAME: 'name',
-      DATE: 'date',
+      maximusId: 'maximusId',
+      eligibility: 'eligibility',
+      firstName: 'firstName',
+      lastName: 'lastName',
+      phoneNumber: 'phoneNumber',
+      emailAddress: 'emailAddress',
+      postalCode: 'postalCode',
+      preferredLocation: 'preferredLocation',
+      consent: 'consent',
     };
     const { rows } = await readXlsxFile(bufferToStream(req.file.buffer), { map: columnMap });
     await validate(EmployeeBatchSchema, rows); // Validate submitted batch against schema

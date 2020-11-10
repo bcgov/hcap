@@ -28,10 +28,6 @@ const siteTypes = [
   '',
 ];
 
-const validateUniqueArray = (a) => (
-  Array.isArray(a) && new Set(a).size === a.length
-);
-
 const validateBlankOrPositiveInteger = (n) => (
   n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n >= 0)
 );
@@ -159,14 +155,12 @@ const EmployeeBatchSchema = yup.array().of(
     // Contact info
     firstName: yup.string().required(errorMessage),
     lastName: yup.string().required(errorMessage),
-    phoneNumber: yup.string().required(errorMessage).matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
+    phoneNumber: yup.string().required(errorMessage),
     emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
     postalCode: yup.string().required(errorMessage).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
 
     // Preferred location
-    preferredLocation: yup.array().required(errorMessage).of(
-      yup.string().oneOf(healthRegions, 'Invalid location'),
-    ).test('is-unique-array', 'Preferred locations must be unique', validateUniqueArray),
+    preferredLocation: yup.string().test('is-region-array', errorMessage, () => true),
 
     // Consent
     consent: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),

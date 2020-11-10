@@ -18,9 +18,9 @@ export default () => {
     const redirect = state ? state.redirectOnLogin : '/';
 
     switch (redirect) {
-      case Routes.EmployeeUpload:
-        idpHint = 'bceid';
-        break;
+      // case Routes.EmployeeUpload:
+      //   idpHint = 'bceid';
+      //   break;
       default:
         idpHint = 'idir';
         break;

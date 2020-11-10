@@ -43,6 +43,7 @@ export default () => {
       autoRefreshToken={true}
       initConfig={{
         pkceMethod: 'S256',
+        checkLoginIframe: false,
       }}
       onTokens={() => {
         store.set('TOKEN', keycloak.token);

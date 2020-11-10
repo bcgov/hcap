@@ -19,10 +19,10 @@ export default () => {
 
     switch (redirect) {
       case Routes.EmployeeUpload:
-        idpHint = 'idir';
+        idpHint = 'bceid';
         break;
       default:
-        idpHint = 'bceid';
+        idpHint = 'idir';
         break;
     }
     store.set('REDIRECT', redirect);

@@ -35,7 +35,6 @@ const PrivateRoute = ({ component: Component, path, ...rest }) => {
   );
 };
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   return (
     <KeycloakProvider

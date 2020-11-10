@@ -8,9 +8,9 @@ services:
       context: ./client
       dockerfile: Dockerfile.dev
     environment:
-      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
-      - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
-      - KEYCLOAK_FE_CLIENTID=${KEYCLOAK_FE_CLIENTID}
+      - REACT_APP_KEYCLOAK_REALM=${KEYCLOAK_REALM}
+      - REACT_APP_KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
+      - REACT_APP_KEYCLOAK_FE_CLIENTID=${KEYCLOAK_FE_CLIENTID}
     ports:
       - 4000:4000
     volumes:

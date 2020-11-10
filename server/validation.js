@@ -28,10 +28,6 @@ const siteTypes = [
   '',
 ];
 
-const validateUniqueArray = (a) => (
-  Array.isArray(a) && new Set(a).size === a.length
-);
-
 const validateBlankOrPositiveInteger = (n) => (
   n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n >= 0)
 );
@@ -89,12 +85,7 @@ const errorMessage = ({ path }) => {
   return errorMessages[path] || `Failed validation on ${path}`;
 };
 
-const LoginSchema = yup.object().noUnknown().shape({
-  username: yup.string().required('Username is required'),
-  password: yup.string().required('Password is required'),
-});
-
-const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shape({
+const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape({
   // Operator Contact Information
   registeredBusinessName: yup.string().nullable(errorMessage),
   operatorName: yup.string().nullable(errorMessage),
@@ -148,31 +139,31 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shap
   doesCertify: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 });
 
-const EmployeeFormSchema = yup.object().noUnknown('Unknown field for form').shape({
-  // Orbeon Id
-  orbeonId: yup.string().typeError(errorMessage),
+const EmployeeBatchSchema = yup.array().of(
+  yup.object().noUnknown('Unknown field in employee row').shape({
+    // Orbeon Id
+    maximusId: yup.string().typeError(errorMessage),
 
-  // Eligibility
-  eligibility: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
+    // Eligibility
+    eligibility: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 
-  // Contact info
-  firstName: yup.string().required(errorMessage),
-  lastName: yup.string().required(errorMessage),
-  phoneNumber: yup.string().required(errorMessage).matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
-  emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
-  postalCode: yup.string().required(errorMessage).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
+    // Contact info
+    firstName: yup.string().required(errorMessage),
+    lastName: yup.string().required(errorMessage),
+    phoneNumber: yup.string().required(errorMessage),
+    emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+    postalCode: yup.string().required(errorMessage).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
 
-  // Preferred location
-  preferredLocation: yup.array().required(errorMessage).of(
-    yup.string().oneOf(healthRegions, 'Invalid location'),
-  ).test('is-unique-array', 'Preferred locations must be unique', validateUniqueArray),
+    // Preferred location
+    preferredLocation: yup.string().test('is-region-array', errorMessage, () => true),
 
-  // Consent
-  consent: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
-});
+    // Consent
+    consent: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
+  }),
+);
 
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
-  LoginSchema, EmployerFormSchema, EmployeeFormSchema, validate,
+  EmployerFormSchema, EmployeeBatchSchema, validate,
 };

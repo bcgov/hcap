@@ -14,7 +14,7 @@ export default () => {
   useEffect(() => {
     let idpHint;
 
-    const redirect = state ? state.redirectOnLogin : '/';
+    const redirect = state ? state.redirectOnLogin : Routes.Admin;
 
     switch (redirect) {
       case Routes.EmployeeUpload:

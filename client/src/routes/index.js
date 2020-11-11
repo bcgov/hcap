@@ -62,7 +62,7 @@ export default () => {
   }, []);
 
   if (!keycloakInfo) {
-    return null;
+    return 'Server unavailable';
   }
 
   return (

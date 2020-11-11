@@ -1,50 +1,67 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router-dom';
 import { Page, Button } from '../../components/generic';
+import { Routes } from '../../constants';
+import store from 'store';
 
-const useStyles = makeStyles((theme) => ({
-  dropzone: {
-    backgroundColor: theme.palette.gray.primary,
-    padding: theme.spacing(3),
-    marginBottom: theme.spacing(2),
-  },
-  dropzoneText: {
-    color: theme.palette.text.secondary,
-    fontSize: theme.typography.button.fontSize,
-  },
-  previewChip: {
-    minWidth: 160,
-    maxWidth: 210
-  },
-}));
-
-// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
 
-  const [success, setSuccess] = useState();
-  const [errors, setErrors] = useState([]);
-  const classes = useStyles();
+  const [roles, setRoles] = useState([]);
+  const history = useHistory();
 
-  const handleSubmit = async () => {
-    
-  };
+  const fetchRoles = async () => {
+    const response = await fetch('/api/v1/roles', {
+      headers: {
+        'Authorization': `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const { roles } = await response.json();
+      setRoles(roles);
+    }
+  }
+
+  useEffect(() => {
+    fetchRoles();
+  }, []);
+
+  const renderAdminButton = (key, route, label) => <Button
+    key={key}
+    onClick={async () => {
+      history.push(route);
+    }}
+    variant="contained"
+    color="primary"
+    fullWidth={false}
+    text={label}
+  />;
 
   return (
     <Page >
       <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
-        <Typography variant="subtitle1" gutterBottom>
-          Select:
-        </Typography>
         <Box pb={4} pl={4} pr={4} pt={2}>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            color="primary"
-            fullWidth={false}
-            text="Upload"
-          />
+          {
+            roles.length === 0 ?
+              <Typography variant="subtitle1" gutterBottom>
+                You don't have enough permissions.
+              </Typography>
+              :
+              roles.includes('admin') ?
+                [renderAdminButton(0, Routes.EmployeeUpload, 'Upload Employees')]
+                :
+                roles.map((item, index) => {
+                  switch (item) {
+                    case 'maximus':
+                      return renderAdminButton(index, Routes.EmployeeUpload, 'Upload Employees');
+                    default:
+                      return null
+                  }
+                })
+          }
         </Box>
       </Grid>
     </Page>

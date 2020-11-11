@@ -51,7 +51,6 @@ const useStyles = makeStyles((theme) => ({
     borderStyle: 'solid',
   },
   button: {
-    width: '90px',
     padding: theme.spacing(1, 3),
     margin: theme.spacing(0, 1),
   },
@@ -99,6 +98,7 @@ export const Header = () => {
             <Button
               className={classes.button}
               text="Logout"
+              fullWidth={false}
               variant="outlined"
               color="inherit"
               onClick={handleLogoutClick}

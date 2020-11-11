@@ -1,10 +1,10 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect, useState, } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import { useKeycloak, KeycloakProvider } from '@react-keycloak/web';
 import store from 'store';
+import Keycloak from 'keycloak-js';
 
-import keycloak from '../keycloak';
 import { Routes } from '../constants';
 
 const EmployeeUpload = lazy(() => import('../pages/private/EmployeeUpload'));
@@ -36,16 +36,45 @@ const PrivateRoute = ({ component: Component, path, ...rest }) => {
 };
 
 export default () => {
+
+  const [keycloakInfo, setKeycloakInfo] = useState();
+
+  const getKeycloakInfo = async () => {
+    const response = await fetch('/api/v1/keycloak-realm-client-info', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json',
+      },
+      method: 'GET',
+    });
+
+    const result = await response.json();
+
+    setKeycloakInfo(new Keycloak({
+      realm: result.realm,
+      url: result.url,
+      clientId: result.clientId
+    }))
+  };
+
+  useEffect(() => {
+    getKeycloakInfo();
+  }, []);
+
+  if (!keycloakInfo) {
+    return 'Server unavailable';
+  }
+
   return (
     <KeycloakProvider
-      keycloak={keycloak}
+      keycloak={keycloakInfo}
       autoRefreshToken={true}
       initConfig={{
         pkceMethod: 'S256',
         checkLoginIframe: false,
       }}
       onTokens={() => {
-        store.set('TOKEN', keycloak.token);
+        store.set('TOKEN', keycloakInfo.token);
       }}
       LoadingComponent={<LinearProgress />}
     >

@@ -101,7 +101,7 @@ app.get(`${apiBaseUrl}/roles`,
       }
     });
     req.roles = roles;
-    return true;
+    return !token.isExpired();
   }),
   asyncMiddleware(async (req, res) => {
     try {

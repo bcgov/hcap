@@ -91,6 +91,27 @@ app.post(`${apiBaseUrl}/employees`,
     return res.json({ message: `Added ${rows.length} rows` });
   }));
 
+// Get user roles
+app.get(`${apiBaseUrl}/roles`,
+  keycloak.protect((token, req) => {
+    const roles = [];
+    ['admin', 'maximus'].forEach((item) => {
+      if (token.hasRole(item)) {
+        roles.push(item);
+      }
+    });
+    req.roles = roles;
+    return !token.isExpired();
+  }),
+  asyncMiddleware(async (req, res) => {
+    try {
+      return res.json({ roles: req.roles });
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
+  }));
+
 // Version number
 app.get(`${apiBaseUrl}/version`,
   (req, res) => res.json({ version: process.env.VERSION }));

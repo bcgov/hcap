@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const csv = require('fast-csv');
 const { writeFileSync } = require('fs');
 const path = require('path');
@@ -23,7 +24,6 @@ const mapToObject = (m) => {
   return o;
 };
 
-/* eslint-disable no-console */
 (async () => {
   if (require.main === module) {
     try {
@@ -97,4 +97,3 @@ const mapToObject = (m) => {
     }
   }
 })();
-/* eslint-enable no-console */

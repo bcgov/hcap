@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
 const { dbClient } = require('../db.js');
 const { schema } = require('../schema.js');
 
@@ -6,7 +6,6 @@ const { schema } = require('../schema.js');
 const ERROR_DUPLICATED = '42P07';
 
 // If run directly, will set up local DB
-/* eslint-disable no-console */
 (async () => {
   if (require.main === module) {
     try {
@@ -44,5 +43,5 @@ const ERROR_DUPLICATED = '42P07';
       console.error(`Failed to create tables or indexes, ${error}`);
     }
   }
+  return null;
 })();
-/* eslint-enable no-console */

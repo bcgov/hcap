@@ -1,18 +1,15 @@
-/* eslint-disable */
-const { dbClient } = require('../db/db.js');
-const { collections } = require('../db/schema.js');
+/* eslint-disable no-console */
 const inquirer = require('inquirer');
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
+const { dbClient } = require('../db/db.js');
+const { collections } = require('../db/schema.js');
 require('dotenv').config({ path: '../.env' });
 
 dayjs.extend(utc);
 
-const toPostgresDate = (date) => {
-  return dayjs(date).utc().format('YYYY-MM-DD HH:mm:ssZ');
-}
+const toPostgresDate = (date) => dayjs(date).utc().format('YYYY-MM-DD HH:mm:ssZ');
 
-/* eslint-disable no-console */
 (async () => {
   if (require.main === module) {
     try {
@@ -27,43 +24,38 @@ const toPostgresDate = (date) => {
         'Northern',
       ];
 
-      let startDate;
-      let endDate;
-
-      ({ 'Start Date': startDate } = await inquirer.prompt([{
+      const { 'Start Date': startDate } = await inquirer.prompt([{
         name: 'Start Date',
         type: 'input',
-        default: dayjs().format('YYYY-MM-DD')
-      }]));
+        default: dayjs().format('YYYY-MM-DD'),
+      }]);
 
-      ({ 'End Date (not inclusive)': endDate } = await inquirer.prompt([{
+      const { 'End Date (not inclusive)': endDate } = await inquirer.prompt([{
         name: 'End Date (not inclusive)',
         type: 'input',
-        default: dayjs().add(1, 'day').format('YYYY-MM-DD')
-      }]));
+        default: dayjs().add(1, 'day').format('YYYY-MM-DD'),
+      }]);
 
       const queryResults = await dbClient.db[collections.EMPLOYER_FORMS]
         .find({
           'created_at BETWEEN': [toPostgresDate(startDate), toPostgresDate(endDate)],
         });
 
-      const healthAuthorityCount = healthAuthorities.map((authority) => {
-        return {
-          name: authority,
-          submissions: queryResults.reduce(
-            (total, result) => {
-              if (result.body.healthAuthority === authority) {
-                return total + 1;
-              } else {
-                return total;
-              }
-            },
-            0),
-        };
-      });
+      const healthAuthorityCount = healthAuthorities.map((authority) => ({
+        name: authority,
+        submissions: queryResults.reduce(
+          (total, result) => {
+            if (result.body.healthAuthority === authority) {
+              return total + 1;
+            }
+            return total;
+          },
+          0,
+        ),
+      }));
 
       console.log('------------------');
-      console.log(`${startDate} to ${endDate} submissions:`)
+      console.log(`${startDate} to ${endDate} submissions:`);
       console.table(healthAuthorityCount);
       console.log(`Total submissions: ${healthAuthorityCount.reduce((total, item) => (item.submissions + total), 0)}`);
       console.log('------------------');
@@ -73,5 +65,5 @@ const toPostgresDate = (date) => {
       console.error(`Failed to retrieve stats, ${error}`);
     }
   }
+  return null;
 })();
-/* eslint-enable no-console */

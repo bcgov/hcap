@@ -7,10 +7,6 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile.dev
-    environment:
-      - REACT_APP_KEYCLOAK_REALM=${KEYCLOAK_REALM}
-      - REACT_APP_KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
-      - REACT_APP_KEYCLOAK_FE_CLIENTID=${KEYCLOAK_FE_CLIENTID}
     ports:
       - 4000:4000
     volumes:
@@ -20,7 +16,7 @@ services:
       - server
     networks:
       - network
-
+      
   server:
     image: ${APP_NAME}-server
     container_name: ${APP_NAME}-server
@@ -41,6 +37,7 @@ services:
       - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
       - KEYCLOAK_API_CLIENTID=${KEYCLOAK_API_CLIENTID}
       - KEYCLOAK_API_SECRET=${KEYCLOAK_API_SECRET}
+      - KEYCLOAK_FE_CLIENTID=${KEYCLOAK_FE_CLIENTID}
     ports:
       - "8080:8080"
       - "9229:9229"

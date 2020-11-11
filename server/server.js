@@ -43,7 +43,11 @@ const allowRoles = (...roles) => (token) => roles.some((role) => token.hasRole(r
 
 // Return client info for Keycloak realm for the current environment
 app.get(`${apiBaseUrl}/keycloak-realm-client-info`,
-  asyncMiddleware(async (req, res) => res.json({ realm: keycloak.realm, url: keycloak['auth-server-url'], clientId: process.env.KEYCLOAK_FE_CLIENTID })));
+  asyncMiddleware(async (req, res) => res.json({
+    realm: process.env.KEYCLOAK_REALM,
+    url: process.env.KEYCLOAK_AUTH_URL,
+    clientId: process.env.KEYCLOAK_FE_CLIENTID,
+  })));
 
 // Create new employer form
 app.post(`${apiBaseUrl}/employer-form`,

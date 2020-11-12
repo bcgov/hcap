@@ -47,7 +47,7 @@ export default () => {
         setErrors(error);
       } else {
         setFile(null);
-        setSuccess('Employees successfully uploaded.');
+        setSuccess('Applicants successfully uploaded.');
       }
       return;
     }
@@ -78,7 +78,7 @@ export default () => {
             filesLimit={1}
             dropzoneClass={classes.dropzone}
             dropzoneParagraphClass={classes.dropzoneText}
-            dropzoneText="Drop your employee sheet here or click"
+            dropzoneText="Drop your applicant sheet here or click the box"
           />
         </Box>
         <Box pl={4} pr={4} pt={2}>

@@ -17,11 +17,10 @@ export default () => {
     const redirect = state ? state.redirectOnLogin : Routes.Admin;
 
     switch (redirect) {
-      case Routes.EmployeeUpload:
+      case Routes.ApplicantUpload:
         idpHint = 'bceid';
         break;
       default:
-        idpHint = 'idir';
         break;
     }
     store.set('REDIRECT', redirect);

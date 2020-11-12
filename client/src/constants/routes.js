@@ -3,7 +3,7 @@ export default Object.freeze({
   Login: '/login',
   Keycloak: '/keycloak',
   EmployerForm: '/',
-  EmployeeUpload: '/employee-upload',
+  ApplicantUpload: '/applicant-upload',
   EmployeeForm: '/employee-form',
   EmployeeConfirmation: '/employee-confirmation',
   EmployerConfirmation: '/employer-confirmation',

@@ -63,6 +63,19 @@ app.post(`${apiBaseUrl}/employer-form`,
     }
   }));
 
+// Get employer forms
+app.get(`${apiBaseUrl}/employer-form`,
+  keycloak.protect(allowRoles('admin')),
+  asyncMiddleware(async (req, res) => {
+    try {
+      const result = await dbClient.db[collections.EMPLOYER_FORMS].findDoc({});
+      return res.json({ data: result });
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
+  }));
+
 // Create employee records from uploaded XLSX file
 app.post(`${apiBaseUrl}/employees`,
   keycloak.protect(allowRoles('admin', 'maximus')),

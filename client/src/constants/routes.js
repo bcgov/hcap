@@ -10,4 +10,5 @@ export default Object.freeze({
 
   // Private routes
   Admin: '/admin',
+  EOIView: '/eoi-view',
 });

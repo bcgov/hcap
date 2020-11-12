@@ -51,7 +51,10 @@ export default () => {
               </Typography>
               :
               roles.includes('admin') ?
-                [renderAdminButton(0, Routes.ApplicantUpload, 'Upload Applicants')]
+                [
+                  renderAdminButton(0, Routes.ApplicantUpload, 'Upload Applicants'),
+                  renderAdminButton(1, Routes.EOIView, 'Expressions of Interest'),
+                ]
                 :
                 roles.map((item, index) => {
                   switch (item) {

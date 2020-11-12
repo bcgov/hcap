@@ -51,12 +51,12 @@ export default () => {
               </Typography>
               :
               roles.includes('admin') ?
-                [renderAdminButton(0, Routes.EmployeeUpload, 'Upload Employees')]
+                [renderAdminButton(0, Routes.ApplicantUpload, 'Upload Applicants')]
                 :
                 roles.map((item, index) => {
                   switch (item) {
                     case 'maximus':
-                      return renderAdminButton(index, Routes.EmployeeUpload, 'Upload Employees');
+                      return renderAdminButton(index, Routes.ApplicantUpload, 'Upload Applicants');
                     default:
                       return null
                   }

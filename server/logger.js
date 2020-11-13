@@ -9,9 +9,10 @@ const dbPort = process.env.MONGO_PORT || '27017';
 const dbUser = process.env.MONGO_USER;
 const dbPassword = process.env.MONGO_PASSWORD;
 const dbName = process.env.MONGO_DB || 'logs';
+const queryParams = typeof process.env.MONGO_REPLICA === 'undefined' ? '' : `replicaSet=${process.env.MONGO_REPLICA}`;
 
 winston.add(new winston.transports.MongoDB({
-  db: `mongodb://${dbUser}:${dbPassword}@${dbServer}:${dbPort}/${dbName}`,
+  db: `mongodb://${dbUser}:${dbPassword}@${dbServer}:${dbPort}/${dbName}?${queryParams}`,
 }));
 
 module.exports = winston;

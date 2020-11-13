@@ -16,7 +16,7 @@ services:
       - server
     networks:
       - network
-      
+
   server:
     image: ${APP_NAME}-server
     container_name: ${APP_NAME}-server

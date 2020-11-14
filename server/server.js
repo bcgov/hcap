@@ -106,19 +106,13 @@ app.post(`${apiBaseUrl}/employees`,
 
 // Get user roles
 app.get(`${apiBaseUrl}/roles`,
-  keycloak.protect((token, req) => {
-    const roles = [];
-    ['admin', 'maximus'].forEach((item) => {
-      if (token.hasRole(item)) {
-        roles.push(item);
-      }
-    });
-    req.roles = roles;
-    return !token.isExpired();
-  }),
+  keycloak.protect(),
   asyncMiddleware(async (req, res) => {
+    const { roles } = req.kauth
+      .grant.access_token.content
+      .resource_access[process.env.KEYCLOAK_API_CLIENTID];
     try {
-      return res.json({ roles: req.roles });
+      return res.json({ roles });
     } catch (error) {
       logger.error(error);
       throw error;

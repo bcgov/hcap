@@ -8,8 +8,6 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { withStyles } from '@material-ui/core/styles';
 
-import { Card } from './Card';
-
 const StyledTableCell = withStyles((theme) => ({
   head: {
     ...theme.typography.body1,
@@ -21,6 +19,14 @@ const StyledTableCell = withStyles((theme) => ({
   }
 }))(TableCell);
 
+const StyledHeaderTableCell = withStyles((theme) => ({
+  head: {
+    ...theme.typography.body1,
+    backgroundColor: theme.palette.common.white,
+    borderBottom: `2px solid ${theme.palette.secondary.main}`,
+  }
+}))(TableCell);
+
 const StyledTableRow = withStyles((theme) => ({
   root: {
     '&:nth-child(1)': {
@@ -28,6 +34,14 @@ const StyledTableRow = withStyles((theme) => ({
     },
     '&:nth-of-type(odd)': {
       backgroundColor: '#FAFAFA',
+    },
+    '&:nth-of-type(even)': {
+      backgroundColor: '#FFFFFF',
+    },
+  },
+  hover: {
+    '&:hover': {
+      backgroundColor: '#F0F7FF !important',
     },
   },
 }))(TableRow);
@@ -39,38 +53,36 @@ export const Table = ({ order, orderBy, onRequestSort, columns, rows, isLoading 
   };
 
   return (
-    <Card noPadding>
-      <MuiTable>
-        <TableHead>
-          <TableRow>
-            {columns.map((column, index) => (
-              <StyledTableCell key={index}>
-                <TableSortLabel
-                  active={orderBy === column.id}
-                  direction={orderBy === column.id ? order : 'asc'}
-                  onClick={createSortHandler(column.id)}>
-                  {column.name}
-                </TableSortLabel>
-              </StyledTableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {isLoading ? [...Array(8)].map((_, i) => (
-            <StyledTableRow key={i}>
-              {[...Array(columns.length)].map((_, i) => (
-                <StyledTableCell key={i}><Skeleton animation="wave" /></StyledTableCell>
-              ))}
-            </StyledTableRow>
-          )) : rows.map((row, index) => (
-            <StyledTableRow key={index}>
-              {Object.keys(row).map((key) => (
-                <StyledTableCell key={key}>{row[key]}</StyledTableCell>
-              ))}
-            </StyledTableRow>
+    <MuiTable stickyHeader>
+      <TableHead>
+        <TableRow>
+          {columns.map((column, index) => (
+            <StyledHeaderTableCell key={index}>
+              <TableSortLabel
+                active={orderBy === column.id}
+                direction={orderBy === column.id ? order : 'asc'}
+                onClick={createSortHandler(column.id)}>
+                {column.name}
+              </TableSortLabel>
+            </StyledHeaderTableCell>
           ))}
-        </TableBody>
-      </MuiTable>
-    </Card>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {isLoading ? [...Array(8)].map((_, i) => (
+          <StyledTableRow key={i}>
+            {[...Array(columns.length)].map((_, i) => (
+              <StyledTableCell key={i}><Skeleton animation="wave" /></StyledTableCell>
+            ))}
+          </StyledTableRow>
+        )) : rows.map((row, index) => (
+          <StyledTableRow hover key={index}>
+            {Object.keys(row).map((key) => (
+              <StyledTableCell key={key}>{row[key]}</StyledTableCell>
+            ))}
+          </StyledTableRow>
+        ))}
+      </TableBody>
+    </MuiTable>
   );
 };

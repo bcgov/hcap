@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
-import { Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
+import store from 'store';
 import { Page, Table } from '../../components/generic';
 
 export default () => {
@@ -9,12 +10,16 @@ export default () => {
   const [order, setOrder] = useState('asc');
   const [isLoading, setLoading] = useState(false);
   const [rows, setRows] = useState([]);
-
-  const columns = [
+  const [columns] = useState([
+    { id: 'id', name: 'ID' },
     { id: 'siteName', name: 'Site Name' },
+    { id: 'siteType', name: 'Site Type' },
+    { id: 'emailAddress', name: 'Email Address' },
+    { id: 'address', name: 'Address' },
     { id: 'healthAuthority', name: 'Health Authority' },
     { id: 'operatorName', name: 'Operator Name' },
-  ];
+  ]);
+
   const [orderBy, setOrderBy] = useState(columns[0].id);
 
   const handleRequestSort = (event, property) => {
@@ -34,39 +39,61 @@ export default () => {
 
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 
-  const getEOIs = async () => {
-    const response = await fetch('/api/v1/employer-form', {
-      headers: {
-        'Accept': 'application/json',
-        'Content-type': 'application/json',
-      },
-      method: 'GET',
-    });
-
-    const result = await response.json();
-
-    console.log(result);
-    
-  };
-
   useEffect(() => {
+    const filterData = (data) => {
+      const rows = [];
+      data.forEach(item => {
+        const row = {};
+        columns.map(column => column.id).forEach(columnId => {
+          for (const [key, value] of Object.entries(item)) {
+            if (key === columnId) {
+              row[key] = value || '';
+            }
+          }
+        });
+        rows.push(row);
+      });
+      return rows;
+    }
+
+    const getEOIs = async () => {
+      setLoading(true);
+      const response = await fetch('/api/v1/employer-form', {
+        headers: {
+          'Accept': 'application/json',
+          'Content-type': 'application/json',
+          'Authorization': `Bearer ${store.get('TOKEN')}`,
+        },
+        method: 'GET',
+      });
+
+      const { data } = await response.json();
+      const rows = filterData(data);
+      setRows(rows);
+      setLoading(false);
+    };
+
     getEOIs();
-  });
+  }, [columns]);
 
   return (
     <Page>
       <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
-        <Typography variant="subtitle1" gutterBottom>
-          Expressions of Interest
-        </Typography>
-        <Table
-          columns={columns}
-          order={order}
-          orderBy={orderBy}
-          onRequestSort={handleRequestSort}
-          rows={sort(rows)}
-          isLoading={isLoading}
-        />
+        <Box pt={4} pb={4} pl={2} pr={2}>
+          <Typography variant="subtitle1" gutterBottom>
+            Expressions of Interest
+          </Typography>
+        </Box>
+        <Box pb={2} pl={2} pr={2} width="100%">
+          <Table
+            columns={columns}
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={handleRequestSort}
+            rows={sort(rows)}
+            isLoading={isLoading}
+          />
+        </Box>
       </Grid>
     </Page>
   );

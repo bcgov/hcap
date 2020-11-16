@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { Page, Button } from '../../components/generic';
 import { Routes } from '../../constants';
 import store from 'store';
+import requirePermissions from './requirePermissions';
 
 export default () => {
 
@@ -29,38 +30,68 @@ export default () => {
     fetchRoles();
   }, []);
 
-  const renderAdminButton = (key, route, label) => <Button
-    key={key}
-    onClick={async () => {
-      history.push(route);
-    }}
-    variant="contained"
-    color="primary"
-    fullWidth={false}
-    text={label}
-  />;
+  const renderAdminButton = (key, route, label) => <Box pb={4} pl={4} pr={4} pt={2}>
+    <Button
+      key={key}
+      onClick={async () => {
+        history.push(route);
+      }}
+      variant="contained"
+      color="primary"
+      fullWidth={false}
+      text={label}
+    />
+  </Box>;
+
+  const renderRoleBasedButtons = (roles) => {
+    let buttons = [];
+    let uploadApplicants, viewApplicants, viewEEOIs;
+    uploadApplicants = viewApplicants = viewEEOIs = false;
+
+    roles.map((item) => {
+      switch (item) {
+        case 'maximus':
+          uploadApplicants = true;
+          break;
+        case 'employer':
+        case 'health_authority':
+        case 'ministry_of_health':
+          viewApplicants = true;
+          viewEEOIs = true;
+          break;
+        case 'superuser':
+          uploadApplicants = true;
+          viewApplicants = true;
+          viewEEOIs = true;
+          break;
+        default:
+          break;
+      }
+    });
+
+    if (uploadApplicants) {
+      buttons.push(renderAdminButton(0, Routes.ApplicantUpload, 'Upload Applicants'));
+    }
+    if (viewApplicants) {
+      buttons.push(renderAdminButton(1, null, 'View Applicants')); //TODO add route HCAP-166
+    }
+    if (viewEEOIs) {
+      buttons.push(renderAdminButton(2, null, 'View EEOIs')); //TODO add route HCAP-175
+    }
+
+    return buttons;
+  }
 
   return (
-    <Page >
+    <Page component={requirePermissions()}>
       <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
         <Box pb={4} pl={4} pr={4} pt={2}>
+          <Typography variant="subtitle1" gutterBottom>
+            Welcome! You are logged in as the following user types:<br/>
+            { roles.join(', ') }
+          </Typography>
           {
-            roles.length === 0 ?
-              <Typography variant="subtitle1" gutterBottom>
-                You don't have enough permissions.
-              </Typography>
-              :
-              roles.includes('admin') ?
-                [renderAdminButton(0, Routes.ApplicantUpload, 'Upload Applicants')]
-                :
-                roles.map((item, index) => {
-                  switch (item) {
-                    case 'maximus':
-                      return renderAdminButton(index, Routes.ApplicantUpload, 'Upload Applicants');
-                    default:
-                      return null
-                  }
-                })
+            renderRoleBasedButtons(roles)
           }
         </Box>
       </Grid>

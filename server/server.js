@@ -65,7 +65,7 @@ app.post(`${apiBaseUrl}/employer-form`,
 
 // Create employee records from uploaded XLSX file
 app.post(`${apiBaseUrl}/employees`,
-  keycloak.protect(allowRoles('admin', 'maximus')),
+  keycloak.protect(allowRoles('superuser', 'maximus')),
   multer().single('file'),
   asyncMiddleware(async (req, res) => {
     const bufferToStream = (binary) => new Readable({
@@ -95,7 +95,7 @@ app.post(`${apiBaseUrl}/employees`,
 app.get(`${apiBaseUrl}/roles`,
   keycloak.protect((token, req) => {
     const roles = [];
-    ['admin', 'maximus'].forEach((item) => {
+    ['superuser', 'maximus', 'employer', 'health_authority', 'ministry_of_health'].forEach((item) => {
       if (token.hasRole(item)) {
         roles.push(item);
       }

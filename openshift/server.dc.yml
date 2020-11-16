@@ -106,6 +106,27 @@ objects:
                     secretKeyRef:
                       key: api-secret
                       name: ${APP_NAME}-keycloak
+                - name: MONGO_HOST
+                  value: ${APP_NAME}-mongodb
+                - name: MONGO_PORT
+                  value: "27017"
+                - name: MONGO_DB
+                  valueFrom:
+                    secretKeyRef:
+                      key: database
+                      name: ${APP_NAME}-mongodb
+                - name: MONGO_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: ${APP_NAME}-mongodb
+                - name: MONGO_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: ${APP_NAME}-mongodb
+                - name: MONGO_REPLICA
+                  value: rs0
               name: ${APP_NAME}-server
               image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
               ports:

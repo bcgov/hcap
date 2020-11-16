@@ -67,8 +67,8 @@ parameters:
   value: netapp-file-standard
   required: true
 objects:
-- apiVersion: v1
-  kind: Secret
+- kind: Secret
+  apiVersion: v1
   metadata:
     name: ${APP_NAME}-mongodb
     labels:

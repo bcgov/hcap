@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
+import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
-import { Page, Table } from '../../components/generic';
+import { Button, Page, Table } from '../../components/generic';
+import { Routes } from '../../constants';
 
 export default () => {
 
@@ -18,9 +20,12 @@ export default () => {
     { id: 'address', name: 'Address' },
     { id: 'healthAuthority', name: 'Health Authority' },
     { id: 'operatorName', name: 'Operator Name' },
+    {}, //Details
   ]);
 
   const [orderBy, setOrderBy] = useState(columns[0].id);
+
+  const history = useHistory();
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -37,20 +42,33 @@ export default () => {
     return [orderBy, 'operatorName'];
   };
 
+  const mapItemToColumns = (item, columns) => {
+    const row = {};
+    columns.map(column => column.id).forEach(columnId => {
+      for (const [key, value] of Object.entries(item)) {
+        if (key === columnId) {
+          row[key] = value || '';
+        }
+      }
+    });
+    return row;
+  }
+
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 
   useEffect(() => {
     const filterData = (data) => {
       const rows = [];
       data.forEach(item => {
-        const row = {};
-        columns.map(column => column.id).forEach(columnId => {
-          for (const [key, value] of Object.entries(item)) {
-            if (key === columnId) {
-              row[key] = value || '';
-            }
-          }
-        });
+        const row = mapItemToColumns(item, columns);
+        row.details = (
+          <Button
+            onClick={() => history.push(Routes.EOIViewDetails, { item })}
+            variant="outlined"
+            size="small"
+            text="Details"
+          />
+        );
         rows.push(row);
       });
       return rows;
@@ -74,7 +92,7 @@ export default () => {
     };
 
     getEOIs();
-  }, [columns]);
+  }, [columns, history]);
 
   return (
     <Page>

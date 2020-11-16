@@ -53,7 +53,8 @@ export const Table = ({ order, orderBy, onRequestSort, columns, rows, isLoading 
   };
 
   return (
-    <MuiTable stickyHeader>
+    <MuiTable
+      stickyHeader>
       <TableHead>
         <TableRow>
           {columns.map((column, index) => (

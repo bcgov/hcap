@@ -77,7 +77,7 @@ const getStepFields = (step) => {
   }
 }
 
-export const Form = ({ initialValues, isDisabled }) => {
+export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
   const history = useHistory();
   const { openToast } = useToast();
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -262,7 +262,7 @@ export const Form = ({ initialValues, isDisabled }) => {
                   {activeStep === 5 && <Review handleEditClick={handleEditClicked} />}
                 </Fragment>
               ) : (
-                  <Review isDisabled />
+                  <Review hideCollectionNotice={hideCollectionNotice} isDisabled />
                 )}
 
               {/** Desktop Prev / Next */}

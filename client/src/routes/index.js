@@ -9,6 +9,7 @@ import { Routes } from '../constants';
 
 const Admin = lazy(() => import('../pages/private/Admin'));
 const EOIView = lazy(() => import('../pages/private/EOIView'));
+const EOIViewDetails = lazy(() => import('../pages/private/EOIViewDetails'));
 const ApplicantUpload = lazy(() => import('../pages/private/ApplicantUpload'));
 const EmployeeForm = lazy(() => import('../pages/public/EmployeeForm'));
 const EmployerForm = lazy(() => import('../pages/public/EmployerForm'));
@@ -89,6 +90,7 @@ export default () => {
             <Route exact path={Routes.EmployeeConfirmation} component={EmployeeConfirmation} />
             <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />
             <PrivateRoute exact path={Routes.EOIView} component={EOIView} />
+            <PrivateRoute exact path={Routes.EOIViewDetails} component={EOIViewDetails} />
             <PrivateRoute exact path={Routes.ApplicantUpload} component={ApplicantUpload} />
             <PrivateRoute exact path={Routes.Admin} component={Admin} />
             <Route exact path={Routes.Keycloak} component={KeycloackRedirect} />

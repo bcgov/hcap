@@ -105,19 +105,20 @@ app.post(`${apiBaseUrl}/employees`,
     };
     const { rows } = await readXlsxFile(bufferToStream(req.file.buffer), { map: columnMap });
     await validate(EmployeeBatchSchema, rows);
-    const response = { successes: [], duplicates: [], errors: [] };
+    const response = [];
     const promises = rows.map((row) => dbClient.db.saveDoc(collections.APPLICANTS, row));
     const results = await Promise.allSettled(promises);
     results.forEach((result, index) => {
+      const id = rows[index].maximusId;
       switch (result.status) {
         case 'fulfilled':
-          response.successes.push(rows[index].maximusId);
+          response.push({ id, status: 'Success' });
           break;
         default:
           if (result.reason.code === '23505') {
-            response.duplicates.push(rows[index].maximusId);
+            response.push({ id, status: 'Duplicate' });
           } else {
-            response.errors.push(`${rows[index].maximusId}: ${result.reason}`);
+            response.push({ id, status: 'Error', message: result.reason });
           }
       }
     });

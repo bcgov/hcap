@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
@@ -6,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Page, Button, CheckPermissions } from '../../components/generic';
 import store from 'store';
 import Alert from '@material-ui/lab/Alert';
+import { Routes } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   dropzone: {
@@ -30,6 +32,7 @@ export default () => {
   const [success, setSuccess] = useState();
   const [errors, setErrors] = useState([]);
   const classes = useStyles();
+  const history = useHistory();
 
   const fetchUserInfo = async () => {
     const response = await fetch('/api/v1/user', {
@@ -61,13 +64,9 @@ export default () => {
     });
 
     if (response.ok) {
-      const { error } = await response.json();
-      if (error) {
-        setErrors(error);
-      } else {
-        setFile(null);
-        setSuccess('Applicants successfully uploaded.');
-      }
+      const results = await response.json();
+      setFile(null);
+      history.push(Routes.ApplicantUploadResults, { results })
       return;
     }
   };

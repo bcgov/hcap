@@ -3,7 +3,6 @@ export default Object.freeze({
   Login: '/login',
   Keycloak: '/keycloak',
   EmployerForm: '/',
-  ApplicantUpload: '/applicant-upload',
   EmployeeForm: '/employee-form',
   EmployeeConfirmation: '/employee-confirmation',
   EmployerConfirmation: '/employer-confirmation',
@@ -12,4 +11,6 @@ export default Object.freeze({
   Admin: '/admin',
   EOIView: '/eoi-view',
   EOIViewDetails: '/eoi-view-details',
+  ApplicantUpload: '/applicant-upload',
+  ApplicantUploadResults: '/applicant-upload-results',
 });

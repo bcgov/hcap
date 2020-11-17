@@ -42,58 +42,19 @@ export default () => {
     />
   </Box>;
 
-  const renderRoleBasedButtons = (roles) => {
-    let buttons = [];
-    let uploadApplicants, viewApplicants, viewEEOIs;
-    uploadApplicants = viewApplicants = viewEEOIs = false;
-
-    roles.map((item) => {
-      switch (item) {
-        case 'maximus':
-          uploadApplicants = true;
-          break;
-        case 'employer':
-        case 'health_authority':
-        case 'ministry_of_health':
-          viewApplicants = true;
-          viewEEOIs = true;
-          break;
-        case 'superuser':
-          uploadApplicants = true;
-          viewApplicants = true;
-          viewEEOIs = true;
-          break;
-        default:
-          break;
-      }
-    });
-
-    if (uploadApplicants) {
-      buttons.push(renderAdminButton(0, Routes.ApplicantUpload, 'Upload Applicants'));
-    }
-    if (viewApplicants) {
-      buttons.push(renderAdminButton(1, null, 'View Applicants')); //TODO add route HCAP-166
-    }
-    if (viewEEOIs) {
-      buttons.push(renderAdminButton(2, null, 'View EEOIs')); //TODO add route HCAP-175
-    }
-
-    return buttons;
-  }
-
   return (
     <Page>
-      <CheckPermissions roles={['admin']}>
+      <CheckPermissions roles={roles} permittedRoles={['maximus', 'employer', 'health_authority', 'ministry_of_health']} renderMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
-          <Box pb={4} pl={4} pr={4} pt={2}>
-            <Typography variant="subtitle1" gutterBottom>
-              Welcome! You are logged in as the following user types:<br/>
-              { roles.join(', ') }
-            </Typography>
-            {
-              renderRoleBasedButtons(roles)
-            }
-          </Box>
+          <CheckPermissions roles={roles} permittedRoles={['maximus']}>
+            { renderAdminButton(0, Routes.ApplicantUpload, 'Upload Applicants') }
+          </CheckPermissions>
+          <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']}>
+            { renderAdminButton(1, null, 'View Applicants') } {/* TODO add route HCAP-166 */}
+          </CheckPermissions>
+          <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']}>
+            { renderAdminButton(2, null, 'View EEOIs') } {/* TODO add route HCAP-175 */}
+          </CheckPermissions>
         </Grid>
       </CheckPermissions>
     </Page>

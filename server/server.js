@@ -39,7 +39,11 @@ app.use(keycloak.middleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-const allowRoles = (...roles) => (token) => roles.some((role) => token.hasRole(role));
+const allowRoles = (...roles) => (token) => {
+  if (!roles.some((role) => token.hasRole(role))) return false;
+  if (token.isExpired()) return false;
+  return true;
+};
 
 // Return client info for Keycloak realm for the current environment
 app.get(`${apiBaseUrl}/keycloak-realm-client-info`,
@@ -100,8 +104,23 @@ app.post(`${apiBaseUrl}/employees`,
     };
     const { rows } = await readXlsxFile(bufferToStream(req.file.buffer), { map: columnMap });
     await validate(EmployeeBatchSchema, rows);
-    await dbClient.db.saveDocs(collections.APPLICANTS, rows);
-    return res.json({ message: `Added ${rows.length} rows` });
+    const response = { successes: [], duplicates: [], errors: [] };
+    const promises = rows.map((row) => dbClient.db.saveDoc(collections.APPLICANTS, row));
+    const results = await Promise.allSettled(promises);
+    results.forEach((result, index) => {
+      switch (result.status) {
+        case 'fulfilled':
+          response.successes.push(rows[index].maximusId);
+          break;
+        default:
+          if (result.reason.code === '23505') {
+            response.duplicates.push(rows[index].maximusId);
+          } else {
+            response.errors.push(`${rows[index].maximusId}: ${result.reason}`);
+          }
+      }
+    });
+    return res.json(response);
   }));
 
 // Get user roles

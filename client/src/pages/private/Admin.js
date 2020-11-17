@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { Page, Button, InsufficientPermissions } from '../../components/generic';
+import { Page, Button, CheckPermissions } from '../../components/generic';
 import { Routes } from '../../constants';
 import store from 'store';
-import { checkPermissions } from '../../utils';
 
 export default () => {
 
@@ -84,9 +83,7 @@ export default () => {
 
   return (
     <Page>
-      { checkPermissions('admin') ?
-        InsufficientPermissions
-        :
+      <CheckPermissions roles={['admin']}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pb={4} pl={4} pr={4} pt={2}>
             <Typography variant="subtitle1" gutterBottom>
@@ -97,7 +94,8 @@ export default () => {
               renderRoleBasedButtons(roles)
             }
           </Box>
-        </Grid> }
+        </Grid>
+      </CheckPermissions>
     </Page>
   );
 };

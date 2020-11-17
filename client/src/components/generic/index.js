@@ -7,3 +7,4 @@ export * from './InputFieldLabel';
 export * from './InputFieldError';
 export * from './Toast';
 export * from './PDFButton';
+export * from './CheckPermissions';

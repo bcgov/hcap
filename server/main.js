@@ -1,3 +1,5 @@
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 const app = require('./server.js');
 const logger = require('./logger.js');
 const { dbClient } = require('./db');
@@ -32,10 +34,25 @@ process.on('SIGTERM', () => {
   shutdown();
 });
 
+const runMigration = async (dbUrl) => {
+  try {
+    const { stdout, stderr } = await exec(`DATABASE_URL=${dbUrl} npm run migrate up`);
+
+    if (stderr) {
+      throw Error(`Migration error: ${stderr}`);
+    } else {
+      logger.info(`Migration success: ${stdout}`);
+    }
+  } catch (err) {
+    throw Error(`Migration error: ${err}`);
+  }
+};
+
 // Start server
 (async () => {
   try {
     await dbClient.connect();
+    await runMigration(dbClient.dbUrl());
     server = app.listen(port, '0.0.0.0', async () => {
       logger.info(`Listening on port ${port}`);
     });

@@ -9,6 +9,7 @@ export OS_NAMESPACE_SUFFIX?=dev
 export COMMIT_SHA:=$(shell git rev-parse --short=7 HEAD)
 export TARGET_NAMESPACE=$(OS_NAMESPACE_PREFIX)-$(OS_NAMESPACE_SUFFIX)
 export TOOLS_NAMESPACE=$(OS_NAMESPACE_PREFIX)-tools
+export DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}
 
 # Status Output
 
@@ -17,6 +18,14 @@ print-status:
 	@echo "TARGET_NAMESPACE: $(TARGET_NAMESPACE)"
 	@echo "TOOLS_NAMESPACE: $(TOOLS_NAMESPACE)"
 	@echo "COMMIT_SHA: $(COMMIT_SHA)"
+
+# Migration (depends on DATABASE_URL)
+
+migrate-up:
+	@npm run migrate up --prefix server
+
+migrate-down:
+	@npm run migrate down --prefix server
 
 # Local Development
 

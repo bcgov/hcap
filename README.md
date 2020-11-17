@@ -24,6 +24,43 @@ and then submits to the /form endpoint. Example of file names:
 
 Shows the submissions stats of a given period of days. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`)
 
+## Migrations
+
+In the server directory, you can run:
+
+### `npm run migrate my-migration-script`
+
+A `xxxx_my-migration-script.js` file in `/migrations` folder will be created. Open it and change the content with your migration strategy. [Docs](https://github.com/salsita/node-pg-migrate/blob/master/docs/migrations.md)
+
+For example, this migration script creates a new table with the current Massive.js format:
+
+```js
+/* eslint-disable camelcase */
+
+exports.up = pgm => {
+  pgm.createTable('applicants', {
+    id: 'serial',
+    body: {
+      type: 'jsonb',
+      notNull: true,
+    },
+    search: {
+      type: 'tsvector',
+    },
+    created_at: {
+      type: 'timestamp with time zone',
+      default: pgm.func('now()'),
+    },
+    updated_at: {
+      type: 'timestamp with time zone',
+    },
+  })
+};
+```
+After that, go to the root project folder and run `make migrate-up` to apply your migration. To undo your migration run `make migrate-down`.
+
+On every server startup the `migrations` folder will be scanned for new migrations and then applied a `migrate up` command automatically.
+
 ## Table of Contents
 
 1. [Project Status](#project-status)

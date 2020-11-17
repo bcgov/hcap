@@ -40,7 +40,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
 const allowRoles = (...roles) => (token) => {
-  roles.push('superuser');
+  if (token.hasRole('superuser')) return true;
   if (!roles.some((role) => token.hasRole(role))) return false;
   if (token.isExpired()) return false;
   return true;

@@ -39,8 +39,7 @@ export default () => {
     fetchUserInfo();
   }, []);
 
-  const renderAdminButton = (key, route, label) => <Button
-    key={key}
+  const renderAdminButton = (route, label) => <Button
     className={classes.button}
     onClick={async () => {
       history.push(route);
@@ -53,7 +52,7 @@ export default () => {
 
   return (
     <Page >
-      <CheckPermissions roles={roles} permittedRoles={['maximus', 'employer', 'health_authority', 'ministry_of_health']} renderMessage={true}>
+      <CheckPermissions roles={roles} permittedRoles={['maximus', 'employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pb={4} pl={4} pr={4} pt={2}>
             <Grid container direction="column">
@@ -61,13 +60,13 @@ export default () => {
                 Welcome, {name}
               </Typography>
               <CheckPermissions roles={roles} permittedRoles={['maximus']}>
-                { renderAdminButton(0, Routes.ApplicantUpload, 'Upload Applicants') }
+                { renderAdminButton(Routes.ApplicantUpload, 'Upload Applicants') }
               </CheckPermissions>
               <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']}>
-                { renderAdminButton(1, null, 'View Applicants') } {/* TODO add route HCAP-166 */}
+                { renderAdminButton(null, 'View Applicants') } {/* TODO add route HCAP-166 */}
               </CheckPermissions>
               <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']}>
-                { renderAdminButton(2, Routes.EOIView, 'View Employers') }
+                { renderAdminButton(Routes.EOIView, 'View Employers') }
               </CheckPermissions>
             </Grid>
           </Box>

@@ -80,7 +80,7 @@ export default () => {
 
   return (
     <Page >
-      <CheckPermissions roles={roles} permittedRoles={['maximus']} renderMessage={true}>
+      <CheckPermissions roles={roles} permittedRoles={['maximus']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Typography variant="subtitle1" gutterBottom>
             Please upload pre-screened applicants:

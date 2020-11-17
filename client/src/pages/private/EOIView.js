@@ -113,7 +113,7 @@ export default () => {
 
   return (
     <Page>
-      <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderMessage={true}>
+      <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pt={4} pb={4} pl={2} pr={2}>
             <Typography variant="subtitle1" gutterBottom>

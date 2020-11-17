@@ -33,7 +33,7 @@ export default () => {
   scrollUp();
   return (
     <Page>
-      <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderMessage={true}>
+      <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
           <Form
             initialValues={location.state?.item}

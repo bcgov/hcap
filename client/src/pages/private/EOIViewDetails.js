@@ -1,24 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Routes } from '../../constants';
 import { useLocation, Redirect } from 'react-router-dom';
-import { Page } from '../../components/generic';
+import { Page, CheckPermissions } from '../../components/generic';
 import { Form } from '../../components/employer-form';
 import { scrollUp } from '../../utils';
+import store from 'store';
 
 export default () => {
+  const [roles, setRoles] = useState([]);
   const location = useLocation();
+
+  const fetchUserInfo = async () => {
+    const response = await fetch('/api/v1/user', {
+      headers: {
+        'Authorization': `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const { roles } = await response.json();
+      setRoles(roles);
+    }
+  }
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
+
   if (!location.state) return <Redirect to={Routes.EOIView} />
   scrollUp();
   return (
     <Page>
-      <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
-        <Form
-          initialValues={location.state?.item}
-          hideCollectionNotice
-          isDisabled
-        />
-      </Grid>
+      <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderMessage={true}>
+        <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
+          <Form
+            initialValues={location.state?.item}
+            hideCollectionNotice
+            isDisabled
+          />
+        </Grid>
+      </CheckPermissions>
     </Page>
   );
 };

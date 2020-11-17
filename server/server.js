@@ -91,8 +91,8 @@ app.post(`${apiBaseUrl}/employees`,
     return res.json({ message: `Added ${rows.length} rows` });
   }));
 
-// Get user roles
-app.get(`${apiBaseUrl}/roles`,
+// Get user info from token
+app.get(`${apiBaseUrl}/user`,
   keycloak.protect((token, req) => {
     const roles = [];
     ['superuser', 'maximus', 'employer', 'health_authority', 'ministry_of_health'].forEach((item) => {
@@ -105,7 +105,12 @@ app.get(`${apiBaseUrl}/roles`,
   }),
   asyncMiddleware(async (req, res) => {
     try {
-      return res.json({ roles: req.roles });
+      return res.json(
+        {
+          roles: req.roles,
+          name: req.kauth.grant.access_token.content.name,
+        },
+      );
     } catch (error) {
       logger.error(error);
       throw error;

@@ -9,10 +9,11 @@ import store from 'store';
 export default () => {
 
   const [roles, setRoles] = useState([]);
+  const [name, setName] = useState([]);
   const history = useHistory();
 
-  const fetchRoles = async () => {
-    const response = await fetch('/api/v1/roles', {
+  const fetchUserInfo = async () => {
+    const response = await fetch('/api/v1/user', {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },
@@ -20,13 +21,14 @@ export default () => {
     });
 
     if (response.ok) {
-      const { roles } = await response.json();
+      const { roles, name } = await response.json();
       setRoles(roles);
+      setName(name);
     }
   }
 
   useEffect(() => {
-    fetchRoles();
+    fetchUserInfo();
   }, []);
 
   const renderAdminButton = (key, route, label) => <Box pb={4} pl={4} pr={4} pt={2}>
@@ -46,6 +48,11 @@ export default () => {
     <Page>
       <CheckPermissions roles={roles} permittedRoles={['maximus', 'employer', 'health_authority', 'ministry_of_health']} renderMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
+          <Box pb={4} pl={4} pr={4} pt={2}>
+            <Typography variant="subtitle1" gutterBottom>
+              Welcome, {name}
+            </Typography>
+          </Box>
           <CheckPermissions roles={roles} permittedRoles={['maximus']}>
             { renderAdminButton(0, Routes.ApplicantUpload, 'Upload Applicants') }
           </CheckPermissions>

@@ -14,7 +14,7 @@ import { ExpressionOfInt } from './ExpressionOfInt';
 import { WorkforceBaseline } from './WorkforceBaseline';
 import { CollectionNotice } from './CollectionNotice';
 
-export const Review = ({ handleEditClick, isDisabled }) => {
+export const Review = ({ hideCollectionNotice, handleEditClick, isDisabled }) => {
   const location = useLocation();
 
   return (
@@ -134,11 +134,13 @@ export const Review = ({ handleEditClick, isDisabled }) => {
             <ExpressionOfInt isDisabled />
           </Card>
         </Grid>
-        <Grid item xs={12}>
-          <Card>
-            <CollectionNotice />
-          </Card>
-        </Grid>
+        {
+          !hideCollectionNotice && <Grid item xs={12}>
+            <Card>
+              <CollectionNotice />
+            </Card>
+          </Grid>
+        }
       </Grid>
     </Fragment>
   );

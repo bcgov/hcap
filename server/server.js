@@ -63,6 +63,19 @@ app.post(`${apiBaseUrl}/employer-form`,
     }
   }));
 
+// Get employer forms
+app.get(`${apiBaseUrl}/employer-form`,
+  keycloak.protect(allowRoles('admin')),
+  asyncMiddleware(async (req, res) => {
+    try {
+      const result = await dbClient.db[collections.EMPLOYER_FORMS].findDoc({});
+      return res.json({ data: result });
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
+  }));
+
 // Create employee records from uploaded XLSX file
 app.post(`${apiBaseUrl}/employees`,
   keycloak.protect(allowRoles('admin', 'maximus')),
@@ -93,19 +106,13 @@ app.post(`${apiBaseUrl}/employees`,
 
 // Get user roles
 app.get(`${apiBaseUrl}/roles`,
-  keycloak.protect((token, req) => {
-    const roles = [];
-    ['admin', 'maximus'].forEach((item) => {
-      if (token.hasRole(item)) {
-        roles.push(item);
-      }
-    });
-    req.roles = roles;
-    return !token.isExpired();
-  }),
+  keycloak.protect(),
   asyncMiddleware(async (req, res) => {
+    const { roles } = req.kauth
+      .grant.access_token.content
+      .resource_access[process.env.KEYCLOAK_API_CLIENTID];
     try {
-      return res.json({ roles: req.roles });
+      return res.json({ roles });
     } catch (error) {
       logger.error(error);
       throw error;

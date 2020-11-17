@@ -39,13 +39,10 @@ app.use(keycloak.middleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-const allowRoles = (...roles) => (token, req) => {
-  req.roles = [];
-  roles.forEach((role) => {
-    if (token.hasRole(role)) req.roles.append(role);
-  });
+const allowRoles = (...roles) => (token) => {
   if (!roles.some((role) => token.hasRole(role))) return false;
-  return !token.isExpired();
+  if (token.isExpired()) return false;
+  return true;
 };
 
 // Return client info for Keycloak realm for the current environment

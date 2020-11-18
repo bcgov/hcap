@@ -4,8 +4,7 @@ import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
-import { Button, Page, Table, CheckPermissions } from '../../components/generic';
-import { Routes } from '../../constants';
+import { Page, Table, CheckPermissions } from '../../components/generic';
 
 export default () => {
 
@@ -16,13 +15,13 @@ export default () => {
   const [rows, setRows] = useState([]);
   const [columns] = useState([
     { id: 'id', name: 'ID' },
-    { id: 'siteName', name: 'Site Name' },
-    { id: 'siteType', name: 'Site Type' },
+    { id: 'firstName', name: 'First Name' },
+    { id: 'lastName', name: 'Last Name' },
+    { id: 'eligibility', name: 'Eligible' },
     { id: 'emailAddress', name: 'Email Address' },
-    { id: 'address', name: 'Address' },
-    { id: 'healthAuthority', name: 'Health Authority' },
-    { id: 'operatorName', name: 'Operator Name' },
-    {}, //Details
+    { id: 'postalCode', name: 'Postal Code' },
+    { id: 'phoneNumber', name: 'Phone Number' },
+    { id: 'preferredLocation', name: 'Preferred Location' },
   ]);
 
   const [orderBy, setOrderBy] = useState(columns[0].id);
@@ -81,22 +80,15 @@ export default () => {
       const rows = [];
       data.forEach(item => {
         const row = mapItemToColumns(item, columns);
-        row.details = (
-          <Button
-            onClick={() => history.push(Routes.EOIViewDetails, { item })}
-            variant="outlined"
-            size="small"
-            text="Details"
-          />
-        );
+        row.eligibility = row.eligibility ? 'Yes' : 'No';
         rows.push(row);
       });
       return rows;
     }
 
-    const getEOIs = async () => {
+    const getApplicants = async () => {
       setLoadingData(true);
-      const response = await fetch('/api/v1/employer-form', {
+      const response = await fetch('/api/v1/employees', {
         headers: {
           'Accept': 'application/json',
           'Content-type': 'application/json',
@@ -111,7 +103,7 @@ export default () => {
       setLoadingData(false);
     };
 
-    getEOIs();
+    getApplicants();
   }, [columns, history]);
 
   return (
@@ -120,7 +112,7 @@ export default () => {
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pt={4} pb={4} pl={2} pr={2}>
             <Typography variant="subtitle1" gutterBottom>
-              Employer Expressions of Interest
+              Applicants
             </Typography>
           </Box>
           <Box pb={2} pl={2} pr={2} width="100%">

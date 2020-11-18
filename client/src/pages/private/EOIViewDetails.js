@@ -9,9 +9,11 @@ import store from 'store';
 
 export default () => {
   const [roles, setRoles] = useState([]);
+  const [isLoadingUser, setLoadingUser] = useState(false);
   const location = useLocation();
 
   const fetchUserInfo = async () => {
+    setLoadingUser(true);
     const response = await fetch('/api/v1/user', {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
@@ -21,6 +23,7 @@ export default () => {
 
     if (response.ok) {
       const { roles } = await response.json();
+      setLoadingUser(false);
       setRoles(roles);
     }
   }
@@ -33,7 +36,7 @@ export default () => {
   scrollUp();
   return (
     <Page>
-      <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
+      <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
           <Form
             initialValues={location.state?.item}

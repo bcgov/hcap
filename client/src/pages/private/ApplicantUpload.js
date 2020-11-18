@@ -29,12 +29,14 @@ export default () => {
 
   const [roles, setRoles] = useState([]);
   const [file, setFile] = useState();
+  const [isLoadingUser, setLoadingUser] = useState(false);
   const [success, setSuccess] = useState();
   const [errors, setErrors] = useState([]);
   const classes = useStyles();
   const history = useHistory();
 
   const fetchUserInfo = async () => {
+    setLoadingUser(true);
     const response = await fetch('/api/v1/user', {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
@@ -44,6 +46,7 @@ export default () => {
 
     if (response.ok) {
       const { roles } = await response.json();
+      setLoadingUser(false);
       setRoles(roles);
     }
   }
@@ -79,7 +82,7 @@ export default () => {
 
   return (
     <Page >
-      <CheckPermissions roles={roles} permittedRoles={['maximus']} renderErrorMessage={true}>
+      <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['maximus']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Typography variant="subtitle1" gutterBottom>
             Please upload pre-screened applicants:

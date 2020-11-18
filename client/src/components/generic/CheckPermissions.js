@@ -3,7 +3,12 @@ import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import { checkPermissions } from '../../utils';
 
-export const CheckPermissions = ({ roles, permittedRoles, children, renderErrorMessage = false }) => {
+export const CheckPermissions = ({ isLoading, roles, permittedRoles, children, renderErrorMessage = false }) => {
+
+  if (isLoading) {
+    return null;
+  }
+
   // If user has a permitted role assigned, grant access to components
   if (checkPermissions(roles, permittedRoles)) {
     return children;

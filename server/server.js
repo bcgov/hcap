@@ -40,6 +40,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
 const allowRoles = (...roles) => (token) => {
+  if (token.hasRole('superuser')) return true;
   if (!roles.some((role) => token.hasRole(role))) return false;
   if (token.isExpired()) return false;
   return true;
@@ -69,7 +70,7 @@ app.post(`${apiBaseUrl}/employer-form`,
 
 // Get employer forms
 app.get(`${apiBaseUrl}/employer-form`,
-  keycloak.protect(allowRoles('admin')),
+  keycloak.protect(allowRoles('employer', 'health_authority', 'ministry_of_health')),
   asyncMiddleware(async (req, res) => {
     try {
       const result = await dbClient.db[collections.EMPLOYER_FORMS].findDoc({});
@@ -82,7 +83,7 @@ app.get(`${apiBaseUrl}/employer-form`,
 
 // Create employee records from uploaded XLSX file
 app.post(`${apiBaseUrl}/employees`,
-  keycloak.protect(allowRoles('admin', 'maximus')),
+  keycloak.protect(allowRoles('maximus')),
   multer().single('file'),
   asyncMiddleware(async (req, res) => {
     const bufferToStream = (binary) => new Readable({
@@ -123,15 +124,20 @@ app.post(`${apiBaseUrl}/employees`,
     return res.json(response);
   }));
 
-// Get user roles
-app.get(`${apiBaseUrl}/roles`,
+// Get user info from token
+app.get(`${apiBaseUrl}/user`,
   keycloak.protect(),
   asyncMiddleware(async (req, res) => {
     const { roles } = req.kauth
       .grant.access_token.content
       .resource_access[process.env.KEYCLOAK_API_CLIENTID];
     try {
-      return res.json({ roles });
+      return res.json(
+        {
+          roles,
+          name: req.kauth.grant.access_token.content.name,
+        },
+      );
     } catch (error) {
       logger.error(error);
       throw error;

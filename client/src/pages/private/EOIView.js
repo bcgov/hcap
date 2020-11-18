@@ -4,11 +4,12 @@ import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
-import { Button, Page, Table } from '../../components/generic';
+import { Button, Page, Table, CheckPermissions } from '../../components/generic';
 import { Routes } from '../../constants';
 
 export default () => {
 
+  const [roles, setRoles] = useState([]);
   const [order, setOrder] = useState('asc');
   const [isLoading, setLoading] = useState(false);
   const [rows, setRows] = useState([]);
@@ -26,6 +27,20 @@ export default () => {
   const [orderBy, setOrderBy] = useState(columns[0].id);
 
   const history = useHistory();
+
+  const fetchUserInfo = async () => {
+    const response = await fetch('/api/v1/user', {
+      headers: {
+        'Authorization': `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const { roles } = await response.json();
+      setRoles(roles);
+    }
+  }
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -57,6 +72,8 @@ export default () => {
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 
   useEffect(() => {
+    fetchUserInfo();
+
     const filterData = (data) => {
       const rows = [];
       data.forEach(item => {
@@ -96,23 +113,25 @@ export default () => {
 
   return (
     <Page>
-      <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
-        <Box pt={4} pb={4} pl={2} pr={2}>
-          <Typography variant="subtitle1" gutterBottom>
-            Expressions of Interest
-          </Typography>
-        </Box>
-        <Box pb={2} pl={2} pr={2} width="100%">
-          <Table
-            columns={columns}
-            order={order}
-            orderBy={orderBy}
-            onRequestSort={handleRequestSort}
-            rows={sort(rows)}
-            isLoading={isLoading}
-          />
-        </Box>
-      </Grid>
+      <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
+        <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
+          <Box pt={4} pb={4} pl={2} pr={2}>
+            <Typography variant="subtitle1" gutterBottom>
+              Employer Expressions of Interest
+            </Typography>
+          </Box>
+          <Box pb={2} pl={2} pr={2} width="100%">
+            <Table
+              columns={columns}
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={handleRequestSort}
+              rows={sort(rows)}
+              isLoading={isLoading}
+            />
+          </Box>
+        </Grid>
+      </CheckPermissions>
     </Page>
   );
 };

@@ -67,7 +67,7 @@ export default () => {
           <Box pb={4} pl={2} pr={2}>
             <Button
                 onClick={() => history.push(Routes.ApplicantUpload)}
-                text="Return to Application Upload"
+                text="Return to Applicant Upload"
               />
           </Box>
           <Box pb={2} pl={2} pr={2} width="100%">

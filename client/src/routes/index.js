@@ -11,6 +11,7 @@ const Admin = lazy(() => import('../pages/private/Admin'));
 const EOIView = lazy(() => import('../pages/private/EOIView'));
 const EOIViewDetails = lazy(() => import('../pages/private/EOIViewDetails'));
 const ApplicantUpload = lazy(() => import('../pages/private/ApplicantUpload'));
+const ApplicantUploadResults = lazy(() => import('../pages/private/ApplicantUploadResults'));
 const EmployeeForm = lazy(() => import('../pages/public/EmployeeForm'));
 const EmployerForm = lazy(() => import('../pages/public/EmployerForm'));
 const Login = lazy(() => import('../pages/public/Login'));
@@ -92,6 +93,7 @@ export default () => {
             <PrivateRoute exact path={Routes.EOIView} component={EOIView} />
             <PrivateRoute exact path={Routes.EOIViewDetails} component={EOIViewDetails} />
             <PrivateRoute exact path={Routes.ApplicantUpload} component={ApplicantUpload} />
+            <PrivateRoute exact path={Routes.ApplicantUploadResults} component={ApplicantUploadResults} />
             <PrivateRoute exact path={Routes.Admin} component={Admin} />
             <Route exact path={Routes.Keycloak} component={KeycloackRedirect} />
             <Route component={EmployerForm} />

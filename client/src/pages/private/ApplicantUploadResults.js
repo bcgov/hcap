@@ -3,6 +3,7 @@ import _orderBy from 'lodash/orderBy';
 import { useHistory, useLocation, Redirect } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
 import { Routes } from '../../constants';
 import store from 'store';
@@ -12,6 +13,7 @@ export default () => {
   const [roles, setRoles] = useState([]);
   const [order, setOrder] = useState('asc');
   const [rows, setRows] = useState([]);
+  const [numRows, setNumRows] = useState(0);
   const [columns] = useState([
     { id: 'id', name: 'ID' },
     { id: 'status', name: 'Status' },
@@ -52,6 +54,7 @@ export default () => {
   useEffect(() => {
     fetchUserInfo();
     const insertMissingMessage = (row) => row.message ? row : {...row, message: ''};
+    setNumRows(location.state?.results?.length || 0);
     setRows(location.state?.results.map(insertMissingMessage) || []);
   }, [location]);
 
@@ -64,7 +67,14 @@ export default () => {
               Applicant Upload Results
             </Typography>
           </Box>
-          <Box pb={4} pl={2} pr={2}>
+          <Alert severity="success">
+            <Typography variant="body2" gutterBottom>
+              <b>
+                Processed {numRows} applicants. See results below.
+              </b>
+            </Typography>
+          </Alert>
+          <Box pt={4} pb={4} pl={2} pr={2}>
             <Button
                 onClick={() => history.push(Routes.ApplicantUpload)}
                 text="Return to Applicant Upload"

@@ -46,6 +46,38 @@ const allowRoles = (...roles) => (token) => {
   return true;
 };
 
+const regionsMap = [
+  { role: 'region_fraser', region: 'Fraser' },
+  { role: 'region_interior', region: 'Interior' },
+  { role: 'region_northern', region: 'Northern' },
+  { role: 'region_vancouver_coastal', region: 'Vancouver Coastal' },
+  { role: 'region_vancouver_island', region: 'Vancouver Island' },
+];
+
+const getUserRoles = (req) => {
+  const { roles } = req.kauth
+    .grant.access_token.content
+    .resource_access[process.env.KEYCLOAK_API_CLIENTID];
+  return roles;
+};
+
+const getUserRegions = (req) => {
+  const roles = getUserRoles(req);
+  const userRegionRoles = roles.filter((item) => item.includes('region_'));
+  return userRegionRoles.map((role) => {
+    const regionMap = regionsMap.find((item) => item.role === role);
+    return regionMap.region;
+  });
+};
+
+const getUserRegionsCriteria = (req, field) => {
+  const userRegions = getUserRegions(req);
+  if (userRegions.length === 0) return null;
+  return {
+    or: userRegions.map((region) => ({ [`${field} ilike`]: `%${region}%` })),
+  };
+};
+
 // Return client info for Keycloak realm for the current environment
 app.get(`${apiBaseUrl}/keycloak-realm-client-info`,
   asyncMiddleware(async (req, res) => res.json({
@@ -73,7 +105,13 @@ app.get(`${apiBaseUrl}/employer-form`,
   keycloak.protect(allowRoles('employer', 'health_authority', 'ministry_of_health')),
   asyncMiddleware(async (req, res) => {
     try {
-      const result = await dbClient.db[collections.EMPLOYER_FORMS].findDoc({});
+      const roles = getUserRoles(req);
+      const isHA = roles.includes('health_authority');
+      const isSuperUser = roles.includes('superuser');
+      const criteria = isHA && !isSuperUser ? getUserRegionsCriteria(req, 'healthAuthority') : {};
+      const result = criteria
+        ? await dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria)
+        : [];
       return res.json({ data: result });
     } catch (error) {
       logger.error(error);
@@ -86,7 +124,11 @@ app.get(`${apiBaseUrl}/employees`,
   keycloak.protect(allowRoles('employer', 'health_authority', 'ministry_of_health')),
   asyncMiddleware(async (req, res) => {
     try {
-      const result = await dbClient.db[collections.APPLICANTS].findDoc({});
+      const roles = getUserRoles(req);
+      const isHA = roles.includes('health_authority');
+      const isSuperUser = roles.includes('superuser');
+      const criteria = isHA && !isSuperUser ? getUserRegionsCriteria(req, 'preferredLocation') : {};
+      const result = criteria ? await dbClient.db[collections.APPLICANTS].findDoc(criteria) : [];
       return res.json({ data: result });
     } catch (error) {
       logger.error(error);
@@ -142,13 +184,10 @@ app.post(`${apiBaseUrl}/employees`,
 app.get(`${apiBaseUrl}/user`,
   keycloak.protect(),
   asyncMiddleware(async (req, res) => {
-    const { roles } = req.kauth
-      .grant.access_token.content
-      .resource_access[process.env.KEYCLOAK_API_CLIENTID];
     try {
       return res.json(
         {
-          roles,
+          roles: getUserRoles(req),
           name: req.kauth.grant.access_token.content.name,
         },
       );

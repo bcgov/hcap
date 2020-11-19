@@ -3,7 +3,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import store from 'store';
 import BcLogo from '../../assets/images/bc-logo.svg';
@@ -58,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const Header = () => {
   const history = useHistory();
+  const location = useLocation();
   const classes = useStyles();
   const [keycloak] = useKeycloak();
 
@@ -94,6 +95,16 @@ export const Header = () => {
               Employer Expression of Interest
             </Typography>
           </div>
+          {(keycloak.authenticated && location.pathname !== Routes.Admin ) && (
+            <Button
+              className={classes.button}
+              text="Home"
+              fullWidth={false}
+              variant="outlined"
+              color="inherit"
+              onClick={() => history.push(Routes.Admin)}
+            />
+          )}
           {(keycloak.authenticated && !keycloak.loginRequired) && (
             <Button
               className={classes.button}

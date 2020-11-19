@@ -54,6 +54,10 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1, 3),
     margin: theme.spacing(0, 1),
   },
+  buttonWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
 }));
 
 export const Header = () => {
@@ -95,26 +99,28 @@ export const Header = () => {
               Employer Expression of Interest
             </Typography>
           </div>
-          {(keycloak.authenticated && location.pathname !== Routes.Admin ) && (
-            <Button
-              className={classes.button}
-              text="Home"
-              fullWidth={false}
-              variant="outlined"
-              color="inherit"
-              onClick={() => history.push(Routes.Admin)}
-            />
-          )}
-          {(keycloak.authenticated && !keycloak.loginRequired) && (
-            <Button
-              className={classes.button}
-              text="Logout"
-              fullWidth={false}
-              variant="outlined"
-              color="inherit"
-              onClick={handleLogoutClick}
-            />
-          )}
+          <div className={classes.buttonWrapper}>
+            {(keycloak.authenticated && location.pathname !== Routes.Admin ) && (
+              <Button
+                className={classes.button}
+                text="Home"
+                fullWidth={false}
+                variant="outlined"
+                color="inherit"
+                onClick={() => history.push(Routes.Admin)}
+              />
+            )}
+            {(keycloak.authenticated && !keycloak.loginRequired) && (
+              <Button
+                className={classes.button}
+                text="Logout"
+                fullWidth={false}
+                variant="outlined"
+                color="inherit"
+                onClick={handleLogoutClick}
+              />
+            )}
+          </div>
         </Toolbar>
       </AppBar>
     </div>

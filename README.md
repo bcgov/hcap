@@ -28,7 +28,7 @@ Shows the submissions stats of a given period of days. (Before running this comm
 
 In the server directory, you can run:
 
-### `npm run migrate my-migration-script`
+### `npm run migrate create my-migration-script`
 
 A `xxxx_my-migration-script.js` file in `/migrations` folder will be created. Open it and change the content with your migration strategy. [Docs](https://github.com/salsita/node-pg-migrate/blob/master/docs/migrations.md)
 

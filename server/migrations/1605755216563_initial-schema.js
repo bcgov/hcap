@@ -2,7 +2,14 @@
 const { collections } = require('../db/schema.js');
 
 exports.up = async (pgm) => {
-  const tableExists = async (table) => pgm.db.query(`SELECT 'public.${table}'::regclass`);
+  const tableExists = async (table) => {
+    try {
+      await pgm.db.query(`SELECT 'public.${table}'::regclass`);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
 
   const collectionTableSchema = {
     id: 'serial',
@@ -22,11 +29,13 @@ exports.up = async (pgm) => {
     },
   };
 
-  if (!tableExists(collections.EMPLOYER_FORMS)) {
+  const employerFormsExists = await tableExists(collections.EMPLOYER_FORMS);
+  if (!employerFormsExists) {
     pgm.createTable(collections.EMPLOYER_FORMS, collectionTableSchema);
   }
 
-  if (!tableExists(collections.APPLICANTS)) {
+  const applicantsExists = await tableExists(collections.APPLICANTS);
+  if (!applicantsExists) {
     pgm.createTable(collections.APPLICANTS, collectionTableSchema);
     pgm.createIndex(collections.APPLICANTS, '(body->>\'maximusId\')', { unique: true });
   }

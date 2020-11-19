@@ -36,11 +36,12 @@ process.on('SIGTERM', () => {
 (async () => {
   try {
     await dbClient.connect();
+    await dbClient.runMigration();
     server = app.listen(port, '0.0.0.0', async () => {
       logger.info(`Listening on port ${port}`);
     });
   } catch (err) {
-    logger.error(err);
+    logger.error(err.message || err);
     shutdown();
   }
 })();

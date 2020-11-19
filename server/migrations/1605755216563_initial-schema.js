@@ -1,42 +1,28 @@
-/* eslint-disable camelcase */
-const { collections } = require('../db/schema.js');
+/* eslint-disable camelcase, no-restricted-syntax, no-await-in-loop */
+const { schema } = require('../db/schema.js');
+const { dbClient } = require('../db/db.js');
 
-exports.up = async (pgm) => {
-  const tableExists = async (table) => {
+const ERROR_DUPLICATED = '42P07';
+
+exports.up = async () => {
+  await dbClient.connect();
+
+  for (const schemaItem of schema) {
     try {
-      await pgm.db.query(`SELECT 'public.${table}'::regclass`);
-      return true;
-    } catch (error) {
-      return false;
+      await dbClient.db.createDocumentTable(schemaItem.collection);
+    } catch (err) {
+      if (err.code !== ERROR_DUPLICATED) {
+        throw err;
+      }
     }
-  };
-
-  const collectionTableSchema = {
-    id: 'serial',
-    body: {
-      type: 'jsonb',
-      notNull: true,
-    },
-    search: {
-      type: 'tsvector',
-    },
-    created_at: {
-      type: 'timestamp with time zone',
-      default: pgm.func('now()'),
-    },
-    updated_at: {
-      type: 'timestamp with time zone',
-    },
-  };
-
-  const employerFormsExists = await tableExists(collections.EMPLOYER_FORMS);
-  if (!employerFormsExists) {
-    pgm.createTable(collections.EMPLOYER_FORMS, collectionTableSchema);
-  }
-
-  const applicantsExists = await tableExists(collections.APPLICANTS);
-  if (!applicantsExists) {
-    pgm.createTable(collections.APPLICANTS, collectionTableSchema);
-    pgm.createIndex(collections.APPLICANTS, '(body->>\'maximusId\')', { unique: true });
+    for (const index of schemaItem.indexes) {
+      try {
+        await dbClient.db.query(index);
+      } catch (err) {
+        if (err.code !== ERROR_DUPLICATED) {
+          throw err;
+        }
+      }
+    }
   }
 };

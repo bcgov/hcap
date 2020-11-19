@@ -5,8 +5,6 @@ const { dbClient } = require('../db/db.js');
 const ERROR_DUPLICATED = '42P07';
 
 exports.up = async () => {
-  await dbClient.connect();
-
   for (const schemaItem of schema) {
     try {
       await dbClient.db.createDocumentTable(schemaItem.collection);

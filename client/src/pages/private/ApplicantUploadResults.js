@@ -12,6 +12,7 @@ export default () => {
 
   const [roles, setRoles] = useState([]);
   const [order, setOrder] = useState('asc');
+  const [isLoadingUser, setLoadingUser] = useState(false);
   const [rows, setRows] = useState([]);
   const [summary, setSummary] = useState({ duplicates: 0, errors: 0 });
   const [columns] = useState([
@@ -38,6 +39,7 @@ export default () => {
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 
   const fetchUserInfo = async () => {
+    setLoadingUser(true);
     const response = await fetch('/api/v1/user', {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
@@ -47,6 +49,7 @@ export default () => {
 
     if (response.ok) {
       const { roles } = await response.json();
+      setLoadingUser(false);
       setRoles(roles);
     }
   }
@@ -63,7 +66,7 @@ export default () => {
 
   return (
     <Page>
-      <CheckPermissions roles={roles} permittedRoles={['maximus']} renderErrorMessage={true}>
+      <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['maximus']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pt={4} pb={4} pl={2} pr={2}>
             <Typography variant="subtitle1" gutterBottom>
@@ -79,9 +82,9 @@ export default () => {
           </Alert>
           <Box pt={4} pb={4} pl={2} pr={2}>
             <Button
-                onClick={() => history.push(Routes.ApplicantUpload)}
-                text="Return to Applicant Upload"
-              />
+              onClick={() => history.goBack()}
+              text="Return to Applicant Upload"
+            />
           </Box>
           <Box pb={2} pl={2} pr={2} width="100%">
             <Table

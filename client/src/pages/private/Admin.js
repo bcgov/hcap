@@ -17,10 +17,12 @@ export default () => {
 
   const [roles, setRoles] = useState([]);
   const [name, setName] = useState([]);
+  const [isLoadingUser, setLoadingUser] = useState(false);
   const history = useHistory();
   const classes = useStyles();
 
   const fetchUserInfo = async () => {
+    setLoadingUser(true);
     const response = await fetch('/api/v1/user', {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
@@ -30,6 +32,7 @@ export default () => {
 
     if (response.ok) {
       const { roles, name } = await response.json();
+      setLoadingUser(false);
       setRoles(roles);
       setName(name);
     }
@@ -52,7 +55,7 @@ export default () => {
 
   return (
     <Page >
-      <CheckPermissions roles={roles} permittedRoles={['maximus', 'employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
+      <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['maximus', 'employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pb={4} pl={4} pr={4} pt={2}>
             <Grid container direction="column">
@@ -63,7 +66,7 @@ export default () => {
                 { renderAdminButton(Routes.ApplicantUpload, 'Upload Applicants') }
               </CheckPermissions>
               <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']}>
-                { renderAdminButton(null, 'View Applicants') } {/* TODO add route HCAP-166 */}
+                { renderAdminButton(Routes.ApplicantView, 'View Applicants') }
               </CheckPermissions>
               <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']}>
                 { renderAdminButton(Routes.EOIView, 'View Employers') }

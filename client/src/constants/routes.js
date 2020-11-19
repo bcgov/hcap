@@ -11,6 +11,7 @@ export default Object.freeze({
   Admin: '/admin',
   EOIView: '/eoi-view',
   EOIViewDetails: '/eoi-view-details',
+  ApplicantView: '/applicant-view',
   ApplicantUpload: '/applicant-upload',
   ApplicantUploadResults: '/applicant-upload-results',
 });

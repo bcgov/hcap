@@ -105,8 +105,12 @@ export default () => {
         method: 'GET',
       });
 
-      const { data } = await response.json();
-      const rows = filterData(data);
+      let rows = [];
+      if (response.ok) {
+        const { data } = await response.json();
+        rows = filterData(data);
+      }
+
       setRows(rows);
       setLoadingData(false);
     };

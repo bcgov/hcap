@@ -13,7 +13,7 @@ export default () => {
   const [roles, setRoles] = useState([]);
   const [order, setOrder] = useState('asc');
   const [rows, setRows] = useState([]);
-  const [numRows, setNumRows] = useState(0);
+  const [summary, setSummary] = useState({ duplicates: 0, errors: 0 });
   const [columns] = useState([
     { id: 'id', name: 'ID' },
     { id: 'status', name: 'Status' },
@@ -54,7 +54,10 @@ export default () => {
   useEffect(() => {
     fetchUserInfo();
     const insertMissingMessage = (row) => row.message ? row : {...row, message: ''};
-    setNumRows(location.state?.results?.length || 0);
+    setSummary({
+      duplicates: location.state?.results?.filter((x) => x.status === 'Duplicate').length || 0,
+      errors: location.state?.results?.filter((x) => x.status === 'Error').length || 0,
+    });
     setRows(location.state?.results.map(insertMissingMessage) || []);
   }, [location]);
 
@@ -67,10 +70,10 @@ export default () => {
               Applicant Upload Results
             </Typography>
           </Box>
-          <Alert severity="success">
+          <Alert severity={summary.errors ? 'error' : summary.duplicates ? 'warning' : 'success'}>
             <Typography variant="body2" gutterBottom>
               <b>
-                Processed {numRows} applicants. See results below.
+                Processed {rows.length} applicants. There were {summary.errors} errors and {summary.duplicates} duplicates. See results below.
               </b>
             </Typography>
           </Alert>

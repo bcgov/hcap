@@ -45,10 +45,6 @@ local-close:
 	@echo "Stopping local app container"
 	@docker-compose -f docker-compose.dev.yml down
 
-local-db-seed:
-	@echo "Seeding local DB container"
-	@docker exec -it $(APP_NAME)-server npm run db:seed
-
 local-server-tests:
 	@echo "Running tests in local app container"
 	@docker exec -it $(APP_NAME)-server npm test

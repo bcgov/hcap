@@ -1,4 +1,5 @@
 const massive = require('massive');
+const migrationRunner = require('node-pg-migrate');
 const logger = require('../logger.js');
 
 /**
@@ -23,7 +24,7 @@ class DBClient {
     this.db = null;
   }
 
-  dbUrl() {
+  async runMigration() {
     const {
       host,
       port,
@@ -31,7 +32,20 @@ class DBClient {
       user,
       password,
     } = this.settings;
-    return `postgres://${user}:${password}@${host}:${port}/${database}`;
+
+    try {
+      const results = await migrationRunner.default({
+        databaseUrl: `postgres://${user}:${password}@${host}:${port}/${database}`,
+        direction: 'up',
+        migrationsTable: 'pgmigrations', // default, do not change
+        dir: 'migrations', // default, do not change
+      });
+      results.forEach((result) => {
+        logger.info(`Migration success: ${result.name}`);
+      });
+    } catch (err) {
+      throw Error(`Migration error: ${err}`);
+    }
   }
 
   /**

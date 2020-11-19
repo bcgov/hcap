@@ -1,28 +1,19 @@
 /* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
-const { dbClient, schema } = require('../../db');
-
-async function seedDatabase() {
-  for (const schemaItem of schema) {
-    await dbClient.db.createDocumentTable(schemaItem.collection);
-    for (const index of schemaItem.indexes) {
-      await dbClient.db.query(index);
-    }
-  }
-}
+const { dbClient, collections } = require('../../db');
 
 async function clearDB() {
-  for (const schemaItem of schema) {
-    await dbClient.db.dropTable(schemaItem.collection, { cascade: true });
+  for (const value of Object.values(collections)) {
+    await dbClient.db.dropTable(value, { cascade: true });
   }
 }
 
 /**
- * Connect to database, and seed it
+ * Connect to database
  */
 async function startDB() {
   await dbClient.connect(true);
   await clearDB();
-  await seedDatabase();
+  await dbClient.runMigration();
 }
 
 async function closeDB() {
@@ -30,7 +21,6 @@ async function closeDB() {
 }
 
 module.exports = {
-  seedDatabase,
   startDB,
   closeDB,
 };

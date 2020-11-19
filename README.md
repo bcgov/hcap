@@ -102,14 +102,10 @@ Make sure you have Docker and Docker-compose installed in your local environment
 To set up and run database, backend (server), and frontend (client) applications:
 - Run `make local-build` within the root folder of the project to build the application
 - Run `make local-run` within the root folder of the project to run the application
-- In a new tab in your terminal, run `make local-db-seed` within the root folder of the project to create the table
 - You should see the application running at `localhost:4000`
 
 To tear down your environment:
 - Run `make close-local`
-
-To seed database, run:
-- `make local-db-seed`
 
 To run server tests:
 - Make sure containers are running
@@ -131,7 +127,6 @@ From both the client and the server folders, run `npm i` to install dependencies
 
 - Run client: `npm start` run within client folder
 - Start Database: `make run-local-db`
-- Once the DB is running, `npm run db:seed` to seed the database
 - Run server: `npm run watch` from within the server folder
 - Run server tests: `npm test` from within the server folder
 
@@ -192,8 +187,6 @@ The database used is based off of the OCIO RocketChat configuration found [here]
 To deploy the database to OpenShift, use the Makefile target `make db-create`.
 
 To shell into the database, find the name of one of the pods created by the deployment (e.g. `hcap-mongodb-0`). Use the OpenShift CLI to remote shell into the pod via `oc rsh hcap-mongodb-0`. This will allow the user to use standard Mongo CLI commands (`mongo -u USERNAME -p PASSWORD DATABASE`) to interact with the data within the MongoDB replica set. This is far from an ideal way to access the data within the cluster and should be corrected.
-
-At the time of writing, the DB schema was applied to the database by remote shelling into one of the application pods (`oc rsh hcap-server`) and running the relevant NPM script (`cd server && npm run db:seed`).
 
 ### Database Backups
 

@@ -7,13 +7,4 @@ const collections = {
   EMPLOYER_FORMS: 'employer_forms',
 };
 
-const schema = [
-  {
-    collection: collections.APPLICANTS,
-    indexes: [
-      `CREATE UNIQUE INDEX maximusId ON ${collections.APPLICANTS}( (body->>'maximusId') ) ;`,
-    ],
-  },
-];
-
-module.exports = { collections, schema };
+module.exports = { collections };

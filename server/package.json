@@ -6,7 +6,6 @@
   "license": "ISC",
   "scripts": {
     "parse-xml": "cd scripts && node parse-xml.js xml",
-    "db:seed": "node db/scripts/seed.js",
     "migrate": "node-pg-migrate",
     "stats": "node scripts/stats.js",
     "export": "node scripts/export.js",

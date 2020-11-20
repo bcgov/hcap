@@ -36,7 +36,10 @@ process.on('SIGTERM', () => {
 (async () => {
   try {
     await dbClient.connect();
-    await dbClient.runMigration();
+    const results = await dbClient.runMigration();
+    results.forEach((result) => {
+      logger.info(`Migration success: ${result.name}`);
+    });
     server = app.listen(port, '0.0.0.0', async () => {
       logger.info(`Listening on port ${port}`);
     });

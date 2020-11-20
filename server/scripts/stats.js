@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
+require('dotenv').config({ path: '../.env' });
 const inquirer = require('inquirer');
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const { dbClient } = require('../db/db.js');
 const { collections } = require('../db/schema.js');
-require('dotenv').config({ path: '../.env' });
 
 dayjs.extend(utc);
 

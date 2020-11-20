@@ -106,9 +106,9 @@ app.get(`${apiBaseUrl}/employer-form`,
   asyncMiddleware(async (req, res) => {
     try {
       const roles = getUserRoles(req);
-      const isHA = roles.includes('health_authority');
+      const isMOH = roles.includes('ministry_of_health');
       const isSuperUser = roles.includes('superuser');
-      const criteria = isHA && !isSuperUser ? getUserRegionsCriteria(req, 'healthAuthority') : {};
+      const criteria = isSuperUser || isMOH ? {} : getUserRegionsCriteria(req, 'healthAuthority');
       const result = criteria
         ? await dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria)
         : [];
@@ -125,9 +125,9 @@ app.get(`${apiBaseUrl}/employees`,
   asyncMiddleware(async (req, res) => {
     try {
       const roles = getUserRoles(req);
-      const isHA = roles.includes('health_authority');
+      const isMOH = roles.includes('ministry_of_health');
       const isSuperUser = roles.includes('superuser');
-      const criteria = isHA && !isSuperUser ? getUserRegionsCriteria(req, 'preferredLocation') : {};
+      const criteria = isSuperUser || isMOH ? {} : getUserRegionsCriteria(req, 'preferredLocation');
       const result = criteria ? await dbClient.db[collections.APPLICANTS].findDoc(criteria) : [];
       return res.json({ data: result });
     } catch (error) {

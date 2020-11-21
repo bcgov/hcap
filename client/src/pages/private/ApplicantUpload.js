@@ -65,13 +65,10 @@ export default () => {
       body: data,
     });
 
-    console.log(response);
-
     if (response.ok) {
       const results = await response.json();
       setFile(null);
       history.push(Routes.ApplicantUploadResults, { results })
-      return;
     } else {
       const message = await response.text();
       setErrors([message])

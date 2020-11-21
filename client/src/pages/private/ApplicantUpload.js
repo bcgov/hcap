@@ -66,12 +66,16 @@ export default () => {
     });
 
     if (response.ok) {
-      const results = await response.json();
+      const result = await response.json();
       setFile(null);
-      history.push(Routes.ApplicantUploadResults, { results })
+      if (Array.isArray(result)) {
+        history.push(Routes.ApplicantUploadResults, { results: result });
+      } else {
+        setErrors([result.message]);
+      }
     } else {
       const message = await response.text();
-      setErrors([message])
+      setErrors([message]);
     }
   };
 
@@ -104,9 +108,9 @@ export default () => {
             />
           </Box>
           <Box pl={4} pr={4} pt={2}>
-            { errors.length > 0 && errors.map(
+            {errors.length > 0 && errors.map(
               (item, index) => <Alert key={index} severity="error">{item}</Alert>
-            ) }
+            )}
           </Box>
           <Box pb={4} pl={4} pr={4} pt={2}>
             <Button

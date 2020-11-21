@@ -30,7 +30,6 @@ export default () => {
   const [roles, setRoles] = useState([]);
   const [file, setFile] = useState();
   const [isLoadingUser, setLoadingUser] = useState(false);
-  const [success, setSuccess] = useState();
   const [errors, setErrors] = useState([]);
   const classes = useStyles();
   const history = useHistory();
@@ -66,17 +65,21 @@ export default () => {
       body: data,
     });
 
+    console.log(response);
+
     if (response.ok) {
       const results = await response.json();
       setFile(null);
       history.push(Routes.ApplicantUploadResults, { results })
       return;
+    } else {
+      const message = await response.text();
+      setErrors([message])
     }
   };
 
   const handleChange = (files) => {
     setFile(files[0]);
-    setSuccess(null);
     setErrors([]);
   };
 
@@ -104,16 +107,9 @@ export default () => {
             />
           </Box>
           <Box pl={4} pr={4} pt={2}>
-            {
-              errors.length > 0 ?
-                errors.map(
-                  (item, index) => <Alert key={index} severity="error">{item}</Alert>
-                )
-                :
-                success ?
-                  <Alert severity="success">{success}</Alert>
-                  : null
-            }
+            { errors.length > 0 && errors.map(
+              (item, index) => <Alert key={index} severity="error">{item}</Alert>
+            ) }
           </Box>
           <Box pb={4} pl={4} pr={4} pt={2}>
             <Button

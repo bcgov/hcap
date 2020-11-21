@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
+require('dotenv').config({ path: '../.env' });
 const csv = require('fast-csv');
 const { writeFileSync } = require('fs');
 const path = require('path');
 const { dbClient } = require('../db/db.js');
 const { collections } = require('../db/schema.js');
-require('dotenv').config({ path: '../.env' });
 
 const roles = [
   'Registered Nurse',

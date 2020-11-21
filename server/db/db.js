@@ -1,6 +1,5 @@
 const massive = require('massive');
 const migrationRunner = require('node-pg-migrate');
-const logger = require('../logger.js');
 
 /**
  * This utility module provides helper methods to allow the application
@@ -40,9 +39,7 @@ class DBClient {
         migrationsTable: 'pgmigrations', // default, do not change
         dir: 'migrations', // default, do not change
       });
-      results.forEach((result) => {
-        logger.info(`Migration success: ${result.name}`);
-      });
+      return results;
     } catch (err) {
       throw Error(`Migration error: ${err}`);
     }
@@ -58,13 +55,7 @@ class DBClient {
    */
   async connect(useTestDb) {
     if (this.db) return;
-
-    try {
-      this.db = await massive({ ...this.settings, database: useTestDb ? 'db_test' : this.settings.database });
-    } catch (err) {
-      logger.error(`Failed to connect to database: ${err}`);
-      throw new Error('DBError');
-    }
+    this.db = await massive({ ...this.settings, database: useTestDb ? 'db_test' : this.settings.database });
   }
 }
 

@@ -139,8 +139,24 @@ app.get(`${apiBaseUrl}/employees`,
 // Create employee records from uploaded XLSX file
 app.post(`${apiBaseUrl}/employees`,
   keycloak.protect(allowRoles('maximus')),
-  multer().single('file'),
+  multer({
+    fileFilter: (req, file, cb) => {
+      if (file.fieldname !== 'file') {
+        req.fileError = 'Invalid field name.';
+        return cb(null, false);
+      }
+      if (file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+        return cb(null, true);
+      }
+      req.fileError = 'File type not allowed.';
+      return cb(null, false);
+    },
+  }).single('file'),
   asyncMiddleware(async (req, res) => {
+    if (req.fileError) {
+      return res.json({ status: 'Error', message: req.fileError });
+    }
+
     const bufferToStream = (binary) => new Readable({
       read() {
         this.push(binary);

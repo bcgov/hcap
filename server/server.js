@@ -143,7 +143,7 @@ app.post(`${apiBaseUrl}/employees`,
     fileFilter: (req, file, cb) => {
       if (file.fieldname !== 'file') {
         req.fileError = 'Invalid field name.';
-        return cb(null, true);
+        return cb(null, false);
       }
       if (file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
         return cb(null, true);

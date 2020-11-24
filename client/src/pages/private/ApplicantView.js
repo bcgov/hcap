@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
 import { Page, Table, CheckPermissions } from '../../components/generic';
+import { TableFilter } from '../../components/generic/TableFilter';
 
 export default () => {
 
@@ -13,6 +14,7 @@ export default () => {
   const [isLoadingData, setLoadingData] = useState(false);
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [rows, setRows] = useState([]);
+  const [fetchedRows, setFetchedRows] = useState([]);
   const [columns] = useState([
     { id: 'id', name: 'ID' },
     { id: 'firstName', name: 'First Name' },
@@ -22,6 +24,13 @@ export default () => {
     { id: 'postalCode', name: 'Postal Code' },
     { id: 'phoneNumber', name: 'Phone Number' },
     { id: 'preferredLocation', name: 'Preferred Location' },
+  ]);
+  const [locations] = useState([
+    'Interior',
+    'Fraser',
+    'Vancouver Coastal',
+    'Vancouver Island',
+    'Northern',
   ]);
 
   const [orderBy, setOrderBy] = useState(columns[0].id);
@@ -103,6 +112,7 @@ export default () => {
         rows = filterData(data);
       }
 
+      setFetchedRows(rows);
       setRows(rows);
       setLoadingData(false);
     };
@@ -119,7 +129,24 @@ export default () => {
               Applicants
             </Typography>
           </Box>
-          <Box pb={2} pl={2} pr={2} width="100%">
+          <Grid container alignContent="center" justify="center" alignItems="center" direction="row">
+            <Grid item>
+              <Box pr={2} pt={1}>
+                <Typography variant="body1" gutterBottom>
+                  Filter:
+              </Typography>
+              </Box>
+            </Grid>
+            <Grid item>
+              <TableFilter
+                onFilter={(filteredRows) => setRows(filteredRows)}
+                values={locations}
+                rows={fetchedRows}
+                label="Preferred Location"
+              />
+            </Grid>
+          </Grid>
+          <Box pt={2} pb={2} pl={2} pr={2} width="100%">
             <Table
               columns={columns}
               order={order}

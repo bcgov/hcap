@@ -6,6 +6,7 @@ import { Box, Typography } from '@material-ui/core';
 import store from 'store';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
 import { Routes } from '../../constants';
+import { TableFilter } from '../../components/generic/TableFilter';
 
 export default () => {
 
@@ -13,6 +14,7 @@ export default () => {
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [isLoadingUser, setLoadingUser] = useState(false);
+  const [fetchedRows, setFetchedRows] = useState([]);
   const [rows, setRows] = useState([]);
   const [columns] = useState([
     { id: 'id', name: 'ID' },
@@ -23,6 +25,13 @@ export default () => {
     { id: 'healthAuthority', name: 'Health Authority' },
     { id: 'operatorName', name: 'Operator Name' },
     {}, //Details
+  ]);
+  const [healthAuthorities] = useState([
+    'Interior',
+    'Fraser',
+    'Vancouver Coastal',
+    'Vancouver Island',
+    'Northern',
   ]);
 
   const [orderBy, setOrderBy] = useState(columns[0].id);
@@ -111,6 +120,7 @@ export default () => {
         rows = filterData(data);
       }
 
+      setFetchedRows(rows);
       setRows(rows);
       setLoadingData(false);
     };
@@ -127,7 +137,24 @@ export default () => {
               Employer Expressions of Interest
             </Typography>
           </Box>
-          <Box pb={2} pl={2} pr={2} width="100%">
+          <Grid container alignContent="center" justify="center" alignItems="center" direction="row">
+            <Grid item>
+              <Box pr={2} pt={1}>
+                <Typography variant="body1" gutterBottom>
+                  Filter:
+              </Typography>
+              </Box>
+            </Grid>
+            <Grid item>
+              <TableFilter
+                onFilter={(filteredRows) => setRows(filteredRows)}
+                values={healthAuthorities}
+                rows={fetchedRows}
+                label="Health Authority"
+              />
+            </Grid>
+          </Grid>
+          <Box pt={2} pb={2} pl={2} pr={2} width="100%">
             <Table
               columns={columns}
               order={order}

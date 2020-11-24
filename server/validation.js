@@ -85,6 +85,8 @@ const errorMessage = ({ path }) => {
   return errorMessages[path] || `Failed validation on ${path}`;
 };
 
+const errorMessageRow = (index) => (error) => `${errorMessage(error)} (row ${index})`;
+
 const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape({
   // Operator Contact Information
   registeredBusinessName: yup.string().nullable(errorMessage),
@@ -140,25 +142,28 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape
 });
 
 const EmployeeBatchSchema = yup.array().of(
-  yup.object().noUnknown('Unknown field in employee row').shape({
-    // Orbeon Id
-    maximusId: yup.string().typeError(errorMessage),
+  yup.lazy((item, options) => {
+    const row = options.parent.indexOf(item) + 1;
+    return yup.object().noUnknown(`Unknown field in employee row ${row}`).shape({
+      // Orbeon Id
+      maximusId: yup.string().typeError(errorMessageRow(row)),
 
-    // Eligibility
-    eligibility: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
+      // Eligibility
+      eligibility: yup.boolean().typeError(errorMessageRow(row)).required(errorMessageRow(row)).test('is-true', errorMessageRow(row), (v) => v === true),
 
-    // Contact info
-    firstName: yup.string().required(errorMessage),
-    lastName: yup.string().required(errorMessage),
-    phoneNumber: yup.string().required(errorMessage),
-    emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
-    postalCode: yup.string().required(errorMessage).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
+      // Contact info
+      firstName: yup.string().required(errorMessageRow(row)),
+      lastName: yup.string().required(errorMessageRow(row)),
+      phoneNumber: yup.string().required(errorMessageRow(row)),
+      emailAddress: yup.string().required(errorMessageRow(row)).matches(/^(.+@.+\..+)?$/, `Invalid email address (row ${row})`),
+      postalCode: yup.string().required(errorMessageRow(row)).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, `Format as A1A 1A1 (row ${row})`),
 
-    // Preferred location
-    preferredLocation: yup.string().test('is-region-array', errorMessage, () => true),
+      // Preferred location
+      preferredLocation: yup.string().test('is-region-array', errorMessageRow(row), () => true),
 
-    // Consent
-    consent: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
+      // Consent
+      consent: yup.boolean().typeError(errorMessageRow(row)).required(errorMessageRow(row)).test('is-true', errorMessageRow(row), (v) => v === true),
+    });
   }),
 );
 

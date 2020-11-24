@@ -1,10 +1,10 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
-import { checkPermissions } from '../../utils';
+import { checkPermissions, checkPending } from '../../utils';
 
 export const CheckPermissions = ({ isLoading, roles, permittedRoles, children, renderErrorMessage = false }) => {
-
+  const isPending = checkPending(roles);
   if (isLoading) {
     return null;
   }
@@ -14,13 +14,15 @@ export const CheckPermissions = ({ isLoading, roles, permittedRoles, children, r
     return children;
   }
 
+  const message = isPending ? `Thank you for logging in, your access request is being reviewed.` : `You don't have permission to view this content.`;
+
   // Optional: display message if no access granted by role(s)
   if (renderErrorMessage) {
     return (
       <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
         <Box pb={4} pl={4} pr={4} pt={2}>
           <Typography variant="subtitle1" gutterBottom>
-            You don't have permission to view this content.
+            { message }
           </Typography>
         </Box>
       </Grid>

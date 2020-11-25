@@ -124,21 +124,65 @@ app.post(`${apiBaseUrl}/employees`,
         this.push(null);
       },
     });
+
     const columnMap = {
-      maximusId: 'maximusId',
-      eligibility: 'eligibility',
-      firstName: 'firstName',
-      lastName: 'lastName',
-      phoneNumber: 'phoneNumber',
-      emailAddress: 'emailAddress',
-      postalCode: 'postalCode',
-      preferredLocation: 'preferredLocation',
-      consent: 'consent',
+      ClientID: 'maximusId',
+      Lastname: 'lastName',
+      FirstName: 'firstName',
+      AddressLine1: 'addressLine1',
+      AddressLine2: 'addressLine2',
+      City: 'city',
+      Province: 'province',
+      Postal: 'postalCode',
+      Phone1: 'phoneNumber',
+      Email: 'emailAddress',
+      registered: 'registered',
+      CreatedDatetime: 'createdDatetime',
+      status: 'status',
+      AssignedStatus: 'assignedStatus',
+      CaseManager: 'caseManager',
+      'Canadian Citizen/Resident': 'canadianCitizenResident',
+      'Consent Confirmed': 'consent',
+      'Criminal Record Check': 'criminalRecordCheck',
+      Fraser: 'fraser',
+      Interior: 'interior',
+      Northern: 'northern',
+      'Vancouver Coastal': 'vancouverCoastal',
+      'Vancouver Island': 'vancouverIsland',
+      Email1: 'email1',
+      Email1Date: 'email1Date',
+      Email2: 'email2',
+      Email2Date: 'email2Date',
+      Email3a: 'email3a',
+      Email3aDate: 'email3aDate',
     };
+
+    const objectMap = (row) => {
+      const object = { ...row };
+
+      const preferredLocation = [];
+
+      if (row.fraser === 1) preferredLocation.push('Fraser');
+      if (row.interior === 1) preferredLocation.push('Interior');
+      if (row.northern === 1) preferredLocation.push('Northern');
+      if (row.vancouverCoastal === 1) preferredLocation.push('Vancouver Coastal');
+      if (row.vancouverIsland === 1) preferredLocation.push('Vancouver Island');
+
+      object.preferredLocation = preferredLocation.join(';');
+
+      delete object.fraser;
+      delete object.interior;
+      delete object.northern;
+      delete object.vancouverCoastal;
+      delete object.vancouverIsland;
+
+      return object;
+    };
+
     const { rows } = await readXlsxFile(bufferToStream(req.file.buffer), { map: columnMap });
     await validate(EmployeeBatchSchema, rows);
     const response = [];
-    const promises = rows.map((row) => dbClient.db.saveDoc(collections.APPLICANTS, row));
+    const promises = rows.map((row) => dbClient.db.saveDoc(collections.APPLICANTS, objectMap(row)));
     const results = await Promise.allSettled(promises);
     results.forEach((result, index) => {
       const id = rows[index].maximusId;

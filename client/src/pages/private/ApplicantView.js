@@ -129,22 +129,24 @@ export default () => {
               Applicants
             </Typography>
           </Box>
-          <Grid container alignContent="center" justify="center" alignItems="center" direction="row">
+          <Grid container alignContent="center" justify="flex-start" alignItems="center" direction="row">
             <Grid item>
-              <Box pr={2} pt={1}>
+              <Box pl={2} pr={2} pt={1}>
                 <Typography variant="body1" gutterBottom>
                   Filter:
               </Typography>
               </Box>
             </Grid>
             <Grid item>
-              <TableFilter
-                onFilter={(filteredRows) => setRows(filteredRows)}
-                values={locations}
-                rows={fetchedRows}
-                label="Preferred Location"
-                filterField="preferredLocation"
-              />
+              <Box minWidth={180}>
+                <TableFilter
+                  onFilter={(filteredRows) => setRows(filteredRows)}
+                  values={locations}
+                  rows={fetchedRows}
+                  label="Preferred Location"
+                  filterField="preferredLocation"
+                />
+              </Box>
             </Grid>
           </Grid>
           <Box pt={2} pb={2} pl={2} pr={2} width="100%">

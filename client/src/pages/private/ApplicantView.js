@@ -143,6 +143,7 @@ export default () => {
                 values={locations}
                 rows={fetchedRows}
                 label="Preferred Location"
+                filterField="preferredLocation"
               />
             </Grid>
           </Grid>

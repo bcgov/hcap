@@ -151,6 +151,7 @@ export default () => {
                 values={healthAuthorities}
                 rows={fetchedRows}
                 label="Health Authority"
+                filterField="healthAuthority"
               />
             </Grid>
           </Grid>

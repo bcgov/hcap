@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MenuItem, TextField } from '@material-ui/core';
 
-export const TableFilter = ({ onFilter, values, label, rows }) => {
+export const TableFilter = ({ onFilter, values, label, rows, filterField }) => {
 
   const [selectedValue, setValue] = useState();
 
@@ -10,7 +10,7 @@ export const TableFilter = ({ onFilter, values, label, rows }) => {
     setValue(value);
     const isValidOption = values.includes(value);
     if (isValidOption) {
-      onFilter(rows.filter(row => row.preferredLocation.includes(value)));
+      onFilter(rows.filter(row => row[filterField].includes(value)));
     } else {
       onFilter(rows);
     }

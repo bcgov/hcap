@@ -1,4 +1,4 @@
-name: OpenShift Build
+name: OpenShift Deploy/Promotion
 
 on:
   push:

@@ -121,6 +121,7 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape
   emailAddress: yup.string().nullable(errorMessage).matches(/(^(.+@.+\..+)?)?$/, 'Invalid email address'),
 
   // Site type and size info
+  check: yup.object().shape(),
   siteType: yup.string().nullable(errorMessage).oneOf(siteTypes, 'Invalid site type'),
   otherSite: yup.string().when('siteType', {
     is: 'Other',

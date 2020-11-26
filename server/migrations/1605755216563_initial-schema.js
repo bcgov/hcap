@@ -1,8 +1,7 @@
 /* eslint-disable camelcase, no-restricted-syntax, no-await-in-loop */
 const { schema } = require('../db/schema.js');
 const { dbClient } = require('../db/db.js');
-
-const ERROR_DUPLICATED = '42P07';
+const { ERROR_DUPLICATED } = require('../db/common');
 
 exports.up = async () => {
   for (const schemaItem of schema) {

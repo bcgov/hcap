@@ -12,10 +12,11 @@ const {
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
-const keycloak = require('./keycloak-config.js').initKeycloak();
+const Keycloak = require('./keycloak.js');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
+const keycloak = new Keycloak();
 
 app.use(helmet({
   contentSecurityPolicy: {
@@ -40,20 +41,16 @@ app.use(keycloak.middleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-const allowRoles = (...roles) => (token) => {
-  if (token.hasRole('superuser')) return true;
-  if (!roles.some((role) => token.hasRole(role))) return false;
-  if (token.isExpired()) return false;
-  return true;
+const userRegionQuery = (regions, target) => {
+  if (regions.length === 0) return null;
+  return {
+    or: regions.map((region) => ({ [`${target} ilike`]: `%${region}%` })),
+  };
 };
 
 // Return client info for Keycloak realm for the current environment
 app.get(`${apiBaseUrl}/keycloak-realm-client-info`,
-  asyncMiddleware(async (req, res) => res.json({
-    realm: process.env.KEYCLOAK_REALM,
-    url: process.env.KEYCLOAK_AUTH_URL,
-    clientId: process.env.KEYCLOAK_FE_CLIENTID,
-  })));
+  (req, res) => res.json(keycloak.RealmInfoFrontend()));
 
 // Create new employer form
 app.post(`${apiBaseUrl}/employer-form`,
@@ -71,10 +68,15 @@ app.post(`${apiBaseUrl}/employer-form`,
 
 // Get employer forms
 app.get(`${apiBaseUrl}/employer-form`,
-  keycloak.protect(allowRoles('health_authority', 'ministry_of_health')),
+  keycloak.allowRoles('health_authority', 'ministry_of_health'),
+  keycloak.getUserInfo(),
   asyncMiddleware(async (req, res) => {
     try {
-      const result = await getEmployers(req);
+      const user = req.hcapUserInfo;
+      const criteria = user.isSuperUser || user.isMOH ? {} : userRegionQuery(user.regions, 'healthAuthority');
+      const result = criteria
+        ? await dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria)
+        : [];
       return res.json({ data: result });
     } catch (error) {
       logger.error(error);
@@ -84,10 +86,13 @@ app.get(`${apiBaseUrl}/employer-form`,
 
 // Get employee records
 app.get(`${apiBaseUrl}/employees`,
-  keycloak.protect(allowRoles('employer', 'health_authority', 'ministry_of_health')),
+  keycloak.allowRoles('employer', 'health_authority', 'ministry_of_health'),
+  keycloak.getUserInfo(),
   asyncMiddleware(async (req, res) => {
     try {
-      const result = await getParticipants(req);
+      const user = req.hcapUserInfo;
+      const criteria = user.isSuperUser || user.isMOH ? {} : userRegionQuery(user.regions, 'preferredLocation');
+      const result = criteria ? await dbClient.db[collections.APPLICANTS].findDoc(criteria) : [];
       return res.json({ data: result });
     } catch (error) {
       logger.error(error);
@@ -97,7 +102,7 @@ app.get(`${apiBaseUrl}/employees`,
 
 // Create employee records from uploaded XLSX file
 app.post(`${apiBaseUrl}/employees`,
-  keycloak.protect(allowRoles('maximus')),
+  keycloak.allowRoles('maximus'),
   multer({
     fileFilter: (req, file, cb) => {
       if (file.fieldname !== 'file') {
@@ -126,19 +131,11 @@ app.post(`${apiBaseUrl}/employees`,
 
 // Get user info from token
 app.get(`${apiBaseUrl}/user`,
-  keycloak.protect(),
-  asyncMiddleware(async (req, res) => {
-    try {
-      return res.json(
-        {
-          roles: getUserRoles(req),
-          name: req.kauth.grant.access_token.content.name,
-        },
-      );
-    } catch (error) {
-      logger.error(error);
-      throw error;
-    }
+  keycloak.allowRoles(),
+  keycloak.getUserInfo(),
+  (req, res) => res.json({
+    roles: req.hcapUserInfo.roles,
+    name: req.hcapUserInfo.name,
   }));
 
 // Version number

@@ -45,9 +45,19 @@ local-close:
 	@echo "Stopping local app container"
 	@docker-compose -f docker-compose.dev.yml down
 
+local-clean:
+	@echo "Cleaning local app"
+	@docker-compose -f docker-compose.dev.yml down -v
+
 local-server-tests:
 	@echo "Running tests in local app container"
 	@docker exec -it $(APP_NAME)-server npm test
+
+database: ## <Helper> :: Executes into database container.
+	@echo "Make: Shelling into local database container ..."
+	@export PGPASSWORD=$(POSTGRES_PASSWORD)
+	@docker-compose -f docker-compose.dev.yml exec postgres psql -U $(POSTGRES_USER) $(POSTGRES_DB)
+
 
 # Git Tagging Aliases
 

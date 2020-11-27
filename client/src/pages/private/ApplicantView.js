@@ -11,6 +11,8 @@ const defaultColumns = [
   { id: 'id', name: 'ID' },
   { id: 'firstName', name: 'First Name' },
   { id: 'lastName', name: 'Last Name' },
+  { id: 'emailAddress', name: 'Email Address' },
+  { id: 'phoneNumber', name: 'Phone Number' },
   { id: 'preferredLocation', name: 'Preferred Location' },
   { id: 'postalCode', name: 'Postal Code' },
 ];
@@ -68,7 +70,7 @@ export default () => {
   useEffect(() => {
 
     const resultColumns = [...defaultColumns];
-    
+
     const fetchUserInfo = async () => {
       setLoadingUser(true);
       const response = await fetch('/api/v1/user', {
@@ -87,8 +89,6 @@ export default () => {
         if (isMOH || isSuperUser) {
           resultColumns.push(
             { id: 'city', name: 'City' },
-            { id: 'emailAddress', name: 'Email Address' },
-            { id: 'phoneNumber', name: 'Phone Number' },
             { id: 'criminalRecordCheck', name: 'Criminal Record Check' },
           );
           setColumns(resultColumns);
@@ -98,7 +98,16 @@ export default () => {
 
     const filterData = (data) => {
       const rows = [];
-      data.forEach(item => {
+      data.forEach(dataItem => {
+
+        const item = { ...dataItem };
+        if (!item.emailAddress) {
+          item.emailAddress = '***@***.***';
+        }
+        if (!item.phoneNumber) {
+          item.phoneNumber = '(***) ***-****';
+        }
+
         const row = mapItemToColumns(item, resultColumns);
         rows.push(row);
       });

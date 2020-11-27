@@ -18,7 +18,7 @@ class DBClient {
     this.db = null;
   }
 
-  async runMigration() {
+  async runMigration(useTestDb) {
     const {
       host,
       port,
@@ -27,9 +27,10 @@ class DBClient {
       password,
     } = this.settings;
 
+    const dbName = useTestDb ? 'db_test' : database;
     try {
       const results = await migrationRunner.default({
-        databaseUrl: `postgres://${user}:${password}@${host}:${port}/${database}`,
+        databaseUrl: `postgres://${user}:${password}@${host}:${port}/${dbName}`,
         direction: 'up',
         migrationsTable: 'pgmigrations', // default, do not change
         dir: 'migrations', // default, do not change

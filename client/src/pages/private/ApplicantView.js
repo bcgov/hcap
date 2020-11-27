@@ -7,6 +7,14 @@ import store from 'store';
 import { Page, Table, CheckPermissions } from '../../components/generic';
 import { TableFilter } from '../../components/generic/TableFilter';
 
+const defaultColumns = [
+  { id: 'id', name: 'ID' },
+  { id: 'firstName', name: 'First Name' },
+  { id: 'lastName', name: 'Last Name' },
+  { id: 'preferredLocation', name: 'Preferred Location' },
+  { id: 'postalCode', name: 'Postal Code' },
+];
+
 export default () => {
 
   const [roles, setRoles] = useState([]);
@@ -15,16 +23,7 @@ export default () => {
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
-  const [columns] = useState([
-    { id: 'id', name: 'ID' },
-    { id: 'firstName', name: 'First Name' },
-    { id: 'lastName', name: 'Last Name' },
-    { id: 'eligibility', name: 'Eligible' },
-    { id: 'emailAddress', name: 'Email Address' },
-    { id: 'postalCode', name: 'Postal Code' },
-    { id: 'phoneNumber', name: 'Phone Number' },
-    { id: 'preferredLocation', name: 'Preferred Location' },
-  ]);
+  const [columns, setColumns] = useState(defaultColumns);
   const [locations] = useState([
     'Interior',
     'Fraser',
@@ -36,22 +35,6 @@ export default () => {
   const [orderBy, setOrderBy] = useState(columns[0].id);
 
   const history = useHistory();
-
-  const fetchUserInfo = async () => {
-    setLoadingUser(true);
-    const response = await fetch('/api/v1/user', {
-      headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      const { roles } = await response.json();
-      setLoadingUser(false);
-      setRoles(roles);
-    }
-  }
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -83,13 +66,40 @@ export default () => {
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 
   useEffect(() => {
-    fetchUserInfo();
+
+    const resultColumns = [...defaultColumns];
+    
+    const fetchUserInfo = async () => {
+      setLoadingUser(true);
+      const response = await fetch('/api/v1/user', {
+        headers: {
+          'Authorization': `Bearer ${store.get('TOKEN')}`,
+        },
+        method: 'GET',
+      });
+
+      if (response.ok) {
+        const { roles } = await response.json();
+        setLoadingUser(false);
+        setRoles(roles);
+        const isMOH = roles.includes('ministry_of_health');
+        const isSuperUser = roles.includes('superuser');
+        if (isMOH || isSuperUser) {
+          resultColumns.push(
+            { id: 'city', name: 'City' },
+            { id: 'emailAddress', name: 'Email Address' },
+            { id: 'phoneNumber', name: 'Phone Number' },
+            { id: 'criminalRecordCheck', name: 'Criminal Record Check' },
+          );
+          setColumns(resultColumns);
+        }
+      }
+    };
 
     const filterData = (data) => {
       const rows = [];
       data.forEach(item => {
-        const row = mapItemToColumns(item, columns);
-        row.eligibility = row.eligibility ? 'Yes' : 'No';
+        const row = mapItemToColumns(item, resultColumns);
         rows.push(row);
       });
       return rows;
@@ -117,8 +127,12 @@ export default () => {
       setLoadingData(false);
     };
 
-    getApplicants();
-  }, [columns, history]);
+    const init = async () => {
+      await fetchUserInfo();
+      await getApplicants();
+    };
+    init();
+  }, [history]);
 
   return (
     <Page>

@@ -2,14 +2,12 @@ const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
-const { Readable } = require('stream');
 const multer = require('multer');
-const readXlsxFile = require('read-excel-file/node');
-const { getParticipants } = require('./services/participants.js');
+const { getParticipants, parseAndSaveParticipants } = require('./services/participants.js');
 const { getUserRoles } = require('./services/user.js');
 const { getEmployers } = require('./services/employers.js');
 const {
-  validate, EmployerFormSchema, EmployeeBatchSchema,
+  validate, EmployerFormSchema,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -118,42 +116,7 @@ app.post(`${apiBaseUrl}/employees`,
       return res.json({ status: 'Error', message: req.fileError });
     }
 
-    const bufferToStream = (binary) => new Readable({
-      read() {
-        this.push(binary);
-        this.push(null);
-      },
-    });
-    const columnMap = {
-      maximusId: 'maximusId',
-      eligibility: 'eligibility',
-      firstName: 'firstName',
-      lastName: 'lastName',
-      phoneNumber: 'phoneNumber',
-      emailAddress: 'emailAddress',
-      postalCode: 'postalCode',
-      preferredLocation: 'preferredLocation',
-      consent: 'consent',
-    };
-    const { rows } = await readXlsxFile(bufferToStream(req.file.buffer), { map: columnMap });
-    await validate(EmployeeBatchSchema, rows);
-    const response = [];
-    const promises = rows.map((row) => dbClient.db.saveDoc(collections.APPLICANTS, row));
-    const results = await Promise.allSettled(promises);
-    results.forEach((result, index) => {
-      const id = rows[index].maximusId;
-      switch (result.status) {
-        case 'fulfilled':
-          response.push({ id, status: 'Success' });
-          break;
-        default:
-          if (result.reason.code === '23505') {
-            response.push({ id, status: 'Duplicate' });
-          } else {
-            response.push({ id, status: 'Error', message: result.reason });
-          }
-      }
-    });
+    const response = await parseAndSaveParticipants(req.file);
     return res.json(response);
   }));
 

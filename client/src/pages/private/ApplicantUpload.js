@@ -29,6 +29,7 @@ export default () => {
 
   const [roles, setRoles] = useState([]);
   const [file, setFile] = useState();
+  const [isLoadingData, setLoadingData] = useState(false);
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [errors, setErrors] = useState([]);
   const classes = useStyles();
@@ -55,6 +56,7 @@ export default () => {
   }, []);
 
   const handleSubmit = async () => {
+    setLoadingData(true);
     const data = new FormData();
     data.append('file', file);
     const response = await fetch('/api/v1/employees', {
@@ -65,6 +67,7 @@ export default () => {
       body: data,
     });
 
+    setLoadingData(false);
     if (response.ok) {
       const result = await response.json();
       setFile(null);
@@ -115,6 +118,7 @@ export default () => {
           <Box pb={4} pl={4} pr={4} pt={2}>
             <Button
               onClick={handleSubmit}
+              loading={isLoadingData}
               variant="contained"
               disabled={!file || errors.length > 0}
               color="primary"

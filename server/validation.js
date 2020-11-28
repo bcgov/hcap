@@ -32,6 +32,10 @@ const validateBlankOrPositiveInteger = (n) => (
   n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n >= 0)
 );
 
+const validateOptionalBooleanInt = (n) => (
+  n === 'NULL' || (Number.isInteger(n) && n >= 0)
+);
+
 const errorMessage = ({ path }) => {
   const errorMessages = {
     // Common fields
@@ -144,25 +148,26 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape
 const EmployeeBatchSchema = yup.array().of(
   yup.lazy((item, options) => {
     const row = options.parent.indexOf(item) + 1;
-    return yup.object().noUnknown(`Unknown field in employee row ${row}`).shape({
+    return yup.object().shape({
       // Orbeon Id
-      maximusId: yup.string().typeError(errorMessageRow(row)),
-
-      // Eligibility
-      eligibility: yup.boolean().typeError(errorMessageRow(row)).required(errorMessageRow(row)).test('is-true', errorMessageRow(row), (v) => v === true),
+      maximusId: yup.number().typeError(errorMessageRow(row)),
 
       // Contact info
       firstName: yup.string().required(errorMessageRow(row)),
       lastName: yup.string().required(errorMessageRow(row)),
-      phoneNumber: yup.string().required(errorMessageRow(row)),
+      phoneNumber: yup.mixed().required(errorMessageRow(row)),
       emailAddress: yup.string().required(errorMessageRow(row)).matches(/^(.+@.+\..+)?$/, `Invalid email address (row ${row})`),
       postalCode: yup.string().required(errorMessageRow(row)).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, `Format as A1A 1A1 (row ${row})`),
 
       // Preferred location
-      preferredLocation: yup.string().test('is-region-array', errorMessageRow(row), () => true),
+      fraser: yup.mixed().required(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanInt),
+      interior: yup.mixed().required(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanInt),
+      northern: yup.mixed().required(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanInt),
+      vancouverCoastal: yup.mixed().required(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanInt),
+      vancouverIsland: yup.mixed().required(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanInt),
 
       // Consent
-      consent: yup.boolean().typeError(errorMessageRow(row)).required(errorMessageRow(row)).test('is-true', errorMessageRow(row), (v) => v === true),
+      consent: yup.number().typeError(errorMessageRow(row)).required(errorMessageRow(row)).test('is-int-true', errorMessageRow(row), (v) => v === 1),
     });
   }),
 );

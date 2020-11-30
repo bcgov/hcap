@@ -28,13 +28,17 @@ const siteTypes = [
   '',
 ];
 
+const isBooleanValue = (val) => typeof val === 'string' && ['yes', 'no'].includes(val.toLowerCase());
+
 const validateBlankOrPositiveInteger = (n) => (
   n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n >= 0)
 );
 
-const validateOptionalBooleanInt = (n) => (
-  n === 'NULL' || (Number.isInteger(n) && n >= 0)
+const validateOptionalBooleanMixed = (n) => (
+  n === 'NULL' || n === null || typeof n === 'undefined' || (Number.isInteger(n) && n >= 0) || (n && isBooleanValue(n))
 );
+
+const validatePreferredLocation = (n) => (typeof n === 'object' && (n.fraser || n.interior || n.vancouverCoastal || n.vancouverIsland || n.northern));
 
 const errorMessage = ({ path }) => {
   const errorMessages = {
@@ -160,20 +164,20 @@ const EmployeeBatchSchema = yup.array().of(
       postalCode: yup.string().required(errorMessageRow(row)).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, `Format as A1A 1A1 (row ${row})`),
 
       // Preferred location
-      fraser: yup.mixed().required(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanInt),
-      interior: yup.mixed().required(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanInt),
-      northern: yup.mixed().required(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanInt),
-      vancouverCoastal: yup.mixed().required(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanInt),
-      vancouverIsland: yup.mixed().required(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanInt),
-
-      // Consent
-      consent: yup.number().typeError(errorMessageRow(row)).required(errorMessageRow(row)).test('is-int-true', errorMessageRow(row), (v) => v === 1),
-    });
+      fraser: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
+      interior: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
+      northern: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
+      vancouverCoastal: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
+      vancouverIsland: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
+      // Others
+      interested: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
+      nonHCAP: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
+    }).test('is-preferred-location-specified', () => `Please specify a preferred (EOI) location for participant of row ${row}`, validatePreferredLocation);
   }),
 );
 
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
-  EmployerFormSchema, EmployeeBatchSchema, validate,
+  EmployerFormSchema, EmployeeBatchSchema, validate, isBooleanValue,
 };

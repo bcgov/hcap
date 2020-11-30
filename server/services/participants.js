@@ -1,7 +1,7 @@
 const { Readable } = require('stream');
 const readXlsxFile = require('read-excel-file/node');
 const {
-  validate, EmployeeBatchSchema,
+  validate, EmployeeBatchSchema, isBooleanValue,
 } = require('../validation.js');
 const { dbClient, collections } = require('../db');
 const { getUserRoles, getUserRegionsCriteria } = require('./user.js');
@@ -24,10 +24,10 @@ const getParticipants = async (req) => {
       lastName: item.lastName,
       postalCode: item.postalCode,
       preferredLocation: item.preferredLocation,
-      city: item.city,
       phoneNumber: item.phoneNumber,
       emailAddress: item.emailAddress,
-      criminalRecordCheck: item.criminalRecordCheck,
+      interested: item.interested || null,
+      nonHCAP: item.nonHCAP || null,
     }));
   }
 
@@ -37,6 +37,8 @@ const getParticipants = async (req) => {
     lastName: item.lastName,
     postalCode: item.postalCode,
     preferredLocation: item.preferredLocation,
+    interested: item.interested || null,
+    nonHCAP: item.nonHCAP || null,
   }));
 };
 
@@ -50,34 +52,19 @@ const parseAndSaveParticipants = async (file) => {
 
   const columnMap = {
     ClientID: 'maximusId',
-    Lastname: 'lastName',
-    FirstName: 'firstName',
-    AddressLine1: 'addressLine1',
-    AddressLine2: 'addressLine2',
-    City: 'city',
-    Province: 'province',
-    Postal: 'postalCode',
-    Phone1: 'phoneNumber',
+    Surname: 'lastName',
+    Name: 'firstName',
+    PostalCode: 'postalCode',
+    'Post Code FSA': 'postalCodeFsa',
+    Phone: 'phoneNumber',
     Email: 'emailAddress',
-    registered: 'submissionDatetime',
-    CreatedDatetime: 'maximusCreatedDatetime',
-    status: 'status',
-    AssignedStatus: 'assignedStatus',
-    CaseManager: 'caseManager',
-    'Canadian Citizen/Resident': 'canadianCitizenResident',
-    'Consent Confirmed': 'consent',
-    'Criminal Record Check': 'criminalRecordCheck',
-    Fraser: 'fraser',
-    Interior: 'interior',
-    Northern: 'northern',
-    'Vancouver Coastal': 'vancouverCoastal',
-    'Vancouver Island': 'vancouverIsland',
-    Email1: 'email1',
-    Email1Date: 'email1Date',
-    Email2: 'email2',
-    Email2Date: 'email2Date',
-    Email3a: 'email3a',
-    Email3aDate: 'email3aDate',
+    'EOI - FHA': 'fraser',
+    'EOI - IHA': 'interior',
+    'EOI - NHA': 'northern',
+    'EOI - VCHA': 'vancouverCoastal',
+    'EOI - VIHA': 'vancouverIsland',
+    'CB1: Still Interested': 'interested',
+    'CB8: Non-HCAP Opportunities': 'nonHCAP',
   };
 
   const objectMap = (row) => {
@@ -85,13 +72,21 @@ const parseAndSaveParticipants = async (file) => {
 
     const preferredLocation = [];
 
-    if (row.fraser === 1) preferredLocation.push('Fraser');
-    if (row.interior === 1) preferredLocation.push('Interior');
-    if (row.northern === 1) preferredLocation.push('Northern');
-    if (row.vancouverCoastal === 1) preferredLocation.push('Vancouver Coastal');
-    if (row.vancouverIsland === 1) preferredLocation.push('Vancouver Island');
+    if (row.fraser === 1 || (isBooleanValue(row.fraser))) preferredLocation.push('Fraser');
+    if (row.interior === 1 || (isBooleanValue(row.interior))) preferredLocation.push('Interior');
+    if (row.northern === 1 || (isBooleanValue(row.northern))) preferredLocation.push('Northern');
+    if (row.vancouverCoastal === 1 || (isBooleanValue(row.vancouverCoastal))) preferredLocation.push('Vancouver Coastal');
+    if (row.vancouverIsland === 1 || (isBooleanValue(row.vancouverIsland))) preferredLocation.push('Vancouver Island');
 
     object.preferredLocation = preferredLocation.join(';');
+
+    // Defaulting optional values with null
+    const optingForNonHCAP = row.nonHCAP;
+    const participantInterested = row.interested;
+    object.nonHCAP = optingForNonHCAP
+    && isBooleanValue(optingForNonHCAP) ? optingForNonHCAP.toLowerCase() : null;
+    object.interested = participantInterested
+    && isBooleanValue(optingForNonHCAP) ? participantInterested.toLowerCase() : null;
 
     delete object.fraser;
     delete object.interior;

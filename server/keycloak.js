@@ -1,4 +1,6 @@
+const querystring = require('querystring');
 const KeyCloakConnect = require('keycloak-connect');
+const axios = require('axios');
 
 const regionMap = {
   region_fraser: 'Fraser',
@@ -20,17 +22,16 @@ class Keycloak { // Wrapper class around keycloak-connect
   constructor() {
     this.realm = process.env.KEYCLOAK_REALM;
     this.authUrl = process.env.KEYCLOAK_AUTH_URL;
-    this.clientIdFrontend = process.env.KEYCLOAK_FE_CLIENTID;
-    this.clientIdBackend = process.env.KEYCLOAK_API_CLIENTID;
+    this.clientNameFrontend = process.env.KEYCLOAK_FE_CLIENTID;
+    this.clientNameBackend = process.env.KEYCLOAK_API_CLIENTID;
     this.clientSecretBackend = process.env.KEYCLOAK_API_SECRET;
+    this.serviceAccountUsername = process.env.KEYCLOAK_SA_USERNAME;
+    this.serviceAccountPassword = process.env.KEYCLOAK_SA_PASSWORD;
     const config = {
       ...defaults,
       realm: this.realm,
       'auth-server-url': this.authUrl,
-      resource: this.clientIdBackend,
-      credentials: {
-        secret: this.clientSecretBackend,
-      },
+      resource: this.clientNameBackend,
     };
     this.keycloakConnect = new KeyCloakConnect({}, config);
   }
@@ -39,7 +40,7 @@ class Keycloak { // Wrapper class around keycloak-connect
     return {
       realm: this.realm,
       url: this.authUrl,
-      clientId: this.clientIdFrontend,
+      clientId: this.clientNameFrontend,
     };
   }
 
@@ -60,9 +61,12 @@ class Keycloak { // Wrapper class around keycloak-connect
 
   getUserInfo() { // Connect middleware for adding HCAP user info to request object
     return (req, res, next) => {
-      const { roles } = req.kauth.grant.access_token.content.resource_access[this.clientIdBackend];
+      // Optional chaining would be great here once ESLint supports it *sigh*
+      console.log(req.kauth.grant.access_token.content);
+      const { content } = req.kauth.grant.access_token;
+      const { roles } = content.resource_access[this.clientNameBackend] || { roles: [] };
       req.hcapUserInfo = {
-        name: req.kauth.grant.access_token.content.name,
+        name: content.name,
         roles,
         regions: roles.map((role) => regionMap[role]).filter((region) => region),
         isSuperUser: roles.includes('superuser'),
@@ -72,10 +76,27 @@ class Keycloak { // Wrapper class around keycloak-connect
     };
   }
 
-  fetchUsers(role) {
-    // TODO
-    return this.realm ? role : null;
+  async authenticateServiceAccount() {
+    const data = querystring.stringify({
+      grant_type: 'password',
+      client_id: this.clientNameBackend,
+      client_secret: this.clientSecretBackend,
+      username: this.serviceAccountUsername,
+      password: this.serviceAccountPassword,
+    });
+    const config = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } };
+    const response = await axios.post(`${this.authUrl}/realms/${this.realm}/protocol/openid-connect/token`, data, config);
+    this.access_token = response.data.access_token;
+  }
+
+  async getClientIdentifier() {
+    // This maps ID of client to client ID
+    // See Keycloak docs https://www.keycloak.org/docs-api/5.0/rest-api/index.html#_clients_resource
+    const config = { params: { clientId: this.clientNameBackend } };
+    const response = await axios.get(`${this.authUrl}/admin/realms/${this.realm}`, config);
+    console.log(response);
   }
 }
+Keycloak.instance = new Keycloak();
 
-module.exports = Keycloak;
+module.exports = Keycloak.instance;

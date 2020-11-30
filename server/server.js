@@ -9,11 +9,10 @@ const { validate, EmployerFormSchema } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
-const Keycloak = require('./keycloak.js');
+const keycloak = require('./keycloak.js');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
-const keycloak = new Keycloak();
 
 app.use(helmet({
   contentSecurityPolicy: {

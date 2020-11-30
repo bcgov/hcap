@@ -68,7 +68,7 @@ export default () => {
               <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']}>
                 { renderAdminButton(Routes.ApplicantView, 'View Applicants') }
               </CheckPermissions>
-              <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']}>
+              <CheckPermissions roles={roles} permittedRoles={['health_authority', 'ministry_of_health']}>
                 { renderAdminButton(Routes.EOIView, 'View Employers') }
               </CheckPermissions>
             </Grid>

@@ -71,7 +71,7 @@ app.post(`${apiBaseUrl}/employer-form`,
 
 // Get employer forms
 app.get(`${apiBaseUrl}/employer-form`,
-  keycloak.protect(allowRoles('employer', 'health_authority', 'ministry_of_health')),
+  keycloak.protect(allowRoles('health_authority', 'ministry_of_health')),
   asyncMiddleware(async (req, res) => {
     try {
       const result = await getEmployers(req);

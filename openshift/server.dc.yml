@@ -106,6 +106,16 @@ objects:
                     secretKeyRef:
                       key: api-secret
                       name: ${APP_NAME}-keycloak
+                - name: KEYCLOAK_SA_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: sa-username
+                      name: ${APP_NAME}-keycloak
+                - name: KEYCLOAK_SA_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: sa-password
+                      name: ${APP_NAME}-keycloak
                 - name: MONGO_HOST
                   value: ${APP_NAME}-mongodb
                 - name: MONGO_PORT

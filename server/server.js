@@ -33,7 +33,7 @@ app.use(helmet({
   },
 }));
 
-app.use(keycloak.middleware());
+app.use(keycloak.expressMiddleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
@@ -57,8 +57,8 @@ app.post(`${apiBaseUrl}/employer-form`,
 
 // Get employer forms
 app.get(`${apiBaseUrl}/employer-form`,
-  keycloak.allowRoles('health_authority', 'ministry_of_health'),
-  keycloak.getUserInfo(),
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     try {
       const user = req.hcapUserInfo;
@@ -72,8 +72,8 @@ app.get(`${apiBaseUrl}/employer-form`,
 
 // Get employee records
 app.get(`${apiBaseUrl}/employees`,
-  keycloak.allowRoles('employer', 'health_authority', 'ministry_of_health'),
-  keycloak.getUserInfo(),
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     try {
       const user = req.hcapUserInfo;
@@ -87,7 +87,7 @@ app.get(`${apiBaseUrl}/employees`,
 
 // Create employee records from uploaded XLSX file
 app.post(`${apiBaseUrl}/employees`,
-  keycloak.allowRoles('maximus'),
+  keycloak.allowRolesMiddleware('maximus'),
   multer({
     fileFilter: (req, file, cb) => {
       if (file.fieldname !== 'file') {
@@ -116,8 +116,8 @@ app.post(`${apiBaseUrl}/employees`,
 
 // Get user info from token
 app.get(`${apiBaseUrl}/user`,
-  keycloak.allowRoles(),
-  keycloak.getUserInfo(),
+  keycloak.allowRolesMiddleware(),
+  keycloak.getUserInfoMiddleware(),
   (req, res) => res.json({
     roles: req.hcapUserInfo.roles,
     name: req.hcapUserInfo.name,

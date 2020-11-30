@@ -44,11 +44,11 @@ class Keycloak { // Wrapper class around keycloak-connect
     };
   }
 
-  middleware(...args) {
+  expressMiddleware(...args) { // Default connect middleware for Keycloak connect library
     return this.keycloakConnect.middleware(...args);
   }
 
-  allowRoles(...roles) { // Connect middleware for limiting roles
+  allowRolesMiddleware(...roles) { // Connect middleware for limiting roles
     const allowRoles = () => (token) => {
       if (roles.length === 0) return true; // Allows any role
       if (token.hasRole('superuser')) return true;
@@ -59,7 +59,7 @@ class Keycloak { // Wrapper class around keycloak-connect
     return this.keycloakConnect.protect(allowRoles);
   }
 
-  getUserInfo() { // Connect middleware for adding HCAP user info to request object
+  getUserInfoMiddleware() { // Connect middleware for adding HCAP user info to request object
     return (req, res, next) => {
       // Optional chaining would be great here once ESLint supports it *sigh*
       console.log(req.kauth.grant.access_token.content);
@@ -89,12 +89,33 @@ class Keycloak { // Wrapper class around keycloak-connect
     this.access_token = response.data.access_token;
   }
 
+  async authenticateIfNeeded() {
+    // Race condition if token expires between this call and the desired authenticated call
+    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    try {
+      await axios.get(`${this.authUrl}/realms/${this.realm}/protocol/openid-connect/userinfo`, config);
+    } catch (error) {
+      await this.authenticateServiceAccount();
+    }
+  }
+
   async getClientIdentifier() {
     // This maps ID of client to client ID
     // See Keycloak docs https://www.keycloak.org/docs-api/5.0/rest-api/index.html#_clients_resource
-    const config = { params: { clientId: this.clientNameBackend } };
-    const response = await axios.get(`${this.authUrl}/admin/realms/${this.realm}`, config);
-    console.log(response);
+    await this.authenticateIfNeeded();
+    const config = {
+      params: { clientId: this.clientNameBackend },
+      headers: { Authorization: `Bearer ${this.access_token}` },
+    };
+    const response = await axios.get(`${this.authUrl}/admin/realms/${this.realm}/clients`, config);
+    this.clientIdBackend = response.data[0].id;
+  }
+
+  async getPendingUsers() {
+    await this.authenticateIfNeeded();
+    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    const response = await axios.get(`${this.authUrl}/admin/realms/${this.realm}/clients/${this.clientIdBackend}/roles/pending/users`, config);
+    console.log(response.data);
   }
 }
 Keycloak.instance = new Keycloak();

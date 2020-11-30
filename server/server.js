@@ -45,14 +45,9 @@ app.get(`${apiBaseUrl}/keycloak-realm-client-info`,
 app.post(`${apiBaseUrl}/employer-form`,
   asyncMiddleware(async (req, res) => {
     await validate(EmployerFormSchema, req.body);
-    try {
-      const result = await dbClient.db.saveDoc(collections.EMPLOYER_FORMS, req.body);
-      logger.info(`Form ${result.id} successfully created.`);
-      return res.json({ id: result.id });
-    } catch (error) {
-      logger.error(error);
-      throw error;
-    }
+    const result = await dbClient.db.saveDoc(collections.EMPLOYER_FORMS, req.body);
+    logger.info(`Form ${result.id} successfully created.`);
+    return res.json({ id: result.id });
   }));
 
 // Get employer forms
@@ -60,14 +55,9 @@ app.get(`${apiBaseUrl}/employer-form`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    try {
-      const user = req.hcapUserInfo;
-      const result = await getEmployers(user);
-      return res.json({ data: result });
-    } catch (error) {
-      logger.error(error);
-      throw error;
-    }
+    const user = req.hcapUserInfo;
+    const result = await getEmployers(user);
+    return res.json({ data: result });
   }));
 
 // Get employee records
@@ -75,14 +65,9 @@ app.get(`${apiBaseUrl}/employees`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    try {
-      const user = req.hcapUserInfo;
-      const result = await getParticipants(user);
-      return res.json({ data: result });
-    } catch (error) {
-      logger.error(error);
-      throw error;
-    }
+    const user = req.hcapUserInfo;
+    const result = await getParticipants(user);
+    return res.json({ data: result });
   }));
 
 // Create employee records from uploaded XLSX file
@@ -112,6 +97,14 @@ app.post(`${apiBaseUrl}/employees`,
     } catch (excp) {
       return res.status(400).send(`${excp}`);
     }
+  }));
+
+// Get pending users from Keycloak
+app.get(`${apiBaseUrl}/pending-users`,
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  asyncMiddleware(async (req, res) => {
+    const users = await keycloak.getPendingUsers();
+    return res.json({ data: users });
   }));
 
 // Get user info from token

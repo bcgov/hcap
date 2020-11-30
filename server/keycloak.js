@@ -62,7 +62,6 @@ class Keycloak { // Wrapper class around keycloak-connect
   getUserInfoMiddleware() { // Connect middleware for adding HCAP user info to request object
     return (req, res, next) => {
       // Optional chaining would be great here once ESLint supports it *sigh*
-      console.log(req.kauth.grant.access_token.content);
       const { content } = req.kauth.grant.access_token;
       const { roles } = content.resource_access[this.clientNameBackend] || { roles: [] };
       req.hcapUserInfo = {
@@ -115,7 +114,7 @@ class Keycloak { // Wrapper class around keycloak-connect
     await this.authenticateIfNeeded();
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
     const response = await axios.get(`${this.authUrl}/admin/realms/${this.realm}/clients/${this.clientIdBackend}/roles/pending/users`, config);
-    console.log(response.data);
+    return response.data;
   }
 }
 Keycloak.instance = new Keycloak();

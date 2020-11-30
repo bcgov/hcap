@@ -3,20 +3,17 @@ const {
   validate, EmployeeBatchSchema, isBooleanValue,
 } = require('../validation.js');
 const { dbClient, collections } = require('../db');
-const { getUserRoles, getUserRegionsCriteria } = require('./user.js');
+const { userRegionQuery } = require('./user.js');
 
-const getParticipants = async (req) => {
-  const roles = getUserRoles(req);
-  const isMOH = roles.includes('ministry_of_health');
-  const isSuperUser = roles.includes('superuser');
-  const criteria = isSuperUser || isMOH ? {} : getUserRegionsCriteria(req, 'preferredLocation');
+const getParticipants = async (user) => {
+  const criteria = user.isSuperUser || user.isMOH ? {} : userRegionQuery(user.regions, 'preferredLocation');
   const participants = criteria ? await dbClient.db[collections.APPLICANTS].findDoc(criteria) : [];
 
-  if (isSuperUser) {
+  if (user.isSuperUser) {
     return participants;
   }
 
-  if (isMOH) {
+  if (user.isMOH) {
     return participants.map((item) => ({
       id: item.id,
       firstName: item.firstName,

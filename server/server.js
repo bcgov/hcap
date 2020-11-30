@@ -4,11 +4,8 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const multer = require('multer');
 const { getParticipants, parseAndSaveParticipants } = require('./services/participants.js');
-const { getUserRoles } = require('./services/user.js');
 const { getEmployers } = require('./services/employers.js');
-const {
-  validate, EmployerFormSchema,
-} = require('./validation.js');
+const { validate, EmployerFormSchema } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
@@ -41,13 +38,6 @@ app.use(keycloak.middleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-const userRegionQuery = (regions, target) => {
-  if (regions.length === 0) return null;
-  return {
-    or: regions.map((region) => ({ [`${target} ilike`]: `%${region}%` })),
-  };
-};
-
 // Return client info for Keycloak realm for the current environment
 app.get(`${apiBaseUrl}/keycloak-realm-client-info`,
   (req, res) => res.json(keycloak.RealmInfoFrontend()));
@@ -73,10 +63,7 @@ app.get(`${apiBaseUrl}/employer-form`,
   asyncMiddleware(async (req, res) => {
     try {
       const user = req.hcapUserInfo;
-      const criteria = user.isSuperUser || user.isMOH ? {} : userRegionQuery(user.regions, 'healthAuthority');
-      const result = criteria
-        ? await dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria)
-        : [];
+      const result = await getEmployers(user);
       return res.json({ data: result });
     } catch (error) {
       logger.error(error);
@@ -91,8 +78,7 @@ app.get(`${apiBaseUrl}/employees`,
   asyncMiddleware(async (req, res) => {
     try {
       const user = req.hcapUserInfo;
-      const criteria = user.isSuperUser || user.isMOH ? {} : userRegionQuery(user.regions, 'preferredLocation');
-      const result = criteria ? await dbClient.db[collections.APPLICANTS].findDoc(criteria) : [];
+      const result = await getParticipants(user);
       return res.json({ data: result });
     } catch (error) {
       logger.error(error);

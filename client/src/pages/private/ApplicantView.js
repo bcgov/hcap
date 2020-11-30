@@ -56,11 +56,7 @@ export default () => {
   const mapItemToColumns = (item, columns) => {
     const row = {};
     columns.map(column => column.id).forEach(columnId => {
-      for (const [key, value] of Object.entries(item)) {
-        if (key === columnId) {
-          row[key] = value || '';
-        }
-      }
+      row[columnId] = item[columnId] || '';
     });
     return row;
   }

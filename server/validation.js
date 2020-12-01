@@ -151,7 +151,7 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape
 
 const EmployeeBatchSchema = yup.array().of(
   yup.lazy((item, options) => {
-    const row = options.parent.indexOf(item) + 1;
+    const row = options.parent.indexOf(item) + 2;
     return yup.object().shape({
       // Orbeon Id
       maximusId: yup.number().typeError(errorMessageRow(row)),

@@ -9,8 +9,8 @@ import { TableFilter } from '../../components/generic/TableFilter';
 
 const defaultColumns = [
   { id: 'id', name: 'ID' },
-  { id: 'firstName', name: 'First Name' },
   { id: 'lastName', name: 'Last Name' },
+  { id: 'firstName', name: 'First Name' },
   { id: 'postalCode', name: 'Postal Code' },
   { id: 'phoneNumber', name: 'Phone Number' },
   { id: 'emailAddress', name: 'Email Address' },

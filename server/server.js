@@ -107,6 +107,7 @@ app.get(`${apiBaseUrl}/pending-users`,
     const users = await keycloak.getPendingUsers();
     const scrubbed = users.map((user) => ({
       emailAddress: user.email,
+      username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,
       enabled: user.enabled,

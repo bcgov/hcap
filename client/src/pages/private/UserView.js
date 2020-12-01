@@ -9,6 +9,7 @@ import { Page, Table, CheckPermissions } from '../../components/generic';
 const columns = [
   { id: 'firstName', name: 'First Name' },
   { id: 'lastName', name: 'Last Name' },
+  { id: 'username', name: 'Username' },
   { id: 'emailAddress', name: 'Email Address' },
   { id: 'enabled', name: 'Enabled' },
   { id: 'createdAt', name: 'Created' },
@@ -97,7 +98,7 @@ export default () => {
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pt={4} pb={4} pl={2} pr={2}>
             <Typography variant="subtitle1" gutterBottom>
-              Pending Users
+              Pending Access Requests
             </Typography>
           </Box>
           <Box pt={2} pb={2} pl={2} pr={2} width="100%">

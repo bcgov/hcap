@@ -4,15 +4,12 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const multer = require('multer');
 const { getParticipants, parseAndSaveParticipants } = require('./services/participants.js');
-const { getUserRoles } = require('./services/user.js');
 const { getEmployers } = require('./services/employers.js');
-const {
-  validate, EmployerFormSchema,
-} = require('./validation.js');
+const { validate, EmployerFormSchema } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
-const keycloak = require('./keycloak-config.js').initKeycloak();
+const keycloak = require('./keycloak.js');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
@@ -36,68 +33,46 @@ app.use(helmet({
   },
 }));
 
-app.use(keycloak.middleware());
+app.use(keycloak.expressMiddleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-const allowRoles = (...roles) => (token) => {
-  if (token.hasRole('superuser')) return true;
-  if (!roles.some((role) => token.hasRole(role))) return false;
-  if (token.isExpired()) return false;
-  return true;
-};
-
 // Return client info for Keycloak realm for the current environment
 app.get(`${apiBaseUrl}/keycloak-realm-client-info`,
-  asyncMiddleware(async (req, res) => res.json({
-    realm: process.env.KEYCLOAK_REALM,
-    url: process.env.KEYCLOAK_AUTH_URL,
-    clientId: process.env.KEYCLOAK_FE_CLIENTID,
-  })));
+  (req, res) => res.json(keycloak.RealmInfoFrontend()));
 
 // Create new employer form
 app.post(`${apiBaseUrl}/employer-form`,
   asyncMiddleware(async (req, res) => {
     await validate(EmployerFormSchema, req.body);
-    try {
-      const result = await dbClient.db.saveDoc(collections.EMPLOYER_FORMS, req.body);
-      logger.info(`Form ${result.id} successfully created.`);
-      return res.json({ id: result.id });
-    } catch (error) {
-      logger.error(error);
-      throw error;
-    }
+    const result = await dbClient.db.saveDoc(collections.EMPLOYER_FORMS, req.body);
+    logger.info(`Form ${result.id} successfully created.`);
+    return res.json({ id: result.id });
   }));
 
 // Get employer forms
 app.get(`${apiBaseUrl}/employer-form`,
-  keycloak.protect(allowRoles('health_authority', 'ministry_of_health')),
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    try {
-      const result = await getEmployers(req);
-      return res.json({ data: result });
-    } catch (error) {
-      logger.error(error);
-      throw error;
-    }
+    const user = req.hcapUserInfo;
+    const result = await getEmployers(user);
+    return res.json({ data: result });
   }));
 
 // Get employee records
 app.get(`${apiBaseUrl}/employees`,
-  keycloak.protect(allowRoles('employer', 'health_authority', 'ministry_of_health')),
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    try {
-      const result = await getParticipants(req);
-      return res.json({ data: result });
-    } catch (error) {
-      logger.error(error);
-      throw error;
-    }
+    const user = req.hcapUserInfo;
+    const result = await getParticipants(user);
+    return res.json({ data: result });
   }));
 
 // Create employee records from uploaded XLSX file
 app.post(`${apiBaseUrl}/employees`,
-  keycloak.protect(allowRoles('maximus')),
+  keycloak.allowRolesMiddleware('maximus'),
   multer({
     fileFilter: (req, file, cb) => {
       if (file.fieldname !== 'file') {
@@ -124,21 +99,21 @@ app.post(`${apiBaseUrl}/employees`,
     }
   }));
 
+// Get pending users from Keycloak
+app.get(`${apiBaseUrl}/pending-users`,
+  keycloak.allowRolesMiddleware('ministry_of_health'),
+  asyncMiddleware(async (req, res) => {
+    const users = await keycloak.getPendingUsers();
+    return res.json({ data: users });
+  }));
+
 // Get user info from token
 app.get(`${apiBaseUrl}/user`,
-  keycloak.protect(),
-  asyncMiddleware(async (req, res) => {
-    try {
-      return res.json(
-        {
-          roles: getUserRoles(req),
-          name: req.kauth.grant.access_token.content.name,
-        },
-      );
-    } catch (error) {
-      logger.error(error);
-      throw error;
-    }
+  keycloak.allowRolesMiddleware('*'),
+  keycloak.getUserInfoMiddleware(),
+  (req, res) => res.json({
+    roles: req.hcapUserInfo.roles,
+    name: req.hcapUserInfo.name,
   }));
 
 // Version number

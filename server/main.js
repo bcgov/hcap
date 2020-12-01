@@ -1,6 +1,7 @@
 const app = require('./server.js');
 const logger = require('./logger.js');
 const { dbClient } = require('./db');
+const keycloak = require('./keycloak');
 
 const port = process.env.SERVER_PORT || 8080;
 
@@ -36,6 +37,7 @@ process.on('SIGTERM', () => {
 (async () => {
   try {
     await dbClient.connect();
+    await keycloak.getClientIdentifier();
     const results = await dbClient.runMigration();
     results.forEach((result) => {
       logger.info(`Migration success: ${result.name}`);

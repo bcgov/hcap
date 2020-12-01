@@ -59,6 +59,15 @@ const parseAndSaveParticipants = async (file) => {
     'CB8: Non-HCAP Opportunities': 'nonHCAP',
   };
 
+  const verifyHeaders = (dataRows) => {
+    const headers = dataRows[0];
+    Object.keys(columnMap).forEach((columName) => {
+      if (!headers.includes(columName)) {
+        throw new Error(`Missing header "${columName}" in participants spreadsheet`);
+      }
+    });
+  };
+
   const createRows = (dataRows) => {
     const headers = dataRows[0];
     const rowSize = dataRows.length;
@@ -105,6 +114,7 @@ const parseAndSaveParticipants = async (file) => {
   };
 
   const xlsx = readXlsxFile.parse(file.buffer, { raw: true });
+  verifyHeaders(xlsx[0].data);
   const rows = createRows(xlsx[0].data);
   await validate(EmployeeBatchSchema, rows);
   const response = [];

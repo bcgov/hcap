@@ -17,7 +17,7 @@ export default () => {
     const redirect = state ? state.redirectOnLogin : Routes.Admin;
 
     switch (redirect) {
-      case Routes.ApplicantUpload:
+      case Routes.ParticipantUpload:
         idpHint = 'bceid';
         break;
       default:

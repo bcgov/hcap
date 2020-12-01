@@ -59,7 +59,7 @@ export default () => {
     setLoadingData(true);
     const data = new FormData();
     data.append('file', file);
-    const response = await fetch('/api/v1/employees', {
+    const response = await fetch('/api/v1/participants', {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },
@@ -72,7 +72,7 @@ export default () => {
       const result = await response.json();
       setFile(null);
       if (Array.isArray(result)) {
-        history.push(Routes.ApplicantUploadResults, { results: result });
+        history.push(Routes.ParticipantUploadResults, { results: result });
       } else {
         setErrors([result.message]);
       }
@@ -92,7 +92,7 @@ export default () => {
       <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['maximus']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Typography variant="subtitle1" gutterBottom>
-            Please upload pre-screened applicants:
+            Please upload pre-screened participants:
           </Typography>
           <Box pt={4} pl={4} pr={4}>
             <DropzoneArea
@@ -107,7 +107,7 @@ export default () => {
               filesLimit={1}
               dropzoneClass={classes.dropzone}
               dropzoneParagraphClass={classes.dropzoneText}
-              dropzoneText="Drop your applicant sheet here or click the box"
+              dropzoneText="Drop your participant sheet here or click the box"
             />
           </Box>
           <Box pl={4} pr={4} pt={2}>

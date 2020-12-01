@@ -1,13 +1,16 @@
 const readXlsxFile = require('node-xlsx').default;
 const {
-  validate, EmployeeBatchSchema, isBooleanValue, evaluateBooleanAnswer,
+  validate, ParticipantBatchSchema, isBooleanValue, evaluateBooleanAnswer,
 } = require('../validation.js');
 const { dbClient, collections } = require('../db');
 const { userRegionQuery } = require('./user.js');
 
 const getParticipants = async (user) => {
-  const criteria = user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'preferredLocation');
-  const participants = criteria ? await dbClient.db[collections.APPLICANTS].findDoc(criteria) : [];
+
+  const criteria = user.isSuperUser || user.isMOH ? {} : userRegionQuery(user.regions, 'preferredLocation');
+  const participants = criteria
+    ? await dbClient.db[collections.PARTICIPANTS].findDoc(criteria)
+    : [];
 
   if (user.isSuperUser) {
     return participants;
@@ -112,9 +115,9 @@ const parseAndSaveParticipants = async (file) => {
   const xlsx = readXlsxFile.parse(file.buffer, { raw: true });
   verifyHeaders(xlsx[0].data);
   const rows = createRows(xlsx[0].data);
-  await validate(EmployeeBatchSchema, rows);
+  await validate(ParticipantBatchSchema, rows);
   const response = [];
-  const promises = rows.map((row) => dbClient.db.saveDoc(collections.APPLICANTS, objectMap(row)));
+  const promises = rows.map((row) => dbClient.db.saveDoc(collections.PARTICIPANTS, objectMap(row)));
   const results = await Promise.allSettled(promises);
   results.forEach((result, index) => {
     const id = rows[index].maximusId;

@@ -63,10 +63,10 @@ export default () => {
                 Welcome, {name}
               </Typography>
               <CheckPermissions roles={roles} permittedRoles={['maximus']}>
-                { renderAdminButton(Routes.ApplicantUpload, 'Upload Applicants') }
+                { renderAdminButton(Routes.ParticipantUpload, 'Upload Participants') }
               </CheckPermissions>
               <CheckPermissions roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']}>
-                { renderAdminButton(Routes.ApplicantView, 'View Applicants') }
+                { renderAdminButton(Routes.ParticipantView, 'View Participants') }
               </CheckPermissions>
               <CheckPermissions roles={roles} permittedRoles={['health_authority', 'ministry_of_health']}>
                 { renderAdminButton(Routes.EOIView, 'View Employers') }

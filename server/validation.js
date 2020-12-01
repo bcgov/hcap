@@ -87,7 +87,7 @@ const errorMessage = ({ path }) => {
     // Orbeon ID from the XML file name
     orbeonId: 'Invalid Orbeon ID format.',
 
-    // Employee info
+    // Participant info
     eligibility: 'We\'re sorry, but current eligibility to work in Canada is a requirement to submit this form.',
     preferredLocation: 'Please select at least one location you\'d like to work in.',
     consent: 'We\'re sorry, but we cannot process your request without permission.',
@@ -151,7 +151,7 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape
   doesCertify: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 });
 
-const EmployeeBatchSchema = yup.array().of(
+const ParticipantBatchSchema = yup.array().of(
   yup.lazy((item, options) => {
     const row = options.parent.indexOf(item) + 2;
     return yup.object().shape({
@@ -182,5 +182,5 @@ const EmployeeBatchSchema = yup.array().of(
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
-  EmployerFormSchema, EmployeeBatchSchema, validate, isBooleanValue, evaluateBooleanAnswer,
+  EmployerFormSchema, ParticipantBatchSchema, validate, isBooleanValue, evaluateBooleanAnswer,
 };

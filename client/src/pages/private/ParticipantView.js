@@ -132,9 +132,9 @@ export default () => {
       return rows;
     }
 
-    const getApplicants = async () => {
+    const getParticipants = async () => {
       setLoadingData(true);
-      const response = await fetch('/api/v1/employees', {
+      const response = await fetch('/api/v1/participants', {
         headers: {
           'Accept': 'application/json',
           'Content-type': 'application/json',
@@ -156,7 +156,7 @@ export default () => {
 
     const init = async () => {
       await fetchUserInfo();
-      await getApplicants();
+      await getParticipants();
     };
     init();
   }, [history]);

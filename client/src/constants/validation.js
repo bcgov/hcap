@@ -71,7 +71,7 @@ const errorMessage = ({ path }) => {
     // Orbeon ID from the XML file name
     orbeonId: 'Invalid Orbeon ID format.',
 
-    // Employee info
+    // Participant info
     eligibility: 'We\'re sorry, but current eligibility to work in Canada is a requirement to submit this form.',
     preferredLocation: 'Please select at least one location you\'d like to work in.',
     consent: 'We\'re sorry, but we cannot process your request without permission.',
@@ -141,7 +141,7 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
   doesCertify: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 });
 
-export const EmployeeFormSchema = yup.object().noUnknown('Unknown field for form').shape({
+export const ParticipantFormSchema = yup.object().noUnknown('Unknown field for form').shape({
   // Orbeon Id - only present for parsed XML files
   orbeonId: yup.string().typeError(errorMessage),
 

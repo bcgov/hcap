@@ -42,8 +42,7 @@ objects:
     stringData:
       realm: ${KEYCLOAK_REALM}
       auth-url: ${KEYCLOAK_AUTH_URL}
-      fe-client-name: ${APP_NAME}${KEYCLOAK_FE_CLIENTID_SUFFIX}
-      be-client-name: ${APP_NAME}${KEYCLOAK_API_CLIENTID_SUFFIX}
+      fe-client-id: ${APP_NAME}${KEYCLOAK_FE_CLIENTID_SUFFIX}
       be-client-id: ${APP_NAME}${KEYCLOAK_API_CLIENTID_SUFFIX}
       api-secret: ${KEYCLOAK_API_SECRET}
       sa-username: ${KEYCLOAK_SA_USERNAME}

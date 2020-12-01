@@ -109,7 +109,7 @@ app.get(`${apiBaseUrl}/pending-users`,
 
 // Get user info from token
 app.get(`${apiBaseUrl}/user`,
-  keycloak.allowRolesMiddleware(),
+  keycloak.allowRolesMiddleware('*'),
   keycloak.getUserInfoMiddleware(),
   (req, res) => res.json({
     roles: req.hcapUserInfo.roles,

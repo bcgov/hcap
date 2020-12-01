@@ -50,7 +50,7 @@ class Keycloak { // Wrapper class around keycloak-connect
 
   allowRolesMiddleware(...roles) { // Connect middleware for limiting roles
     const allowRoles = () => (token) => {
-      if (roles.length === 0) return true; // Allows any role
+      if (roles.length === 1 && roles[0] === '*') return true; // Allows any role
       if (token.hasRole('superuser')) return true;
       if (!roles.some((role) => token.hasRole(role))) return false;
       if (token.isExpired()) return false;

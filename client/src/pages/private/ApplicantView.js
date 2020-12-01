@@ -153,7 +153,7 @@ export default () => {
               <Box pl={2} pr={2} pt={1}>
                 <Typography variant="body1" gutterBottom>
                   Filter:
-              </Typography>
+                </Typography>
               </Box>
             </Grid>
             <Grid item>

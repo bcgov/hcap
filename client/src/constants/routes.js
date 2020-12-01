@@ -9,6 +9,7 @@ export default Object.freeze({
 
   // Private routes
   Admin: '/admin',
+  UserView: '/user-view',
   EOIView: '/eoi-view',
   EOIViewDetails: '/eoi-view-details',
   ApplicantView: '/applicant-view',

@@ -20,10 +20,9 @@ const getParticipants = async (user) => {
       lastName: item.lastName,
       postalCode: item.postalCode,
       preferredLocation: item.preferredLocation,
-      phoneNumber: item.phoneNumber,
-      emailAddress: item.emailAddress,
-      interested: item.interested || null,
-      nonHCAP: item.nonHCAP || null,
+      nonHCAP: item.nonHCAP,
+      interested: item.interested,
+      crcClear: item.crcClear,
     }));
   }
 
@@ -33,8 +32,10 @@ const getParticipants = async (user) => {
     lastName: item.lastName,
     postalCode: item.postalCode,
     preferredLocation: item.preferredLocation,
-    interested: item.interested || null,
-    nonHCAP: item.nonHCAP || null,
+    nonHCAP: item.nonHCAP,
+    /// / TODO uncomment/rework on HCAP-222
+    // phoneNumber: item.phoneNumber,
+    // emailAddress: item.emailAddress,
   }));
 };
 
@@ -54,6 +55,7 @@ const parseAndSaveParticipants = async (file) => {
     'EOI - VIHA': 'vancouverIsland',
     'CB1: Still Interested': 'interested',
     'CB8: Non-HCAP Opportunities': 'nonHCAP',
+    'CB13: CRC Clear': 'crcClear',
   };
 
   const verifyHeaders = (dataRows) => {

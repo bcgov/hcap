@@ -101,7 +101,7 @@ app.post(`${apiBaseUrl}/employees`,
 
 // Get pending users from Keycloak
 app.get(`${apiBaseUrl}/pending-users`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
     const users = await keycloak.getPendingUsers();
     return res.json({ data: users });

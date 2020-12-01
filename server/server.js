@@ -116,8 +116,12 @@ app.post(`${apiBaseUrl}/employees`,
       return res.json({ status: 'Error', message: req.fileError });
     }
 
-    const response = await parseAndSaveParticipants(req.file);
-    return res.json(response);
+    try {
+      const response = await parseAndSaveParticipants(req.file);
+      return res.json(response);
+    } catch (excp) {
+      return res.status(400).send(`${excp}`);
+    }
   }));
 
 // Get user info from token

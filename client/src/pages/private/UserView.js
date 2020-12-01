@@ -79,12 +79,13 @@ export default () => {
           }), {})
         });
         setRows(rows);
+        setIsPendingRequests(rows.length > 0);
       } else {
         setRows([]);
+        setIsPendingRequests(false);
       }
 
       setLoadingData(false);
-      setIsPendingRequests(rows.length > 0);
     };
 
     const init = async () => {

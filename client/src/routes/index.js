@@ -8,6 +8,7 @@ import Keycloak from 'keycloak-js';
 import { Routes } from '../constants';
 
 const Admin = lazy(() => import('../pages/private/Admin'));
+const UserView = lazy(() => import('../pages/private/UserView'));
 const ApplicantView = lazy(() => import('../pages/private/ApplicantView'));
 const EOIView = lazy(() => import('../pages/private/EOIView'));
 const EOIViewDetails = lazy(() => import('../pages/private/EOIViewDetails'));
@@ -91,6 +92,7 @@ export default () => {
             <Route exact path={Routes.EmployeeForm} component={EmployeeForm} />
             <Route exact path={Routes.EmployeeConfirmation} component={EmployeeConfirmation} />
             <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />
+            <PrivateRoute exact path={Routes.UserView} component={UserView} />
             <PrivateRoute exact path={Routes.EOIView} component={EOIView} />
             <PrivateRoute exact path={Routes.EOIViewDetails} component={EOIViewDetails} />
             <PrivateRoute exact path={Routes.ApplicantView} component={ApplicantView} />

@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
+const dayjs = require('dayjs');
 const multer = require('multer');
 const { getParticipants, parseAndSaveParticipants } = require('./services/participants.js');
 const { getEmployers } = require('./services/employers.js');
@@ -104,7 +105,15 @@ app.get(`${apiBaseUrl}/pending-users`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
     const users = await keycloak.getPendingUsers();
-    return res.json({ data: users });
+    const scrubbed = users.map((user) => ({
+      emailAddress: user.email,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      enabled: user.enabled,
+      createdAt: dayjs(user.createdTimestamp).format('YYYY-MM-DD HH:mm'),
+    }));
+    return res.json({ data: scrubbed });
   }));
 
 // Get user info from token

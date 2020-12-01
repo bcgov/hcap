@@ -9,12 +9,13 @@ import { TableFilter } from '../../components/generic/TableFilter';
 
 const defaultColumns = [
   { id: 'id', name: 'ID' },
-  { id: 'firstName', name: 'First Name' },
   { id: 'lastName', name: 'Last Name' },
-  { id: 'emailAddress', name: 'Email Address' },
-  { id: 'phoneNumber', name: 'Phone Number' },
-  { id: 'preferredLocation', name: 'Preferred Location' },
+  { id: 'firstName', name: 'First Name' },
   { id: 'postalCode', name: 'Postal Code' },
+  { id: 'phoneNumber', name: 'Phone Number' },
+  { id: 'emailAddress', name: 'Email Address' },
+  { id: 'preferredLocation', name: 'Preferred Region(s)' },
+  { id: 'nonHCAP', name: 'Non-HCAP' },
 ];
 
 export default () => {
@@ -59,7 +60,7 @@ export default () => {
       row[columnId] = item[columnId] || '';
     });
     return row;
-  }
+  };
 
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 
@@ -84,8 +85,8 @@ export default () => {
         const isSuperUser = roles.includes('superuser');
         if (isMOH || isSuperUser) {
           resultColumns.push(
-            { id: 'city', name: 'City' },
-            { id: 'criminalRecordCheck', name: 'Criminal Record Check' },
+            { id: 'interested', name: 'Interest' },
+            { id: 'crcClear', name: 'CRC Clear' },
           );
           setColumns(resultColumns);
         }

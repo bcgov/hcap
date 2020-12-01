@@ -172,6 +172,7 @@ const EmployeeBatchSchema = yup.array().of(
       // Others
       interested: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
       nonHCAP: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
+      crcClear: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
     }).test('is-preferred-location-specified', () => `Please specify a preferred (EOI) location for participant of row ${row}`, validatePreferredLocation);
   }),
 );

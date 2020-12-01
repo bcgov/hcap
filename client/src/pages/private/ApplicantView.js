@@ -60,7 +60,7 @@ export default () => {
       row[columnId] = item[columnId] || '';
     });
     return row;
-  }
+  };
 
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 

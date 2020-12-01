@@ -12,6 +12,7 @@ const dbName = process.env.MONGO_DB || 'logs';
 const queryParams = typeof process.env.MONGO_REPLICA === 'undefined' ? '' : `replicaSet=${process.env.MONGO_REPLICA}`;
 
 winston.add(new winston.transports.MongoDB({
+  options: { useUnifiedTopology: true },
   db: `mongodb://${dbUser}:${dbPassword}@${dbServer}:${dbPort}/${dbName}?${queryParams}`,
 }));
 

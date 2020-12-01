@@ -21,6 +21,7 @@ export default () => {
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [isLoadingUser, setLoadingUser] = useState(false);
+  const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [rows, setRows] = useState([]);
 
   const [orderBy, setOrderBy] = useState(columns[4].id);
@@ -83,6 +84,7 @@ export default () => {
       }
 
       setLoadingData(false);
+      setIsPendingRequests(rows.length > 0);
     };
 
     const init = async () => {
@@ -98,10 +100,10 @@ export default () => {
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pt={4} pb={4} pl={2} pr={2}>
             <Typography variant="subtitle1" gutterBottom>
-              Pending Access Requests
+              { isPendingRequests ? 'Pending Access Requests' : 'No pending access requests' }
             </Typography>
           </Box>
-          <Box pt={2} pb={2} pl={2} pr={2} width="100%">
+          { isPendingRequests && <Box pt={2} pb={2} pl={2} pr={2} width="100%">
             <Table
               columns={columns}
               order={order}
@@ -110,7 +112,7 @@ export default () => {
               rows={sort(rows)}
               isLoading={isLoadingData}
             />
-          </Box>
+          </Box> }
         </Grid>
       </CheckPermissions>
     </Page>

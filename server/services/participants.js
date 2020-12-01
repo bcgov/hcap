@@ -1,5 +1,4 @@
-const { Readable } = require('stream');
-const readXlsxFile = require('read-excel-file/node');
+const readXlsxFile = require('node-xlsx').default;
 const {
   validate, EmployeeBatchSchema, isBooleanValue,
 } = require('../validation.js');
@@ -43,13 +42,6 @@ const getParticipants = async (req) => {
 };
 
 const parseAndSaveParticipants = async (file) => {
-  const bufferToStream = (binary) => new Readable({
-    read() {
-      this.push(binary);
-      this.push(null);
-    },
-  });
-
   const columnMap = {
     ClientID: 'maximusId',
     Surname: 'lastName',
@@ -65,6 +57,21 @@ const parseAndSaveParticipants = async (file) => {
     'EOI - VIHA': 'vancouverIsland',
     'CB1: Still Interested': 'interested',
     'CB8: Non-HCAP Opportunities': 'nonHCAP',
+  };
+
+  const createRows = (dataRows) => {
+    const headers = dataRows[0];
+    const rowSize = dataRows.length;
+    const rows = [];
+    dataRows.slice(1, rowSize).forEach((dataRow) => {
+      if (dataRow.length === 0) return; // ignore empty rows
+      const row = {};
+      headers.forEach((header, index) => {
+        row[columnMap[header]] = dataRow[index];
+      });
+      rows.push(row);
+    });
+    return rows;
   };
 
   const objectMap = (row) => {
@@ -84,9 +91,9 @@ const parseAndSaveParticipants = async (file) => {
     const optingForNonHCAP = row.nonHCAP;
     const participantInterested = row.interested;
     object.nonHCAP = optingForNonHCAP
-    && isBooleanValue(optingForNonHCAP) ? optingForNonHCAP.toLowerCase() : null;
+      && isBooleanValue(optingForNonHCAP) ? optingForNonHCAP.toLowerCase() : null;
     object.interested = participantInterested
-    && isBooleanValue(optingForNonHCAP) ? participantInterested.toLowerCase() : null;
+      && isBooleanValue(optingForNonHCAP) ? participantInterested.toLowerCase() : null;
 
     delete object.fraser;
     delete object.interior;
@@ -97,7 +104,8 @@ const parseAndSaveParticipants = async (file) => {
     return object;
   };
 
-  const { rows } = await readXlsxFile(bufferToStream(file.buffer), { map: columnMap });
+  const xlsx = readXlsxFile.parse(file.buffer, { raw: true });
+  const rows = createRows(xlsx[0].data);
   await validate(EmployeeBatchSchema, rows);
   const response = [];
   const promises = rows.map((row) => dbClient.db.saveDoc(collections.APPLICANTS, objectMap(row)));

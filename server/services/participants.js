@@ -79,7 +79,6 @@ const parseAndSaveParticipants = async (file) => {
       });
       rows.push(row);
     });
-    console.log(rows);
     return rows;
   };
 

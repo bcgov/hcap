@@ -1,6 +1,6 @@
 const readXlsxFile = require('node-xlsx').default;
 const {
-  validate, EmployeeBatchSchema, isBooleanValue,
+  validate, EmployeeBatchSchema, isBooleanValue, evaluateBooleanAnswer,
 } = require('../validation.js');
 const { dbClient, collections } = require('../db');
 const { userRegionQuery } = require('./user.js');
@@ -26,17 +26,22 @@ const getParticipants = async (user) => {
     }));
   }
 
-  return participants.map((item) => ({
-    id: item.id,
-    firstName: item.firstName,
-    lastName: item.lastName,
-    postalCode: item.postalCode,
-    preferredLocation: item.preferredLocation,
-    nonHCAP: item.nonHCAP,
+  // HCAP-220: Filtering data based on candidate who is interested and cleared CRC
+  return participants
+    .filter((item) => (
+      evaluateBooleanAnswer(item.interested)
+    && evaluateBooleanAnswer(item.crcClear)))
+    .map((item) => ({
+      id: item.id,
+      firstName: item.firstName,
+      lastName: item.lastName,
+      postalCode: item.postalCode,
+      preferredLocation: item.preferredLocation,
+      nonHCAP: item.nonHCAP,
     /// / TODO uncomment/rework on HCAP-222
     // phoneNumber: item.phoneNumber,
     // emailAddress: item.emailAddress,
-  }));
+    }));
 };
 
 const parseAndSaveParticipants = async (file) => {

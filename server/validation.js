@@ -30,6 +30,8 @@ const siteTypes = [
 
 const isBooleanValue = (val) => typeof val === 'string' && ['yes', 'no'].includes(val.toLowerCase());
 
+const evaluateBooleanAnswer = (val) => (isBooleanValue(val) && val.toLowerCase() === 'yes');
+
 const validateBlankOrPositiveInteger = (n) => (
   n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n >= 0)
 );
@@ -180,5 +182,5 @@ const EmployeeBatchSchema = yup.array().of(
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
-  EmployerFormSchema, EmployeeBatchSchema, validate, isBooleanValue,
+  EmployerFormSchema, EmployeeBatchSchema, validate, isBooleanValue, evaluateBooleanAnswer,
 };

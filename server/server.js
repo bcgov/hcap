@@ -110,7 +110,6 @@ app.get(`${apiBaseUrl}/pending-users`,
       username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,
-      enabled: user.enabled,
       createdAt: dayjs(user.createdTimestamp).format('YYYY-MM-DD HH:mm'),
     }));
     return res.json({ data: scrubbed });

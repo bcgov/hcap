@@ -11,7 +11,6 @@ const columns = [
   { id: 'lastName', name: 'Last Name' },
   { id: 'username', name: 'Username' },
   { id: 'emailAddress', name: 'Email Address' },
-  { id: 'enabled', name: 'Enabled' },
   { id: 'createdAt', name: 'Created' },
 ];
 

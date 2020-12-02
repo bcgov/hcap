@@ -81,9 +81,9 @@ export default () => {
         const { roles } = await response.json();
         setLoadingUser(false);
         setRoles(roles);
-        const isMOH = roles.includes('ministry_of_health');
+        const isMoH = roles.includes('ministry_of_health');
         const isSuperUser = roles.includes('superuser');
-        if (isMOH || isSuperUser) {
+        if (isMoH || isSuperUser) {
           resultColumns.push(
             { id: 'interested', name: 'Interest' },
             { id: 'crcClear', name: 'CRC Clear' },

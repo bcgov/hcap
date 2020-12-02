@@ -95,14 +95,6 @@ const parseAndSaveParticipants = async (file) => {
 
     object.preferredLocation = preferredLocation.join(';');
 
-    // Defaulting optional values with null
-    const optingForNonHCAP = row.nonHCAP;
-    const participantInterested = row.interested;
-    object.nonHCAP = optingForNonHCAP
-      && isBooleanValue(optingForNonHCAP) ? optingForNonHCAP.toLowerCase() : null;
-    object.interested = participantInterested
-      && isBooleanValue(optingForNonHCAP) ? participantInterested.toLowerCase() : null;
-
     delete object.fraser;
     delete object.interior;
     delete object.northern;

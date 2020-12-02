@@ -82,8 +82,9 @@ class Keycloak { // Wrapper class around keycloak-connect
       username: this.serviceAccountUsername,
       password: this.serviceAccountPassword,
     });
+    const url = `${this.authUrl}/realms/${this.realm}/protocol/openid-connect/token`;
     const config = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } };
-    const response = await axios.post(`${this.authUrl}/realms/${this.realm}/protocol/openid-connect/token`, data, config);
+    const response = await axios.post(url, data, config);
     this.access_token = response.data.access_token;
   }
 
@@ -97,22 +98,51 @@ class Keycloak { // Wrapper class around keycloak-connect
     }
   }
 
-  async getClientIdentifier() {
-    // This maps ID of client to client ID
+  async buildInternalIdMap() {
+    // Creates maps of Keycloak role and client names to IDs
     // See Keycloak docs https://www.keycloak.org/docs-api/5.0/rest-api/index.html#_clients_resource
     await this.authenticateIfNeeded();
-    const config = {
-      params: { clientId: this.clientNameBackend },
-      headers: { Authorization: `Bearer ${this.access_token}` },
+    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    {
+      const clientNames = [this.clientNameBackend, this.clientNameFrontend];
+      const url = `${this.authUrl}/admin/realms/${this.realm}/clients`;
+      const response = await axios.get(url, config);
+      this.clientIdMap = response.data
+        .filter((client) => clientNames.includes(client.clientId))
+        .reduce((a, client) => ({ ...a, [client.clientId]: client.id }), {});
+    }
+    {
+      const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${this.clientIdMap[this.clientNameBackend]}/roles`;
+      const response = await axios.get(url, config);
+      this.roleIdMap = response.data.reduce((a, role) => ({ ...a, [role.name]: role.id }), {});
+    }
+  }
+
+  async approvePendingRequest(userId, role, regions) {
+    if (!Object.keys(this.roleIdMap).includes(role)) throw Error(`Invalid role: ${role}`);
+    const regionToRole = (region) => {
+      const roleName = Object.keys(regionMap).find((k) => regionMap[k] === region);
+      if (!roleName) return null;
+      return { name: roleName, id: this.roleIdMap[roleName] };
     };
-    const response = await axios.get(`${this.authUrl}/admin/realms/${this.realm}/clients`, config);
-    this.clientIdBackend = response.data[0].id;
+    await this.authenticateIfNeeded();
+    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    {
+      const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings/clients/${this.clientIdMap[this.clientNameBackend]}`;
+      const data = [
+        ...regions.map(regionToRole).filter((x) => x),
+        { name: role, id: this.roleIdMap[role] },
+      ];
+      const response = await axios.post(url, data, config);
+      console.log(response);
+    }
   }
 
   async getPendingUsers() {
     await this.authenticateIfNeeded();
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-    const response = await axios.get(`${this.authUrl}/admin/realms/${this.realm}/clients/${this.clientIdBackend}/roles/pending/users`, config);
+    const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${this.clientIdMap[this.clientNameBackend]}/roles/pending/users`;
+    const response = await axios.get(url, config);
     return response.data;
   }
 }

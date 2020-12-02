@@ -5,6 +5,7 @@ async function clearDB() {
   for (const value of Object.values(collections)) {
     await dbClient.db.dropTable(value, { cascade: true });
   }
+  await dbClient.db.dropTable('pgmigrations', { cascade: true });
 }
 
 /**
@@ -13,7 +14,7 @@ async function clearDB() {
 async function startDB() {
   await dbClient.connect(true);
   await clearDB();
-  await dbClient.runMigration();
+  await dbClient.runMigration(true);
 }
 
 async function closeDB() {

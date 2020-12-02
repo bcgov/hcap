@@ -93,7 +93,7 @@ app.post(`${apiBaseUrl}/participants`,
     }
 
     try {
-      const response = await parseAndSaveParticipants(req.file);
+      const response = await parseAndSaveParticipants(req.file.buffer);
       return res.json(response);
     } catch (excp) {
       return res.status(400).send(`${excp}`);

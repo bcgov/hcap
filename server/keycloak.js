@@ -127,14 +127,17 @@ class Keycloak { // Wrapper class around keycloak-connect
     };
     await this.authenticateIfNeeded();
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings/clients/${this.clientIdMap[this.clientNameBackend]}`;
     {
-      const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings/clients/${this.clientIdMap[this.clientNameBackend]}`;
       const data = [
         ...regions.map(regionToRole).filter((x) => x),
         { name: role, id: this.roleIdMap[role] },
       ];
-      const response = await axios.post(url, data, config);
-      console.log(response);
+      await axios.post(url, data, config);
+    }
+    {
+      const data = [{ name: 'pending', id: this.roleIdMap.pending }];
+      await axios.delete(url, { ...config, data });
     }
   }
 

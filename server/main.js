@@ -37,7 +37,7 @@ process.on('SIGTERM', () => {
 (async () => {
   try {
     await dbClient.connect();
-    await keycloak.getClientIdentifier();
+    await keycloak.buildInternalIdMap();
     const results = await dbClient.runMigration();
     results.forEach((result) => {
       logger.info(`Migration success: ${result.name}`);

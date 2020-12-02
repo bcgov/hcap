@@ -7,7 +7,6 @@ const healthRegions = [
   'Vancouver Coastal',
   'Vancouver Island',
   'Northern',
-  '',
 ];
 
 const roles = [
@@ -91,6 +90,11 @@ const errorMessage = ({ path }) => {
     eligibility: 'We\'re sorry, but current eligibility to work in Canada is a requirement to submit this form.',
     preferredLocation: 'Please select at least one location you\'d like to work in.',
     consent: 'We\'re sorry, but we cannot process your request without permission.',
+
+    // Access request approval
+    userId: 'User ID is required',
+    role: 'User role is required',
+    regions: 'User health regions are required',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
@@ -111,7 +115,7 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape
   // Site contact info
   siteName: yup.string().nullable(errorMessage),
   address: yup.string().nullable(errorMessage),
-  healthAuthority: yup.string().nullable(errorMessage).oneOf(healthRegions, 'Invalid location'),
+  healthAuthority: yup.string().nullable(errorMessage).oneOf([...healthRegions, ''], 'Invalid location'),
   siteContactFirstName: yup.string().nullable(errorMessage),
   siteContactLastName: yup.string().nullable(errorMessage),
   phoneNumber: yup.string().matches(/(^[0-9]{10})?$/, 'Phone number must be provided as 10 digits').nullable(true),
@@ -179,8 +183,16 @@ const ParticipantBatchSchema = yup.array().of(
   }),
 );
 
+const AccessRequestApproval = yup.object().noUnknown('Unknown field in form').shape({
+  userId: yup.string().required(errorMessage),
+  regions: yup.array().required(errorMessage).of(
+    yup.string().nullable(errorMessage).oneOf(healthRegions, 'Invalid location'),
+  ),
+  role: yup.string().required(errorMessage),
+});
+
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
-  EmployerFormSchema, ParticipantBatchSchema, validate, isBooleanValue, evaluateBooleanAnswer,
+  EmployerFormSchema, ParticipantBatchSchema, validate, isBooleanValue, evaluateBooleanAnswer, AccessRequestApproval,
 };

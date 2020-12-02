@@ -6,7 +6,7 @@ const dayjs = require('dayjs');
 const multer = require('multer');
 const { getParticipants, parseAndSaveParticipants } = require('./services/participants.js');
 const { getEmployers } = require('./services/employers.js');
-const { validate, EmployerFormSchema } = require('./validation.js');
+const { validate, EmployerFormSchema, AccessRequestApproval } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
@@ -113,6 +113,14 @@ app.get(`${apiBaseUrl}/pending-users`,
       createdAt: dayjs(user.createdTimestamp).format('YYYY-MM-DD HH:mm'),
     }));
     return res.json({ data: scrubbed });
+  }));
+
+app.post(`${apiBaseUrl}/approve-user`,
+  keycloak.allowRolesMiddleware('ministry_of_health'),
+  asyncMiddleware(async (req, res) => {
+    await validate(AccessRequestApproval, req.body);
+    await keycloak.approvePendingRequest(req.body.userId, req.body.role, req.body.regions);
+    res.json({});
   }));
 
 // Get user info from token

@@ -47,7 +47,7 @@ const getParticipants = async (user) => {
     }));
 };
 
-const parseAndSaveParticipants = async (file) => {
+const parseAndSaveParticipants = async (fileBuffer) => {
   const columnMap = {
     ClientID: 'maximusId',
     Surname: 'lastName',
@@ -112,7 +112,7 @@ const parseAndSaveParticipants = async (file) => {
     return object;
   };
 
-  const xlsx = readXlsxFile.parse(file.buffer, { raw: true });
+  const xlsx = readXlsxFile.parse(fileBuffer, { raw: true });
   verifyHeaders(xlsx[0].data);
   const rows = createRows(xlsx[0].data);
   await validate(ParticipantBatchSchema, rows);

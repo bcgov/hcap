@@ -1,5 +1,6 @@
 const { readFileSync } = require('fs');
 const { join } = require('path');
+const { ValidationError } = require('yup');
 const { startDB, closeDB } = require('./util/db');
 const { parseAndSaveParticipants, getParticipants } = require('../services/participants.js');
 
@@ -172,6 +173,11 @@ describe('Participants Service', () => {
     ];
 
     expect(res).toEqual(expectedRes);
+  });
+
+  it('Parse participants xlsx, receive validation error', async () => {
+    const file = readFileSync(join(__dirname, './mock/xlsx/participants-data-error.xlsx'));
+    expect(parseAndSaveParticipants(file)).rejects.toEqual(new ValidationError('Please specify a preferred (EOI) location for participant of row 2'));
   });
 
   it('Get participants as super_user, receive all successfully', async () => {

@@ -22,7 +22,7 @@ export default () => {
   ]);
   const history = useHistory();
   const location = useLocation();
-  if (!location.state) return <Redirect to={Routes.ApplicantUpload} />
+  if (!location.state) return <Redirect to={Routes.ParticipantUpload} />
 
   const [orderBy, setOrderBy] = useState(columns[0].id);
 
@@ -70,20 +70,20 @@ export default () => {
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pt={4} pb={4} pl={2} pr={2}>
             <Typography variant="subtitle1" gutterBottom>
-              Applicant Upload Results
+              Participant Upload Results
             </Typography>
           </Box>
           <Alert severity={summary.errors ? 'error' : summary.duplicates ? 'warning' : 'success'}>
             <Typography variant="body2" gutterBottom>
               <b>
-                Processed {rows.length} applicants. There were {summary.errors} errors and {summary.duplicates} duplicates. See results below.
+                Processed {rows.length} participants. There were {summary.errors} errors and {summary.duplicates} duplicates. See results below.
               </b>
             </Typography>
           </Alert>
           <Box pt={4} pb={4} pl={2} pr={2}>
             <Button
               onClick={() => history.goBack()}
-              text="Return to Applicant Upload"
+              text="Return to Participant Upload"
             />
           </Box>
           <Box pb={2} pl={2} pr={2} width="100%">

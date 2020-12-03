@@ -61,8 +61,8 @@ app.get(`${apiBaseUrl}/employer-form`,
     return res.json({ data: result });
   }));
 
-// Get employee records
-app.get(`${apiBaseUrl}/employees`,
+// Get participant records
+app.get(`${apiBaseUrl}/participants`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -71,8 +71,8 @@ app.get(`${apiBaseUrl}/employees`,
     return res.json({ data: result });
   }));
 
-// Create employee records from uploaded XLSX file
-app.post(`${apiBaseUrl}/employees`,
+// Create participant records from uploaded XLSX file
+app.post(`${apiBaseUrl}/participants`,
   keycloak.allowRolesMiddleware('maximus'),
   multer({
     fileFilter: (req, file, cb) => {

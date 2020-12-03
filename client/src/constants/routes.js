@@ -3,8 +3,8 @@ export default Object.freeze({
   Login: '/login',
   Keycloak: '/keycloak',
   EmployerForm: '/',
-  EmployeeForm: '/employee-form',
-  EmployeeConfirmation: '/employee-confirmation',
+  ParticipantForm: '/participant-form',
+  ParticipantConfirmation: '/participant-confirmation',
   EmployerConfirmation: '/employer-confirmation',
 
   // Private routes
@@ -12,7 +12,7 @@ export default Object.freeze({
   UserView: '/user-view',
   EOIView: '/eoi-view',
   EOIViewDetails: '/eoi-view-details',
-  ApplicantView: '/applicant-view',
-  ApplicantUpload: '/applicant-upload',
-  ApplicantUploadResults: '/applicant-upload-results',
+  ParticipantView: '/participant-view',
+  ParticipantUpload: '/participant-upload',
+  ParticipantUploadResults: '/participant-upload-results',
 });

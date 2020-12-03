@@ -9,15 +9,15 @@ import { Routes } from '../constants';
 
 const Admin = lazy(() => import('../pages/private/Admin'));
 const UserView = lazy(() => import('../pages/private/UserView'));
-const ApplicantView = lazy(() => import('../pages/private/ApplicantView'));
+const ParticipantView = lazy(() => import('../pages/private/ParticipantView'));
 const EOIView = lazy(() => import('../pages/private/EOIView'));
 const EOIViewDetails = lazy(() => import('../pages/private/EOIViewDetails'));
-const ApplicantUpload = lazy(() => import('../pages/private/ApplicantUpload'));
-const ApplicantUploadResults = lazy(() => import('../pages/private/ApplicantUploadResults'));
-const EmployeeForm = lazy(() => import('../pages/public/EmployeeForm'));
+const ParticipantUpload = lazy(() => import('../pages/private/ParticipantUpload'));
+const ParticipantUploadResults = lazy(() => import('../pages/private/ParticipantUploadResults'));
+const ParticipantForm = lazy(() => import('../pages/public/ParticipantForm'));
 const EmployerForm = lazy(() => import('../pages/public/EmployerForm'));
 const Login = lazy(() => import('../pages/public/Login'));
-const EmployeeConfirmation = lazy(() => import('../pages/public/EmployeeConfirmation'));
+const ParticipantConfirmation = lazy(() => import('../pages/public/ParticipantConfirmation'));
 const EmployerConfirmation = lazy(() => import('../pages/public/EmployerConfirmation'));
 const KeycloackRedirect = lazy(() => import('../pages/public/Keycloak'));
 
@@ -89,15 +89,15 @@ export default () => {
           <Switch>
             <Route exact path={Routes.Login} component={Login} />
             <Route exact path={Routes.EmployerForm} component={EmployerForm} />
-            <Route exact path={Routes.EmployeeForm} component={EmployeeForm} />
-            <Route exact path={Routes.EmployeeConfirmation} component={EmployeeConfirmation} />
+            <Route exact path={Routes.ParticipantForm} component={ParticipantForm} />
+            <Route exact path={Routes.ParticipantConfirmation} component={ParticipantConfirmation} />
             <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />
             <PrivateRoute exact path={Routes.UserView} component={UserView} />
             <PrivateRoute exact path={Routes.EOIView} component={EOIView} />
             <PrivateRoute exact path={Routes.EOIViewDetails} component={EOIViewDetails} />
-            <PrivateRoute exact path={Routes.ApplicantView} component={ApplicantView} />
-            <PrivateRoute exact path={Routes.ApplicantUpload} component={ApplicantUpload} />
-            <PrivateRoute exact path={Routes.ApplicantUploadResults} component={ApplicantUploadResults} />
+            <PrivateRoute exact path={Routes.ParticipantView} component={ParticipantView} />
+            <PrivateRoute exact path={Routes.ParticipantUpload} component={ParticipantUpload} />
+            <PrivateRoute exact path={Routes.ParticipantUploadResults} component={ParticipantUploadResults} />
             <PrivateRoute exact path={Routes.Admin} component={Admin} />
             <Route exact path={Routes.Keycloak} component={KeycloackRedirect} />
             <Route component={EmployerForm} />

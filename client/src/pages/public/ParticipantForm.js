@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Page } from '../../components/generic';
-import { Form } from '../../components/employee-form';
+import { Form } from '../../components/participant-form';
 
 export default () => {
   return (

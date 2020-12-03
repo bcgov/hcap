@@ -3,15 +3,15 @@
  */
 
 const collections = {
-  APPLICANTS: 'applicants',
+  PARTICIPANTS: 'participants',
   EMPLOYER_FORMS: 'employer_forms',
 };
 
 const schema = [
   {
-    collection: collections.APPLICANTS,
+    collection: collections.PARTICIPANTS,
     indexes: [
-      `CREATE UNIQUE INDEX maximusId ON ${collections.APPLICANTS}( (body->>'maximusId') ) ;`,
+      `CREATE UNIQUE INDEX maximusId ON ${collections.PARTICIPANTS}( (body->>'maximusId') ) ;`,
     ],
   },
 ];

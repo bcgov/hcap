@@ -6,7 +6,7 @@ const inquirer = require('inquirer');
 const parser = require('fast-xml-parser');
 const _ = require('lodash');
 const asyncPool = require('tiny-async-pool');
-const { validate, EmployeeFormSchema } = require('../validation');
+const { validate, ParticipantFormSchema } = require('../validation');
 
 const endpoints = [
   { name: 'Local', value: 'http://localhost:4000' },
@@ -15,7 +15,7 @@ const endpoints = [
 
 const postHcapSubmission = async (endpoint, data) => {
   const apiUrl = `${endpoint}/api/v1`;
-  const response = await axios.post(`${apiUrl}/employee-form`, data);
+  const response = await axios.post(`${apiUrl}/participant-form`, data);
   return response.data;
 };
 
@@ -92,7 +92,7 @@ const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint
         consent: _.get(jsonObj, 'form.consent.grid-3.confirmed') === 'Yes',
       };
       try {
-        await validate(EmployeeFormSchema, parsedJsonObj);
+        await validate(ParticipantFormSchema, parsedJsonObj);
         parsedJsonObjs.push(parsedJsonObj);
       } catch (e) {
         validationErrors.push({ fileName: xml.name, error: e.message });

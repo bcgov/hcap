@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { Formik, Form as FormikForm } from 'formik';
 import { useHistory } from 'react-router-dom';
 
-import { EmployeeFormSchema, Routes, ToastStatus } from '../../constants';
+import { ParticipantFormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 import { scrollUp } from '../../utils';
 
@@ -31,7 +31,7 @@ export const Form = ({ initialValues, isDisabled }) => {
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
 
-    const response = await fetch('/api/v1/employee-form', {
+    const response = await fetch('/api/v1/participant-form', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
       body: JSON.stringify(values),
@@ -42,7 +42,7 @@ export const Form = ({ initialValues, isDisabled }) => {
       if (error) {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
       } else {
-        history.push(Routes.EmployeeConfirmation, { formValues: values, id });
+        history.push(Routes.ParticipantConfirmation, { formValues: values, id });
         return;
       }
     } else {
@@ -61,7 +61,7 @@ export const Form = ({ initialValues, isDisabled }) => {
     <Grid item xs={12} sm={isDisabled ? 12 : 11} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8} xl={isDisabled ? 12 : 6}>
       <Formik
         initialValues={formValues}
-        validationSchema={EmployeeFormSchema}
+        validationSchema={ParticipantFormSchema}
         onSubmit={handleSubmit}
       >
         {({ errors, submitForm, setTouched, values }) => (

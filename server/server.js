@@ -106,6 +106,7 @@ app.get(`${apiBaseUrl}/pending-users`,
   asyncMiddleware(async (req, res) => {
     const users = await keycloak.getPendingUsers();
     const scrubbed = users.map((user) => ({
+      id: user.id,
       emailAddress: user.email,
       username: user.username,
       firstName: user.firstName,

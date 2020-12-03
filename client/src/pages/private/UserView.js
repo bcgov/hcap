@@ -4,7 +4,8 @@ import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
-import { Page, Table, CheckPermissions } from '../../components/generic';
+import { Button, Page, Table, CheckPermissions } from '../../components/generic';
+import { Routes } from '../../constants';
 
 const columns = [
   { id: 'firstName', name: 'First Name' },
@@ -12,6 +13,7 @@ const columns = [
   { id: 'username', name: 'Username' },
   { id: 'emailAddress', name: 'Email Address' },
   { id: 'createdAt', name: 'Created' },
+  { id: 'details' },
 ];
 
 export default () => {
@@ -36,36 +38,24 @@ export default () => {
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
 
   useEffect(() => {
-
     const fetchUserInfo = async () => {
       setLoadingUser(true);
       const response = await fetch('/api/v1/user', {
-        headers: {
-          'Authorization': `Bearer ${store.get('TOKEN')}`,
-        },
+        headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
         method: 'GET',
       });
 
       if (response.ok) {
         const { roles } = await response.json();
-        setLoadingUser(false);
         setRoles(roles);
       }
+      setLoadingUser(false);
     };
 
-    const prettyTableCell = (v) => {
-      if (typeof v === 'undefined' || v === null) return '';
-      return String(v);
-    }
-
-    const getPendingUsers = async () => {
+    const fetchPendingUsers = async () => {
       setLoadingData(true);
       const response = await fetch('/api/v1/pending-users', {
-        headers: {
-          'Accept': 'application/json',
-          'Content-type': 'application/json',
-          'Authorization': `Bearer ${store.get('TOKEN')}`,
-        },
+        headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
         method: 'GET',
       });
 
@@ -74,7 +64,15 @@ export default () => {
         const rows = data.map((row) => {
           return columns.reduce((a, i) => ({
             ...a,
-            [i.id]: prettyTableCell(row[i.id]),
+            [i.id]: row[i.id],
+            details: (
+              <Button
+                onClick={() => history.push(Routes.Admin)}
+                variant="outlined"
+                size="small"
+                text="Options"
+              />
+            ),
           }), {})
         });
         setRows(rows);
@@ -83,15 +81,11 @@ export default () => {
         setRows([]);
         setIsPendingRequests(false);
       }
-
       setLoadingData(false);
     };
 
-    const init = async () => {
-      await fetchUserInfo();
-      await getPendingUsers();
-    };
-    init();
+    fetchUserInfo();
+    fetchPendingUsers();
   }, [history]);
 
   return (

@@ -194,13 +194,6 @@ describe('Participants Service', () => {
   it('Get participants as MoH, receive successfully', async () => {
     const res = await getParticipants({
       isMoH: true,
-      regions: [
-        'Fraser',
-        'Interior',
-        'Northern',
-        'Vancouver Coastal',
-        'Vancouver Island',
-      ],
     });
 
     expect(res.map((item) => (Object.keys(item)))).toEqual(

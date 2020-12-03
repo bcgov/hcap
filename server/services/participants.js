@@ -6,8 +6,7 @@ const { dbClient, collections } = require('../db');
 const { userRegionQuery } = require('./user.js');
 
 const getParticipants = async (user) => {
-
-  const criteria = user.isSuperUser || user.isMOH ? {} : userRegionQuery(user.regions, 'preferredLocation');
+  const criteria = user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'preferredLocation');
   const participants = criteria
     ? await dbClient.db[collections.PARTICIPANTS].findDoc(criteria)
     : [];

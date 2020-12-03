@@ -3,6 +3,7 @@ const { join } = require('path');
 const { ValidationError } = require('yup');
 const { startDB, closeDB } = require('./util/db');
 const { parseAndSaveParticipants, getParticipants } = require('../services/participants.js');
+const { evaluateBooleanAnswer } = require('../validation');
 
 describe('Participants Service', () => {
   beforeAll(async () => {
@@ -191,7 +192,16 @@ describe('Participants Service', () => {
   });
 
   it('Get participants as MoH, receive successfully', async () => {
-    const res = await getParticipants({ isMoH: true });
+    const res = await getParticipants({
+      isMoH: true,
+      regions: [
+        'Fraser',
+        'Interior',
+        'Northern',
+        'Vancouver Coastal',
+        'Vancouver Island',
+      ],
+    });
 
     expect(res.map((item) => (Object.keys(item)))).toEqual(
       allParticipants.map(() => ([
@@ -220,8 +230,13 @@ describe('Participants Service', () => {
       ],
     });
 
+    const filteredParticipants = allParticipants
+      .filter((item) => (
+        evaluateBooleanAnswer(item.interested)
+        && evaluateBooleanAnswer(item.crcClear)));
+
     expect(res.map((item) => (Object.keys(item)))).toEqual(
-      allParticipants.map(() => ([
+      filteredParticipants.map(() => ([
         'id',
         'firstName',
         'lastName',

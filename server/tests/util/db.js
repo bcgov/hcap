@@ -12,9 +12,9 @@ async function clearDB() {
  * Connect to database
  */
 async function startDB() {
-  await dbClient.connect(true);
+  await dbClient.connect();
   await clearDB();
-  await dbClient.runMigration(true);
+  await dbClient.runMigration();
 }
 
 async function closeDB() {

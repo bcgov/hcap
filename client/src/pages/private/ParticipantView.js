@@ -18,11 +18,11 @@ const defaultColumns = [
 
 const sortOrder = [
   'id',
-  'lastName', 
-  'firstName', 
-  'postalCode', 
-  'phoneNumber', 
-  'emailAddress', 
+  'lastName',
+  'firstName',
+  'postalCode',
+  'phoneNumber',
+  'emailAddress',
   'preferredLocation',
   'interested',
   'nonHCAP',

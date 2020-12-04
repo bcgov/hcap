@@ -7,7 +7,6 @@ const healthRegions = [
   'Vancouver Coastal',
   'Vancouver Island',
   'Northern',
-  '',
 ];
 
 const siteTypes = [
@@ -15,8 +14,11 @@ const siteTypes = [
   'Assisted living',
   'Both',
   'Other',
-  '',
-]
+];
+
+const userRoles = [
+  'ministry_of_health',
+];
 
 const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
@@ -84,6 +86,11 @@ export const LoginSchema = yup.object().noUnknown().shape({
   password: yup.string().required('Password is required'),
 });
 
+export const ApproveAccessRequestSchema = yup.object().noUnknown().shape({
+  region: yup.string().required('Region is required').oneOf(healthRegions, 'Invalid region'),
+  role: yup.string().required('Role is required').oneOf(userRoles, 'Invalid role'),
+});
+
 export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shape({
   // Operator Contact Information
   registeredBusinessName: yup.string().nullable(errorMessage),
@@ -98,14 +105,14 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
   // Site contact info
   siteName: yup.string().nullable(errorMessage),
   address: yup.string().nullable(errorMessage),
-  healthAuthority: yup.string().nullable(errorMessage).oneOf(healthRegions, 'Invalid location'),
+  healthAuthority: yup.string().nullable(errorMessage).oneOf([...healthRegions, ''], 'Invalid location'),
   siteContactFirstName: yup.string().nullable(errorMessage),
   siteContactLastName: yup.string().nullable(errorMessage),
   phoneNumber: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
   emailAddress: yup.string().nullable(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
 
   // Site type and size info
-  siteType: yup.string().nullable(errorMessage).oneOf(siteTypes, 'Invalid site type'),
+  siteType: yup.string().nullable(errorMessage).oneOf([...siteTypes, ''], 'Invalid site type'),
   otherSite: yup.string().when('siteType', {
     is: 'Other',
     then: yup.string().nullable('Must specify other site type'),

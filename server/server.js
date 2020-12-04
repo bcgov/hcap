@@ -120,7 +120,7 @@ app.post(`${apiBaseUrl}/approve-user`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
     await validate(AccessRequestApproval, req.body);
-    await keycloak.approvePendingRequest(req.body.userId, req.body.role, req.body.regions);
+    await keycloak.approvePendingRequest(req.body.userId, req.body.role, [req.body.region]);
     res.json({});
   }));
 

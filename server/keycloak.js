@@ -122,7 +122,7 @@ class Keycloak { // Wrapper class around keycloak-connect
     if (!Object.keys(this.roleIdMap).includes(role)) throw Error(`Invalid role: ${role}`);
     const regionToRole = (region) => {
       const roleName = Object.keys(regionMap).find((k) => regionMap[k] === region);
-      if (!roleName) return null;
+      if (!roleName || !this.roleIdMap[roleName]) return null;
       return { name: roleName, id: this.roleIdMap[roleName] };
     };
     await this.authenticateIfNeeded();

@@ -27,6 +27,10 @@ const siteTypes = [
   '',
 ];
 
+const userRoles = [
+  'ministry_of_health',
+];
+
 const isBooleanValue = (val) => typeof val === 'string' && ['yes', 'no'].includes(val.toLowerCase());
 
 const evaluateBooleanAnswer = (val) => (isBooleanValue(val) && val.toLowerCase() === 'yes');
@@ -184,11 +188,9 @@ const ParticipantBatchSchema = yup.array().of(
 );
 
 const AccessRequestApproval = yup.object().noUnknown('Unknown field in form').shape({
-  userId: yup.string().required(errorMessage),
-  regions: yup.array().required(errorMessage).of(
-    yup.string().nullable(errorMessage).oneOf(healthRegions, 'Invalid location'),
-  ),
-  role: yup.string().required(errorMessage),
+  userId: yup.string().required('User ID is required'),
+  region: yup.string().required('Region is required').oneOf(healthRegions, 'Invalid region'),
+  role: yup.string().required('Role is required').oneOf(userRoles, 'Invalid role'),
 });
 
 const validate = async (schema, data) => schema.validate(data, { strict: true });

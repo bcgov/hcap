@@ -8,3 +8,4 @@ export * from './InputFieldError';
 export * from './Toast';
 export * from './PDFButton';
 export * from './CheckPermissions';
+export * from './Dialog';

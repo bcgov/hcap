@@ -94,11 +94,6 @@ const errorMessage = ({ path }) => {
     eligibility: 'We\'re sorry, but current eligibility to work in Canada is a requirement to submit this form.',
     preferredLocation: 'Please select at least one location you\'d like to work in.',
     consent: 'We\'re sorry, but we cannot process your request without permission.',
-
-    // Access request approval
-    userId: 'User ID is required',
-    role: 'User role is required',
-    regions: 'User health regions are required',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };

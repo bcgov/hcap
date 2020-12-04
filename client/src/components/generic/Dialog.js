@@ -6,15 +6,11 @@ export const Dialog = ({
   onClose,
   children,
   title,
-  initialValues,
-  validationSchema,
 }) => {
   return (
     <MuiDialog
       open={open}
       onClose={onClose}
-      aria-labelledby="simple-modal-title"
-      aria-describedby="simple-modal-description"
     >
       <Box pt={4} pb={2} pl={4} pr={4}>
         <Typography variant="subtitle1">

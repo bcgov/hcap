@@ -73,12 +73,12 @@ export const Table = ({ order, orderBy, onRequestSort, columns, rows, isLoading,
           <TableRow>
             {columns.map((column, index) => (
               <StyledHeaderTableCell key={index}>
-                <TableSortLabel
+                {column.name && <TableSortLabel // Disable sorting if column has no header
                   active={orderBy === column.id}
                   direction={orderBy === column.id ? order : 'asc'}
                   onClick={createSortHandler(column.id)}>
                   {column.name}
-                </TableSortLabel>
+                </TableSortLabel>}
               </StyledHeaderTableCell>
             ))}
           </TableRow>
@@ -92,8 +92,8 @@ export const Table = ({ order, orderBy, onRequestSort, columns, rows, isLoading,
             </StyledTableRow>
           )) : pageRows.map((row, index) => (
             <StyledTableRow hover key={index}>
-              {Object.keys(row).map((key) => (
-                <StyledTableCell key={key}>{row[key]}</StyledTableCell>
+              {columns.map((column) => (
+                <StyledTableCell key={column.id}>{row[column.id] || ''}</StyledTableCell>
               ))}
             </StyledTableRow>
           ))}

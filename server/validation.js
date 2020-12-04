@@ -7,7 +7,6 @@ const healthRegions = [
   'Vancouver Coastal',
   'Vancouver Island',
   'Northern',
-  '',
 ];
 
 const roles = [
@@ -26,6 +25,10 @@ const siteTypes = [
   'Both',
   'Other',
   '',
+];
+
+const userRoles = [
+  'health_authority',
 ];
 
 const isBooleanValue = (val) => typeof val === 'string' && ['yes', 'no'].includes(val.toLowerCase());
@@ -111,7 +114,7 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape
   // Site contact info
   siteName: yup.string().nullable(errorMessage),
   address: yup.string().nullable(errorMessage),
-  healthAuthority: yup.string().nullable(errorMessage).oneOf(healthRegions, 'Invalid location'),
+  healthAuthority: yup.string().nullable(errorMessage).oneOf([...healthRegions, ''], 'Invalid location'),
   siteContactFirstName: yup.string().nullable(errorMessage),
   siteContactLastName: yup.string().nullable(errorMessage),
   phoneNumber: yup.string().matches(/(^[0-9]{10})?$/, 'Phone number must be provided as 10 digits').nullable(true),
@@ -179,8 +182,14 @@ const ParticipantBatchSchema = yup.array().of(
   }),
 );
 
+const AccessRequestApproval = yup.object().noUnknown('Unknown field in form').shape({
+  userId: yup.string().required('User ID is required'),
+  region: yup.string().required('Region is required').oneOf(healthRegions, 'Invalid region'),
+  role: yup.string().required('Role is required').oneOf(userRoles, 'Invalid role'),
+});
+
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
-  EmployerFormSchema, ParticipantBatchSchema, validate, isBooleanValue, evaluateBooleanAnswer,
+  EmployerFormSchema, ParticipantBatchSchema, validate, isBooleanValue, evaluateBooleanAnswer, AccessRequestApproval,
 };

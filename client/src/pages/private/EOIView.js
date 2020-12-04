@@ -24,7 +24,7 @@ export default () => {
     { id: 'address', name: 'Address' },
     { id: 'healthAuthority', name: 'Health Authority' },
     { id: 'operatorName', name: 'Operator Name' },
-    {}, //Details
+    { id: 'details' },
   ]);
   const [healthAuthorities] = useState([
     'Interior',

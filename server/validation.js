@@ -28,7 +28,7 @@ const siteTypes = [
 ];
 
 const userRoles = [
-  'ministry_of_health',
+  'health_authority',
 ];
 
 const isBooleanValue = (val) => typeof val === 'string' && ['yes', 'no'].includes(val.toLowerCase());

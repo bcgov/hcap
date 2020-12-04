@@ -17,7 +17,7 @@ const siteTypes = [
 ];
 
 const userRoles = [
-  'ministry_of_health',
+  'health_authority',
 ];
 
 const validateUniqueArray = (a) => (

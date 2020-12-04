@@ -147,7 +147,7 @@ export default () => {
                 component={RenderSelectField}
                 label="* User Role"
                 options={[
-                  { value: 'ministry_of_health', label: 'Ministry of Health' },
+                  { value: 'health_authority', label: 'Health Authority' },
                 ]}
               />
               <Box mt={3}>

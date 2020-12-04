@@ -68,6 +68,8 @@ export const Header = () => {
 
   const handleLogoClick = () => history.push(Routes.EmployerForm);
 
+  const handleLoginClick = () => history.push(Routes.Login);
+
   const handleLogoutClick = async () => {
     store.remove('TOKEN');
     await keycloak.logout({ redirectUri: window.location.origin });
@@ -102,7 +104,7 @@ export const Header = () => {
             </Typography>
           </div>
           <div className={classes.buttonWrapper}>
-            {(keycloak.authenticated && location.pathname !== Routes.Admin ) && (
+            {(keycloak.authenticated && location.pathname !== Routes.Admin) && (
               <Button
                 className={classes.button}
                 text="Home"
@@ -112,7 +114,7 @@ export const Header = () => {
                 onClick={() => history.push(Routes.Admin)}
               />
             )}
-            {(keycloak.authenticated && !keycloak.loginRequired) && (
+            {(keycloak.authenticated && !keycloak.loginRequired) ?
               <Button
                 className={classes.button}
                 text="Logout"
@@ -121,7 +123,16 @@ export const Header = () => {
                 color="inherit"
                 onClick={handleLogoutClick}
               />
-            )}
+              :
+              <Button
+                className={classes.button}
+                text="Login"
+                fullWidth={false}
+                variant="outlined"
+                color="inherit"
+                onClick={handleLoginClick}
+              />
+            }
           </div>
         </Toolbar>
       </AppBar>

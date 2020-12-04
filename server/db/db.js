@@ -10,7 +10,7 @@ class DBClient {
     this.settings = {
       host: process.env.POSTGRES_HOST || 'postgres',
       port: process.env.POSTGRES_PORT || 5432,
-      database: process.env.POSTGRES_DB,
+      database: process.env.NODE_ENV === 'test' ? 'db_test' : process.env.POSTGRES_DB,
       user: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
     };
@@ -54,9 +54,9 @@ class DBClient {
    * @returns {Promise<void>}
    * @memberof DB
    */
-  async connect(useTestDb) {
+  async connect() {
     if (this.db) return;
-    this.db = await massive({ ...this.settings, database: useTestDb ? 'db_test' : this.settings.database });
+    this.db = await massive(this.settings);
   }
 }
 

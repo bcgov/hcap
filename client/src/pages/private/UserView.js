@@ -49,10 +49,46 @@ export default () => {
     });
     if (response.ok) {
       setModalOpen(false);
+      fetchPendingUsers();
       openToast({ status: ToastStatus.Success, message: 'Access request approved' });
     } else {
       openToast({ status: ToastStatus.Error, message: 'Access request approval failed' });
     }
+  };
+
+  const fetchPendingUsers = async () => {
+    setLoadingData(true);
+    const response = await fetch('/api/v1/pending-users', {
+      headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const { data } = await response.json();
+      const rows = data.map((row) => {
+        return columns.reduce((a, i) => ({
+          ...a,
+          [i.id]: row[i.id],
+          details: (
+            <Button
+              onClick={() => {
+                setSelectedUserId(row['id']);
+                setModalOpen(true);
+              }}
+              variant="outlined"
+              size="small"
+              text="Options"
+            />
+          ),
+        }), {})
+      });
+      setRows(rows);
+      setIsPendingRequests(rows.length > 0);
+    } else {
+      setRows([]);
+      setIsPendingRequests(false);
+    }
+    setLoadingData(false);
   };
 
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
@@ -70,41 +106,6 @@ export default () => {
         setRoles(roles);
       }
       setLoadingUser(false);
-    };
-
-    const fetchPendingUsers = async () => {
-      setLoadingData(true);
-      const response = await fetch('/api/v1/pending-users', {
-        headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
-        method: 'GET',
-      });
-
-      if (response.ok) {
-        const { data } = await response.json();
-        const rows = data.map((row) => {
-          return columns.reduce((a, i) => ({
-            ...a,
-            [i.id]: row[i.id],
-            details: (
-              <Button
-                onClick={() => {
-                  setSelectedUserId(row['id']);
-                  setModalOpen(true);
-                }}
-                variant="outlined"
-                size="small"
-                text="Options"
-              />
-            ),
-          }), {})
-        });
-        setRows(rows);
-        setIsPendingRequests(rows.length > 0);
-      } else {
-        setRows([]);
-        setIsPendingRequests(false);
-      }
-      setLoadingData(false);
     };
 
     fetchUserInfo();

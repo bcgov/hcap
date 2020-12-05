@@ -28,7 +28,7 @@ const BeforeYouBegin = () => {
           <Typography variant="subtitle2" gutterBottom>
             The Health Career Access Program
           </Typography>
-          <Divider/>
+          <Divider />
           <Typography variant="body1">
             The Health Career Access Program (HCAP) is a paid work and training initiative for individuals
             seeking an entry point to employment in health. New hires will start as a Health Care Support Worker
@@ -51,9 +51,9 @@ const BeforeYouBegin = () => {
           </Typography>
           <br />
           <Typography variant="body1">
-          <b>
-            The Employer Expression of Interest is available to operators of long-term care and/or assisted
-            living sites with both public and privately funded beds.
+            <b>
+              The Employer Expression of Interest is available to operators of long-term care and/or assisted
+              living sites with both public and privately funded beds.
           </b>
           </Typography>
         </Card>
@@ -64,7 +64,7 @@ const BeforeYouBegin = () => {
           <Typography variant="subtitle2" gutterBottom>
             Employer Expression of Interest (EOI)
           </Typography>
-          <Divider/>
+          <Divider />
           <Typography variant="body1" paragraph>
             Submission of an EOI does not commit employers to participation in the Health Career Access
             Program. Rather, the form is a first step for employers who want to be considered or are interested in
@@ -77,7 +77,11 @@ const BeforeYouBegin = () => {
             &nbsp;that may be interested in participating in the Health Career Access Program.
           </Typography>
           <Typography variant="body1" paragraph>
-            <b>Submitted forms must be received by Tuesday, November 3, 2020.</b>
+            <b>Thank you for your interest in the Health Career Access Program. The initial round of submissions
+            closed on November 3, 2020 and the Ministry is finalizing the allocation of resources to those
+            sites that submitted their expressions of interest before this date. Your submission will be assessed
+            in the next round of allocations for the Health Career Access Program. We expect the next round of
+            allocations to occur before January 2021.</b>
           </Typography>
         </Card>
       </Box>

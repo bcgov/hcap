@@ -14,7 +14,7 @@ async function clearDB() {
 async function startDB() {
   await dbClient.connect();
   await clearDB();
-  await dbClient.runMigration(true);
+  await dbClient.runMigration();
 }
 
 async function closeDB() {

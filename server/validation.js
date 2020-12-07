@@ -155,6 +155,25 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape
   doesCertify: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 });
 
+const EmployerSiteSchema = yup.object().noUnknown('Unknown field in site data').shape({
+  siteId: yup.number(errorMessage),
+  siteName: yup.string().nullable(errorMessage),
+  earlyAdaptorAllocation: yup.number().nullable(errorMessage),
+  address: yup.string().nullable(errorMessage),
+  city: yup.string().nullable(errorMessage),
+  healthAuthority: yup.string().nullable(errorMessage).oneOf(healthRegions, 'Invalid location'),
+  postalCode: yup.string().nullable(errorMessage).matches(/(^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)$/, { excludeEmptyString: true, message: 'Format as A1A 1A1' }),
+  registeredBusinessName: yup.string().nullable(errorMessage),
+  operatorContactFirstName: yup.string().nullable(errorMessage),
+  operatorContactLastName: yup.string().nullable(errorMessage),
+  operatorEmail: yup.string().email('should be a valid email address').nullable(errorMessage),
+  operatorPhone: yup.string().matches(/^([0-9]{10})$/, { excludeEmptyString: true, message: 'Phone number must be provided as 10 digits' }).nullable(errorMessage),
+  siteContactFirstName: yup.string().nullable(errorMessage),
+  siteContactLastName: yup.string().nullable(errorMessage),
+  siteContactPhoneNumber: yup.string().matches(/(^[0-9]{10})$/, { excludeEmptyString: true, message: 'Phone number must be provided as 10 digits' }).nullable(errorMessage),
+  siteContactEmailAddress: yup.string().email('should be a valid email address').nullable(errorMessage),
+});
+
 const ParticipantBatchSchema = yup.array().of(
   yup.lazy((item, options) => {
     const row = options.parent.indexOf(item) + 2;
@@ -192,5 +211,11 @@ const AccessRequestApproval = yup.object().noUnknown('Unknown field in form').sh
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
-  EmployerFormSchema, ParticipantBatchSchema, validate, isBooleanValue, evaluateBooleanAnswer, AccessRequestApproval,
+  EmployerFormSchema,
+  ParticipantBatchSchema,
+  validate,
+  isBooleanValue,
+  evaluateBooleanAnswer,
+  AccessRequestApproval,
+  EmployerSiteSchema,
 };

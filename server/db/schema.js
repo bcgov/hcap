@@ -5,7 +5,7 @@
 const collections = {
   PARTICIPANTS: 'participants',
   EMPLOYER_FORMS: 'employer_forms',
-  EMPLOYER_SITE: 'employer_site',
+  EMPLOYER_SITES: 'employer_sites',
 };
 
 const schema = [

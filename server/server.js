@@ -63,7 +63,7 @@ app.get(`${apiBaseUrl}/employer-form`,
 
 // Get participant records
 app.get(`${apiBaseUrl}/participants`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;

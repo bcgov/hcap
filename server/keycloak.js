@@ -31,7 +31,7 @@ class Keycloak { // Wrapper class around keycloak-connect
       ...defaults,
       realm: this.realm,
       'auth-server-url': this.authUrl,
-      resource: this.clientNameBackend,
+      resource: this.clientNameFrontend,
     };
     this.keycloakConnect = new KeyCloakConnect({}, config);
   }
@@ -62,7 +62,7 @@ class Keycloak { // Wrapper class around keycloak-connect
     return (req, res, next) => {
       // Optional chaining would be great here once ESLint supports it *sigh*
       const { content } = req.kauth.grant.access_token;
-      const { roles } = content.resource_access[this.clientNameBackend] || { roles: [] };
+      const { roles } = content.resource_access[this.clientNameFrontend] || { roles: [] };
       req.hcapUserInfo = {
         name: content.name,
         roles,
@@ -103,7 +103,7 @@ class Keycloak { // Wrapper class around keycloak-connect
     // See Keycloak docs https://www.keycloak.org/docs-api/5.0/rest-api/index.html#_clients_resource
     await this.authenticateIfNeeded();
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-    {
+    { // Map of clients to their internal Keycloak ID
       const clientNames = [this.clientNameBackend, this.clientNameFrontend];
       const url = `${this.authUrl}/admin/realms/${this.realm}/clients`;
       const response = await axios.get(url, config);
@@ -111,8 +111,8 @@ class Keycloak { // Wrapper class around keycloak-connect
         .filter((client) => clientNames.includes(client.clientId))
         .reduce((a, client) => ({ ...a, [client.clientId]: client.id }), {});
     }
-    {
-      const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${this.clientIdMap[this.clientNameBackend]}/roles`;
+    { // Map containing all roles a user can assume and their associated Keycloak IDs
+      const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${this.clientIdMap[this.clientNameFrontend]}/roles`;
       const response = await axios.get(url, config);
       this.roleIdMap = response.data.reduce((a, role) => ({ ...a, [role.name]: role.id }), {});
     }
@@ -127,7 +127,7 @@ class Keycloak { // Wrapper class around keycloak-connect
     };
     await this.authenticateIfNeeded();
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-    const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings/clients/${this.clientIdMap[this.clientNameBackend]}`;
+    const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings/clients/${this.clientIdMap[this.clientNameFrontend]}`;
     {
       const data = [
         ...regions.map(regionToRole).filter((x) => x),
@@ -144,7 +144,7 @@ class Keycloak { // Wrapper class around keycloak-connect
   async getPendingUsers() {
     await this.authenticateIfNeeded();
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-    const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${this.clientIdMap[this.clientNameBackend]}/roles/pending/users`;
+    const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${this.clientIdMap[this.clientNameFrontend]}/roles/pending/users`;
     const response = await axios.get(url, config);
     return response.data;
   }

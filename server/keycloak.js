@@ -13,9 +13,8 @@ const regionMap = {
 const defaults = {
   'ssl-required': 'external',
   'confidential-port': 0,
-  'verify-token-audience': true,
   'use-resource-role-mappings': true,
-  'policy-enforcer': {},
+  'public-client': true,
 };
 
 class Keycloak { // Wrapper class around keycloak-connect

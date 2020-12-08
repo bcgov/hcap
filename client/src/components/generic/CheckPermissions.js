@@ -14,7 +14,12 @@ export const CheckPermissions = ({ isLoading, roles, permittedRoles, children, r
     return children;
   }
 
-  const message = isPending ? `Thank you for logging in, your access request is being reviewed.` : `You don't have permission to view this content.`;
+  const message = isPending 
+  ? <><p>Thank you for logging in. Your access request is being reviewed.</p>
+	<p>Please note that your access will only be granted if you have approved allocations under HCAP.</p></>
+  : <p>You don't have permission to view this content.</p>
+  ;
+ 
 
   // Optional: display message if no access granted by role(s)
   if (renderErrorMessage) {

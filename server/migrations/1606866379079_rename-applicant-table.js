@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
-
-const ERROR_UNIDENTIFIED_TABLE = '42P01';
+const { ERROR_UNIDENTIFIED_TABLE } = require('../db/common');
 
 exports.up = async (pgm) => {
   try {

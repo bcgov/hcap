@@ -1,3 +1,4 @@
 module.exports = {
   ERROR_DUPLICATED: '42P07',
+  ERROR_UNIDENTIFIED_TABLE: '42P01',
 };

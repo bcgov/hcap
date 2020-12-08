@@ -18,6 +18,7 @@ const siteTypes = [
 
 const userRoles = [
   'health_authority',
+  'employer',
 ];
 
 const validateUniqueArray = (a) => (

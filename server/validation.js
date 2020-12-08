@@ -98,7 +98,7 @@ const errorMessage = ({ path }) => {
   return errorMessages[path] || `Failed validation on ${path}`;
 };
 
-const errorMessageIndex = (index, indexName) => (error) => `${errorMessage(error)} (${indexName || 'row'} ${index})`;
+const errorMessageIndex = (index, indexName) => (error) => `${errorMessage(error)} (${indexName || 'index'} ${index})`;
 
 const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape({
   // Operator Contact Information

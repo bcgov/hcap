@@ -58,13 +58,6 @@ database: ## <Helper> :: Executes into database container.
 	@export PGPASSWORD=$(POSTGRES_PASSWORD)
 	@docker-compose -f docker-compose.dev.yml exec postgres psql -U $(POSTGRES_USER) $(POSTGRES_DB)
 
-
-database: ## <Helper> :: Executes into database container.
-	@echo "Make: Shelling into local database container ..."
-	@export PGPASSWORD=$(POSTGRES_PASSWORD)
-	@docker-compose -f docker-compose.dev.yml exec postgres psql -U $(POSTGRES_USER) $(POSTGRES_DB)
-
-
 # Git Tagging Aliases
 
 tag-dev:

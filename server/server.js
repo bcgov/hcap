@@ -5,7 +5,7 @@ const path = require('path');
 const dayjs = require('dayjs');
 const multer = require('multer');
 const { getParticipants, parseAndSaveParticipants } = require('./services/participants.js');
-const { getEmployers } = require('./services/employers.js');
+const { getEmployers, saveSites, getSites } = require('./services/employers.js');
 const { validate, EmployerFormSchema, AccessRequestApproval } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -114,6 +114,25 @@ app.get(`${apiBaseUrl}/pending-users`,
       createdAt: dayjs(user.createdTimestamp).format('YYYY-MM-DD HH:mm'),
     }));
     return res.json({ data: scrubbed });
+  }));
+
+app.post(`${apiBaseUrl}/employer-sites`,
+  keycloak.allowRolesMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    try {
+      const response = await saveSites(req.body);
+      return res.json(response);
+    } catch (excp) {
+      return res.status(400).send(`${excp}`);
+    }
+  }));
+
+app.get(`${apiBaseUrl}/employer-sites`,
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const result = await getSites();
+    return res.json({ data: result });
   }));
 
 app.post(`${apiBaseUrl}/approve-user`,

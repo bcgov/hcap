@@ -98,7 +98,7 @@ const errorMessage = ({ path }) => {
   return errorMessages[path] || `Failed validation on ${path}`;
 };
 
-const errorMessageRow = (index) => (error) => `${errorMessage(error)} (row ${index})`;
+const errorMessageIndex = (index, indexName) => (error) => `${errorMessage(error)} (${indexName || 'row'} ${index})`;
 
 const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape({
   // Operator Contact Information
@@ -155,50 +155,56 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape
   doesCertify: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 });
 
-const EmployerSiteSchema = yup.object().noUnknown('Unknown field in site data').shape({
-  siteId: yup.number(errorMessage),
-  siteName: yup.string().nullable(errorMessage),
-  earlyAdaptorAllocation: yup.number().nullable(errorMessage),
-  address: yup.string().nullable(errorMessage),
-  city: yup.string().nullable(errorMessage),
-  healthAuthority: yup.string().nullable(errorMessage).oneOf(healthRegions, 'Invalid location'),
-  postalCode: yup.string().nullable(errorMessage).matches(/(^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)$/, { excludeEmptyString: true, message: 'Format as A1A 1A1' }),
-  registeredBusinessName: yup.string().nullable(errorMessage),
-  operatorContactFirstName: yup.string().nullable(errorMessage),
-  operatorContactLastName: yup.string().nullable(errorMessage),
-  operatorEmail: yup.string().email('should be a valid email address').nullable(errorMessage),
-  operatorPhone: yup.string().matches(/^([0-9]{10})$/, { excludeEmptyString: true, message: 'Phone number must be provided as 10 digits' }).nullable(errorMessage),
-  siteContactFirstName: yup.string().nullable(errorMessage),
-  siteContactLastName: yup.string().nullable(errorMessage),
-  siteContactPhoneNumber: yup.string().matches(/(^[0-9]{10})$/, { excludeEmptyString: true, message: 'Phone number must be provided as 10 digits' }).nullable(errorMessage),
-  siteContactEmailAddress: yup.string().email('should be a valid email address').nullable(errorMessage),
-});
+const EmployerSiteBatchSchema = yup.array().of(
+  yup.lazy((item, options) => {
+    const index = options.parent.indexOf(item);
+    return yup.object().noUnknown(`Unknown field in site data (index ${index})`).shape({
+      siteId: yup.number(errorMessageIndex(index)),
+      siteName: yup.string().nullable(errorMessageIndex(index)),
+      earlyAdaptorAllocation: yup.number().nullable(errorMessageIndex(index)),
+      address: yup.string().nullable(errorMessageIndex(index)),
+      city: yup.string().nullable(errorMessageIndex(index)),
+      healthAuthority: yup.string().nullable(errorMessageIndex(index)).oneOf(healthRegions, `Invalid location (index ${index})`),
+      postalCode: yup.string().nullable(errorMessageIndex(index)).matches(/(^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)$/, { excludeEmptyString: true, message: `Format as A1A 1A1 (index ${index})` }),
+      registeredBusinessName: yup.string().nullable(errorMessageIndex(index)),
+      operatorContactFirstName: yup.string().nullable(errorMessageIndex(index)),
+      operatorContactLastName: yup.string().nullable(errorMessageIndex(index)),
+      operatorEmail: yup.string().email(`should be a valid email address (index ${index})`).nullable(errorMessageIndex(index)),
+      operatorPhone: yup.string().matches(/^([0-9]{10})$/, { excludeEmptyString: true, message: `Phone number must be provided as 10 digits (index ${index})` }).nullable(errorMessageIndex(index)),
+      siteContactFirstName: yup.string().nullable(errorMessageIndex(index)),
+      siteContactLastName: yup.string().nullable(errorMessageIndex(index)),
+      siteContactPhoneNumber: yup.string().matches(/(^[0-9]{10})$/, { excludeEmptyString: true, message: `Phone number must be provided as 10 digits (index ${index})` }).nullable(errorMessageIndex(index)),
+      siteContactEmailAddress: yup.string().email(`should be a valid email address (index ${index})`).nullable(errorMessageIndex(index)),
+    });
+  }),
+);
 
 const ParticipantBatchSchema = yup.array().of(
   yup.lazy((item, options) => {
-    const row = options.parent.indexOf(item) + 2;
+    const index = options.parent.indexOf(item) + 2;
+    const indexName = 'row';
     return yup.object().shape({
       // Orbeon Id
-      maximusId: yup.number().typeError(errorMessageRow(row)),
+      maximusId: yup.number().typeError(errorMessageIndex(index, indexName)),
 
       // Contact info
-      firstName: yup.string().required(errorMessageRow(row)),
-      lastName: yup.string().required(errorMessageRow(row)),
-      phoneNumber: yup.mixed().required(errorMessageRow(row)),
-      emailAddress: yup.string().required(errorMessageRow(row)).matches(/^(.+@.+\..+)?$/, `Invalid email address (row ${row})`),
-      postalCode: yup.string().required(errorMessageRow(row)).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, `Format as A1A 1A1 (row ${row})`),
+      firstName: yup.string().required(errorMessageIndex(index, indexName)),
+      lastName: yup.string().required(errorMessageIndex(index, indexName)),
+      phoneNumber: yup.mixed().required(errorMessageIndex(index, indexName)),
+      emailAddress: yup.string().required(errorMessageIndex(index, indexName)).matches(/^(.+@.+\..+)?$/, `Invalid email address (row ${index})`),
+      postalCode: yup.string().required(errorMessageIndex(index, indexName)).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, `Format as A1A 1A1 (row ${index})`),
 
       // Preferred location
-      fraser: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
-      interior: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
-      northern: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
-      vancouverCoastal: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
-      vancouverIsland: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
+      fraser: yup.mixed().optional(errorMessageIndex(index, indexName)).test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
+      interior: yup.mixed().optional(errorMessageIndex(index, indexName)).test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
+      northern: yup.mixed().optional(errorMessageIndex(index, indexName)).test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
+      vancouverCoastal: yup.mixed().optional(errorMessageIndex(index, indexName)).test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
+      vancouverIsland: yup.mixed().optional(errorMessageIndex(index, indexName)).test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
       // Others
-      interested: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
-      nonHCAP: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
-      crcClear: yup.mixed().optional(errorMessageRow(row)).test('is-bool-opt', errorMessageRow(row), validateOptionalBooleanMixed),
-    }).test('is-preferred-location-specified', () => `Please specify a preferred (EOI) location for participant of row ${row}`, validatePreferredLocation);
+      interested: yup.mixed().optional(errorMessageIndex(index, indexName)).test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
+      nonHCAP: yup.mixed().optional(errorMessageIndex(index, indexName)).test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
+      crcClear: yup.mixed().optional(errorMessageIndex(index, indexName)).test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
+    }).test('is-preferred-location-specified', () => `Please specify a preferred (EOI) location for participant of row ${index}`, validatePreferredLocation);
   }),
 );
 
@@ -217,5 +223,5 @@ module.exports = {
   isBooleanValue,
   evaluateBooleanAnswer,
   AccessRequestApproval,
-  EmployerSiteSchema,
+  EmployerSiteBatchSchema,
 };

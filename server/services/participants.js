@@ -3,6 +3,7 @@ const {
   validate, ParticipantBatchSchema, isBooleanValue, evaluateBooleanAnswer,
 } = require('../validation.js');
 const { dbClient, collections } = require('../db');
+const { createRows, verifyHeaders } = require('../utils');
 const { userRegionQuery } = require('./user.js');
 
 const getParticipants = async (user) => {
@@ -65,30 +66,6 @@ const parseAndSaveParticipants = async (fileBuffer) => {
     'CB13: CRC Clear': 'crcClear',
   };
 
-  const verifyHeaders = (dataRows) => {
-    const headers = dataRows[0];
-    Object.keys(columnMap).forEach((columName) => {
-      if (!headers.includes(columName)) {
-        throw new Error(`Missing header "${columName}" in participants spreadsheet`);
-      }
-    });
-  };
-
-  const createRows = (dataRows) => {
-    const headers = dataRows[0];
-    const rowSize = dataRows.length;
-    const rows = [];
-    dataRows.slice(1, rowSize).forEach((dataRow) => {
-      if (dataRow.length === 0) return; // ignore empty rows
-      const row = {};
-      headers.forEach((header, index) => {
-        row[columnMap[header]] = dataRow[index];
-      });
-      rows.push(row);
-    });
-    return rows;
-  };
-
   const objectMap = (row) => {
     const object = { ...row };
 
@@ -112,8 +89,8 @@ const parseAndSaveParticipants = async (fileBuffer) => {
   };
 
   const xlsx = readXlsxFile.parse(fileBuffer, { raw: true });
-  verifyHeaders(xlsx[0].data);
-  const rows = createRows(xlsx[0].data);
+  verifyHeaders(xlsx[0].data, columnMap);
+  const rows = createRows(xlsx[0].data, columnMap);
   await validate(ParticipantBatchSchema, rows);
   const response = [];
   const promises = rows.map((row) => dbClient.db.saveDoc(collections.PARTICIPANTS, objectMap(row)));

@@ -52,10 +52,6 @@ local-clean:
 local-server-tests:
 	@echo "Running tests in local app container"
 	@docker exec -it $(APP_NAME)-server npm test
-	
-local-clean:
-	@echo "Stopping and cleaning local app container"
-	@docker-compose -f docker-compose.dev.yml down -v
 
 database: ## <Helper> :: Executes into database container.
 	@echo "Make: Shelling into local database container ..."

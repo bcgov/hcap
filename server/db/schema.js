@@ -15,6 +15,12 @@ const schema = [
       `CREATE UNIQUE INDEX maximusId ON ${collections.PARTICIPANTS}( (body->>'maximusId') ) ;`,
     ],
   },
+  {
+    collection: collections.EMPLOYER_SITES,
+    indexes: [
+      `CREATE UNIQUE INDEX siteId ON ${collections.EMPLOYER_SITES}( (body->>'siteId') ) ;`,
+    ],
+  },
 ];
 
 module.exports = { collections, schema };

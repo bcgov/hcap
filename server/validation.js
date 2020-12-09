@@ -159,13 +159,13 @@ const EmployerSiteBatchSchema = yup.array().of(
   yup.lazy((item, options) => {
     const index = options.parent.indexOf(item);
     return yup.object().noUnknown(`Unknown field in site data (index ${index})`).shape({
-      siteId: yup.number(errorMessageIndex(index)),
-      siteName: yup.string().nullable(errorMessageIndex(index)),
-      earlyAdaptorAllocation: yup.number().nullable(errorMessageIndex(index)),
+      siteId: yup.number().required(errorMessageIndex(index)),
+      siteName: yup.string().required(errorMessageIndex(index)),
+      earlyAdopterAllocation: yup.number().nullable(errorMessageIndex(index)),
       address: yup.string().nullable(errorMessageIndex(index)),
       city: yup.string().nullable(errorMessageIndex(index)),
-      healthAuthority: yup.string().nullable(errorMessageIndex(index)).oneOf(healthRegions, `Invalid location (index ${index})`),
-      postalCode: yup.string().nullable(errorMessageIndex(index)).matches(/(^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)$/, { excludeEmptyString: true, message: `Format as A1A 1A1 (index ${index})` }),
+      healthAuthority: yup.string().required(errorMessageIndex(index)).oneOf(healthRegions, `Invalid location (index ${index})`),
+      postalCode: yup.string().required(errorMessageIndex(index)).matches(/(^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)$/, { excludeEmptyString: true, message: `Format as A1A 1A1 (index ${index})` }),
       registeredBusinessName: yup.string().nullable(errorMessageIndex(index)),
       operatorContactFirstName: yup.string().nullable(errorMessageIndex(index)),
       operatorContactLastName: yup.string().nullable(errorMessageIndex(index)),

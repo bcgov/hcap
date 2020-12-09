@@ -168,6 +168,7 @@ const EmployerSiteBatchSchema = yup.array().of(
       healthAuthority: yup.string().required(errorMessageIndex(index)).oneOf(healthRegions, `Invalid location (index ${index})`),
       postalCode: yup.string().required(errorMessageIndex(index)).matches(/(^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)$/, { excludeEmptyString: true, message: `Format as A1A 1A1 (index ${index})` }),
       registeredBusinessName: yup.string().nullable(errorMessageIndex(index)),
+      operatorName: yup.string().nullable(errorMessageIndex(index)),
       operatorContactFirstName: yup.string().nullable(errorMessageIndex(index)),
       operatorContactLastName: yup.string().nullable(errorMessageIndex(index)),
       operatorEmail: yup.string().email(`should be a valid email address (index ${index})`).nullable(errorMessageIndex(index)),

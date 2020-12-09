@@ -18,6 +18,7 @@ const { createRows, verifyHeaders } = require('../utils');
         City: 'city',
         'Post Code': 'postalCode',
         'Registered Business Name': 'registeredBusinessName',
+        'Operator Name': 'operatorName',
         'Operator Contact First Name': 'operatorContactFirstName',
         'Operator Contact Last Name': 'operatorContactLastName',
         'Operator Contact Email': 'operatorEmail',

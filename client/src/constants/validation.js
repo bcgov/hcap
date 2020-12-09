@@ -88,6 +88,7 @@ export const LoginSchema = yup.object().noUnknown().shape({
 });
 
 export const ApproveAccessRequestSchema = yup.object().noUnknown().shape({
+  sites: yup.array().required('Employer Sites is required').min(1, 'At least 1 employer site is required'),
   region: yup.string().required('Region is required').oneOf(healthRegions, 'Invalid region'),
   role: yup.string().required('Role is required').oneOf(userRoles, 'Invalid role'),
 });

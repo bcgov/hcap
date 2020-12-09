@@ -211,6 +211,7 @@ const ParticipantBatchSchema = yup.array().of(
 
 const AccessRequestApproval = yup.object().noUnknown('Unknown field in form').shape({
   userId: yup.string().required('User ID is required'),
+  sites: yup.array().required('Employer Sites is required').min(1, 'At least 1 employer site is required'),
   region: yup.string().required('Region is required').oneOf(healthRegions, 'Invalid region'),
   role: yup.string().required('Role is required').oneOf(userRoles, 'Invalid role'),
 });

@@ -143,10 +143,13 @@ and then submits to the /form endpoint. Example of file names:
 - Health Career Access Program - Expression of Interest - 8353ec90e6ea8727.xml
 - Health Career Access Program - Expression of Interest - 91113c10e0xx872x (1).xml
 
+#### `npm run feed-sites my_spreadsheet.xlsx`
+
+Parses a given xlsx file inside the `server/scripts/xlsx/` folder and feeds the `employer_sites` table.
+
 #### `npm run stats`
 
 Shows the EEOI submission stats of a given period of days. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`)
-
 
 #### `npm run export`
 

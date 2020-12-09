@@ -149,6 +149,7 @@ export default () => {
                 label="* User Role"
                 options={[
                   { value: 'health_authority', label: 'Health Authority' },
+                  { value: 'employer', label: 'Private Employer' },
                 ]}
               />
               <Box mt={3}>

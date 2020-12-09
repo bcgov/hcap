@@ -43,6 +43,7 @@ export default () => {
   };
 
   const handleSubmit = async (values) => {
+    console.log(values);
     const response = await fetch('/api/v1/approve-user', {
       headers: { 'Content-type': 'application/json', 'Authorization': `Bearer ${store.get('TOKEN')}` },
       method: 'POST',

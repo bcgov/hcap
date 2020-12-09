@@ -1,5 +1,7 @@
 const request = require('supertest');
+const { ValidationError } = require('yup');
 const app = require('../server');
+const { saveSites, getSites } = require('../services/employers.js');
 const { startDB, closeDB } = require('./util/db');
 
 describe('Server V1 Form Endpoints', () => {
@@ -16,6 +18,25 @@ describe('Server V1 Form Endpoints', () => {
   });
 
   const formEndpoint = '/api/v1/employer-form';
+
+  const site = {
+    siteId: 67,
+    siteName: 'Test site',
+    earlyAdopterAllocation: 1,
+    address: '123 XYZ',
+    city: 'Victoria',
+    healthAuthority: 'Vancouver Island',
+    postalCode: 'V8V 1M5',
+    registeredBusinessName: 'AAA',
+    operatorContactFirstName: 'AABB',
+    operatorContactLastName: 'CCC',
+    operatorEmail: 'test@hcpa.fresh',
+    operatorPhone: '2219909090',
+    siteContactFirstName: 'NNN',
+    siteContactLastName: 'PCP',
+    siteContactPhoneNumber: '2219909091',
+    siteContactEmailAddress: 'test.site@hcpa.fresh',
+  };
 
   const form = {
 
@@ -149,5 +170,36 @@ describe('Server V1 Form Endpoints', () => {
       .post(formEndpoint)
       .send({ ...form, doesCertify: false });
     expect(res.statusCode).toEqual(400);
+  });
+
+  it('Create new site, receive success', async () => {
+    const res = await saveSites(site);
+    const expectedRes = [
+      { siteId: 67, status: 'Success' },
+    ];
+    expect(res).toEqual(expectedRes);
+  });
+
+  it('Get sites, receive all successfully', async () => {
+    const res = await getSites();
+    expect(res).toEqual(
+      expect.arrayContaining(
+        [site].map((item) => (expect.objectContaining(item))),
+      ),
+    );
+  });
+
+  it('Create new site, receive validation error', async () => {
+    expect(
+      saveSites({ ...site, siteContactPhoneNumber: '1' }),
+    ).rejects.toEqual(new ValidationError('Phone number must be provided as 10 digits (index 0)'));
+  });
+
+  it('Create new site, receive duplicated', async () => {
+    const res = await saveSites(site);
+    const expectedRes = [
+      { siteId: 67, status: 'Duplicate' },
+    ];
+    expect(res).toEqual(expectedRes);
   });
 });

@@ -1,3 +1,5 @@
+const { dbClient, collections } = require('../db');
+
 const userRegionQuery = (regions, target) => {
   if (regions.length === 0) return null;
   return {
@@ -5,4 +7,9 @@ const userRegionQuery = (regions, target) => {
   };
 };
 
-module.exports = { userRegionQuery };
+const getUser = async (id) => {
+  const query = { keycloakId: id };
+  return dbClient.db[collections.EMPLOYER_FORMS].findDoc(query);
+};
+
+module.exports = { getUser, userRegionQuery };

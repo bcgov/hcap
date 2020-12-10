@@ -1,8 +1,13 @@
+/* eslint-disable no-restricted-syntax, no-await-in-loop */
 const { readFileSync } = require('fs');
 const { join } = require('path');
 const { ValidationError } = require('yup');
 const { startDB, closeDB } = require('./util/db');
-const { parseAndSaveParticipants, getParticipants } = require('../services/participants.js');
+const {
+  parseAndSaveParticipants,
+  getParticipants,
+  setParticipantStatus,
+} = require('../services/participants.js');
 const { evaluateBooleanAnswer } = require('../validation');
 
 describe('Participants Service', () => {
@@ -189,6 +194,35 @@ describe('Participants Service', () => {
         allParticipants.map((item) => (expect.objectContaining(item))),
       ),
     );
+  });
+
+  it('Set participant status with different employers, fetch participant with status', async () => {
+    const participants = await getParticipants({ isSuperUser: true });
+
+    const employerAId = 12345;
+    const employerBId = 12346;
+
+    for (const participant of participants) {
+      await setParticipantStatus(employerAId, participant.id, 'status');
+      await setParticipantStatus(employerAId, participant.id, 'status2');
+      await setParticipantStatus(employerAId, participant.id, 'status3');
+    }
+
+    await setParticipantStatus(employerBId, participants[0].id, 'status3');
+
+    const participantsWithStatus = await getParticipants({ isSuperUser: true }, { status: true });
+
+    expect(participantsWithStatus[0].statusInfo[0].employerId).toEqual(employerBId);
+    expect(participantsWithStatus[0].statusInfo[1].employerId).toEqual(employerAId);
+    expect(participantsWithStatus[1].statusInfo.length).toEqual(1);
+    expect(participantsWithStatus[2].statusInfo.length).toEqual(1);
+    expect(participantsWithStatus[3].statusInfo.length).toEqual(1);
+    expect(participantsWithStatus[4].statusInfo.length).toEqual(1);
+    expect(participantsWithStatus[5].statusInfo.length).toEqual(1);
+    expect(participantsWithStatus[6].statusInfo.length).toEqual(1);
+    expect(participantsWithStatus[7].statusInfo.length).toEqual(1);
+    expect(participantsWithStatus[8].statusInfo.length).toEqual(1);
+    expect(participantsWithStatus[9].statusInfo.length).toEqual(1);
   });
 
   it('Get participants as MoH, receive successfully', async () => {

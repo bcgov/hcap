@@ -139,6 +139,7 @@ app.post(`${apiBaseUrl}/approve-user`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
     await validate(AccessRequestApproval, req.body);
+    // TODO HCAP-249 Save sites selected on access request approvals (req.body.sites)
     await keycloak.approvePendingRequest(req.body.userId, req.body.role, [req.body.region]);
     res.json({});
   }));

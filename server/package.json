@@ -7,6 +7,7 @@
   "scripts": {
     "parse-xml": "cd scripts && node parse-xml.js xml",
     "migrate": "node-pg-migrate",
+    "feed-sites": "node scripts/feed-sites.js",
     "stats": "node scripts/stats.js",
     "export": "node scripts/export.js",
     "watch": "NODE_ENV=development nodemon main.js",

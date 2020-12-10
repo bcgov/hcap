@@ -28,6 +28,7 @@ describe('Server V1 Form Endpoints', () => {
     healthAuthority: 'Vancouver Island',
     postalCode: 'V8V 1M5',
     registeredBusinessName: 'AAA',
+    operatorName: 'Test Operator',
     operatorContactFirstName: 'AABB',
     operatorContactLastName: 'CCC',
     operatorEmail: 'test@hcpa.fresh',

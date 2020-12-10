@@ -8,7 +8,7 @@ import { useToast } from '../../hooks';
 import { Button, Page, Table, CheckPermissions, Dialog } from '../../components/generic';
 import { ApproveAccessRequestSchema, ToastStatus } from '../../constants';
 import { FastField, Formik, Form as FormikForm } from 'formik';
-import { RenderSelectField } from '../../components/fields';
+import { RenderMultiSelectField, RenderSelectField } from '../../components/fields';
 
 const columns = [
   { id: 'firstName', name: 'First Name' },
@@ -22,6 +22,7 @@ const columns = [
 export default () => {
 
   const [roles, setRoles] = useState([]);
+  const [sites, setSites] = useState([]);
   const [order, setOrder] = useState('asc');
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoadingData, setLoadingData] = useState(false);
@@ -91,6 +92,20 @@ export default () => {
     setLoadingData(false);
   };
 
+  const fetchSites = async () => {
+    setLoadingData(true);
+    const response = await fetch('/api/v1/employer-sites', {
+      headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const { data } = await response.json();
+      setSites(data);
+    }
+    setLoadingData(false);
+  };
+
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
 
   useEffect(() => {
@@ -110,9 +125,11 @@ export default () => {
 
     fetchUserInfo();
     fetchPendingUsers();
+    fetchSites();
   }, [history]);
 
   const initialValues = {
+    sites: [],
     region: '',
     role: '',
   };
@@ -131,6 +148,18 @@ export default () => {
         >
           {({ submitForm }) => (
             <FormikForm>
+              <FastField
+                name="sites"
+                component={RenderMultiSelectField}
+                label="* Employer Sites (followed with allocation number)"
+                options={
+                  _orderBy(sites, ['siteName'])
+                    .filter(item => item.earlyAdopterAllocation > 0)
+                    .map(item => (
+                      { value: item.siteId, label: `${item.siteName} (${item.earlyAdopterAllocation})` }
+                    ))
+                }
+              />
               <FastField
                 name="region"
                 component={RenderSelectField}
@@ -179,10 +208,10 @@ export default () => {
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pt={4} pb={4} pl={2} pr={2}>
             <Typography variant="subtitle1" gutterBottom>
-              { isPendingRequests ? 'Pending Access Requests' : 'No pending access requests' }
+              {isPendingRequests ? 'Pending Access Requests' : 'No pending access requests'}
             </Typography>
           </Box>
-          { isPendingRequests && <Box pt={2} pb={2} pl={2} pr={2} width="100%">
+          {isPendingRequests && <Box pt={2} pb={2} pl={2} pr={2} width="100%">
             <Table
               columns={columns}
               order={order}
@@ -191,7 +220,7 @@ export default () => {
               rows={sort(rows)}
               isLoading={isLoadingData}
             />
-          </Box> }
+          </Box>}
         </Grid>
       </CheckPermissions>
     </Page>

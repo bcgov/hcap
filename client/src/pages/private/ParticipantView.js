@@ -11,7 +11,7 @@ const defaultColumns = [
   { id: 'id', name: 'ID' },
   { id: 'lastName', name: 'Last Name' },
   { id: 'firstName', name: 'First Name' },
-  { id: 'postalCode', name: 'Postal Code' },
+  { id: 'postalCodeFsa', name: 'FSA' },
   { id: 'preferredLocation', name: 'Preferred Region(s)' },
   { id: 'nonHCAP', name: 'Non-HCAP' },
 ];
@@ -20,7 +20,7 @@ const sortOrder = [
   'id',
   'lastName',
   'firstName',
-  'postalCode',
+  'postalCodeFsa',
   'phoneNumber',
   'emailAddress',
   'preferredLocation',

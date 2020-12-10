@@ -141,6 +141,10 @@ app.post(`${apiBaseUrl}/approve-user`,
     await validate(AccessRequestApproval, req.body);
     // TODO HCAP-249 Save sites selected on access request approvals (req.body.sites)
     await keycloak.approvePendingRequest(req.body.userId, req.body.role, [req.body.region]);
+    await dbClient.db.saveDoc(collections.USERS, {
+      keycloakId: req.body.userId,
+      // TODO: Add sites to user object
+    });
     res.json({});
   }));
 

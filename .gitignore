@@ -10,6 +10,7 @@ client/build
 server/*.pdf
 server/pdfs/*
 server/db/.migrate
+server/scripts/xlsx
 
 # Misc.
 docs

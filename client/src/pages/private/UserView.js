@@ -151,7 +151,7 @@ export default () => {
               <FastField
                 name="sites"
                 component={RenderMultiSelectField}
-                label="* Employer Sites (followed with allocation number)"
+                label="* Employer Sites (allocation number)"
                 options={
                   _orderBy(sites, ['siteName'])
                     .filter(item => item.earlyAdopterAllocation > 0)

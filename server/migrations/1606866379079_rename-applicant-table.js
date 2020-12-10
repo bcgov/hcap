@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 const { ERROR_UNIDENTIFIED_TABLE } = require('../db/common');
 
 exports.up = async (pgm) => {

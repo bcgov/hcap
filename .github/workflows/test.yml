@@ -9,7 +9,7 @@ jobs:
   test:
     name: Run NPM Test (e2e)
     runs-on: ubuntu-latest
-    container: node:12-alpine
+    container: node:14-alpine
     services:
       postgres:
         image: postgres:13-alpine

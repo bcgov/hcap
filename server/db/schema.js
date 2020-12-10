@@ -6,20 +6,21 @@ const collections = {
   PARTICIPANTS: 'participants',
   EMPLOYER_FORMS: 'employer_forms',
   EMPLOYER_SITES: 'employer_sites',
+  USERS: 'users',
 };
 
 const schema = [
   {
     collection: collections.PARTICIPANTS,
-    indexes: [
-      `CREATE UNIQUE INDEX maximusId ON ${collections.PARTICIPANTS}( (body->>'maximusId') ) ;`,
-    ],
+    indexes: ['maximusId'],
   },
   {
     collection: collections.EMPLOYER_SITES,
-    indexes: [
-      `CREATE UNIQUE INDEX siteId ON ${collections.EMPLOYER_SITES}( (body->>'siteId') ) ;`,
-    ],
+    indexes: ['siteId'],
+  },
+  {
+    collection: collections.USERS,
+    indexes: ['keycloakId'],
   },
 ];
 

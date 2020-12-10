@@ -1,5 +1,5 @@
 # Client
-FROM node:12-alpine AS client
+FROM node:14-alpine AS client
 
 # Build client
 RUN apk add --no-cache git python g++ make
@@ -10,7 +10,7 @@ COPY client/. .
 RUN INLINE_RUNTIME_CHUNK=false npm run build
 
 # Server
-FROM node:12-alpine AS server
+FROM node:14-alpine AS server
 
 # Static env vars
 ARG VERSION

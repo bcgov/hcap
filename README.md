@@ -147,6 +147,8 @@ and then submits to the /form endpoint. Example of file names:
 
 Parses a given xlsx file inside the `server/scripts/xlsx/` folder and feeds the `employer_sites` table.
 
+If you've spun up the application using Docker Compose i.e. `make local-run`, you can run the site seeding script with `docker exec -it hcap-server npm run my_spreadsheet.xlsx`.
+
 #### `npm run stats`
 
 Shows the EEOI submission stats of a given period of days. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`)

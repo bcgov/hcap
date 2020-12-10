@@ -1,5 +1,6 @@
 const massive = require('massive');
 const migrationRunner = require('node-pg-migrate');
+const { ERROR_DUPLICATED } = require('./common');
 
 /**
  * This utility module provides helper methods to allow the application
@@ -14,12 +15,6 @@ class DBClient {
       user: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
     };
-    /**
-     * Current Database
-     *
-     * @type {Db|null}
-     * @memberof DB
-     */
     this.db = null;
   }
 
@@ -46,17 +41,26 @@ class DBClient {
     }
   }
 
-  /**
-   * Connect to database
-   * You don't need to worry about closing the connection in your code.
-   * The underlying pg lib worries about it for you.
-   *
-   * @returns {Promise<void>}
-   * @memberof DB
-   */
   async connect() {
     if (this.db) return;
     this.db = await massive(this.settings);
+  }
+
+  async createDocumentTableIfNotExists(table) {
+    try {
+      await this.db.createDocumentTable(table);
+    } catch (err) {
+      if (err.code !== ERROR_DUPLICATED) throw err;
+    }
+  }
+
+  async createIndexIfNotExists(table, field) {
+    try {
+      const query = `CREATE UNIQUE INDEX ${field} ON ${table}( (body->>'${field}') ) ;`;
+      await this.db.query(query);
+    } catch (err) {
+      if (err.code !== ERROR_DUPLICATED) throw err;
+    }
   }
 }
 

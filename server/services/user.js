@@ -9,7 +9,8 @@ const userRegionQuery = (regions, target) => {
 
 const getUser = async (id) => {
   const query = { keycloakId: id };
-  return dbClient.db[collections.EMPLOYER_FORMS].findDoc(query);
+  const options = { single: true };
+  return dbClient.db[collections.USERS].findDoc(query, options);
 };
 
 module.exports = { getUser, userRegionQuery };

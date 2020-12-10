@@ -61,14 +61,13 @@ class Keycloak { // Wrapper class around keycloak-connect
   getUserInfoMiddleware() { // Connect middleware for adding HCAP user info to request object
     return async (req, res, next) => {
       try {
-        // Optional chaining would be great here once ESLint supports it *sigh*
         const { content } = req.kauth.grant.access_token;
-        const { roles } = content.resource_access[this.clientNameFrontend] || { roles: [] };
-        const { sites } = await getUser(content.sub);
+        const roles = content?.resource_access[this.clientNameFrontend]?.roles || [];
+        const user = await getUser(content.sub);
         req.hcapUserInfo = {
           name: content.name,
           id: content.sub,
-          sites: sites || [],
+          sites: user?.sites || [],
           roles,
           regions: roles.map((role) => regionMap[role]).filter((region) => region),
           isSuperUser: roles.includes('superuser'),

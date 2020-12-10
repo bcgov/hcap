@@ -1,4 +1,4 @@
-FROM node:12-alpine
+FROM node:14-alpine
 
 # Allow node modules to be called directly
 ENV PATH $PATH:/client/node_modules/.bin

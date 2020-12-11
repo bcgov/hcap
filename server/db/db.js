@@ -47,29 +47,26 @@ class DBClient {
   }
 
   async runRawQuery(query) {
-    if (query) {
-      await this.db.query(query);
-    }
+    if (!query) return;
+    await this.db.query(query);
   }
 
   async createDocumentTableIfNotExists(table) {
-    if (table) {
-      try {
-        await this.db.createDocumentTable(table);
-      } catch (err) {
-        if (err.code !== ERROR_DUPLICATED) throw err;
-      }
+    if (!table) return;
+    try {
+      await this.db.createDocumentTable(table);
+    } catch (err) {
+      if (err.code !== ERROR_DUPLICATED) throw err;
     }
   }
 
   async createIndexIfNotExists(table, field) {
-    if (table && field) {
-      try {
-        const query = `CREATE UNIQUE INDEX ${field} ON ${table}( (body->>'${field}') ) ;`;
-        await this.db.query(query);
-      } catch (err) {
-        if (err.code !== ERROR_DUPLICATED) throw err;
-      }
+    if (!table || !field) return;
+    try {
+      const query = `CREATE UNIQUE INDEX ${field} ON ${table}( (body->>'${field}') ) ;`;
+      await this.db.query(query);
+    } catch (err) {
+      if (err.code !== ERROR_DUPLICATED) throw err;
     }
   }
 }

@@ -6,19 +6,24 @@ const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { userRegionQuery } = require('./user.js');
 
-const setParticipantStatus = async (employerId, participantId, status) => {
-  await dbClient.db[collections.PARTICIPANTS_STATUS].update({
+const setParticipantStatus = async (
+  employerId,
+  participantId,
+  status,
+) => dbClient.db.withTransaction(async (tx) => {
+  await tx[collections.PARTICIPANTS_STATUS].update({
     employer_id: employerId,
     participant_id: participantId,
     current: true,
   }, { current: false });
-  return dbClient.db[collections.PARTICIPANTS_STATUS].save({
+
+  return tx[collections.PARTICIPANTS_STATUS].save({
     employer_id: employerId,
     participant_id: participantId,
     status,
     current: true,
   });
-};
+});
 
 const flatJoinedParticipantStatus = (raw) => {
   const prticipantsMap = new Map();

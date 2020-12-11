@@ -46,7 +46,13 @@ class DBClient {
     this.db = await massive(this.settings);
   }
 
+  async runRawQuery(query) {
+    if (!query) return;
+    await this.db.query(query);
+  }
+
   async createDocumentTableIfNotExists(table) {
+    if (!table) return;
     try {
       await this.db.createDocumentTable(table);
     } catch (err) {
@@ -55,6 +61,7 @@ class DBClient {
   }
 
   async createIndexIfNotExists(table, field) {
+    if (!table || !field) return;
     try {
       const query = `CREATE UNIQUE INDEX ${field} ON ${table}( (body->>'${field}') ) ;`;
       await this.db.query(query);

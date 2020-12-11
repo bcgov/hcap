@@ -6,11 +6,85 @@ const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { userRegionQuery } = require('./user.js');
 
-const getParticipants = async (user) => {
+const setParticipantStatus = async (
+  employerId,
+  participantId,
+  status,
+) => dbClient.db.withTransaction(async (tx) => {
+  await tx[collections.PARTICIPANTS_STATUS].update({
+    employer_id: employerId,
+    participant_id: participantId,
+    current: true,
+  }, { current: false });
+
+  return tx[collections.PARTICIPANTS_STATUS].save({
+    employer_id: employerId,
+    participant_id: participantId,
+    status,
+    current: true,
+  });
+});
+
+const flatJoinedParticipantStatus = (raw) => {
+  const prticipantsMap = new Map();
+  const participantsStatusMap = new Map();
+
+  raw.forEach((item) => {
+    prticipantsMap.set(item[`${collections.PARTICIPANTS}__id`], {
+      ...item[`${collections.PARTICIPANTS}__body`],
+      id: item[`${collections.PARTICIPANTS}__id`],
+    });
+
+    const participantStatus = participantsStatusMap.get(item[`${collections.PARTICIPANTS_STATUS}__participant_id`]);
+
+    participantsStatusMap.set(
+      item[`${collections.PARTICIPANTS_STATUS}__participant_id`],
+      participantStatus ? [...participantStatus, item] : [item],
+    );
+  });
+
+  const participants = [];
+
+  prticipantsMap.forEach((item, participantId) => {
+    let statusInfos = participantsStatusMap.get(participantId);
+    if (statusInfos) {
+      statusInfos = statusInfos.map((statusInfo) => ({
+        createdAt: statusInfo[`${collections.PARTICIPANTS_STATUS}__created_at`],
+        employerId: statusInfo[`${collections.PARTICIPANTS_STATUS}__employer_id`],
+        status: statusInfo[`${collections.PARTICIPANTS_STATUS}__status`],
+      }));
+    } else {
+      statusInfos = [];
+    }
+    participants.push({
+      ...item,
+      statusInfos,
+    });
+  });
+
+  return participants;
+};
+
+const getParticipants = async (user, options) => {
   const criteria = user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'preferredLocation');
-  const participants = criteria
-    ? await dbClient.db[collections.PARTICIPANTS].findDoc(criteria)
+  let table = dbClient.db[collections.PARTICIPANTS];
+  const showStatus = options && options.status;
+  if (showStatus) {
+    table = table.join({
+      [collections.PARTICIPANTS_STATUS]: {
+        type: 'LEFT OUTER',
+        on: { participant_id: 'id', current: true },
+      },
+    });
+  }
+
+  let participants = criteria
+    ? await table.findDoc(criteria)
     : [];
+
+  if (showStatus) {
+    participants = flatJoinedParticipantStatus(participants);
+  }
 
   if (user.isSuperUser) {
     return participants;
@@ -33,7 +107,7 @@ const getParticipants = async (user) => {
   return participants
     .filter((item) => (
       evaluateBooleanAnswer(item.interested)
-    && evaluateBooleanAnswer(item.crcClear)))
+      && evaluateBooleanAnswer(item.crcClear)))
     .map((item) => ({
       id: item.id,
       firstName: item.firstName,
@@ -41,9 +115,9 @@ const getParticipants = async (user) => {
       postalCode: item.postalCode,
       preferredLocation: item.preferredLocation,
       nonHCAP: item.nonHCAP,
-    /// / TODO uncomment/rework on HCAP-222
-    // phoneNumber: item.phoneNumber,
-    // emailAddress: item.emailAddress,
+      /// / TODO uncomment/rework on HCAP-222
+      // phoneNumber: item.phoneNumber,
+      // emailAddress: item.emailAddress,
     }));
 };
 
@@ -112,4 +186,4 @@ const parseAndSaveParticipants = async (fileBuffer) => {
   return response;
 };
 
-module.exports = { parseAndSaveParticipants, getParticipants };
+module.exports = { parseAndSaveParticipants, getParticipants, setParticipantStatus };

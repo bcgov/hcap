@@ -11,7 +11,7 @@ const defaultColumns = [
   { id: 'id', name: 'ID' },
   { id: 'lastName', name: 'Last Name' },
   { id: 'firstName', name: 'First Name' },
-  { id: 'postalCodeFsa', name: 'FSA' },
+  { id: 'postalCode', name: 'FSA' },
   { id: 'preferredLocation', name: 'Preferred Region(s)' },
   { id: 'nonHCAP', name: 'Non-HCAP' },
 ];
@@ -20,7 +20,7 @@ const sortOrder = [
   'id',
   'lastName',
   'firstName',
-  'postalCodeFsa',
+  'postalCode',
   'phoneNumber',
   'emailAddress',
   'preferredLocation',
@@ -78,7 +78,6 @@ export default () => {
   useEffect(() => {
 
     const resultColumns = [...defaultColumns];
-
     const fetchUserInfo = async () => {
       setLoadingUser(true);
       const response = await fetch('/api/v1/user', {
@@ -122,9 +121,13 @@ export default () => {
         if (!item.emailAddress) {
           item.emailAddress = '***@***.***';
         }
+
         if (!item.phoneNumber) {
           item.phoneNumber = '(***) ***-****';
         }
+
+        // Output the first three characters of the postal code only
+        item.postalCode = item.postalCode.substring(0,3);
 
         const row = mapItemToColumns(item, resultColumns);
         rows.push(row);
@@ -146,6 +149,7 @@ export default () => {
       let rows = [];
       if (response.ok) {
         const { data } = await response.json();
+        console.log(data);
         rows = filterData(data);
       }
 

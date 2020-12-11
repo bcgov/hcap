@@ -12,7 +12,7 @@ const collections = {
 
 const schema = [
   {
-    raw: `CREATE TABLE IF NOT EXISTS ${collections.PARTICIPANTS_STATUS}(
+    participantsStatusTable: `CREATE TABLE IF NOT EXISTS ${collections.PARTICIPANTS_STATUS}(
       id serial primary key, 
       "employer_id" integer not null, 
       "participant_id" integer not null, 
@@ -20,6 +20,7 @@ const schema = [
       "current" boolean not null, 
       "created_at" timestamp with time zone DEFAULT now()
       )`,
+    indexes: [],
   },
   {
     collection: collections.PARTICIPANTS,

@@ -212,17 +212,17 @@ describe('Participants Service', () => {
 
     const participantsWithStatus = await getParticipants({ isSuperUser: true }, { status: true });
 
-    expect(participantsWithStatus[0].statusInfo[0].employerId).toEqual(employerBId);
-    expect(participantsWithStatus[0].statusInfo[1].employerId).toEqual(employerAId);
-    expect(participantsWithStatus[1].statusInfo.length).toEqual(1);
-    expect(participantsWithStatus[2].statusInfo.length).toEqual(1);
-    expect(participantsWithStatus[3].statusInfo.length).toEqual(1);
-    expect(participantsWithStatus[4].statusInfo.length).toEqual(1);
-    expect(participantsWithStatus[5].statusInfo.length).toEqual(1);
-    expect(participantsWithStatus[6].statusInfo.length).toEqual(1);
-    expect(participantsWithStatus[7].statusInfo.length).toEqual(1);
-    expect(participantsWithStatus[8].statusInfo.length).toEqual(1);
-    expect(participantsWithStatus[9].statusInfo.length).toEqual(1);
+    expect(participantsWithStatus[0].statusInfos[0].employerId).toEqual(employerBId);
+    expect(participantsWithStatus[0].statusInfos[1].employerId).toEqual(employerAId);
+    expect(participantsWithStatus[1].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus[2].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus[3].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus[4].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus[5].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus[6].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus[7].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus[8].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus[9].statusInfos.length).toEqual(1);
   });
 
   it('Get participants as MoH, receive successfully', async () => {

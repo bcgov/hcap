@@ -46,20 +46,30 @@ class DBClient {
     this.db = await massive(this.settings);
   }
 
+  async runRawQuery(query) {
+    if (query) {
+      await this.db.query(query);
+    }
+  }
+
   async createDocumentTableIfNotExists(table) {
-    try {
-      await this.db.createDocumentTable(table);
-    } catch (err) {
-      if (err.code !== ERROR_DUPLICATED) throw err;
+    if (table) {
+      try {
+        await this.db.createDocumentTable(table);
+      } catch (err) {
+        if (err.code !== ERROR_DUPLICATED) throw err;
+      }
     }
   }
 
   async createIndexIfNotExists(table, field) {
-    try {
-      const query = `CREATE UNIQUE INDEX ${field} ON ${table}( (body->>'${field}') ) ;`;
-      await this.db.query(query);
-    } catch (err) {
-      if (err.code !== ERROR_DUPLICATED) throw err;
+    if (table && field) {
+      try {
+        const query = `CREATE UNIQUE INDEX ${field} ON ${table}( (body->>'${field}') ) ;`;
+        await this.db.query(query);
+      } catch (err) {
+        if (err.code !== ERROR_DUPLICATED) throw err;
+      }
     }
   }
 }

@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, TextField, MenuItem } from '@material-ui/core';
 import store from 'store';
 import { Page, Table, CheckPermissions } from '../../components/generic';
-import { TableFilter } from '../../components/generic/TableFilter';
 
 const defaultColumns = [
   { id: 'id', name: 'ID' },
@@ -38,6 +37,8 @@ export default () => {
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
   const [columns, setColumns] = useState(defaultColumns);
+  const [locationFilter, setLocationFilter] = useState(null);
+  const [fsaFilter, setFsaFilter] = useState(null);
   const [locations] = useState([
     'Interior',
     'Fraser',
@@ -72,6 +73,13 @@ export default () => {
     });
     return row;
   };
+
+  useEffect(() => { // Filter table
+    let filtered = fetchedRows;
+    if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
+    if (fsaFilter) filtered = filtered.filter((row) => row.postalCodeFsa.toUpperCase().startsWith(fsaFilter.toUpperCase()));
+    setRows(filtered);
+  }, [locationFilter, fsaFilter, fetchedRows]);
 
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 
@@ -179,13 +187,30 @@ export default () => {
               </Box>
             </Grid>
             <Grid item>
-              <Box minWidth={180}>
-                <TableFilter
-                  onFilter={(filteredRows) => setRows(filteredRows)}
-                  values={locations}
-                  rows={fetchedRows}
-                  label="Preferred Location"
-                  filterField="preferredLocation"
+              <Box>
+                <TextField
+                  select
+                  fullWidth
+                  variant="filled"
+                  inputProps={{ displayEmpty: true }}
+                  value={locationFilter || ''}
+                  onChange={({ target }) => setLocationFilter(target.value)}
+                >
+                  <MenuItem value="">Preferred Location</MenuItem>
+                  {locations.map((option) => (
+                    <MenuItem key={option} value={option}>{option}</MenuItem>
+                  ))}
+                </TextField>
+              </Box>
+            </Grid>
+            <Grid item>
+              <Box pl={2}>
+                <TextField
+                  variant="filled"
+                  fullWidth
+                  value={fsaFilter || ''}
+                  onChange={({ target }) => setFsaFilter(target.value)}
+                  placeholder='Forward Sortation Area'
                 />
               </Box>
             </Grid>

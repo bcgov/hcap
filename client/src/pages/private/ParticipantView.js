@@ -149,7 +149,6 @@ export default () => {
       let rows = [];
       if (response.ok) {
         const { data } = await response.json();
-        console.log(data);
         rows = filterData(data);
       }
 

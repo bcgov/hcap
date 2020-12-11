@@ -1,6 +1,7 @@
 {
   "baseUrl": "http://localhost:4000",
   "chromeWebSecurity": false,
+  "video": false,
   "env": {
     "auth_base_url": "https://dev.oidc.gov.bc.ca/auth",
     "auth_realm": "4qjrpzzl",

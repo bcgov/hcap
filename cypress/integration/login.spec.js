@@ -15,10 +15,27 @@ describe("Login", () => {
         });
       }).then(res => {
         cy.log(res)
-        cy.visit('/');
       });
   });
 
+  it("tests the /admin page as a superuser", () => {
+    cy.visit('/');
+    cy.kcNavAs("superuser", "admin");
+    cy.contains('Upload Participants').should('exist');
+    cy.contains('View Participants').should('exist');
+    cy.contains('View Employers').should('exist');
+    cy.contains('View Access Requests').should('exist');
+  });
+
+  it("tests the /admin page as an employer", () => {
+    cy.visit('/');
+    cy.kcNavAs("employer", "admin");
+    cy.contains('Upload Participants').should('not.exist');
+    cy.contains('View Participants').should('exist');
+    cy.contains('View Employers').should('not.exist');
+    cy.contains('View Access Requests').should('not.exist');
+  });
+})
 
   //// Arcane manual login feature
   //it("logs in via BCeID portal", () => {
@@ -43,4 +60,4 @@ describe("Login", () => {
   //  });
   //  cy.visit('localhost:4000/admin');
   //});
-})
+  //})

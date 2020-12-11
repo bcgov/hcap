@@ -78,7 +78,6 @@ export default () => {
   useEffect(() => {
 
     const resultColumns = [...defaultColumns];
-
     const fetchUserInfo = async () => {
       setLoadingUser(true);
       const response = await fetch('/api/v1/user', {
@@ -122,6 +121,7 @@ export default () => {
         if (!item.emailAddress) {
           item.emailAddress = '***@***.***';
         }
+
         if (!item.phoneNumber) {
           item.phoneNumber = '(***) ***-****';
         }

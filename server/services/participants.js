@@ -95,7 +95,7 @@ const getParticipants = async (user, options) => {
       id: item.id,
       firstName: item.firstName,
       lastName: item.lastName,
-      postalCode: item.postalCode,
+      postalCodeFsa: item.postalCodeFsa,
       preferredLocation: item.preferredLocation,
       nonHCAP: item.nonHCAP,
       interested: item.interested,
@@ -112,7 +112,7 @@ const getParticipants = async (user, options) => {
       id: item.id,
       firstName: item.firstName,
       lastName: item.lastName,
-      postalCode: item.postalCode,
+      postalCodeFsa: item.postalCodeFsa,
       preferredLocation: item.preferredLocation,
       nonHCAP: item.nonHCAP,
       /// / TODO uncomment/rework on HCAP-222

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import { checkPermissions, checkPending } from '../../utils';
@@ -14,12 +14,12 @@ export const CheckPermissions = ({ isLoading, roles, permittedRoles, children, r
     return children;
   }
 
-  const message = isPending 
-  ? <><p>Thank you for logging in. Your access request is being reviewed.</p>
-	<p>Please note that your access will only be granted if you have approved allocations under HCAP.</p></>
-  : <p>You don't have permission to view this content.</p>
-  ;
- 
+  const pendingMessage = <Fragment>
+    <p>Thank you for logging in. Your access request is being reviewed.</p>
+    <p>Please note that your access will only be granted if you have approved allocations under HCAP.</p>
+  </Fragment>;
+
+  const message = isPending ? pendingMessage : <p>You don't have permission to view this content.</p>;
 
   // Optional: display message if no access granted by role(s)
   if (renderErrorMessage) {

@@ -11,7 +11,7 @@ const defaultColumns = [
   { id: 'id', name: 'ID' },
   { id: 'lastName', name: 'Last Name' },
   { id: 'firstName', name: 'First Name' },
-  { id: 'postalCode', name: 'FSA' },
+  { id: 'postalCodeFsa', name: 'FSA' },
   { id: 'preferredLocation', name: 'Preferred Region(s)' },
   { id: 'nonHCAP', name: 'Non-HCAP' },
 ];
@@ -20,7 +20,7 @@ const sortOrder = [
   'id',
   'lastName',
   'firstName',
-  'postalCode',
+  'postalCodeFsa',
   'phoneNumber',
   'emailAddress',
   'preferredLocation',
@@ -125,9 +125,6 @@ export default () => {
         if (!item.phoneNumber) {
           item.phoneNumber = '(***) ***-****';
         }
-
-        // Output the first three characters of the postal code only
-        item.postalCode = item.postalCode.substring(0,3);
 
         const row = mapItemToColumns(item, resultColumns);
         rows.push(row);

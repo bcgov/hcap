@@ -30,15 +30,15 @@ const flatJoinedParticipantStatus = (raw) => {
   const participantsStatusMap = new Map();
 
   raw.forEach((item) => {
-    prticipantsMap.set(item.participants__id, {
-      ...item.participants__body,
-      id: item.participants__id,
+    prticipantsMap.set(item[`${collections.PARTICIPANTS}__id`], {
+      ...item[`${collections.PARTICIPANTS}__body`],
+      id: item[`${collections.PARTICIPANTS}__id`],
     });
 
-    const participantStatus = participantsStatusMap.get(item.participants_status__participant_id);
+    const participantStatus = participantsStatusMap.get(item[`${collections.PARTICIPANTS_STATUS}__participant_id`]);
 
     participantsStatusMap.set(
-      item.participants_status__participant_id,
+      item[`${collections.PARTICIPANTS_STATUS}__participant_id`],
       participantStatus ? [...participantStatus, item] : [item],
     );
   });
@@ -49,9 +49,9 @@ const flatJoinedParticipantStatus = (raw) => {
     let statusInfos = participantsStatusMap.get(participantId);
     if (statusInfos) {
       statusInfos = statusInfos.map((statusInfo) => ({
-        createdAt: statusInfo.participants_status__created_at,
-        employerId: statusInfo.participants_status__employer_id,
-        status: statusInfo.participants_status__status,
+        createdAt: statusInfo[`${collections.PARTICIPANTS_STATUS}__created_at`],
+        employerId: statusInfo[`${collections.PARTICIPANTS_STATUS}__employer_id`],
+        status: statusInfo[`${collections.PARTICIPANTS_STATUS}__status`],
       }));
     } else {
       statusInfos = [];

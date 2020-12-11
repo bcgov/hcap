@@ -84,6 +84,7 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
 
   // in case visitUrl is an url with a hash, a second hash should not be added to the url
   let joiningCharacter = visitUrl.indexOf("#") === -1 ? "#" : "&";
-  let url = Cypress.config().baseUrl + "/" + visitUrl + joiningCharacter + "state=" + state + "&session_state=" + utils_1.createUUID() + "&code=" + utils_1.createUUID();
+  let url = Cypress.config().baseUrl + "/" + visitUrl + joiningCharacter + "state=" + state 
+    + "&session_state=" + utils_1.createUUID() + "&code=" + utils_1.createUUID();
   cy.visit(url);
 });

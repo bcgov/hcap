@@ -17,17 +17,14 @@
  * @type {Cypress.PluginConfig}
  */
 
-module.exports = (on, config) => {
-  const { getAuthToken } = require('../support/get_token.js');
-  on('task', {
-    getToken (auth) {
-      return getAuthToken(auth);
-    }
-    
-
-    //getAuthToken
-  });
-};
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
+//module.exports = (on, config) => {
+//  const { getAuthToken } = require('../support/get_token.js');
+//  on('task', {
+//    getToken (auth) {
+//      return getAuthToken(auth);
+//    }
+//  });
+//};
+// `on` is used to hook into various events Cypress emits
+// `config` is the resolved Cypress config
 

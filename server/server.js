@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const dayjs = require('dayjs');
 const multer = require('multer');
-const { getParticipants, parseAndSaveParticipants } = require('./services/participants.js');
+const { getParticipants, parseAndSaveParticipants, setParticipantStatus } = require('./services/participants.js');
 const { getEmployers, saveSites, getSites } = require('./services/employers.js');
 const { validate, EmployerFormSchema, AccessRequestApproval } = require('./validation.js');
 const logger = require('./logger.js');
@@ -68,6 +68,20 @@ app.get(`${apiBaseUrl}/participants`,
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
     const result = await getParticipants(user);
+    return res.json({ data: result });
+  }));
+
+// Engage participant
+app.post(`${apiBaseUrl}/engage-participant`,
+  keycloak.allowRolesMiddleware('health_authority', 'employer'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const user = req.hcapUserInfo;
+    const result = await setParticipantStatus(
+      user.id,
+      req.body.participantId,
+      req.body.disengage ? 'open' : 'prospecting',
+      );
     return res.json({ data: result });
   }));
 

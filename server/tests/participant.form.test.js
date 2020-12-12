@@ -197,10 +197,10 @@ describe('Participants Service', () => {
   });
 
   it('Set participant status with different employers, fetch participant with status', async () => {
-    const participants = await getParticipants({ isSuperUser: true });
+    const employerAId = '12345-a';
+    const employerBId = '12345-b';
 
-    const employerAId = 12345;
-    const employerBId = 12346;
+    const participants = await getParticipants({ isSuperUser: true });
 
     for (const participant of participants) {
       await setParticipantStatus(employerAId, participant.id, 'status');
@@ -210,7 +210,7 @@ describe('Participants Service', () => {
 
     await setParticipantStatus(employerBId, participants[0].id, 'status3');
 
-    const participantsWithStatus = await getParticipants({ isSuperUser: true }, { status: true });
+    const participantsWithStatus = await getParticipants({ isSuperUser: true });
 
     expect(participantsWithStatus[0].statusInfos[0].employerId).toEqual(employerBId);
     expect(participantsWithStatus[0].statusInfos[1].employerId).toEqual(employerAId);

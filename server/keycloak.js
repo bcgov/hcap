@@ -70,6 +70,8 @@ class Keycloak { // Wrapper class around keycloak-connect
           sites: user?.sites || [],
           roles,
           regions: roles.map((role) => regionMap[role]).filter((region) => region),
+          isEmployer: roles.includes('employer'),
+          isHA: roles.includes('health_authority'),
           isSuperUser: roles.includes('superuser'),
           isMoH: roles.includes('ministry_of_health'),
         };

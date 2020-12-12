@@ -164,6 +164,33 @@ export default () => {
       }
     };
 
+    const handleEngage = async (participantId, isEngaged) => {
+      const response = await fetch('/api/v1/engage-participant', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${store.get('TOKEN')}`,
+          'Accept': 'application/json',
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({ participantId, disengage: isEngaged }),
+      });
+
+      if (response.ok) {
+        const { data, error } = await response.json();
+        if (error) {
+          openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
+        } else {
+          console.log(data);
+          const index = rows.findIndex(row => row.id === participantId);
+          rows[index] = { ...rows[index], emailAddress: data.emailAddress, phoneNumber: data.phoneNumber };
+          setRows(rows);
+          openToast({ status: ToastStatus.Success, message: 'You engaged' });
+        }
+      } else {
+        openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
+      }
+    };
+
     const filterData = (data) => {
       const filteredRows = [];
       data.forEach(dataItem => {

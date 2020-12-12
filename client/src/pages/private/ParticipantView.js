@@ -86,6 +86,9 @@ export default () => {
 
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 
+  const emailAddressMask = '***@***.***';
+  const phoneNumberMask = '(***) ***-****';
+
   useEffect(() => {
 
     const resultColumns = [...defaultColumns];
@@ -127,6 +130,15 @@ export default () => {
       }
     };
 
+    const renderEngageButton = (id, isEngaged) => (
+      <Button
+        onClick={() => handleEngage(id, isEngaged)}
+        variant="outlined"
+        size="small"
+        text={isEngaged ? 'Disengage' : 'Engage'}
+      />
+    );
+
     const handleEngage = async (participantId, isEngaged) => {
       const response = await fetch('/api/v1/engage-participant', {
         method: 'POST',
@@ -143,11 +155,18 @@ export default () => {
         if (error) {
           openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
         } else {
-          console.log(data);
           const index = rows.findIndex(row => row.id === participantId);
-          rows[index] = { ...rows[index], emailAddress: data.emailAddress, phoneNumber: data.phoneNumber };
+          rows[index] = {
+            ...rows[index],
+            emailAddress: data.emailAddress || emailAddressMask,
+            phoneNumber: data.phoneNumber || phoneNumberMask,
+            engage: renderEngageButton(participantId, !isEngaged),
+          };
           setRows(rows);
-          openToast({ status: ToastStatus.Success, message: 'You engaged' });
+          openToast({
+            status: ToastStatus.Success,
+            message: `You ${isEngaged ? 'disengaged' : 'engaged'} a participant`,
+          });
         }
       } else {
         openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
@@ -160,11 +179,11 @@ export default () => {
 
         const item = { ...dataItem };
         if (!item.emailAddress) {
-          item.emailAddress = '***@***.***';
+          item.emailAddress = emailAddressMask;
         }
 
         if (!item.phoneNumber) {
-          item.phoneNumber = '(***) ***-****';
+          item.phoneNumber = phoneNumberMask;
         }
 
         const row = mapItemToColumns(item, resultColumns);
@@ -173,14 +192,7 @@ export default () => {
           item => item.status === 'prospecting'
         ) ? true : false;
 
-        row.engage = (
-          <Button
-            onClick={() => handleEngage(item.id, isEngaged)}
-            variant="outlined"
-            size="small"
-            text={isEngaged ? 'Disengage' : 'Engage'}
-          />
-        );
+        row.engage = renderEngageButton(item.id, isEngaged);
 
         filteredRows.push(row);
       });
@@ -267,7 +279,7 @@ export default () => {
               order={order}
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
-              rows={sort(rows)}
+              rows={sort(rows)} //TODO wrap and set the engage button here to get rid of the hook warning
               isLoading={isLoadingData}
             />
           </Box>

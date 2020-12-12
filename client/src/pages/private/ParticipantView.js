@@ -164,6 +164,15 @@ export default () => {
       }
     };
 
+    const renderEngageButton = (id, isEngaged) => (
+      <Button
+        onClick={() => handleEngage(id, isEngaged)}
+        variant="outlined"
+        size="small"
+        text={isEngaged ? 'Disengage' : 'Engage'}
+      />
+    );
+
     const handleEngage = async (participantId, isEngaged) => {
       const response = await fetch('/api/v1/engage-participant', {
         method: 'POST',
@@ -180,11 +189,18 @@ export default () => {
         if (error) {
           openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
         } else {
-          console.log(data);
           const index = rows.findIndex(row => row.id === participantId);
-          rows[index] = { ...rows[index], emailAddress: data.emailAddress, phoneNumber: data.phoneNumber };
+          rows[index] = {
+            ...rows[index],
+            emailAddress: data.emailAddress || emailAddressMask,
+            phoneNumber: data.phoneNumber || phoneNumberMask,
+            engage: renderEngageButton(participantId, !isEngaged),
+          };
           setRows(rows);
-          openToast({ status: ToastStatus.Success, message: 'You engaged' });
+          openToast({
+            status: ToastStatus.Success,
+            message: `You ${isEngaged ? 'disengaged' : 'engaged'} a participant`,
+          });
         }
       } else {
         openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
@@ -311,7 +327,7 @@ export default () => {
                 }
               }
               onRequestSort={handleRequestSort}
-              rows={sort(rows)}
+              rows={sort(rows)} //TODO wrap and set the engage button here to get rid of the hook warning
               isLoading={isLoadingData}
             />
           </Box>

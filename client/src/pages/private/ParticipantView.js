@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography, TextField, MenuItem } from '@material-ui/core';
@@ -39,6 +39,7 @@ export default () => {
   const [isLoadingData, setLoadingData] = useState(false);
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [rows, setRows] = useState([]);
+  const rowsRef = useRef([]);
   const [fetchedRows, setFetchedRows] = useState([]);
   const [columns, setColumns] = useState(defaultColumns);
   const [locationFilter, setLocationFilter] = useState(null);
@@ -80,6 +81,7 @@ export default () => {
     let filtered = fetchedRows;
     if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
     if (fsaFilter) filtered = filtered.filter((row) => row.postalCodeFsa.toUpperCase().startsWith(fsaFilter.toUpperCase()));
+    rowsRef.current = filtered;
     setRows(filtered);
   }, [locationFilter, fsaFilter, fetchedRows]);
 
@@ -104,6 +106,7 @@ export default () => {
       if (error) {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
       } else {
+        const rows = rowsRef.current;
         const index = rows.findIndex(row => row.id === participantId);
         rows[index] = {
           ...rows[index],
@@ -126,7 +129,6 @@ export default () => {
   useEffect(() => {
 
     const resultColumns = [...defaultColumns];
-    let rows = [];
 
     const fetchUserInfo = async () => {
       setLoadingUser(true);
@@ -201,13 +203,14 @@ export default () => {
         method: 'GET',
       });
 
+      let newRows = [];
       if (response.ok) {
         const { data } = await response.json();
-        rows = filterData(data);
+        newRows = filterData(data);
       }
 
-      setFetchedRows(rows);
-      setRows(rows);
+      setFetchedRows(newRows);
+      setRows(newRows);
       setLoadingData(false);
     };
 

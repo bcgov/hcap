@@ -5,7 +5,6 @@ import { Box, Typography, TextField, MenuItem } from '@material-ui/core';
 import store from 'store';
 import { ToastStatus } from '../../constants';
 import { Page, Table, CheckPermissions, Button } from '../../components/generic';
-import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 
 const defaultColumns = [

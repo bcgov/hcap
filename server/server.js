@@ -6,6 +6,7 @@ const dayjs = require('dayjs');
 const multer = require('multer');
 const { getParticipants, parseAndSaveParticipants, setParticipantStatus } = require('./services/participants.js');
 const { getEmployers, saveSites, getSites } = require('./services/employers.js');
+const { getUser } = require('./services/user');
 const { validate, EmployerFormSchema, AccessRequestApproval } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -68,6 +69,20 @@ app.get(`${apiBaseUrl}/participants`,
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
     const result = await getParticipants(user);
+
+    // HCAP-242 - Log View Access Of Participant Data
+    const { content } = req.kauth.grant.access_token;
+    const logData = {
+      "action": "participant_get",
+      "accessed_by": {
+        "username": content.preferred_username,
+        "id": content.sub
+      },
+      //slicing so that things don't get out of hand with the IDs
+      "ids_viewed": result.map(person => person.id).slice(0,10),
+      "timestamp": new Date()
+    };
+    logger.info(logData)
     return res.json({ data: result });
   }));
 
@@ -108,6 +123,21 @@ app.post(`${apiBaseUrl}/participants`,
 
     try {
       const response = await parseAndSaveParticipants(req.file.buffer);
+
+      // HCAP-244 - Log Participant Upload
+      const { content } = req.kauth.grant.access_token;
+      const logData = {
+        "action": "participant_post",
+        "uploaded_by": {
+          "username": content.preferred_username,
+          "id": content.sub
+        },
+        //slicing so that things don't get out of hand with the IDs
+        "ids_posted": response.map(entry => entry.id).slice(0,10),
+        "timestamp": new Date()
+      };
+      logger.info(logData);
+
       return res.json(response);
     } catch (excp) {
       return res.status(400).send(`${excp}`);
@@ -118,6 +148,7 @@ app.post(`${apiBaseUrl}/participants`,
 app.get(`${apiBaseUrl}/pending-users`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
+        const user = await getUser(content.sub);
     const users = await keycloak.getPendingUsers();
     const scrubbed = users.map((user) => ({
       id: user.id,

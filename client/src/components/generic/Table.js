@@ -47,15 +47,29 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-export const Table = ({ order, orderBy, onRequestSort, columns, rows, isLoading, rowsPerPage = 10 }) => {
+export const Table = ({ order, orderBy, renderObjectCell, onRequestSort, columns, rows, isLoading, rowsPerPage = 10 }) => {
 
   const [pageRows, setPageRows] = useState([]);
   const [page, setPage] = useState(0);
 
   useEffect(() => {
     const offset = page * rowsPerPage;
-    setPageRows(rows.slice(offset, offset + rowsPerPage))
-  }, [rows, page, rowsPerPage]);
+
+    const paginatedRows = rows.slice(offset, offset + rowsPerPage);
+
+    if (renderObjectCell) {
+      paginatedRows.forEach(row => {
+        Object.keys(row).forEach((key) => {
+          if (!React.isValidElement(row[key]) &&
+            typeof row[key] === 'object' && row[key] !== null) {
+            row[key] = renderObjectCell(row[key]);
+          }
+        });
+      });
+    }
+
+    setPageRows(paginatedRows);
+  }, [rows, page, rowsPerPage, renderObjectCell]);
 
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);

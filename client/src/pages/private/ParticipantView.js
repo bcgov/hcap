@@ -89,6 +89,41 @@ export default () => {
   const emailAddressMask = '***@***.***';
   const phoneNumberMask = '(***) ***-****';
 
+  const handleEngage = async (participantId, isEngaged) => {
+    const response = await fetch('/api/v1/engage-participant', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        'Accept': 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({ participantId, disengage: isEngaged }),
+    });
+
+    if (response.ok) {
+      const { data, error } = await response.json();
+      if (error) {
+        openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
+      } else {
+        const index = rows.findIndex(row => row.id === participantId);
+        rows[index] = {
+          ...rows[index],
+          emailAddress: data.emailAddress || emailAddressMask,
+          phoneNumber: data.phoneNumber || phoneNumberMask,
+          engage: { id: participantId, isEngaged: !isEngaged },
+        };
+        setRows(rows);
+        const { firstName, lastName } = rows[index];
+        openToast({
+          status: ToastStatus.Success,
+          message: `You ${isEngaged ? 'disengaged' : 'engaged'} ${firstName} ${lastName}`,
+        });
+      }
+    } else {
+      openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
+    }
+  };
+
   useEffect(() => {
 
     const resultColumns = [...defaultColumns];
@@ -130,49 +165,6 @@ export default () => {
       }
     };
 
-    const renderEngageButton = (id, isEngaged) => (
-      <Button
-        onClick={() => handleEngage(id, isEngaged)}
-        variant="outlined"
-        size="small"
-        text={isEngaged ? 'Disengage' : 'Engage'}
-      />
-    );
-
-    const handleEngage = async (participantId, isEngaged) => {
-      const response = await fetch('/api/v1/engage-participant', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${store.get('TOKEN')}`,
-          'Accept': 'application/json',
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify({ participantId, disengage: isEngaged }),
-      });
-
-      if (response.ok) {
-        const { data, error } = await response.json();
-        if (error) {
-          openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
-        } else {
-          const index = rows.findIndex(row => row.id === participantId);
-          rows[index] = {
-            ...rows[index],
-            emailAddress: data.emailAddress || emailAddressMask,
-            phoneNumber: data.phoneNumber || phoneNumberMask,
-            engage: renderEngageButton(participantId, !isEngaged),
-          };
-          setRows(rows);
-          openToast({
-            status: ToastStatus.Success,
-            message: `You ${isEngaged ? 'disengaged' : 'engaged'} a participant`,
-          });
-        }
-      } else {
-        openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
-      }
-    };
-
     const filterData = (data) => {
       const filteredRows = [];
       data.forEach(dataItem => {
@@ -192,7 +184,7 @@ export default () => {
           item => item.status === 'prospecting'
         ) ? true : false;
 
-        row.engage = renderEngageButton(item.id, isEngaged);
+        row.engage = { id: item.id, isEngaged };
 
         filteredRows.push(row);
       });
@@ -278,8 +270,15 @@ export default () => {
               columns={columns}
               order={order}
               orderBy={orderBy}
+              renderObjectCell={
+                (cell) => <Button
+                  onClick={() => handleEngage(cell.id, cell.isEngaged)}
+                  variant="outlined"
+                  size="small"
+                  text={cell.isEngaged ? 'Disengage' : 'Engage'} />
+              }
               onRequestSort={handleRequestSort}
-              rows={sort(rows)} //TODO wrap and set the engage button here to get rid of the hook warning
+              rows={sort(rows)}
               isLoading={isLoadingData}
             />
           </Box>

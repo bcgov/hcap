@@ -54,7 +54,7 @@ export default () => {
   />;
 
   return (
-    <Page >
+    <Page>
       <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['maximus', 'employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pb={4} pl={4} pr={4} pt={2}>

@@ -68,12 +68,11 @@ app.get(`${apiBaseUrl}/participants`,
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
     const result = await getParticipants(user);
-    const { content } = req.kauth.grant.access_token;
     logger.info({
       "action": "participant_get",
       "performed_by": {
-        "username": content.preferred_username,
-        "id": content.sub
+        "username": user.username,
+        "id": user.id
       },
       // Slicing to one page of results
       "ids_viewed": result.map(person => person.id).slice(0,10),

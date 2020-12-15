@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "cypress": "^6.1.0",
+    "cypress-dotenv": "^1.2.2"
+  },
+  "dependencies": {
+    "uuidv4": "^6.2.6"
+  }
+}

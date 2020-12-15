@@ -58,6 +58,10 @@ database: ## <Helper> :: Executes into database container.
 	@export PGPASSWORD=$(POSTGRES_PASSWORD)
 	@docker-compose -f docker-compose.dev.yml exec postgres psql -U $(POSTGRES_USER) $(POSTGRES_DB)
 
+local-cypress-test:
+	@echo "Running all available Cypress tests"
+	@npx cypress run --headless
+
 # Git Tagging Aliases
 
 tag-dev:

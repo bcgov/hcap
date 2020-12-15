@@ -92,7 +92,7 @@ app.post(`${apiBaseUrl}/employer-actions`,
       req.body.status,
     );
     logger.info({
-      action: 'employer-actions',
+      action: 'employer-actions_post',
       performed_by: {
         username: user.username,
         id: user.id,
@@ -198,7 +198,7 @@ app.post(`${apiBaseUrl}/approve-user`,
 
     const user = req.hcapUserInfo;
     logger.info({
-      action: 'approve-user',
+      action: 'approve-user_post',
       performed_by: {
         username: user.username,
         id: user.id,

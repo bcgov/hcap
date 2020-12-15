@@ -53,14 +53,14 @@ local-server-tests:
 	@echo "Running tests in local app container"
 	@docker exec -it $(APP_NAME)-server npm test
 
+local-cypress-tests:
+	@echo "Running all available Cypress tests"
+	@npx cypress run --headless
+
 database: ## <Helper> :: Executes into database container.
 	@echo "Make: Shelling into local database container ..."
 	@export PGPASSWORD=$(POSTGRES_PASSWORD)
 	@docker-compose -f docker-compose.dev.yml exec postgres psql -U $(POSTGRES_USER) $(POSTGRES_DB)
-
-local-cypress-test:
-	@echo "Running all available Cypress tests"
-	@npx cypress run --headless
 
 # Git Tagging Aliases
 

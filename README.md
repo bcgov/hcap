@@ -19,6 +19,8 @@ This is a digital service built for the Ministry of Health which supports Britis
 
 ## Project Status
 
+[![img](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+
 This application is in active development.
 
 ## Features
@@ -40,8 +42,6 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 
 ## Development
 
-### Using Docker
-
 Make sure you have Docker and Docker-compose installed in your local environment. For instructions on how to install it, follow the links below:
 - https://docs.docker.com/get-docker/
 - https://docs.docker.com/compose/install/
@@ -62,22 +62,8 @@ To run server tests:
   - `npm test`
 - or by running
   - `make local-server-tests`
-
-### Using npm
-
-From both the client and the server folders, run `npm i` to install dependencies.
-
-- Add a hostname alias to your environment
-- - Edit your `/etc/hosts` filename
-- - Add `127.0.0.1   server`
-
-
-- Run client: `npm start` run within client folder
-- Start Database: `make run-local-db`
-- Run server: `npm run watch` from within the server folder
-- Run server tests: `npm test` from within the server folder
-
-Communication from front end to back end is facilitated by [the proxy field](https://create-react-app.dev/docs/proxying-api-requests-in-development/) in client package.json.
+- Cypress tests may be run with
+  - `make local-cypress-tests`
 
 ### Public Front End Views
 

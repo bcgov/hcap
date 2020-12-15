@@ -32,6 +32,7 @@ export default () => {
     'Vancouver Coastal',
     'Vancouver Island',
     'Northern',
+    'None',
   ]);
 
   const [orderBy, setOrderBy] = useState(columns[0].id);

@@ -70,7 +70,7 @@ app.get(`${apiBaseUrl}/participants`,
     const user = req.hcapUserInfo;
     const result = await getParticipants(user);
     const { content } = req.kauth.grant.access_token;
-    const logData = {
+    logger.info({
       "action": "participant_get",
       "performed_by": {
         "username": content.preferred_username,
@@ -78,9 +78,7 @@ app.get(`${apiBaseUrl}/participants`,
       },
       // Slicing to one page of results
       "ids_viewed": result.map(person => person.id).slice(0,10),
-      "timestamp": new Date()
-    };
-    logger.info(logData)
+    });
     return res.json({ data: result });
   }));
 
@@ -122,7 +120,7 @@ app.post(`${apiBaseUrl}/participants`,
     try {
       const response = await parseAndSaveParticipants(req.file.buffer);
       const { content } = req.kauth.grant.access_token;
-      const logData = {
+      logger.info({
         "action": "participant_post",
         "performed_by": {
           "username": content.preferred_username,
@@ -130,9 +128,7 @@ app.post(`${apiBaseUrl}/participants`,
         },
         // Slicing to one page of results
         "ids_posted": response.map(entry => entry.id).slice(0,10),
-        "timestamp": new Date()
-      };
-      logger.info(logData);
+      });
 
       return res.json(response);
     } catch (excp) {

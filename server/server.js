@@ -6,7 +6,6 @@ const dayjs = require('dayjs');
 const multer = require('multer');
 const { getParticipants, parseAndSaveParticipants, setParticipantStatus } = require('./services/participants.js');
 const { getEmployers, saveSites, getSites } = require('./services/employers.js');
-const { getUser } = require('./services/user');
 const { validate, EmployerFormSchema, AccessRequestApproval } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -99,6 +98,7 @@ app.post(`${apiBaseUrl}/employer-actions`,
 // Create participant records from uploaded XLSX file
 app.post(`${apiBaseUrl}/participants`,
   keycloak.allowRolesMiddleware('maximus'),
+  keycloak.getUserInfoMiddleware(),
   multer({
     fileFilter: (req, file, cb) => {
       if (file.fieldname !== 'file') {
@@ -119,12 +119,12 @@ app.post(`${apiBaseUrl}/participants`,
 
     try {
       const response = await parseAndSaveParticipants(req.file.buffer);
-      const { content } = req.kauth.grant.access_token;
+      const user = req.hcapUserInfo;
       logger.info({
         "action": "participant_post",
         "performed_by": {
-          "username": content.preferred_username,
-          "id": content.sub
+          "username": user.username,
+          "id": user.id
         },
         // Slicing to one page of results
         "ids_posted": response.map(entry => entry.id).slice(0,10),

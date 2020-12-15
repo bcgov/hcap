@@ -153,7 +153,13 @@ app.post(`${apiBaseUrl}/approve-user`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
     await validate(AccessRequestApproval, req.body);
-    await keycloak.approvePendingRequest(req.body.userId, req.body.role, [req.body.region]);
+    const results = await dbClient.db[collections.EMPLOYER_SITES].findDoc({
+      or: req.body.sites.map((siteId) => ({ 'siteId ilike': `${siteId}` })),
+    });
+    const siteRegions = results.map((item) => item.healthAuthority);
+    const joinedRegions = [...siteRegions, req.body.region];
+    const uniqueRegions = [...new Set(joinedRegions)];
+    await keycloak.approvePendingRequest(req.body.userId, req.body.role, uniqueRegions);
     await dbClient.db.saveDoc(collections.USERS, {
       keycloakId: req.body.userId,
       sites: req.body.sites,

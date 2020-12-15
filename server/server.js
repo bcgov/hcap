@@ -69,13 +69,13 @@ app.get(`${apiBaseUrl}/participants`,
     const user = req.hcapUserInfo;
     const result = await getParticipants(user);
     logger.info({
-      "action": "participant_get",
-      "performed_by": {
-        "username": user.username,
-        "id": user.id
+      action: 'participant_get',
+      performed_by: {
+        username: user.username,
+        id: user.id,
       },
       // Slicing to one page of results
-      "ids_viewed": result.map(person => person.id).slice(0,10),
+      ids_viewed: result.map((person) => person.id).slice(0, 10),
     });
     return res.json({ data: result });
   }));
@@ -91,6 +91,15 @@ app.post(`${apiBaseUrl}/employer-actions`,
       req.body.participantId,
       req.body.status,
     );
+    logger.info({
+      action: 'employer-actions_post',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      participant_id: req.body.participantId,
+      status: req.body.status,
+    });
     return res.json({ data: result });
   }));
 
@@ -120,13 +129,13 @@ app.post(`${apiBaseUrl}/participants`,
       const response = await parseAndSaveParticipants(req.file.buffer);
       const user = req.hcapUserInfo;
       logger.info({
-        "action": "participant_post",
-        "performed_by": {
-          "username": user.username,
-          "id": user.id
+        action: 'participant_post',
+        performed_by: {
+          username: user.username,
+          id: user.id,
         },
         // Slicing to one page of results
-        "ids_posted": response.map(entry => entry.id).slice(0,10),
+        ids_posted: response.map((entry) => entry.id).slice(0, 10),
       });
 
       return res.json(response);
@@ -172,6 +181,7 @@ app.get(`${apiBaseUrl}/employer-sites`,
 
 app.post(`${apiBaseUrl}/approve-user`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(AccessRequestApproval, req.body);
     const results = await dbClient.db[collections.EMPLOYER_SITES].findDoc({
@@ -185,6 +195,20 @@ app.post(`${apiBaseUrl}/approve-user`,
       keycloakId: req.body.userId,
       sites: req.body.sites,
     });
+
+    const user = req.hcapUserInfo;
+    logger.info({
+      action: 'approve-user_post',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      role_assigned: req.body.role,
+      granted_access_to: req.body.userId,
+      regions_assigned: uniqueRegions,
+      siteIds_assigned: req.body.sites,
+    });
+
     res.json({});
   }));
 

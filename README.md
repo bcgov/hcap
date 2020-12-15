@@ -19,6 +19,8 @@ This is a digital service built for the Ministry of Health which supports Britis
 
 ## Project Status
 
+[![img](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+
 This application is in active development.
 
 ## Features

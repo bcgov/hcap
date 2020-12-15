@@ -72,7 +72,7 @@ app.get(`${apiBaseUrl}/participants`,
   }));
 
 // Engage participant
-app.post(`${apiBaseUrl}/engage-participant`,
+app.post(`${apiBaseUrl}/employer-actions`,
   keycloak.allowRolesMiddleware('health_authority', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -80,8 +80,8 @@ app.post(`${apiBaseUrl}/engage-participant`,
     const result = await setParticipantStatus(
       user.id,
       req.body.participantId,
-      req.body.disengage ? 'open' : 'prospecting',
-      );
+      req.body.status,
+    );
     return res.json({ data: result });
   }));
 

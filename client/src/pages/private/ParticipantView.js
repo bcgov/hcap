@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography, TextField, MenuItem } from '@material-ui/core';
@@ -39,7 +39,6 @@ export default () => {
   const [isLoadingData, setLoadingData] = useState(false);
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [rows, setRows] = useState([]);
-  const rowsRef = useRef([]);
   const [fetchedRows, setFetchedRows] = useState([]);
   const [columns, setColumns] = useState(defaultColumns);
   const [locationFilter, setLocationFilter] = useState(null);
@@ -81,7 +80,6 @@ export default () => {
     let filtered = fetchedRows;
     if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
     if (fsaFilter) filtered = filtered.filter((row) => row.postalCodeFsa.toUpperCase().startsWith(fsaFilter.toUpperCase()));
-    rowsRef.current = filtered;
     setRows(filtered);
   }, [locationFilter, fsaFilter, fetchedRows]);
 
@@ -91,14 +89,14 @@ export default () => {
   const phoneNumberMask = '(***) ***-****';
 
   const handleEngage = async (participantId, isEngaged) => {
-    const response = await fetch('/api/v1/engage-participant', {
+    const response = await fetch('/api/v1/employer-actions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
         'Accept': 'application/json',
         'Content-type': 'application/json',
       },
-      body: JSON.stringify({ participantId, disengage: isEngaged }),
+      body: JSON.stringify({ participantId, status: isEngaged ? 'open' : 'prospecting' }),
     });
 
     if (response.ok) {
@@ -106,7 +104,7 @@ export default () => {
       if (error) {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
       } else {
-        const rows = rowsRef.current;
+        const rows = [...fetchedRows];
         const index = rows.findIndex(row => row.id === participantId);
         rows[index] = {
           ...rows[index],
@@ -114,7 +112,7 @@ export default () => {
           phoneNumber: data.phoneNumber || phoneNumberMask,
           engage: { id: participantId, isEngaged: !isEngaged },
         };
-        setRows(rows);
+        setFetchedRows(rows);
         const { firstName, lastName } = rows[index];
         openToast({
           status: ToastStatus.Success,
@@ -272,12 +270,18 @@ export default () => {
               columns={columns}
               order={order}
               orderBy={orderBy}
-              renderObjectCell={
-                (cell) => <Button
-                  onClick={() => handleEngage(cell.id, cell.isEngaged)}
-                  variant="outlined"
-                  size="small"
-                  text={cell.isEngaged ? 'Disengage' : 'Engage'} />
+              renderCell={
+                (columnId, cell) => {
+                  if (columnId === 'engage') {
+                    return <Button
+                      onClick={() => handleEngage(cell.id, cell.isEngaged)}
+                      variant="outlined"
+                      size="small"
+                      text={cell.isEngaged ? 'Disengage' : 'Engage'} />
+                  } else {
+                    return cell;
+                  }
+                }
               }
               onRequestSort={handleRequestSort}
               rows={sort(rows)}

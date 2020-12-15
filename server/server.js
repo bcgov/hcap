@@ -154,7 +154,7 @@ app.post(`${apiBaseUrl}/approve-user`,
   asyncMiddleware(async (req, res) => {
     await validate(AccessRequestApproval, req.body);
     const results = await dbClient.db[collections.EMPLOYER_SITES].findDoc({
-      or: req.body.sites.map((siteId) => ({ 'siteId ilike': `%${siteId}%` })),
+      or: req.body.sites.map((siteId) => ({ 'siteId ilike': `${siteId}` })),
     });
     const siteRegions = results.map((item) => item.healthAuthority);
     const joinedRegions = [...siteRegions, req.body.region];

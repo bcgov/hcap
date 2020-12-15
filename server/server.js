@@ -148,7 +148,6 @@ app.post(`${apiBaseUrl}/participants`,
 app.get(`${apiBaseUrl}/pending-users`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
-        const user = await getUser(content.sub);
     const users = await keycloak.getPendingUsers();
     const scrubbed = users.map((user) => ({
       id: user.id,

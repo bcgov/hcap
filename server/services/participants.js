@@ -129,7 +129,7 @@ const getParticipants = async (user) => {
         id: item.id,
         firstName: item.firstName,
         lastName: item.lastName,
-        postalCode: item.postalCode,
+        postalCodeFsa: item.postalCodeFsa,
         preferredLocation: item.preferredLocation,
         nonHCAP: item.nonHCAP,
       };

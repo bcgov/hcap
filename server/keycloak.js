@@ -66,6 +66,7 @@ class Keycloak { // Wrapper class around keycloak-connect
         const user = await getUser(content.sub);
         req.hcapUserInfo = {
           name: content.name,
+          username: content.preferred_username,
           id: content.sub,
           sites: user?.sites || [],
           roles,

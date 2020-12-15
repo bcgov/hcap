@@ -69,16 +69,14 @@ app.get(`${apiBaseUrl}/participants`,
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
     const result = await getParticipants(user);
-
-    // HCAP-242 - Log View Access Of Participant Data
     const { content } = req.kauth.grant.access_token;
     const logData = {
       "action": "participant_get",
-      "accessed_by": {
+      "performed_by": {
         "username": content.preferred_username,
         "id": content.sub
       },
-      //slicing so that things don't get out of hand with the IDs
+      // Slicing to one page of results
       "ids_viewed": result.map(person => person.id).slice(0,10),
       "timestamp": new Date()
     };
@@ -123,16 +121,14 @@ app.post(`${apiBaseUrl}/participants`,
 
     try {
       const response = await parseAndSaveParticipants(req.file.buffer);
-
-      // HCAP-244 - Log Participant Upload
       const { content } = req.kauth.grant.access_token;
       const logData = {
         "action": "participant_post",
-        "uploaded_by": {
+        "performed_by": {
           "username": content.preferred_username,
           "id": content.sub
         },
-        //slicing so that things don't get out of hand with the IDs
+        // Slicing to one page of results
         "ids_posted": response.map(entry => entry.id).slice(0,10),
         "timestamp": new Date()
       };

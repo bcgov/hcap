@@ -10,6 +10,9 @@ export const TableFilter = ({ onFilter, values, label, rows, filterField }) => {
     setValue(value);
     const isValidOption = values.includes(value);
     if (isValidOption) {
+      (value === "None")?
+      onFilter(rows.filter(row => !(row[filterField])))
+      :
       onFilter(rows.filter(row => row[filterField].includes(value)));
     } else {
       onFilter(rows);

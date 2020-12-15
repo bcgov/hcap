@@ -17,20 +17,36 @@ const setParticipantStatus = async (
     current: true,
   }, { current: false });
 
-  return tx[collections.PARTICIPANTS_STATUS].save({
+  await tx[collections.PARTICIPANTS_STATUS].save({
     employer_id: employerId,
     participant_id: participantId,
     status,
     current: true,
   });
+
+  const participant = await tx[collections.PARTICIPANTS].findDoc({
+    id: participantId,
+  });
+
+  if (status === 'prospecting') {
+    return {
+      emailAddress: participant[0].emailAddress,
+      phoneNumber: participant[0].phoneNumber,
+      status
+    };
+  }
+
+  return {
+    status
+  };
 });
 
-const flatJoinedParticipantStatus = (raw) => {
-  const prticipantsMap = new Map();
+const decomposeParticipantStatus = (raw) => {
+  const participantsMap = new Map();
   const participantsStatusMap = new Map();
 
   raw.forEach((item) => {
-    prticipantsMap.set(item[`${collections.PARTICIPANTS}__id`], {
+    participantsMap.set(item[`${collections.PARTICIPANTS}__id`], {
       ...item[`${collections.PARTICIPANTS}__body`],
       id: item[`${collections.PARTICIPANTS}__id`],
     });
@@ -45,7 +61,7 @@ const flatJoinedParticipantStatus = (raw) => {
 
   const participants = [];
 
-  prticipantsMap.forEach((item, participantId) => {
+  participantsMap.forEach((item, participantId) => {
     let statusInfos = participantsStatusMap.get(participantId);
     if (statusInfos) {
       statusInfos = statusInfos.map((statusInfo) => ({
@@ -65,10 +81,10 @@ const flatJoinedParticipantStatus = (raw) => {
   return participants;
 };
 
-const getParticipants = async (user, options) => {
+const getParticipants = async (user) => {
   const criteria = user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'preferredLocation');
   let table = dbClient.db[collections.PARTICIPANTS];
-  const showStatus = options && options.status;
+  const showStatus = user.isHA || user.isEmployer || user.isSuperUser;
   if (showStatus) {
     table = table.join({
       [collections.PARTICIPANTS_STATUS]: {
@@ -83,7 +99,7 @@ const getParticipants = async (user, options) => {
     : [];
 
   if (showStatus) {
-    participants = flatJoinedParticipantStatus(participants);
+    participants = decomposeParticipantStatus(participants);
   }
 
   if (user.isSuperUser) {
@@ -103,22 +119,44 @@ const getParticipants = async (user, options) => {
     }));
   }
 
-  // HCAP-220: Filtering data based on candidate who is interested and cleared CRC
   return participants
     .filter((item) => (
       evaluateBooleanAnswer(item.interested)
       && evaluateBooleanAnswer(item.crcClear)))
-    .map((item) => ({
-      id: item.id,
-      firstName: item.firstName,
-      lastName: item.lastName,
-      postalCodeFsa: item.postalCodeFsa,
-      preferredLocation: item.preferredLocation,
-      nonHCAP: item.nonHCAP,
-      /// / TODO uncomment/rework on HCAP-222
-      // phoneNumber: item.phoneNumber,
-      // emailAddress: item.emailAddress,
-    }));
+    .map((item) => {
+
+      let participant = {
+        id: item.id,
+        firstName: item.firstName,
+        lastName: item.lastName,
+        postalCodeFsa: item.postalCodeFsa,
+        preferredLocation: item.preferredLocation,
+        nonHCAP: item.nonHCAP,
+      };
+
+      const statusInfos = item.statusInfos?.find(statusInfo =>
+        statusInfo.employerId === user.id
+      );
+
+      if (statusInfos) {
+        participant = {
+          ...participant,
+          statusInfos: Array.isArray(statusInfos) ? statusInfos : [statusInfos],
+        };
+        const hasProspectingStatus = participant.statusInfos.find(statusInfo =>
+          statusInfo.status === 'prospecting',
+        );
+        if (hasProspectingStatus) {
+          participant = {
+            ...participant,
+            phoneNumber: item.phoneNumber,
+            emailAddress: item.emailAddress,
+          };
+        }
+      }
+
+      return participant;
+    });
 };
 
 const parseAndSaveParticipants = async (fileBuffer) => {

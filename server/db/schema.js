@@ -14,7 +14,7 @@ const schema = [
   {
     participantsStatusTable: `CREATE TABLE IF NOT EXISTS ${collections.PARTICIPANTS_STATUS}(
       id serial primary key, 
-      "employer_id" integer not null, 
+      "employer_id" varchar(255) not null, 
       "participant_id" integer not null, 
       "status" varchar(255) not null,
       "current" boolean not null, 

@@ -47,15 +47,16 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-export const Table = ({ order, orderBy, onRequestSort, columns, rows, isLoading, rowsPerPage = 10 }) => {
+export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows, isLoading, rowsPerPage = 10 }) => {
 
   const [pageRows, setPageRows] = useState([]);
   const [page, setPage] = useState(0);
 
   useEffect(() => {
     const offset = page * rowsPerPage;
-    setPageRows(rows.slice(offset, offset + rowsPerPage))
-  }, [rows, page, rowsPerPage]);
+    const paginatedRows = rows.slice(offset, offset + rowsPerPage);
+    setPageRows(paginatedRows);
+  }, [rows, page, rowsPerPage, renderCell]);
 
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -93,7 +94,14 @@ export const Table = ({ order, orderBy, onRequestSort, columns, rows, isLoading,
           )) : pageRows.map((row, index) => (
             <StyledTableRow hover key={index}>
               {columns.map((column) => (
-                <StyledTableCell key={column.id}>{row[column.id] || ''}</StyledTableCell>
+                <StyledTableCell key={column.id}>
+                  {
+                    renderCell ?
+                      renderCell(column.id, row[column.id])
+                      :
+                      row[column.id] || ''
+                  }
+                </StyledTableCell>
               ))}
             </StyledTableRow>
           ))}

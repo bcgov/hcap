@@ -7,7 +7,7 @@ describe("Login", () => {
     cy.kcGetToken("service-account")
       .then(token => {
         cy.request({
-          url: Cypress.env("auth_base_url"),
+          url: Cypress.env("KEYCLOAK_AUTH_URL"),
           followRedirect: true,
           auth: {
             bearer: token

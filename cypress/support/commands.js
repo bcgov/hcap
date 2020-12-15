@@ -1,13 +1,14 @@
 // These commands were sourced from the cypress-keycloak-login package
 const utils_1 = require('./utils');
+const { v4 } = require('uuid');
 
 Cypress.Commands.add("kcGetToken", function (user) {
   Cypress.log({ name: "Login" });
   cy.fixture("users/" + user).then(function (userData) {
-    (userData.password)? null : userData.password = Cypress.env("kc_sa_pass")
-    let authBaseUrl = Cypress.env("auth_base_url");
-    let realm = Cypress.env("auth_realm");
-    let client_id = Cypress.env("auth_client_id");
+    (userData.password)? null : userData.password = Cypress.env("KEYCLOAK_SA_PASSWORD")
+    let authBaseUrl = Cypress.env("KEYCLOAK_AUTH_URL");
+    let realm = Cypress.env("KEYCLOAK_REALM");
+    let client_id = Cypress.env("KEYCLOAK_FE_CLIENTID");
     cy.request({
       method: "POST",
       url: authBaseUrl + "/realms/" + realm + "/protocol/openid-connect/token",
@@ -16,7 +17,7 @@ Cypress.Commands.add("kcGetToken", function (user) {
       body: {
         grant_type: 'password',
         client_id: client_id,
-        client_secret: Cypress.env("kc_api_secret"),
+        client_secret: Cypress.env("KEYCLOAK_API_CLIENTID"),
         username: userData.username,
         password: userData.password,
       }
@@ -30,20 +31,22 @@ Cypress.Commands.add("kcGetToken", function (user) {
 
 Cypress.Commands.add("kcLogout", function () {
     Cypress.log({ name: "Logout" });
-    let authBaseUrl = Cypress.env("auth_base_url");
-    let realm = Cypress.env("auth_realm");
+    let authBaseUrl = Cypress.env("KEYCLOAK_AUTH_URL");
+    let realm = Cypress.env("KEYCLOAK_REALM");
     return cy.request({
-        url: authBaseUrl + "/realms/" + realm + "/protocol/openid-connect/logout"
+        url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/logout`
     });
 });
 
 Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
-  if (visitUrl === void 0) { visitUrl = ""; }
+  visitUrl = visitUrl || ""
   Cypress.log({ name: "Fake Login" });
-  let authBaseUrl = Cypress.env("auth_base_url");
-  let realm = Cypress.env("auth_realm");
-  const { access_token, refresh_token, id_token } = Cypress.env();
-  let state = utils_1.createUUID();
+  let authBaseUrl = Cypress.env("KEYCLOAK_AUTH_URL");
+  let realm = Cypress.env("KEYCLOAK_REALM");
+  let access_token = Cypress.env("ACCESS_TOKEN");
+  let refresh_token = Cypress.env("REFRESH_TOKEN");
+  let id_token = Cypress.env("ID_TOKEN");
+  let state = v4();
   let nonce = utils_1.decodeToken(access_token).nonce;
   let token = {
     access_token: access_token,
@@ -53,7 +56,7 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
     token_type: "bearer",
     id_token: id_token,
     "not-before-policy": 0,
-    session_state: utils_1.createUUID(),
+    session_state: v4(),
     scope: "openid"
   };
 
@@ -62,7 +65,7 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
     nonce: nonce,
     expires: Date() + 3600
   };
-  let localStorageKey = "kc-callback-" + state;
+  const localStorageKey = `kc-callback-${state}`
 
   // This function defines the values that will be returned from the call to
   // /protocol/openid-connect/auth
@@ -79,12 +82,9 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
   }
 
   window.localStorage.setItem(localStorageKey, JSON.stringify(localStorageObj));
-  cy.intercept("post", authBaseUrl + "/realms/" + realm + "/protocol/openid-connect/token", token);
-  cy.intercept("get", authBaseUrl + "/realms/" + realm + "/protocol/openid-connect/auth", userInfo(user));
+  cy.intercept("post", `${authBaseUrl}/realms/${realm}/protocol/openid-connect/token`, token);
+  cy.intercept("get", `${authBaseUrl}/realms/${realm}/protocol/openid-connect/auth`, userInfo(user));
 
-  // in case visitUrl is an url with a hash, a second hash should not be added to the url
-  let joiningCharacter = visitUrl.indexOf("#") === -1 ? "#" : "&";
-  let url = Cypress.config().baseUrl + "/" + visitUrl + joiningCharacter + "state=" + state 
-    + "&session_state=" + utils_1.createUUID() + "&code=" + utils_1.createUUID();
-  cy.visit(url);
+  const url = new URL(`${Cypress.config().baseUrl}/${visitUrl}#state=${state}&session_state=${v4()}&code=${v4()}`);
+  cy.visit(url.toString());
 });

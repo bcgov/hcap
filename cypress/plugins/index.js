@@ -17,14 +17,16 @@
  * @type {Cypress.PluginConfig}
  */
 
+const dotenvPlugin = require('cypress-dotenv');
+
 module.exports = (on, config) => {
-  //const { getAuthToken } = require('../support/get_token.js');
-  //on('task', {
-  //  getToken (auth) {
-  //    return getAuthToken(auth);
-  //  }
-  //});
+  // The first parameter is the config, the second parameter is the dotenv
+  // config, and the third parameter specifies ALL env variables
+  //config = dotenvPlugin(config, {path: '../..'}, true);
+  config = dotenvPlugin(config, {}, true);
+  return config;
 };
+
 // `on` is used to hook into various events Cypress emits
 // `config` is the resolved Cypress config
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography, TextField, MenuItem } from '@material-ui/core';
@@ -39,7 +39,6 @@ export default () => {
   const [isLoadingData, setLoadingData] = useState(false);
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [rows, setRows] = useState([]);
-  const rowsRef = useRef([]);
   const [fetchedRows, setFetchedRows] = useState([]);
   const [columns, setColumns] = useState(defaultColumns);
   const [locationFilter, setLocationFilter] = useState(null);
@@ -81,7 +80,6 @@ export default () => {
     let filtered = fetchedRows;
     if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
     if (fsaFilter) filtered = filtered.filter((row) => row.postalCodeFsa.toUpperCase().startsWith(fsaFilter.toUpperCase()));
-    rowsRef.current = filtered;
     setRows(filtered);
   }, [locationFilter, fsaFilter, fetchedRows]);
 

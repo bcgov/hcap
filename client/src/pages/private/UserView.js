@@ -7,7 +7,7 @@ import store from 'store';
 import { useToast } from '../../hooks';
 import { Button, Page, Table, CheckPermissions, Dialog } from '../../components/generic';
 import { ApproveAccessRequestSchema, ToastStatus } from '../../constants';
-import { FastField, Formik, Form as FormikForm } from 'formik';
+import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderMultiSelectField, RenderSelectField } from '../../components/fields';
 
 const columns = [
@@ -130,7 +130,7 @@ export default () => {
 
   const initialValues = {
     sites: [],
-    region: '',
+    regions: [],
     role: '',
   };
 
@@ -146,41 +146,65 @@ export default () => {
           validationSchema={ApproveAccessRequestSchema}
           onSubmit={handleSubmit}
         >
-          {({ submitForm }) => (
+          {({ submitForm, values, handleChange, setFieldValue }) => (
             <FormikForm>
-              <FastField
-                name="sites"
-                component={RenderMultiSelectField}
-                label="* Employer Sites (allocation number)"
-                options={
-                  _orderBy(sites, ['siteName'])
+              <Box>
+                <Field
+                  name="role"
+                  component={RenderSelectField}
+                  label="* User Role"
+                  options={[
+                    { value: 'health_authority', label: 'Health Authority' },
+                    { value: 'employer', label: 'Private Employer' },
+                  ]}
+                  onChange={(e) => {
+                    setFieldValue('regions', []);
+                    setFieldValue('sites', []);
+                    handleChange(e);
+                  }}
+                />
+              </Box>
+              {(values.role === 'health_authority') && <Box mt={3}>
+                <Field
+                  name="regions"
+                  component={RenderSelectField}
+                  label="* Health Region"
+                  options={[
+                    { value: 'Interior', label: 'Interior Health' },
+                    { value: 'Fraser', label: 'Fraser Health' },
+                    { value: 'Vancouver Coastal', label: 'Vancouver Coastal Health' },
+                    { value: 'Vancouver Island', label: 'Vancouver Island Health' },
+                    { value: 'Northern', label: 'Northern Health' },
+                  ]}
+                  onChange={(e) => {
+                    setFieldValue('sites', []);
+                    // Wrap single region value in array
+                    const forcedArray = { ...e, target: { ...e.target, value: [e.target.value] } };
+                    handleChange(forcedArray);
+                  }}
+                />
+              </Box>}
+              {((values.role === 'health_authority' && values.regions.length > 0) || values.role === 'employer') && <Box mt={3}>
+                <Field
+                  name="sites"
+                  component={RenderMultiSelectField}
+                  label="* Employer Sites (allocation number) - select one or more"
+                  options={_orderBy(sites, ['siteName'])
                     .filter(item => item.earlyAdopterAllocation > 0)
-                    .map(item => (
-                      { value: item.siteId, label: `${item.siteName} (${item.earlyAdopterAllocation})` }
-                    ))
-                }
-              />
-              <FastField
-                name="region"
-                component={RenderSelectField}
-                label="* Health Region"
-                options={[
-                  { value: 'Interior', label: 'Interior Health' },
-                  { value: 'Fraser', label: 'Fraser Health' },
-                  { value: 'Vancouver Coastal', label: 'Vancouver Coastal Health' },
-                  { value: 'Vancouver Island', label: 'Vancouver Island Health' },
-                  { value: 'Northern', label: 'Northern Health' },
-                ]}
-              />
-              <FastField
-                name="role"
-                component={RenderSelectField}
-                label="* User Role"
-                options={[
-                  { value: 'health_authority', label: 'Health Authority' },
-                  { value: 'employer', label: 'Private Employer' },
-                ]}
-              />
+                    .filter(item => values.role === 'health_authority' ? values.regions.includes(item.healthAuthority) : true)
+                    .map(item => ({
+                      value: item.siteId, label: `${item.siteName} (${item.earlyAdopterAllocation})`
+                    }))
+                  }
+                  onChange={(e) => {
+                    const regions = sites
+                      .filter((site) => e.target.value.includes(site.siteId))
+                      .map((site) => site.healthAuthority);
+                    if (regions.length > 0) setFieldValue('regions', regions);
+                    handleChange(e);
+                  }}
+                />
+              </Box>}
               <Box mt={3}>
                 <Grid container spacing={2} justify="flex-end">
                   <Grid item>
@@ -195,7 +219,7 @@ export default () => {
                       onClick={submitForm}
                       variant="contained"
                       color="primary"
-                      text={'Submit'}
+                      text="Submit"
                     />
                   </Grid>
                 </Grid>

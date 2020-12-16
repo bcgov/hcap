@@ -201,13 +201,7 @@ app.post(`${apiBaseUrl}/approve-user`,
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(AccessRequestApproval, req.body);
-    const results = await dbClient.db[collections.EMPLOYER_SITES].findDoc({
-      or: req.body.sites.map((siteId) => ({ 'siteId ilike': `${siteId}` })),
-    });
-    const siteRegions = results.map((item) => item.healthAuthority);
-    const joinedRegions = [...siteRegions, req.body.region];
-    const uniqueRegions = [...new Set(joinedRegions)];
-    await keycloak.approvePendingRequest(req.body.userId, req.body.role, uniqueRegions);
+    await keycloak.approvePendingRequest(req.body.userId, req.body.role, req.body.regions);
     await dbClient.db.saveDoc(collections.USERS, {
       keycloakId: req.body.userId,
       sites: req.body.sites,
@@ -222,7 +216,7 @@ app.post(`${apiBaseUrl}/approve-user`,
       },
       role_assigned: req.body.role,
       granted_access_to: req.body.userId,
-      regions_assigned: uniqueRegions,
+      regions_assigned: req.body.regions,
       siteIds_assigned: req.body.sites,
     });
 

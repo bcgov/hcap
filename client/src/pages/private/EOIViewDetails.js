@@ -10,7 +10,6 @@ import store from 'store';
 export default () => {
   const [roles, setRoles] = useState([]);
   const [isLoadingUser, setLoadingUser] = useState(false);
-  const [isLoadingDetails, setLoadingDetails] = useState(false);
   const location = useLocation();
 
   const fetchUserInfo = async () => {
@@ -29,9 +28,9 @@ export default () => {
     }
   }
 
+  // This is only being used for logging at the moment
   const fetchDetails = async () => {
     const id = await location.state?.item.id;
-    setLoadingDetails(true);
     const response = await fetch(`/api/v1/employer-sites-detail?id=${id}`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
@@ -40,8 +39,7 @@ export default () => {
     });
 
     if (response.ok) {
-      let the_deets = await response.json()
-      console.log(the_deets)
+      // do something with data
     }
   }
 

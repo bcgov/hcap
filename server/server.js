@@ -68,15 +68,6 @@ app.get(`${apiBaseUrl}/participants`,
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
     const result = await getParticipants(user);
-    logger.info({
-      action: 'participant_get',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-      // Slicing to one page of results
-      ids_viewed: result.map((person) => person.id).slice(0, 10),
-    });
     return res.json({ data: result });
   }));
 
@@ -91,22 +82,12 @@ app.post(`${apiBaseUrl}/employer-actions`,
       req.body.participantId,
       req.body.status,
     );
-    logger.info({
-      action: 'employer-actions_post',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-      participant_id: req.body.participantId,
-      status: req.body.status,
-    });
     return res.json({ data: result });
   }));
 
 // Create participant records from uploaded XLSX file
 app.post(`${apiBaseUrl}/participants`,
   keycloak.allowRolesMiddleware('maximus'),
-  keycloak.getUserInfoMiddleware(),
   multer({
     fileFilter: (req, file, cb) => {
       if (file.fieldname !== 'file') {
@@ -127,17 +108,6 @@ app.post(`${apiBaseUrl}/participants`,
 
     try {
       const response = await parseAndSaveParticipants(req.file.buffer);
-      const user = req.hcapUserInfo;
-      logger.info({
-        action: 'participant_post',
-        performed_by: {
-          username: user.username,
-          id: user.id,
-        },
-        // Slicing to one page of results
-        ids_posted: response.map((entry) => entry.id).slice(0, 10),
-      });
-
       return res.json(response);
     } catch (excp) {
       return res.status(400).send(`${excp}`);
@@ -190,41 +160,20 @@ app.get(`${apiBaseUrl}/employer-sites-detail`,
         username: user.username,
         id: user.id
       },
-      id: req.query.id
+      eeoi_id: req.query.id
     });
-    return res.json({ data: "dummy data" });
+    return res.json({ data: "" });
   }));
 
 app.post(`${apiBaseUrl}/approve-user`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
-  keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(AccessRequestApproval, req.body);
-    const results = await dbClient.db[collections.EMPLOYER_SITES].findDoc({
-      or: req.body.sites.map((siteId) => ({ 'siteId ilike': `${siteId}` })),
-    });
-    const siteRegions = results.map((item) => item.healthAuthority);
-    const joinedRegions = [...siteRegions, req.body.region];
-    const uniqueRegions = [...new Set(joinedRegions)];
-    await keycloak.approvePendingRequest(req.body.userId, req.body.role, uniqueRegions);
+    await keycloak.approvePendingRequest(req.body.userId, req.body.role, [req.body.region]);
     await dbClient.db.saveDoc(collections.USERS, {
       keycloakId: req.body.userId,
       sites: req.body.sites,
     });
-
-    const user = req.hcapUserInfo;
-    logger.info({
-      action: 'approve-user_post',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-      role_assigned: req.body.role,
-      granted_access_to: req.body.userId,
-      regions_assigned: uniqueRegions,
-      siteIds_assigned: req.body.sites,
-    });
-
     res.json({});
   }));
 

@@ -1,5 +1,13 @@
 import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Dialog as MuiDialog} from '@material-ui/core';
+
+const useStyles = makeStyles(() => ({
+  root: {
+    width: '1000px',
+    maxWidth: '600px',
+  },
+}));
 
 export const Dialog = ({
   open,
@@ -7,12 +15,13 @@ export const Dialog = ({
   children,
   title,
 }) => {
+  const classes = useStyles();
   return (
     <MuiDialog
       open={open}
       onClose={onClose}
     >
-      <Box pt={4} pb={2} pl={4} pr={4}>
+      <Box pt={4} pb={2} pl={4} pr={4} className={classes.root}>
         <Typography variant="subtitle1">
           { title }
         </Typography>

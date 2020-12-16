@@ -6,7 +6,7 @@ import { ErrorMessage } from 'formik';
 import { InputFieldError, InputFieldLabel } from '../generic';
 
 export const RenderSelectField = ({
-  field: { value, ...fieldRest },
+  field: { value, name, ...fieldRest },
   form,
   label,
   options,
@@ -24,6 +24,7 @@ export const RenderSelectField = ({
         error={touched && !!error}
         inputProps={{ displayEmpty: true }}
         value={value || ''}
+        name={name}
         {...fieldRest}
         {...props}
       >
@@ -32,7 +33,7 @@ export const RenderSelectField = ({
           <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
         ))}
       </TextField>
-      <InputFieldError error={<ErrorMessage name={fieldRest.name} />} />
+      <InputFieldError error={<ErrorMessage name={name} />} />
     </Fragment>
   );
 };

@@ -10,6 +10,7 @@ import store from 'store';
 export default () => {
   const [roles, setRoles] = useState([]);
   const [isLoadingUser, setLoadingUser] = useState(false);
+  const [isLoadingDetails, setLoadingDetails] = useState(false);
   const location = useLocation();
 
   const fetchUserInfo = async () => {
@@ -28,8 +29,25 @@ export default () => {
     }
   }
 
+  const fetchDetails = async () => {
+    const id = await location.state?.item.id;
+    setLoadingDetails(true);
+    const response = await fetch(`/api/v1/employer-sites-detail?id=${id}`, {
+      headers: {
+        'Authorization': `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      let the_deets = await response.json()
+      console.log(the_deets)
+    }
+  }
+
   useEffect(() => {
     fetchUserInfo();
+    fetchDetails();
   }, []);
 
   if (!location.state) return <Redirect to={Routes.EOIView} />

@@ -179,6 +179,22 @@ app.get(`${apiBaseUrl}/employer-sites`,
     return res.json({ data: result });
   }));
 
+// In development
+app.get(`${apiBaseUrl}/employer-sites-detail`,
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const user = req.hcapUserInfo;
+    logger.info({
+      action: 'employer-sites-detail_get',
+      performed_by: {
+        username: user.username,
+        id: user.id
+      },
+      id: req.query.id
+    });
+    return res.json({ data: "dummy data" });
+  }));
+
 app.post(`${apiBaseUrl}/approve-user`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
@@ -216,10 +232,13 @@ app.post(`${apiBaseUrl}/approve-user`,
 app.get(`${apiBaseUrl}/user`,
   keycloak.allowRolesMiddleware('*'),
   keycloak.getUserInfoMiddleware(),
-  (req, res) => res.json({
-    roles: req.hcapUserInfo.roles,
-    name: req.hcapUserInfo.name,
-  }));
+  (req, res) => {
+
+    res.json({
+      roles: req.hcapUserInfo.roles,
+      name: req.hcapUserInfo.name,
+    })
+  });
 
 // Version number
 app.get(`${apiBaseUrl}/version`,

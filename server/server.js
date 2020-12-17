@@ -30,6 +30,7 @@ app.use(helmet({
       'script-src-attr': ["'none'"],
       'style-src': ["'self'", 'https:', "'unsafe-inline'"],
       'upgrade-insecure-requests': [],
+      'form-action': ["'self'"],
     },
   },
 }));

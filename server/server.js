@@ -189,11 +189,11 @@ app.get(`${apiBaseUrl}/employer-sites-detail`,
       action: 'employer-sites-detail_get',
       performed_by: {
         username: user.username,
-        id: user.id
+        id: user.id,
       },
-      eeoi_id: req.query.id
+      eeoi_id: req.query.id,
     });
-    return res.json({ data: "" });
+    return res.json({ data: '' });
   }));
 
 app.post(`${apiBaseUrl}/approve-user`,
@@ -244,4 +244,3 @@ if (process.env.NODE_ENV === 'production') {
 app.use(errorHandler);
 
 module.exports = app;
-

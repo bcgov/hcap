@@ -67,13 +67,19 @@ export default () => {
     if (response.ok) {
       const { data } = await response.json();
       const rows = data.map((row) => {
-        return columns.reduce((a, i) => ({
-          ...a,
-          [i.id]: row[i.id],
+        // Pull all relevant props from row based on columns constant
+        const mappedRow = columns.reduce((accumulator, column) => ({
+          ...accumulator,
+          [column.id]: row[column.id],
+        }), {});
+        // Add additional props (user ID, button) to row
+        return {
+          ...mappedRow,
+          id: row.id,
           details: (
             <Button
               onClick={() => {
-                setSelectedUserId(row['id']);
+                setSelectedUserId(row.id);
                 setModalOpen(true);
               }}
               variant="outlined"
@@ -81,7 +87,7 @@ export default () => {
               text="Options"
             />
           ),
-        }), {})
+        };
       });
       setRows(rows);
       setIsPendingRequests(rows.length > 0);
@@ -141,6 +147,14 @@ export default () => {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
       >
+        <Box mb={4}>
+          <Typography variant="body1" gutterBottom>
+            Username: <b>{rows?.find((i) => i.id === selectedUserId)?.username || ''}</b>
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Email address: <b>{rows?.find((i) => i.id === selectedUserId)?.emailAddress || ''}</b>
+          </Typography>
+        </Box>
         <Formik
           initialValues={initialValues}
           validationSchema={ApproveAccessRequestSchema}

@@ -26,7 +26,7 @@ export const Dialog = ({
           { title }
         </Typography>
       </Box>
-      <Box pt={4} pb={4} pl={4} pr={4}>
+      <Box pb={4} pl={4} pr={4}>
         { children }
       </Box>
     </MuiDialog>

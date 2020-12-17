@@ -70,10 +70,11 @@ export default () => {
         return columns.reduce((a, i) => ({
           ...a,
           [i.id]: row[i.id],
+          id: row.id,
           details: (
             <Button
               onClick={() => {
-                setSelectedUserId(row['id']);
+                setSelectedUserId(row.id);
                 setModalOpen(true);
               }}
               variant="outlined"
@@ -137,10 +138,18 @@ export default () => {
   return (
     <Page>
       <Dialog
-        title="Approve Access Request"
+        title="Approve Access Request For:"
         open={modalOpen}
         onClose={() => setModalOpen(false)}
       >
+        <Box mb={4}>
+          <Typography variant="body1" gutterBottom>
+            Username: <b>{rows?.find((i) => i.id === selectedUserId)?.username || ''}</b>
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Email address: <b>{rows?.find((i) => i.id === selectedUserId)?.emailAddress || ''}</b>
+          </Typography>
+        </Box>
         <Formik
           initialValues={initialValues}
           validationSchema={ApproveAccessRequestSchema}

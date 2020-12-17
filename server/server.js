@@ -28,7 +28,7 @@ app.use(helmet({
       'object-src': ["'none'"],
       'script-src': ["'self'", 'https://*.gov.bc.ca'],
       'script-src-attr': ["'none'"],
-      'style-src': ["'self'", 'https:', "'unsafe-inline'"],
+      'style-src': ["'self'", 'https:'],
       'upgrade-insecure-requests': [],
       'form-action': ["'self'"],
     },

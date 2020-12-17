@@ -67,9 +67,14 @@ export default () => {
     if (response.ok) {
       const { data } = await response.json();
       const rows = data.map((row) => {
-        return columns.reduce((a, i) => ({
-          ...a,
-          [i.id]: row[i.id],
+        // Pull all relevant props from row based on columns constant
+        const mappedRow = columns.reduce((accumulator, column) => ({
+          ...accumulator,
+          [column.id]: row[column.id],
+        }), {});
+        // Add additional props (user ID, button) to row
+        return {
+          ...mappedRow,
           id: row.id,
           details: (
             <Button
@@ -82,7 +87,7 @@ export default () => {
               text="Options"
             />
           ),
-        }), {})
+        };
       });
       setRows(rows);
       setIsPendingRequests(rows.length > 0);
@@ -138,7 +143,7 @@ export default () => {
   return (
     <Page>
       <Dialog
-        title="Approve Access Request For:"
+        title="Approve Access Request"
         open={modalOpen}
         onClose={() => setModalOpen(false)}
       >

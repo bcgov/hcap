@@ -214,7 +214,8 @@ export default () => {
                     const regions = sites
                       .filter((site) => e.target.value.includes(site.siteId))
                       .map((site) => site.healthAuthority);
-                    if (regions.length > 0) setFieldValue('regions', regions);
+                    const deduped = [...new Set(regions)];
+                    if (regions.length > 0) setFieldValue('regions', deduped);
                     handleChange(e);
                   }}
                 />

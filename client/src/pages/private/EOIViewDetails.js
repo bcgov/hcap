@@ -46,7 +46,7 @@ export default () => {
   useEffect(() => {
     fetchUserInfo();
     fetchDetails();
-  }, []);
+  });
 
   if (!location.state) return <Redirect to={Routes.EOIView} />
   scrollUp();

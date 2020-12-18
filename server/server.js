@@ -88,7 +88,7 @@ app.get(`${apiBaseUrl}/participants`,
         id: user.id,
       },
       // Slicing to one page of results
-      ids_viewed: result.map((person) => person.id).slice(0, 10),
+      ids_viewed: result.slice(0, 10).map((person) => person.id),
     });
     return res.json({ data: result });
   }));
@@ -150,7 +150,7 @@ app.post(`${apiBaseUrl}/participants`,
           id: user.id,
         },
         // Slicing to one page of results
-        ids_posted: response.map((entry) => entry.id).slice(0, 10),
+        ids_posted: response.slice(0, 10).map((entry) => entry.id),
       });
 
       return res.json(response);

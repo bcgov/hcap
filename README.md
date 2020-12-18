@@ -133,7 +133,7 @@ and then submits to the /form endpoint. Example of file names:
 
 Parses a given xlsx file inside the `server/scripts/xlsx/` folder and feeds the `employer_sites` table.
 
-If you've spun up the application using Docker Compose i.e. `make local-run`, you can run the site seeding script with `docker exec -it hcap-server npm run my_spreadsheet.xlsx`.
+If you've spun up the application using Docker Compose i.e. `make local-run`, you can run the site seeding script with `docker exec -it hcap-server npm run feed-sites my_spreadsheet.xlsx`.
 
 #### `npm run stats`
 

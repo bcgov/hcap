@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+// To use this, login to the app and copy your JWT from local storage
+// Run `export TOKEN=[YOUR_TOKEN]` before running `node scripts/load-test.js`
 const axios = require('axios');
 const asyncPool = require('tiny-async-pool');
 const { performance } = require('perf_hooks');

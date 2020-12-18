@@ -76,10 +76,13 @@ export default () => {
     return row;
   };
 
+  const [filterUpdated, setFilterUpdated] = useState(false);
+
   useEffect(() => { // Filter table
     let filtered = fetchedRows;
     if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
     if (fsaFilter) filtered = filtered.filter((row) => row.postalCodeFsa.toUpperCase().startsWith(fsaFilter.toUpperCase()));
+    if (fetchedRows !== filtered) setFilterUpdated(true);
     setRows(filtered);
   }, [locationFilter, fsaFilter, fetchedRows]);
 
@@ -267,6 +270,8 @@ export default () => {
           </Grid>
           <Box pt={2} pb={2} pl={2} pr={2} width="100%">
             <Table
+              filterUpdated={filterUpdated}
+              setFilterUpdated={setFilterUpdated}
               columns={columns}
               order={order}
               orderBy={orderBy}
@@ -284,6 +289,8 @@ export default () => {
                 }
               }
               onRequestSort={handleRequestSort}
+              locationFilter={locationFilter}
+              fsaFilter={locationFilter}
               rows={sort(rows)}
               isLoading={isLoadingData}
             />

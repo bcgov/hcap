@@ -91,15 +91,10 @@ const getParticipants = async (user) => {
     table = table.join({
       [collections.PARTICIPANTS_STATUS]: {
         type: 'LEFT OUTER',
-        on: user.isHA || user.isEmployer
-          ? {
+        on: {
             participant_id: 'id',
             current: true,
-            employer_id: user.id,
-          }
-          : {
-            participant_id: 'id',
-            current: true,
+            ...(user.isHA || user.isEmployer) && {employer_id: user.id},
           },
       },
     });

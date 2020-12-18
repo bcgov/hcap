@@ -289,8 +289,6 @@ export default () => {
                 }
               }
               onRequestSort={handleRequestSort}
-              locationFilter={locationFilter}
-              fsaFilter={locationFilter}
               rows={sort(rows)}
               isLoading={isLoadingData}
             />

@@ -24,14 +24,6 @@ export const RenderMultiSelectField = ({
     return placeholder;
   };
 
-  const onChange = (e) => {
-    let { value } = e.target;
-    if (value.includes('')) {
-      value = value.slice(1);
-    }
-    field.onChange(e);
-  };
-
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} />}
@@ -43,8 +35,7 @@ export const RenderMultiSelectField = ({
         variant="filled"
         error={touched && !!error}
         inputProps={{ displayEmpty: true }}
-        value={field.value || ['']}
-        onChange={onChange}
+        value={field.value || []}
         {...props}
       >
         <MenuItem value="" disabled>{placeholder}</MenuItem>

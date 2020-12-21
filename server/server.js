@@ -80,7 +80,10 @@ app.get(`${apiBaseUrl}/participants`,
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
-    const result = await getParticipants(user);
+    const { lastId } = req.query;
+    console.log(`?lastId=${lastId}`);
+    const result = await getParticipants(user, { pageSize: 10, lastId });
+    console.log(result);
     logger.info({
       action: 'participant_get',
       performed_by: {
@@ -88,9 +91,9 @@ app.get(`${apiBaseUrl}/participants`,
         id: user.id,
       },
       // Slicing to one page of results
-      ids_viewed: result.slice(0, 10).map((person) => person.id),
+      ids_viewed: result.data.slice(0, 10).map((person) => person.id),
     });
-    return res.json({ data: result });
+    return res.json(result);
   }));
 
 // Engage participant

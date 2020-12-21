@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
@@ -99,6 +99,8 @@ export default () => {
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
+  const [pagination, setPagination] = useState({ currentPage: 0 });
+  const lastIds = useRef([0]);
   const [columns, setColumns] = useState(defaultColumns);
   const [locationFilter, setLocationFilter] = useState(null);
   const [fsaFilter, setFsaFilter] = useState(null);
@@ -237,8 +239,8 @@ export default () => {
   };
 
   useEffect(() => {
-
     const resultColumns = [...defaultColumns];
+    const currentPage = pagination.currentPage;
 
     const fetchUserInfo = async () => {
       setLoadingUser(true);
@@ -310,7 +312,8 @@ export default () => {
 
     const getParticipants = async () => {
       setLoadingData(true);
-      const response = await fetch('/api/v1/participants', {
+      const queryLastId = lastIds.current[lastIds.current.length - 1];
+      const response = await fetch(`/api/v1/participants${queryLastId ? `?lastId=${queryLastId}` : ''}`, {
         headers: {
           'Accept': 'application/json',
           'Content-type': 'application/json',
@@ -321,12 +324,16 @@ export default () => {
 
       let newRows = [];
       if (response.ok) {
-        const { data } = await response.json();
+        const { data, pagination } = await response.json();
+        lastIds.current.push(pagination.lastId);
+        setPagination({
+          total: pagination.total,
+          currentPage: currentPage || 0,
+        });
         newRows = filterData(data);
       }
 
-      setFetchedRows(newRows);
-      setRows(newRows);
+      setFetchedRows(oldRows => [...oldRows, ...newRows]);
       setLoadingData(false);
     };
 
@@ -335,7 +342,14 @@ export default () => {
       await getParticipants();
     };
     init();
-  }, []);
+  }, [pagination.currentPage]);
+
+  const handlePageChange = (oldPage, newPage) => {
+    const isLatestFetchedPage = lastIds.current[newPage + 1] === undefined;
+    if (isLatestFetchedPage) {
+      setPagination(pagination => ({ ...pagination, currentPage: newPage }));
+    }
+  };
 
   const getDialogTitle = (activeModalForm) => {
     if (activeModalForm === 'hired') return 'Hire Participant';
@@ -465,6 +479,10 @@ export default () => {
               columns={columns}
               order={order}
               orderBy={orderBy}
+              rowsCount={pagination.total}
+              onChangePage={handlePageChange}
+              rowsPerPage={10}
+              currentPage={pagination.currentPage}
               renderCell={
                 (columnId, cell) => {
                   if (columnId === 'status') {

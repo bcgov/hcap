@@ -161,10 +161,10 @@ const TablePaginationActions = (props) => {
 
 
 
-export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows, isLoading, rowsPerPage = 10, filterUpdated, setFilterUpdated }) => {
+export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows, isLoading, currentPage = 0, rowsPerPage = 10, filterUpdated, setFilterUpdated, onChangePage, rowsCount, }) => {
 
   const [pageRows, setPageRows] = useState([]);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(currentPage);
 
   useEffect(() => {
     const resetIfNeeded = () => {
@@ -183,8 +183,10 @@ export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows
     onRequestSort(event, property);
   };
 
-  const onChangePage = (_, page) => {
-    setPage(page);
+  //todo conflict
+  const handlePageChange = (_, newPage) => {
+    onChangePage(page, newPage);
+    setPage(newPage);
   };
 
   return (
@@ -231,7 +233,7 @@ export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows
       <TablePagination
         rowsPerPageOptions={[]}
         component="div"
-        count={rows.length}
+        count={rowsCount || rows.length}
         rowsPerPage={rowsPerPage}
         page={filterUpdated? 0 : page}
         onChangePage={onChangePage}

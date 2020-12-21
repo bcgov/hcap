@@ -1,6 +1,6 @@
 const readXlsxFile = require('node-xlsx').default;
 const {
-  validate, ParticipantBatchSchema, isBooleanValue, evaluateBooleanAnswer,
+  validate, ParticipantBatchSchema, isBooleanValue,
 } = require('../validation.js');
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
@@ -83,8 +83,14 @@ const decomposeParticipantStatus = (raw) => {
   return participants;
 };
 
-const getParticipants = async (user) => {
-  const criteria = user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'preferredLocation');
+const getParticipants = async (user, pagination) => {
+  const criteria = user.isSuperUser || user.isMoH ? {}
+    : {
+      ...userRegionQuery(user.regions, 'preferredLocation'),
+      interested: 'yes',
+      crcClear: 'yes',
+    };
+
   let table = dbClient.db[collections.PARTICIPANTS];
   const showStatus = user.isHA || user.isEmployer || user.isSuperUser;
   if (showStatus) {
@@ -92,43 +98,67 @@ const getParticipants = async (user) => {
       [collections.PARTICIPANTS_STATUS]: {
         type: 'LEFT OUTER',
         on: {
-            participant_id: 'id',
-            current: true,
-            ...(user.isHA || user.isEmployer) && {employer_id: user.id},
-          },
+          participant_id: 'id',
+          current: true,
+          ...(user.isHA || user.isEmployer) && { employer_id: user.id },
+        },
       },
     });
   }
 
   if (!criteria) return []; // This happens when user has no regions assigned
 
-  let participants = await table.findDoc(criteria);
+  const getParticipantsCount = async () => {
+    if (this.participantsCount) return this.participantsCount;
+    this.participantsCount = Number(await table.countDoc(criteria || {}));
+    return this.participantsCount;
+  };
+
+  const options = pagination && {
+    order: [{
+      field: 'id',
+      ...pagination.lastId && { last: Number(pagination.lastId) },
+    }],
+    pageLength: pagination.pageSize || await getParticipantsCount(),
+  };
+
+  let participants = await table.findDoc(criteria, options);
+
 
   if (showStatus) {
     participants = decomposeParticipantStatus(participants);
   }
+  const paginationData = pagination && {
+    lastId: participants.length > 0 && participants[participants.length - 1].id,
+    total: await getParticipantsCount(),
+  };
 
-  if (user.isSuperUser) return participants;
+  if (user.isSuperUser) {
+    return {
+      data: participants,
+      ...pagination && { pagination: paginationData },
+    };
+  }
 
-  if (user.isMoH || user.isSuperUser) { // Only return relevant fields
-    return participants.map((item) => ({
-      id: item.id,
-      firstName: item.firstName,
-      lastName: item.lastName,
-      postalCodeFsa: item.postalCodeFsa,
-      preferredLocation: item.preferredLocation,
-      nonHCAP: item.nonHCAP,
-      interested: item.interested,
-      crcClear: item.crcClear,
-    }));
+  if (user.isMoH) {
+    return {
+      data: participants.map((item) => ({ // Only return relevant fields
+        id: item.id,
+        firstName: item.firstName,
+        lastName: item.lastName,
+        postalCodeFsa: item.postalCodeFsa,
+        preferredLocation: item.preferredLocation,
+        nonHCAP: item.nonHCAP,
+        interested: item.interested,
+        crcClear: item.crcClear,
+      })),
+      ...pagination && { pagination: paginationData },
+    };
   }
 
   // Returned participants for employers
-  return participants
-    .filter((item) => (
-      evaluateBooleanAnswer(item.interested)
-      && evaluateBooleanAnswer(item.crcClear)))
-    .map((item) => {
+  return {
+    data: participants.map((item) => {
       let participant = {
         id: item.id,
         firstName: item.firstName,
@@ -153,7 +183,9 @@ const getParticipants = async (user) => {
       }
 
       return participant;
-    });
+    }),
+    ...pagination && { pagination: paginationData },
+  };
 };
 
 const parseAndSaveParticipants = async (fileBuffer) => {

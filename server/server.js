@@ -81,9 +81,7 @@ app.get(`${apiBaseUrl}/participants`,
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
     const { lastId } = req.query;
-    console.log(`?lastId=${lastId}`);
     const result = await getParticipants(user, { pageSize: 10, lastId });
-    console.log(result);
     logger.info({
       action: 'participant_get',
       performed_by: {

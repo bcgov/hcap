@@ -9,6 +9,22 @@ const healthRegions = [
   'Northern',
 ];
 
+const orderDirections = [
+  'desc',
+  'asc',
+];
+
+const paginationFields = [
+  'id',
+  'firstName',
+  'lastName',
+  'postalCodeFsa',
+  'preferredLocation',
+  'phoneNumber',
+  'emailAddress',
+  'nonHCAP',
+];
+
 const roles = [
   'Registered Nurse',
   'Licensed Practical Nurse',
@@ -234,6 +250,12 @@ const ParticipantStatusChange = yup.object().noUnknown('Unknown field in form').
   status: yup.string().oneOf(participantStatuses, 'Invalid region'),
 });
 
+const ParticipantQuerySchema = yup.object().shape({
+  regionFilter: yup.string().oneOf(healthRegions, 'Invalid region'),
+  field: yup.string().oneOf(paginationFields, 'Invalid field'),
+  direction: yup.string().oneOf(orderDirections, 'Invalid direction'),
+});
+
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
@@ -244,5 +266,6 @@ module.exports = {
   isBooleanValue,
   evaluateBooleanAnswer,
   AccessRequestApproval,
+  ParticipantQuerySchema,
   EmployerSiteBatchSchema,
 };

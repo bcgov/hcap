@@ -83,13 +83,23 @@ const decomposeParticipantStatus = (raw) => {
   return participants;
 };
 
-const getParticipants = async (user, pagination) => {
-  const criteria = user.isSuperUser || user.isMoH ? {}
+const getParticipants = async (user, pagination, regionFilter, fsaFilter) => {
+  let criteria = user.isSuperUser || user.isMoH
+    ? {
+      ...regionFilter && { 'preferredLocation ilike': `%${regionFilter}%` },
+    }
     : {
-      ...userRegionQuery(user.regions, 'preferredLocation'),
+      ...(regionFilter && user.regions.includes(regionFilter))
+        ? { 'preferredLocation ilike': `%${regionFilter}%` }
+        : { ...userRegionQuery(user.regions, 'preferredLocation') },
       interested: 'yes',
       crcClear: 'yes',
     };
+
+  criteria = {
+    ...criteria,
+    ...fsaFilter && { 'postalCodeFsa ilike': `${fsaFilter}%` },
+  };
 
   let table = dbClient.db[collections.PARTICIPANTS];
   const showStatus = user.isHA || user.isEmployer || user.isSuperUser;
@@ -116,10 +126,14 @@ const getParticipants = async (user, pagination) => {
 
   const options = pagination && {
     order: [{
-      field: 'id',
-      ...pagination.lastId && { last: Number(pagination.lastId) },
+      field: pagination.field && pagination.field !== 'id' ? `body.${pagination.field}::TEXT` : 'id',
+      ...pagination.direction && { direction: pagination.direction },
+      ...pagination.lastId && {
+        last: typeof pagination.lastId === 'number'
+          ? Number(pagination.lastId) : pagination.lastId,
+      },
     }],
-    pageLength: pagination.pageSize || await getParticipantsCount(),
+    ...pagination.pageSize && { pageLength: pagination.pageSize },
   };
 
   let participants = await table.findDoc(criteria, options);
@@ -129,8 +143,9 @@ const getParticipants = async (user, pagination) => {
     participants = decomposeParticipantStatus(participants);
   }
   const paginationData = pagination && {
-    lastId: participants.length > 0 && participants[participants.length - 1].id,
-    total: await getParticipantsCount(),
+    lastId: participants.length > 0 && participants[participants.length - 1][pagination.field || 'id'],
+    total: Number(await table.countDoc(criteria || {})),
+    field: pagination.field || 'id',
   };
 
   if (user.isSuperUser) {

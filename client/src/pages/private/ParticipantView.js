@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
@@ -98,17 +97,16 @@ export default () => {
   const [isLoadingData, setLoadingData] = useState(false);
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [rows, setRows] = useState([]);
-  const [fetchedRows, setFetchedRows] = useState([]);
   const [pagination, setPagination] = useState({ currentPage: 0 });
-  const lastIds = useRef([0]);
   const [columns, setColumns] = useState(defaultColumns);
   const [locationFilter, setLocationFilter] = useState(null);
   const [fsaFilter, setFsaFilter] = useState(null);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
-  const [orderBy, setOrderBy] = useState(columns[0].id);
   const [tabValue, setTabValue] = useState(null);
+  const offsets = useRef([0]);
+
   const [locations] = useState([
     'Interior',
     'Fraser',
@@ -120,35 +118,73 @@ export default () => {
   const handleTabChange = (event, newValue) => setTabValue(newValue);
 
   const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
-
-  const sortConfig = () => {
-    if (orderBy === 'siteName') {
-      return [item => item.siteName.toLowerCase(), 'operatorName'];
-    } else if (orderBy === 'healthAuthority') {
-      return [item => item.healthAuthority.toLowerCase(), 'operatorName'];
-    }
-    return [orderBy, 'operatorName'];
-  };
-
-  const mapItemToColumns = (item, columns) => {
-    const row = {};
-    columns.map(column => column.id).forEach(columnId => {
-      row[columnId] = item[columnId] || '';
+    offsets.current.splice(1, offsets.current.length); //reset the pagination if there's a filter/order change
+    setOrder({
+      field: property,
+      direction: order.direction === 'desc' ? 'asc' : 'desc',
     });
-    return row;
+    setPagination(oldPagination => ({
+      ...oldPagination,
+      currentPage: 0,
+    }));
   };
 
-  const [filterUpdated, setFilterUpdated] = useState(false);
+  const handleLocationFilter = (value) => {
+    locationFilter.current = value;
+    offsets.current.splice(1, offsets.current.length);
+    setLocationFilter(value);
+    setPagination(oldPagination => ({
+      ...oldPagination,
+      currentPage: 0,
+    }));
+  };
 
-  useEffect(() => { // Filter table
-    let filtered = fetchedRows;
+  const handleFsaFilter = (value) => {
+    fsaFilter.current = value;
+    offsets.current.splice(1, offsets.current.length);
+    setFsaFilter(value);
+    setPagination(oldPagination => ({
+      ...oldPagination,
+      currentPage: 0,
+    }));
+  };
 
-    filtered = filtered.filter((row) => tabs[tabValue]?.statuses?.includes(row.status));
+  const filterData = (data, columns) => {
 
+    const mapItemToColumns = (item, columns) => {
+      const row = {};
+      columns.map(column => column.id).forEach(columnId => {
+        row[columnId] = item[columnId] || '';
+      });
+      return row;
+    };
+
+    const filteredRows = [];
+    data && data.forEach(dataItem => {
+
+      const item = { ...dataItem };
+      if (!item.emailAddress) {
+        item.emailAddress = emailAddressMask;
+      }
+
+      if (!item.phoneNumber) {
+        item.phoneNumber = phoneNumberMask;
+      }
+
+      const row = mapItemToColumns(item, columns);
+
+      const isEngaged = item.statusInfos?.find(
+        item => item.status === 'prospecting'
+      ) ? true : false;
+
+      row.engage = { id: item.id, isEngaged };
+
+      filteredRows.push(row);
+    });
+    return filteredRows;
+  };
+
+  useEffect(() => {
     setColumns(oldColumns => {
       if (tabValue === 1 && !oldColumns.find(column => column.id === 'status'))
         return [
@@ -161,14 +197,30 @@ export default () => {
 
       return oldColumns;
     });
+  }, [tabValue]);
 
-    if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
-    if (fsaFilter) filtered = filtered.filter((row) => row.postalCodeFsa.toUpperCase().startsWith(fsaFilter.toUpperCase()));
-    if (fetchedRows !== filtered) setFilterUpdated(true);
-    setRows(filtered);
-  }, [locationFilter, fsaFilter, fetchedRows, tabValue]);
+  const fetchParticipants = async (lastId, regionFilter, fsaFilter, field, direction) => {
+    const queries = [
+      field && `field=${field}`,
+      lastId && `lastId=${lastId}`,
+      direction && `direction=${direction}`,
+      regionFilter && `regionFilter=${regionFilter}`,
+      fsaFilter && `fsaFilter=${fsaFilter}`,
+    ].filter(item => item).join('&');
 
-  const sort = (array) => _orderBy(array, sortConfig(), [order]);
+    const response = await fetch(`/api/v1/participants?${queries}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json',
+        'Authorization': `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      return response.json();
+    }
+  };
 
   const emailAddressMask = '***@***.***';
   const phoneNumberMask = '(***) ***-****';
@@ -189,47 +241,51 @@ export default () => {
       if (error) {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
       } else {
-        const rows = [...fetchedRows];
-        const index = rows.findIndex(row => row.id === participantId);
-        rows[index] = {
-          ...rows[index],
-          emailAddress: data.emailAddress || emailAddressMask,
-          phoneNumber: data.phoneNumber || phoneNumberMask,
-          engage: { id: participantId, status },
-          status,
-        };
-        setFetchedRows(rows);
-        const { firstName, lastName } = rows[index];
-        const toasts = {
-          open: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} is has been disengaged`,
-          },
-          prospecting: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} has been engaged`,
-          },
-          interviewing: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} is now being interviewed`,
-          },
-          offer_made: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} has been made a job offer`,
-          },
-          hired: {
-            status: ToastStatus.Success,
-            message: `${firstName} ${lastName} has been hired`,
-          },
-          rejected: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} has been rejected`,
-          },
-        }
+        setRows(oldRows => {
+          const newRows = [...oldRows];
+          const index = newRows.findIndex(row => row.id === participantId);
+          newRows[index] = {
+            ...newRows[index],
+            emailAddress: data.emailAddress || emailAddressMask,
+            phoneNumber: data.phoneNumber || phoneNumberMask,
+            engage: { id: participantId, status },
+            status,
+          };
 
+          const { firstName, lastName } = newRows[index];
 
+          const toasts = {
+            open: {
+              status: ToastStatus.Info,
+              message: `${firstName} ${lastName} is has been disengaged`,
+            },
+            prospecting: {
+              status: ToastStatus.Info,
+              message: `${firstName} ${lastName} has been engaged`,
+            },
+            interviewing: {
+              status: ToastStatus.Info,
+              message: `${firstName} ${lastName} is now being interviewed`,
+            },
+            offer_made: {
+              status: ToastStatus.Info,
+              message: `${firstName} ${lastName} has been made a job offer`,
+            },
+            hired: {
+              status: ToastStatus.Success,
+              message: `${firstName} ${lastName} has been hired`,
+            },
+            rejected: {
+              status: ToastStatus.Info,
+              message: `${firstName} ${lastName} has been rejected`,
+            },
+          }
 
-        openToast(toasts[status]);
+          openToast(toasts[status]);
+
+          return newRows;
+        });
+
         setActionMenuParticipant(null);
         setActiveModalForm(null);
       }
@@ -240,7 +296,6 @@ export default () => {
 
   useEffect(() => {
     const resultColumns = [...defaultColumns];
-    const currentPage = pagination.currentPage;
 
     const fetchUserInfo = async () => {
       setLoadingUser(true);
@@ -286,54 +341,26 @@ export default () => {
       }
     };
 
-    const filterData = (data) => {
-      const filteredRows = [];
-      data.forEach(dataItem => {
-
-        const item = { ...dataItem };
-        if (!item.emailAddress) {
-          item.emailAddress = emailAddressMask;
-        }
-
-        if (!item.phoneNumber) {
-          item.phoneNumber = phoneNumberMask;
-        }
-
-        const row = mapItemToColumns(item, resultColumns);
-
-        row.engage = item;
-        row.status = item.statusInfos && item.statusInfos.length > 0 ? item.statusInfos[0].status : 'open';
-        row.engage.status = row.status;
-
-        filteredRows.push(row);
-      });
-      return filteredRows;
-    }
-
     const getParticipants = async () => {
       setLoadingData(true);
-      const queryLastId = lastIds.current[lastIds.current.length - 1];
-      const response = await fetch(`/api/v1/participants${queryLastId ? `?lastId=${queryLastId}` : ''}`, {
-        headers: {
-          'Accept': 'application/json',
-          'Content-type': 'application/json',
-          'Authorization': `Bearer ${store.get('TOKEN')}`,
-        },
-        method: 'GET',
+      const { data, pagination } = await fetchParticipants(
+        offsets.current[offsets.current.length - 1],
+        locationFilter,
+        fsaFilter,
+        order.field,
+        order.direction);
+
+      setPagination({
+        total: pagination.total,
+        currentPage: offsets.current.length - 1,
       });
-
-      let newRows = [];
-      if (response.ok) {
-        const { data, pagination } = await response.json();
-        lastIds.current.push(pagination.lastId);
-        setPagination({
-          total: pagination.total,
-          currentPage: currentPage || 0,
-        });
-        newRows = filterData(data);
-      }
-
-      setFetchedRows(oldRows => [...oldRows, ...newRows]);
+      const newRows = filterData(data, resultColumns);
+      setRows(oldRows => {
+        if (offsets.current.length === 1) return newRows;
+        //Only add rows if there's a pagination going on
+        return [...oldRows, ...newRows];
+      });
+      offsets.current.push(pagination.offset);
       setLoadingData(false);
     };
 
@@ -342,13 +369,12 @@ export default () => {
       await getParticipants();
     };
     init();
-  }, [pagination.currentPage]);
+  }, [pagination.currentPage, locationFilter, fsaFilter, order]);
 
   const handlePageChange = (oldPage, newPage) => {
-    const isLatestFetchedPage = lastIds.current[newPage + 1] === undefined;
-    if (isLatestFetchedPage) {
+    //Only update 'pagination.currentPage' when the next page still not exists
+    if (newPage === offsets.current.length - 1)
       setPagination(pagination => ({ ...pagination, currentPage: newPage }));
-    }
   };
 
   const getDialogTitle = (activeModalForm) => {
@@ -441,7 +467,7 @@ export default () => {
                   variant="filled"
                   inputProps={{ displayEmpty: true }}
                   value={locationFilter || ''}
-                  onChange={({ target }) => setLocationFilter(target.value)}
+                  onChange={({ target }) => handleLocationFilter(target.value)}
                 >
                   <MenuItem value="">Preferred Location</MenuItem>
                   {locations.map((option) => (
@@ -456,7 +482,7 @@ export default () => {
                   variant="filled"
                   fullWidth
                   value={fsaFilter || ''}
-                  onChange={({ target }) => setFsaFilter(target.value)}
+                  onChange={({ target }) => handleFsaFilter(target.value)}
                   placeholder='Forward Sortation Area'
                 />
               </Box>
@@ -474,14 +500,12 @@ export default () => {
               }
             </CustomTabs>
             <Table
-              filterUpdated={filterUpdated}
-              setFilterUpdated={setFilterUpdated}
               columns={columns}
               order={order}
-              orderBy={orderBy}
+              orderBy={order.field}
               rowsCount={pagination.total}
               onChangePage={handlePageChange}
-              rowsPerPage={10}
+              rowsPerPage={1}
               currentPage={pagination.currentPage}
               renderCell={
                 (columnId, cell) => {
@@ -503,7 +527,7 @@ export default () => {
                 }
               }
               onRequestSort={handleRequestSort}
-              rows={sort(rows)}
+              rows={rows}
               isLoading={isLoadingData}
             />
           </Box>

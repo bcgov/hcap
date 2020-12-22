@@ -8,7 +8,7 @@ const { getParticipants, parseAndSaveParticipants, setParticipantStatus } = requ
 const { getEmployers, saveSites, getSites } = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
 const {
-  validate, EmployerFormSchema, AccessRequestApproval, ParticipantStatusChange,
+  validate, EmployerFormSchema, AccessRequestApproval, ParticipantQuerySchema, ParticipantStatusChange,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -79,9 +79,19 @@ app.get(`${apiBaseUrl}/participants`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
+    await validate(ParticipantQuerySchema, req.query);
     const user = req.hcapUserInfo;
-    const { lastId } = req.query;
-    const result = await getParticipants(user, { pageSize: 10, lastId });
+    const {
+      lastId, regionFilter, field, direction, fsaFilter,
+    } = req.query;
+    const result = await getParticipants(
+      user,
+      {
+        pageSize: 1, lastId, field, direction,
+      },
+      regionFilter,
+      fsaFilter,
+    );
     logger.info({
       action: 'participant_get',
       performed_by: {

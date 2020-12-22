@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { Box, Typography, TextField, MenuItem } from '@material-ui/core';
+import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
 import { ToastStatus } from '../../constants';
 import { Page, Table, CheckPermissions, Button } from '../../components/generic';
@@ -83,6 +83,8 @@ export default () => {
   const [columns, setColumns] = useState(defaultColumns);
   const [locationFilter, setLocationFilter] = useState(null);
   const [fsaFilter, setFsaFilter] = useState(null);
+  const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
+  const [anchorElement, setAnchorElement] = useState(false);
   const [locations] = useState([
     'Interior',
     'Fraser',
@@ -152,7 +154,7 @@ export default () => {
   const emailAddressMask = '***@***.***';
   const phoneNumberMask = '(***) ***-****';
 
-  const handleEngage = async (participantId, isEngaged) => {
+  const handleEngage = async (participantId, status) => {
     const response = await fetch('/api/v1/employer-actions', {
       method: 'POST',
       headers: {
@@ -160,7 +162,7 @@ export default () => {
         'Accept': 'application/json',
         'Content-type': 'application/json',
       },
-      body: JSON.stringify({ participantId, status: isEngaged ? 'open' : 'prospecting' }),
+      body: JSON.stringify({ participantId, status }),
     });
 
     if (response.ok) {
@@ -174,15 +176,15 @@ export default () => {
           ...rows[index],
           emailAddress: data.emailAddress || emailAddressMask,
           phoneNumber: data.phoneNumber || phoneNumberMask,
-          engage: { id: participantId, isEngaged: !isEngaged },
-          status: isEngaged ? 'open' : 'prospecting',
+          engage: { id: participantId, isEngaged: status === 'prospecting' },
         };
         setFetchedRows(rows);
         const { firstName, lastName } = rows[index];
         openToast({
           status: ToastStatus.Success,
-          message: `You ${isEngaged ? 'disengaged' : 'engaged'} ${firstName} ${lastName}`,
+          message: `${firstName} ${lastName} moved to ${status} state`,
         });
+        setActionMenuParticipant(null);
       }
     } else {
       openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
@@ -244,12 +246,11 @@ export default () => {
 
         const row = mapItemToColumns(item, resultColumns);
 
-        const isEngaged = item.statusInfos?.find(
+        item.isEngaged = item.statusInfos?.find(
           item => item.status === 'prospecting'
         ) ? true : false;
 
-        row.engage = { id: item.id, isEngaged };
-        row.status = item.statusInfos && item.statusInfos.length > 0 ? item.statusInfos[0].status : 'open';
+        row.engage = item;
 
         filteredRows.push(row);
       });
@@ -348,10 +349,14 @@ export default () => {
                 (columnId, cell) => {
                   if (columnId === 'engage') {
                     return <Button
-                      onClick={() => handleEngage(cell.id, cell.isEngaged)}
+                      onClick={(event) => {
+                        setActionMenuParticipant(cell);
+                        setAnchorElement(event.currentTarget);
+                      }}
                       variant="outlined"
                       size="small"
-                      text={cell.isEngaged ? 'Disengage' : 'Engage'} />
+                      text="Actions"
+                    />
                   } else {
                     return cell;
                   }
@@ -363,6 +368,16 @@ export default () => {
             />
           </Box>
         </Grid>
+        <Menu
+          keepMounted
+          open={actionMenuParticipant != null}
+          anchorEl={anchorElement}
+          onClose={() => setActionMenuParticipant(null)}
+        >
+          {!actionMenuParticipant?.isEngaged && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
+          {actionMenuParticipant?.isEngaged && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'interviewing')}>Interviewing</MenuItem>}
+          {actionMenuParticipant?.isEngaged && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'open')}>Disengage</MenuItem>}
+        </Menu>
       </CheckPermissions>
     </Page>
   );

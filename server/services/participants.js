@@ -32,13 +32,11 @@ const setParticipantStatus = async (
     return {
       emailAddress: participant[0].emailAddress,
       phoneNumber: participant[0].phoneNumber,
-      status
+      status,
     };
   }
 
-  return {
-    status
-  };
+  return { status };
 });
 
 const decomposeParticipantStatus = (raw) => {
@@ -124,7 +122,6 @@ const getParticipants = async (user) => {
       evaluateBooleanAnswer(item.interested)
       && evaluateBooleanAnswer(item.crcClear)))
     .map((item) => {
-
       let participant = {
         id: item.id,
         firstName: item.firstName,
@@ -134,18 +131,14 @@ const getParticipants = async (user) => {
         nonHCAP: item.nonHCAP,
       };
 
-      const statusInfos = item.statusInfos?.find(statusInfo =>
-        statusInfo.employerId === user.id
-      );
+      const statusInfos = item.statusInfos?.find((statusInfo) => statusInfo.employerId === user.id);
 
       if (statusInfos) {
         participant = {
           ...participant,
           statusInfos: Array.isArray(statusInfos) ? statusInfos : [statusInfos],
         };
-        const hasProspectingStatus = participant.statusInfos.find(statusInfo =>
-          statusInfo.status === 'prospecting',
-        );
+        const hasProspectingStatus = participant.statusInfos.find((statusInfo) => statusInfo.status === 'prospecting');
         if (hasProspectingStatus) {
           participant = {
             ...participant,

@@ -14,6 +14,7 @@ const EOIView = lazy(() => import('../pages/private/EOIView'));
 const EOIViewDetails = lazy(() => import('../pages/private/EOIViewDetails'));
 const ParticipantUpload = lazy(() => import('../pages/private/ParticipantUpload'));
 const ParticipantUploadResults = lazy(() => import('../pages/private/ParticipantUploadResults'));
+const ReportingView = lazy(() => import('../pages/private/ReportingView'));
 const ParticipantForm = lazy(() => import('../pages/public/ParticipantForm'));
 const EmployerForm = lazy(() => import('../pages/public/EmployerForm'));
 const Login = lazy(() => import('../pages/public/Login'));
@@ -93,6 +94,7 @@ export default () => {
             <Route exact path={Routes.ParticipantConfirmation} component={ParticipantConfirmation} />
             <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />
             <PrivateRoute exact path={Routes.UserView} component={UserView} />
+            <PrivateRoute exact path={Routes.ReportingView} component={ReportingView} />
             <PrivateRoute exact path={Routes.EOIView} component={EOIView} />
             <PrivateRoute exact path={Routes.EOIViewDetails} component={EOIViewDetails} />
             <PrivateRoute exact path={Routes.ParticipantView} component={ParticipantView} />

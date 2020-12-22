@@ -130,7 +130,6 @@ export default () => {
   };
 
   const handleLocationFilter = (value) => {
-    locationFilter.current = value;
     offsets.current.splice(1, offsets.current.length);
     setLocationFilter(value);
     setPagination(oldPagination => ({
@@ -140,7 +139,6 @@ export default () => {
   };
 
   const handleFsaFilter = (value) => {
-    fsaFilter.current = value;
     offsets.current.splice(1, offsets.current.length);
     setFsaFilter(value);
     setPagination(oldPagination => ({

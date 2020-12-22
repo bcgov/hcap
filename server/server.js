@@ -92,6 +92,7 @@ app.get(`${apiBaseUrl}/participants`,
       regionFilter,
       fsaFilter,
     );
+    console.log(result);
     logger.info({
       action: 'participant_get',
       performed_by: {

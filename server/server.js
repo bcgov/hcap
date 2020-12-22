@@ -87,7 +87,7 @@ app.get(`${apiBaseUrl}/participants`,
     const result = await getParticipants(
       user,
       {
-        pageSize: 1, lastId,
+        pageSize: 10, lastId,
       },
       {
         field, direction,

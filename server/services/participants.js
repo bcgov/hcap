@@ -83,7 +83,7 @@ const decomposeParticipantStatus = (raw) => {
   return participants;
 };
 
-const getParticipants = async (user, pagination, regionFilter, fsaFilter) => {
+const getParticipants = async (user, pagination, sort, regionFilter, fsaFilter) => {
   let criteria = user.isSuperUser || user.isMoH
     ? {
       ...regionFilter && { 'preferredLocation ilike': `%${regionFilter}%` },
@@ -126,12 +126,15 @@ const getParticipants = async (user, pagination, regionFilter, fsaFilter) => {
 
   const options = pagination && {
     order: [{
-      field: pagination.field && pagination.field !== 'id' ? `body.${pagination.field}::TEXT` : 'id',
-      ...pagination.direction && { direction: pagination.direction },
+      field: 'id',
+      ...sort.direction && { direction: sort.direction },
       ...pagination.lastId && {
-        last: typeof pagination.lastId === 'number'
-          ? Number(pagination.lastId) : pagination.lastId,
+        last: Number(pagination.lastId),
       },
+    },
+    {
+      ...sort.field && { field: `body.${sort.field}` },
+      ...sort.direction && { direction: sort.direction },
     }],
     ...pagination.pageSize && { pageLength: pagination.pageSize },
   };
@@ -143,9 +146,8 @@ const getParticipants = async (user, pagination, regionFilter, fsaFilter) => {
     participants = decomposeParticipantStatus(participants);
   }
   const paginationData = pagination && {
-    lastId: participants.length > 0 && participants[participants.length - 1][pagination.field || 'id'],
+    lastId: participants.length > 0 && participants[participants.length - 1].id,
     total: Number(await table.countDoc(criteria || {})),
-    field: pagination.field || 'id',
   };
 
   if (user.isSuperUser) {

@@ -93,7 +93,7 @@ export default () => {
   const { openToast } = useToast();
   const [roles, setRoles] = useState([]);
   const [sites, setSites] = useState([]);
-  const [order, setOrder] = useState('asc');
+  const [order, setOrder] = useState({ field: 'id', direction: 'asc' });
   const [isLoadingData, setLoadingData] = useState(false);
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [rows, setRows] = useState([]);
@@ -499,7 +499,7 @@ export default () => {
             </CustomTabs>
             <Table
               columns={columns}
-              order={order}
+              order={order.direction}
               orderBy={order.field}
               rowsCount={pagination.total}
               onChangePage={handlePageChange}

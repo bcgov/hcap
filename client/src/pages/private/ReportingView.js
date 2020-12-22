@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
-import { Box, Typography, TextField, MenuItem } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import store from 'store';
-import { ToastStatus } from '../../constants';
-import { Page, Table, CheckPermissions, Button } from '../../components/generic';
-import { useToast } from '../../hooks';
+import { Page, CheckPermissions } from '../../components/generic';
 
 export default () => {
 
   const [roles, setRoles] = useState([]);
   const [isLoadingUser, setLoadingUser] = useState(false);
-  const [report, setReport] = useState({'total': 0, 'qualified': 0, });
-  const [rows, setRows] = useState([]);
+  const [report, setReport] = useState({ 'total': 0, 'qualified': 0, 'inProgress': 0, 'hired': 0 });
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);
@@ -24,7 +20,7 @@ export default () => {
     });
 
     if (response.ok) {
-      const { roles, name } = await response.json();
+      const { roles } = await response.json();
       setLoadingUser(false);
       setRoles(roles);
     }

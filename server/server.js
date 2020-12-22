@@ -6,6 +6,7 @@ const dayjs = require('dayjs');
 const multer = require('multer');
 const { getParticipants, parseAndSaveParticipants, setParticipantStatus } = require('./services/participants.js');
 const { getEmployers, saveSites, getSites } = require('./services/employers.js');
+const { getReport } = require('./services/reporting.js');
 const { validate, EmployerFormSchema, AccessRequestApproval } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -59,6 +60,15 @@ app.get(`${apiBaseUrl}/employer-form`,
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
     const result = await getEmployers(user);
+    return res.json({ data: result });
+  }));
+
+// Get Report
+app.get(`${apiBaseUrl}/milestone-report`,
+  keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const result = await getReport();
     return res.json({ data: result });
   }));
 

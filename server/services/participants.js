@@ -125,15 +125,28 @@ const getParticipants = async (user, pagination, sortField, regionFilter, fsaFil
   };
 
   const options = pagination && {
+    // ID is the default sort column
     order: [{
       field: 'id',
       direction: pagination.direction || 'asc',
-      ...pagination.lastId && {
-        last: Number(pagination.lastId),
-      },
     }],
-    ...pagination.pageSize && { pageLength: pagination.pageSize },
+    /*
+      Using limit/offset pagination may decrease performance in the Postgres instance,
+      however this is the only way to sort columns that does not have a deterministic
+      ordering such as firstName.
+      See more details: https://massivejs.org/docs/options-objects#keyset-pagination
+    */
+    ...pagination.offset && { offset: pagination.offset },
+    ...pagination.pageSize && { limit: pagination.pageSize },
   };
+
+  if (sortField && sortField !== 'id' && options.order) {
+    // If a field to sort is provided we put that as first priority
+    options.order.unshift({
+      field: `body.${sortField}`,
+      direction: pagination.direction || 'asc',
+    });
+  }
 
   let participants = await table.findDoc(criteria, options);
 
@@ -142,7 +155,7 @@ const getParticipants = async (user, pagination, sortField, regionFilter, fsaFil
     participants = decomposeParticipantStatus(participants);
   }
   const paginationData = pagination && {
-    lastId: participants.length > 0 && participants[participants.length - 1].id,
+    offset: (pagination.offset ? Number(pagination.offset) : 0) + participants.length,
     total: Number(await table.countDoc(criteria || {})),
   };
 

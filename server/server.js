@@ -82,18 +82,17 @@ app.get(`${apiBaseUrl}/participants`,
     await validate(ParticipantQuerySchema, req.query);
     const user = req.hcapUserInfo;
     const {
-      lastId, regionFilter, field, direction, fsaFilter,
+      offset, regionFilter, field, direction, fsaFilter,
     } = req.query;
     const result = await getParticipants(
       user,
       {
-        pageSize: 2, lastId, direction,
+        pageSize: 2, offset, direction,
       },
       field,
       regionFilter,
       fsaFilter,
     );
-    console.log(result);
     logger.info({
       action: 'participant_get',
       performed_by: {

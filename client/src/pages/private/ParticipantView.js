@@ -197,10 +197,10 @@ export default () => {
     });
   }, [tabValue]);
 
-  const fetchParticipants = async (lastId, regionFilter, fsaFilter, field, direction) => {
+  const fetchParticipants = async (offset, regionFilter, fsaFilter, field, direction) => {
     const queries = [
       field && `field=${field}`,
-      lastId && `lastId=${lastId}`,
+      offset && `offset=${offset}`,
       direction && `direction=${direction}`,
       regionFilter && `regionFilter=${regionFilter}`,
       fsaFilter && `fsaFilter=${fsaFilter}`,

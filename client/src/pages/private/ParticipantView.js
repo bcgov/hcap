@@ -134,8 +134,8 @@ export default () => {
 
     filtered = filterByTab(tabValue, filtered);
 
-    // if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
-    // if (fsaFilter) filtered = filtered.filter((row) => row.postalCodeFsa.toUpperCase().startsWith(fsaFilter.toUpperCase()));
+    if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
+    if (fsaFilter) filtered = filtered.filter((row) => row.postalCodeFsa.toUpperCase().startsWith(fsaFilter.toUpperCase()));
     setRows(filtered);
   }, [locationFilter, fsaFilter, fetchedRows, tabValue]);
 
@@ -439,9 +439,9 @@ export default () => {
           anchorEl={anchorElement}
           onClose={() => setActionMenuParticipant(null)}
         >
-            {(console.log(activeStatuses) || activeStatuses.length === 0 || activeStatuses.includes('open')) && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
-            {activeStatuses.includes('prospecting') && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'interviewing')}>Interviewing</MenuItem>}
-            {activeStatuses.includes('prospecting') && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'open')}>Disengage</MenuItem>}
+            {actionMenuParticipant?.status === 'open' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
+            {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'interviewing')}>Interviewing</MenuItem>}
+            {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'open')}>Disengage</MenuItem>}
         </Menu>
       </CheckPermissions>
     </Page>

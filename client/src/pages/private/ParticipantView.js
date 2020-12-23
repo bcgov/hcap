@@ -8,8 +8,7 @@ import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
 import { ToastStatus, ParticipantStatusChangeInterviewing } from '../../constants';
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
-import { RenderDateField } from '../../components/fields';
-import { Field, Formik, Form as FormikForm } from 'formik';
+import { InterviewingForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 
 const defaultColumns = [
@@ -87,7 +86,7 @@ export default () => {
   const [fsaFilter, setFsaFilter] = useState(null);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations] = useState([
     'Interior',
     'Fraser',
@@ -186,7 +185,7 @@ export default () => {
           message: `${firstName} ${lastName} moved to ${status} state`,
         });
         setActionMenuParticipant(null);
-        setModalOpen(false);
+        setActiveModalForm(null);
       }
     } else {
       openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
@@ -251,7 +250,7 @@ export default () => {
         row.engage = item;
         row.status = item.statusInfos && item.statusInfos.length > 0 ? item.statusInfos[0].status : 'open';
         row.engage.status = row.status;
-        
+
         filteredRows.push(row);
       });
       return filteredRows;
@@ -294,47 +293,17 @@ export default () => {
     <Page>
       <Dialog
         title="Approve Access Request"
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        open={activeModalForm != null}
+        onClose={() => setActiveModalForm(null)}
       >
-        <Formik
+        {activeModalForm === 'interviewing' && <InterviewingForm
           initialValues={initialValues}
           validationSchema={ParticipantStatusChangeInterviewing}
           onSubmit={(values) => {
             handleEngage(actionMenuParticipant.id, 'interviewing', { contacted_at: values.contactedDate });
           }}
-        >
-          {({ submitForm, values, handleChange, setFieldValue }) => (
-            <FormikForm>
-              <Box>
-                <Field
-                  name="contactedDate"
-                  component={RenderDateField}
-                  label="* Contacted Date"
-                />
-              </Box>
-              <Box mt={3}>
-                <Grid container spacing={2} justify="flex-end">
-                  <Grid item>
-                    <Button
-                      onClick={() => setModalOpen(false)}
-                      color="default"
-                      text="Cancel"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      onClick={submitForm}
-                      variant="contained"
-                      color="primary"
-                      text="Submit"
-                    />
-                  </Grid>
-                </Grid>
-              </Box>
-            </FormikForm>
-          )}
-        </Formik>
+          onClose={() => setActiveModalForm(null)}
+        />}
       </Dialog>
       <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
@@ -424,8 +393,8 @@ export default () => {
         >
           {actionMenuParticipant?.status === 'open' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
           {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => setModalOpen(true)}>Interviewing</MenuItem>}
-          {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'open')}>Disengage</MenuItem>}
           {actionMenuParticipant?.status === 'interviewing' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'offer_made')}>Offer Made</MenuItem>}
+          {['prospecting', 'interviewing', 'offer_made'].includes(actionMenuParticipant?.status) && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'open')}>Reject</MenuItem>}
         </Menu>
       </CheckPermissions>
     </Page>

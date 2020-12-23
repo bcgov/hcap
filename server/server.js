@@ -104,7 +104,7 @@ app.post(`${apiBaseUrl}/employer-actions`,
       user.id,
       req.body.participantId,
       req.body.status,
-      { contacted_at: req.body.contactedDate },
+      req.body.data,
     );
     logger.info({
       action: 'employer-actions_post',

@@ -137,19 +137,16 @@ export default () => {
   }, [locationFilter, fsaFilter, fetchedRows, tabValue]);
 
   const filterByTab = (tabIndex, rows) => {
-    let status;
+    let statuses;
     switch (tabIndex) {
-      case 0:
-        status = 'open';
-        break;
       case 1:
-        status = 'prospecting';
+        statuses = ['prospecting', 'interviewing'];
         break;
       default:
-        status = 'open';
+        statuses = ['open'];
         break;
     }
-    return rows.filter((row) => row.status === status);
+    return rows.filter((row) => statuses.includes(row.status));
   };
 
   const sort = (array) => _orderBy(array, sortConfig(), [order]);

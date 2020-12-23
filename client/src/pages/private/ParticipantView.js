@@ -6,8 +6,9 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
-import { ToastStatus } from '../../constants';
+import { ToastStatus, ParticipantStatusChangeInterviewing } from '../../constants';
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
+import { RenderDateField } from '../../components/fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { useToast } from '../../hooks';
 
@@ -128,10 +129,13 @@ export default () => {
   useEffect(() => { // Filter table
     let filtered = fetchedRows;
 
+    console.log(filtered.length);
+    console.log(filtered[0])
+
     filtered = filterByTab(tabValue, filtered);
 
-    if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
-    if (fsaFilter) filtered = filtered.filter((row) => row.postalCodeFsa.toUpperCase().startsWith(fsaFilter.toUpperCase()));
+    // if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
+    // if (fsaFilter) filtered = filtered.filter((row) => row.postalCodeFsa.toUpperCase().startsWith(fsaFilter.toUpperCase()));
     setRows(filtered);
   }, [locationFilter, fsaFilter, fetchedRows, tabValue]);
 
@@ -156,7 +160,7 @@ export default () => {
   const emailAddressMask = '***@***.***';
   const phoneNumberMask = '(***) ***-****';
 
-  const handleEngage = async (participantId, status) => {
+  const handleEngage = async (participantId, status, additional = {}) => {
     const response = await fetch('/api/v1/employer-actions', {
       method: 'POST',
       headers: {
@@ -164,7 +168,7 @@ export default () => {
         'Accept': 'application/json',
         'Content-type': 'application/json',
       },
-      body: JSON.stringify({ participantId, status }),
+      body: JSON.stringify({ participantId, status, data: additional }),
     });
 
     if (response.ok) {
@@ -179,6 +183,7 @@ export default () => {
           emailAddress: data.emailAddress || emailAddressMask,
           phoneNumber: data.phoneNumber || phoneNumberMask,
           engage: { id: participantId, isEngaged: status === 'prospecting' },
+          status,
         };
         setFetchedRows(rows);
         const { firstName, lastName } = rows[index];
@@ -253,6 +258,7 @@ export default () => {
         ) ? true : false;
 
         row.engage = item;
+        row.status = item.statusInfos && item.statusInfos.length > 0 ? item.statusInfos[0].status : 'open';
 
         filteredRows.push(row);
       });
@@ -303,16 +309,16 @@ export default () => {
       >
         <Formik
           initialValues={initialValues}
-          validationSchema={ApproveAccessRequestSchema}
-          onSubmit={handleSubmit}
+          validationSchema={ParticipantStatusChangeInterviewing}
+          onSubmit={(values) => handleEngage(actionMenuParticipant.id, 'interviewing', values.contactedDate)}
         >
           {({ submitForm, values, handleChange, setFieldValue }) => (
             <FormikForm>
               <Box>
                 <Field
                   name="role"
-                  component={RenderSelectField}
-                  label="* User Role"
+                  component={RenderDateField}
+                  label="* Contacted Date"
                   options={[
                     { value: 'health_authority', label: 'Health Authority' },
                     { value: 'employer', label: 'Private Employer' },

@@ -9,7 +9,6 @@ const { getEmployers, saveSites, getSites } = require('./services/employers.js')
 const { getReport } = require('./services/reporting.js');
 const {
   validate, EmployerFormSchema, AccessRequestApproval, ParticipantStatusChange,
-  ParticipantStatusChangeInterviewing,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -105,30 +104,7 @@ app.post(`${apiBaseUrl}/employer-actions`,
       user.id,
       req.body.participantId,
       req.body.status,
-    );
-    logger.info({
-      action: 'employer-actions_post',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-      participant_id: req.body.participantId,
-      status: req.body.status,
-    });
-    return res.json({ data: result });
-  }));
-
-// Move participant to interviewing status
-app.post(`${apiBaseUrl}/employer-interviewing`,
-  keycloak.allowRolesMiddleware('health_authority', 'employer'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    await validate(ParticipantStatusChangeInterviewing, req.body);
-    const user = req.hcapUserInfo;
-    const result = await setParticipantStatus(
-      user.id,
-      req.body.participantId,
-      req.body.status,
+      { contacted_at: req.body.contactedDate },
     );
     logger.info({
       action: 'employer-actions_post',

@@ -10,6 +10,7 @@ const setParticipantStatus = async (
   employerId,
   participantId,
   status,
+  data, // JSONB on the status row
 ) => dbClient.db.withTransaction(async (tx) => {
   await tx[collections.PARTICIPANTS_STATUS].update({
     employer_id: employerId,
@@ -22,6 +23,7 @@ const setParticipantStatus = async (
     participant_id: participantId,
     status,
     current: true,
+    data,
   });
 
   const participant = await tx[collections.PARTICIPANTS].findDoc({

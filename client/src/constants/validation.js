@@ -21,6 +21,12 @@ const userRoles = [
   'employer',
 ];
 
+const validateDateString = (s) => {
+  if (/^\d{4}\/\d{2}\/\d{2}$/.test(s) === false) return false;
+  const date = Date.parse(s);
+  return typeof date === 'number' && !Number.isNaN(date);
+};
+
 const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
 );
@@ -150,6 +156,10 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
 
   // Certification
   doesCertify: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
+});
+
+export const ParticipantStatusChangeInterviewing = yup.object().noUnknown('Unknown field in form').shape({
+  contactedDate: yup.string().required('Date of contact is required').test('is-date', 'Not a valid date', validateDateString),
 });
 
 export const ParticipantFormSchema = yup.object().noUnknown('Unknown field for form').shape({

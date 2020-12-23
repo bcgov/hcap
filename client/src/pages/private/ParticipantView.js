@@ -140,7 +140,7 @@ export default () => {
     let statuses;
     switch (tabIndex) {
       case 1:
-        statuses = ['prospecting', 'interviewing'];
+        statuses = ['prospecting', 'interviewing', 'offer_made'];
         break;
       default:
         statuses = ['open'];
@@ -176,7 +176,7 @@ export default () => {
           ...rows[index],
           emailAddress: data.emailAddress || emailAddressMask,
           phoneNumber: data.phoneNumber || phoneNumberMask,
-          engage: { id: participantId, isEngaged: status === 'prospecting', status },
+          engage: { id: participantId, status },
           status,
         };
         setFetchedRows(rows);
@@ -247,10 +247,6 @@ export default () => {
         }
 
         const row = mapItemToColumns(item, resultColumns);
-
-        item.isEngaged = item.statusInfos?.find(
-          item => item.status === 'prospecting'
-        ) ? true : false;
 
         row.engage = item;
         row.status = item.statusInfos && item.statusInfos.length > 0 ? item.statusInfos[0].status : 'open';
@@ -429,6 +425,7 @@ export default () => {
           {actionMenuParticipant?.status === 'open' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
           {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => setModalOpen(true)}>Interviewing</MenuItem>}
           {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'open')}>Disengage</MenuItem>}
+          {actionMenuParticipant?.status === 'interviewing' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'offer_made')}>Offer Made</MenuItem>}
         </Menu>
       </CheckPermissions>
     </Page>

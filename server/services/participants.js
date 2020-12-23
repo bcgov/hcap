@@ -30,7 +30,7 @@ const setParticipantStatus = async (
     id: participantId,
   });
 
-  if (status === 'prospecting') {
+  if (['prospecting', 'interviewing', 'offer_made', 'hired'].includes(status)) {
     return {
       emailAddress: participant[0].emailAddress,
       phoneNumber: participant[0].phoneNumber,

@@ -138,8 +138,8 @@ const getParticipants = async (user) => {
 
       if (statusInfos) {
         participant.statusInfos = Array.isArray(statusInfos) ? statusInfos : [statusInfos];
-        const hasProspectingStatus = participant.statusInfos.find((statusInfo) => statusInfo.status === 'prospecting');
-        if (hasProspectingStatus) {
+        const showContactInfo = participant.statusInfos.find((statusInfo) => ['prospecting', 'interviewing', 'offer_made', 'hired'].includes(statusInfo.status));
+        if (showContactInfo) {
           participant = {
             ...participant,
             phoneNumber: item.phoneNumber,

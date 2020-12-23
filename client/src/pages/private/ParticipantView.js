@@ -129,9 +129,6 @@ export default () => {
   useEffect(() => { // Filter table
     let filtered = fetchedRows;
 
-    console.log(filtered.length);
-    console.log(filtered[0])
-
     filtered = filterByTab(tabValue, filtered);
 
     if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
@@ -182,7 +179,7 @@ export default () => {
           ...rows[index],
           emailAddress: data.emailAddress || emailAddressMask,
           phoneNumber: data.phoneNumber || phoneNumberMask,
-          engage: { id: participantId, isEngaged: status === 'prospecting' },
+          engage: { id: participantId, isEngaged: status === 'prospecting', status },
           status,
         };
         setFetchedRows(rows);
@@ -259,7 +256,8 @@ export default () => {
 
         row.engage = item;
         row.status = item.statusInfos && item.statusInfos.length > 0 ? item.statusInfos[0].status : 'open';
-
+        row.engage.status = row.status;
+        
         filteredRows.push(row);
       });
       return filteredRows;
@@ -439,9 +437,9 @@ export default () => {
           anchorEl={anchorElement}
           onClose={() => setActionMenuParticipant(null)}
         >
-            {actionMenuParticipant?.status === 'open' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
-            {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'interviewing')}>Interviewing</MenuItem>}
-            {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'open')}>Disengage</MenuItem>}
+          {actionMenuParticipant?.status === 'open' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
+          {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'interviewing')}>Interviewing</MenuItem>}
+          {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'open')}>Disengage</MenuItem>}
         </Menu>
       </CheckPermissions>
     </Page>

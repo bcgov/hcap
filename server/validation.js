@@ -38,6 +38,7 @@ const participantStatuses = [
   'interviewing',
   'offer_made',
   'hired',
+  'rejected',
 ];
 
 const isBooleanValue = (val) => typeof val === 'string' && ['yes', 'no'].includes(val.toLowerCase());

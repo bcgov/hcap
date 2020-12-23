@@ -6,9 +6,9 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
-import { ToastStatus, ParticipantStatusChangeInterviewing } from '../../constants';
+import { ToastStatus, InterviewingFormSchema, RejectedFormSchema } from '../../constants';
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
-import { InterviewingForm } from '../../components/modal-forms';
+import { InterviewingForm, RejectedForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 
 const defaultColumns = [
@@ -140,6 +140,9 @@ export default () => {
     switch (tabIndex) {
       case 1:
         statuses = ['prospecting', 'interviewing', 'offer_made'];
+        break;
+      case 2:
+        statuses = ['rejected'];
         break;
       default:
         statuses = ['open'];
@@ -285,10 +288,6 @@ export default () => {
     init();
   }, []);
 
-  const initialValues = {
-    contactedDate: '',
-  };
-
   return (
     <Page>
       <Dialog
@@ -297,10 +296,18 @@ export default () => {
         onClose={() => setActiveModalForm(null)}
       >
         {activeModalForm === 'interviewing' && <InterviewingForm
-          initialValues={initialValues}
-          validationSchema={ParticipantStatusChangeInterviewing}
+          initialValues={{ contactedDate: '' }}
+          validationSchema={InterviewingFormSchema}
           onSubmit={(values) => {
             handleEngage(actionMenuParticipant.id, 'interviewing', { contacted_at: values.contactedDate });
+          }}
+          onClose={() => setActiveModalForm(null)}
+        />}
+        {activeModalForm === 'rejected' && <RejectedForm
+          initialValues={{ contactedDate: '' }}
+          validationSchema={RejectedFormSchema}
+          onSubmit={(values) => {
+            handleEngage(actionMenuParticipant.id, 'rejected', { final_status: values.finalStatus });
           }}
           onClose={() => setActiveModalForm(null)}
         />}
@@ -392,9 +399,9 @@ export default () => {
           onClose={() => setActionMenuParticipant(null)}
         >
           {actionMenuParticipant?.status === 'open' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
-          {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => setModalOpen(true)}>Interviewing</MenuItem>}
+          {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => setActiveModalForm('interviewing')}>Interviewing</MenuItem>}
           {actionMenuParticipant?.status === 'interviewing' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'offer_made')}>Offer Made</MenuItem>}
-          {['prospecting', 'interviewing', 'offer_made'].includes(actionMenuParticipant?.status) && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'open')}>Reject</MenuItem>}
+          {['prospecting', 'interviewing', 'offer_made'].includes(actionMenuParticipant?.status) && <MenuItem onClick={() => setActiveModalForm('rejected')}>Rejected</MenuItem>}
         </Menu>
       </CheckPermissions>
     </Page>

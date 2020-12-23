@@ -158,8 +158,12 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
   doesCertify: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
 });
 
-export const ParticipantStatusChangeInterviewing = yup.object().noUnknown('Unknown field in form').shape({
+export const InterviewingFormSchema = yup.object().noUnknown('Unknown field in form').shape({
   contactedDate: yup.string().required('Date of contact is required').test('is-date', 'Not a valid date', validateDateString),
+});
+
+export const RejectedFormSchema = yup.object().noUnknown('Unknown field in form').shape({
+  finalStatus: yup.string().required('Participant final status is required').oneOf(['withdrawn', 'position filled', 'not qualified'], 'Invalid final status')
 });
 
 export const ParticipantFormSchema = yup.object().noUnknown('Unknown field for form').shape({

@@ -406,8 +406,7 @@ export default () => {
                     return <Button
                       onClick={(event) => {
                         setActionMenuParticipant(cell);
-                        // setAnchorElement(event.currentTarget);
-                        setModalOpen(true);
+                        setAnchorElement(event.currentTarget);
                       }}
                       variant="outlined"
                       size="small"
@@ -431,7 +430,7 @@ export default () => {
           onClose={() => setActionMenuParticipant(null)}
         >
           {actionMenuParticipant?.status === 'open' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
-          {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'interviewing')}>Interviewing</MenuItem>}
+          {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => setModalOpen(true)}>Interviewing</MenuItem>}
           {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'open')}>Disengage</MenuItem>}
         </Menu>
       </CheckPermissions>

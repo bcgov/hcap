@@ -87,14 +87,13 @@ app.get(`${apiBaseUrl}/participants`,
     const result = await getParticipants(
       user,
       {
-        pageSize: 10, lastId,
+        pageSize: 2, lastId, direction,
       },
-      {
-        field, direction,
-      },
+      field,
       regionFilter,
       fsaFilter,
     );
+    console.log(result);
     logger.info({
       action: 'participant_get',
       performed_by: {

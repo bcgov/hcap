@@ -83,7 +83,7 @@ const decomposeParticipantStatus = (raw) => {
   return participants;
 };
 
-const getParticipants = async (user, pagination, sort, regionFilter, fsaFilter) => {
+const getParticipants = async (user, pagination, sortField, regionFilter, fsaFilter) => {
   let criteria = user.isSuperUser || user.isMoH
     ? {
       ...regionFilter && { 'preferredLocation ilike': `%${regionFilter}%` },
@@ -127,14 +127,10 @@ const getParticipants = async (user, pagination, sort, regionFilter, fsaFilter) 
   const options = pagination && {
     order: [{
       field: 'id',
-      ...sort.direction && { direction: sort.direction },
+      direction: pagination.direction || 'asc',
       ...pagination.lastId && {
         last: Number(pagination.lastId),
       },
-    },
-    {
-      ...sort.field && { field: `body.${sort.field}` },
-      ...sort.direction && { direction: sort.direction },
     }],
     ...pagination.pageSize && { pageLength: pagination.pageSize },
   };

@@ -33,6 +33,10 @@ export default createMuiTheme({
     secondary: {
       main: '#FDB913',
     },
+    highlight: {
+      primary: '#40a9ff',
+      secondary: '#1890ff',
+    },
     warning: {
       main: '#F5A623',
     },
@@ -48,6 +52,7 @@ export default createMuiTheme({
     },
     gray: {
       primary: '#F0F0F0',
+      secondary: '#E8E8E8',
     }
   },
 

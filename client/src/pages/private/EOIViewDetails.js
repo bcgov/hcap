@@ -28,25 +28,29 @@ export default () => {
     }
   }
 
-  // This is only being used for logging at the moment
-  const fetchDetails = async () => {
-    const id = await location.state?.item.id;
-    const response = await fetch(`/api/v1/employer-sites-detail?id=${id}`, {
-      headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      // do something with data
-    }
-  }
-
   useEffect(() => {
     fetchUserInfo();
+  }, []);
+
+  useEffect(() => {
+    // This is only being used for logging at the moment
+    const fetchDetails = async () => {
+      const id = location.state?.item.id;
+      if (!id) return;
+      const response = await fetch(`/api/v1/employer-sites-detail?id=${id}`, {
+        headers: {
+          'Authorization': `Bearer ${store.get('TOKEN')}`,
+        },
+        method: 'GET',
+      });
+
+      if (response.ok) {
+        // do something with data
+      }
+    }
+
     fetchDetails();
-  });
+  }, [location.state?.item.id]);
 
   if (!location.state) return <Redirect to={Routes.EOIView} />
   scrollUp();

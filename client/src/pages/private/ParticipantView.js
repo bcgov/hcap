@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
+import { withStyles } from '@material-ui/core/styles';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import { Box, Typography, TextField, MenuItem } from '@material-ui/core';
 import store from 'store';
 import { ToastStatus } from '../../constants';
@@ -30,6 +33,43 @@ const sortOrder = [
   'engage',
 ];
 
+const tabs = [
+  'Available Participants',
+  'My Candidates',
+  'Archived Candidates',
+  'Hired Candidates',
+];
+
+const CustomTabs = withStyles(theme => ({
+  root: {
+    borderBottom: `1px solid ${theme.palette.gray.secondary}`,
+    marginBottom: theme.spacing(2),
+  },
+  indicator: {
+    backgroundColor: theme.palette.highlight.primary,
+  },
+}))(Tabs);
+
+const CustomTab = withStyles((theme) => ({
+  root: {
+    textTransform: 'none',
+    minWidth: 72,
+    fontWeight: theme.typography.fontWeightRegular,
+    marginRight: theme.spacing(4),
+    '&:hover': {
+      color: theme.palette.highlight.primary,
+      opacity: 1,
+    },
+    '&$selected': {
+      color: theme.palette.highlight.secondary,
+      fontWeight: theme.typography.fontWeightMedium,
+    },
+    '&:focus': {
+      color: theme.palette.highlight.primary,
+    },
+  },
+  selected: {},
+}))((props) => <Tab disableRipple {...props} />);
 
 export default () => {
 
@@ -52,6 +92,11 @@ export default () => {
   ]);
 
   const [orderBy, setOrderBy] = useState(columns[0].id);
+  const [tabValue, setTabValue] = useState(0);
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -78,10 +123,29 @@ export default () => {
 
   useEffect(() => { // Filter table
     let filtered = fetchedRows;
+
+    filtered = filterByTab(tabValue, filtered);
+
     if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
     if (fsaFilter) filtered = filtered.filter((row) => row.postalCodeFsa.toUpperCase().startsWith(fsaFilter.toUpperCase()));
     setRows(filtered);
-  }, [locationFilter, fsaFilter, fetchedRows]);
+  }, [locationFilter, fsaFilter, fetchedRows, tabValue]);
+
+  const filterByTab = (tabIndex, rows) => {
+    let status;
+    switch (tabIndex) {
+      case 0:
+        status = 'open';
+        break;
+      case 1:
+        status = 'prospecting';
+        break;
+      default:
+        status = 'open';
+        break;
+    }
+    return rows.filter((row) => row.status === status);
+  };
 
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 
@@ -111,6 +175,7 @@ export default () => {
           emailAddress: data.emailAddress || emailAddressMask,
           phoneNumber: data.phoneNumber || phoneNumberMask,
           engage: { id: participantId, isEngaged: !isEngaged },
+          status: isEngaged ? 'open' : 'prospecting',
         };
         setFetchedRows(rows);
         const { firstName, lastName } = rows[index];
@@ -184,6 +249,7 @@ export default () => {
         ) ? true : false;
 
         row.engage = { id: item.id, isEngaged };
+        row.status = item.statusInfos && item.statusInfos.length > 0 ? item.statusInfos[0].status : 'open';
 
         filteredRows.push(row);
       });
@@ -266,6 +332,14 @@ export default () => {
             </Grid>
           </Grid>
           <Box pt={2} pb={2} pl={2} pr={2} width="100%">
+            <CustomTabs
+              value={tabValue}
+              onChange={handleTabChange}
+            >
+              {
+                tabs.map((item, index) => <CustomTab key={index} label={item} />)
+              }
+            </CustomTabs>
             <Table
               columns={columns}
               order={order}

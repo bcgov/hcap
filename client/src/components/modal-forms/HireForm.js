@@ -2,10 +2,10 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box } from '@material-ui/core';
-import { RenderDateField } from '../fields';
+import { RenderDateField, RenderCheckbox } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 
-export const InterviewingForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
+export const HireForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
   return <Formik
     initialValues={initialValues}
     validationSchema={validationSchema}
@@ -14,6 +14,11 @@ export const InterviewingForm = ({ initialValues, validationSchema, onSubmit, on
     {({ submitForm }) => (
       <FormikForm>
         <Box>
+          <Field
+            name="nonHcapOpportunity"
+            component={RenderCheckbox}
+            label="non-HCAP Opportunity"
+          />
           <Field
             name="contactedDate"
             component={RenderDateField}

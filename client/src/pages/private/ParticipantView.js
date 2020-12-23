@@ -8,7 +8,7 @@ import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
 import { ToastStatus, InterviewingFormSchema, RejectedFormSchema } from '../../constants';
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
-import { InterviewingForm, RejectedForm } from '../../components/modal-forms';
+import { InterviewingForm, RejectedForm, HireForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 
 const defaultColumns = [
@@ -302,11 +302,22 @@ export default () => {
           }}
           onClose={() => setActiveModalForm(null)}
         />}
+
         {activeModalForm === 'rejected' && <RejectedForm
           initialValues={{ contactedDate: '' }}
           validationSchema={RejectedFormSchema}
           onSubmit={(values) => {
             handleEngage(actionMenuParticipant.id, 'rejected', { final_status: values.finalStatus });
+          }}
+          onClose={() => setActiveModalForm(null)}
+        />}
+
+        {activeModalForm === 'hired' && <HireForm
+          initialValues={{ contactedDate: '' }}
+          validationSchema={InterviewingFormSchema}
+          onSubmit={(values) => {
+            handleEngage(actionMenuParticipant.id, 'hired', { contacted_at: values.contactedDate });
+
           }}
           onClose={() => setActiveModalForm(null)}
         />}

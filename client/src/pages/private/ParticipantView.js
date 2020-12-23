@@ -189,6 +189,7 @@ export default () => {
           message: `${firstName} ${lastName} moved to ${status} state`,
         });
         setActionMenuParticipant(null);
+        setModalOpen(false);
       }
     } else {
       openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
@@ -292,10 +293,8 @@ export default () => {
     init();
   }, []);
 
-  const activeStatuses = actionMenuParticipant?.statusInfos?.map((item) => item.status) || [];
-
   const initialValues = {
-    contactedDate: [],
+    contactedDate: '',
   };
 
   return (
@@ -308,24 +307,17 @@ export default () => {
         <Formik
           initialValues={initialValues}
           validationSchema={ParticipantStatusChangeInterviewing}
-          onSubmit={(values) => handleEngage(actionMenuParticipant.id, 'interviewing', values.contactedDate)}
+          onSubmit={(values) => {
+            handleEngage(actionMenuParticipant.id, 'interviewing', { contacted_at: values.contactedDate });
+          }}
         >
           {({ submitForm, values, handleChange, setFieldValue }) => (
             <FormikForm>
               <Box>
                 <Field
-                  name="role"
+                  name="contactedDate"
                   component={RenderDateField}
                   label="* Contacted Date"
-                  options={[
-                    { value: 'health_authority', label: 'Health Authority' },
-                    { value: 'employer', label: 'Private Employer' },
-                  ]}
-                  onChange={(e) => {
-                    setFieldValue('regions', []);
-                    setFieldValue('sites', []);
-                    handleChange(e);
-                  }}
                 />
               </Box>
               <Box mt={3}>
@@ -414,7 +406,8 @@ export default () => {
                     return <Button
                       onClick={(event) => {
                         setActionMenuParticipant(cell);
-                        setAnchorElement(event.currentTarget);
+                        // setAnchorElement(event.currentTarget);
+                        setModalOpen(true);
                       }}
                       variant="outlined"
                       size="small"

@@ -104,6 +104,8 @@ const getParticipants = async (user) => {
     participants = decomposeParticipantStatus(participants);
   }
 
+  if (user.isSuperUser) return participants;
+
   if (user.isMoH || user.isSuperUser) { // Only return relevant fields
     return participants.map((item) => ({
       id: item.id,

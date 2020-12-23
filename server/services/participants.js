@@ -39,6 +39,8 @@ const setParticipantStatus = async (
   return { status };
 });
 
+// When MassiveJS executes a join query, it returns results with underscored key names
+// This maps results into expected participant objects with a `statusInfos` property
 const decomposeParticipantStatus = (raw) => {
   const participantsMap = new Map();
   const participantsStatusMap = new Map();
@@ -92,19 +94,15 @@ const getParticipants = async (user) => {
     });
   }
 
-  let participants = criteria
-    ? await table.findDoc(criteria)
-    : [];
+  if (!criteria) return []; // This happens when user has no regions assigned
+
+  let participants = await table.findDoc(criteria);
 
   if (showStatus) {
     participants = decomposeParticipantStatus(participants);
   }
 
-  if (user.isSuperUser) {
-    return participants;
-  }
-
-  if (user.isMoH) {
+  if (user.isMoH || user.isSuperUser) { // Only return relevant fields
     return participants.map((item) => ({
       id: item.id,
       firstName: item.firstName,
@@ -117,6 +115,7 @@ const getParticipants = async (user) => {
     }));
   }
 
+  // Returned participants for employers
   return participants
     .filter((item) => (
       evaluateBooleanAnswer(item.interested)
@@ -134,10 +133,7 @@ const getParticipants = async (user) => {
       const statusInfos = item.statusInfos?.find((statusInfo) => statusInfo.employerId === user.id);
 
       if (statusInfos) {
-        participant = {
-          ...participant,
-          statusInfos: Array.isArray(statusInfos) ? statusInfos : [statusInfos],
-        };
+        participant.statusInfos = Array.isArray(statusInfos) ? statusInfos : [statusInfos];
         const hasProspectingStatus = participant.statusInfos.find((statusInfo) => statusInfo.status === 'prospecting');
         if (hasProspectingStatus) {
           participant = {

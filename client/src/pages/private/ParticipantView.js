@@ -7,7 +7,8 @@ import Tab from '@material-ui/core/Tab';
 import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
 import { ToastStatus } from '../../constants';
-import { Page, Table, CheckPermissions, Button } from '../../components/generic';
+import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
+import { Field, Formik, Form as FormikForm } from 'formik';
 import { useToast } from '../../hooks';
 
 const defaultColumns = [
@@ -85,6 +86,7 @@ export default () => {
   const [fsaFilter, setFsaFilter] = useState(null);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [locations] = useState([
     'Interior',
     'Fraser',
@@ -286,8 +288,65 @@ export default () => {
     init();
   }, []);
 
+  const activeStatuses = actionMenuParticipant?.statusInfos?.map((item) => item.status) || [];
+
+  const initialValues = {
+    contactedDate: [],
+  };
+
   return (
     <Page>
+      <Dialog
+        title="Approve Access Request"
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+      >
+        <Formik
+          initialValues={initialValues}
+          validationSchema={ApproveAccessRequestSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ submitForm, values, handleChange, setFieldValue }) => (
+            <FormikForm>
+              <Box>
+                <Field
+                  name="role"
+                  component={RenderSelectField}
+                  label="* User Role"
+                  options={[
+                    { value: 'health_authority', label: 'Health Authority' },
+                    { value: 'employer', label: 'Private Employer' },
+                  ]}
+                  onChange={(e) => {
+                    setFieldValue('regions', []);
+                    setFieldValue('sites', []);
+                    handleChange(e);
+                  }}
+                />
+              </Box>
+              <Box mt={3}>
+                <Grid container spacing={2} justify="flex-end">
+                  <Grid item>
+                    <Button
+                      onClick={() => setModalOpen(false)}
+                      color="default"
+                      text="Cancel"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      onClick={submitForm}
+                      variant="contained"
+                      color="primary"
+                      text="Submit"
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+            </FormikForm>
+          )}
+        </Formik>
+      </Dialog>
       <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pt={4} pb={4} pl={2} pr={2}>
@@ -374,9 +433,9 @@ export default () => {
           anchorEl={anchorElement}
           onClose={() => setActionMenuParticipant(null)}
         >
-          {!actionMenuParticipant?.isEngaged && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
-          {actionMenuParticipant?.isEngaged && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'interviewing')}>Interviewing</MenuItem>}
-          {actionMenuParticipant?.isEngaged && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'open')}>Disengage</MenuItem>}
+            {(console.log(activeStatuses) || activeStatuses.length === 0 || activeStatuses.includes('open')) && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
+            {activeStatuses.includes('prospecting') && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'interviewing')}>Interviewing</MenuItem>}
+            {activeStatuses.includes('prospecting') && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'open')}>Disengage</MenuItem>}
         </Menu>
       </CheckPermissions>
     </Page>

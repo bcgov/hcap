@@ -39,6 +39,12 @@ const participantStatuses = [
   'hired',
 ];
 
+const validateDateString = (s) => {
+  if (/^\d{4}\/\d{2}\/\d{2}$/.test(s) === false) return false;
+  const date = Date.parse(s);
+  return typeof date === 'number' && !Number.isNaN(date);
+};
+
 const isBooleanValue = (val) => typeof val === 'string' && ['yes', 'no'].includes(val.toLowerCase());
 
 const evaluateBooleanAnswer = (val) => (isBooleanValue(val) && val.toLowerCase() === 'yes');
@@ -231,6 +237,12 @@ const ParticipantStatusChange = yup.object().noUnknown('Unknown field in form').
   status: yup.string().oneOf(participantStatuses, 'Invalid region'),
 });
 
+const ParticipantStatusChangeInterviewing = yup.object().noUnknown('Unknown field in form').shape({
+  participantId: yup.number().required('Participant ID is required'),
+  contactedDate: yup.string().required('Date of contact is required').test('is-date', 'Not a valid date', validateDateString),
+  status: yup.string().oneOf(participantStatuses, 'Invalid region').test((x) => x === 'interviewing'),
+});
+
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
@@ -242,4 +254,5 @@ module.exports = {
   evaluateBooleanAnswer,
   AccessRequestApproval,
   EmployerSiteBatchSchema,
+  ParticipantStatusChangeInterviewing,
 };

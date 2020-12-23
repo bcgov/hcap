@@ -36,6 +36,7 @@ const participantStatuses = [
   'open',
   'prospecting',
   'interviewing',
+  'offer_made',
   'hired',
 ];
 

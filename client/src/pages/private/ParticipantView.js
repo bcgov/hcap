@@ -4,10 +4,12 @@ import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { Box, Typography, TextField, MenuItem } from '@material-ui/core';
+import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
-import { ToastStatus } from '../../constants';
-import { Page, Table, CheckPermissions, Button } from '../../components/generic';
+import { ToastStatus, ParticipantStatusChangeInterviewing } from '../../constants';
+import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
+import { RenderDateField } from '../../components/fields';
+import { Field, Formik, Form as FormikForm } from 'formik';
 import { useToast } from '../../hooks';
 
 const defaultColumns = [
@@ -83,6 +85,9 @@ export default () => {
   const [columns, setColumns] = useState(defaultColumns);
   const [locationFilter, setLocationFilter] = useState(null);
   const [fsaFilter, setFsaFilter] = useState(null);
+  const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
+  const [anchorElement, setAnchorElement] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [locations] = useState([
     'Interior',
     'Fraser',
@@ -132,19 +137,16 @@ export default () => {
   }, [locationFilter, fsaFilter, fetchedRows, tabValue]);
 
   const filterByTab = (tabIndex, rows) => {
-    let status;
+    let statuses;
     switch (tabIndex) {
-      case 0:
-        status = 'open';
-        break;
       case 1:
-        status = 'prospecting';
+        statuses = ['prospecting', 'interviewing'];
         break;
       default:
-        status = 'open';
+        statuses = ['open'];
         break;
     }
-    return rows.filter((row) => row.status === status);
+    return rows.filter((row) => statuses.includes(row.status));
   };
 
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
@@ -152,7 +154,7 @@ export default () => {
   const emailAddressMask = '***@***.***';
   const phoneNumberMask = '(***) ***-****';
 
-  const handleEngage = async (participantId, isEngaged) => {
+  const handleEngage = async (participantId, status, additional = {}) => {
     const response = await fetch('/api/v1/employer-actions', {
       method: 'POST',
       headers: {
@@ -160,7 +162,7 @@ export default () => {
         'Accept': 'application/json',
         'Content-type': 'application/json',
       },
-      body: JSON.stringify({ participantId, status: isEngaged ? 'open' : 'prospecting' }),
+      body: JSON.stringify({ participantId, status, data: additional }),
     });
 
     if (response.ok) {
@@ -174,15 +176,17 @@ export default () => {
           ...rows[index],
           emailAddress: data.emailAddress || emailAddressMask,
           phoneNumber: data.phoneNumber || phoneNumberMask,
-          engage: { id: participantId, isEngaged: !isEngaged },
-          status: isEngaged ? 'open' : 'prospecting',
+          engage: { id: participantId, isEngaged: status === 'prospecting', status },
+          status,
         };
         setFetchedRows(rows);
         const { firstName, lastName } = rows[index];
         openToast({
           status: ToastStatus.Success,
-          message: `You ${isEngaged ? 'disengaged' : 'engaged'} ${firstName} ${lastName}`,
+          message: `${firstName} ${lastName} moved to ${status} state`,
         });
+        setActionMenuParticipant(null);
+        setModalOpen(false);
       }
     } else {
       openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
@@ -244,13 +248,14 @@ export default () => {
 
         const row = mapItemToColumns(item, resultColumns);
 
-        const isEngaged = item.statusInfos?.find(
+        item.isEngaged = item.statusInfos?.find(
           item => item.status === 'prospecting'
         ) ? true : false;
 
-        row.engage = { id: item.id, isEngaged };
+        row.engage = item;
         row.status = item.statusInfos && item.statusInfos.length > 0 ? item.statusInfos[0].status : 'open';
-
+        row.engage.status = row.status;
+        
         filteredRows.push(row);
       });
       return filteredRows;
@@ -285,8 +290,56 @@ export default () => {
     init();
   }, []);
 
+  const initialValues = {
+    contactedDate: '',
+  };
+
   return (
     <Page>
+      <Dialog
+        title="Approve Access Request"
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+      >
+        <Formik
+          initialValues={initialValues}
+          validationSchema={ParticipantStatusChangeInterviewing}
+          onSubmit={(values) => {
+            handleEngage(actionMenuParticipant.id, 'interviewing', { contacted_at: values.contactedDate });
+          }}
+        >
+          {({ submitForm, values, handleChange, setFieldValue }) => (
+            <FormikForm>
+              <Box>
+                <Field
+                  name="contactedDate"
+                  component={RenderDateField}
+                  label="* Contacted Date"
+                />
+              </Box>
+              <Box mt={3}>
+                <Grid container spacing={2} justify="flex-end">
+                  <Grid item>
+                    <Button
+                      onClick={() => setModalOpen(false)}
+                      color="default"
+                      text="Cancel"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      onClick={submitForm}
+                      variant="contained"
+                      color="primary"
+                      text="Submit"
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+            </FormikForm>
+          )}
+        </Formik>
+      </Dialog>
       <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pt={4} pb={4} pl={2} pr={2}>
@@ -348,10 +401,14 @@ export default () => {
                 (columnId, cell) => {
                   if (columnId === 'engage') {
                     return <Button
-                      onClick={() => handleEngage(cell.id, cell.isEngaged)}
+                      onClick={(event) => {
+                        setActionMenuParticipant(cell);
+                        setAnchorElement(event.currentTarget);
+                      }}
                       variant="outlined"
                       size="small"
-                      text={cell.isEngaged ? 'Disengage' : 'Engage'} />
+                      text="Actions"
+                    />
                   } else {
                     return cell;
                   }
@@ -363,6 +420,16 @@ export default () => {
             />
           </Box>
         </Grid>
+        <Menu
+          keepMounted
+          open={actionMenuParticipant != null}
+          anchorEl={anchorElement}
+          onClose={() => setActionMenuParticipant(null)}
+        >
+          {actionMenuParticipant?.status === 'open' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
+          {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => setModalOpen(true)}>Interviewing</MenuItem>}
+          {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'open')}>Disengage</MenuItem>}
+        </Menu>
       </CheckPermissions>
     </Page>
   );

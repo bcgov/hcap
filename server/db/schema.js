@@ -18,7 +18,8 @@ const schema = [
       "participant_id" integer not null, 
       "status" varchar(255) not null,
       "current" boolean not null, 
-      "created_at" timestamp with time zone DEFAULT now()
+      "created_at" timestamp with time zone DEFAULT now(),
+      "data" jsonb
       )`,
     indexes: [],
   },

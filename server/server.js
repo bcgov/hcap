@@ -7,7 +7,9 @@ const multer = require('multer');
 const { getParticipants, parseAndSaveParticipants, setParticipantStatus } = require('./services/participants.js');
 const { getEmployers, saveSites, getSites } = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
-const { validate, EmployerFormSchema, AccessRequestApproval } = require('./validation.js');
+const {
+  validate, EmployerFormSchema, AccessRequestApproval, ParticipantStatusChange,
+} = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
@@ -96,11 +98,13 @@ app.post(`${apiBaseUrl}/employer-actions`,
   keycloak.allowRolesMiddleware('health_authority', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
+    await validate(ParticipantStatusChange, req.body);
     const user = req.hcapUserInfo;
     const result = await setParticipantStatus(
       user.id,
       req.body.participantId,
       req.body.status,
+      req.body.data,
     );
     logger.info({
       action: 'employer-actions_post',

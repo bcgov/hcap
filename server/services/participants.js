@@ -10,6 +10,7 @@ const setParticipantStatus = async (
   employerId,
   participantId,
   status,
+  data, // JSONB on the status row
 ) => dbClient.db.withTransaction(async (tx) => {
   await tx[collections.PARTICIPANTS_STATUS].update({
     employer_id: employerId,
@@ -22,6 +23,7 @@ const setParticipantStatus = async (
     participant_id: participantId,
     status,
     current: true,
+    data,
   });
 
   const participant = await tx[collections.PARTICIPANTS].findDoc({
@@ -32,15 +34,15 @@ const setParticipantStatus = async (
     return {
       emailAddress: participant[0].emailAddress,
       phoneNumber: participant[0].phoneNumber,
-      status
+      status,
     };
   }
 
-  return {
-    status
-  };
+  return { status };
 });
 
+// When MassiveJS executes a join query, it returns results with underscored key names
+// This maps results into expected participant objects with a `statusInfos` property
 const decomposeParticipantStatus = (raw) => {
   const participantsMap = new Map();
   const participantsStatusMap = new Map();
@@ -94,19 +96,17 @@ const getParticipants = async (user) => {
     });
   }
 
-  let participants = criteria
-    ? await table.findDoc(criteria)
-    : [];
+  if (!criteria) return []; // This happens when user has no regions assigned
+
+  let participants = await table.findDoc(criteria);
 
   if (showStatus) {
     participants = decomposeParticipantStatus(participants);
   }
 
-  if (user.isSuperUser) {
-    return participants;
-  }
+  if (user.isSuperUser) return participants;
 
-  if (user.isMoH) {
+  if (user.isMoH || user.isSuperUser) { // Only return relevant fields
     return participants.map((item) => ({
       id: item.id,
       firstName: item.firstName,
@@ -119,12 +119,12 @@ const getParticipants = async (user) => {
     }));
   }
 
+  // Returned participants for employers
   return participants
     .filter((item) => (
       evaluateBooleanAnswer(item.interested)
       && evaluateBooleanAnswer(item.crcClear)))
     .map((item) => {
-
       let participant = {
         id: item.id,
         firstName: item.firstName,
@@ -134,18 +134,11 @@ const getParticipants = async (user) => {
         nonHCAP: item.nonHCAP,
       };
 
-      const statusInfos = item.statusInfos?.find(statusInfo =>
-        statusInfo.employerId === user.id
-      );
+      const statusInfos = item.statusInfos?.find((statusInfo) => statusInfo.employerId === user.id);
 
       if (statusInfos) {
-        participant = {
-          ...participant,
-          statusInfos: Array.isArray(statusInfos) ? statusInfos : [statusInfos],
-        };
-        const hasProspectingStatus = participant.statusInfos.find(statusInfo =>
-          statusInfo.status === 'prospecting',
-        );
+        participant.statusInfos = Array.isArray(statusInfos) ? statusInfos : [statusInfos];
+        const hasProspectingStatus = participant.statusInfos.find((statusInfo) => statusInfo.status === 'prospecting');
         if (hasProspectingStatus) {
           participant = {
             ...participant,

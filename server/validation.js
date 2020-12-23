@@ -32,6 +32,13 @@ const userRoles = [
   'employer',
 ];
 
+const participantStatuses = [
+  'open',
+  'prospecting',
+  'interviewing',
+  'hired',
+];
+
 const isBooleanValue = (val) => typeof val === 'string' && ['yes', 'no'].includes(val.toLowerCase());
 
 const evaluateBooleanAnswer = (val) => (isBooleanValue(val) && val.toLowerCase() === 'yes');
@@ -219,11 +226,18 @@ const AccessRequestApproval = yup.object().noUnknown('Unknown field in form').sh
   role: yup.string().required('Role is required').oneOf(userRoles, 'Invalid role'),
 });
 
+const ParticipantStatusChange = yup.object().noUnknown('Unknown field in form').shape({
+  participantId: yup.number().required('Participant ID is required'),
+  data: yup.object(),
+  status: yup.string().oneOf(participantStatuses, 'Invalid region'),
+});
+
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
   EmployerFormSchema,
   ParticipantBatchSchema,
+  ParticipantStatusChange,
   validate,
   isBooleanValue,
   evaluateBooleanAnswer,

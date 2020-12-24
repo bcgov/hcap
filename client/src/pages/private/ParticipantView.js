@@ -224,6 +224,11 @@ export default () => {
           resultColumns.push(
             { id: 'phoneNumber', name: 'Phone Number' },
             { id: 'emailAddress', name: 'Email Address' },
+          )
+        }
+
+        if (!isMoH && !isSuperUser) {
+          resultColumns.push(
             { id: 'engage' },
           )
         }

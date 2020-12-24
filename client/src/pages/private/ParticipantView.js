@@ -161,11 +161,14 @@ export default () => {
       case 2:
         statuses = ['rejected'];
         break;
+      case -1:
+        statuses = ['all'];
+        break;
       default:
         statuses = ['open'];
         break;
     }
-    return rows.filter((row) => statuses.includes(row.status));
+    return (statuses.includes('all'))? rows : rows.filter((row) => statuses.includes(row.status));
   };
 
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
@@ -428,7 +431,9 @@ export default () => {
               onChange={handleTabChange}
             >
               {
-                tabs.map((item, index) => <CustomTab key={index} label={item} />)
+                (roles.includes('superuser') || roles.includes('ministry_of_health'))
+                ? <CustomTab key={-1} label='Participants' />
+                : tabs.map((item, index) => <CustomTab key={index} label={item} />)
               }
             </CustomTabs>
             <Table

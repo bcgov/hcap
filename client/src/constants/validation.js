@@ -166,7 +166,7 @@ export const HireFormSchema = yup.object().noUnknown('Unknown field in form').sh
   startDate: yup.string().required('Start date is required').test('is-date', 'Not a valid date', validateDateString),
   hiredDate: yup.string().required('Date hired is required').test('is-date', 'Not a valid date', validateDateString),
   nonHcapOpportunity: yup.boolean().required('Non-Hcap Opportunity is required as true or false'),
-  acknowledge: yup.boolean().test('is-true', 'You must acknowledge', (v) => v === true),
+  acknowledge: yup.boolean().test('is-true', 'Must acknowledge participant acceptance', (v) => v === true),
   positionTitle: yup.string().when('nonHcapOpportunity', {
     is: true,
     then: yup.string().required('Position title is required'),

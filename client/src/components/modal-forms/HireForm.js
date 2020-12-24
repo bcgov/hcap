@@ -88,7 +88,7 @@ export const HireForm = ({ initialValues, validationSchema, onSubmit, onClose, s
           <Field
             name="acknowledge"
             component={RenderCheckbox}
-            label="I acknowledge that the participant has accepted the offer"
+            label="I acknowledge that the participant has accepted the offer in writing."
           />
         </Box>
         <Box mt={3}>

@@ -4,10 +4,16 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { List, ListItem, ListItemText, Menu, MenuItem } from '@material-ui/core';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TablePagination from '@material-ui/core/TablePagination';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import FirstPageIcon from '@material-ui/icons/FirstPage';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import LastPageIcon from '@material-ui/icons/LastPage';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -47,16 +53,131 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows, isLoading, rowsPerPage = 10 }) => {
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexShrink: 0,
+    marginLeft: theme.spacing(2.5),
+  },
+}));
+
+const TablePaginationActions = (props) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const classes = useStyles();
+  const { count, page, rowsPerPage, onChangePage } = props;
+
+  const handleFirstPageButtonClick = (event) => {
+    onChangePage(event, 0);
+  };
+
+  const handleBackButtonClick = (event) => {
+    onChangePage(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onChangePage(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onChangePage(event, Math.max(0, Math.floor(count / rowsPerPage)));
+  };
+
+  const handleClickListItem = (event) => {
+    setAnchorEl(event.currentTarget);
+  }
+
+  const handleMenuItemClick = (event, index) => {
+    onChangePage(event, index);
+    setAnchorEl(null);
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  }
+
+
+  return (
+    <div className={classes.root}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        <FirstPageIcon />
+      </IconButton>
+      <IconButton onClick={handleBackButtonClick}
+        disabled={page === 0} 
+        aria-label="previous page"
+      >
+        <KeyboardArrowLeft />
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        <KeyboardArrowRight />
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        <LastPageIcon />
+      </IconButton>
+    <List component="nav" aria-label="Page Selector">
+      <ListItem
+        button
+        aria-haspopup="true"
+        aria-controls="page-select"
+        aria-label="go to page"
+        onClick={handleClickListItem}
+      >
+        <ListItemText primary="Skip to page..." />
+      </ListItem>
+    </List>
+    <Menu
+      id="page-select"
+      anchorEl={anchorEl}
+      keepMounted
+      open={Boolean(anchorEl)}
+      onClose={handleClose}
+    >
+      {/* This expression creates an array of integers 0..n */}
+      {[...Array(Math.ceil(count / rowsPerPage)).keys()].map((option) => (
+        <MenuItem
+          key={`page ${option}`}
+          selected={option === page}
+          onClick={(event) => handleMenuItemClick(event, option)}
+        >
+          Page {option+1}
+        </MenuItem>
+      ))}
+    </Menu>
+  </div>
+  )
+};
+
+
+
+export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows, isLoading, rowsPerPage = 10, filterUpdated, setFilterUpdated }) => {
 
   const [pageRows, setPageRows] = useState([]);
   const [page, setPage] = useState(0);
 
   useEffect(() => {
+    const resetIfNeeded = () => {
+      if (filterUpdated) {
+        setFilterUpdated(false);
+        setPage(0);
+      }
+    }
     const offset = page * rowsPerPage;
     const paginatedRows = rows.slice(offset, offset + rowsPerPage);
     setPageRows(paginatedRows);
-  }, [rows, page, rowsPerPage, renderCell]);
+    resetIfNeeded();
+  }, [rows, page, rowsPerPage, renderCell, filterUpdated, setFilterUpdated ]);
 
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -112,8 +233,9 @@ export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows
         component="div"
         count={rows.length}
         rowsPerPage={rowsPerPage}
-        page={page}
+        page={filterUpdated? 0 : page}
         onChangePage={onChangePage}
+        ActionsComponent={TablePaginationActions}
       />
     </Fragment>
   );

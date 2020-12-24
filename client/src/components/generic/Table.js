@@ -230,7 +230,7 @@ export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows
         component="div"
         count={rows.length}
         rowsPerPage={rowsPerPage}
-        page={page}
+        page={filterUpdated? 0 : page}
         onChangePage={onChangePage}
         ActionsComponent={TablePaginationActions}
       />

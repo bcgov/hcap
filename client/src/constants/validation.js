@@ -162,6 +162,23 @@ export const InterviewingFormSchema = yup.object().noUnknown('Unknown field in f
   contactedDate: yup.string().required('Date of contact is required').test('is-date', 'Not a valid date', validateDateString),
 });
 
+export const HireFormSchema = yup.object().noUnknown('Unknown field in form').shape({
+  startDate: yup.string().required('Start date is required').test('is-date', 'Not a valid date', validateDateString),
+  hiredDate: yup.string().required('Date hired is required').test('is-date', 'Not a valid date', validateDateString),
+  nonHcapOpportunity: yup.boolean().required('Non-Hcap Opportunity is required as true or false'),
+  positionTitle: yup.string().when('nonHcapOpportunity', {
+    is: true,
+    then: yup.string().required('Position title is required'),
+    otherwise: yup.string().nullable(),
+  }),
+  positionType: yup.string().when('nonHcapOpportunity', {
+    is: true,
+    then: yup.string().required('Position type is required').oneOf(['Full-Time', 'Part-Time', 'Casual'], 'Invalid position type'),
+    otherwise: yup.string().nullable(),
+  }),
+  site: yup.number().required('Site is required'),
+});
+
 export const RejectedFormSchema = yup.object().noUnknown('Unknown field in form').shape({
   finalStatus: yup.string().required('Participant final status is required').oneOf(['withdrawn', 'position filled', 'not qualified'], 'Invalid final status')
 });

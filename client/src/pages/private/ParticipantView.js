@@ -6,7 +6,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
-import { ToastStatus, InterviewingFormSchema, RejectedFormSchema } from '../../constants';
+import { ToastStatus, InterviewingFormSchema, RejectedFormSchema, HireFormSchema } from '../../constants';
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { InterviewingForm, RejectedForm, HireForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
@@ -75,6 +75,7 @@ export default () => {
 
   const { openToast } = useToast();
   const [roles, setRoles] = useState([]);
+  const [sites, setSites] = useState([]);
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [isLoadingUser, setLoadingUser] = useState(false);
@@ -208,8 +209,9 @@ export default () => {
       });
 
       if (response.ok) {
-        const { roles } = await response.json();
+        const { roles, sites } = await response.json();
         setLoadingUser(false);
+        setSites(sites)
         setRoles(roles);
         const isMoH = roles.includes('ministry_of_health');
         const isSuperUser = roles.includes('superuser');
@@ -287,10 +289,15 @@ export default () => {
     init();
   }, []);
 
+  const getDialogTitle = (activeModalForm) => {
+    if (activeModalForm === 'hired') return 'Hire';
+    return 'Change Participant Status';
+  };
+
   return (
     <Page>
       <Dialog
-        title="Approve Access Request"
+        title={getDialogTitle(activeModalForm)}
         open={activeModalForm != null}
         onClose={() => setActiveModalForm(null)}
       >
@@ -313,11 +320,25 @@ export default () => {
         />}
 
         {activeModalForm === 'hired' && <HireForm
-          initialValues={{ contactedDate: '' }}
-          validationSchema={InterviewingFormSchema}
+          sites={sites}
+          initialValues={{
+            nonHcapOpportunity: false,
+            positionTitle: '',
+            positionType: '',
+            hiredDate: '',
+            startDate: '',
+            site: '',
+          }}
+          validationSchema={HireFormSchema}
           onSubmit={(values) => {
-            handleEngage(actionMenuParticipant.id, 'hired', { contacted_at: values.contactedDate });
-
+            handleEngage(actionMenuParticipant.id, 'hired', {
+              nonHcapOpportunity: values.nonHcapOpportunity,
+              positionTitle: values.positionTitle,
+              positionType: values.positionType,
+              hiredDate: values.hiredDate,
+              startDate: values.startDate,
+              site: values.site,
+            });
           }}
           onClose={() => setActiveModalForm(null)}
         />}
@@ -411,6 +432,7 @@ export default () => {
           {actionMenuParticipant?.status === 'open' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
           {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => setActiveModalForm('interviewing')}>Interviewing</MenuItem>}
           {actionMenuParticipant?.status === 'interviewing' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'offer_made')}>Offer Made</MenuItem>}
+          {actionMenuParticipant?.status === 'offer_made' && <MenuItem onClick={() => setActiveModalForm('hired')}>Hire</MenuItem>}
           {['prospecting', 'interviewing', 'offer_made'].includes(actionMenuParticipant?.status) && <MenuItem onClick={() => setActiveModalForm('rejected')}>Rejected</MenuItem>}
           {actionMenuParticipant?.status === 'rejected' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Re-engage</MenuItem>}
         </Menu>

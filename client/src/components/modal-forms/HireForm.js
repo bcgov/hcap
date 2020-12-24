@@ -1,28 +1,80 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box } from '@material-ui/core';
-import { RenderDateField, RenderCheckbox } from '../fields';
+import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
+import store from 'store';
 
-export const HireForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
+export const HireForm = ({ initialValues, validationSchema, onSubmit, onClose, sites }) => {
+
+  const [sitesDetail, setSitesDetail] = useState([]);
+
+  useEffect(() => {
+    const fetchSites = async () => {
+      const response = await fetch('/api/v1/employer-sites', {
+        headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
+        method: 'GET',
+      });
+
+      if (response.ok) {
+        const { data } = await response.json();
+        setSitesDetail(data.filter((site) => sites.includes(site.siteId)));
+      }
+    };
+
+    fetchSites();
+  }, [sites]);
+
   return <Formik
     initialValues={initialValues}
     validationSchema={validationSchema}
     onSubmit={onSubmit}
   >
-    {({ submitForm }) => (
+    {({ submitForm, values }) => (
       <FormikForm>
         <Box>
           <Field
             name="nonHcapOpportunity"
             component={RenderCheckbox}
-            label="non-HCAP Opportunity"
+            label="Non-HCAP Opportunity"
+          />
+          {
+            values.nonHcapOpportunity && (<>
+              <Field
+                name="positionTitle"
+                component={RenderTextField}
+                label="* Position Title"
+              />
+              <Field
+                name="positionType"
+                component={RenderSelectField}
+                label="* Position Type"
+                options={[
+                  { value: 'Full-Time', label: 'Full-Time' },
+                  { value: 'Part-Time', label: 'Part-Time' },
+                  { value: 'Casual', label: 'Casual' },
+                ]}
+              />
+            </>)
+          }
+          <Field
+            name="hiredDate"
+            component={RenderDateField}
+            label="* Date Hired"
           />
           <Field
-            name="contactedDate"
+            name="startDate"
             component={RenderDateField}
-            label="* Contacted Date"
+            label="* Start Date"
+          />
+          <Field
+            name="site"
+            component={RenderSelectField}
+            label="* Site"
+            options={sitesDetail.map((siteDetail) => ({
+              value: siteDetail.id, label: siteDetail.siteName,
+            }))}
           />
         </Box>
         <Box mt={3}>

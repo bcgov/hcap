@@ -200,10 +200,36 @@ export default () => {
         };
         setFetchedRows(rows);
         const { firstName, lastName } = rows[index];
-        openToast({
-          status: ToastStatus.Success,
-          message: `${firstName} ${lastName} moved to ${status} state`,
-        });
+        const toasts = {
+          open: {
+            status: ToastStatus.Info,
+            message: `${firstName} ${lastName} is open to job offers`,
+          },
+          prospecting: {
+            status: ToastStatus.Info,
+            message: `${firstName} ${lastName} is now a job prospect`,
+          },
+          interviewing: {
+            status: ToastStatus.Info,
+            message: `${firstName} ${lastName} is now being interviewed`,
+          },
+          offer_made: {
+            status: ToastStatus.Info,
+            message: `${firstName} ${lastName} has been made a job offer`,
+          },
+          hired: {
+            status: ToastStatus.Success,
+            message: `${firstName} ${lastName} has been hired`,
+          },
+          rejected: {
+            status: ToastStatus.Info,
+            message: `${firstName} ${lastName} has been rejected`,
+          },
+        }
+
+
+
+        openToast(toasts[status]);
         setActionMenuParticipant(null);
         setActiveModalForm(null);
       }

@@ -290,7 +290,9 @@ export default () => {
   }, []);
 
   const getDialogTitle = (activeModalForm) => {
-    if (activeModalForm === 'hired') return 'Hire';
+    if (activeModalForm === 'hired') return 'Hire Participant';
+    if (activeModalForm === 'interviewing') return 'Interview Participant';
+    if (activeModalForm === 'rejected') return 'Reject Participant';
     return 'Change Participant Status';
   };
 

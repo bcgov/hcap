@@ -38,7 +38,6 @@ const tabs = [
   'Available Participants',
   'My Candidates',
   'Archived Candidates',
-  'Hired Candidates',
 ];
 
 const CustomTabs = withStyles(theme => ({

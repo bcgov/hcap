@@ -17,6 +17,7 @@ export const InterviewingForm = ({ initialValues, validationSchema, onSubmit, on
           <Field
             name="contactedDate"
             component={RenderDateField}
+            maxDate={new Date().toISOString().split('T')[0]}
             label="* Contacted Date"
           />
         </Box>

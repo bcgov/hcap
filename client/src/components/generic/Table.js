@@ -158,16 +158,23 @@ const TablePaginationActions = (props) => {
 
 
 
-export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows, isLoading, rowsPerPage = 10 }) => {
+export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows, isLoading, rowsPerPage = 10, filterUpdated, setFilterUpdated }) => {
 
   const [pageRows, setPageRows] = useState([]);
   const [page, setPage] = useState(0);
 
   useEffect(() => {
+    const resetIfNeeded = () => {
+      if (filterUpdated) {
+        setFilterUpdated(false);
+        setPage(0);
+      }
+    }
     const offset = page * rowsPerPage;
     const paginatedRows = rows.slice(offset, offset + rowsPerPage);
     setPageRows(paginatedRows);
-  }, [rows, page, rowsPerPage, renderCell]);
+    resetIfNeeded();
+  }, [rows, page, rowsPerPage, renderCell, filterUpdated, setFilterUpdated ]);
 
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);

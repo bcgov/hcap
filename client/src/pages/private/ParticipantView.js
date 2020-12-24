@@ -125,6 +125,8 @@ export default () => {
     return row;
   };
 
+  const [filterUpdated, setFilterUpdated] = useState(false);
+
   useEffect(() => { // Filter table
     let filtered = fetchedRows;
 
@@ -132,6 +134,7 @@ export default () => {
 
     if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
     if (fsaFilter) filtered = filtered.filter((row) => row.postalCodeFsa.toUpperCase().startsWith(fsaFilter.toUpperCase()));
+    if (fetchedRows !== filtered) setFilterUpdated(true);
     setRows(filtered);
   }, [locationFilter, fsaFilter, fetchedRows, tabValue]);
 
@@ -366,6 +369,8 @@ export default () => {
               }
             </CustomTabs>
             <Table
+              filterUpdated={filterUpdated}
+              setFilterUpdated={setFilterUpdated}
               columns={columns}
               order={order}
               orderBy={orderBy}

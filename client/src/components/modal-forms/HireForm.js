@@ -26,6 +26,14 @@ export const HireForm = ({ initialValues, validationSchema, onSubmit, onClose, s
     fetchSites();
   }, [sites]);
 
+  const getTodayDate = () => {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yyyy = today.getFullYear();
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
   return <Formik
     initialValues={initialValues}
     validationSchema={validationSchema}
@@ -61,6 +69,7 @@ export const HireForm = ({ initialValues, validationSchema, onSubmit, onClose, s
           <Field
             name="hiredDate"
             component={RenderDateField}
+            maxDate={getTodayDate()}
             label="* Date Hired"
           />
           <Field
@@ -75,6 +84,11 @@ export const HireForm = ({ initialValues, validationSchema, onSubmit, onClose, s
             options={sitesDetail.map((siteDetail) => ({
               value: siteDetail.id, label: siteDetail.siteName,
             }))}
+          />
+          <Field
+            name="acknowledge"
+            component={RenderCheckbox}
+            label="I acknowledge that the participant has accepted the offer"
           />
         </Box>
         <Box mt={3}>

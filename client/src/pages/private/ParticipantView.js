@@ -330,6 +330,7 @@ export default () => {
             hiredDate: '',
             startDate: '',
             site: '',
+            acknowledge: false,
           }}
           validationSchema={HireFormSchema}
           onSubmit={(values) => {

@@ -24,6 +24,7 @@ const sortOrder = [
   'id',
   'lastName',
   'firstName',
+  'status',
   'postalCodeFsa',
   'phoneNumber',
   'emailAddress',
@@ -131,6 +132,19 @@ export default () => {
     let filtered = fetchedRows;
 
     filtered = filterByTab(tabValue, filtered);
+
+    setColumns(oldColumns => {
+      if (tabValue === 1 && !oldColumns.find(column => column.id === 'status'))
+        return [
+          ...oldColumns.slice(0, 3),
+          { id: 'status', name: 'Status' },
+          ...oldColumns.slice(3),
+        ];
+      if (tabValue !== 1)
+        return oldColumns.filter(column => column.id !== 'status');
+
+      return oldColumns;
+    });
 
     if (locationFilter) filtered = filtered.filter((row) => row.preferredLocation.includes(locationFilter));
     if (fsaFilter) filtered = filtered.filter((row) => row.postalCodeFsa.toUpperCase().startsWith(fsaFilter.toUpperCase()));
@@ -304,6 +318,16 @@ export default () => {
     return 'Change Participant Status';
   };
 
+  const prettifyStatus = (status) => {
+    if (status === 'offer_made') return 'Offer Made';
+    if (status === 'open') return 'Open';
+    if (status === 'prospecting') return 'Prospecting';
+    if (status === 'interviewing') return 'Interviewing';
+    if (status === 'rejected') return 'Rejected';
+    if (status === 'hired') return 'Hired';
+    return status;
+  }
+
   return (
     <Page>
       <Dialog
@@ -415,6 +439,9 @@ export default () => {
               orderBy={orderBy}
               renderCell={
                 (columnId, cell) => {
+                  if (columnId === 'status') {
+                    return prettifyStatus(cell);
+                  }
                   if (columnId === 'engage') {
                     return <Button
                       onClick={(event) => {
@@ -425,9 +452,8 @@ export default () => {
                       size="small"
                       text="Actions"
                     />
-                  } else {
-                    return cell;
                   }
+                  return cell;
                 }
               }
               onRequestSort={handleRequestSort}

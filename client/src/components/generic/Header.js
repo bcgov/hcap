@@ -15,12 +15,13 @@ import { Button } from './Button';
 const useStyles = makeStyles((theme) => ({
   root: {
     '& > header': {
-      height: '80px',
       boxShadow: 'none',
     },
   },
   appBar: {
+    height: '70px',
     backgroundColor: theme.palette.primary.light,
+    borderBottom: `2px solid ${theme.palette.secondary.main}`,
   },
   toolbar: {
     height: '100%',
@@ -33,9 +34,12 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     color: theme.palette.headerText.primary,
-    textAlign: 'center',
     fontWeight: 'bold',
-    marginTop: theme.spacing(1.4),
+    marginTop: -3,
+  },
+  titleSmall: {
+    color: theme.palette.headerText.primary,
+    marginBottom: -3,
   },
   logo: {
     height: '40px',
@@ -97,11 +101,16 @@ export const Header = () => {
               />
             </Hidden>
             <hr className={classes.verticalDivider} />
-            <Typography className={classes.title} variant="h2" gutterBottom>
-              {location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation
-                ? 'Employer Expression of Interest'
-                : 'Health Career Access Program Employer Portal'}
-            </Typography>
+            <div>
+              <Typography className={classes.titleSmall} variant="body2">
+                The Health Career Access Program
+              </Typography>
+              <Typography className={classes.title} variant="h3">
+                {location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation
+                  ? 'Employer Expression of Interest'
+                  : 'Employer Portal'}
+              </Typography>
+            </div>
           </div>
           <div className={classes.buttonWrapper}>
             {(keycloak.authenticated && location.pathname !== Routes.Admin) && (

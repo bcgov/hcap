@@ -53,7 +53,7 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-const useStyles1 = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'row',
@@ -64,9 +64,8 @@ const useStyles1 = makeStyles((theme) => ({
 
 const TablePaginationActions = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const classes = useStyles1();
+  const classes = useStyles();
   const { count, page, rowsPerPage, onChangePage } = props;
-  const pages = [...Array(Math.ceil(count / rowsPerPage)).keys()];
 
   const handleFirstPageButtonClick = (event) => {
     onChangePage(event, 0);
@@ -81,7 +80,7 @@ const TablePaginationActions = (props) => {
   };
 
   const handleLastPageButtonClick = (event) => {
-    onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+    onChangePage(event, Math.max(0, Math.floor(count / rowsPerPage)));
   };
 
   const handleClickListItem = (event) => {
@@ -107,7 +106,10 @@ const TablePaginationActions = (props) => {
       >
         <FirstPageIcon />
       </IconButton>
-      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+      <IconButton onClick={handleBackButtonClick}
+        disabled={page === 0} 
+        aria-label="previous page"
+      >
         <KeyboardArrowLeft />
       </IconButton>
       <IconButton
@@ -142,7 +144,8 @@ const TablePaginationActions = (props) => {
       open={Boolean(anchorEl)}
       onClose={handleClose}
     >
-      {pages.map((option) => (
+      {/* This expression creates an array of integers 0..n */}
+      {[...Array(Math.ceil(count / rowsPerPage)).keys()].map((option) => (
         <MenuItem
           key={`page ${option}`}
           selected={option === page}

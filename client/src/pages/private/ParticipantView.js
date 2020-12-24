@@ -41,6 +41,9 @@ const tabs = [
   'Archived Candidates',
 ];
 
+const adminTabs = [
+  'Participants',
+];
 const CustomTabs = withStyles(theme => ({
   root: {
     borderBottom: `1px solid ${theme.palette.gray.secondary}`,
@@ -161,12 +164,17 @@ export default () => {
       case 2:
         statuses = ['rejected'];
         break;
-      case -1:
+
+      // Admin Cases
+      case 10:
         statuses = ['all'];
         break;
+
+      // Base Case
       default:
         statuses = ['open'];
         break;
+
     }
     return (statuses.includes('all'))? rows : rows.filter((row) => statuses.includes(row.status));
   };
@@ -432,7 +440,7 @@ export default () => {
             >
               {
                 (roles.includes('superuser') || roles.includes('ministry_of_health'))
-                ? <CustomTab key={-1} label='Participants' />
+                ? adminTabs.map((item, index) => <CustomTab key={index+10} label={item} />)
                 : tabs.map((item, index) => <CustomTab key={index} label={item} />)
               }
             </CustomTabs>

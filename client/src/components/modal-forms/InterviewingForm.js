@@ -1,8 +1,8 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
-import { Button } from '../../components/generic';
+import { Button } from '../generic';
 import { Box } from '@material-ui/core';
-import { RenderDateField } from '../../components/fields';
+import { RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 
 export const InterviewingForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {

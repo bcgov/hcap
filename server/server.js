@@ -187,7 +187,7 @@ app.post(`${apiBaseUrl}/employer-sites`,
   }));
 
 app.get(`${apiBaseUrl}/employer-sites`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     const result = await getSites();
@@ -245,6 +245,7 @@ app.get(`${apiBaseUrl}/user`,
   (req, res) => res.json({
     roles: req.hcapUserInfo.roles,
     name: req.hcapUserInfo.name,
+    sites: req.hcapUserInfo.sites,
   }));
 
 // Version number

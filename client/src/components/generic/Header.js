@@ -31,6 +31,10 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    overflow: 'hidden',
+  },
+  logoTextWrapper: {
+    overflow: 'hidden',
   },
   title: {
     color: theme.palette.headerText.primary,
@@ -45,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
     height: '40px',
     marginBottom: theme.spacing(1.1),
     cursor: 'pointer',
+    flexShrink: 0, // Logo should hold its own
   },
   verticalDivider: {
     marginLeft: theme.spacing(1.5),
@@ -101,15 +106,24 @@ export const Header = () => {
               />
             </Hidden>
             <hr className={classes.verticalDivider} />
-            <div>
-              <Typography className={classes.titleSmall} variant="body2">
+            <div className={classes.logoTextWrapper}>
+              <Typography noWrap className={classes.titleSmall} variant="body2">
                 The Health Career Access Program
               </Typography>
-              <Typography className={classes.title} variant="h3">
-                {location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation
-                  ? 'Employer Expression of Interest'
-                  : 'Employer Portal'}
-              </Typography>
+              <Hidden smDown>
+                <Typography noWrap className={classes.title} variant="h3">
+                  {location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation
+                    ? 'Employer Expression of Interest'
+                    : 'Employer Portal'}
+                </Typography>
+              </Hidden>
+              <Hidden mdUp>
+                <Typography noWrap className={classes.title} variant="h6">
+                  {location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation
+                    ? 'Employer Expression of Interest'
+                    : 'Employer Portal'}
+                </Typography>
+              </Hidden>
             </div>
           </div>
           <div className={classes.buttonWrapper}>

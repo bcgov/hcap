@@ -148,7 +148,7 @@ export default () => {
     filtered = filtered.filter((row) => tabs[tabValue]?.statuses?.includes(row.status));
 
     setColumns(oldColumns => {
-      if (tabValue === 1 && !oldColumns.find(column => column.id === 'status'))
+      if (tabValue === 'My Candidates' && !oldColumns.find(column => column.id === 'status'))
         return [
           ...oldColumns.slice(0, 3),
           { id: 'status', name: 'Status' },

@@ -15,12 +15,13 @@ import { Button } from './Button';
 const useStyles = makeStyles((theme) => ({
   root: {
     '& > header': {
-      height: '80px',
       boxShadow: 'none',
     },
   },
   appBar: {
+    height: '70px',
     backgroundColor: theme.palette.primary.light,
+    borderBottom: `2px solid ${theme.palette.secondary.main}`,
   },
   toolbar: {
     height: '100%',
@@ -30,17 +31,25 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    overflow: 'hidden',
+  },
+  logoTextWrapper: {
+    overflow: 'hidden',
   },
   title: {
     color: theme.palette.headerText.primary,
-    textAlign: 'center',
     fontWeight: 'bold',
-    marginTop: theme.spacing(1.4),
+    marginTop: -3,
+  },
+  titleSmall: {
+    color: theme.palette.headerText.primary,
+    marginBottom: -3,
   },
   logo: {
     height: '40px',
     marginBottom: theme.spacing(1.1),
     cursor: 'pointer',
+    flexShrink: 0, // Logo should hold its own
   },
   verticalDivider: {
     marginLeft: theme.spacing(1.5),
@@ -97,11 +106,25 @@ export const Header = () => {
               />
             </Hidden>
             <hr className={classes.verticalDivider} />
-            <Typography className={classes.title} variant="h2" gutterBottom>
-              {location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation
-                ? 'Employer Expression of Interest'
-                : 'Health Career Access Program Employer Portal'}
-            </Typography>
+            <div className={classes.logoTextWrapper}>
+              <Typography noWrap className={classes.titleSmall} variant="body2">
+                The Health Career Access Program
+              </Typography>
+              <Hidden smDown>
+                <Typography noWrap className={classes.title} variant="h3">
+                  {location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation
+                    ? 'Employer Expression of Interest'
+                    : 'Employer Portal'}
+                </Typography>
+              </Hidden>
+              <Hidden mdUp>
+                <Typography noWrap className={classes.title} variant="h6">
+                  {location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation
+                    ? 'Employer Expression of Interest'
+                    : 'Employer Portal'}
+                </Typography>
+              </Hidden>
+            </div>
           </div>
           <div className={classes.buttonWrapper}>
             {(keycloak.authenticated && location.pathname !== Routes.Admin) && (

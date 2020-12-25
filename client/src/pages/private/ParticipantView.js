@@ -203,7 +203,7 @@ export default () => {
         const toasts = {
           open: {
             status: ToastStatus.Info,
-            message: `${firstName} ${lastName} is open to job offers`,
+            message: `${firstName} ${lastName} is has been disengaged`,
           },
           prospecting: {
             status: ToastStatus.Info,

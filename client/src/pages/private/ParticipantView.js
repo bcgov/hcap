@@ -35,11 +35,28 @@ const sortOrder = [
   'engage',
 ];
 
-const tabs = [
-  'Available Participants',
-  'My Candidates',
-  'Archived Candidates',
-];
+const tabs = { // Tabs, associated allowed roles, displayed statuses
+  'Available Participants': {
+    roles: ['employer', 'health_authority'],
+    statuses: ['open'],
+  },
+  'My Candidates': {
+    roles: ['employer', 'health_authority'],
+    statuses: ['prospecting', 'interviewing', 'offer_made'],
+  },
+  'Archived Candidates': {
+    roles: ['employer', 'health_authority'],
+    statuses: ['rejected'],
+  },
+  'Hired Candidates': {
+    roles: ['employer', 'health_authority'],
+    statuses: ['hired'],
+  },
+  Participants: {
+    roles: ['ministry_of_health', 'superuser'],
+    statuses: ['open', 'prospecting', 'interviewing', 'offer_made', 'rejected'],
+  },
+};
 
 const CustomTabs = withStyles(theme => ({
   root: {
@@ -88,6 +105,8 @@ export default () => {
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
+  const [orderBy, setOrderBy] = useState(columns[0].id);
+  const [tabValue, setTabValue] = useState(null);
   const [locations] = useState([
     'Interior',
     'Fraser',
@@ -96,12 +115,7 @@ export default () => {
     'Northern',
   ]);
 
-  const [orderBy, setOrderBy] = useState(columns[0].id);
-  const [tabValue, setTabValue] = useState(0);
-
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
+  const handleTabChange = (event, newValue) => setTabValue(newValue);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -131,7 +145,7 @@ export default () => {
   useEffect(() => { // Filter table
     let filtered = fetchedRows;
 
-    filtered = filterByTab(tabValue, filtered);
+    filtered = filtered.filter((row) => tabs[tabValue]?.statuses?.includes(row.status));
 
     setColumns(oldColumns => {
       if (tabValue === 1 && !oldColumns.find(column => column.id === 'status'))
@@ -151,22 +165,6 @@ export default () => {
     if (fetchedRows !== filtered) setFilterUpdated(true);
     setRows(filtered);
   }, [locationFilter, fsaFilter, fetchedRows, tabValue]);
-
-  const filterByTab = (tabIndex, rows) => {
-    let statuses;
-    switch (tabIndex) {
-      case 1:
-        statuses = ['prospecting', 'interviewing', 'offer_made'];
-        break;
-      case 2:
-        statuses = ['rejected'];
-        break;
-      default:
-        statuses = ['open'];
-        break;
-    }
-    return rows.filter((row) => statuses.includes(row.status));
-  };
 
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 
@@ -230,6 +228,8 @@ export default () => {
         setLoadingUser(false);
         setSites(sites)
         setRoles(roles);
+        setTabValue(Object.keys(tabs) // Set selected tab to first tab allowed for role
+          .find((key) => tabs[key].roles.some((role) => roles.includes(role))))
         const isMoH = roles.includes('ministry_of_health');
         const isSuperUser = roles.includes('superuser');
         if (isMoH || isSuperUser) {
@@ -424,11 +424,13 @@ export default () => {
           </Grid>
           <Box pt={2} pb={2} pl={2} pr={2} width="100%">
             <CustomTabs
-              value={tabValue}
+              value={tabValue || false}
               onChange={handleTabChange}
             >
               {
-                tabs.map((item, index) => <CustomTab key={index} label={item} />)
+                Object.keys(tabs)
+                  .filter((key) => roles.some((role) => tabs[key].roles.includes(role))) // Only display tabs for user role
+                  .map((key) => <CustomTab key={key} label={key} value={key} />) // Tab component with tab name as value
               }
             </CustomTabs>
             <Table

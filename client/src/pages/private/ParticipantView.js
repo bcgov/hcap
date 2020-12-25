@@ -207,7 +207,7 @@ export default () => {
           },
           prospecting: {
             status: ToastStatus.Info,
-            message: `${firstName} ${lastName} is now a job prospect`,
+            message: `${firstName} ${lastName} has been engaged`,
           },
           interviewing: {
             status: ToastStatus.Info,

@@ -14,7 +14,7 @@ const orderDirections = [
   'asc',
 ];
 
-const paginationFields = [
+const sortFields = [
   'id',
   'firstName',
   'lastName',
@@ -247,13 +247,17 @@ const AccessRequestApproval = yup.object().noUnknown('Unknown field in form').sh
 const ParticipantStatusChange = yup.object().noUnknown('Unknown field in form').shape({
   participantId: yup.number().required('Participant ID is required'),
   data: yup.object(),
-  status: yup.string().oneOf(participantStatuses, 'Invalid region'),
+  status: yup.string().oneOf(participantStatuses, 'Invalid status'),
 });
 
 const ParticipantQuerySchema = yup.object().shape({
   regionFilter: yup.string().oneOf(healthRegions, 'Invalid region'),
-  field: yup.string().oneOf(paginationFields, 'Invalid field'),
-  direction: yup.string().oneOf(orderDirections, 'Invalid direction'),
+  sortField: yup.string().oneOf(sortFields, 'Invalid sort field'),
+  sortDirection: yup.string().oneOf(orderDirections, 'Invalid sort direction'),
+  offset: yup.number(),
+  statusFilters: yup.array().of(
+    yup.string().oneOf(participantStatuses, 'Invalid status'),
+  ),
 });
 
 const validate = async (schema, data) => schema.validate(data, { strict: true });

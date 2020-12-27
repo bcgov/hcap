@@ -83,7 +83,9 @@ const decomposeParticipantStatus = (raw) => {
   return participants;
 };
 
-const getParticipants = async (user, pagination, sortField, regionFilter, fsaFilter) => {
+const getParticipants = async (user, pagination, sortField,
+  regionFilter, fsaFilter, statusFilters) => {
+  const showStatus = user.isHA || user.isEmployer || user.isSuperUser;
   let criteria = user.isSuperUser || user.isMoH
     ? {
       ...regionFilter && { 'preferredLocation ilike': `%${regionFilter}%` },
@@ -91,7 +93,7 @@ const getParticipants = async (user, pagination, sortField, regionFilter, fsaFil
     : {
       ...(regionFilter && user.regions.includes(regionFilter))
         ? { 'preferredLocation ilike': `%${regionFilter}%` }
-        : { ...userRegionQuery(user.regions, 'preferredLocation') },
+        : { and: [userRegionQuery(user.regions, 'preferredLocation')] },
       interested: 'yes',
       crcClear: 'yes',
     };
@@ -102,7 +104,6 @@ const getParticipants = async (user, pagination, sortField, regionFilter, fsaFil
   };
 
   let table = dbClient.db[collections.PARTICIPANTS];
-  const showStatus = user.isHA || user.isEmployer || user.isSuperUser;
   if (showStatus) {
     table = table.join({
       [collections.PARTICIPANTS_STATUS]: {
@@ -114,15 +115,25 @@ const getParticipants = async (user, pagination, sortField, regionFilter, fsaFil
         },
       },
     });
+
+    if (statusFilters) {
+      const newStatusFilters = statusFilters.includes('open')
+        // if 'open' is found adds also null because no status
+        // means that the participant is open as well
+        ? [null, ...statusFilters]
+        : statusFilters;
+      const statusQuery = {
+        or: newStatusFilters.map((status) => ({ [`${collections.PARTICIPANTS_STATUS}.status`]: status })),
+      };
+      if (criteria.and) {
+        criteria.and.push(statusQuery);
+      } else {
+        criteria.and = [statusQuery];
+      }
+    }
   }
 
   if (!criteria) return []; // This happens when user has no regions assigned
-
-  const getParticipantsCount = async () => {
-    if (this.participantsCount) return this.participantsCount;
-    this.participantsCount = Number(await table.countDoc(criteria || {}));
-    return this.participantsCount;
-  };
 
   const options = pagination && {
     // ID is the default sort column
@@ -149,7 +160,6 @@ const getParticipants = async (user, pagination, sortField, regionFilter, fsaFil
   }
 
   let participants = await table.findDoc(criteria, options);
-
 
   if (showStatus) {
     participants = decomposeParticipantStatus(participants);

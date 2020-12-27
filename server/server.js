@@ -8,7 +8,8 @@ const { getParticipants, parseAndSaveParticipants, setParticipantStatus } = requ
 const { getEmployers, saveSites, getSites } = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
 const {
-  validate, EmployerFormSchema, AccessRequestApproval, ParticipantQuerySchema, ParticipantStatusChange,
+  validate, EmployerFormSchema, AccessRequestApproval,
+  ParticipantQuerySchema, ParticipantStatusChange,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -82,16 +83,17 @@ app.get(`${apiBaseUrl}/participants`,
     await validate(ParticipantQuerySchema, req.query);
     const user = req.hcapUserInfo;
     const {
-      offset, regionFilter, field, direction, fsaFilter,
+      offset, regionFilter, sortField, sortDirection, fsaFilter, statusFilters,
     } = req.query;
     const result = await getParticipants(
       user,
       {
-        pageSize: 10, offset, direction,
+        pageSize: 10, offset, sortDirection,
       },
-      field,
+      sortField,
       regionFilter,
       fsaFilter,
+      statusFilters,
     );
     logger.info({
       action: 'participant_get',

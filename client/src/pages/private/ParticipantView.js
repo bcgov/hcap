@@ -171,11 +171,9 @@ export default () => {
 
       const row = mapItemToColumns(item, columns);
 
-      const isEngaged = item.statusInfos?.find(
-        item => item.status === 'prospecting'
-      ) ? true : false;
-
-      row.engage = { id: item.id, isEngaged };
+      row.engage = item;
+      row.status = item.statusInfos && item.statusInfos.length > 0 ? item.statusInfos[0].status : 'open';
+      row.engage.status = row.status;
 
       filteredRows.push(row);
     });
@@ -197,13 +195,14 @@ export default () => {
     });
   }, [tabValue]);
 
-  const fetchParticipants = async (offset, regionFilter, fsaFilter, field, direction) => {
+  const fetchParticipants = async (offset, regionFilter, fsaFilter, sortField, sortDirection, statusFilters) => {
     const queries = [
-      field && `field=${field}`,
+      sortField && `sortField=${sortField}`,
       offset && `offset=${offset}`,
-      direction && `direction=${direction}`,
+      sortDirection && `sortDirection=${sortDirection}`,
       regionFilter && `regionFilter=${regionFilter}`,
       fsaFilter && `fsaFilter=${fsaFilter}`,
+      ...statusFilters && statusFilters.map(status => `statusFilters[]=${status}`),
     ].filter(item => item).join('&');
 
     const response = await fetch(`/api/v1/participants?${queries}`, {
@@ -346,7 +345,9 @@ export default () => {
         locationFilter,
         fsaFilter,
         order.field,
-        order.direction);
+        order.direction,
+        ['open'],
+      );
 
       setPagination({
         total: pagination.total,
@@ -367,7 +368,7 @@ export default () => {
       await getParticipants();
     };
     init();
-  }, [pagination.currentPage, locationFilter, fsaFilter, order]);
+  }, [pagination.currentPage, locationFilter, fsaFilter, order, tabValue]);
 
   const handlePageChange = (oldPage, newPage) => {
     //Only update 'pagination.currentPage' when the next page still not exists

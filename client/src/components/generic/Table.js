@@ -236,7 +236,7 @@ export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows
         count={rowsCount || rows.length}
         rowsPerPage={rowsPerPage}
         page={filterUpdated? 0 : page}
-        onChangePage={onChangePage}
+        onChangePage={handlePageChange}
         ActionsComponent={TablePaginationActions}
       />
     </Fragment>

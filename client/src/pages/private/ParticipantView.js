@@ -115,14 +115,21 @@ export default () => {
     'Northern',
   ]);
 
-  const handleTabChange = (event, newValue) => setTabValue(newValue);
-
   const handleRequestSort = (event, property) => {
     offsets.current.splice(1, offsets.current.length); //reset the pagination if there's a filter/order change
     setOrder({
       field: property,
       direction: order.direction === 'desc' ? 'asc' : 'desc',
     });
+    setPagination(oldPagination => ({
+      ...oldPagination,
+      currentPage: 0,
+    }));
+  };
+
+  const handleTabChange = (event, newValue) => {
+    offsets.current.splice(1, offsets.current.length);
+    setTabValue(newValue)
     setPagination(oldPagination => ({
       ...oldPagination,
       currentPage: 0,
@@ -179,21 +186,6 @@ export default () => {
     });
     return filteredRows;
   };
-
-  useEffect(() => {
-    setColumns(oldColumns => {
-      if (tabValue === 1 && !oldColumns.find(column => column.id === 'status'))
-        return [
-          ...oldColumns.slice(0, 3),
-          { id: 'status', name: 'Status' },
-          ...oldColumns.slice(3),
-        ];
-      if (tabValue !== 1)
-        return oldColumns.filter(column => column.id !== 'status');
-
-      return oldColumns;
-    });
-  }, [tabValue]);
 
   const fetchParticipants = async (offset, regionFilter, fsaFilter, sortField, sortDirection, statusFilters) => {
     const queries = [
@@ -339,6 +331,7 @@ export default () => {
     };
 
     const getParticipants = async () => {
+      if (!tabValue) return;
       setLoadingData(true);
       const { data, pagination } = await fetchParticipants(
         offsets.current[offsets.current.length - 1],
@@ -346,7 +339,7 @@ export default () => {
         fsaFilter,
         order.field,
         order.direction,
-        ['open'],
+        tabs[tabValue].statuses,
       );
 
       setPagination({
@@ -363,11 +356,24 @@ export default () => {
       setLoadingData(false);
     };
 
-    const init = async () => {
+    const runAsync = async () => {
       await fetchUserInfo();
       await getParticipants();
+
+      setColumns(oldColumns => {
+        if (tabValue === 'My Candidates' && !oldColumns.find(column => column.id === 'status'))
+          return [
+            ...oldColumns.slice(0, 3),
+            { id: 'status', name: 'Status' },
+            ...oldColumns.slice(3),
+          ];
+        if (tabValue !== 'My Candidates')
+          return oldColumns.filter(column => column.id !== 'status');
+
+        return oldColumns;
+      });
     };
-    init();
+    runAsync();
   }, [pagination.currentPage, locationFilter, fsaFilter, order, tabValue]);
 
   const handlePageChange = (oldPage, newPage) => {

@@ -254,7 +254,7 @@ const ParticipantQuerySchema = yup.object().shape({
   regionFilter: yup.string().oneOf(healthRegions, 'Invalid region'),
   sortField: yup.string().oneOf(sortFields, 'Invalid sort field'),
   sortDirection: yup.string().oneOf(orderDirections, 'Invalid sort direction'),
-  offset: yup.number(),
+  offset: yup.string().matches(/^\d+$/, 'Offset must be a `number` type'),
   statusFilters: yup.array().of(
     yup.string().oneOf(participantStatuses, 'Invalid status'),
   ),

@@ -298,10 +298,12 @@ export default () => {
       if (response.ok) {
         const { roles, sites } = await response.json();
         setLoadingUser(false);
-        setSites(sites)
+        setSites(sites);
         setRoles(roles);
-        setTabValue(Object.keys(tabs) // Set selected tab to first tab allowed for role
-          .find((key) => tabs[key].roles.some((role) => roles.includes(role))))
+        if (!tabValue) {
+          setTabValue(Object.keys(tabs) // Set selected tab to first tab allowed for role
+            .find((key) => tabs[key].roles.some((role) => roles.includes(role))));
+        }
         const isMoH = roles.includes('ministry_of_health');
         const isSuperUser = roles.includes('superuser');
         if (isMoH || isSuperUser) {

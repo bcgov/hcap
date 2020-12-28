@@ -41,66 +41,42 @@ const setParticipantStatus = async (
   return { status };
 });
 
-// When MassiveJS executes a join query, it returns results with underscored key names
-// This maps results into expected participant objects with a `statusInfos` property
-const decomposeParticipantStatus = (raw) => {
-  const participantsMap = new Map();
-  const participantsStatusMap = new Map();
+const decomposeParticipantStatus = (raw, tableAliases) => raw.map((participant) => {
+  const statusInfos = [];
 
-  raw.forEach((item) => {
-    participantsMap.set(item[`${collections.PARTICIPANTS}__id`], {
-      ...item[`${collections.PARTICIPANTS}__body`],
-      id: item[`${collections.PARTICIPANTS}__id`],
-    });
-
-    const participantStatus = participantsStatusMap.get(item[`${collections.PARTICIPANTS_STATUS}__participant_id`]);
-
-    participantsStatusMap.set(
-      item[`${collections.PARTICIPANTS_STATUS}__participant_id`],
-      participantStatus ? [...participantStatus, item] : [item],
-    );
+  tableAliases.forEach((table) => {
+    statusInfos.push(...participant[table].map((statusInfo) => ({
+      createdAt: statusInfo.created_at,
+      employerId: statusInfo.employer_id,
+      status: statusInfo.status,
+    })));
   });
 
-  const participants = [];
-
-  participantsMap.forEach((item, participantId) => {
-    let statusInfos = participantsStatusMap.get(participantId);
-    if (statusInfos) {
-      statusInfos = statusInfos.map((statusInfo) => ({
-        createdAt: statusInfo[`${collections.PARTICIPANTS_STATUS}__created_at`],
-        employerId: statusInfo[`${collections.PARTICIPANTS_STATUS}__employer_id`],
-        status: statusInfo[`${collections.PARTICIPANTS_STATUS}__status`],
-      }));
-    } else {
-      statusInfos = [];
-    }
-    participants.push({
-      ...item,
-      statusInfos,
-    });
-  });
-
-  return participants;
-};
+  return {
+    ...participant.body,
+    id: participant.id,
+    statusInfos,
+  };
+});
 
 const getParticipants = async (user, pagination, sortField,
   regionFilter, fsaFilter, statusFilters) => {
   const showStatus = user.isHA || user.isEmployer || user.isSuperUser;
   let criteria = user.isSuperUser || user.isMoH
     ? {
-      ...regionFilter && { 'preferredLocation ilike': `%${regionFilter}%` },
+      ...regionFilter && { 'body.preferredLocation ilike': `%${regionFilter}%` },
     }
     : {
       ...(regionFilter && user.regions.includes(regionFilter))
-        ? { 'preferredLocation ilike': `%${regionFilter}%` }
-        : { and: [userRegionQuery(user.regions, 'preferredLocation')] },
-      interested: 'yes',
-      crcClear: 'yes',
+        ? { 'body.preferredLocation ilike': `%${regionFilter}%` }
+        : { and: [userRegionQuery(user.regions, 'body.preferredLocation')] },
+      'body.interested': 'yes',
+      'body.crcClear': 'yes',
     };
 
   criteria = {
     ...criteria,
-    ...fsaFilter && { 'postalCodeFsa ilike': `${fsaFilter}%` },
+    ...fsaFilter && { 'body.postalCodeFsa ilike': `${fsaFilter}%` },
   };
 
   let table = dbClient.db[collections.PARTICIPANTS];
@@ -108,6 +84,7 @@ const getParticipants = async (user, pagination, sortField,
     table = table.join({
       [collections.PARTICIPANTS_STATUS]: {
         type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'id',
           current: true,
@@ -115,21 +92,21 @@ const getParticipants = async (user, pagination, sortField,
         },
       },
     });
+  }
 
-    if (statusFilters) {
-      const newStatusFilters = statusFilters.includes('open')
-        // if 'open' is found adds also null because no status
-        // means that the participant is open as well
-        ? [null, ...statusFilters]
-        : statusFilters;
-      const statusQuery = {
-        or: newStatusFilters.map((status) => ({ [`${collections.PARTICIPANTS_STATUS}.status`]: status })),
-      };
-      if (criteria.and) {
-        criteria.and.push(statusQuery);
-      } else {
-        criteria.and = [statusQuery];
-      }
+  if (statusFilters) {
+    const newStatusFilters = statusFilters.includes('open')
+      // if 'open' is found adds also null because no status
+      // means that the participant is open as well
+      ? [null, ...statusFilters]
+      : statusFilters;
+    const statusQuery = {
+      or: newStatusFilters.map((status) => ({ [`${collections.PARTICIPANTS_STATUS}.status`]: status })),
+    };
+    if (criteria.and) {
+      criteria.and.push(statusQuery);
+    } else {
+      criteria.and = [statusQuery];
     }
   }
 
@@ -159,11 +136,10 @@ const getParticipants = async (user, pagination, sortField,
     });
   }
 
-  let participants = await table.findDoc(criteria, options);
+  let participants = await table.find(criteria, options);
 
-  if (showStatus) {
-    participants = decomposeParticipantStatus(participants);
-  }
+  participants = decomposeParticipantStatus(participants, [collections.PARTICIPANTS_STATUS]);
+
   const paginationData = pagination && {
     offset: (pagination.offset ? Number(pagination.offset) : 0) + participants.length,
     total: Number(await table.countDoc(criteria || {})),

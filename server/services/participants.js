@@ -41,11 +41,11 @@ const setParticipantStatus = async (
   return { status };
 });
 
-const decomposeParticipantStatus = (raw, tableAliases) => raw.map((participant) => {
+const decomposeParticipantStatus = (raw, joinNames) => raw.map((participant) => {
   const statusInfos = [];
 
-  tableAliases.forEach((table) => {
-    statusInfos.push(...participant[table].map((statusInfo) => ({
+  joinNames.forEach((joinName) => {
+    statusInfos.push(...participant[joinName].map((statusInfo) => ({
       createdAt: statusInfo.created_at,
       employerId: statusInfo.employer_id,
       status: statusInfo.status,
@@ -80,9 +80,10 @@ const getParticipants = async (user, pagination, sortField,
   };
 
   let table = dbClient.db[collections.PARTICIPANTS];
+  const join1Name = 'join1';
   if (showStatus) {
     table = table.join({
-      [collections.PARTICIPANTS_STATUS]: {
+      [join1Name]: {
         type: 'LEFT OUTER',
         relation: collections.PARTICIPANTS_STATUS,
         on: {
@@ -138,7 +139,7 @@ const getParticipants = async (user, pagination, sortField,
 
   let participants = await table.find(criteria, options);
 
-  participants = decomposeParticipantStatus(participants, [collections.PARTICIPANTS_STATUS]);
+  participants = decomposeParticipantStatus(participants, [join1Name]);
 
   const paginationData = pagination && {
     offset: (pagination.offset ? Number(pagination.offset) : 0) + participants.length,

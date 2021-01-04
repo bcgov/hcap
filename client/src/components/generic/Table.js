@@ -183,7 +183,6 @@ export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows
     onRequestSort(event, property);
   };
 
-  //todo conflict
   const handlePageChange = (_, newPage) => {
     onChangePage(page, newPage);
     setPage(newPage);

@@ -223,57 +223,62 @@ export default () => {
     });
 
     if (response.ok) {
-      const { data, error } = await response.json();
+      const { error } = await response.json();
       if (error) {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
       } else {
-        setRows(oldRows => {
-          const newRows = [...oldRows];
-          const index = newRows.findIndex(row => row.id === participantId);
-          newRows[index] = {
-            ...newRows[index],
-            emailAddress: data.emailAddress || emailAddressMask,
-            phoneNumber: data.phoneNumber || phoneNumberMask,
-            engage: { id: participantId, status },
-            status,
-          };
 
-          const { firstName, lastName } = newRows[index];
+        const index = rows.findIndex(row => row.id === participantId);
+        const { firstName, lastName } = rows[index];
 
-          const toasts = {
-            open: {
-              status: ToastStatus.Info,
-              message: `${firstName} ${lastName} is has been disengaged`,
-            },
-            prospecting: {
-              status: ToastStatus.Info,
-              message: `${firstName} ${lastName} has been engaged`,
-            },
-            interviewing: {
-              status: ToastStatus.Info,
-              message: `${firstName} ${lastName} is now being interviewed`,
-            },
-            offer_made: {
-              status: ToastStatus.Info,
-              message: `${firstName} ${lastName} has been made a job offer`,
-            },
-            hired: {
-              status: ToastStatus.Success,
-              message: `${firstName} ${lastName} has been hired`,
-            },
-            rejected: {
-              status: ToastStatus.Info,
-              message: `${firstName} ${lastName} has been rejected`,
-            },
-          }
+        const toasts = {
+          open: {
+            status: ToastStatus.Info,
+            message: `${firstName} ${lastName} is has been disengaged`,
+          },
+          prospecting: {
+            status: ToastStatus.Info,
+            message: `${firstName} ${lastName} has been engaged`,
+          },
+          interviewing: {
+            status: ToastStatus.Info,
+            message: `${firstName} ${lastName} is now being interviewed`,
+          },
+          offer_made: {
+            status: ToastStatus.Info,
+            message: `${firstName} ${lastName} has been made a job offer`,
+          },
+          hired: {
+            status: ToastStatus.Success,
+            message: `${firstName} ${lastName} has been hired`,
+          },
+          rejected: {
+            status: ToastStatus.Info,
+            message: `${firstName} ${lastName} has been rejected`,
+          },
+        };
 
-          openToast(toasts[status]);
-
-          return newRows;
-        });
-
+        openToast(toasts[status]);
         setActionMenuParticipant(null);
         setActiveModalForm(null);
+
+        setLoadingData(true);
+        const { data, pagination: paginationData } = await fetchParticipants(
+          pagination.currentPage * pageSize,
+          locationFilter,
+          fsaFilter,
+          order.field,
+          order.direction,
+          tabs[tabValue].statuses,
+        );
+  
+        setPagination({
+          total: paginationData.total,
+          currentPage: pagination.currentPage,
+        });
+        const newRows = filterData(data, columns);
+        setRows(newRows);
+        setLoadingData(false);
       }
     } else {
       openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
@@ -9,6 +9,8 @@ import { ToastStatus, InterviewingFormSchema, RejectedFormSchema, HireFormSchema
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { InterviewingForm, RejectedForm, HireForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
+
+const pageSize = 10;
 
 const defaultColumns = [
   { id: 'id', name: 'ID' },
@@ -105,7 +107,6 @@ export default () => {
   const [anchorElement, setAnchorElement] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [tabValue, setTabValue] = useState(null);
-  const offsets = useRef([0]);
 
   const [locations] = useState([
     'Interior',
@@ -116,7 +117,6 @@ export default () => {
   ]);
 
   const handleRequestSort = (event, property) => {
-    offsets.current.splice(1, offsets.current.length); //reset the pagination if there's a filter/order change
     setOrder({
       field: property,
       direction: order.direction === 'desc' ? 'asc' : 'desc',
@@ -128,7 +128,6 @@ export default () => {
   };
 
   const handleTabChange = (event, newValue) => {
-    offsets.current.splice(1, offsets.current.length);
     setTabValue(newValue)
     setPagination(oldPagination => ({
       ...oldPagination,
@@ -137,7 +136,6 @@ export default () => {
   };
 
   const handleLocationFilter = (value) => {
-    offsets.current.splice(1, offsets.current.length);
     setLocationFilter(value);
     setPagination(oldPagination => ({
       ...oldPagination,
@@ -146,7 +144,6 @@ export default () => {
   };
 
   const handleFsaFilter = (value) => {
-    offsets.current.splice(1, offsets.current.length);
     setFsaFilter(value);
     setPagination(oldPagination => ({
       ...oldPagination,
@@ -285,6 +282,7 @@ export default () => {
 
   useEffect(() => {
     const resultColumns = [...defaultColumns];
+    const currentPage = pagination.currentPage;
 
     const fetchUserInfo = async () => {
       setLoadingUser(true);
@@ -336,7 +334,7 @@ export default () => {
       if (!tabValue) return;
       setLoadingData(true);
       const { data, pagination } = await fetchParticipants(
-        offsets.current[offsets.current.length - 1],
+        currentPage * pageSize,
         locationFilter,
         fsaFilter,
         order.field,
@@ -346,15 +344,10 @@ export default () => {
 
       setPagination({
         total: pagination.total,
-        currentPage: offsets.current.length - 1,
+        currentPage: currentPage,
       });
       const newRows = filterData(data, resultColumns);
-      setRows(oldRows => {
-        if (offsets.current.length === 1) return newRows;
-        //Only add rows if there's a pagination going on
-        return [...oldRows, ...newRows];
-      });
-      offsets.current.push(pagination.offset);
+      setRows(newRows);
       setLoadingData(false);
     };
 
@@ -379,9 +372,7 @@ export default () => {
   }, [pagination.currentPage, locationFilter, fsaFilter, order, tabValue]);
 
   const handlePageChange = (oldPage, newPage) => {
-    //Only update 'pagination.currentPage' when the next page still not exists
-    if (newPage === offsets.current.length - 1)
-      setPagination(pagination => ({ ...pagination, currentPage: newPage }));
+    setPagination(pagination => ({ ...pagination, currentPage: newPage }));
   };
 
   const getDialogTitle = (activeModalForm) => {
@@ -512,7 +503,7 @@ export default () => {
               orderBy={order.field}
               rowsCount={pagination.total}
               onChangePage={handlePageChange}
-              rowsPerPage={10}
+              rowsPerPage={pageSize}
               currentPage={pagination.currentPage}
               renderCell={
                 (columnId, cell) => {

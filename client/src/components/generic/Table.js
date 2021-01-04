@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import MuiTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -96,7 +96,6 @@ const TablePaginationActions = (props) => {
     setAnchorEl(null);
   }
 
-
   return (
     <div className={classes.root}>
       <IconButton
@@ -159,25 +158,9 @@ const TablePaginationActions = (props) => {
   )
 };
 
+export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows, isLoading, currentPage = 0, rowsPerPage, onChangePage, rowsCount, }) => {
 
-
-export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows, isLoading, currentPage = 0, rowsPerPage = 10, filterUpdated, setFilterUpdated, onChangePage, rowsCount, }) => {
-
-  const [pageRows, setPageRows] = useState([]);
   const [page, setPage] = useState(currentPage);
-
-  useEffect(() => {
-    const resetIfNeeded = () => {
-      if (filterUpdated) {
-        setFilterUpdated(false);
-        setPage(0);
-      }
-    }
-    const offset = page * rowsPerPage;
-    const paginatedRows = rows.slice(offset, offset + rowsPerPage);
-    setPageRows(paginatedRows);
-    resetIfNeeded();
-  }, [rows, page, rowsPerPage, renderCell, filterUpdated, setFilterUpdated ]);
 
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -213,7 +196,7 @@ export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows
                 <StyledTableCell key={i}><Skeleton animation="wave" /></StyledTableCell>
               ))}
             </StyledTableRow>
-          )) : pageRows.map((row, index) => (
+          )) : rows.map((row, index) => (
             <StyledTableRow hover key={index}>
               {columns.map((column) => (
                 <StyledTableCell key={column.id}>
@@ -233,8 +216,8 @@ export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows
         rowsPerPageOptions={[]}
         component="div"
         count={rowsCount || rows.length}
-        rowsPerPage={rowsPerPage}
-        page={filterUpdated? 0 : page}
+        rowsPerPage={rowsPerPage || rows.length || 10}
+        page={page}
         onChangePage={handlePageChange}
         ActionsComponent={TablePaginationActions}
       />

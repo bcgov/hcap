@@ -45,6 +45,7 @@ const decomposeParticipantStatus = (raw, joinNames) => raw.map((participant) => 
   const statusInfos = [];
 
   joinNames.forEach((joinName) => {
+    if (!participant[joinName]) return;
     statusInfos.push(...participant[joinName].map((statusInfo) => ({
       createdAt: statusInfo.created_at,
       employerId: statusInfo.employer_id,

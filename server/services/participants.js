@@ -144,7 +144,7 @@ const getParticipants = async (user, pagination, sortField,
 
   const paginationData = pagination && {
     offset: (pagination.offset ? Number(pagination.offset) : 0) + participants.length,
-    total: Number(await table.countDoc(criteria || {})),
+    total: Number(await table.count(criteria || {})),
   };
 
   if (user.isSuperUser) {

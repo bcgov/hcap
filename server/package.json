@@ -15,7 +15,7 @@
     "test": "NODE_ENV=test jest --runInBand --forceExit"
   },
   "dependencies": {
-    "axios": "0.21.0",
+    "axios": "0.21.1",
     "body-parser": "1.19.0",
     "dayjs": "1.9.3",
     "dotenv": "8.2.0",

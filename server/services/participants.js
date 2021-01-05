@@ -133,7 +133,7 @@ const getParticipants = async (user, pagination, sortField,
   if (sortField && sortField !== 'id' && options.order) {
     // If a field to sort is provided we put that as first priority
     options.order.unshift({
-      field: `body.${sortField}`,
+      field: sortField === 'status' ? `${collections.PARTICIPANTS_STATUS}.status` : `body.${sortField}`,
       direction: pagination.direction || 'asc',
     });
   }

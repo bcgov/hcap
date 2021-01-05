@@ -23,6 +23,9 @@ const sortFields = [
   'phoneNumber',
   'emailAddress',
   'nonHCAP',
+  'interested',
+  'crcClear',
+  'status',
 ];
 
 const roles = [

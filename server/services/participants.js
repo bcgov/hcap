@@ -94,21 +94,21 @@ const getParticipants = async (user, pagination, sortField,
         },
       },
     });
-  }
 
-  if (statusFilters) {
-    const newStatusFilters = statusFilters.includes('open')
-      // if 'open' is found adds also null because no status
-      // means that the participant is open as well
-      ? [null, ...statusFilters]
-      : statusFilters;
-    const statusQuery = {
-      or: newStatusFilters.map((status) => ({ [`${collections.PARTICIPANTS_STATUS}.status`]: status })),
-    };
-    if (criteria.and) {
-      criteria.and.push(statusQuery);
-    } else {
-      criteria.and = [statusQuery];
+    if (statusFilters) {
+      const newStatusFilters = statusFilters.includes('open')
+        // if 'open' is found adds also null because no status
+        // means that the participant is open as well
+        ? [null, ...statusFilters]
+        : statusFilters;
+      const statusQuery = {
+        or: newStatusFilters.map((status) => ({ [`${collections.PARTICIPANTS_STATUS}.status`]: status })),
+      };
+      if (criteria.and) {
+        criteria.and.push(statusQuery);
+      } else {
+        criteria.and = [statusQuery];
+      }
     }
   }
 

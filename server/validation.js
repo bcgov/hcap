@@ -9,6 +9,22 @@ const healthRegions = [
   'Northern',
 ];
 
+const orderDirections = [
+  'desc',
+  'asc',
+];
+
+const sortFields = [
+  'id',
+  'firstName',
+  'lastName',
+  'postalCodeFsa',
+  'preferredLocation',
+  'phoneNumber',
+  'emailAddress',
+  'nonHCAP',
+];
+
 const roles = [
   'Registered Nurse',
   'Licensed Practical Nurse',
@@ -231,7 +247,17 @@ const AccessRequestApproval = yup.object().noUnknown('Unknown field in form').sh
 const ParticipantStatusChange = yup.object().noUnknown('Unknown field in form').shape({
   participantId: yup.number().required('Participant ID is required'),
   data: yup.object(),
-  status: yup.string().oneOf(participantStatuses, 'Invalid region'),
+  status: yup.string().oneOf(participantStatuses, 'Invalid status'),
+});
+
+const ParticipantQuerySchema = yup.object().shape({
+  regionFilter: yup.string().oneOf(healthRegions, 'Invalid region'),
+  sortField: yup.string().oneOf(sortFields, 'Invalid sort field'),
+  sortDirection: yup.string().oneOf(orderDirections, 'Invalid sort direction'),
+  offset: yup.string().matches(/^\d+$/, 'Offset must be a `number` type'),
+  statusFilters: yup.array().of(
+    yup.string().oneOf(participantStatuses, 'Invalid status'),
+  ),
 });
 
 const validate = async (schema, data) => schema.validate(data, { strict: true });
@@ -244,5 +270,6 @@ module.exports = {
   isBooleanValue,
   evaluateBooleanAnswer,
   AccessRequestApproval,
+  ParticipantQuerySchema,
   EmployerSiteBatchSchema,
 };

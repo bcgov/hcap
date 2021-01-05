@@ -8,7 +8,8 @@ const { getParticipants, parseAndSaveParticipants, setParticipantStatus } = requ
 const { getEmployers, saveSites, getSites } = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
 const {
-  validate, EmployerFormSchema, AccessRequestApproval, ParticipantStatusChange,
+  validate, EmployerFormSchema, AccessRequestApproval,
+  ParticipantQuerySchema, ParticipantStatusChange,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -79,8 +80,23 @@ app.get(`${apiBaseUrl}/participants`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
+    await validate(ParticipantQuerySchema, req.query);
     const user = req.hcapUserInfo;
-    const result = await getParticipants(user);
+    const {
+      offset, regionFilter, sortField, sortDirection, fsaFilter, statusFilters,
+    } = req.query;
+    const result = await getParticipants(
+      user,
+      {
+        pageSize: 10,
+        offset,
+        direction: sortDirection,
+      },
+      sortField,
+      regionFilter,
+      fsaFilter,
+      statusFilters,
+    );
     logger.info({
       action: 'participant_get',
       performed_by: {
@@ -88,9 +104,9 @@ app.get(`${apiBaseUrl}/participants`,
         id: user.id,
       },
       // Slicing to one page of results
-      ids_viewed: result.map((person) => person.id).slice(0, 10),
+      ids_viewed: result.data.slice(0, 10).map((person) => person.id),
     });
-    return res.json({ data: result });
+    return res.json(result);
   }));
 
 // Engage participant
@@ -150,7 +166,7 @@ app.post(`${apiBaseUrl}/participants`,
           id: user.id,
         },
         // Slicing to one page of results
-        ids_posted: response.map((entry) => entry.id).slice(0, 10),
+        ids_posted: response.slice(0, 10).map((entry) => entry.id),
       });
 
       return res.json(response);

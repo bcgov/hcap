@@ -189,7 +189,7 @@ describe('Participants Service', () => {
   it('Get participants as super_user, receive all successfully', async () => {
     const res = await getParticipants({ isSuperUser: true });
 
-    expect(res).toEqual(
+    expect(res.data).toEqual(
       expect.arrayContaining(
         allParticipants.map((item) => (expect.objectContaining(item))),
       ),
@@ -202,27 +202,27 @@ describe('Participants Service', () => {
 
     const participants = await getParticipants({ isSuperUser: true });
 
-    for (const participant of participants) {
+    for (const participant of participants.data) {
       await setParticipantStatus(employerAId, participant.id, 'status');
       await setParticipantStatus(employerAId, participant.id, 'status2');
       await setParticipantStatus(employerAId, participant.id, 'status3');
     }
 
-    await setParticipantStatus(employerBId, participants[0].id, 'status3');
+    await setParticipantStatus(employerBId, participants.data[0].id, 'status3');
 
     const participantsWithStatus = await getParticipants({ isSuperUser: true });
 
-    expect(participantsWithStatus[0].statusInfos[0].employerId).toEqual(employerBId);
-    expect(participantsWithStatus[0].statusInfos[1].employerId).toEqual(employerAId);
-    expect(participantsWithStatus[1].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus[2].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus[3].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus[4].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus[5].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus[6].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus[7].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus[8].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus[9].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus.data[0].statusInfos[0].employerId).toEqual(employerBId);
+    expect(participantsWithStatus.data[0].statusInfos[1].employerId).toEqual(employerAId);
+    expect(participantsWithStatus.data[1].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus.data[2].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus.data[3].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus.data[4].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus.data[5].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus.data[6].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus.data[7].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus.data[8].statusInfos.length).toEqual(1);
+    expect(participantsWithStatus.data[9].statusInfos.length).toEqual(1);
   });
 
   it('Get participants as MoH, receive successfully', async () => {
@@ -230,7 +230,7 @@ describe('Participants Service', () => {
       isMoH: true,
     });
 
-    expect(res.map((item) => (Object.keys(item)))).toEqual(
+    expect(res.data.map((item) => (Object.keys(item)))).toEqual(
       allParticipants.map(() => ([
         'id',
         'firstName',
@@ -262,7 +262,7 @@ describe('Participants Service', () => {
         evaluateBooleanAnswer(item.interested)
         && evaluateBooleanAnswer(item.crcClear)));
 
-    expect(res.map((item) => (Object.keys(item)))).toEqual(
+    expect(res.data.map((item) => (Object.keys(item)))).toEqual(
       filteredParticipants.map(() => ([
         'id',
         'firstName',

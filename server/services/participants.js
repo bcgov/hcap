@@ -1,6 +1,6 @@
 const readXlsxFile = require('node-xlsx').default;
 const {
-  validate, ParticipantBatchSchema, isBooleanValue, evaluateBooleanAnswer,
+  validate, ParticipantBatchSchema, isBooleanValue,
 } = require('../validation.js');
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
@@ -41,90 +41,138 @@ const setParticipantStatus = async (
   return { status };
 });
 
-// When MassiveJS executes a join query, it returns results with underscored key names
-// This maps results into expected participant objects with a `statusInfos` property
-const decomposeParticipantStatus = (raw) => {
-  const participantsMap = new Map();
-  const participantsStatusMap = new Map();
+const decomposeParticipantStatus = (raw, joinNames) => raw.map((participant) => {
+  const statusInfos = [];
 
-  raw.forEach((item) => {
-    participantsMap.set(item[`${collections.PARTICIPANTS}__id`], {
-      ...item[`${collections.PARTICIPANTS}__body`],
-      id: item[`${collections.PARTICIPANTS}__id`],
-    });
-
-    const participantStatus = participantsStatusMap.get(item[`${collections.PARTICIPANTS_STATUS}__participant_id`]);
-
-    participantsStatusMap.set(
-      item[`${collections.PARTICIPANTS_STATUS}__participant_id`],
-      participantStatus ? [...participantStatus, item] : [item],
-    );
+  joinNames.forEach((joinName) => {
+    if (!participant[joinName]) return;
+    statusInfos.push(...participant[joinName].map((statusInfo) => ({
+      createdAt: statusInfo.created_at,
+      employerId: statusInfo.employer_id,
+      status: statusInfo.status,
+    })));
   });
 
-  const participants = [];
+  return {
+    ...participant.body,
+    id: participant.id,
+    statusInfos,
+  };
+});
 
-  participantsMap.forEach((item, participantId) => {
-    let statusInfos = participantsStatusMap.get(participantId);
-    if (statusInfos) {
-      statusInfos = statusInfos.map((statusInfo) => ({
-        createdAt: statusInfo[`${collections.PARTICIPANTS_STATUS}__created_at`],
-        employerId: statusInfo[`${collections.PARTICIPANTS_STATUS}__employer_id`],
-        status: statusInfo[`${collections.PARTICIPANTS_STATUS}__status`],
-      }));
-    } else {
-      statusInfos = [];
-    }
-    participants.push({
-      ...item,
-      statusInfos,
-    });
-  });
-
-  return participants;
-};
-
-const getParticipants = async (user) => {
-  const criteria = user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'preferredLocation');
-  let table = dbClient.db[collections.PARTICIPANTS];
+const getParticipants = async (user, pagination, sortField,
+  regionFilter, fsaFilter, statusFilters) => {
   const showStatus = user.isHA || user.isEmployer || user.isSuperUser;
+  let criteria = user.isSuperUser || user.isMoH
+    ? {
+      ...regionFilter && { 'body.preferredLocation ilike': `%${regionFilter}%` },
+    }
+    : {
+      ...(regionFilter && user.regions.includes(regionFilter))
+        ? { 'body.preferredLocation ilike': `%${regionFilter}%` }
+        : { and: [userRegionQuery(user.regions, 'body.preferredLocation')] },
+      'body.interested': 'yes',
+      'body.crcClear': 'yes',
+    };
+
+  criteria = {
+    ...criteria,
+    ...fsaFilter && { 'body.postalCodeFsa ilike': `${fsaFilter}%` },
+  };
+
+  let table = dbClient.db[collections.PARTICIPANTS];
+  const join1Name = 'join1';
   if (showStatus) {
     table = table.join({
-      [collections.PARTICIPANTS_STATUS]: {
+      [join1Name]: {
         type: 'LEFT OUTER',
-        on: { participant_id: 'id', current: true },
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'id',
+          current: true,
+          ...(user.isHA || user.isEmployer) && { employer_id: user.id },
+        },
       },
     });
   }
 
-  if (!criteria) return []; // This happens when user has no regions assigned
-
-  let participants = await table.findDoc(criteria);
-
-  if (showStatus) {
-    participants = decomposeParticipantStatus(participants);
+  if (statusFilters) {
+    const newStatusFilters = statusFilters.includes('open')
+      // if 'open' is found adds also null because no status
+      // means that the participant is open as well
+      ? [null, ...statusFilters]
+      : statusFilters;
+    const statusQuery = {
+      or: newStatusFilters.map((status) => ({ [`${collections.PARTICIPANTS_STATUS}.status`]: status })),
+    };
+    if (criteria.and) {
+      criteria.and.push(statusQuery);
+    } else {
+      criteria.and = [statusQuery];
+    }
   }
 
-  if (user.isSuperUser) return participants;
+  if (!criteria) return []; // This happens when user has no regions assigned
 
-  if (user.isMoH || user.isSuperUser) { // Only return relevant fields
-    return participants.map((item) => ({
-      id: item.id,
-      firstName: item.firstName,
-      lastName: item.lastName,
-      postalCodeFsa: item.postalCodeFsa,
-      preferredLocation: item.preferredLocation,
-      nonHCAP: item.nonHCAP,
-      interested: item.interested,
-      crcClear: item.crcClear,
-    }));
+  const options = pagination && {
+    // ID is the default sort column
+    order: [{
+      field: 'id',
+      direction: pagination.direction || 'asc',
+    }],
+    /*
+      Using limit/offset pagination may decrease performance in the Postgres instance,
+      however this is the only way to sort columns that does not have a deterministic
+      ordering such as firstName.
+      See more details: https://massivejs.org/docs/options-objects#keyset-pagination
+    */
+    ...pagination.offset && { offset: pagination.offset },
+    ...pagination.pageSize && { limit: pagination.pageSize },
+  };
+
+  if (sortField && sortField !== 'id' && options.order) {
+    // If a field to sort is provided we put that as first priority
+    options.order.unshift({
+      field: `body.${sortField}`,
+      direction: pagination.direction || 'asc',
+    });
+  }
+
+  let participants = await table.find(criteria, options);
+
+  participants = decomposeParticipantStatus(participants, [join1Name]);
+
+  const paginationData = pagination && {
+    offset: (pagination.offset ? Number(pagination.offset) : 0) + participants.length,
+    total: Number(await table.count(criteria || {})),
+  };
+
+  if (user.isSuperUser) {
+    return {
+      data: participants,
+      ...pagination && { pagination: paginationData },
+    };
+  }
+
+  if (user.isMoH) {
+    return {
+      data: participants.map((item) => ({ // Only return relevant fields
+        id: item.id,
+        firstName: item.firstName,
+        lastName: item.lastName,
+        postalCodeFsa: item.postalCodeFsa,
+        preferredLocation: item.preferredLocation,
+        nonHCAP: item.nonHCAP,
+        interested: item.interested,
+        crcClear: item.crcClear,
+      })),
+      ...pagination && { pagination: paginationData },
+    };
   }
 
   // Returned participants for employers
-  return participants
-    .filter((item) => (
-      evaluateBooleanAnswer(item.interested)
-      && evaluateBooleanAnswer(item.crcClear)))
-    .map((item) => {
+  return {
+    data: participants.map((item) => {
       let participant = {
         id: item.id,
         firstName: item.firstName,
@@ -149,7 +197,9 @@ const getParticipants = async (user) => {
       }
 
       return participant;
-    });
+    }),
+    ...pagination && { pagination: paginationData },
+  };
 };
 
 const parseAndSaveParticipants = async (fileBuffer) => {

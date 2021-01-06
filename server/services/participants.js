@@ -70,7 +70,7 @@ const decomposeParticipantStatus = (raw, joinNames) => raw.map((participant) => 
 
 const getParticipants = async (user, pagination, sortField,
   regionFilter, fsaFilter, statusFilters) => {
-  const showStatus = user.isHA || user.isEmployer || user.isSuperUser;
+  const showStatus = user.isHA || user.isEmployer;
   let criteria = user.isSuperUser || user.isMoH
     ? {
       ...regionFilter && { 'body.preferredLocation ilike': `%${regionFilter}%` },
@@ -78,6 +78,11 @@ const getParticipants = async (user, pagination, sortField,
     : {
       ...(regionFilter && user.regions.includes(regionFilter))
         ? { 'body.preferredLocation ilike': `%${regionFilter}%` }
+        /*
+          as an employer/HA, the first inner AND array is used to filter regions
+          and statuses (unless when the status is 'unavailable', in this case
+          we handle in the upper OR array)
+        */
         : { or: [{ and: [userRegionQuery(user.regions, 'body.preferredLocation')] }] },
       'body.interested': 'yes',
       'body.crcClear': 'yes',
@@ -101,7 +106,7 @@ const getParticipants = async (user, pagination, sortField,
         on: {
           participant_id: 'id',
           current: true,
-          ...(user.isHA || user.isEmployer) && { employer_id: user.id },
+          employer_id: user.id,
         },
       },
       [hiredGlobalJoin]: {
@@ -117,8 +122,10 @@ const getParticipants = async (user, pagination, sortField,
 
     if (statusFilters) {
       const newStatusFilters = statusFilters.includes('open')
-        // if 'open' is found adds also null because no status
-        // means that the participant is open as well
+        /*
+          if 'open' is found adds also null because no status
+          means that the participant is open as well
+        */
         ? [null, ...statusFilters]
         : statusFilters;
 
@@ -134,12 +141,14 @@ const getParticipants = async (user, pagination, sortField,
 
       // we don't want hired participants listed with such statuses:
       if (statusFilters.some((item) => ['open', 'prospecting', 'interviewing', 'offer_made'].includes(item))) {
-        criteria.or[0].and.push({ or: [{ [`${hiredGlobalJoin}.status`]: null }] });
+        criteria.or[0].and.push({ [`${hiredGlobalJoin}.status`]: null });
       }
 
-      // the 'unavailable' status filter covers participants with
-      // 'prospecting', 'interviewing', 'offer_made' statuses which have
-      // been hired by someone else
+      /*
+        the higher level 'unavailable' status filter covers participants with
+        'prospecting', 'interviewing', 'offer_made' statuses which have
+        been hired by someone else
+      */
       if (statusFilters.includes('unavailable')) {
         const unavailableQuery = {
           and: [{
@@ -179,7 +188,7 @@ const getParticipants = async (user, pagination, sortField,
   if (sortField && sortField !== 'id' && options.order) {
     // If a field to sort is provided we put that as first priority
     options.order.unshift({
-      field: sortField === 'status' ? `${employerSpecificJoin}.status` : `body.${sortField}`,
+      field: sortField === 'status' && showStatus ? `${employerSpecificJoin}.status` : `body.${sortField}`,
       direction: pagination.direction || 'asc',
     });
   }

@@ -271,4 +271,27 @@ describe('Participants Service', () => {
       ])),
     );
   });
+
+  it('Employer A hires participant X then employer B cannot hire participant X', async () => {
+    const employerAId = '12345-a';
+    const employerBId = '12345-b';
+
+    const regions = [
+      'Fraser',
+      'Interior',
+      'Northern',
+      'Vancouver Coastal',
+      'Vancouver Island',
+    ];
+
+    const participants = await getParticipants({ isEmployer: true, id: employerAId, regions });
+
+    const hiredParticipantId = participants.data[0].id;
+
+    await setParticipantStatus(employerAId, hiredParticipantId, 'hired');
+
+    const result = await setParticipantStatus(employerBId, hiredParticipantId, 'hired');
+
+    expect(result.status).toEqual('already_hired');
+  });
 });

@@ -13,8 +13,6 @@ export default () => {
     }
   }, [keycloak.authenticated, keycloak.token]);
 
-  if (keycloak?.tokenParsed.resource_access["hcap-fe"].roles.includes("employer")) store.set('REDIRECT', '/participant-view');
-
   return keycloak.authenticated
     ?
     <Redirect to={store.get('REDIRECT')} />

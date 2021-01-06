@@ -42,6 +42,11 @@ export default () => {
     fetchUserInfo();
   }, []);
 
+  useEffect(() => {
+    if (roles.includes("employer")) history.push(Routes.ParticipantView);
+  }, [roles, history]);
+
+
   const renderAdminButton = (route, label) => <Button
     className={classes.button}
     onClick={async () => {

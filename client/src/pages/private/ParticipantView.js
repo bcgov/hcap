@@ -103,7 +103,6 @@ export default () => {
   const [columns, setColumns] = useState(defaultColumns);
   const [locationFilter, setLocationFilter] = useState(null);
   const [fsaFilter, setFsaFilter] = useState(null);
-  const [fsaText, setFsaText] = useState(null);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
@@ -144,21 +143,16 @@ export default () => {
     }));
   };
 
-
-  useEffect(() => {
+  const handleFsaFilter = (value) => {
     const timeout = setTimeout(() => {
-      setFsaFilter(fsaText);
       setPagination(oldPagination => ({
         ...oldPagination,
         currentPage: 0,
       }));
+      setFsaFilter(value);
     }, 1000);
 
     return () => clearTimeout(timeout);
-  }, [fsaText]);
-
-  const handleFsaFilter = (value) => {
-    setFsaText(value);
   };
 
   const filterData = (data, columns) => {
@@ -266,7 +260,7 @@ export default () => {
             status: ToastStatus.Info,
             message: `${firstName} ${lastName} has been rejected`,
           },
-          already_hired : {
+          already_hired: {
             status: ToastStatus.Info,
             message: `${firstName} ${lastName} is already hired by someone else`,
           }
@@ -498,7 +492,7 @@ export default () => {
                 <TextField
                   variant="filled"
                   fullWidth
-                  value={fsaText || ''}
+                  value={fsaFilter || ''}
                   onChange={({ target }) => handleFsaFilter(target.value)}
                   placeholder='Forward Sortation Area'
                 />

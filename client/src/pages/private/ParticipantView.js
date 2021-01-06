@@ -10,7 +10,7 @@ import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/
 import { InterviewingForm, RejectedForm, HireForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 
-const pageSize = 10;
+const pageSize = 4;
 
 const defaultColumns = [
   { id: 'id', name: 'ID' },
@@ -103,6 +103,7 @@ export default () => {
   const [columns, setColumns] = useState(defaultColumns);
   const [locationFilter, setLocationFilter] = useState(null);
   const [fsaFilter, setFsaFilter] = useState(null);
+  const [fsaText, setFsaText] = useState(null);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
@@ -143,16 +144,21 @@ export default () => {
     }));
   };
 
-  const handleFsaFilter = (value) => {
+
+  useEffect(() => {
     const timeout = setTimeout(() => {
       setPagination(oldPagination => ({
         ...oldPagination,
         currentPage: 0,
       }));
-      setFsaFilter(value);
+      setFsaFilter(fsaText);
     }, 1000);
 
     return () => clearTimeout(timeout);
+  }, [fsaText]);
+
+  const handleFsaFilter = (value) => {
+    setFsaText(value);
   };
 
   const filterData = (data, columns) => {
@@ -260,7 +266,7 @@ export default () => {
             status: ToastStatus.Info,
             message: `${firstName} ${lastName} has been rejected`,
           },
-          already_hired: {
+          already_hired : {
             status: ToastStatus.Info,
             message: `${firstName} ${lastName} is already hired by someone else`,
           }
@@ -492,7 +498,7 @@ export default () => {
                 <TextField
                   variant="filled"
                   fullWidth
-                  value={fsaFilter || ''}
+                  value={fsaText || ''}
                   onChange={({ target }) => handleFsaFilter(target.value)}
                   placeholder='Forward Sortation Area'
                 />

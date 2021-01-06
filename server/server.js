@@ -88,7 +88,7 @@ app.get(`${apiBaseUrl}/participants`,
     const result = await getParticipants(
       user,
       {
-        pageSize: 10,
+        pageSize: 4,
         offset,
         direction: sortDirection,
       },

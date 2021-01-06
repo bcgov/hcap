@@ -103,6 +103,7 @@ export default () => {
   const [columns, setColumns] = useState(defaultColumns);
   const [locationFilter, setLocationFilter] = useState(null);
   const [fsaFilter, setFsaFilter] = useState(null);
+  const [fsaText, setFsaText] = useState(null);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
@@ -143,12 +144,21 @@ export default () => {
     }));
   };
 
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setFsaFilter(fsaText);
+      setPagination(oldPagination => ({
+        ...oldPagination,
+        currentPage: 0,
+      }));
+    }, 250);
+
+    return () => clearTimeout(timeout);
+  }, [fsaText]);
+
   const handleFsaFilter = (value) => {
-    setFsaFilter(value);
-    setPagination(oldPagination => ({
-      ...oldPagination,
-      currentPage: 0,
-    }));
+    setFsaText(value);
   };
 
   const filterData = (data, columns) => {
@@ -488,7 +498,7 @@ export default () => {
                 <TextField
                   variant="filled"
                   fullWidth
-                  value={fsaFilter || ''}
+                  value={fsaText || ''}
                   onChange={({ target }) => handleFsaFilter(target.value)}
                   placeholder='Forward Sortation Area'
                 />

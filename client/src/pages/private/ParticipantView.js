@@ -10,7 +10,7 @@ import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/
 import { InterviewingForm, RejectedForm, HireForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 
-const pageSize = 4;
+const pageSize = 10;
 
 const defaultColumns = [
   { id: 'id', name: 'ID' },

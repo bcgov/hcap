@@ -18,7 +18,7 @@ const setParticipantStatus = async (
     current: true,
   });
 
-  if (item) return { status: 'already_hired' };
+  if (item.length > 0) return { status: 'already_hired' };
 
   await tx[collections.PARTICIPANTS_STATUS].update({
     employer_id: employerId,

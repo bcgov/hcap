@@ -210,19 +210,17 @@ describe('Participants Service', () => {
 
     await setParticipantStatus(employerBId, participants.data[0].id, 'status3');
 
-    const participantsWithStatus = await getParticipants({ isSuperUser: true });
+    const regions = [
+      'Fraser',
+      'Interior',
+      'Northern',
+      'Vancouver Coastal',
+      'Vancouver Island',
+    ];
 
-    expect(participantsWithStatus.data[0].statusInfos[0].employerId).toEqual(employerBId);
-    expect(participantsWithStatus.data[0].statusInfos[1].employerId).toEqual(employerAId);
-    expect(participantsWithStatus.data[1].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus.data[2].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus.data[3].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus.data[4].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus.data[5].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus.data[6].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus.data[7].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus.data[8].statusInfos.length).toEqual(1);
-    expect(participantsWithStatus.data[9].statusInfos.length).toEqual(1);
+    const participants1 = await getParticipants({ isEmployer: true, id: employerAId, regions });
+
+    expect(participants1.data[0].statusInfos[0].employerId).toEqual(employerAId);
   });
 
   it('Get participants as MoH, receive successfully', async () => {

@@ -152,7 +152,7 @@ export default () => {
         ...oldPagination,
         currentPage: 0,
       }));
-    }, 250);
+    }, 1000);
 
     return () => clearTimeout(timeout);
   }, [fsaText]);

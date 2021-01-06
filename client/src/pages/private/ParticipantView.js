@@ -47,7 +47,7 @@ const tabs = { // Tabs, associated allowed roles, displayed statuses
   },
   'Archived Candidates': {
     roles: ['employer', 'health_authority'],
-    statuses: ['rejected'],
+    statuses: ['rejected', 'unavailable'],
   },
   'Hired Candidates': {
     roles: ['employer', 'health_authority'],
@@ -223,7 +223,7 @@ export default () => {
     });
 
     if (response.ok) {
-      const { error } = await response.json();
+      const { data: statusData, error } = await response.json();
       if (error) {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
       } else {
@@ -256,9 +256,13 @@ export default () => {
             status: ToastStatus.Info,
             message: `${firstName} ${lastName} has been rejected`,
           },
+          already_hired : {
+            status: ToastStatus.Info,
+            message: `${firstName} ${lastName} is already hired by someone else`,
+          }
         };
 
-        openToast(toasts[status]);
+        openToast(toasts[statusData?.status === 'already_hired' ? statusData.status : status]);
         setActionMenuParticipant(null);
         setActiveModalForm(null);
 
@@ -271,7 +275,7 @@ export default () => {
           order.direction,
           tabs[tabValue].statuses,
         );
-  
+
         setPagination({
           total: paginationData.total,
           currentPage: pagination.currentPage,

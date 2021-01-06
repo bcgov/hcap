@@ -12,6 +12,14 @@ const setParticipantStatus = async (
   status,
   data, // JSONB on the status row
 ) => dbClient.db.withTransaction(async (tx) => {
+  const item = await tx[collections.PARTICIPANTS_STATUS].find({
+    participant_id: participantId,
+    status: 'hired',
+    current: true,
+  });
+
+  if (item.length > 0) return { status: 'already_hired' };
+
   await tx[collections.PARTICIPANTS_STATUS].update({
     employer_id: employerId,
     participant_id: participantId,
@@ -70,7 +78,7 @@ const getParticipants = async (user, pagination, sortField,
     : {
       ...(regionFilter && user.regions.includes(regionFilter))
         ? { 'body.preferredLocation ilike': `%${regionFilter}%` }
-        : { and: [userRegionQuery(user.regions, 'body.preferredLocation')] },
+        : { or: [{ and: [userRegionQuery(user.regions, 'body.preferredLocation')] }] },
       'body.interested': 'yes',
       'body.crcClear': 'yes',
     };
@@ -81,16 +89,28 @@ const getParticipants = async (user, pagination, sortField,
   };
 
   let table = dbClient.db[collections.PARTICIPANTS];
-  const join1Name = 'join1';
+
+  const employerSpecificJoin = 'employerSpecificJoin';
+  const hiredGlobalJoin = 'hiredGlobalJoin';
+
   if (showStatus) {
     table = table.join({
-      [join1Name]: {
+      [employerSpecificJoin]: {
         type: 'LEFT OUTER',
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'id',
           current: true,
           ...(user.isHA || user.isEmployer) && { employer_id: user.id },
+        },
+      },
+      [hiredGlobalJoin]: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'id',
+          current: true,
+          status: 'hired',
         },
       },
     });
@@ -101,13 +121,39 @@ const getParticipants = async (user, pagination, sortField,
         // means that the participant is open as well
         ? [null, ...statusFilters]
         : statusFilters;
+
       const statusQuery = {
-        or: newStatusFilters.map((status) => ({ [`${collections.PARTICIPANTS_STATUS}.status`]: status })),
+        or: newStatusFilters.filter((item) => item !== 'unavailable')
+          .map((status) => ({ [`${employerSpecificJoin}.status`]: status })),
       };
-      if (criteria.and) {
-        criteria.and.push(statusQuery);
+      if (criteria.or) {
+        criteria.or[0].and.push(statusQuery);
       } else {
-        criteria.and = [statusQuery];
+        criteria.or = [{ and: [statusQuery] }];
+      }
+
+      // we don't want hired participants listed with such statuses:
+      if (statusFilters.some((item) => ['open', 'prospecting', 'interviewing', 'offer_made'].includes(item))) {
+        criteria.or[0].and.push({ or: [{ [`${hiredGlobalJoin}.status`]: null }] });
+      }
+
+      // the 'unavailable' status filter covers participants with
+      // 'prospecting', 'interviewing', 'offer_made' statuses which have
+      // been hired by someone else
+      if (statusFilters.includes('unavailable')) {
+        const unavailableQuery = {
+          and: [{
+            or: ['prospecting', 'interviewing', 'offer_made'].map((status) => ({ [`${employerSpecificJoin}.status`]: status })),
+          },
+          { [`${hiredGlobalJoin}.status`]: 'hired' },
+          ],
+        };
+
+        if (criteria.or) {
+          criteria.or.push(unavailableQuery);
+        } else {
+          criteria.or = [unavailableQuery];
+        }
       }
     }
   }
@@ -133,14 +179,14 @@ const getParticipants = async (user, pagination, sortField,
   if (sortField && sortField !== 'id' && options.order) {
     // If a field to sort is provided we put that as first priority
     options.order.unshift({
-      field: sortField === 'status' ? `${collections.PARTICIPANTS_STATUS}.status` : `body.${sortField}`,
+      field: sortField === 'status' ? `${employerSpecificJoin}.status` : `body.${sortField}`,
       direction: pagination.direction || 'asc',
     });
   }
 
   let participants = await table.find(criteria, options);
 
-  participants = decomposeParticipantStatus(participants, [join1Name]);
+  participants = decomposeParticipantStatus(participants, [employerSpecificJoin, hiredGlobalJoin]);
 
   const paginationData = pagination && {
     offset: (pagination.offset ? Number(pagination.offset) : 0) + participants.length,

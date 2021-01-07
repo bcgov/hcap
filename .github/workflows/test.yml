@@ -22,7 +22,6 @@ jobs:
           cat > .env << EOF
           ${{ secrets.ENVFILE }}
           EOF
-          cat .env
 
       - name: Build Locally
         run: make local-build

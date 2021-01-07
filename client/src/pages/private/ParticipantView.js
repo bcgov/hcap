@@ -484,6 +484,7 @@ export default () => {
                   variant="filled"
                   inputProps={{ displayEmpty: true }}
                   value={locationFilter || ''}
+                  disabled={isLoadingData}
                   onChange={({ target }) => handleLocationFilter(target.value)}
                 >
                   <MenuItem value="">Preferred Location</MenuItem>
@@ -499,6 +500,7 @@ export default () => {
                   variant="filled"
                   fullWidth
                   value={fsaText || ''}
+                  disabled={isLoadingData}
                   onChange={({ target }) => handleFsaFilter(target.value)}
                   placeholder='Forward Sortation Area'
                 />
@@ -513,7 +515,7 @@ export default () => {
               {
                 Object.keys(tabs)
                   .filter((key) => roles.some((role) => tabs[key].roles.includes(role))) // Only display tabs for user role
-                  .map((key) => <CustomTab key={key} label={key} value={key} />) // Tab component with tab name as value
+                  .map((key) => <CustomTab key={key} label={key} value={key} disabled={isLoadingData} />) // Tab component with tab name as value
               }
             </CustomTabs>
             <Table

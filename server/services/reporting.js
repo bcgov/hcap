@@ -7,8 +7,7 @@ const getReport = async () => {
     crcClear: 'yes',
   });
 
-  /// ///////////
-  const inProgress1 = await dbClient.db[collections.PARTICIPANTS_STATUS].join({
+  const inProgressEntries = await dbClient.db[collections.PARTICIPANTS_STATUS].join({
     hiredJoin: {
       type: 'LEFT OUTER',
       relation: collections.PARTICIPANTS_STATUS,
@@ -24,16 +23,7 @@ const getReport = async () => {
     'hiredJoin.status': null,
   });
 
-  console.log(inProgress1);
-  /// ///////////
-
-  const inProgress = await dbClient.db[collections.PARTICIPANTS_STATUS].count({
-    current: true,
-    status: ['prospecting', 'interviewing', 'offer_made'],
-  }, {
-    fields: ['participant_id'],
-    distinct: true,
-  });
+  const inProgress = [...new Set(inProgressEntries.map((i) => i.participant_id))].length;
 
   const hired = await dbClient.db[collections.PARTICIPANTS_STATUS].count({
     status: ['hired'],

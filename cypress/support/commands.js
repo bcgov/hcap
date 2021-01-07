@@ -85,6 +85,6 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
   cy.intercept("post", `${authBaseUrl}/realms/${realm}/protocol/openid-connect/token`, token);
   cy.intercept("get", `${authBaseUrl}/realms/${realm}/protocol/openid-connect/auth`, userInfo(user));
 
-  const url = new URL(`${Cypress.config().baseUrl}/${visitUrl}#state=${state}&session_state=${v4()}&code=${v4()}`);
+  const url = new URL(`${Cypress.config().baseUrl}${visitUrl}#state=${state}&session_state=${v4()}&code=${v4()}`);
   cy.visit(url.toString());
 });

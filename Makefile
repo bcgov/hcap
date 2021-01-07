@@ -79,6 +79,11 @@ tag-prod:
 	@git tag -fa prod -m "Deploying $(APP_NAME):$(COMMIT_SHA) to prod env" $(COMMIT_SHA)
 	@git push --force origin refs/tags/prod:refs/tags/prod
 
+tag-cypress:
+	@echo "running cypress test"
+	@git tag -fa cypress -m "testing"
+	@git push --force origin refs/tags/cypress:refs/tags/cypress
+
 # OpenShift Aliases
 
 server-prep: # TODO: Move role binding command to a server prep template

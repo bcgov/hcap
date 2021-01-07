@@ -8,6 +8,7 @@ const {
   getParticipants,
   setParticipantStatus,
 } = require('../services/participants.js');
+const { getReport } = require('../services/reporting.js');
 const { evaluateBooleanAnswer } = require('../validation');
 
 describe('Participants Service', () => {
@@ -293,5 +294,31 @@ describe('Participants Service', () => {
     const result = await setParticipantStatus(employerBId, hiredParticipantId, 'hired');
 
     expect(result.status).toEqual('already_hired');
+  });
+
+  it('Two Employers engage one participant and the inProgress number increases by one', async () => {
+    const employerAId = '12345-a';
+    const employerBId = '12345-b';
+
+    const regions = [
+      'Fraser',
+      'Interior',
+      'Northern',
+      'Vancouver Coastal',
+      'Vancouver Island',
+    ];
+
+    const participants = await getParticipants({ isEmployer: true, id: employerAId, regions });
+
+    const selectParticipantId = participants.data[1].id;
+
+    const firstReport = await getReport();
+
+    await setParticipantStatus(employerAId, selectParticipantId, 'interviewing');
+    await setParticipantStatus(employerBId, selectParticipantId, 'interviewing');
+
+    const secondReport = await getReport();
+
+    expect(secondReport.inProgress).toEqual(firstReport.inProgress + 1);
   });
 });

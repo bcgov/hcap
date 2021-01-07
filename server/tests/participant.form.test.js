@@ -310,12 +310,12 @@ describe('Participants Service', () => {
 
     const participants = await getParticipants({ isEmployer: true, id: employerAId, regions });
 
-    const selectParticipantId = participants.data[0].id;
+    const selectParticipantId = participants.data[1].id;
 
     const firstReport = await getReport();
 
-    await setParticipantStatus(employerAId, selectParticipantId, 'prospecting');
-    await setParticipantStatus(employerBId, selectParticipantId, 'prospecting');
+    await setParticipantStatus(employerAId, selectParticipantId, 'interviewing');
+    await setParticipantStatus(employerBId, selectParticipantId, 'interviewing');
 
     const secondReport = await getReport();
 

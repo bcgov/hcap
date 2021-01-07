@@ -6,17 +6,12 @@ const getReport = async () => {
     interested: 'yes',
     crcClear: 'yes',
   });
-  const inProgressEntries = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
+  const inProgress = await dbClient.db[collections.PARTICIPANTS_STATUS].count({
     current: true,
     status: ['prospecting', 'interviewing', 'offer made'],
   }, {
-    columns: ['participant_id'],
+    fields: ['participant_id'],
     distinct: true,
-  });
-
-  const inProgressIDs = [];
-  inProgressEntries.forEach((entry) => {
-    if (!inProgressIDs.includes(entry.participant_id)) inProgressIDs.push(entry.participant_id);
   });
 
   const hired = await dbClient.db[collections.PARTICIPANTS_STATUS].count({
@@ -26,7 +21,7 @@ const getReport = async () => {
   return {
     total,
     qualified,
-    inProgress: inProgressIDs.length,
+    inProgress,
     hired,
   };
 };

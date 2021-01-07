@@ -147,11 +147,11 @@ export default () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setFsaFilter(fsaText);
       setPagination(oldPagination => ({
         ...oldPagination,
         currentPage: 0,
       }));
+      setFsaFilter(fsaText);
     }, 1000);
 
     return () => clearTimeout(timeout);

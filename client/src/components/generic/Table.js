@@ -106,7 +106,7 @@ const TablePaginationActions = (props) => {
         <FirstPageIcon />
       </IconButton>
       <IconButton onClick={handleBackButtonClick}
-        disabled={page === 0} 
+        disabled={page === 0}
         aria-label="previous page"
       >
         <KeyboardArrowLeft />
@@ -125,36 +125,36 @@ const TablePaginationActions = (props) => {
       >
         <LastPageIcon />
       </IconButton>
-    <List component="nav" aria-label="Page Selector">
-      <ListItem
-        button
-        aria-haspopup="true"
-        aria-controls="page-select"
-        aria-label="go to page"
-        onClick={handleClickListItem}
-      >
-        <ListItemText primary="Skip to page..." />
-      </ListItem>
-    </List>
-    <Menu
-      id="page-select"
-      anchorEl={anchorEl}
-      keepMounted
-      open={Boolean(anchorEl)}
-      onClose={handleClose}
-    >
-      {/* This expression creates an array of integers 0..n */}
-      {[...Array(Math.ceil(count / rowsPerPage)).keys()].map((option) => (
-        <MenuItem
-          key={`page ${option}`}
-          selected={option === page}
-          onClick={(event) => handleMenuItemClick(event, option)}
+      <List component="nav" aria-label="Page Selector">
+        <ListItem
+          button
+          aria-haspopup="true"
+          aria-controls="page-select"
+          aria-label="go to page"
+          onClick={handleClickListItem}
         >
-          Page {option+1}
-        </MenuItem>
-      ))}
-    </Menu>
-  </div>
+          <ListItemText primary="Skip to page..." />
+        </ListItem>
+      </List>
+      <Menu
+        id="page-select"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        {/* This expression creates an array of integers 0..n */}
+        {[...Array(Math.ceil(count / rowsPerPage)).keys()].map((option) => (
+          <MenuItem
+            key={`page ${option}`}
+            selected={option === page}
+            onClick={(event) => handleMenuItemClick(event, option)}
+          >
+            Page {option + 1}
+          </MenuItem>
+        ))}
+      </Menu>
+    </div>
   )
 };
 
@@ -180,6 +180,7 @@ export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows
             {columns.map((column, index) => (
               <StyledHeaderTableCell key={index}>
                 {column.name && <TableSortLabel // Disable sorting if column has no header
+                  disabled={isLoading}
                   active={orderBy === column.id}
                   direction={orderBy === column.id ? order : 'asc'}
                   onClick={createSortHandler(column.id)}>
@@ -219,7 +220,7 @@ export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows
         rowsPerPage={rowsPerPage || rows.length || 10}
         page={page}
         onChangePage={handlePageChange}
-        ActionsComponent={TablePaginationActions}
+        ActionsComponent={isLoading ? () => null : TablePaginationActions}
       />
     </Fragment>
   );

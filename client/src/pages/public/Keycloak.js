@@ -13,7 +13,6 @@ export default () => {
     }
   }, [keycloak.authenticated, keycloak.token]);
 
-
   return keycloak.authenticated
     ?
     <Redirect to={store.get('REDIRECT')} />

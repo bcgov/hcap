@@ -1,11 +1,43 @@
 name: Test application (e2e)
 
 on:
+  push:
+    tags:
+      - cypress
+
   pull_request:
     branches:
       - master
 
+
 jobs:
+  cypress-test:
+    runs-on: ubuntu-16.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Make env
+        run: |
+          cat > .env << EOF
+          ${{ secrets.ENVFILE }}
+          EOF
+
+      - name: Build Locally
+        run: make local-build
+
+      - name: Run locally
+        run: make local-run &
+
+      - name: Waiting for server to spin up
+        run: |
+          while ! nc -z localhost 4000; do
+          sleep 0.1
+          done
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+
   test:
     name: Run NPM Test (e2e)
     runs-on: ubuntu-latest

@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.headerText.primary,
     fontWeight: 'bold',
     marginTop: -3,
+    fontSize: '2.2em',
   },
   titleSmall: {
     color: theme.palette.headerText.primary,
@@ -93,7 +94,7 @@ export const Header = () => {
               <img
                 className={classes.logo}
                 src={BcLogo}
-                alt="Logo"
+                alt="Government of B.C."
                 onClick={handleLogoClick}
               />
             </Hidden>
@@ -101,7 +102,7 @@ export const Header = () => {
               <img
                 className={classes.logo}
                 src={BcLogoMini}
-                alt="Logo Mini"
+                alt="Government of B.C."
                 onClick={handleLogoClick}
               />
             </Hidden>
@@ -110,20 +111,11 @@ export const Header = () => {
               <Typography noWrap className={classes.titleSmall} variant="body2">
                 The Health Career Access Program
               </Typography>
-              <Hidden smDown>
-                <Typography noWrap className={classes.title} variant="h3">
-                  {location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation
-                    ? 'Employer Expression of Interest'
-                    : 'Employer Portal'}
-                </Typography>
-              </Hidden>
-              <Hidden mdUp>
-                <Typography noWrap className={classes.title} variant="h6">
-                  {location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation
-                    ? 'Employer Expression of Interest'
-                    : 'Employer Portal'}
-                </Typography>
-              </Hidden>
+              <Typography noWrap className={classes.title} variant="h1">
+                {location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation
+                  ? 'Employer Expression of Interest'
+                  : 'Employer Portal'}
+              </Typography>
             </div>
           </div>
           <div className={classes.buttonWrapper}>

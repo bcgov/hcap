@@ -32,6 +32,6 @@ describe("Login", () => {
     cy.kcNavAs("employer", "admin");
     cy.location().should((loc) => {
       expect(loc.pathname).to.eq('/participant-view');
-    }
+    });
   });
 })

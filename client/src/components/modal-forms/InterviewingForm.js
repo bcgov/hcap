@@ -6,6 +6,15 @@ import { RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 
 export const InterviewingForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
+
+  const getTodayDate = () => {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yyyy = today.getFullYear();
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
   return <Formik
     initialValues={initialValues}
     validationSchema={validationSchema}
@@ -17,7 +26,7 @@ export const InterviewingForm = ({ initialValues, validationSchema, onSubmit, on
           <Field
             name="contactedDate"
             component={RenderDateField}
-            maxDate={new Date().toISOString().split('T')[0]}
+            maxDate={getTodayDate()}
             label="* Contacted Date"
           />
         </Box>

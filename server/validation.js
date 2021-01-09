@@ -61,6 +61,12 @@ const participantStatuses = [
   'unavailable',
 ];
 
+const validateDateString = (s) => {
+  if (/^\d{4}\/\d{2}\/\d{2}$/.test(s) === false) return false;
+  const date = Date.parse(s);
+  return typeof date === 'number' && !Number.isNaN(date);
+};
+
 const isBooleanValue = (val) => typeof val === 'string' && ['yes', 'no'].includes(val.toLowerCase());
 
 const evaluateBooleanAnswer = (val) => (isBooleanValue(val) && val.toLowerCase() === 'yes');
@@ -250,7 +256,40 @@ const AccessRequestApproval = yup.object().noUnknown('Unknown field in form').sh
 
 const ParticipantStatusChange = yup.object().noUnknown('Unknown field in form').shape({
   participantId: yup.number().required('Participant ID is required'),
-  data: yup.object(),
+  data: yup.object().when(['status'], (status, schema) => {
+    if (status === 'interviewing') {
+      return schema.noUnknown('Unknown field in form').shape({
+        contacted_at: yup.string().required('Date of contact is required').test('is-date', 'Not a valid date', validateDateString),
+      });
+    }
+
+    if (status === 'hired') {
+      return schema.noUnknown('Unknown field in form').shape({
+        startDate: yup.string().required('Start date is required').test('is-date', 'Not a valid date', validateDateString),
+        hiredDate: yup.string().required('Date hired is required').test('is-date', 'Not a valid date', validateDateString),
+        nonHcapOpportunity: yup.boolean().required('Non-Hcap Opportunity is required as true or false'),
+        positionTitle: yup.string().when('nonHcapOpportunity', {
+          is: true,
+          then: yup.string().required('Position title is required'),
+          otherwise: yup.string().nullable(),
+        }),
+        positionType: yup.string().when('nonHcapOpportunity', {
+          is: true,
+          then: yup.string().required('Position type is required').oneOf(['Full-Time', 'Part-Time', 'Casual'], 'Invalid position type'),
+          otherwise: yup.string().nullable(),
+        }),
+        site: yup.number().required('Site is required'),
+      });
+    }
+
+    if (status === 'rejected') {
+      return schema.noUnknown('Unknown field in form').shape({
+        final_status: yup.string().required('Participant final status is required').oneOf(['withdrawn', 'position filled', 'not qualified'], 'Invalid final status'),
+      });
+    }
+
+    return schema.test('is-null-or-empty', `${status} does not require a data object`, (obj) => !obj || Object.keys(obj).length === 0);
+  }),
   status: yup.string().oneOf(participantStatuses, 'Invalid status'),
 });
 

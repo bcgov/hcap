@@ -27,12 +27,11 @@ describe("Login", () => {
     cy.contains('View Access Requests').should('exist');
   });
 
-  it("tests the /admin page as an employer", () => {
+  it("tests /admin redirection as an employer", () => {
     cy.visit('/');
     cy.kcNavAs("employer", "admin");
-    cy.contains('Upload Participants').should('not.exist');
-    cy.contains('View Participants').should('exist');
-    cy.contains('View Employers').should('not.exist');
-    cy.contains('View Access Requests').should('not.exist');
+    cy.location().should((loc) => {
+      expect(loc.pathname).to.eq('/participant-view');
+    });
   });
 })

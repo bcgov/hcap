@@ -27,7 +27,7 @@ describe("Login", () => {
     cy.contains('View Access Requests').should('exist');
   });
 
-  it("tests the /admin page as an employer", () => {
+  it("tests /admin redirection as an employer", () => {
     cy.visit('/');
     cy.kcNavAs("employer", "admin");
     cy.location().should((loc) => {

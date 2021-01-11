@@ -26,17 +26,11 @@ jobs:
       - name: Build Locally
         run: make local-build
 
-      - name: Run locally
-        run: make local-run &
-
-      - name: Waiting for server to spin up
-        run: |
-          while ! nc -z localhost 4000; do
-          sleep 0.1
-          done
-
       - name: Cypress run
         uses: cypress-io/github-action@v2
+        with:
+          start: make local-run
+          wait-on: 'http://localhost:4000'
 
   test:
     name: Run NPM Test (e2e)

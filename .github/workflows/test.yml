@@ -29,7 +29,8 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: make local-run | grep -v ^hcap
+          start: make local-run &
+          quiet: true
           wait-on: 'http://localhost:4000'
 
   test:

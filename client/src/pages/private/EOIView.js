@@ -26,7 +26,7 @@ export default () => {
     { id: 'operatorName', name: 'Operator Name' },
     { id: 'details' },
   ]);
-  const [healthAuthorities] = useState([
+  const [healthAuthorities, setHealthAuthorities ] = useState([
     'Interior',
     'Fraser',
     'Vancouver Coastal',
@@ -54,6 +54,17 @@ export default () => {
       setRoles(roles);
     }
   }
+
+  useEffect(() => {
+    const locationRoles = {
+      region_interior: 'Interior',
+      region_fraser: 'Fraser',
+      region_vancouver_coastal: 'Vancouver Coastal',
+      region_vancouver_island: 'Vancouver Island',
+      region_northern: 'Northern'
+    };
+    setHealthAuthorities(roles.map((loc) => locationRoles[loc]).filter(Boolean));
+  }, [roles]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

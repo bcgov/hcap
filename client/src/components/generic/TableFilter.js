@@ -32,6 +32,7 @@ export const TableFilter = ({ onFilter, values, label, rows, filterField }) => {
     disabled={values.length === 1}
     value={selectedValue || ''}
     onChange={handleFilter}
+    aria-label={label + " filter"}
   >
     {(values.length > 1) && (<MenuItem value=''>{label}</MenuItem>)}
     {values.map((option) => (

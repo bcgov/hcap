@@ -381,6 +381,10 @@ export default () => {
             { id: 'status', name: 'Status' },
             ...oldColumns.slice(3),
           ];
+
+        if (tabValue === 'Hired Candidates')
+          oldColumns = oldColumns.filter(column => column.id !== 'engage');
+
         if (tabValue !== 'My Candidates')
           return oldColumns.filter(column => column.id !== 'status');
 

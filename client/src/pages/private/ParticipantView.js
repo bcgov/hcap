@@ -109,7 +109,7 @@ export default () => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [tabValue, setTabValue] = useState(null);
 
-  const [locations] = useState([
+  const [locations, setLocations] = useState([
     'Interior',
     'Fraser',
     'Vancouver Coastal',
@@ -305,6 +305,13 @@ export default () => {
   useEffect(() => {
     const resultColumns = [...defaultColumns];
     const currentPage = pagination.currentPage;
+    const locationRoles = {
+      region_interior: 'Interior',
+      region_fraser: 'Fraser',
+      region_vancouver_coastal: 'Vancouver Coastal',
+      region_vancouver_island: 'Vancouver Island',
+      region_northern: 'Northern'
+    };
 
     const fetchUserInfo = async () => {
       setLoadingUser(true);
@@ -320,6 +327,8 @@ export default () => {
         setLoadingUser(false);
         setSites(sites);
         setRoles(roles);
+        // a Boolean filter removes all undefined values
+        setLocations(roles.map((loc) => locationRoles[loc]).filter(Boolean));
         if (!tabValue) {
           setTabValue(Object.keys(tabs) // Set selected tab to first tab allowed for role
             .find((key) => tabs[key].roles.some((role) => roles.includes(role))));
@@ -351,6 +360,7 @@ export default () => {
         setColumns(resultColumns);
       }
     };
+
 
     const getParticipants = async () => {
       if (!tabValue) return;
@@ -396,6 +406,10 @@ export default () => {
     };
     runAsync();
   }, [pagination.currentPage, locationFilter, fsaFilter, order, tabValue]);
+
+  useEffect(() => {
+    if (locations.length === 1) handleLocationFilter(locations[0]);
+  }, [locations]);
 
   const handlePageChange = (oldPage, newPage) => {
     setPagination(pagination => ({ ...pagination, currentPage: newPage }));
@@ -510,12 +524,13 @@ export default () => {
                   variant="filled"
                   inputProps={{ displayEmpty: true }}
                   value={locationFilter || ''}
-                  disabled={isLoadingData}
+                  disabled={isLoadingData || locations.length === 1}
                   onChange={({ target }) => handleLocationFilter(target.value)}
+                  aria-label="location filter"
                 >
-                  <MenuItem value="">Preferred Location</MenuItem>
+                  {(locations.length > 1) && (<MenuItem value=''>Preferred Location</MenuItem>)}
                   {locations.map((option) => (
-                    <MenuItem key={option} value={option}>{option}</MenuItem>
+                    <MenuItem key={option} value={option} aria-label={option}>{option}</MenuItem>
                   ))}
                 </TextField>
               </Box>

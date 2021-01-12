@@ -185,7 +185,7 @@ export default () => {
 
       if (item.statusInfos && item.statusInfos.length > 0) {
         if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
-          const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data.previous);
+          const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
           row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'already_hired'];
         } else {
           row.status = [item.statusInfos[0].status];

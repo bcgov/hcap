@@ -12,13 +12,15 @@ const setParticipantStatus = async (
   status,
   data, // JSONB on the status row
 ) => dbClient.db.withTransaction(async (tx) => {
-  const item = await tx[collections.PARTICIPANTS_STATUS].find({
-    participant_id: participantId,
-    status: 'hired',
-    current: true,
-  });
+  if (status !== 'rejected') {
+    const item = await tx[collections.PARTICIPANTS_STATUS].find({
+      participant_id: participantId,
+      status: 'hired',
+      current: true,
+    });
 
-  if (item.length > 0) return { status: 'already_hired' };
+    if (item.length > 0) return { status: 'already_hired' };
+  }
 
   await tx[collections.PARTICIPANTS_STATUS].update({
     employer_id: employerId,
@@ -57,6 +59,8 @@ const decomposeParticipantStatus = (raw, joinNames) => raw.map((participant) => 
     statusInfos.push(...participant[joinName].map((statusInfo) => ({
       createdAt: statusInfo.created_at,
       employerId: statusInfo.employer_id,
+      ...statusInfo.data && Object.keys(statusInfo.data).length > 0 ? { data: statusInfo.data }
+        : {},
       status: statusInfo.status,
     })));
   });

@@ -284,7 +284,12 @@ const ParticipantStatusChange = yup.object().noUnknown('Unknown field in form').
 
     if (status === 'rejected') {
       return schema.noUnknown('Unknown field in form').shape({
-        final_status: yup.string().required('Participant final status is required').oneOf(['withdrawn', 'position filled', 'not qualified'], 'Invalid final status'),
+        final_status: yup.string().required('Participant final status is required').oneOf(['hired by other', 'withdrawn', 'position filled', 'not qualified'], 'Invalid final status'),
+        previous: yup.string().when('final_status', {
+          is: 'hired by other',
+          then: yup.string().required('Previous status is required').oneOf(['prospecting', 'interviewing', 'offer_made'], 'Invalid previous status'),
+          otherwise: yup.string().nullable(),
+        }),
       });
     }
 

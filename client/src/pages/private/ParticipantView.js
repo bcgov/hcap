@@ -185,7 +185,8 @@ export default () => {
 
       if (item.statusInfos && item.statusInfos.length > 0) {
         if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
-          row.status = [item.statusInfos[0].status, 'already_hired'];
+          const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data.previous);
+          row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'already_hired'];
         } else {
           row.status = [item.statusInfos[0].status];
         }
@@ -394,7 +395,7 @@ export default () => {
       await getParticipants();
 
       setColumns(oldColumns => {
-        if (tabValue === 'My Candidates' && !oldColumns.find(column => column.id === 'status'))
+        if (['My Candidates', 'Archived Candidates'].includes(tabValue) && !oldColumns.find(column => column.id === 'status'))
           return [
             ...oldColumns.slice(0, 3),
             { id: 'status', name: 'Status' },
@@ -404,7 +405,7 @@ export default () => {
         if (tabValue === 'Hired Candidates')
           oldColumns = oldColumns.filter(column => column.id !== 'engage');
 
-        if (tabValue !== 'My Candidates')
+        if (!['My Candidates', 'Archived Candidates'].includes(tabValue))
           return oldColumns.filter(column => column.id !== 'status');
 
         return oldColumns;
@@ -429,7 +430,7 @@ export default () => {
     return 'Change Participant Status';
   };
 
-  const prettifyStatus = (status) => {
+  const prettifyStatus = (status, id) => {
     let firstStatus = status[0];
     if (status[0] === 'offer_made') firstStatus = 'Offer Made';
     if (status[0] === 'open') firstStatus = 'Open';
@@ -450,20 +451,20 @@ export default () => {
           marginBottom: 10,
         }}><InfoIcon color="secondary" style={{ marginRight: 10 }} fontSize="small" />
         This candidate was hired by other employer.</div>
-        <div style={{
+        {tabValue !== 'Archived Candidates' && <div style={{
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'flex-end',
         }}>
           <Button
             onClick={() => {
-              // TODO
+              handleEngage(id, 'rejected', { final_status: 'hired by other', previous: status[0] });
             }}
             size="small"
             fullWidth={false}
             text="Move to Archived Candidates"
           />
-        </div>
+        </div>}
       </div>}>
       <InfoIcon style={{ marginLeft: 5 }} color="secondary" />
     </ComponentTooltip>}</div>;
@@ -604,14 +605,14 @@ export default () => {
               rowsPerPage={pageSize}
               currentPage={pagination.currentPage}
               renderCell={
-                (columnId, cell) => {
+                (columnId, row) => {
                   if (columnId === 'status') {
-                    return prettifyStatus(cell);
+                    return prettifyStatus(row[columnId], row.id);
                   }
                   if (columnId === 'engage') {
-                    return <Button
+                    return !row.status.includes('already_hired') && <Button
                       onClick={(event) => {
-                        setActionMenuParticipant(cell);
+                        setActionMenuParticipant(row[columnId]);
                         setAnchorElement(event.currentTarget);
                       }}
                       variant="outlined"
@@ -619,7 +620,7 @@ export default () => {
                       text="Actions"
                     />
                   }
-                  return cell;
+                  return row[columnId];
                 }
               }
               onRequestSort={handleRequestSort}

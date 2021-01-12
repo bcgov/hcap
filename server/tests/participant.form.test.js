@@ -321,4 +321,47 @@ describe('Participants Service', () => {
 
     expect(secondReport.inProgress).toEqual(firstReport.inProgress + 1);
   });
+
+  it('See unavailable participant, acknowledge as rejected, then receive 0 unavailable participants', async () => {
+    const employerAId = '12345-a';
+    const employerBId = '12345-b';
+
+    const regions = [
+      'Fraser',
+      'Interior',
+      'Northern',
+      'Vancouver Coastal',
+      'Vancouver Island',
+    ];
+
+    const participantsB = await getParticipants({ isEmployer: true, id: employerBId, regions });
+
+    const selectParticipantId = participantsB.data[1].id;
+
+    await setParticipantStatus(employerBId, selectParticipantId, 'hired');
+
+    const unavailableParticipantsA = await getParticipants(
+      { isEmployer: true, id: employerAId, regions }, null, null, null, null, ['interviewing', 'unavailable'],
+    );
+
+    expect(unavailableParticipantsA.data[0].statusInfos[0].status).toEqual('interviewing');
+    expect(unavailableParticipantsA.data[0].statusInfos[1].status).toEqual('already_hired');
+
+    await setParticipantStatus(employerAId, selectParticipantId, 'rejected', { final_status: 'hired by other', previous: 'interviewing' });
+
+    const rejectedParticipantsA = await getParticipants(
+      { isEmployer: true, id: employerAId, regions }, null, null, null, null, ['rejected'],
+    );
+
+    expect(rejectedParticipantsA.data[0].statusInfos[0].status).toEqual('rejected');
+    expect(rejectedParticipantsA.data[0].statusInfos[0].data.final_status).toEqual('hired by other');
+    expect(rejectedParticipantsA.data[0].statusInfos[0].data.previous).toEqual('interviewing');
+    expect(rejectedParticipantsA.data[0].statusInfos[1].status).toEqual('already_hired');
+
+    const unavailableParticipantsAafter = await getParticipants(
+      { isEmployer: true, id: employerAId, regions }, null, null, null, null, ['interviewing', 'unavailable'],
+    );
+
+    expect(unavailableParticipantsAafter.data.length).toEqual(0);
+  });
 });

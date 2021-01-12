@@ -5,10 +5,12 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
+import InfoIcon from '@material-ui/icons/Info';
 import { ToastStatus, InterviewingFormSchema, RejectedFormSchema, HireFormSchema } from '../../constants';
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { ProspectingForm, InterviewingForm, RejectedForm, HireForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
+import { ComponentTooltip } from '../../components/generic/ComponentTooltip';
 
 const pageSize = 10;
 
@@ -43,11 +45,11 @@ const tabs = { // Tabs, associated allowed roles, displayed statuses
   },
   'My Candidates': {
     roles: ['employer', 'health_authority'],
-    statuses: ['prospecting', 'interviewing', 'offer_made'],
+    statuses: ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
   },
   'Archived Candidates': {
     roles: ['employer', 'health_authority'],
-    statuses: ['rejected', 'unavailable'],
+    statuses: ['rejected'],
   },
   'Hired Candidates': {
     roles: ['employer', 'health_authority'],
@@ -180,8 +182,18 @@ export default () => {
       const row = mapItemToColumns(item, columns);
 
       row.engage = item;
-      row.status = item.statusInfos && item.statusInfos.length > 0 ? item.statusInfos[0].status : 'open';
-      row.engage.status = row.status;
+
+      if (item.statusInfos && item.statusInfos.length > 0) {
+        if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
+          row.status = [item.statusInfos[0].status, 'already_hired'];
+        } else {
+          row.status = [item.statusInfos[0].status];
+        }
+      } else {
+        row.status = ['open'];
+      }
+
+      row.engage.status = row.status[0];
 
       filteredRows.push(row);
     });
@@ -258,7 +270,7 @@ export default () => {
             status: ToastStatus.Info,
             message: `${firstName} ${lastName} has been rejected`,
           },
-          already_hired : {
+          already_hired: {
             status: ToastStatus.Info,
             message: `${firstName} ${lastName} is already hired by someone else`,
           }
@@ -418,13 +430,43 @@ export default () => {
   };
 
   const prettifyStatus = (status) => {
-    if (status === 'offer_made') return 'Offer Made';
-    if (status === 'open') return 'Open';
-    if (status === 'prospecting') return 'Prospecting';
-    if (status === 'interviewing') return 'Interviewing';
-    if (status === 'rejected') return 'Rejected';
-    if (status === 'hired') return 'Hired';
-    return status;
+    let firstStatus = status[0];
+    if (status[0] === 'offer_made') firstStatus = 'Offer Made';
+    if (status[0] === 'open') firstStatus = 'Open';
+    if (status[0] === 'prospecting') firstStatus = 'Prospecting';
+    if (status[0] === 'interviewing') firstStatus = 'Interviewing';
+    if (status[0] === 'rejected') firstStatus = 'Rejected';
+    if (status[0] === 'hired') firstStatus = 'Hired';
+    return <div style={{
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+    }}>{firstStatus} {status[1] && <ComponentTooltip arrow
+      title={<div style={{ margin: 10 }}>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: 10,
+        }}><InfoIcon color="secondary" style={{ marginRight: 10 }} fontSize="small" />
+        This candidate was hired by other employer.</div>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+        }}>
+          <Button
+            onClick={() => {
+              // TODO
+            }}
+            size="small"
+            fullWidth={false}
+            text="Move to Archived Candidates"
+          />
+        </div>
+      </div>}>
+      <InfoIcon style={{ marginLeft: 5 }} color="secondary" />
+    </ComponentTooltip>}</div>;
   }
 
   const defaultOnClose = () => {

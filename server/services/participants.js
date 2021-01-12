@@ -251,6 +251,19 @@ const getParticipants = async (user, pagination, sortField,
         }
       }
 
+      const hiredBySomeoneElseStatus = item.statusInfos?.find((statusInfo) => statusInfo.status === 'hired'
+        && statusInfo.employerId !== user.id);
+
+      if (hiredBySomeoneElseStatus) {
+        if (!participant.statusInfos) {
+          participant.statusInfos = [];
+        }
+        participant.statusInfos.push({
+          createdAt: hiredBySomeoneElseStatus.createdAt,
+          status: 'already_hired',
+        });
+      }
+
       return participant;
     }),
     ...pagination && { pagination: paginationData },

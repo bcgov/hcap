@@ -606,6 +606,7 @@ export default () => {
               currentPage={pagination.currentPage}
               renderCell={
                 (columnId, row) => {
+                  console.log(row["status"]);
                   if (columnId === 'status') {
                     return prettifyStatus(row[columnId], row.id);
                   }
@@ -618,6 +619,7 @@ export default () => {
                       variant="outlined"
                       size="small"
                       text="Actions"
+                      display={(row["status"] === "unavailable")? "none" : "block"}
                     />
                   }
                   return row[columnId];

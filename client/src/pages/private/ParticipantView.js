@@ -7,7 +7,7 @@ import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
 import { ToastStatus, InterviewingFormSchema, RejectedFormSchema, HireFormSchema } from '../../constants';
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
-import { InterviewingForm, RejectedForm, HireForm } from '../../components/modal-forms';
+import { ProspectingForm, InterviewingForm, RejectedForm, HireForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 
 const pageSize = 10;
@@ -236,6 +236,8 @@ export default () => {
       const { data: statusData, error } = await response.json();
       if (error) {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
+      } else if (status === 'prospecting') { // Modal appears after submitting
+        setActiveModalForm('prospecting');
       } else {
 
         const index = rows.findIndex(row => row.id === participantId);
@@ -245,10 +247,6 @@ export default () => {
           open: {
             status: ToastStatus.Info,
             message: `${firstName} ${lastName} is has been disengaged`,
-          },
-          prospecting: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} has been engaged`,
           },
           interviewing: {
             status: ToastStatus.Info,
@@ -275,28 +273,33 @@ export default () => {
         openToast(toasts[statusData?.status === 'already_hired' ? statusData.status : status]);
         setActionMenuParticipant(null);
         setActiveModalForm(null);
-
-        setLoadingData(true);
-        const { data, pagination: paginationData } = await fetchParticipants(
-          pagination.currentPage * pageSize,
-          locationFilter,
-          fsaFilter,
-          order.field,
-          order.direction,
-          tabs[tabValue].statuses,
-        );
-
-        setPagination({
-          total: paginationData.total,
-          currentPage: pagination.currentPage,
-        });
-        const newRows = filterData(data, columns);
-        setRows(newRows);
-        setLoadingData(false);
+        forceReload(pagination);
       }
     } else {
       openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
     }
+  };
+
+  const forceReload = async (currentPagination) => {
+    if (!tabValue) return;
+    const currentPage = currentPagination.currentPage;
+    setLoadingData(true);
+    const { data, pagination } = await fetchParticipants(
+      currentPage * pageSize,
+      locationFilter,
+      fsaFilter,
+      order.field,
+      order.direction,
+      tabs[tabValue].statuses,
+    );
+
+    setPagination({
+      total: pagination.total,
+      currentPage: currentPage,
+    });
+    const newRows = filterData(data, columns);
+    setRows(newRows);
+    setLoadingData(false);
   };
 
   useEffect(() => {
@@ -399,6 +402,7 @@ export default () => {
   };
 
   const getDialogTitle = (activeModalForm) => {
+    if (activeModalForm === 'prospecting') return 'Candidate Engaged';
     if (activeModalForm === 'hired') return 'Hire Participant';
     if (activeModalForm === 'interviewing') return 'Interview Participant';
     if (activeModalForm === 'rejected') return 'Reject Participant';
@@ -415,20 +419,38 @@ export default () => {
     return status;
   }
 
+  const defaultOnClose = () => {
+    setActiveModalForm(null);
+    setActionMenuParticipant(null);
+  };
+
   return (
     <Page>
       <Dialog
         title={getDialogTitle(activeModalForm)}
         open={activeModalForm != null}
-        onClose={() => setActiveModalForm(null)}
+        onClose={defaultOnClose}
       >
+
+        {activeModalForm === 'prospecting' && <ProspectingForm
+          name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
+          onClose={async () => {
+            defaultOnClose();
+            forceReload(pagination);
+          }}
+          onSubmit={() => {
+            defaultOnClose();
+            handleTabChange(null, 'My Candidates')
+          }}
+        />}
+
         {activeModalForm === 'interviewing' && <InterviewingForm
           initialValues={{ contactedDate: '' }}
           validationSchema={InterviewingFormSchema}
           onSubmit={(values) => {
             handleEngage(actionMenuParticipant.id, 'interviewing', { contacted_at: values.contactedDate });
           }}
-          onClose={() => setActiveModalForm(null)}
+          onClose={defaultOnClose}
         />}
 
         {activeModalForm === 'rejected' && <RejectedForm
@@ -437,7 +459,7 @@ export default () => {
           onSubmit={(values) => {
             handleEngage(actionMenuParticipant.id, 'rejected', { final_status: values.finalStatus });
           }}
-          onClose={() => setActiveModalForm(null)}
+          onClose={defaultOnClose}
         />}
 
         {activeModalForm === 'hired' && <HireForm
@@ -462,7 +484,7 @@ export default () => {
               site: values.site,
             });
           }}
-          onClose={() => setActiveModalForm(null)}
+          onClose={defaultOnClose}
         />}
       </Dialog>
       <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>

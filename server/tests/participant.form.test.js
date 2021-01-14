@@ -360,16 +360,19 @@ describe('Participants Service', () => {
 
     const selectParticipantId = participantsB.data[1].id;
 
+    await setParticipantStatus(employerBId, selectParticipantId, 'prospecting');
+    await setParticipantStatus(employerBId, selectParticipantId, 'interviewing');
+    await setParticipantStatus(employerBId, selectParticipantId, 'offer_made');
     await setParticipantStatus(employerBId, selectParticipantId, 'hired');
 
     const unavailableParticipantsA = await getParticipants(
-      { isEmployer: true, id: employerAId, regions }, null, null, null, null, ['interviewing', 'unavailable'],
+      { isEmployer: true, id: employerAId, regions }, null, null, null, null, ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
     );
 
-    expect(unavailableParticipantsA.data[0].statusInfos[0].status).toEqual('interviewing');
+    expect(unavailableParticipantsA.data[0].statusInfos[0].status).toEqual('prospecting');
     expect(unavailableParticipantsA.data[0].statusInfos[1].status).toEqual('already_hired');
 
-    await setParticipantStatus(employerAId, selectParticipantId, 'rejected', { final_status: 'hired by other', previous: 'interviewing' });
+    await setParticipantStatus(employerAId, selectParticipantId, 'rejected', { final_status: 'hired by other', previous: 'prospecting' });
 
     const rejectedParticipantsA = await getParticipants(
       { isEmployer: true, id: employerAId, regions }, null, null, null, null, ['rejected'],
@@ -377,11 +380,11 @@ describe('Participants Service', () => {
 
     expect(rejectedParticipantsA.data[0].statusInfos[0].status).toEqual('rejected');
     expect(rejectedParticipantsA.data[0].statusInfos[0].data.final_status).toEqual('hired by other');
-    expect(rejectedParticipantsA.data[0].statusInfos[0].data.previous).toEqual('interviewing');
+    expect(rejectedParticipantsA.data[0].statusInfos[0].data.previous).toEqual('prospecting');
     expect(rejectedParticipantsA.data[0].statusInfos[1].status).toEqual('already_hired');
 
     const unavailableParticipantsAafter = await getParticipants(
-      { isEmployer: true, id: employerAId, regions }, null, null, null, null, ['interviewing', 'unavailable'],
+      { isEmployer: true, id: employerAId, regions }, null, null, null, null, ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
     );
 
     expect(unavailableParticipantsAafter.data.length).toEqual(0);

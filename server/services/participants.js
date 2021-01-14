@@ -13,14 +13,26 @@ const setParticipantStatus = async (
   data, // JSONB on the status row
 ) => dbClient.db.withTransaction(async (tx) => {
   if (status !== 'rejected') {
-    const item = await tx[collections.PARTICIPANTS_STATUS].find({
+    const items = await tx[collections.PARTICIPANTS_STATUS].find({
       participant_id: participantId,
       status: 'hired',
       current: true,
     });
 
-    if (item.length > 0) return { status: 'already_hired' };
+    if (items.length > 0) return { status: 'already_hired' };
   }
+
+  const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
+    participant_id: participantId,
+    employer_id: employerId,
+    current: true,
+  });
+
+  if ((status === 'prospecting' && item !== null && item.status !== 'open')
+    || (status === 'interviewing' && item?.status !== 'prospecting')
+    || (status === 'offer_made' && item?.status !== 'interviewing')
+    || (status === 'hired' && item?.status !== 'offer_made')
+  ) return { status: 'invalid_status_transition' };
 
   await tx[collections.PARTICIPANTS_STATUS].update({
     employer_id: employerId,

@@ -606,7 +606,6 @@ export default () => {
               currentPage={pagination.currentPage}
               renderCell={
                 (columnId, row) => {
-                  console.log(row["status"]);
                   if (columnId === 'status') {
                     return prettifyStatus(row[columnId], row.id);
                   }

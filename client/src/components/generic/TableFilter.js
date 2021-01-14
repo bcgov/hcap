@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MenuItem, TextField } from '@material-ui/core';
 
 export const TableFilter = ({ onFilter, values, label, rows, filterField }) => {
@@ -19,17 +19,24 @@ export const TableFilter = ({ onFilter, values, label, rows, filterField }) => {
     }
   };
 
+  useEffect(() => {
+    if (values.length === 1) setValue(values[0]);
+  }, [values]);
+
+
   return (<TextField
     select
     fullWidth
     variant="filled"
     inputProps={{ displayEmpty: true }}
+    disabled={values.length === 1}
     value={selectedValue || ''}
     onChange={handleFilter}
+    aria-label={label + " filter"}
   >
-    <MenuItem value="">{label}</MenuItem>
+    {(values.length > 1) && (<MenuItem value=''>{label}</MenuItem>)}
     {values.map((option) => (
-      <MenuItem key={option} value={option}>{option}</MenuItem>
+      <MenuItem key={option} value={option} aria-label={option}>{option}</MenuItem>
     ))}
   </TextField>);
 };

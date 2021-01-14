@@ -5,10 +5,12 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
+import InfoIcon from '@material-ui/icons/Info';
 import { ToastStatus, InterviewingFormSchema, RejectedFormSchema, HireFormSchema } from '../../constants';
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { ProspectingForm, InterviewingForm, RejectedForm, HireForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
+import { ComponentTooltip } from '../../components/generic/ComponentTooltip';
 
 const pageSize = 10;
 
@@ -43,11 +45,11 @@ const tabs = { // Tabs, associated allowed roles, displayed statuses
   },
   'My Candidates': {
     roles: ['employer', 'health_authority'],
-    statuses: ['prospecting', 'interviewing', 'offer_made'],
+    statuses: ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
   },
   'Archived Candidates': {
     roles: ['employer', 'health_authority'],
-    statuses: ['rejected', 'unavailable'],
+    statuses: ['rejected'],
   },
   'Hired Candidates': {
     roles: ['employer', 'health_authority'],
@@ -180,8 +182,19 @@ export default () => {
       const row = mapItemToColumns(item, columns);
 
       row.engage = item;
-      row.status = item.statusInfos && item.statusInfos.length > 0 ? item.statusInfos[0].status : 'open';
-      row.engage.status = row.status;
+
+      if (item.statusInfos && item.statusInfos.length > 0) {
+        if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
+          const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
+          row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'already_hired'];
+        } else {
+          row.status = [item.statusInfos[0].status];
+        }
+      } else {
+        row.status = ['open'];
+      }
+
+      row.engage.status = row.status[0];
 
       filteredRows.push(row);
     });
@@ -258,7 +271,7 @@ export default () => {
             status: ToastStatus.Info,
             message: `${firstName} ${lastName} has been rejected`,
           },
-          already_hired : {
+          already_hired: {
             status: ToastStatus.Info,
             message: `${firstName} ${lastName} is already hired by someone else`,
           }
@@ -382,7 +395,7 @@ export default () => {
       await getParticipants();
 
       setColumns(oldColumns => {
-        if (tabValue === 'My Candidates' && !oldColumns.find(column => column.id === 'status'))
+        if (['My Candidates', 'Archived Candidates'].includes(tabValue) && !oldColumns.find(column => column.id === 'status'))
           return [
             ...oldColumns.slice(0, 3),
             { id: 'status', name: 'Status' },
@@ -392,7 +405,7 @@ export default () => {
         if (tabValue === 'Hired Candidates')
           oldColumns = oldColumns.filter(column => column.id !== 'engage');
 
-        if (tabValue !== 'My Candidates')
+        if (!['My Candidates', 'Archived Candidates'].includes(tabValue))
           return oldColumns.filter(column => column.id !== 'status');
 
         return oldColumns;
@@ -417,14 +430,44 @@ export default () => {
     return 'Change Participant Status';
   };
 
-  const prettifyStatus = (status) => {
-    if (status === 'offer_made') return 'Offer Made';
-    if (status === 'open') return 'Open';
-    if (status === 'prospecting') return 'Prospecting';
-    if (status === 'interviewing') return 'Interviewing';
-    if (status === 'rejected') return 'Rejected';
-    if (status === 'hired') return 'Hired';
-    return status;
+  const prettifyStatus = (status, id) => {
+    let firstStatus = status[0];
+    if (status[0] === 'offer_made') firstStatus = 'Offer Made';
+    if (status[0] === 'open') firstStatus = 'Open';
+    if (status[0] === 'prospecting') firstStatus = 'Prospecting';
+    if (status[0] === 'interviewing') firstStatus = 'Interviewing';
+    if (status[0] === 'rejected') firstStatus = 'Rejected';
+    if (status[0] === 'hired') firstStatus = 'Hired';
+    return <div style={{
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+    }}>{firstStatus} {status[1] && <ComponentTooltip arrow
+      title={<div style={{ margin: 10 }}>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: 10,
+        }}><InfoIcon color="secondary" style={{ marginRight: 10 }} fontSize="small" />
+        This candidate was hired by other employer.</div>
+        {tabValue !== 'Archived Candidates' && <div style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+        }}>
+          <Button
+            onClick={() => {
+              handleEngage(id, 'rejected', { final_status: 'hired by other', previous: status[0] });
+            }}
+            size="small"
+            fullWidth={false}
+            text="Move to Archived Candidates"
+          />
+        </div>}
+      </div>}>
+      <InfoIcon style={{ marginLeft: 5 }} color="secondary" />
+    </ComponentTooltip>}</div>;
   }
 
   const defaultOnClose = () => {
@@ -562,14 +605,14 @@ export default () => {
               rowsPerPage={pageSize}
               currentPage={pagination.currentPage}
               renderCell={
-                (columnId, cell) => {
+                (columnId, row) => {
                   if (columnId === 'status') {
-                    return prettifyStatus(cell);
+                    return prettifyStatus(row[columnId], row.id);
                   }
                   if (columnId === 'engage') {
-                    return <Button
+                    return !row.status.includes('already_hired') && <Button
                       onClick={(event) => {
-                        setActionMenuParticipant(cell);
+                        setActionMenuParticipant(row[columnId]);
                         setAnchorElement(event.currentTarget);
                       }}
                       variant="outlined"
@@ -577,7 +620,7 @@ export default () => {
                       text="Actions"
                     />
                   }
-                  return cell;
+                  return row[columnId];
                 }
               }
               onRequestSort={handleRequestSort}

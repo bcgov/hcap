@@ -203,7 +203,7 @@ export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows
                 <StyledTableCell key={column.id}>
                   {
                     renderCell ?
-                      renderCell(column.id, row[column.id])
+                      renderCell(column.id, row)
                       :
                       row[column.id] || ''
                   }

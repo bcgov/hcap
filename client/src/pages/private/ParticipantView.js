@@ -109,13 +109,7 @@ export default () => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [tabValue, setTabValue] = useState(null);
 
-  const [locations, setLocations] = useState([
-    'Interior',
-    'Fraser',
-    'Vancouver Coastal',
-    'Vancouver Island',
-    'Northern',
-  ]);
+  const [locations, setLocations] = useState([]);
 
   const handleRequestSort = (event, property) => {
     setOrder({

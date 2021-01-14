@@ -70,15 +70,34 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
   // This function defines the values that will be returned from the call to
   // /protocol/openid-connect/auth
   const userInfo = (userType) => {
-    if (userType === "superuser") return {
-      name: "Test Superuser",
-      roles: [ "superuser" ]
+    let jsonOutput = {
+      name: "Test User",
+      pagination: {
+        offset: 0,
+        total: 0,
+      },
+      roles: [],
+    };
+
+    if (userType.includes("superuser")) {
+      jsonOutput.name = "Test Superuser";
+      jsonOutput.roles.push("superuser");
     }
 
-    if (userType === "employer") return {
-      name: "Test Employer",
-      roles: [ "employer" ]
+    if (userType.includes("employer")) {
+      jsonOutput.name = "Test Employer";
+      jsonOutput.roles.push("employer");
     }
+
+    if (userType.includes("island")) {
+      jsonOutput.roles.push("region_vancouver_island");
+    }
+
+    if (userType.includes("fraser")) {
+      jsonOutput.roles.push("region_fraser");
+    }
+
+    return jsonOutput;
   }
 
   window.localStorage.setItem(localStorageKey, JSON.stringify(localStorageObj));

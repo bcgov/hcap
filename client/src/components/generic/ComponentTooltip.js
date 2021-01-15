@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -18,9 +18,21 @@ export const ComponentTooltip = ({
   ...props
 }) => {
   const classes = useStyles();
+  const [open, setOpen] = useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
   return (
     <Tooltip
       classes={{ tooltip: classes.tooltip, arrow: classes.arrow }}
+      open={open} onClose={handleClose} onOpen={handleOpen}
+      onClick={handleOpen} //enable onClick due to mobile devices limitation
       interactive={true}
       {...props}
     />

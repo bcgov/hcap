@@ -63,7 +63,12 @@ export default () => {
       region_vancouver_island: 'Vancouver Island',
       region_northern: 'Northern'
     };
-    setHealthAuthorities(roles.map((loc) => locationRoles[loc]).filter(Boolean));
+
+    setHealthAuthorities(
+      (roles.includes("superuser") || roles.includes("ministry_of_health"))
+      ? Object.values(locationRoles) 
+      : roles.map((loc) => locationRoles[loc]).filter(Boolean)
+    );
   }, [roles]);
 
   const handleRequestSort = (event, property) => {

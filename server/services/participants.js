@@ -253,31 +253,32 @@ const getParticipants = async (user, pagination, sortField,
         nonHCAP: item.nonHCAP,
       };
 
+      const hiredBySomeoneElseStatus = item.statusInfos?.find((statusInfo) => statusInfo.status === 'hired'
+        && statusInfo.employerId !== user.id);
+
+      if (hiredBySomeoneElseStatus) {
+        if (!participant.statusInfos) participant.statusInfos = [];
+
+        participant.statusInfos.push({
+          createdAt: hiredBySomeoneElseStatus.createdAt,
+          status: 'already_hired',
+        });
+      }
+
       const statusInfos = item.statusInfos?.find((statusInfo) => statusInfo.employerId === user.id);
 
       if (statusInfos) {
-        participant.statusInfos = Array.isArray(statusInfos) ? statusInfos : [statusInfos];
+        if (!participant.statusInfos) participant.statusInfos = [];
+
+        participant.statusInfos.unshift(statusInfos);
         const showContactInfo = participant.statusInfos.find((statusInfo) => ['prospecting', 'interviewing', 'offer_made', 'hired'].includes(statusInfo.status));
-        if (showContactInfo) {
+        if (showContactInfo && !hiredBySomeoneElseStatus) {
           participant = {
             ...participant,
             phoneNumber: item.phoneNumber,
             emailAddress: item.emailAddress,
           };
         }
-      }
-
-      const hiredBySomeoneElseStatus = item.statusInfos?.find((statusInfo) => statusInfo.status === 'hired'
-        && statusInfo.employerId !== user.id);
-
-      if (hiredBySomeoneElseStatus) {
-        if (!participant.statusInfos) {
-          participant.statusInfos = [];
-        }
-        participant.statusInfos.push({
-          createdAt: hiredBySomeoneElseStatus.createdAt,
-          status: 'already_hired',
-        });
       }
 
       return participant;

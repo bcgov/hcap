@@ -77,16 +77,48 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
         total: 0,
       },
       roles: [],
+      data: [
+        {
+          "id":"17b2254c-269e-4c21-b19d-0c005365a5e9",
+          "emailAddress":"graeme.clarke@gov.bc.ca",
+          "username":"gclarke@idir",
+          "firstName":"Graeme",
+          "lastName":"Clarke",
+          "createdAt":"2020-11-12 18:33"
+        }
+      ],
     };
 
     if (userType.includes("superuser")) {
       jsonOutput.name = "Test Superuser";
-      jsonOutput.roles.push("superuser");
+      jsonOutput.roles.push("superuser",
+        "region_vancouver_island",
+        "region_fraser",
+        "region_interior",
+        "region_northern",
+        "region_vancouver_coastal"
+      );
+    }
+
+    if (userType.includes("ministry_of_health")) {
+      jsonOutput.name = "Test MoH";
+      jsonOutput.roles.push("ministry_of_health",
+        "region_vancouver_island",
+        "region_fraser",
+        "region_interior",
+        "region_northern",
+        "region_vancouver_coastal"
+      );
     }
 
     if (userType.includes("employer")) {
       jsonOutput.name = "Test Employer";
       jsonOutput.roles.push("employer");
+    }
+
+    if (userType.includes("MoH")) {
+      jsonOutput.name = "Test MoH";
+      jsonOutput.roles.push("ministry_of_health");
     }
 
     if (userType.includes("island")) {

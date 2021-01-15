@@ -61,9 +61,15 @@ export default () => {
       region_fraser: 'Fraser',
       region_vancouver_coastal: 'Vancouver Coastal',
       region_vancouver_island: 'Vancouver Island',
-      region_northern: 'Northern'
+      region_northern: 'Northern',
+      none: 'None'
     };
-    setHealthAuthorities(roles.map((loc) => locationRoles[loc]).filter(Boolean));
+
+    setHealthAuthorities(
+      (roles.includes("superuser") || roles.includes("ministry_of_health"))
+      ? Object.values(locationRoles) 
+      : roles.map((loc) => locationRoles[loc]).filter(Boolean)
+    );
   }, [roles]);
 
   const handleRequestSort = (event, property) => {

@@ -335,8 +335,7 @@ export default () => {
         setLoadingUser(false);
         setSites(sites);
         setRoles(roles);
-        // a Boolean filter removes all undefined values
-        setLocations(roles.map((loc) => locationRoles[loc]).filter(Boolean));
+        
         if (!tabValue) {
           setTabValue(Object.keys(tabs) // Set selected tab to first tab allowed for role
             .find((key) => tabs[key].roles.some((role) => roles.includes(role))));
@@ -349,6 +348,9 @@ export default () => {
             { id: 'crcClear', name: 'CRC Clear' },
           );
         }
+
+        // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
+        setLocations((isMoH || isSuperUser)? Object.values(locationRoles) : roles.map((loc) => locationRoles[loc]).filter(Boolean));
 
         if (!isMoH) {
           resultColumns.push(

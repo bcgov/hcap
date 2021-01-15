@@ -245,6 +245,7 @@ export default () => {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
       } else if (status === 'prospecting') { // Modal appears after submitting
         setActiveModalForm('prospecting');
+        forceReload(pagination);
       } else {
 
         const index = rows.findIndex(row => row.id === participantId);
@@ -485,13 +486,10 @@ export default () => {
 
         {activeModalForm === 'prospecting' && <ProspectingForm
           name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
-          onClose={async () => {
-            defaultOnClose();
-            forceReload(pagination);
-          }}
+          onClose={defaultOnClose}
           onSubmit={() => {
             defaultOnClose();
-            handleTabChange(null, 'My Candidates')
+            handleTabChange(null, 'My Candidates');
           }}
         />}
 
@@ -631,7 +629,7 @@ export default () => {
         </Grid>
         <Menu
           keepMounted
-          open={actionMenuParticipant != null}
+          open={actionMenuParticipant != null && activeModalForm == null}
           anchorEl={anchorElement}
           onClose={() => setActionMenuParticipant(null)}
         >

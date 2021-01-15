@@ -451,7 +451,7 @@ export default () => {
           alignItems: 'center',
           marginBottom: 10,
         }}><InfoIcon color="secondary" style={{ marginRight: 10 }} fontSize="small" />
-        This candidate was hired by other employer.</div>
+        This candidate was hired by another employer.</div>
         {tabValue !== 'Archived Candidates' && <div style={{
           display: 'flex',
           flexDirection: 'row',

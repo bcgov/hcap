@@ -37,4 +37,24 @@ const getReport = async () => {
   };
 };
 
-module.exports = { getReport };
+const getParticipantsReport = async () => {
+  const inProgressEntries = await dbClient.db[collections.PARTICIPANTS_STATUS].join({
+    hiredJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.PARTICIPANTS_STATUS,
+      on: {
+        participant_id: 'participant_id',
+        status: 'hired',
+        current: true,
+      },
+    },
+  }).find({
+    current: true,
+    status: ['prospecting', 'interviewing', 'offer_made'],
+    'hiredJoin.status': null,
+  });
+
+  return inProgressEntries;
+};
+
+module.exports = { getReport, getParticipantsReport };

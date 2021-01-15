@@ -9,6 +9,7 @@
     "migrate": "node-pg-migrate",
     "feed-sites": "node scripts/feed-sites.js",
     "stats": "node scripts/stats.js",
+    "participant-stats": "node scripts/participant-stats.js",
     "export": "node scripts/export.js",
     "watch": "NODE_ENV=development nodemon main.js",
     "start": "NODE_ENV=production node main.js",

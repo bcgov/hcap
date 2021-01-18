@@ -82,7 +82,7 @@ const getParticipantsReport = async () => {
     participantId: entry.participant_id,
     participantFsa: getFirst(entry.participantJoin)?.body.postalCodeFsa,
     employerId: entry.employer_id,
-    employerEmail: users.find((user) => user.id === entry.employer_id).email,
+    employerEmail: users.find((user) => user.id === entry.employer_id)?.email,
     employerhealthRegion: getFirst(entry.employerUserJoin)?.body?.sites.map((id) => healthAuthorities[id]).join('; '),
   }));
 };

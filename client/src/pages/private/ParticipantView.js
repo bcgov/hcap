@@ -270,7 +270,7 @@ export default () => {
           },
           rejected: {
             status: ToastStatus.Info,
-            message: `${firstName} ${lastName} has been rejected`,
+            message: `${firstName} ${lastName} has been archived`,
           },
           already_hired: {
             status: ToastStatus.Info,
@@ -428,7 +428,7 @@ export default () => {
     if (activeModalForm === 'prospecting') return 'Candidate Engaged';
     if (activeModalForm === 'hired') return 'Hire Participant';
     if (activeModalForm === 'interviewing') return 'Interview Participant';
-    if (activeModalForm === 'rejected') return 'Reject Participant';
+    if (activeModalForm === 'rejected') return 'Archive Participant';
     return 'Change Participant Status';
   };
 
@@ -438,7 +438,7 @@ export default () => {
     if (status[0] === 'open') firstStatus = 'Open';
     if (status[0] === 'prospecting') firstStatus = 'Prospecting';
     if (status[0] === 'interviewing') firstStatus = 'Interviewing';
-    if (status[0] === 'rejected') firstStatus = 'Rejected';
+    if (status[0] === 'rejected') firstStatus = 'Archived';
     if (status[0] === 'hired') firstStatus = 'Hired';
     return <div style={{
       display: 'flex',
@@ -638,7 +638,7 @@ export default () => {
           {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => setActiveModalForm('interviewing')}>Interviewing</MenuItem>}
           {actionMenuParticipant?.status === 'interviewing' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'offer_made')}>Offer Made</MenuItem>}
           {actionMenuParticipant?.status === 'offer_made' && <MenuItem onClick={() => setActiveModalForm('hired')}>Hire</MenuItem>}
-          {['prospecting', 'interviewing', 'offer_made'].includes(actionMenuParticipant?.status) && <MenuItem onClick={() => setActiveModalForm('rejected')}>Rejected</MenuItem>}
+          {['prospecting', 'interviewing', 'offer_made'].includes(actionMenuParticipant?.status) && <MenuItem onClick={() => setActiveModalForm('rejected')}>Archive</MenuItem>}
           {actionMenuParticipant?.status === 'rejected' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Re-engage</MenuItem>}
         </Menu>
       </CheckPermissions>

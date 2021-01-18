@@ -22,6 +22,7 @@ export const RejectedForm = ({ initialValues, validationSchema, onSubmit, onClos
               { value: 'withdrawn', label: 'Withdrawn at Participant Request' },
               { value: 'position filled', label: 'Not Hired – Position Filled' },
               { value: 'not qualified', label: 'Not Hired – Participant Not Qualified' },
+              { value: 'not responsive', label: 'Not Hired - Unable to Contact Participant' },
             ]}
           />
         </Box>

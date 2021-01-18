@@ -195,7 +195,7 @@ export const HireFormSchema = yup.object().noUnknown('Unknown field in form').sh
 });
 
 export const RejectedFormSchema = yup.object().noUnknown('Unknown field in form').shape({
-  finalStatus: yup.string().required('Participant final status is required').oneOf(['withdrawn', 'position filled', 'not qualified'], 'Invalid final status')
+  finalStatus: yup.string().required('Participant final status is required').oneOf(['withdrawn', 'position filled', 'not qualified', 'not responsive'], 'Invalid final status')
 });
 
 export const ParticipantFormSchema = yup.object().noUnknown('Unknown field for form').shape({

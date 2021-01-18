@@ -138,6 +138,7 @@ export default () => {
     sites: [],
     regions: [],
     role: '',
+    acknowledgement: false,
   };
 
   return (
@@ -170,10 +171,12 @@ export default () => {
                   options={[
                     { value: 'health_authority', label: 'Health Authority' },
                     { value: 'employer', label: 'Private Employer' },
+                    { value: 'ministry_of_health', label: 'Ministry Of Health' },
                   ]}
                   onChange={(e) => {
                     setFieldValue('regions', []);
                     setFieldValue('sites', []);
+                    setFieldValue('acknowledgement', false);
                     handleChange(e);
                   }}
                 />
@@ -220,6 +223,38 @@ export default () => {
                   }}
                 />
               </Box>}
+            {(values.role === 'employer') && <Box mt={3}>
+                <Field
+              name="sites"
+              component={RenderMultiSelectField}
+              label="* Employer Sites (allocation number) - select one or more"
+              options={_orderBy(sites, ['siteName'])
+                .filter(item => item.earlyAdopterAllocation > 0)
+                .filter(item => values.role === 'health_authority' ? values.regions.includes(item.healthAuthority) : true)
+                .map(item => ({
+                  value: item.siteId, label: `${item.siteName} (${item.earlyAdopterAllocation})`
+                }))
+              }
+              onChange={(e) => {
+                const regions = sites
+                  .filter((site) => e.target.value.includes(site.siteId))
+                  .map((site) => site.healthAuthority);
+                const deduped = [...new Set(regions)];
+                if (regions.length > 0) setFieldValue('regions', deduped);
+                handleChange(e);
+              }}
+                />
+                </Box>}
+            {(values.role === 'ministry_of_health') && <Box mt={3}>
+                <Field
+                  name="acknowledgement"
+                  type="checkbox"
+                  checked={values.acknowledgement}
+                />
+                I understand that I am granting this user access to potentially sensitive personal information.
+              </Box>}
+
+
               <Box mt={3}>
                 <Grid container spacing={2} justify="flex-end">
                   <Grid item>

@@ -322,10 +322,30 @@ describe('Participants Service', () => {
 
     const participantId = participants.data[0].id;
 
+    // Cannot skip a status
     expect((await setParticipantStatus(employerAId, participantId, 'interviewing')).status).toEqual('invalid_status_transition');
     expect((await setParticipantStatus(employerAId, participantId, 'offer_made')).status).toEqual('invalid_status_transition');
     expect((await setParticipantStatus(employerAId, participantId, 'hired')).status).toEqual('invalid_status_transition');
     expect((await setParticipantStatus(employerAId, participantId, 'interviewing')).status).toEqual('invalid_status_transition');
+
+    // Cannot go backwards
+    await setParticipantStatus(employerAId, participantId, 'prospecting');
+    expect((await setParticipantStatus(employerAId, participantId, 'open')).status).toEqual('invalid_status_transition');
+    await setParticipantStatus(employerAId, participantId, 'interviewing');
+    expect((await setParticipantStatus(employerAId, participantId, 'prospecting')).status).toEqual('invalid_status_transition');
+    expect((await setParticipantStatus(employerAId, participantId, 'open')).status).toEqual('invalid_status_transition');
+    await setParticipantStatus(employerAId, participantId, 'offer_made');
+    expect((await setParticipantStatus(employerAId, participantId, 'interviewing')).status).toEqual('invalid_status_transition');
+    expect((await setParticipantStatus(employerAId, participantId, 'prospecting')).status).toEqual('invalid_status_transition');
+    expect((await setParticipantStatus(employerAId, participantId, 'open')).status).toEqual('invalid_status_transition');
+
+    // Cannot hire and re-engage
+    await setParticipantStatus(employerAId, participantId, 'hired');
+    expect((await setParticipantStatus(employerAId, participantId, 'open')).status).toEqual('already_hired');
+    expect((await setParticipantStatus(employerAId, participantId, 'prospecting')).status).toEqual('already_hired');
+    expect((await setParticipantStatus(employerAId, participantId, 'interviewing')).status).toEqual('already_hired');
+    expect((await setParticipantStatus(employerAId, participantId, 'offer_made')).status).toEqual('already_hired');
+    expect((await setParticipantStatus(employerAId, participantId, 'hired')).status).toEqual('already_hired');
   });
 
   it('Two Employers engage one participant and the inProgress number increases by one', async () => {

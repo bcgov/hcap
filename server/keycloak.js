@@ -127,6 +127,14 @@ class Keycloak { // Wrapper class around keycloak-connect
     }
   }
 
+  async getUsers() {
+    await this.authenticateIfNeeded();
+    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    const url = `${this.authUrl}/admin/realms/${this.realm}/users`;
+    const response = await axios.get(url, config);
+    return response.data;
+  }
+
   async approvePendingRequest(userId, role, regions) {
     if (!Object.keys(this.roleIdMap).includes(role)) throw Error(`Invalid role: ${role}`);
     const regionToRole = (region) => {

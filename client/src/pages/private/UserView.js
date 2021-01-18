@@ -223,28 +223,6 @@ export default () => {
                   }}
                 />
               </Box>}
-            {(values.role === 'employer') && <Box mt={3}>
-                <Field
-              name="sites"
-              component={RenderMultiSelectField}
-              label="* Employer Sites (allocation number) - select one or more"
-              options={_orderBy(sites, ['siteName'])
-                .filter(item => item.earlyAdopterAllocation > 0)
-                .filter(item => values.role === 'health_authority' ? values.regions.includes(item.healthAuthority) : true)
-                .map(item => ({
-                  value: item.siteId, label: `${item.siteName} (${item.earlyAdopterAllocation})`
-                }))
-              }
-              onChange={(e) => {
-                const regions = sites
-                  .filter((site) => e.target.value.includes(site.siteId))
-                  .map((site) => site.healthAuthority);
-                const deduped = [...new Set(regions)];
-                if (regions.length > 0) setFieldValue('regions', deduped);
-                handleChange(e);
-              }}
-                />
-                </Box>}
             {(values.role === 'ministry_of_health') && <Box mt={3}>
                 <Field
                   name="acknowledgement"

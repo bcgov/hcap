@@ -8,7 +8,7 @@ import { useToast } from '../../hooks';
 import { Button, Page, Table, CheckPermissions, Dialog } from '../../components/generic';
 import { ApproveAccessRequestSchema, ToastStatus } from '../../constants';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { RenderMultiSelectField, RenderSelectField } from '../../components/fields';
+import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../../components/fields';
 
 const columns = [
   { id: 'firstName', name: 'First Name' },
@@ -248,10 +248,11 @@ export default () => {
             {(values.role === 'ministry_of_health') && <Box mt={3}>
                 <Field
                   name="acknowledgement"
+                  component={RenderCheckbox}
                   type="checkbox"
                   checked={values.acknowledgement}
+                  label="I understand that I am granting this user access to potentially sensitive personal information."
                 />
-                I understand that I am granting this user access to potentially sensitive personal information.
               </Box>}
 
 

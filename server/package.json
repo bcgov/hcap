@@ -33,6 +33,7 @@
     "node-xlsx": "0.15.0",
     "pg": "8.5.1",
     "tiny-async-pool": "1.1.0",
+    "uuid": "8.3.2",
     "winston": "3.3.3",
     "winston-mongodb": "5.0.5",
     "yup": "0.29.3"

@@ -28,7 +28,15 @@ const setParticipantStatus = async (
     current: true,
   });
 
-  if ((status === 'prospecting' && item !== null && item.status !== 'open')
+  // Check the desired status against the current status:
+  // -- Rejecting a participant is allowed even if they've been hired elsewhere (handled above)
+  // -- Open is the starting point, there is no way to transition here from any other status
+  // -- If engaging (prospecting), participant must be coming from open, null, or rejected status
+  // -- If interviewing, participant must be coming from prospecting status
+  // -- If offer made, must be coming from interviewing
+  // -- If hiring, must be coming from offer made
+  if ((status === 'open')
+    || (status === 'prospecting' && item !== null && item.status !== 'open' && item.status !== 'rejected')
     || (status === 'interviewing' && item?.status !== 'prospecting')
     || (status === 'offer_made' && item?.status !== 'interviewing')
     || (status === 'hired' && item?.status !== 'offer_made')

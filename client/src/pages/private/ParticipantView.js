@@ -201,13 +201,16 @@ export default () => {
     return filteredRows;
   };
 
-  const fetchParticipants = async (offset, regionFilter, fsaFilter, sortField, sortDirection, statusFilters) => {
+  const fetchParticipants = async (offset, regionFilter, fsaFilter, lastNameFilter,
+    emailFilter, sortField, sortDirection, statusFilters) => {
     const queries = [
       sortField && `sortField=${sortField}`,
       offset && `offset=${offset}`,
       sortDirection && `sortDirection=${sortDirection}`,
       regionFilter && `regionFilter=${regionFilter}`,
       fsaFilter && `fsaFilter=${fsaFilter}`,
+      lastNameFilter && `lastNameFilter=${lastNameFilter}`,
+      emailFilter && `emailFilter=${emailFilter}`,
       ...statusFilters && statusFilters.map(status => `statusFilters[]=${status}`),
     ].filter(item => item).join('&');
 
@@ -296,6 +299,8 @@ export default () => {
       currentPage * pageSize,
       locationFilter,
       fsaFilter,
+      null,
+      null,
       order.field,
       order.direction,
       tabs[tabValue].statuses,
@@ -349,7 +354,7 @@ export default () => {
         }
 
         // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
-        setLocations((isMoH || isSuperUser)? Object.values(locationRoles) : roles.map((loc) => locationRoles[loc]).filter(Boolean));
+        setLocations((isMoH || isSuperUser) ? Object.values(locationRoles) : roles.map((loc) => locationRoles[loc]).filter(Boolean));
 
         if (!isMoH) {
           resultColumns.push(
@@ -378,6 +383,8 @@ export default () => {
         currentPage * pageSize,
         locationFilter,
         fsaFilter,
+        null,
+        null,
         order.field,
         order.direction,
         tabs[tabValue].statuses,

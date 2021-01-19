@@ -83,7 +83,8 @@ app.get(`${apiBaseUrl}/participants`,
     await validate(ParticipantQuerySchema, req.query);
     const user = req.hcapUserInfo;
     const {
-      offset, regionFilter, sortField, sortDirection, fsaFilter, statusFilters,
+      offset, regionFilter, sortField, sortDirection,
+      fsaFilter, lastNameFilter, emailFilter, statusFilters,
     } = req.query;
     const result = await getParticipants(
       user,
@@ -95,6 +96,8 @@ app.get(`${apiBaseUrl}/participants`,
       sortField,
       regionFilter,
       fsaFilter,
+      lastNameFilter,
+      emailFilter,
       statusFilters,
     );
     logger.info({

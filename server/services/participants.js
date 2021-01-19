@@ -72,12 +72,16 @@ const setParticipantStatus = async (
 });
 
 const getParticipants = async (user, pagination, sortField,
-  regionFilter, fsaFilter, statusFilters) => {
+  regionFilter, fsaFilter, lastNameFilter, emailFilter, statusFilters) => {
   const participantsFinder = new ParticipantsFinder(dbClient, user);
 
   const participants = await participantsFinder
     .filterRegion(regionFilter)
-    .filterFsa(fsaFilter)
+    .filterParticipantFields({
+      postalCodeFsa: fsaFilter,
+      lastName: lastNameFilter,
+      emailAddress: emailFilter,
+    })
     .filterStatus(statusFilters)
     .paginate(pagination, sortField)
     .run();

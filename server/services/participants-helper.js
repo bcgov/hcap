@@ -80,7 +80,7 @@ class FilteredParticipantsFinder {
   }
 }
 
-class FsaFilteredParticipantsFinder {
+class FieldsFilteredParticipantsFinder {
   constructor(context) {
     this.context = context;
   }
@@ -172,12 +172,14 @@ class RegionsFilteredParticipantsFinder {
     this.context = context;
   }
 
-  filterFsa(fsaFilter) {
+  filterParticipantFields({ postalCodeFsa, lastName, emailAddress }) {
     this.context.criteria = {
       ...this.context.criteria,
-      ...fsaFilter && { 'body.postalCodeFsa ilike': `${fsaFilter}%` },
+      ...postalCodeFsa && { 'body.postalCodeFsa ilike': `${postalCodeFsa}%` },
+      ...lastName && { 'body.lastName ilike': `${lastName}%` },
+      ...emailAddress && { 'body.emailAddress ilike': `${emailAddress}%` },
     };
-    return new FsaFilteredParticipantsFinder(this.context);
+    return new FieldsFilteredParticipantsFinder(this.context);
   }
 
   async paginate(pagination) {

@@ -4,7 +4,7 @@ const {
 } = require('../validation.js');
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
-const { userRegionQuery } = require('./user.js');
+const { ParticipantsFinder } = require('./participants-helper');
 
 const setParticipantStatus = async (
   employerId,
@@ -71,155 +71,18 @@ const setParticipantStatus = async (
   return { status };
 });
 
-const decomposeParticipantStatus = (raw, joinNames) => raw.map((participant) => {
-  const statusInfos = [];
-
-  joinNames.forEach((joinName) => {
-    if (!participant[joinName]) return;
-    statusInfos.push(...participant[joinName].map((statusInfo) => ({
-      createdAt: statusInfo.created_at,
-      employerId: statusInfo.employer_id,
-      ...statusInfo.data && Object.keys(statusInfo.data).length > 0 ? { data: statusInfo.data }
-        : {},
-      status: statusInfo.status,
-    })));
-  });
-
-  return {
-    ...participant.body,
-    id: participant.id,
-    statusInfos,
-  };
-});
-
 const getParticipants = async (user, pagination, sortField,
   regionFilter, fsaFilter, statusFilters) => {
-  const showStatus = user.isHA || user.isEmployer;
-  let criteria = user.isSuperUser || user.isMoH
-    ? {
-      ...regionFilter && { 'body.preferredLocation ilike': `%${regionFilter}%` },
-    }
-    : {
-      ...(regionFilter && user.regions.includes(regionFilter))
-        ? { 'body.preferredLocation ilike': `%${regionFilter}%` }
-        /*
-          as an employer/HA, the first inner AND array is used to filter regions
-          and statuses (unless when the status is 'unavailable', in this case
-          we handle in the upper OR array)
-        */
-        : { or: [{ and: [userRegionQuery(user.regions, 'body.preferredLocation')] }] },
-      'body.interested': 'yes',
-      'body.crcClear': 'yes',
-    };
+  const participantsFinder = new ParticipantsFinder(dbClient, user);
 
-  criteria = {
-    ...criteria,
-    ...fsaFilter && { 'body.postalCodeFsa ilike': `${fsaFilter}%` },
-  };
+  const participants = await participantsFinder
+    .filterRegion(regionFilter)
+    .filterFsa(fsaFilter)
+    .filterStatus(statusFilters)
+    .paginate(pagination, sortField)
+    .run();
 
-  let table = dbClient.db[collections.PARTICIPANTS];
-
-  const employerSpecificJoin = 'employerSpecificJoin';
-  const hiredGlobalJoin = 'hiredGlobalJoin';
-
-  if (showStatus) {
-    table = table.join({
-      [employerSpecificJoin]: {
-        type: 'LEFT OUTER',
-        relation: collections.PARTICIPANTS_STATUS,
-        on: {
-          participant_id: 'id',
-          current: true,
-          employer_id: user.id,
-        },
-      },
-      [hiredGlobalJoin]: {
-        type: 'LEFT OUTER',
-        relation: collections.PARTICIPANTS_STATUS,
-        on: {
-          participant_id: 'id',
-          current: true,
-          status: 'hired',
-        },
-      },
-    });
-
-    if (statusFilters) {
-      const newStatusFilters = statusFilters.includes('open')
-        /*
-          if 'open' is found adds also null because no status
-          means that the participant is open as well
-        */
-        ? [null, ...statusFilters]
-        : statusFilters;
-
-      const statusQuery = {
-        or: newStatusFilters.filter((item) => item !== 'unavailable')
-          .map((status) => ({ [`${employerSpecificJoin}.status`]: status })),
-      };
-      if (criteria.or) {
-        criteria.or[0].and.push(statusQuery);
-      } else {
-        criteria.or = [{ and: [statusQuery] }];
-      }
-
-      // we don't want hired participants listed with such statuses:
-      if (statusFilters.some((item) => ['open', 'prospecting', 'interviewing', 'offer_made'].includes(item))) {
-        criteria.or[0].and.push({ [`${hiredGlobalJoin}.status`]: null });
-      }
-
-      /*
-        the higher level 'unavailable' status filter covers participants with
-        'prospecting', 'interviewing', 'offer_made' statuses which have
-        been hired by someone else
-      */
-      if (statusFilters.includes('unavailable')) {
-        const unavailableQuery = {
-          and: [{
-            or: ['prospecting', 'interviewing', 'offer_made'].map((status) => ({ [`${employerSpecificJoin}.status`]: status })),
-          },
-          { [`${hiredGlobalJoin}.status`]: 'hired' },
-          ],
-        };
-
-        if (criteria.or) {
-          criteria.or.push(unavailableQuery);
-        } else {
-          criteria.or = [unavailableQuery];
-        }
-      }
-    }
-  }
-
-  if (!criteria) return []; // This happens when user has no regions assigned
-
-  const options = pagination && {
-    // ID is the default sort column
-    order: [{
-      field: 'id',
-      direction: pagination.direction || 'asc',
-    }],
-    /*
-      Using limit/offset pagination may decrease performance in the Postgres instance,
-      however this is the only way to sort columns that does not have a deterministic
-      ordering such as firstName.
-      See more details: https://massivejs.org/docs/options-objects#keyset-pagination
-    */
-    ...pagination.offset && { offset: pagination.offset },
-    ...pagination.pageSize && { limit: pagination.pageSize },
-  };
-
-  if (sortField && sortField !== 'id' && options.order) {
-    // If a field to sort is provided we put that as first priority
-    options.order.unshift({
-      field: sortField === 'status' && showStatus ? `${employerSpecificJoin}.status` : `body.${sortField}`,
-      direction: pagination.direction || 'asc',
-    });
-  }
-
-  let participants = await table.find(criteria, options);
-
-  participants = decomposeParticipantStatus(participants, [employerSpecificJoin, hiredGlobalJoin]);
+  const { table, criteria } = participantsFinder;
 
   const paginationData = pagination && {
     offset: (pagination.offset ? Number(pagination.offset) : 0) + participants.length,

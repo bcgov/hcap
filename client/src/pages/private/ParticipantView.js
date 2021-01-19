@@ -11,6 +11,7 @@ import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/
 import { ProspectingForm, InterviewingForm, RejectedForm, HireForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { ComponentTooltip } from '../../components/generic/ComponentTooltip';
+import { DebounceTextField } from '../../components/generic/DebounceTextField';
 
 const pageSize = 10;
 
@@ -106,6 +107,11 @@ export default () => {
   const [locationFilter, setLocationFilter] = useState(null);
   const [fsaFilter, setFsaFilter] = useState(null);
   const [fsaText, setFsaText] = useState(null);
+  const [lastNameFilter, setLastNameFilter] = useState(null);
+  const [lastNameText, setLastNameText] = useState(null);
+  const [emailFilter, setEmailFilter] = useState(null);
+  const [emailText, setEmailText] = useState(null);
+  const [hideLastNameAndEmailFilter, setHideLastNameAndEmailFilter] = useState(true);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
@@ -140,21 +146,28 @@ export default () => {
     }));
   };
 
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setPagination(oldPagination => ({
-        ...oldPagination,
-        currentPage: 0,
-      }));
-      setFsaFilter(fsaText);
-    }, 1000);
-
-    return () => clearTimeout(timeout);
-  }, [fsaText]);
-
   const handleFsaFilter = (value) => {
-    setFsaText(value);
+    setPagination(oldPagination => ({
+      ...oldPagination,
+      currentPage: 0,
+    }));
+    setFsaFilter(value);
+  };
+
+  const handleLastNameFilter = (value) => {
+    setPagination(oldPagination => ({
+      ...oldPagination,
+      currentPage: 0,
+    }));
+    setLastNameFilter(value);
+  };
+
+  const handleEmailFilter = (value) => {
+    setPagination(oldPagination => ({
+      ...oldPagination,
+      currentPage: 0,
+    }));
+    setEmailFilter(value);
   };
 
   const filterData = (data, columns) => {
@@ -299,8 +312,8 @@ export default () => {
       currentPage * pageSize,
       locationFilter,
       fsaFilter,
-      null,
-      null,
+      lastNameFilter,
+      emailFilter,
       order.field,
       order.direction,
       tabs[tabValue].statuses,
@@ -383,8 +396,8 @@ export default () => {
         currentPage * pageSize,
         locationFilter,
         fsaFilter,
-        null,
-        null,
+        lastNameFilter,
+        emailFilter,
         order.field,
         order.direction,
         tabs[tabValue].statuses,
@@ -404,6 +417,8 @@ export default () => {
       await getParticipants();
 
       setColumns(oldColumns => {
+        setHideLastNameAndEmailFilter(tabValue === 'Available Participants')
+
         if (['My Candidates', 'Archived Candidates'].includes(tabValue) && !oldColumns.find(column => column.id === 'status'))
           return [
             ...oldColumns.slice(0, 3),
@@ -421,7 +436,7 @@ export default () => {
       });
     };
     runAsync();
-  }, [pagination.currentPage, locationFilter, fsaFilter, order, tabValue]);
+  }, [pagination.currentPage, locationFilter, fsaFilter, lastNameFilter, emailFilter, order, tabValue]);
 
   useEffect(() => {
     if (locations.length === 1) handleLocationFilter(locations[0]);
@@ -580,13 +595,43 @@ export default () => {
             </Grid>
             <Grid item>
               <Box pl={2}>
-                <TextField
+                <DebounceTextField
+                  time={1000}
                   variant="filled"
                   fullWidth
                   value={fsaText || ''}
                   disabled={isLoadingData}
-                  onChange={({ target }) => handleFsaFilter(target.value)}
+                  onDebounce={(text) => handleFsaFilter(text)}
+                  onChange={({ target }) => setFsaText(target.value)}
                   placeholder='Forward Sortation Area'
+                />
+              </Box>
+            </Grid>
+            <Grid item>
+              <Box pl={2}>
+                <DebounceTextField
+                  time={1000}
+                  variant="filled"
+                  fullWidth
+                  value={lastNameText || ''}
+                  disabled={isLoadingData || hideLastNameAndEmailFilter}
+                  onDebounce={(text) => handleLastNameFilter(text)}
+                  onChange={({ target }) => setLastNameText(target.value)}
+                  placeholder='Last Name'
+                />
+              </Box>
+            </Grid>
+            <Grid item>
+              <Box pl={2}>
+                <DebounceTextField
+                  time={1000}
+                  variant="filled"
+                  fullWidth
+                  value={emailText || ''}
+                  disabled={isLoadingData || hideLastNameAndEmailFilter}
+                  onDebounce={(text) => handleEmailFilter(text)}
+                  onChange={({ target }) => setEmailText(target.value)}
+                  placeholder='Email'
                 />
               </Box>
             </Grid>

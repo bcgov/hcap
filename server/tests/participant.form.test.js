@@ -210,17 +210,19 @@ describe('Participants Service', () => {
     const employerAId = v4();
     const employerBId = v4();
 
-    const participants = await getParticipants({ isSuperUser: true });
+    const openParticipants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, ['open']);
 
-    await setParticipantStatus(employerAId, participants.data[0].id, 'prospecting');
-    await setParticipantStatus(employerAId, participants.data[0].id, 'interviewing');
-    await setParticipantStatus(employerAId, participants.data[0].id, 'offer_made');
+    await setParticipantStatus(employerAId, openParticipants.data[0].id, 'prospecting');
+    await setParticipantStatus(employerAId, openParticipants.data[0].id, 'interviewing');
+    await setParticipantStatus(employerAId, openParticipants.data[0].id, 'offer_made');
 
-    await setParticipantStatus(employerBId, participants.data[0].id, 'prospecting');
+    await setParticipantStatus(employerBId, openParticipants.data[0].id, 'prospecting');
 
-    const participants1 = await getParticipants({ isEmployer: true, id: employerAId, regions });
+    const participantsA = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, ['offer_made']);
+    expect(participantsA.data[0].statusInfos[0].employerId).toEqual(employerAId);
 
-    expect(participants1.data[0].statusInfos[0].employerId).toEqual(employerAId);
+    const participantsB = await getParticipants({ isEmployer: true, id: employerBId, regions }, null, null, null, null, ['prospecting']);
+    expect(participantsB.data[0].statusInfos[0].employerId).toEqual(employerBId);
   });
 
   it('Get participants as MoH, receive successfully', async () => {

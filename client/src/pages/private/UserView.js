@@ -8,7 +8,7 @@ import { useToast } from '../../hooks';
 import { Button, Page, Table, CheckPermissions, Dialog } from '../../components/generic';
 import { ApproveAccessRequestSchema, ToastStatus } from '../../constants';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { RenderMultiSelectField, RenderSelectField } from '../../components/fields';
+import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../../components/fields';
 
 const columns = [
   { id: 'firstName', name: 'First Name' },
@@ -138,6 +138,7 @@ export default () => {
     sites: [],
     regions: [],
     role: '',
+    acknowledgement: false,
   };
 
   return (
@@ -170,10 +171,12 @@ export default () => {
                   options={[
                     { value: 'health_authority', label: 'Health Authority' },
                     { value: 'employer', label: 'Private Employer' },
+                    { value: 'ministry_of_health', label: 'Ministry Of Health' },
                   ]}
                   onChange={(e) => {
                     setFieldValue('regions', []);
                     setFieldValue('sites', []);
+                    setFieldValue('acknowledgement', false);
                     handleChange(e);
                   }}
                 />
@@ -220,6 +223,17 @@ export default () => {
                   }}
                 />
               </Box>}
+            {(values.role === 'ministry_of_health') && <Box mt={3}>
+                <Field
+                  name="acknowledgement"
+                  component={RenderCheckbox}
+                  type="checkbox"
+                  checked={values.acknowledgement}
+                  label="I understand that I am granting this user access to potentially sensitive personal information."
+                />
+              </Box>}
+
+
               <Box mt={3}>
                 <Grid container spacing={2} justify="flex-end">
                   <Grid item>

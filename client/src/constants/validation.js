@@ -19,6 +19,7 @@ const siteTypes = [
 const userRoles = [
   'health_authority',
   'employer',
+  'ministry_of_health',
 ];
 
 const validateDateString = (s) => {
@@ -94,11 +95,24 @@ export const LoginSchema = yup.object().noUnknown().shape({
 });
 
 export const ApproveAccessRequestSchema = yup.object().noUnknown().shape({
-  sites: yup.array().required('Employer sites are required').min(1, 'At least 1 employer site is required'),
-  regions: yup.array().required('Health regions are required').of(
+  role: yup.string().required('Role is required').oneOf(userRoles, 'Invalid role'),
+  sites: yup.array().when('role', {
+    is: 'ministry_of_health',
+    then: yup.array().nullable(),
+    otherwise: yup.array().required('Employer sites are required').min(1, 'At least 1 employer site is required'),
+  }),
+  regions: yup.array().when('role', {
+    is: 'ministry_of_health',
+    then: yup.array().nullable(),
+    otherwise: yup.array().required('Health regions are required').of(
     yup.string().oneOf(healthRegions, 'Invalid region'),
   ).min(1, 'At least 1 health region is required'),
-  role: yup.string().required('Role is required').oneOf(userRoles, 'Invalid role'),
+  }),
+  acknowledgement: yup.boolean().when('role', {
+    is: 'ministry_of_health',
+    then: yup.boolean().test('is-true', 'Must acknowledge user access', (v) => v === true),
+    otherwise: yup.boolean(),
+  }),
 });
 
 export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form').shape({

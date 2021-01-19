@@ -335,7 +335,6 @@ export default () => {
         setLoadingUser(false);
         setSites(sites);
         setRoles(roles);
-        
         if (!tabValue) {
           setTabValue(Object.keys(tabs) // Set selected tab to first tab allowed for role
             .find((key) => tabs[key].roles.some((role) => roles.includes(role))));

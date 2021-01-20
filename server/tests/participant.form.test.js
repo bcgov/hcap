@@ -8,6 +8,7 @@ const {
   parseAndSaveParticipants,
   getParticipants,
   setParticipantStatus,
+  makeParticipant,
 } = require('../services/participants.js');
 const { getReport } = require('../services/reporting.js');
 const { evaluateBooleanAnswer } = require('../validation');
@@ -240,6 +241,8 @@ describe('Participants Service', () => {
         'nonHCAP',
         'interested',
         'crcClear',
+        'statusInfo',
+        'progressStats',
       ])),
     );
   });
@@ -405,5 +408,64 @@ describe('Participants Service', () => {
     );
 
     expect(unavailableParticipantsAafter.data.length).toEqual(0);
+  });
+
+  it('Checks MoH status versus multiple employer engagement', async () => {
+    await closeDB();
+    await startDB();
+    const employerAId = v4();
+    const employerBId = v4();
+
+    const participant1 = {
+      maximusId: 648690,
+      lastName: 'Extra',
+      firstName: 'Eddy',
+      postalCode: 'V1V2V3',
+      postalCodeFsa: 'V1V',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Fraser',
+    };
+
+    const participant2 = {
+      maximusId: 648691,
+      lastName: 'Extra',
+      firstName: 'Eduardo',
+      postalCode: 'V1V2V3',
+      postalCodeFsa: 'V1V',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'no',
+      preferredLocation: 'Fraser',
+    };
+
+    await makeParticipant(participant1);
+    await makeParticipant(participant2);
+
+    let participants = await getParticipants({ isMoH: true });
+    expect(participants.data[0].statusInfo).toEqual('Available');
+    expect(participants.data[1].statusInfo).toEqual('Pending');
+
+    await setParticipantStatus(employerAId, participants.data[0].id, 'prospecting');
+
+    participants = await getParticipants({ isMoH: true });
+    expect(participants.data[0].statusInfo).toEqual('In Progress');
+
+    await setParticipantStatus(employerBId, participants.data[0].id, 'prospecting');
+    await setParticipantStatus(employerBId, participants.data[0].id, 'interviewing');
+    await setParticipantStatus(employerBId, participants.data[0].id, 'offer_made');
+
+    participants = await getParticipants({ isMoH: true });
+    expect(participants.data[0].statusInfo).toEqual('In Progress (2)');
+
+    await setParticipantStatus(employerBId, participants.data[0].id, 'hired');
+
+    participants = await getParticipants({ isMoH: true });
+    expect(participants.data[0].statusInfo).toEqual('Hired');
   });
 });

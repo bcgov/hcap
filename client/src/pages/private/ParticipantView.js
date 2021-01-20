@@ -29,6 +29,7 @@ const sortOrder = [
   'lastName',
   'firstName',
   'status',
+  'statusInfo',
   'postalCodeFsa',
   'phoneNumber',
   'emailAddress',
@@ -362,6 +363,7 @@ export default () => {
           resultColumns.push(
             { id: 'interested', name: 'Interest' },
             { id: 'crcClear', name: 'CRC Clear' },
+            { id: 'statusInfo', name: 'Status' },
           );
         }
 

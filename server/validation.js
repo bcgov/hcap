@@ -26,6 +26,7 @@ const sortFields = [
   'interested',
   'crcClear',
   'status',
+  'statusInfo',
 ];
 
 const roles = [

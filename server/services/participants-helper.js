@@ -25,10 +25,17 @@ const decomposeParticipantStatus = (raw, joinNames) => raw.map((participant) => 
 
 const run = async (context) => {
   const {
-    table, criteria, options, employerSpecificJoin, hiredGlobalJoin,
+    table, criteria, options, employerSpecificJoin, hiredGlobalJoin, currentStatusJoin,
   } = context;
   let participants = await table.find(criteria, options);
-  participants = decomposeParticipantStatus(participants, [employerSpecificJoin, hiredGlobalJoin]);
+  participants = decomposeParticipantStatus(
+    participants,
+    [
+      employerSpecificJoin,
+      currentStatusJoin,
+      hiredGlobalJoin,
+    ],
+  );
   return participants;
 };
 
@@ -87,30 +94,61 @@ class FieldsFilteredParticipantsFinder {
 
   filterStatus(statusFilters) {
     const {
-      user, showStatus, criteria, employerSpecificJoin, hiredGlobalJoin,
+      user, showStatus, criteria, employerSpecificJoin, hiredGlobalJoin, currentStatusJoin,
     } = this.context;
 
     if (showStatus) {
-      this.context.table = this.context.table.join({
-        [employerSpecificJoin]: {
-          type: 'LEFT OUTER',
-          relation: collections.PARTICIPANTS_STATUS,
-          on: {
-            participant_id: 'id',
-            current: true,
-            employer_id: user.id,
+      if (user.isMoH) {
+        this.context.table = this.context.table.join({
+          [hiredGlobalJoin]: {
+            type: 'LEFT OUTER',
+            relation: collections.PARTICIPANTS_STATUS,
+            on: {
+              participant_id: 'id',
+              current: true,
+              status: 'hired',
+            },
           },
-        },
-        [hiredGlobalJoin]: {
-          type: 'LEFT OUTER',
-          relation: collections.PARTICIPANTS_STATUS,
-          on: {
-            participant_id: 'id',
-            current: true,
-            status: 'hired',
+          [currentStatusJoin]: {
+            type: 'LEFT OUTER',
+            relation: collections.PARTICIPANTS_STATUS,
+            on: {
+              participant_id: 'id',
+              current: true,
+            },
           },
-        },
-      });
+          [employerSpecificJoin]: {
+            type: 'LEFT OUTER',
+            relation: collections.PARTICIPANTS_STATUS,
+            on: {
+              participant_id: 'id',
+              current: true,
+              employer_id: user.id,
+            },
+          },
+        });
+      } else {
+        this.context.table = this.context.table.join({
+          [employerSpecificJoin]: {
+            type: 'LEFT OUTER',
+            relation: collections.PARTICIPANTS_STATUS,
+            on: {
+              participant_id: 'id',
+              current: true,
+              employer_id: user.id,
+            },
+          },
+          [hiredGlobalJoin]: {
+            type: 'LEFT OUTER',
+            relation: collections.PARTICIPANTS_STATUS,
+            on: {
+              participant_id: 'id',
+              current: true,
+              status: 'hired',
+            },
+          },
+        });
+      }
 
       if (statusFilters) {
         const newStatusFilters = statusFilters.includes('open')
@@ -191,7 +229,7 @@ class ParticipantsFinder {
   constructor(dbClient, user) {
     this.user = user;
     this.table = dbClient.db[collections.PARTICIPANTS];
-    this.showStatus = this.user.isHA || this.user.isEmployer;
+    this.showStatus = this.user.isHA || this.user.isEmployer || this.user.isMoH;
     this.employerSpecificJoin = 'employerSpecificJoin';
     this.hiredGlobalJoin = 'hiredGlobalJoin';
   }

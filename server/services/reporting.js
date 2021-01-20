@@ -71,7 +71,7 @@ const getParticipantsReport = async () => {
 
   const healthAuthorities = [];
   (await dbClient.db[collections.EMPLOYER_SITES].find({})).forEach((item) => {
-    healthAuthorities[item.id] = item.body.healthAuthority;
+    healthAuthorities[item.body.siteId] = item.body.healthAuthority;
   });
 
   const users = await keycloak.getUsers();
@@ -83,7 +83,7 @@ const getParticipantsReport = async () => {
     participantFsa: getFirst(entry.participantJoin)?.body.postalCodeFsa,
     employerId: entry.employer_id,
     employerEmail: users.find((user) => user.id === entry.employer_id)?.email,
-    employerhealthRegion: getFirst(entry.employerUserJoin)?.body?.sites.map((id) => healthAuthorities[id]).join('; '),
+    employerhealthRegion: [...new Set(getFirst(entry.employerUserJoin)?.body?.sites.map((id) => healthAuthorities[id]))].join('; '),
   }));
 };
 

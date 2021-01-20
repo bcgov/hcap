@@ -71,7 +71,7 @@ const getParticipantsReport = async () => {
 
   const healthAuthorities = [];
   (await dbClient.db[collections.EMPLOYER_SITES].find({})).forEach((item) => {
-    healthAuthorities[item.id] = item.body.healthAuthority;
+    healthAuthorities[item.body.siteId] = item.body.healthAuthority;
   });
 
   const users = await keycloak.getUsers();

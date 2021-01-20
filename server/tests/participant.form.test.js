@@ -210,7 +210,7 @@ describe('Participants Service', () => {
     const employerAId = v4();
     const employerBId = v4();
 
-    const openParticipants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, ['open']);
+    const openParticipants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['open']);
 
     await setParticipantStatus(employerAId, openParticipants.data[0].id, 'prospecting');
     await setParticipantStatus(employerAId, openParticipants.data[0].id, 'interviewing');
@@ -218,10 +218,10 @@ describe('Participants Service', () => {
 
     await setParticipantStatus(employerBId, openParticipants.data[0].id, 'prospecting');
 
-    const participantsA = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, ['offer_made']);
+    const participantsA = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['offer_made']);
     expect(participantsA.data[0].statusInfos[0].employerId).toEqual(employerAId);
 
-    const participantsB = await getParticipants({ isEmployer: true, id: employerBId, regions }, null, null, null, null, ['prospecting']);
+    const participantsB = await getParticipants({ isEmployer: true, id: employerBId, regions }, null, null, null, null, null, null, ['prospecting']);
     expect(participantsB.data[0].statusInfos[0].employerId).toEqual(employerBId);
   });
 
@@ -270,7 +270,7 @@ describe('Participants Service', () => {
 
   it('Status change happy path', async () => {
     const employerAId = v4();
-    const participants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, ['open']);
+    const participants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['open']);
     const participantId = participants.data[0].id;
 
     // Engage, reject
@@ -303,7 +303,7 @@ describe('Participants Service', () => {
     const employerAId = v4();
     const employerBId = v4();
 
-    const participants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, ['open']);
+    const participants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['open']);
 
     const hiredParticipantId = participants.data[0].id;
 
@@ -320,7 +320,7 @@ describe('Participants Service', () => {
   it('Status change does not follow transitions: open > prospecting > interviewing > offer_made > hired, receive invalid_status_transition', async () => {
     const employerAId = v4();
 
-    const participants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, ['open']);
+    const participants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['open']);
 
     const participantId = participants.data[0].id;
 
@@ -354,7 +354,7 @@ describe('Participants Service', () => {
     const employerAId = v4();
     const employerBId = v4();
 
-    const participants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, ['open']);
+    const participants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['open']);
 
     const selectParticipantId = participants.data[0].id;
 
@@ -372,7 +372,7 @@ describe('Participants Service', () => {
     const employerAId = v4();
     const employerBId = v4();
 
-    const participantsB = await getParticipants({ isEmployer: true, id: employerBId, regions }, null, null, null, null, ['open']);
+    const participantsB = await getParticipants({ isEmployer: true, id: employerBId, regions }, null, null, null, null, null, null, ['open']);
 
     const selectParticipantId = participantsB.data[0].id;
 
@@ -383,7 +383,7 @@ describe('Participants Service', () => {
     await setParticipantStatus(employerBId, selectParticipantId, 'hired');
 
     const unavailableParticipantsA = await getParticipants(
-      { isEmployer: true, id: employerAId, regions }, null, null, null, null, ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
+      { isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
     );
 
     expect(unavailableParticipantsA.data[0].statusInfos[0].status).toEqual('prospecting');
@@ -392,7 +392,7 @@ describe('Participants Service', () => {
     await setParticipantStatus(employerAId, selectParticipantId, 'rejected', { final_status: 'hired by other', previous: 'prospecting' });
 
     const rejectedParticipantsA = await getParticipants(
-      { isEmployer: true, id: employerAId, regions }, null, null, null, null, ['rejected'],
+      { isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['rejected'],
     );
 
     expect(rejectedParticipantsA.data[0].statusInfos[0].status).toEqual('rejected');
@@ -401,7 +401,7 @@ describe('Participants Service', () => {
     expect(rejectedParticipantsA.data[0].statusInfos[1].status).toEqual('already_hired');
 
     const unavailableParticipantsAafter = await getParticipants(
-      { isEmployer: true, id: employerAId, regions }, null, null, null, null, ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
+      { isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
     );
 
     expect(unavailableParticipantsAafter.data.length).toEqual(0);

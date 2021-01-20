@@ -82,7 +82,7 @@ export const HireForm = ({ initialValues, validationSchema, onSubmit, onClose, s
             component={RenderSelectField}
             label="* Site"
             options={sitesDetail.map((siteDetail) => ({
-              value: siteDetail.id, label: siteDetail.siteName,
+              value: siteDetail.siteId, label: siteDetail.siteName,
             }))}
           />
           <Field

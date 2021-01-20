@@ -437,10 +437,6 @@ export default () => {
     runAsync();
   }, [pagination.currentPage, locationFilter, fsaFilter, lastNameFilter, emailFilter, order, tabValue]);
 
-  useEffect(() => {
-    if (locations.length === 1) handleLocationFilter(locations[0]);
-  }, [locations]);
-
   const handlePageChange = (oldPage, newPage) => {
     setPagination(pagination => ({ ...pagination, currentPage: newPage }));
   };
@@ -588,10 +584,14 @@ export default () => {
                   onChange={({ target }) => handleLocationFilter(target.value)}
                   aria-label="location filter"
                 >
-                  {(locations.length > 1) && (<MenuItem value=''>Preferred Location</MenuItem>)}
-                  {locations.map((option) => (
-                    <MenuItem key={option} value={option} aria-label={option}>{option}</MenuItem>
-                  ))}
+                  {
+                    locations.length === 1 ?
+                      <MenuItem value=''>{locations[0]}</MenuItem>
+                      :
+                      ['Preferred Location', ...locations].map((option, index) => (
+                        <MenuItem key={option} value={index === 0 ? '' : option} aria-label={option}>{option}</MenuItem>
+                      ))
+                  }
                 </TextField>
               </Box>
             </Grid>

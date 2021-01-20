@@ -20,6 +20,7 @@ export const Dialog = ({
     <MuiDialog
       open={open}
       onClose={onClose}
+      disableBackdropClick
     >
       <Box pt={4} pb={2} pl={4} pr={4} className={classes.root}>
         <Typography variant="subtitle1">

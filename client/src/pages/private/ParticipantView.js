@@ -131,11 +131,11 @@ export default () => {
   };
 
   const handleTabChange = (event, newValue) => {
-    setTabValue(newValue)
     setPagination(oldPagination => ({
       ...oldPagination,
       currentPage: 0,
     }));
+    setTabValue(newValue);
   };
 
   const handleLocationFilter = (value) => {
@@ -261,7 +261,6 @@ export default () => {
         openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
       } else if (status === 'prospecting') { // Modal appears after submitting
         setActiveModalForm('prospecting');
-        forceReload(pagination);
       } else {
 
         const index = rows.findIndex(row => row.id === participantId);
@@ -417,7 +416,7 @@ export default () => {
       await getParticipants();
 
       setColumns(oldColumns => {
-        setHideLastNameAndEmailFilter(tabValue === 'Available Participants')
+        setHideLastNameAndEmailFilter(['Available Participants', 'Archived Candidates'].includes(tabValue));
 
         if (['My Candidates', 'Archived Candidates'].includes(tabValue) && !oldColumns.find(column => column.id === 'status'))
           return [
@@ -509,7 +508,10 @@ export default () => {
 
         {activeModalForm === 'prospecting' && <ProspectingForm
           name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
-          onClose={defaultOnClose}
+          onClose={() => {
+            forceReload(pagination);
+            defaultOnClose();
+          }}
           onSubmit={() => {
             defaultOnClose();
             handleTabChange(null, 'My Candidates');
@@ -609,30 +611,30 @@ export default () => {
             </Grid>
             <Grid item>
               <Box pl={2}>
-                <DebounceTextField
+                {!hideLastNameAndEmailFilter && <DebounceTextField
                   time={1000}
                   variant="filled"
                   fullWidth
                   value={lastNameText || ''}
-                  disabled={isLoadingData || hideLastNameAndEmailFilter}
+                  disabled={isLoadingData}
                   onDebounce={(text) => handleLastNameFilter(text)}
                   onChange={({ target }) => setLastNameText(target.value)}
                   placeholder='Last Name'
-                />
+                />}
               </Box>
             </Grid>
             <Grid item>
               <Box pl={2}>
-                <DebounceTextField
+                {!hideLastNameAndEmailFilter && <DebounceTextField
                   time={1000}
                   variant="filled"
                   fullWidth
                   value={emailText || ''}
-                  disabled={isLoadingData || hideLastNameAndEmailFilter}
+                  disabled={isLoadingData}
                   onDebounce={(text) => handleEmailFilter(text)}
                   onChange={({ target }) => setEmailText(target.value)}
                   placeholder='Email'
-                />
+                />}
               </Box>
             </Grid>
           </Grid>

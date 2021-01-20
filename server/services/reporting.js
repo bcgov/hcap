@@ -24,6 +24,23 @@ const getReport = async () => {
     'hiredJoin.status': null,
   });
 
+  let hiredPerRegion = await dbClient.db[collections.PARTICIPANTS_STATUS].join({
+    siteJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.EMPLOYER_SITES,
+      decomposeTo: 'object',
+      on: { 'id::text': 'data.site' },
+    },
+  }).find({
+    current: true,
+    status: 'hired',
+  });
+  hiredPerRegion = hiredPerRegion.reduce((a, v) => {
+    const region = v.siteJoin?.body?.healthAuthority || 'Unknown';
+    if (typeof a[region] === 'undefined') return { ...a, [region]: 1 };
+    return { ...a, [region]: a[region] + 1 };
+  }, {});
+
   const inProgress = [...new Set(inProgressEntries.map((i) => i.participant_id))].length;
 
   const hired = await dbClient.db[collections.PARTICIPANTS_STATUS].count({
@@ -35,6 +52,7 @@ const getReport = async () => {
     qualified,
     inProgress,
     hired,
+    hiredPerRegion,
   };
 };
 

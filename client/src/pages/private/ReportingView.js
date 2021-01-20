@@ -8,7 +8,7 @@ export default () => {
 
   const [roles, setRoles] = useState([]);
   const [isLoadingUser, setLoadingUser] = useState(false);
-  const [report, setReport] = useState({ 'total': 0, 'qualified': 0, 'inProgress': 0, 'hired': 0 });
+  const [report, setReport] = useState({ 'total': 0, 'qualified': 0, 'inProgress': 0, 'hired': 0, 'hiredPerRegion': {} });
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);
@@ -42,50 +42,58 @@ export default () => {
         qualified: results.data.qualified,
         inProgress: results.data.inProgress,
         hired: results.data.hired,
+        hiredPerRegion: results.data.hiredPerRegion,
       });
     }
   }
 
-
   useEffect(() => {
     fetchUserInfo();
     fetchReport();
-  },[]);
+  }, []);
 
   return (
     <Page>
       <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
-          <Box width={4/10} py={4} px={2}>
+          <Box width={0.6} py={4} px={2}>
             <Typography variant="subtitle1" gutterBottom>
               Milestone Reporting
             </Typography>
             <Grid container spacing={3} direction="row">
               <Grid item xs={3}>
-              <Typography variant="h4">
-              {report.total}
-              </Typography>
-              Total Participants
+                <Typography variant="h4">
+                  {report.total}
+                </Typography>
+                Total Participants
               </Grid>
               <Grid item xs={3}>
-              <Typography variant="h4">
-              {report.qualified}
-              </Typography>
-              Qualified
+                <Typography variant="h4">
+                  {report.qualified}
+                </Typography>
+                Qualified
               </Grid>
               <Grid item xs={3}>
-              <Typography variant="h4">
-              {report.inProgress}
-              </Typography>
-              In Progress
+                <Typography variant="h4">
+                  {report.inProgress}
+                </Typography>
+                In Progress
               </Grid>
               <Grid item xs={3}>
-              <Typography variant="h4">
-              {report.hired}
-              </Typography>
-              Participants Hired
+                <Typography variant="h4">
+                  {report.hired}
+                </Typography>
+                Participants Hired
               </Grid>
             </Grid>
+          </Box>
+          <Box width={0.6} py={4} px={2}>
+            <Typography variant="subtitle1" gutterBottom>
+              Hired Per Region
+            </Typography>
+            <ul>
+              {Object.keys(report.hiredPerRegion).map((k) => <li>{k}: {report.hiredPerRegion[k]}</li>)}
+            </ul>
           </Box>
         </Grid>
       </CheckPermissions>

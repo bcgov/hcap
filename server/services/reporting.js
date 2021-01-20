@@ -29,7 +29,7 @@ const getReport = async () => {
       type: 'LEFT OUTER',
       relation: collections.EMPLOYER_SITES,
       decomposeTo: 'object',
-      on: { 'id::text': 'data.site' },
+      on: { 'body.siteId': 'data.site' },
     },
   }).find({
     current: true,

@@ -95,7 +95,6 @@ const getParticipants = async (user, pagination, sortField,
     .run();
 
   const { table, criteria } = participantsFinder;
-
   const paginationData = pagination && {
     offset: (pagination.offset ? Number(pagination.offset) : 0) + participants.length,
     total: Number(await table.count(criteria || {})),
@@ -110,16 +109,41 @@ const getParticipants = async (user, pagination, sortField,
 
   if (user.isMoH) {
     return {
-      data: participants.map((item) => ({ // Only return relevant fields
-        id: item.id,
-        firstName: item.firstName,
-        lastName: item.lastName,
-        postalCodeFsa: item.postalCodeFsa,
-        preferredLocation: item.preferredLocation,
-        nonHCAP: item.nonHCAP,
-        interested: item.interested,
-        crcClear: item.crcClear,
-      })),
+      data: participants.map((item) => { // Only return relevant fields
+        let returnStatus = 'Pending';
+        const progressStats = {
+          prospecting: 0,
+          interviewing: 0,
+          offer_made: 0,
+          hired: 0,
+          total: 0,
+        };
+
+        if (item.interested === 'no') returnStatus = 'Withdrawn';
+        if (item.interested === 'yes' && item.crcClear === 'yes') returnStatus = 'Available';
+
+        item.statusInfos.forEach((entry) => {
+          progressStats[entry.status] += 1;
+          progressStats.total += 1;
+        });
+
+        const { total, hired } = progressStats;
+        if (total > 0) returnStatus = (total === 1) ? 'In Progress' : `In Progress (${progressStats.total})`;
+        if (hired) returnStatus = 'Hired';
+
+        return {
+          id: item.id,
+          firstName: item.firstName,
+          lastName: item.lastName,
+          postalCodeFsa: item.postalCodeFsa,
+          preferredLocation: item.preferredLocation,
+          nonHCAP: item.nonHCAP,
+          interested: item.interested,
+          crcClear: item.crcClear,
+          statusInfo: returnStatus,
+          progressStats,
+        };
+      }),
       ...pagination && { pagination: paginationData },
     };
   }
@@ -235,4 +259,14 @@ const parseAndSaveParticipants = async (fileBuffer) => {
   return response;
 };
 
-module.exports = { parseAndSaveParticipants, getParticipants, setParticipantStatus };
+const makeParticipant = async (participantJson) => {
+  const res = dbClient.db.saveDoc(collections.PARTICIPANTS, participantJson);
+  return res;
+};
+
+module.exports = {
+  parseAndSaveParticipants,
+  getParticipants,
+  setParticipantStatus,
+  makeParticipant,
+};

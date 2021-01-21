@@ -73,7 +73,7 @@ class FilteredParticipantsFinder {
     if (sortField && sortField !== 'id' && this.context.options.order) {
       // If a field to sort is provided we put that as first priority
       this.context.options.order.unshift({
-        field: sortField === 'status'`${this.context.employerSpecificJoin}.status`,
+        field: sortField === 'status' ? `${this.context.employerSpecificJoin}.status` : `body.${sortField}`,
         direction: pagination.direction || 'asc',
       });
     }

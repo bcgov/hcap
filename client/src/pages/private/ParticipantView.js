@@ -59,7 +59,7 @@ const tabs = { // Tabs, associated allowed roles, displayed statuses
   },
   Participants: {
     roles: ['ministry_of_health', 'superuser'],
-    statuses: ['open', 'prospecting', 'interviewing', 'offer_made', 'rejected'],
+    statuses: ['open', 'prospecting', 'interviewing', 'offer_made', 'rejected', 'hired'],
   },
 };
 

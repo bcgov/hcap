@@ -136,6 +136,11 @@ class FieldsFilteredParticipantsFinder {
         criteria.or = [{ and: [statusQuery] }];
       }
 
+      if ((user.isMoH || user.isSuperUser) && statusFilters.includes('hired')) {
+        // this clause grants all hired participants in the return
+        criteria.or.push({ [`${hiredGlobalJoin}.status`]: 'hired' });
+      }
+
       // we don't want hired participants listed with such statuses:
       if (statusFilters.some((item) => ['open', 'prospecting', 'interviewing', 'offer_made'].includes(item))) {
         criteria.or[0].and.push({ [`${hiredGlobalJoin}.status`]: null });

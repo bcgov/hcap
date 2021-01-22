@@ -100,14 +100,7 @@ const getParticipants = async (user, pagination, sortField,
     total: Number(await table.count(criteria || {})),
   };
 
-  if (user.isSuperUser) {
-    return {
-      data: participants,
-      ...pagination && { pagination: paginationData },
-    };
-  }
-
-  if (user.isMoH) {
+  if (user.isSuperUser || user.isMoH) {
     return {
       data: participants.map((item) => { // Only return relevant fields
         let returnStatus = 'Pending';

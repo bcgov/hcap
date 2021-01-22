@@ -103,6 +103,7 @@ class FieldsFilteredParticipantsFinder {
         on: {
           participant_id: 'id',
           current: true,
+          status: ['open', 'prospecting', 'interviewing', 'offer_made', 'rejected'],
           ...(user.isEmployer || user.isHA) && { employer_id: user.id },
         },
       },
@@ -169,10 +170,6 @@ class FieldsFilteredParticipantsFinder {
     }
 
     return new FilteredParticipantsFinder(this.context);
-  }
-
-  async paginate(pagination) {
-    return new FilteredParticipantsFinder(this.context).paginate(pagination);
   }
 }
 

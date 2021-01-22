@@ -197,13 +197,23 @@ describe('Participants Service', () => {
     expect(parseAndSaveParticipants(file)).rejects.toEqual(new ValidationError('Please specify a preferred (EOI) location for participant of row 2'));
   });
 
-  it('Get participants as super_user, receive all successfully', async () => {
+  it('Get participants as superuser, receive all successfully', async () => {
     const res = await getParticipants({ isSuperUser: true });
 
-    expect(res.data).toEqual(
-      expect.arrayContaining(
-        allParticipants.map((item) => (expect.objectContaining(item))),
-      ),
+    expect(res.data.length).toBe(allParticipants.length);
+    expect(res.data.map((item) => (Object.keys(item)))).toEqual(
+      allParticipants.map(() => ([
+        'id',
+        'firstName',
+        'lastName',
+        'postalCodeFsa',
+        'preferredLocation',
+        'nonHCAP',
+        'interested',
+        'crcClear',
+        'statusInfo',
+        'progressStats',
+      ])),
     );
   });
 

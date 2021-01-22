@@ -119,10 +119,10 @@ class FieldsFilteredParticipantsFinder {
 
     if (statusFilters) {
       const newStatusFilters = statusFilters.includes('open')
-      /*
-            if 'open' is found adds also null because no status
-            means that the participant is open as well
-            */
+        /*
+              if 'open' is found adds also null because no status
+              means that the participant is open as well
+              */
         ? [null, ...statusFilters]
         : statusFilters;
 

@@ -19,7 +19,7 @@ export const RenderCheckbox = ({
         control={
           <Checkbox
             color="primary"
-            checked={field.value === true}
+            checked={props['checked'] || field.value === true}
           />
         }
         {...field}

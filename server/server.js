@@ -4,7 +4,9 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const dayjs = require('dayjs');
 const multer = require('multer');
-const { getParticipants, parseAndSaveParticipants, setParticipantStatus } = require('./services/participants.js');
+const {
+  getParticipants, parseAndSaveParticipants, setParticipantStatus, makeParticipant,
+} = require('./services/participants.js');
 const { getEmployers, saveSites, getSites } = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
 const {
@@ -135,6 +137,45 @@ app.post(`${apiBaseUrl}/employer-actions`,
       status: req.body.status,
     });
     return res.json({ data: result });
+  }));
+
+// Add Hired Participant to Database
+app.post(`${apiBaseUrl}/new-hired-participant`,
+  keycloak.allowRolesMiddleware('employer', 'health_authority'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    try {
+      const user = req.hcapUserInfo;
+      const { participantInfo } = req.body;
+      participantInfo.preferredLocation = user.regions[0];
+      participantInfo.crcClear = 'yes';
+      participantInfo.interested = 'yes';
+
+      const response = await makeParticipant(participantInfo);
+      await setParticipantStatus(user.id, response.id, 'prospecting');
+      await setParticipantStatus(user.id, response.id, 'interviewing', { contacted_at: participantInfo.contactedDate });
+      console.log(participantInfo.contactedDate);
+      await setParticipantStatus(user.id, response.id, 'offer_made');
+      await setParticipantStatus(user.id, response.id, 'hired', {
+        nonHcapOpportunity: participantInfo.nonHcapOpportunity,
+        positionTitle: participantInfo.positionTitle,
+        positionType: participantInfo.positionType,
+        hiredDate: participantInfo.hiredDate,
+        startDate: participantInfo.startDate,
+      });
+
+      logger.info({
+        action: 'participant_create',
+        performed_by: {
+          username: user.username,
+          id: user.id,
+        },
+      });
+
+      return res.json(response);
+    } catch (excp) {
+      return res.status(400).send(`${excp}`);
+    }
   }));
 
 // Create participant records from uploaded XLSX file

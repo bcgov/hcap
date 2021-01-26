@@ -201,6 +201,20 @@ export const HireFormSchema = yup.object().noUnknown('Unknown field in form').sh
   site: yup.number().required('Site is required'),
 });
 
+export const HiredParticipantSchema = yup.object().noUnknown('Unknown field in form').shape({
+  firstName: yup.string().required('First Name is required'),
+  lastName: yup.string().required('Last Name is required'),
+  phoneNumber: yup.string().required('Phone number is required').matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  emailAddress: yup.string().required('Email address is required').matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  origin: yup.string().required('Must indicate origin of offer'),
+  contactedDate: yup.string().required('Contacted date is required').matches(/^\d{4}\/\d{2}\/\d{2}$/, 'Invalid Date'),
+  startDate: yup.string().required('Start date is required').matches(/^\d{4}\/\d{2}\/\d{2}$/, 'Invalid Date'),
+  offerDate: yup.string().required('Offer acceptance date is required').matches(/^\d{4}\/\d{2}\/\d{2}$/, 'Invalid Date'),
+  nonHcapOpportunity: yup.boolean().required('Non-Hcap Opportunity is required as true or false'),
+  acknowledge: yup.boolean().test('is-true', 'Must acknowledge participant acceptance', (v) => v === true),
+  site: yup.number().required('Site is required'),
+});
+
 export const RejectedFormSchema = yup.object().noUnknown('Unknown field in form').shape({
   finalStatus: yup.string().required('Participant final status is required').oneOf(['withdrawn', 'position filled', 'not qualified', 'not responsive'], 'Invalid final status')
 });

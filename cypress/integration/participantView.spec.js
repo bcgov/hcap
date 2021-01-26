@@ -3,6 +3,43 @@ describe("Participant View", () => {
     cy.visit('/');
   })
 
+  it("Tests the manual participant adder", () => {
+    cy.kcNavAs('employer', 'participant-view');
+    cy.intercept('post','api/v1/new-hired-participant', (req) => {
+      expect(req.body).to.equal(
+        {"participantInfo":
+          {
+            "firstName":"Tiddly",
+            "lastName":"Whiskers",
+            "phoneNumber":"3141592654",
+            "emailAddress":"tiddlywhiskers@goat.zone",
+            "origin":"internal",
+            "nonHcapOpportunity":false,
+            "contactedDate":"2020/10/10",
+            "offerDate":"2020/11/11",
+            "startDate":"2020/12/12",
+            "site":2
+          }
+        });
+    });
+
+    cy.contains('Hired Candidates').click();
+    cy.contains('New Hire').click();
+    cy.get('input[name=firstName]').type("Tiddly");
+    cy.get('input[name=lastName]').type("Whiskers");
+    cy.get('input[name=phoneNumber]').type("3141592654");
+    cy.get('input[name=emailAddress]').type("tiddlywhiskers@goat.zone");
+    cy.get('div#mui-component-select-origin').click();
+    cy.get('li').contains('Internal').click();
+    cy.get('input[name=DateContacted]').type("20201010");
+    cy.get('input[name=DateOfferAccepted]').type("20201111");
+    cy.get('input[name=StartDate]').type("20201212");
+    cy.get('div#mui-component-select-site').click();
+    cy.get('li[data-value=2]').click();
+    cy.get('input[name=acknowledge]').click();
+    cy.get('button').contains('Submit').click();
+  });
+
   it("Visits Participant View as a multi-region employer", () => {
     cy.kcNavAs('employer_island_fraser', 'participant-view');
     cy.get('div.MuiSelect-selectMenu').should('not.have.class', 'Mui-disabled');

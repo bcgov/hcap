@@ -67,8 +67,142 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
   };
   const localStorageKey = `kc-callback-${state}`
 
+  const sites = [
+    {
+      "city":"Richmond",
+      "siteId":4,
+      "address":"123 Generic St",
+      "siteName":"Bob's Home Care",
+      "postalCode":"A1A 1A1",
+      "operatorName":"FreshTeam",
+      "operatorEmail":"bob.burger@test.com",
+      "operatorPhone":"5555555555",
+      "healthAuthority":"Fraser",
+      "siteContactLastName":"Burger",
+      "siteContactFirstName":"Bob",
+      "earlyAdopterAllocation":3,
+      "registeredBusinessName":"FRESHWORKS STUDIO INC.",
+      "siteContactPhoneNumber":"5555555555",
+      "operatorContactLastName":"Burger",
+      "siteContactEmailAddress":"bob.burger@test.com",
+      "operatorContactFirstName":"Bob",
+      "id":3,
+      "created_at":"2021-01-26T17:22:43.803Z",
+      "updated_at":null
+    },
+    {
+      "city":"Kamloops",
+      "siteId":3,
+      "address":"64 Test Rd",
+      "siteName":"Sample Site",
+      "postalCode":"B2B 2B2",
+      "operatorName":"SAMPLE",
+      "operatorEmail":"ashley.admin@test.com",
+      "operatorPhone":"5555555555",
+      "healthAuthority":"Interior",
+      "siteContactLastName":"Admin",
+      "siteContactFirstName":"Ashley",
+      "registeredBusinessName":"SAMPLE BOUTIQUE",
+      "siteContactPhoneNumber":"5555555555",
+      "operatorContactLastName":"Admin",
+      "siteContactEmailAddress":"ashley.admin@test.com",
+      "operatorContactFirstName":"Ashley",
+      "id":4,
+      "created_at":"2021-01-26T17:22:43.803Z",
+      "updated_at":null
+    },
+    {
+      "city":"Burnaby",
+      "siteId":1,
+      "address":"123 Known St",
+      "siteName":"Forgotten Homes",
+      "postalCode":"Z1Z 1Z1",
+      "operatorName":"Operator",
+      "operatorEmail":"first.last@test.com",
+      "operatorPhone":"5555555555",
+      "healthAuthority":"Fraser",
+      "siteContactLastName":"Last",
+      "siteContactFirstName":"First",
+      "registeredBusinessName":"FORGOTTEN ISLAND FARM",
+      "siteContactPhoneNumber":"5555555555",
+      "operatorContactLastName":"Last",
+      "siteContactEmailAddress":"first.last@test.com",
+      "operatorContactFirstName":"First",
+      "id":5,
+      "created_at":"2021-01-26T17:22:43.800Z",
+      "updated_at":null
+    },
+    {
+      "city":"Osoyoos",
+      "siteId":6,
+      "address":"2021 New Rd",
+      "siteName":"#2 Spreadsheet Care",
+      "postalCode":"A1A 1A2",
+      "operatorName":"Interior Health Authority",
+      "operatorEmail":"heather@ha.test.com",
+      "operatorPhone":"5555555555",
+      "healthAuthority":"Interior",
+      "siteContactLastName":"Contact",
+      "siteContactFirstName":"Cathy",
+      "earlyAdopterAllocation":30,
+      "registeredBusinessName":"Interior Health Authority",
+      "siteContactPhoneNumber":"5555555555",
+      "operatorContactLastName":"Haverston",
+      "siteContactEmailAddress":"cathy@ha.test.com",
+      "operatorContactFirstName":"Heather",
+      "id":6,
+      "created_at":"2021-01-26T17:22:43.822Z",
+      "updated_at":null
+    },
+    {
+      "city":"Prince Rupert",
+      "siteId":2,
+      "address":"90 Test Ave",
+      "siteName":"Home Sweet Home",
+      "postalCode":"A1A 2B2",
+      "operatorName":"Home Sweet Home",
+      "operatorEmail":"hannah123@test.com",
+      "operatorPhone":"1234567890",
+      "healthAuthority":"Northern",
+      "siteContactLastName":"Homebody",
+      "siteContactFirstName":"Hannah",
+      "earlyAdopterAllocation":10,
+      "registeredBusinessName":"HOME SWEET HOME, HOME SERVICES",
+      "siteContactPhoneNumber":"1234567890",
+      "operatorContactLastName":"Homebody",
+      "siteContactEmailAddress":"hannah123@test.com",
+      "operatorContactFirstName":"Hannah",
+      "id":1,
+      "created_at":"2021-01-26T17:22:43.800Z",
+      "updated_at":null
+    },
+    {
+      "city":"Osoyoos",
+      "siteId":5,
+      "address":"2020 New Rd",
+      "siteName":"Spreadsheet Care",
+      "postalCode":"A1A 1A1",
+      "operatorName":"Interior Health Authority",
+      "operatorEmail":"heather@ha.test.com",
+      "operatorPhone":"5555555555",
+      "healthAuthority":"Interior",
+      "siteContactLastName":"Contact",
+      "siteContactFirstName":"Cathy",
+      "earlyAdopterAllocation":20,
+      "registeredBusinessName":"Interior Health Authority",
+      "siteContactPhoneNumber":"5555555555",
+      "operatorContactLastName":"Haverston",
+      "siteContactEmailAddress":"cathy@ha.test.com",
+      "operatorContactFirstName":"Heather",
+      "id":2,
+      "created_at":"2021-01-26T17:22:43.804Z",
+      "updated_at":null
+    }
+  ];
+
   // This function defines the values that will be returned from the call to
   // /protocol/openid-connect/auth
+  //
   const userInfo = (userType) => {
     let jsonOutput = {
       name: "Test User",
@@ -85,7 +219,7 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
           "firstName":"Graeme",
           "lastName":"Clarke",
           "createdAt":"2020-11-12 18:33"
-        }
+        },
       ],
     };
 
@@ -135,6 +269,9 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
   window.localStorage.setItem(localStorageKey, JSON.stringify(localStorageObj));
   cy.intercept("post", `${authBaseUrl}/realms/${realm}/protocol/openid-connect/token`, token);
   cy.intercept("get", `${authBaseUrl}/realms/${realm}/protocol/openid-connect/auth`, userInfo(user));
+  cy.intercept('get', 'api/v1/employer-sites', {data: sites});
+  cy.intercept('get', 'api/v1/user', { "sites": [6,4,2,5], roles: userInfo(user).roles });
+
 
   const url = new URL(`${Cypress.config().baseUrl}/${visitUrl}#state=${state}&session_state=${v4()}&code=${v4()}`);
   cy.visit(url.toString());

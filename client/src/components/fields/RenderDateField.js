@@ -19,6 +19,7 @@ export const RenderDateField = ({
       {label && <InputFieldLabel label={label} />}
       <KeyboardDatePicker
         format="YYYY/MM/DD"
+        name={label.replace(/[ *]/g, '')}
         value={!field.value ? null : stringToDate(field.value)}
         onChange={(value) => setValue(dateToString(value))}
         onBlur={() => setTouched(true)}

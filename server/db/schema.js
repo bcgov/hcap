@@ -10,6 +10,10 @@ const collections = {
   USERS: 'users',
 };
 
+const views = {
+  PARTICIPANTS_STATUS_INFOS: 'participants_status_infos',
+};
+
 const schema = [
   {
     participantsStatusTable: `CREATE TABLE IF NOT EXISTS ${collections.PARTICIPANTS_STATUS}(
@@ -37,4 +41,4 @@ const schema = [
   },
 ];
 
-module.exports = { collections, schema };
+module.exports = { collections, views, schema };

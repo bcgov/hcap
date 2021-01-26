@@ -6,21 +6,7 @@ describe("Participant View", () => {
   it("Tests the manual participant adder", () => {
     cy.kcNavAs('employer', 'participant-view');
     cy.intercept('post','api/v1/new-hired-participant', (req) => {
-      expect(req.body).to.equal(
-        {"participantInfo":
-          {
-            "firstName":"Tiddly",
-            "lastName":"Whiskers",
-            "phoneNumber":"3141592654",
-            "emailAddress":"tiddlywhiskers@goat.zone",
-            "origin":"internal",
-            "nonHcapOpportunity":false,
-            "contactedDate":"2020/10/10",
-            "offerDate":"2020/11/11",
-            "startDate":"2020/12/12",
-            "site":2
-          }
-        });
+      expect(req.body).to.equal({"participantInfo":{"firstName":"Tiddly","lastName":"Whiskers","phoneNumber":"3141592654","emailAddress":"tiddlywhiskers@goat.zone","origin":"internal","nonHcapOpportunity":false,"contactedDate":"2020/10/10","offerDate":"2020/11/11","startDate":"2020/12/12","site":2}});
     });
 
     cy.contains('Hired Candidates').click();

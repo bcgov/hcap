@@ -130,7 +130,7 @@ class Keycloak { // Wrapper class around keycloak-connect
   async getUsers() {
     await this.authenticateIfNeeded();
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-    const url = `${this.authUrl}/admin/realms/${this.realm}/users`;
+    const url = `${this.authUrl}/admin/realms/${this.realm}/users?briefRepresentation=true&max=1000000`;
     const response = await axios.get(url, config);
     return response.data;
   }

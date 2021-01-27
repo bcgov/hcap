@@ -28,6 +28,13 @@ const validateDateString = (s) => {
   return typeof date === 'number' && !Number.isNaN(date);
 };
 
+const validatePastDateString = (s) => {
+  if (/^\d{4}\/\d{2}\/\d{2}$/.test(s) === false) return false;
+  const date = Date.parse(s);
+  if (date > new Date()) return false;
+  return typeof date === 'number' && !Number.isNaN(date);
+};
+
 const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
 );
@@ -173,12 +180,12 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
 });
 
 export const InterviewingFormSchema = yup.object().noUnknown('Unknown field in form').shape({
-  contactedDate: yup.string().required('Date of contact is required').test('is-date', 'Not a valid date', validateDateString),
+  contactedDate: yup.string().required('Date of contact is required').test('is-date', 'Not a valid date in the past', validatePastDateString),
 });
 
 export const HireFormSchema = yup.object().noUnknown('Unknown field in form').shape({
   startDate: yup.string().required('Start date is required').test('is-date', 'Not a valid date', validateDateString),
-  hiredDate: yup.string().required('Date hired is required').test('is-date', 'Not a valid date', validateDateString),
+  hiredDate: yup.string().required('Date hired is required').test('is-date', 'Not a valid date', validatePastDateString),
   nonHcapOpportunity: yup.boolean().required('Non-Hcap Opportunity is required as true or false'),
   acknowledge: yup.boolean().test('is-true', 'Must acknowledge participant acceptance', (v) => v === true),
   positionTitle: yup.string().when('nonHcapOpportunity', {

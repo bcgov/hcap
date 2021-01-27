@@ -252,7 +252,7 @@ const AccessRequestApproval = yup.object().noUnknown('Unknown field in form').sh
   sites: yup.array().when('role', {
     is: 'ministry_of_health',
     then: yup.array().defined(),
-    otherwise: yup.array().required('Employer sites are required').max(0, 'No sites necessary'),
+    otherwise: yup.array().required('Employer sites are required'),
   }),
   regions: yup.array().when('role', {
     is: 'ministry_of_health',

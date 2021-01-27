@@ -473,7 +473,7 @@ export default () => {
     if (activeModalForm === 'hired') return 'Hire Participant';
     if (activeModalForm === 'interviewing') return 'Interview Participant';
     if (activeModalForm === 'rejected') return 'Archive Participant';
-    if (activeModalForm === 'new-participant') return 'Add New Hired Participant';
+    if (activeModalForm === 'new-participant') return 'Add New Non-Portal Hire';
     return 'Change Participant Status';
   };
 
@@ -693,6 +693,13 @@ export default () => {
                 />}
               </Box>
             </Grid>
+            {tabValue === "Hired Candidates" && <Grid container item xs={2} style={{'marginLeft': 'auto', 'marginRight': 20}}>
+              <Button
+              onClick={() => setActiveModalForm("new-participant")}
+              text="Add Non-Portal Hire"
+              size="medium"
+              />
+            </Grid>}
           </Grid>
           <Box pt={2} pb={2} pl={2} pr={2} width="100%">
             <CustomTabs

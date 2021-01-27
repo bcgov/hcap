@@ -4,9 +4,22 @@ describe("Participant View", () => {
   })
 
   it("Tests the manual participant adder", () => {
+    const participantInfo = {
+      "firstName": "Tiddly",
+      "lastName": "Whiskers",
+      "phoneNumber": "3141592654",
+      "emailAddress": "tiddlywhiskers@ca.ts",
+      "origin": "internal",
+      "nonHcapOpportunity": false,
+      "contactedDate": "2020/10/10",
+      "offerDate": "2020/11/11",
+      "startDate": "2020/12/12",
+      "site": 2
+    };
+
     cy.kcNavAs('employer', 'participant-view');
     cy.intercept('post','api/v1/new-hired-participant', (req) => {
-      expect(req.body).to.equal({"participantInfo":{"firstName":"Tiddly","lastName":"Whiskers","phoneNumber":"3141592654","emailAddress":"tiddlywhiskers@goat.zone","origin":"internal","nonHcapOpportunity":false,"contactedDate":"2020/10/10","offerDate":"2020/11/11","startDate":"2020/12/12","site":2}});
+      expect(req.body.participantInfo).to.deep.equal(participantInfo);
     });
 
     cy.contains('Hired Candidates').click();
@@ -14,7 +27,7 @@ describe("Participant View", () => {
     cy.get('input[name=firstName]').type("Tiddly");
     cy.get('input[name=lastName]').type("Whiskers");
     cy.get('input[name=phoneNumber]').type("3141592654");
-    cy.get('input[name=emailAddress]').type("tiddlywhiskers@goat.zone");
+    cy.get('input[name=emailAddress]').type("tiddlywhiskers@ca.ts");
     cy.get('div#mui-component-select-origin').click();
     cy.get('li').contains('Internal').click();
     cy.get('input[name=DateContacted]').type("20201010");

@@ -154,7 +154,6 @@ app.post(`${apiBaseUrl}/new-hired-participant`,
       const response = await makeParticipant(participantInfo);
       await setParticipantStatus(user.id, response.id, 'prospecting');
       await setParticipantStatus(user.id, response.id, 'interviewing', { contacted_at: participantInfo.contactedDate });
-      console.log(participantInfo.contactedDate);
       await setParticipantStatus(user.id, response.id, 'offer_made');
       await setParticipantStatus(user.id, response.id, 'hired', {
         nonHcapOpportunity: participantInfo.nonHcapOpportunity,

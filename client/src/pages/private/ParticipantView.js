@@ -743,12 +743,6 @@ export default () => {
               rows={rows}
               isLoading={isLoadingData}
             />
-            {tabValue === "Hired Candidates" && <Button
-              onClick={() => setActiveModalForm("new-participant")}
-              text="Manually Add A New Hire"
-              size="medium"
-              />}
-
           </Box>
         </Grid>
         <Menu

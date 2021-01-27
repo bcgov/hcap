@@ -23,7 +23,7 @@ describe("Participant View", () => {
     });
 
     cy.contains('Hired Candidates').click();
-    cy.contains('New Hire').click();
+    cy.contains('Non-Portal').click();
     cy.get('input[name=firstName]').type("Tiddly");
     cy.get('input[name=lastName]').type("Whiskers");
     cy.get('input[name=phoneNumber]').type("3141592654");

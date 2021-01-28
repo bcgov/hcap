@@ -5,7 +5,7 @@ const path = require('path');
 const dayjs = require('dayjs');
 const multer = require('multer');
 const {
-  getParticipants, parseAndSaveParticipants, setParticipantStatus, makeParticipant,
+  getParticipants, getParticipantByID, parseAndSaveParticipants, setParticipantStatus, makeParticipant,
 } = require('./services/participants.js');
 const { getEmployers, saveSites, getSites } = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
@@ -111,6 +111,26 @@ app.get(`${apiBaseUrl}/participants`,
       },
       // Slicing to one page of results
       ids_viewed: result.data.slice(0, 10).map((person) => person.id),
+    });
+    return res.json(result);
+  }));
+
+app.get(`${apiBaseUrl}/participant`,
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    await validate(ParticipantQuerySchema, req.query);
+    const user = req.hcapUserInfo;
+    const id = req.query;
+    const result = await getParticipantByID(id);
+    logger.info({
+      action: 'participant_get',
+      its: 'a test',
+      output: result,
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
     });
     return res.json(result);
   }));

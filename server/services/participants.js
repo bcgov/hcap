@@ -71,6 +71,15 @@ const setParticipantStatus = async (
   return { status };
 });
 
+const getParticipantByID = async (participantInfo) => dbClient.db.withTransaction(async (tx) => {
+  console.log('this is participantID');
+  console.log(participantInfo.id);
+  const participant = await tx[collections.PARTICIPANTS].findDoc({
+    id: participantInfo.id,
+  });
+  return participant;
+});
+
 const getParticipants = async (user, pagination, sortField,
   regionFilter, fsaFilter, lastNameFilter, emailFilter, statusFilters) => {
   const participantsFinder = new ParticipantsFinder(dbClient, user);
@@ -271,6 +280,7 @@ const makeParticipant = async (participantJson) => {
 module.exports = {
   parseAndSaveParticipants,
   getParticipants,
+  getParticipantByID,
   setParticipantStatus,
   makeParticipant,
 };

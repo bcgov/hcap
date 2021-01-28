@@ -8,7 +8,7 @@ import store from 'store';
 import InfoIcon from '@material-ui/icons/Info';
 import { ToastStatus, InterviewingFormSchema, RejectedFormSchema, HireFormSchema, HiredParticipantSchema } from '../../constants';
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
-import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipantForm } from '../../components/modal-forms';
+import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipantForm, EditParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { ComponentTooltip } from '../../components/generic/ComponentTooltip';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
@@ -40,6 +40,7 @@ const sortOrder = [
   'crcClear',
   'callbackStatus',
   'engage',
+  'edit',
 ];
 
 const tabs = { // Tabs, associated allowed roles, displayed statuses
@@ -391,6 +392,7 @@ export default () => {
             { id: 'interested', name: 'Interest' },
             { id: 'crcClear', name: 'CRC Clear' },
             { id: 'statusInfo', name: 'Status' },
+            { id: 'edit' },
           );
         }
 
@@ -477,7 +479,11 @@ export default () => {
     if (activeModalForm === 'hired') return 'Hire Participant';
     if (activeModalForm === 'interviewing') return 'Interview Participant';
     if (activeModalForm === 'rejected') return 'Archive Participant';
+<<<<<<< HEAD
     if (activeModalForm === 'new-participant') return 'Add New Non-Portal Hire';
+=======
+    if (activeModalForm === 'edit-participant') return 'Edit Participant';
+>>>>>>> 62bd98e (edit participant modal is functional)
     return 'Change Participant Status';
   };
 
@@ -588,6 +594,7 @@ export default () => {
           }}
           onClose={defaultOnClose}
         />}
+<<<<<<< HEAD
         {activeModalForm === 'new-participant' && <NewParticipantForm
           sites={sites}
           initialValues={{
@@ -616,6 +623,20 @@ export default () => {
               nonHcapOpportunity: values.nonHcapOpportunity,
               contactedDate: values.contactedDate,
               offerDate: values.offerDate,
+=======
+        {activeModalForm === 'edit-participant' && <EditParticipantForm
+          sites={sites}
+          initialValues={{
+            ...actionMenuParticipant
+          }}
+          validationSchema={HireFormSchema}
+          onSubmit={(values) => {
+            handleEngage(actionMenuParticipant.id, 'hired', {
+              nonHcapOpportunity: values.nonHcapOpportunity,
+              positionTitle: values.positionTitle,
+              positionType: values.positionType,
+              hiredDate: values.hiredDate,
+>>>>>>> 62bd98e (edit participant modal is functional)
               startDate: values.startDate,
               site: values.site,
             });
@@ -744,6 +765,30 @@ export default () => {
                       variant="outlined"
                       size="small"
                       text="Actions"
+                    />
+                  }
+                  if (columnId === 'edit') {
+                    return <Button
+                      onClick={async () => {
+                        // Get data from row.id
+                        const response = await fetch(`/api/v1/participant?id=${row.id}`, {
+                          headers: {
+                            'Accept': 'application/json',
+                            'Content-type': 'application/json',
+                            'Authorization': `Bearer ${store.get('TOKEN')}`,
+                          },
+                          method: 'GET',
+                        });
+
+                        const participant = await response.json();
+
+                        setActionMenuParticipant(participant[0]);
+                        setActiveModalForm('edit-participant');
+                        setAnchorElement(null);
+                      }}
+                      variant="outlined"
+                      size="small"
+                      text="Edit"
                     />
                   }
                   return row[columnId];

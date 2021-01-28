@@ -6,9 +6,9 @@ import Tab from '@material-ui/core/Tab';
 import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
 import InfoIcon from '@material-ui/icons/Info';
-import { ToastStatus, InterviewingFormSchema, RejectedFormSchema, HireFormSchema } from '../../constants';
+import { ToastStatus, InterviewingFormSchema, RejectedFormSchema, HireFormSchema, HiredParticipantSchema } from '../../constants';
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
-import { ProspectingForm, InterviewingForm, RejectedForm, HireForm } from '../../components/modal-forms';
+import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { ComponentTooltip } from '../../components/generic/ComponentTooltip';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
@@ -304,6 +304,31 @@ export default () => {
     }
   };
 
+  const handleExternalHire = async (participantInfo) => {
+    const response = await fetch('/api/v1/new-hired-participant', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        'Accept': 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({participantInfo}),
+    });
+
+    if (response.ok) {
+      const { error } = await response.json();
+      if (error) {
+        openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
+      } else {
+        setActionMenuParticipant(null);
+        setActiveModalForm(null);
+        forceReload(pagination);
+      }
+    } else {
+      openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
+    }
+  };
+
   const forceReload = async (currentPagination) => {
     if (!tabValue) return;
     const currentPage = currentPagination.currentPage;
@@ -448,6 +473,7 @@ export default () => {
     if (activeModalForm === 'hired') return 'Hire Participant';
     if (activeModalForm === 'interviewing') return 'Interview Participant';
     if (activeModalForm === 'rejected') return 'Archive Participant';
+    if (activeModalForm === 'new-participant') return 'Add New Non-Portal Hire';
     return 'Change Participant Status';
   };
 
@@ -558,6 +584,34 @@ export default () => {
           }}
           onClose={defaultOnClose}
         />}
+        {activeModalForm === 'new-participant' && <NewParticipantForm
+          sites={sites}
+          initialValues={{
+            nonHcapOpportunity: false,
+            positionTitle: '',
+            positionType: '',
+            offerDate: '',
+            startDate: '',
+            site: '',
+            acknowledge: false,
+          }}
+          validationSchema={HiredParticipantSchema}
+          onSubmit={(values) => {
+            handleExternalHire({
+              firstName: values.firstName,
+              lastName: values.lastName,
+              phoneNumber: values.phoneNumber,
+              emailAddress: values.emailAddress,
+              origin: values.origin,
+              nonHcapOpportunity: values.nonHcapOpportunity,
+              contactedDate: values.contactedDate,
+              offerDate: values.offerDate,
+              startDate: values.startDate,
+              site: values.site,
+            });
+          }}
+          onClose={defaultOnClose}
+        />}
       </Dialog>
       <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
@@ -639,6 +693,13 @@ export default () => {
                 />}
               </Box>
             </Grid>
+            {tabValue === "Hired Candidates" && <Grid container item xs={2} style={{'marginLeft': 'auto', 'marginRight': 20}}>
+              <Button
+              onClick={() => setActiveModalForm("new-participant")}
+              text="Add Non-Portal Hire"
+              size="medium"
+              />
+            </Grid>}
           </Grid>
           <Box pt={2} pb={2} pl={2} pr={2} width="100%">
             <CustomTabs

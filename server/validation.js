@@ -314,6 +314,19 @@ const ParticipantStatusChange = yup.object().noUnknown('Unknown field in form').
   status: yup.string().oneOf(participantStatuses, 'Invalid status'),
 });
 
+const NewParticipantSchema = yup.object().shape({
+  firstName: yup.string().required('First Name is required'),
+  lastName: yup.string().required('Last Name is required'),
+  phoneNumber: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  origin: yup.string().required('Must indicate origin of offer'),
+  startDate: yup.string().required('Start date is required').test('is-date', 'Not a valid date', validateDateString),
+  hiredDate: yup.string().required('Date hired is required').test('is-date', 'Not a valid date', validateDateString),
+  nonHcapOpportunity: yup.boolean().required('Non-Hcap Opportunity is required as true or false'),
+  acknowledge: yup.boolean().test('is-true', 'Must acknowledge participant acceptance', (v) => v === true),
+  site: yup.number().required('Site is required'),
+});
+
 const ParticipantQuerySchema = yup.object().shape({
   regionFilter: yup.string().oneOf(healthRegions, 'Invalid region'),
   sortField: yup.string().oneOf(sortFields, 'Invalid sort field'),
@@ -330,6 +343,7 @@ module.exports = {
   EmployerFormSchema,
   ParticipantBatchSchema,
   ParticipantStatusChange,
+  NewParticipantSchema,
   validate,
   isBooleanValue,
   evaluateBooleanAnswer,

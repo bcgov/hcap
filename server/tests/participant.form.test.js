@@ -478,4 +478,36 @@ describe('Participants Service', () => {
     participants = await getParticipants({ isMoH: true });
     expect(participants.data[0].statusInfo).toEqual('Hired');
   });
+
+  it('checks the status of an entry made through the new-hired-participant endpoint', async () => {
+    await closeDB();
+    await startDB();
+    const employerAId = v4();
+
+    const participant1 = {
+      lastName: 'Extra',
+      firstName: 'Eddy',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Fraser',
+      contactedDate: '09/09/2020',
+    };
+
+    const response = await makeParticipant(participant1);
+    await setParticipantStatus(employerAId, response.id, 'prospecting');
+    await setParticipantStatus(employerAId, response.id, 'interviewing', { contacted_at: participant1.contactedDate });
+    await setParticipantStatus(employerAId, response.id, 'offer_made');
+    await setParticipantStatus(employerAId, response.id, 'hired', {
+      nonHcapOpportunity: 'no',
+      contactedDate: '09/09/2020',
+      hiredDate: '10/10/2020',
+      startDate: '11/11/2020',
+    });
+
+    const participants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['hired']);
+    expect(participants.data[0].statusInfos[0].status).toEqual('hired');
+  });
 });

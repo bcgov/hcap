@@ -5,7 +5,12 @@ const path = require('path');
 const dayjs = require('dayjs');
 const multer = require('multer');
 const {
-  getParticipants, getParticipantByID, parseAndSaveParticipants, setParticipantStatus, makeParticipant,
+  getParticipants,
+  getParticipantByID,
+  updateParticipant,
+  parseAndSaveParticipants,
+  setParticipantStatus,
+  makeParticipant,
 } = require('./services/participants.js');
 const { getEmployers, saveSites, getSites } = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
@@ -125,8 +130,27 @@ app.get(`${apiBaseUrl}/participant`,
     const result = await getParticipantByID(id);
     logger.info({
       action: 'participant_get',
-      its: 'a test',
-      output: result,
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      on: {
+        id,
+      },
+    });
+    return res.json(result);
+  }));
+
+// Update participant data
+app.post(`${apiBaseUrl}/participant`,
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    // await validate(ParticipantQuerySchema, req.body);
+    const user = req.hcapUserInfo;
+    const result = await updateParticipant(req.body);
+    logger.info({
+      action: 'participant_get',
       performed_by: {
         username: user.username,
         id: user.id,

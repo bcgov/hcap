@@ -6,7 +6,14 @@ import Tab from '@material-ui/core/Tab';
 import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
 import InfoIcon from '@material-ui/icons/Info';
-import { ToastStatus, InterviewingFormSchema, RejectedFormSchema, HireFormSchema, HiredParticipantSchema } from '../../constants';
+import { 
+  ToastStatus, 
+  InterviewingFormSchema,
+  RejectedFormSchema,
+  HireFormSchema,
+  HiredParticipantSchema,
+  EditParticipantFormSchema,
+} from '../../constants';
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipantForm, EditParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
@@ -479,11 +486,8 @@ export default () => {
     if (activeModalForm === 'hired') return 'Hire Participant';
     if (activeModalForm === 'interviewing') return 'Interview Participant';
     if (activeModalForm === 'rejected') return 'Archive Participant';
-<<<<<<< HEAD
     if (activeModalForm === 'new-participant') return 'Add New Non-Portal Hire';
-=======
     if (activeModalForm === 'edit-participant') return 'Edit Participant';
->>>>>>> 62bd98e (edit participant modal is functional)
     return 'Change Participant Status';
   };
 
@@ -534,116 +538,134 @@ export default () => {
 
   return (
     <Page>
-      <Dialog
-        title={getDialogTitle(activeModalForm)}
-        open={activeModalForm != null}
-        onClose={defaultOnClose}
-      >
+    <Dialog
+    title={getDialogTitle(activeModalForm)}
+    open={activeModalForm != null}
+    onClose={defaultOnClose}
+    >
 
-        {activeModalForm === 'prospecting' && <ProspectingForm
-          name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
-          onClose={() => {
-            forceReload(pagination);
-            defaultOnClose();
-          }}
-          onSubmit={() => {
-            defaultOnClose();
-            handleTabChange(null, 'My Candidates');
-          }}
+    {activeModalForm === 'prospecting' && <ProspectingForm
+      name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
+      onClose={() => {
+        forceReload(pagination);
+        defaultOnClose();
+      }}
+      onSubmit={() => {
+        defaultOnClose();
+        handleTabChange(null, 'My Candidates');
+      }}
+      />}
+
+    {activeModalForm === 'interviewing' && <InterviewingForm
+      initialValues={{ contactedDate: '' }}
+      validationSchema={InterviewingFormSchema}
+      onSubmit={(values) => {
+        handleEngage(actionMenuParticipant.id, 'interviewing', { contacted_at: values.contactedDate });
+      }}
+      onClose={defaultOnClose}
         />}
 
-        {activeModalForm === 'interviewing' && <InterviewingForm
-          initialValues={{ contactedDate: '' }}
-          validationSchema={InterviewingFormSchema}
-          onSubmit={(values) => {
-            handleEngage(actionMenuParticipant.id, 'interviewing', { contacted_at: values.contactedDate });
-          }}
-          onClose={defaultOnClose}
+    {activeModalForm === 'rejected' && <RejectedForm
+      initialValues={{ contactedDate: '' }}
+      validationSchema={RejectedFormSchema}
+      onSubmit={(values) => {
+        handleEngage(actionMenuParticipant.id, 'rejected', { final_status: values.finalStatus });
+      }}
+      onClose={defaultOnClose}
         />}
 
-        {activeModalForm === 'rejected' && <RejectedForm
-          initialValues={{ contactedDate: '' }}
-          validationSchema={RejectedFormSchema}
-          onSubmit={(values) => {
-            handleEngage(actionMenuParticipant.id, 'rejected', { final_status: values.finalStatus });
-          }}
-          onClose={defaultOnClose}
+    {activeModalForm === 'hired' && <HireForm
+      sites={sites}
+      initialValues={{
+        nonHcapOpportunity: false,
+          positionTitle: '',
+          positionType: '',
+          hiredDate: '',
+          startDate: '',
+          site: '',
+          acknowledge: false,
+      }}
+      validationSchema={HireFormSchema}
+      onSubmit={(values) => {
+        handleEngage(actionMenuParticipant.id, 'hired', {
+          nonHcapOpportunity: values.nonHcapOpportunity,
+          positionTitle: values.positionTitle,
+          positionType: values.positionType,
+          hiredDate: values.hiredDate,
+          startDate: values.startDate,
+          site: values.site,
+        });
+      }}
+      onClose={defaultOnClose}
         />}
-
-        {activeModalForm === 'hired' && <HireForm
-          sites={sites}
-          initialValues={{
-            nonHcapOpportunity: false,
-            positionTitle: '',
-            positionType: '',
-            hiredDate: '',
-            startDate: '',
-            site: '',
-            acknowledge: false,
-          }}
-          validationSchema={HireFormSchema}
-          onSubmit={(values) => {
-            handleEngage(actionMenuParticipant.id, 'hired', {
-              nonHcapOpportunity: values.nonHcapOpportunity,
-              positionTitle: values.positionTitle,
-              positionType: values.positionType,
-              hiredDate: values.hiredDate,
-              startDate: values.startDate,
-              site: values.site,
+    {activeModalForm === 'edit-participant' && <EditParticipantForm
+      initialValues={{
+        ...actionMenuParticipant
+      }}
+      validationSchema={EditParticipantFormSchema}
+      onSubmit={async (values) => {
+        const history = {
+          timestamp: new Date(),
+          changes: [],
+        };
+        Object.keys(values).forEach(key => {
+          if (values[key] !== actionMenuParticipant[key]) {
+            history.changes.push({
+              field: key,
+              from: actionMenuParticipant[key],
+              to: values[key],
             });
-          }}
-          onClose={defaultOnClose}
-        />}
-<<<<<<< HEAD
-        {activeModalForm === 'new-participant' && <NewParticipantForm
-          sites={sites}
-          initialValues={{
-            firstName: '',
-            lastName: '',
-            phoneNumber: '',
-            emailAddress: '',
-            origin: '',
-            nonHcapOpportunity: false,
-            positionTitle: '',
-            positionType: '',
-            contactedDate: '',
-            offerDate: '',
-            startDate: '',
-            site: '',
-            acknowledge: false,
-          }}
-          validationSchema={HiredParticipantSchema}
-          onSubmit={(values) => {
-            handleExternalHire({
-              firstName: values.firstName,
-              lastName: values.lastName,
-              phoneNumber: values.phoneNumber,
-              emailAddress: values.emailAddress,
-              origin: values.origin,
-              nonHcapOpportunity: values.nonHcapOpportunity,
-              contactedDate: values.contactedDate,
-              offerDate: values.offerDate,
-=======
-        {activeModalForm === 'edit-participant' && <EditParticipantForm
-          sites={sites}
-          initialValues={{
-            ...actionMenuParticipant
-          }}
-          validationSchema={HireFormSchema}
-          onSubmit={(values) => {
-            handleEngage(actionMenuParticipant.id, 'hired', {
-              nonHcapOpportunity: values.nonHcapOpportunity,
-              positionTitle: values.positionTitle,
-              positionType: values.positionType,
-              hiredDate: values.hiredDate,
->>>>>>> 62bd98e (edit participant modal is functional)
-              startDate: values.startDate,
-              site: values.site,
-            });
-          }}
-          onClose={defaultOnClose}
-        />}
-      </Dialog>
+          }
+        });
+        values.history = (actionMenuParticipant.history)? [history, ...actionMenuParticipant.history] : [history];
+        const response = await fetch('/api/v1/participant', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${store.get('TOKEN')}`,
+            'Accept': 'application/json',
+            'Content-type': 'application/json',
+          },
+          body: JSON.stringify(values),
+        });
+
+        if (response.ok) {
+          forceReload(pagination);
+          defaultOnClose();
+        }
+      }}
+
+      onClose={defaultOnClose}
+
+     />}
+    {activeModalForm === 'new-participant' && <NewParticipantForm
+      sites={sites}
+      initialValues={{
+        nonHcapOpportunity: false,
+          positionTitle: '',
+          positionType: '',
+          offerDate: '',
+          startDate: '',
+          site: '',
+          acknowledge: false,
+      }}
+      validationSchema={HiredParticipantSchema}
+      onSubmit={(values) => {
+        handleExternalHire({
+          firstName: values.firstName,
+          lastName: values.lastName,
+          phoneNumber: values.phoneNumber,
+          emailAddress: values.emailAddress,
+          origin: values.origin,
+          nonHcapOpportunity: values.nonHcapOpportunity,
+          contactedDate: values.contactedDate,
+          offerDate: values.offerDate,
+          startDate: values.startDate,
+          site: values.site,
+        });
+      }}
+      onClose={defaultOnClose}
+    />}
+    </Dialog>
       <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pt={4} pb={4} pl={2} pr={2}>
@@ -800,7 +822,7 @@ export default () => {
             />
           </Box>
         </Grid>
-        <Menu
+    {(!roles.includes('ministry_of_health')) && <Menu
           keepMounted
           open={actionMenuParticipant != null && activeModalForm == null}
           anchorEl={anchorElement}
@@ -812,7 +834,7 @@ export default () => {
           {actionMenuParticipant?.status === 'offer_made' && <MenuItem onClick={() => setActiveModalForm('hired')}>Hire</MenuItem>}
           {['prospecting', 'interviewing', 'offer_made'].includes(actionMenuParticipant?.status) && <MenuItem onClick={() => setActiveModalForm('rejected')}>Archive</MenuItem>}
           {actionMenuParticipant?.status === 'rejected' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Re-engage</MenuItem>}
-        </Menu>
+        </Menu> }
       </CheckPermissions>
     </Page>
   );

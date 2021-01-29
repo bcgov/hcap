@@ -72,11 +72,36 @@ const setParticipantStatus = async (
 });
 
 const getParticipantByID = async (participantInfo) => dbClient.db.withTransaction(async (tx) => {
-  console.log('this is participantID');
-  console.log(participantInfo.id);
   const participant = await tx[collections.PARTICIPANTS].findDoc({
     id: participantInfo.id,
   });
+  return participant;
+});
+
+const updateParticipant = async (participantInfo) => dbClient.db.withTransaction(async (tx) => {
+  console.log('participantInfo');
+  console.log(participantInfo);
+
+  // The below reduce function unpacks the most recent changes in the history
+  // and builds them into an object to be used for the update request
+  const changes = participantInfo.history[0].changes.reduce((acc, change) => {
+    const { field, to } = change;
+    return { ...acc, [field]: to };
+  }, {});
+
+  console.log('changes');
+  console.log(changes);
+
+  await tx[collections.PARTICIPANTS].update({
+    id: participantInfo.id,
+  }, changes);
+
+  console.log('passed');
+
+  const participant = await tx[collections.PARTICIPANTS].findDoc({
+    id: participantInfo.id,
+  });
+
   return participant;
 });
 
@@ -281,6 +306,7 @@ module.exports = {
   parseAndSaveParticipants,
   getParticipants,
   getParticipantByID,
+  updateParticipant,
   setParticipantStatus,
   makeParticipant,
 };

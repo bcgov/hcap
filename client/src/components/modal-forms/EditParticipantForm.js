@@ -6,26 +6,7 @@ import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } f
 import { Field, Formik, Form as FormikForm } from 'formik';
 import store from 'store';
 
-export const EditParticipantForm = ({ initialValues, validationSchema, onSubmit, onClose, sites }) => {
-
-  const [sitesDetail, setSitesDetail] = useState([]);
-
-  useEffect(() => {
-    const fetchSites = async () => {
-      const response = await fetch('/api/v1/employer-sites', {
-        headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
-        method: 'GET',
-      });
-
-      if (response.ok) {
-        const { data } = await response.json();
-        setSitesDetail(data.filter((site) => sites.includes(site.siteId)));
-      }
-    };
-
-    fetchSites();
-  }, [sites]);
-
+export const EditParticipantForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
   const getTodayDate = () => {
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
@@ -64,49 +45,15 @@ export const EditParticipantForm = ({ initialValues, validationSchema, onSubmit,
       label="* Email Address"
       type="email"
       />
-          <Field
-            name="nonHcapOpportunity"
-            component={RenderCheckbox}
-            label="Non-HCAP Opportunity"
-          />
-          {
-            values.nonHcapOpportunity && (<>
-              <Field
-                name="positionType"
-                component={RenderSelectField}
-                label="* Position Type"
-                options={[
-                  { value: 'Full-Time', label: 'Full-Time' },
-                  { value: 'Part-Time', label: 'Part-Time' },
-                  { value: 'Casual', label: 'Casual' },
-                ]}
-              />
-            </>)
-          }
-          <Field
-            name="hiredDate"
-            component={RenderDateField}
-            maxDate={getTodayDate()}
-            label="* Date Hired"
-          />
-          <Field
-            name="startDate"
-            component={RenderDateField}
-            label="* Start Date"
-          />
-          <Field
-            name="site"
-            component={RenderSelectField}
-            label="* Site"
-            options={sitesDetail.map((siteDetail) => ({
-              value: siteDetail.siteId, label: siteDetail.siteName,
-            }))}
-          />
-          <Field
-            name="acknowledge"
-            component={RenderCheckbox}
-            label="I acknowledge that the participant has accepted the offer in writing."
-          />
+      <Field
+      name="interested"
+      component={RenderSelectField}
+      label="Program Interest"
+      options={[
+        { value: 'yes', label: 'Interested' },
+        { value: 'withdrawn', label: 'Withdrawn' },
+      ]}
+      />
         </Box>
         <Box mt={3}>
           <Grid container spacing={2} justify="flex-end">

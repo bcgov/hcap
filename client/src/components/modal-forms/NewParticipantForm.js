@@ -4,6 +4,7 @@ import { Button } from '../generic';
 import { Box } from '@material-ui/core';
 import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
+import { getTodayDate } from '../../utils';
 import store from 'store';
 
 export const NewParticipantForm = ({ initialValues, validationSchema, onSubmit, onClose, sites }) => {
@@ -26,14 +27,6 @@ export const NewParticipantForm = ({ initialValues, validationSchema, onSubmit, 
     fetchSites();
   }, [sites]);
 
-  const getTodayDate = () => {
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const yyyy = today.getFullYear();
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
   return <Formik
     initialValues={initialValues}
     validationSchema={validationSchema}
@@ -50,26 +43,26 @@ export const NewParticipantForm = ({ initialValues, validationSchema, onSubmit, 
             disabled
           />
           <Field
-          name="firstName"
-          component={RenderTextField}
-          label="* First Name"
+            name="firstName"
+            component={RenderTextField}
+            label="* First Name"
           />
           <Field
-          name="lastName"
-          component={RenderTextField}
-          label="* Last Name"
+            name="lastName"
+            component={RenderTextField}
+            label="* Last Name"
           />
           <Field
-          name="phoneNumber"
-          component={RenderTextField}
-          label="* Phone Number"
-          type="tel"
+            name="phoneNumber"
+            component={RenderTextField}
+            label="* Phone Number"
+            type="tel"
           />
           <Field
-          name="emailAddress"
-          component={RenderTextField}
-          label="* Email Address"
-          type="email"
+            name="emailAddress"
+            component={RenderTextField}
+            label="* Email Address"
+            type="email"
           />
           <Field
             name="origin"
@@ -78,9 +71,9 @@ export const NewParticipantForm = ({ initialValues, validationSchema, onSubmit, 
             options={[{value: "internal", label: "Internal"}, {value: "other", label: "Other"}]}
           />
           { values.origin === "other" && <Field
-          name="other-origin"
-          component={RenderTextField}
-          label="* Where did the offer originate?"
+            name="other-origin"
+            component={RenderTextField}
+            label="* Where did the offer originate?"
           />
           }
           <Field

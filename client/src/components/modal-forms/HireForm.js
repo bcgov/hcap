@@ -4,6 +4,7 @@ import { Button } from '../generic';
 import { Box } from '@material-ui/core';
 import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
+import { getTodayDate } from '../../utils';
 import store from 'store';
 
 export const HireForm = ({ initialValues, validationSchema, onSubmit, onClose, sites }) => {
@@ -25,14 +26,6 @@ export const HireForm = ({ initialValues, validationSchema, onSubmit, onClose, s
 
     fetchSites();
   }, [sites]);
-
-  const getTodayDate = () => {
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const yyyy = today.getFullYear();
-    return `${yyyy}-${mm}-${dd}`;
-  }
 
   return <Formik
     initialValues={initialValues}

@@ -10,6 +10,7 @@ export default Object.freeze({
   // Private routes
   Admin: '/admin',
   UserView: '/user-view',
+  UserManage: '/user-manage',
   EOIView: '/eoi-view',
   EOIViewDetails: '/eoi-view-details',
   ParticipantView: '/participant-view',

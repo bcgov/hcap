@@ -9,6 +9,7 @@ import { Routes } from '../constants';
 
 const Admin = lazy(() => import('../pages/private/Admin'));
 const UserView = lazy(() => import('../pages/private/UserView'));
+const UserManage = lazy(() => import('../pages/private/UserManage'));
 const ParticipantView = lazy(() => import('../pages/private/ParticipantView'));
 const EOIView = lazy(() => import('../pages/private/EOIView'));
 const EOIViewDetails = lazy(() => import('../pages/private/EOIViewDetails'));
@@ -94,6 +95,7 @@ export default () => {
             <Route exact path={Routes.ParticipantConfirmation} component={ParticipantConfirmation} />
             <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />
             <PrivateRoute exact path={Routes.UserView} component={UserView} />
+            <PrivateRoute exact path={Routes.UserManage} component={UserManage} />
             <PrivateRoute exact path={Routes.ReportingView} component={ReportingView} />
             <PrivateRoute exact path={Routes.EOIView} component={EOIView} />
             <PrivateRoute exact path={Routes.EOIViewDetails} component={EOIViewDetails} />

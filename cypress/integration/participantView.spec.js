@@ -68,6 +68,7 @@ describe("Participant View", () => {
     cy.get('li[data-value=2]').click();
     cy.get('input[name=acknowledge]').click();
     cy.get('button').contains('Submit').click();
+  });
 
   it("Uses the MoH edit feature", () => {
     cy.intercept('post','/api/v1/participant', (req) => {

@@ -164,11 +164,12 @@ app.post(`${apiBaseUrl}/new-hired-participant`,
       });
 
       logger.info({
-        action: 'participant_create',
+        action: 'hired_participant_post',
         performed_by: {
           username: user.username,
           id: user.id,
         },
+        participant_id: response.id,
       });
 
       return res.json(response);

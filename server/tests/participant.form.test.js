@@ -9,6 +9,8 @@ const {
   getParticipants,
   setParticipantStatus,
   makeParticipant,
+  getParticipantByID,
+  updateParticipant,
 } = require('../services/participants.js');
 const { getReport } = require('../services/reporting.js');
 const { evaluateBooleanAnswer } = require('../validation');
@@ -519,5 +521,34 @@ describe('Participants Service', () => {
 
     const participants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['hired']);
     expect(participants.data[0].statusInfos[0].status).toEqual('hired');
+  });
+
+  it('Tests functionality for updating a user\'s information', async () => {
+    await closeDB();
+    await startDB();
+    const participant = {
+      maximusId: 648691,
+      lastName: 'Extra',
+      firstName: 'Eduardo',
+      postalCode: 'V1V2V3',
+      postalCodeFsa: 'V1V',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'no',
+      preferredLocation: 'Fraser',
+    };
+
+    await makeParticipant(participant);
+    const participants = await getParticipants({ isMoH: true });
+    participant.id = participants.data[0].id;
+
+    const query = await getParticipantByID(participant);
+    expect(query[0].firstName).toEqual(participant.firstName);
+    participant.history = [{ timestamp: new Date(), changes: [{ field: 'firstName', from: 'Eduardo', to: 'Eddy' }] }];
+    await updateParticipant(participant);
+    const query2 = await getParticipantByID(participant);
+    expect(query2[0].firstName).toEqual('Eddy');
   });
 });

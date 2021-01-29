@@ -1,20 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box } from '@material-ui/core';
-import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } from '../fields';
+import { RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import store from 'store';
 
 export const EditParticipantForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
-  const getTodayDate = () => {
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const yyyy = today.getFullYear();
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
   return <Formik
     initialValues={initialValues}
     validationSchema={validationSchema}
@@ -69,7 +60,7 @@ export const EditParticipantForm = ({ initialValues, validationSchema, onSubmit,
                 onClick={submitForm}
                 variant="contained"
                 color="primary"
-                text="Submit"
+                text="Save"
               />
             </Grid>
           </Grid>

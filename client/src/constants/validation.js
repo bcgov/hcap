@@ -213,12 +213,12 @@ export const HiredParticipantSchema = yup.object().noUnknown('Unknown field in f
   site: yup.number().required('Site is required'),
 });
 
-export const EditParticipantFormSchema = yup.object().noUnknown('Unknown field in form').shape({
+export const EditParticipantFormSchema = yup.object().shape({
   firstName: yup.string().required(errorMessage),
   lastName: yup.string().required(errorMessage),
   phoneNumber: yup.string().required(errorMessage).matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
   emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
-  postalCode: yup.string().required(errorMessage).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
+  //postalCode: yup.string().required(errorMessage).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
 });
 
 export const RejectedFormSchema = yup.object().noUnknown('Unknown field in form').shape({

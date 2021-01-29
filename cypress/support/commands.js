@@ -94,10 +94,10 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
 
   const participant = [{
     "id":1,
-    "emailAddress":"graeme.clarke@gov.bc.ca",
-    "username":"gclarke@idir",
-    "firstName":"Graeme",
-    "lastName":"Clarke",
+    "emailAddress":"tasty@snac.ks",
+    "username":"graham",
+    "firstName":"Graham",
+    "lastName":"Crackers",
     "phoneNumber": 1112223333,
     "createdAt":"2020-11-12 18:33"
   }];
@@ -116,10 +116,11 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
       data: [
         {
           "id":1,
-          "emailAddress":"graeme.clarke@gov.bc.ca",
-          "username":"gclarke@idir",
-          "firstName":"Graeme",
-          "lastName":"Clarke",
+          "emailAddress":"tasty@snac.ks",
+          "username":"graham",
+          "firstName":"Graham",
+          "lastName":"Crackers",
+          "phoneNumber": 1112223333,
           "createdAt":"2020-11-12 18:33"
         },
       ],

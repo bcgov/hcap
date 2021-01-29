@@ -337,6 +337,14 @@ const ParticipantQuerySchema = yup.object().shape({
   ),
 });
 
+const ParticipantEditSchema = yup.object().shape({
+  firstName: yup.string().required('First Name is required'),
+  lastName: yup.string().required('Last Name is required'),
+  phoneNumber: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  history: yup.array().required(),
+});
+
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
@@ -349,5 +357,6 @@ module.exports = {
   evaluateBooleanAnswer,
   AccessRequestApproval,
   ParticipantQuerySchema,
+  ParticipantEditSchema,
   EmployerSiteBatchSchema,
 };

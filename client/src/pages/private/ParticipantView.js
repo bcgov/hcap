@@ -822,7 +822,7 @@ export default () => {
             />
           </Box>
         </Grid>
-    {(!roles.includes('ministry_of_health')) && <Menu
+    {(!roles.includes('ministry_of_health')) && (!roles.includes('superuser')) && <Menu
           keepMounted
           open={actionMenuParticipant != null && activeModalForm == null}
           anchorEl={anchorElement}
@@ -834,7 +834,8 @@ export default () => {
           {actionMenuParticipant?.status === 'offer_made' && <MenuItem onClick={() => setActiveModalForm('hired')}>Hire</MenuItem>}
           {['prospecting', 'interviewing', 'offer_made'].includes(actionMenuParticipant?.status) && <MenuItem onClick={() => setActiveModalForm('rejected')}>Archive</MenuItem>}
           {actionMenuParticipant?.status === 'rejected' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Re-engage</MenuItem>}
-        </Menu> }
+        </Menu>
+    }
       </CheckPermissions>
     </Page>
   );

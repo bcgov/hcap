@@ -72,12 +72,12 @@ describe("Participant View", () => {
 
   it("Uses the MoH edit feature", () => {
     cy.intercept('post','/api/v1/participant', (req) => {
-      expect(req.body.history[0].changes[0]).to.deep.equal({field: "firstName", from: "Graeme", to: "Graham"});
+      expect(req.body.history[0].changes[0]).to.deep.equal({field: "firstName", from: "Graham", to: "Animal"});
     }).as('postChanges');
     cy.kcNavAs('ministry_of_health', 'participant-view');
     cy.contains('Edit').click();
     cy.get('div.MuiDialog-scrollPaper').should('exist');
-    cy.get('input[name=firstName').should('have.value', 'Graeme').clear().type('Graham');
+    cy.get('input[name=firstName').should('have.value', 'Graham').clear().type('Animal');
     cy.contains('Save').click();
     cy.wait('@postChanges');
     cy.get('div.MuiDialog-scrollPaper').should('not.exist');

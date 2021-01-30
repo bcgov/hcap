@@ -227,30 +227,30 @@ export default () => {
 
   const fetchParticipants = async (offset, regionFilter, fsaFilter, lastNameFilter,
     emailFilter, sortField, sortDirection, statusFilters) => {
-    const queries = [
-      sortField && `sortField=${sortField}`,
-      offset && `offset=${offset}`,
-      sortDirection && `sortDirection=${sortDirection}`,
-      regionFilter && `regionFilter=${regionFilter}`,
-      fsaFilter && `fsaFilter=${fsaFilter}`,
-      lastNameFilter && `lastNameFilter=${lastNameFilter}`,
-      emailFilter && `emailFilter=${emailFilter}`,
-      ...statusFilters && statusFilters.map(status => `statusFilters[]=${status}`),
-    ].filter(item => item).join('&');
+      const queries = [
+        sortField && `sortField=${sortField}`,
+        offset && `offset=${offset}`,
+        sortDirection && `sortDirection=${sortDirection}`,
+        regionFilter && `regionFilter=${regionFilter}`,
+        fsaFilter && `fsaFilter=${fsaFilter}`,
+        lastNameFilter && `lastNameFilter=${lastNameFilter}`,
+        emailFilter && `emailFilter=${emailFilter}`,
+        ...statusFilters && statusFilters.map(status => `statusFilters[]=${status}`),
+      ].filter(item => item).join('&');
 
-    const response = await fetch(`/api/v1/participants?${queries}`, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-type': 'application/json',
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
+      const response = await fetch(`/api/v1/participants?${queries}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-type': 'application/json',
+          'Authorization': `Bearer ${store.get('TOKEN')}`,
+        },
+        method: 'GET',
+      });
 
-    if (response.ok) {
-      return response.json();
-    }
-  };
+      if (response.ok) {
+        return response.json();
+      }
+    };
 
   const emailAddressMask = '***@***.***';
   const phoneNumberMask = '(***) ***-****';
@@ -511,7 +511,7 @@ export default () => {
           alignItems: 'center',
           marginBottom: 10,
         }}><InfoIcon color="secondary" style={{ marginRight: 10 }} fontSize="small" />
-        This candidate was hired by another employer.</div>
+          This candidate was hired by another employer.</div>
         {tabValue !== 'Archived Candidates' && <div style={{
           display: 'flex',
           flexDirection: 'row',
@@ -538,134 +538,134 @@ export default () => {
 
   return (
     <Page>
-    <Dialog
-    title={getDialogTitle(activeModalForm)}
-    open={activeModalForm != null}
-    onClose={defaultOnClose}
-    >
+      <Dialog
+        title={getDialogTitle(activeModalForm)}
+        open={activeModalForm != null}
+        onClose={defaultOnClose}
+      >
 
-    {activeModalForm === 'prospecting' && <ProspectingForm
-      name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
-      onClose={() => {
-        forceReload(pagination);
-        defaultOnClose();
-      }}
-      onSubmit={() => {
-        defaultOnClose();
-        handleTabChange(null, 'My Candidates');
-      }}
-      />}
-
-    {activeModalForm === 'interviewing' && <InterviewingForm
-      initialValues={{ contactedDate: '' }}
-      validationSchema={InterviewingFormSchema}
-      onSubmit={(values) => {
-        handleEngage(actionMenuParticipant.id, 'interviewing', { contacted_at: values.contactedDate });
-      }}
-      onClose={defaultOnClose}
+        {activeModalForm === 'prospecting' && <ProspectingForm
+          name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
+          onClose={() => {
+            forceReload(pagination);
+            defaultOnClose();
+          }}
+          onSubmit={() => {
+            defaultOnClose();
+            handleTabChange(null, 'My Candidates');
+          }}
         />}
 
-    {activeModalForm === 'rejected' && <RejectedForm
-      initialValues={{ contactedDate: '' }}
-      validationSchema={RejectedFormSchema}
-      onSubmit={(values) => {
-        handleEngage(actionMenuParticipant.id, 'rejected', { final_status: values.finalStatus });
-      }}
-      onClose={defaultOnClose}
+        {activeModalForm === 'interviewing' && <InterviewingForm
+          initialValues={{ contactedDate: '' }}
+          validationSchema={InterviewingFormSchema}
+          onSubmit={(values) => {
+            handleEngage(actionMenuParticipant.id, 'interviewing', { contacted_at: values.contactedDate });
+          }}
+          onClose={defaultOnClose}
         />}
 
-    {activeModalForm === 'hired' && <HireForm
-      sites={sites}
-      initialValues={{
-        nonHcapOpportunity: false,
-          positionTitle: '',
-          positionType: '',
-          hiredDate: '',
-          startDate: '',
-          site: '',
-          acknowledge: false,
-      }}
-      validationSchema={HireFormSchema}
-      onSubmit={(values) => {
-        handleEngage(actionMenuParticipant.id, 'hired', {
-          nonHcapOpportunity: values.nonHcapOpportunity,
-          positionTitle: values.positionTitle,
-          positionType: values.positionType,
-          hiredDate: values.hiredDate,
-          startDate: values.startDate,
-          site: values.site,
-        });
-      }}
-      onClose={defaultOnClose}
+        {activeModalForm === 'rejected' && <RejectedForm
+          initialValues={{ contactedDate: '' }}
+          validationSchema={RejectedFormSchema}
+          onSubmit={(values) => {
+            handleEngage(actionMenuParticipant.id, 'rejected', { final_status: values.finalStatus });
+          }}
+          onClose={defaultOnClose}
         />}
-    {activeModalForm === 'edit-participant' && <EditParticipantForm
-      initialValues={{
-        ...actionMenuParticipant
-      }}
-      validationSchema={EditParticipantFormSchema}
-      onSubmit={async (values) => {
-        const history = {
-          timestamp: new Date(),
-          changes: [],
-        };
-        Object.keys(values).forEach(key => {
-          if (values[key] !== actionMenuParticipant[key]) {
-            history.changes.push({
-              field: key,
-              from: actionMenuParticipant[key],
-              to: values[key],
+
+        {activeModalForm === 'hired' && <HireForm
+          sites={sites}
+          initialValues={{
+            nonHcapOpportunity: false,
+            positionTitle: '',
+            positionType: '',
+            hiredDate: '',
+            startDate: '',
+            site: '',
+            acknowledge: false,
+          }}
+          validationSchema={HireFormSchema}
+          onSubmit={(values) => {
+            handleEngage(actionMenuParticipant.id, 'hired', {
+              nonHcapOpportunity: values.nonHcapOpportunity,
+              positionTitle: values.positionTitle,
+              positionType: values.positionType,
+              hiredDate: values.hiredDate,
+              startDate: values.startDate,
+              site: values.site,
             });
-          }
-        });
-        values.history = (actionMenuParticipant.history)? [history, ...actionMenuParticipant.history] : [history];
-        const response = await fetch('/api/v1/participant', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${store.get('TOKEN')}`,
-            'Accept': 'application/json',
-            'Content-type': 'application/json',
-          },
-          body: JSON.stringify(values),
-        });
+          }}
+          onClose={defaultOnClose}
+        />}
+        {activeModalForm === 'edit-participant' && <EditParticipantForm
+          initialValues={{
+            ...actionMenuParticipant
+          }}
+          validationSchema={EditParticipantFormSchema}
+          onSubmit={async (values) => {
+            const history = {
+              timestamp: new Date(),
+              changes: [],
+            };
+            Object.keys(values).forEach(key => {
+              if (values[key] !== actionMenuParticipant[key]) {
+                history.changes.push({
+                  field: key,
+                  from: actionMenuParticipant[key],
+                  to: values[key],
+                });
+              }
+            });
+            values.history = (actionMenuParticipant.history)? [history, ...actionMenuParticipant.history] : [history];
+            const response = await fetch('/api/v1/participant', {
+              method: 'PATCH',
+              headers: {
+                'Authorization': `Bearer ${store.get('TOKEN')}`,
+                'Accept': 'application/json',
+                'Content-type': 'application/json',
+              },
+              body: JSON.stringify(values),
+            });
 
-        if (response.ok) {
-          forceReload(pagination);
-          defaultOnClose();
-        }
-      }}
+            if (response.ok) {
+              forceReload(pagination);
+              defaultOnClose();
+            }
+          }}
 
-      onClose={defaultOnClose}
+          onClose={defaultOnClose}
 
-     />}
-    {activeModalForm === 'new-participant' && <NewParticipantForm
-      sites={sites}
-      initialValues={{
-        nonHcapOpportunity: false,
-          positionTitle: '',
-          positionType: '',
-          offerDate: '',
-          startDate: '',
-          site: '',
-          acknowledge: false,
-      }}
-      validationSchema={HiredParticipantSchema}
-      onSubmit={(values) => {
-        handleExternalHire({
-          firstName: values.firstName,
-          lastName: values.lastName,
-          phoneNumber: values.phoneNumber,
-          emailAddress: values.emailAddress,
-          origin: values.origin,
-          nonHcapOpportunity: values.nonHcapOpportunity,
-          contactedDate: values.contactedDate,
-          offerDate: values.offerDate,
-          startDate: values.startDate,
-          site: values.site,
-        });
-      }}
-      onClose={defaultOnClose}
-    />}
-    </Dialog>
+        />}
+        {activeModalForm === 'new-participant' && <NewParticipantForm
+          sites={sites}
+          initialValues={{
+            nonHcapOpportunity: false,
+            positionTitle: '',
+            positionType: '',
+            offerDate: '',
+            startDate: '',
+            site: '',
+            acknowledge: false,
+          }}
+          validationSchema={HiredParticipantSchema}
+          onSubmit={(values) => {
+            handleExternalHire({
+              firstName: values.firstName,
+              lastName: values.lastName,
+              phoneNumber: values.phoneNumber,
+              emailAddress: values.emailAddress,
+              origin: values.origin,
+              nonHcapOpportunity: values.nonHcapOpportunity,
+              contactedDate: values.contactedDate,
+              offerDate: values.offerDate,
+              startDate: values.startDate,
+              site: values.site,
+            });
+          }}
+          onClose={defaultOnClose}
+        />}
+      </Dialog>
       <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pt={4} pb={4} pl={2} pr={2}>
@@ -748,9 +748,9 @@ export default () => {
             </Grid>
             {tabValue === "Hired Candidates" && <Grid container item xs={2} style={{'marginLeft': 'auto', 'marginRight': 20}}>
               <Button
-              onClick={() => setActiveModalForm("new-participant")}
-              text="Add Non-Portal Hire"
-              size="medium"
+                onClick={() => setActiveModalForm("new-participant")}
+                text="Add Non-Portal Hire"
+                size="medium"
               />
             </Grid>}
           </Grid>
@@ -822,7 +822,7 @@ export default () => {
             />
           </Box>
         </Grid>
-    {(!roles.includes('ministry_of_health')) && (!roles.includes('superuser')) && <Menu
+        {(!roles.includes('ministry_of_health')) && (!roles.includes('superuser')) && <Menu
           keepMounted
           open={actionMenuParticipant != null && activeModalForm == null}
           anchorEl={anchorElement}
@@ -835,7 +835,7 @@ export default () => {
           {['prospecting', 'interviewing', 'offer_made'].includes(actionMenuParticipant?.status) && <MenuItem onClick={() => setActiveModalForm('rejected')}>Archive</MenuItem>}
           {actionMenuParticipant?.status === 'rejected' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Re-engage</MenuItem>}
         </Menu>
-    }
+        }
       </CheckPermissions>
     </Page>
   );

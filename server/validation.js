@@ -342,7 +342,7 @@ const ParticipantEditSchema = yup.object().shape({
   lastName: yup.string().required('Last Name is required'),
   phoneNumber: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
   emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
-  history: yup.array().required(),
+  history: yup.array().defined(),
 });
 
 const validate = async (schema, data) => schema.validate(data, { strict: true });

@@ -143,8 +143,8 @@ app.get(`${apiBaseUrl}/participant`,
   }));
 
 // Update participant data
-app.post(`${apiBaseUrl}/participant`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+app.patch(`${apiBaseUrl}/participant`,
+  keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantEditSchema, req.body);

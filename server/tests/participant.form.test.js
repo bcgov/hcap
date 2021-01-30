@@ -12,7 +12,6 @@ const {
 } = require('../services/participants.js');
 const { getReport } = require('../services/reporting.js');
 const { evaluateBooleanAnswer } = require('../validation');
-// require('./util/db');
 
 describe('Participants Service', () => {
   beforeAll(async () => {
@@ -290,8 +289,6 @@ describe('Participants Service', () => {
     const expected = mapRawToEmployerColumns(allParticipants
       .filter((i) => (evaluateBooleanAnswer(i.interested))));
     expect(trimIds(res.data)).toEqual(expect.arrayContaining(expected));
-    // const expected = allParticipants.filter((i) => (evaluateBooleanAnswer(i.interested)));
-    // expect(res.data).toMatchRaw(expected);
   });
 
   it('Status change happy path', async () => {

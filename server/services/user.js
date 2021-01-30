@@ -20,4 +20,13 @@ const getUserSites = async (id) => {
   });
 };
 
-module.exports = { getUser, getUserSites, userRegionQuery };
+const makeUser = async ({ keycloakId, sites }) => {
+  await dbClient.db.saveDoc(collections.USERS, {
+    keycloakId,
+    sites,
+  });
+};
+
+module.exports = {
+  getUser, getUserSites, userRegionQuery, makeUser,
+};

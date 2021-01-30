@@ -8,7 +8,7 @@ describe("Tests the User View", () => {
     // kcNavAs is the command that bypasses keycloak login. First parameter
     // indicates the roles to be implemented upon navigating to the url in the
     // second parameter
-    cy.kcNavAs("MoH", "user-view");
+    cy.kcNavAs("MoH", "user-pending");
     cy.contains('Options').click();
 
     // Cypress locates objects in the DOM via CSS selector syntax. Afterwards,
@@ -24,7 +24,7 @@ describe("Tests the User View", () => {
   });
 
   it("tests successful access request approval", () => {
-    cy.kcNavAs("MoH", "user-view");
+    cy.kcNavAs("MoH", "user-pending");
     cy.contains('Options').click();
     cy.get('div#mui-component-select-role').click();
     cy.get('li').contains("Ministry").click();

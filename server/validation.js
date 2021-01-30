@@ -319,7 +319,12 @@ const NewParticipantSchema = yup.object().shape({
   lastName: yup.string().required('Last Name is required'),
   phoneNumber: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
   emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
-  origin: yup.string().required('Must indicate origin of offer'),
+  origin: yup.string().required('Must indicate origin of offer').oneOf(['internal', 'other'], 'Invalid entry'),
+  otherOrigin: yup.string().when('origin', {
+    is: 'other',
+    then: yup.string().required('Please specify'),
+    otherwise: yup.string().nullable().test('is-null', 'Other origin must be null', (v) => v == null || v === ''),
+  }),
   startDate: yup.string().required('Start date is required').test('is-date', 'Not a valid date', validateDateString),
   hiredDate: yup.string().required('Date hired is required').test('is-date', 'Not a valid date', validateDateString),
   nonHcapOpportunity: yup.boolean().required('Non-Hcap Opportunity is required as true or false'),

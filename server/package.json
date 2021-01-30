@@ -54,7 +54,8 @@
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
       "/node_modules/"
-    ]
+    ],
+    "setupFilesAfterEnv": ["./tests/util/extensions.js"]
   },
   "husky": {
     "hooks": {

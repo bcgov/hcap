@@ -264,21 +264,31 @@ describe('Participants Service', () => {
       regions,
     });
 
-    const filteredParticipants = allParticipants
-      .filter((item) => (
-        evaluateBooleanAnswer(item.interested)
-        && evaluateBooleanAnswer(item.crcClear)));
-
-    expect(res.data.map((item) => (Object.keys(item)))).toEqual(
-      filteredParticipants.map(() => ([
-        'id',
+    const mapRawToEmployerColumns = (a) => {
+      const employerColumns = [ // Fields expected to be returned to employers
         'firstName',
         'lastName',
         'postalCodeFsa',
         'preferredLocation',
         'nonHCAP',
-      ])),
-    );
+        'statusInfo',
+        'progressStats',
+      ];
+      return a.map((i) => (
+        Object.keys(i)
+          .filter((k) => employerColumns.includes(k))
+          .reduce((o, k) => ({ ...o, [k]: i[k] }), { nonHCAP: undefined })
+      ));
+    };
+    const trimIds = (a) => a.map((i) => (
+      Object.keys(i)
+        .filter((k) => !['id', 'callbackStatus'].includes(k)) // TODO: Should not ignore callback status
+        .reduce((o, k) => ({ ...o, [k]: i[k] }), { nonHCAP: undefined })
+    ));
+
+    const expected = mapRawToEmployerColumns(allParticipants
+      .filter((i) => (evaluateBooleanAnswer(i.interested))));
+    expect(trimIds(res.data)).toEqual(expect.arrayContaining(expected));
   });
 
   it('Status change happy path', async () => {

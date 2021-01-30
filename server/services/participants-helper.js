@@ -27,6 +27,7 @@ const decomposeParticipantStatus = (raw, joinNames) => raw.map((participant) => 
   return {
     ...participant.body,
     id: participant.id,
+    updated_at: participant.updated_at || participant.created_at,
     statusInfos,
   };
 });
@@ -237,7 +238,6 @@ class ParticipantsFinder {
           //  we handle in the upper OR array)
           : { or: [{ and: [userRegionQuery(this.user.regions, 'body.preferredLocation')] }] },
         'body.interested': 'yes',
-        'body.crcClear': 'yes',
       };
     return new RegionsFilteredParticipantsFinder(this);
   }

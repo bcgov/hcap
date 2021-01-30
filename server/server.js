@@ -148,7 +148,7 @@ app.post(`${apiBaseUrl}/new-hired-participant`,
     try {
       const user = req.hcapUserInfo;
       const { participantInfo } = req.body;
-      participantInfo.preferredLocation = user.regions[0];
+      [participantInfo.preferredLocation] = user.regions;
       participantInfo.crcClear = 'yes';
       participantInfo.interested = 'yes';
 

@@ -22,6 +22,7 @@ const defaultColumns = [
   { id: 'postalCodeFsa', name: 'FSA' },
   { id: 'preferredLocation', name: 'Preferred Region(s)' },
   { id: 'nonHCAP', name: 'Non-HCAP' },
+  { id: 'callbackStatus', name: 'Callback Status' },
 ];
 
 const sortOrder = [
@@ -37,6 +38,7 @@ const sortOrder = [
   'interested',
   'nonHCAP',
   'crcClear',
+  'callbackStatus',
   'engage',
 ];
 
@@ -444,6 +446,8 @@ export default () => {
 
       setColumns(oldColumns => {
         setHideLastNameAndEmailFilter(['Available Participants', 'Archived Candidates'].includes(tabValue));
+
+        if (tabValue !== 'Available Participants') oldColumns = oldColumns.filter(column => column.id !== 'callbackStatus');
 
         if (['My Candidates', 'Archived Candidates'].includes(tabValue) && !oldColumns.find(column => column.id === 'status'))
           return [

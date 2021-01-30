@@ -93,7 +93,8 @@ export default () => {
             <Route exact path={Routes.ParticipantForm} component={ParticipantForm} />
             <Route exact path={Routes.ParticipantConfirmation} component={ParticipantConfirmation} />
             <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />
-            <PrivateRoute exact path={Routes.UserView} component={UserView} />
+            <PrivateRoute exact path={Routes.UserPending} component={UserView} />
+            <PrivateRoute exact path={Routes.UserEdit} component={UserView} />
             <PrivateRoute exact path={Routes.ReportingView} component={ReportingView} />
             <PrivateRoute exact path={Routes.EOIView} component={EOIView} />
             <PrivateRoute exact path={Routes.EOIViewDetails} component={EOIViewDetails} />

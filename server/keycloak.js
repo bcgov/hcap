@@ -127,12 +127,24 @@ class Keycloak { // Wrapper class around keycloak-connect
     }
   }
 
-  async getUsers() {
+  async getUsers(ignorePendings) {
     await this.authenticateIfNeeded();
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-    const url = `${this.authUrl}/admin/realms/${this.realm}/users?briefRepresentation=true&max=1000000`;
-    const response = await axios.get(url, config);
-    return response.data;
+
+    const getData = async (url) => {
+      const response = await axios.get(url, config);
+      return response.data.filter((user) => user.username !== 'service-account');
+    };
+
+    if (!ignorePendings) {
+      return getData(`${this.authUrl}/admin/realms/${this.realm}/users?briefRepresentation=true&max=1000000`);
+    }
+
+    const results = await Promise.all(
+      ['ministry_of_health', 'employer', 'health_authority']
+        .map(async (role) => getData(`${this.authUrl}/admin/realms/${this.realm}/clients/${this.clientIdMap[this.clientNameFrontend]}/roles/${role}/users?briefRepresentation=true&max=1000000`)),
+    );
+    return results.flat();
   }
 
   async approvePendingRequest(userId, role, regions) {

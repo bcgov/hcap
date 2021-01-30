@@ -283,7 +283,7 @@ describe('Participants Service', () => {
     };
     const trimIds = (a) => a.map((i) => (
       Object.keys(i)
-        .filter((k) => k !== 'id')
+        .filter((k) => !['id', 'callbackStatus'].includes(k)) // TODO: Should not ignore callback status
         .reduce((o, k) => ({ ...o, [k]: i[k] }), { nonHCAP: undefined })
     ));
 

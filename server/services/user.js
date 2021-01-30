@@ -13,4 +13,11 @@ const getUser = async (id) => {
   return dbClient.db[collections.USERS].findDoc(query, options);
 };
 
-module.exports = { getUser, userRegionQuery };
+const getUserSites = async (id) => {
+  const user = await getUser(id);
+  return dbClient.db[collections.EMPLOYER_SITES].findDoc({
+    siteId: user.sites.map((item) => item.toString()),
+  });
+};
+
+module.exports = { getUser, getUserSites, userRegionQuery };

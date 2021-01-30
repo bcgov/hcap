@@ -9,6 +9,7 @@ const {
 } = require('./services/participants.js');
 const { getEmployers, saveSites, getSites } = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
+const { getUserSites } = require('./services/user.js');
 const {
   validate, EmployerFormSchema, AccessRequestApproval,
   ParticipantQuerySchema, ParticipantStatusChange,
@@ -232,6 +233,30 @@ app.get(`${apiBaseUrl}/pending-users`,
       createdAt: dayjs(user.createdTimestamp).format('YYYY-MM-DD HH:mm'),
     }));
     return res.json({ data: scrubbed });
+  }));
+
+// Get users from Keycloak
+app.get(`${apiBaseUrl}/users`,
+  keycloak.allowRolesMiddleware('ministry_of_health'),
+  asyncMiddleware(async (req, res) => {
+    const users = await keycloak.getUsers(true);
+    const scrubbed = users.map((user) => ({
+      id: user.id,
+      emailAddress: user.email,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      createdAt: dayjs(user.createdTimestamp).format('YYYY-MM-DD HH:mm'),
+    }));
+    return res.json({ data: scrubbed });
+  }));
+
+// Get user sites
+app.get(`${apiBaseUrl}/user-sites`,
+  keycloak.allowRolesMiddleware('ministry_of_health'),
+  asyncMiddleware(async (req, res) => {
+    const sites = await getUserSites(req.query.id);
+    return res.json({ data: sites });
   }));
 
 app.post(`${apiBaseUrl}/employer-sites`,

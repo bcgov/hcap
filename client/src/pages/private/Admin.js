@@ -77,10 +77,10 @@ export default () => {
                 { renderAdminButton(Routes.EOIView, 'View Employers') }
               </CheckPermissions>
               <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-                { renderAdminButton(Routes.UserView, 'View Access Requests') }
+                { renderAdminButton(Routes.UserPending, 'View Access Requests') }
               </CheckPermissions>
               <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-                { renderAdminButton(Routes.UserManage, 'Manage Users') }
+                { renderAdminButton(Routes.UserEdit, 'Manage Users') }
               </CheckPermissions>
               <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
                 { renderAdminButton(Routes.ReportingView, 'View Milestone Reports') }

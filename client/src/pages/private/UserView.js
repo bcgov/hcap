@@ -6,9 +6,10 @@ import { Box, Typography } from '@material-ui/core';
 import store from 'store';
 import { useToast } from '../../hooks';
 import { Button, Page, Table, CheckPermissions, Dialog } from '../../components/generic';
-import { ApproveAccessRequestSchema, ToastStatus } from '../../constants';
+import { ApproveAccessRequestSchema, Routes, ToastStatus } from '../../constants';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../../components/fields';
+import { useLocation } from 'react-router-dom'
 
 const columns = [
   { id: 'firstName', name: 'First Name' },
@@ -29,11 +30,13 @@ export default () => {
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUserSites, setSelectedUserSites] = useState(null); // TODO HCAP-328
   const [rows, setRows] = useState([]);
 
   const [orderBy, setOrderBy] = useState(columns[4].id);
 
   const history = useHistory();
+  const location = useLocation();
   const { openToast } = useToast();
 
   const handleRequestSort = (event, property) => {
@@ -50,16 +53,16 @@ export default () => {
     });
     if (response.ok) {
       setModalOpen(false);
-      fetchPendingUsers();
+      fetchUsers({ pending: location.pathname === Routes.UserPending });
       openToast({ status: ToastStatus.Success, message: 'Access request approved' });
     } else {
       openToast({ status: ToastStatus.Error, message: 'Access request approval failed' });
     }
   };
 
-  const fetchPendingUsers = async () => {
+  const fetchUsers = async ({ pending }) => {
     setLoadingData(true);
-    const response = await fetch('/api/v1/pending-users', {
+    const response = await fetch(`/api/v1/${pending ? 'pending-users' : 'users'}`, {
       headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
       method: 'GET',
     });
@@ -78,8 +81,21 @@ export default () => {
           id: row.id,
           details: (
             <Button
-              onClick={() => {
+              onClick={async () => {
                 setSelectedUserId(row.id);
+                if (!pending) {
+                  const response = await fetch(`/api/v1/user-sites?id=${row.id}`, {
+                    headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
+                    method: 'GET',
+                  });
+
+                  if (response.ok) {
+                    const { data } = await response.json();
+                    setSelectedUserSites(data);
+                    setModalOpen(true);
+                    return;
+                  }
+                }
                 setModalOpen(true);
               }}
               variant="outlined"
@@ -130,9 +146,9 @@ export default () => {
     };
 
     fetchUserInfo();
-    fetchPendingUsers();
+    fetchUsers({ pending: location.pathname === Routes.UserPending });
     fetchSites();
-  }, [history]);
+  }, [history, location]);
 
   const initialValues = {
     sites: [],
@@ -144,7 +160,7 @@ export default () => {
   return (
     <Page>
       <Dialog
-        title="Approve Access Request"
+        title={location.pathname === Routes.UserPending ? 'Approve Access Request' : 'Edit User'}
         open={modalOpen}
         onClose={() => setModalOpen(false)}
       >
@@ -223,7 +239,7 @@ export default () => {
                   }}
                 />
               </Box>}
-            {(values.role === 'ministry_of_health') && <Box mt={3}>
+              {(values.role === 'ministry_of_health') && <Box mt={3}>
                 <Field
                   name="acknowledgement"
                   component={RenderCheckbox}
@@ -261,7 +277,9 @@ export default () => {
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
           <Box pt={4} pb={4} pl={2} pr={2}>
             <Typography variant="subtitle1" gutterBottom>
-              {isPendingRequests ? 'Pending Access Requests' : 'No pending access requests'}
+              {location.pathname === Routes.UserPending
+                ? isPendingRequests ? 'Pending Access Requests' : 'No pending access requests'
+                : 'Users Management'}
             </Typography>
           </Box>
           {isPendingRequests && <Box pt={2} pb={2} pl={2} pr={2} width="100%">

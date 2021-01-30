@@ -71,7 +71,7 @@ describe("Participant View", () => {
   });
 
   it("Uses the MoH edit feature", () => {
-    cy.intercept('post','/api/v1/participant', (req) => {
+    cy.intercept('patch','/api/v1/participant', (req) => {
       expect(req.body.history[0].changes[0]).to.deep.equal({field: "firstName", from: "Graham", to: "Animal"});
     }).as('postChanges');
     cy.kcNavAs('ministry_of_health', 'participant-view');

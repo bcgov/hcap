@@ -160,13 +160,11 @@ app.patch(`${apiBaseUrl}/participant`,
       ? { ...o, [k]: req.body[k] }
       : o
     ), {});
-    console.log('req.body');
-    console.log(req.body);
     await validate(ParticipantEditSchema, req.body);
     const user = req.hcapUserInfo;
     const result = await updateParticipant(req.body);
     logger.info({
-      action: 'participant_updated',
+      action: 'participant_patch',
       performed_by: {
         username: user.username,
         id: user.id,

@@ -151,7 +151,7 @@ app.patch(`${apiBaseUrl}/participant`,
     const user = req.hcapUserInfo;
     const result = await updateParticipant(req.body);
     logger.info({
-      action: 'participant_get',
+      action: 'participant_updated',
       performed_by: {
         username: user.username,
         id: user.id,

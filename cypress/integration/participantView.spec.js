@@ -58,9 +58,10 @@ describe("Participant View", () => {
       "otherOrigin": '',
       "nonHcapOpportunity": false,
       "contactedDate": "2020/10/10",
-      "offerDate": "2020/11/11",
+      "hiredDate": "2020/11/11",
       "startDate": "2020/12/12",
-      "site": 2
+      "site": 2,
+      "acknowledge": true,
     };
 
     cy.kcNavAs('employer', 'participant-view');

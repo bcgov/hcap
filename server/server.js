@@ -143,10 +143,25 @@ app.get(`${apiBaseUrl}/participant`,
   }));
 
 // Update participant data
+const patchableFields = [
+  'firstName',
+  'lastName',
+  'emailAddress',
+  'phoneNumber',
+  'interest',
+  'history',
+];
+
 app.patch(`${apiBaseUrl}/participant`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
+    req.body = Object.keys(req.body).reduce((o, k) => (patchableFields.includes(k)
+      ? { ...o, [k]: req.body[k] }
+      : o
+    ), {});
+    console.log('req.body');
+    console.log(req.body);
     await validate(ParticipantEditSchema, req.body);
     const user = req.hcapUserInfo;
     const result = await updateParticipant(req.body);

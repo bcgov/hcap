@@ -565,5 +565,6 @@ describe('Participants Service', () => {
     await updateParticipant(reduceParticipant);
     const query2 = await getParticipantByID(reduceParticipant);
     expect(query2[0].firstName).toEqual('Eddy');
+    expect(query2[0].history.length).toEqual(1);
   });
 });

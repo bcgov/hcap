@@ -55,6 +55,7 @@ describe("Participant View", () => {
       "phoneNumber": "3141592654",
       "emailAddress": "tiddlywhiskers@ca.ts",
       "origin": "internal",
+      "otherOrigin": '',
       "nonHcapOpportunity": false,
       "contactedDate": "2020/10/10",
       "offerDate": "2020/11/11",

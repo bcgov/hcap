@@ -540,15 +540,30 @@ describe('Participants Service', () => {
       preferredLocation: 'Fraser',
     };
 
+    const patchableFields = [
+      'firstName',
+      'lastName',
+      'emailAddress',
+      'phoneNumber',
+      'interest',
+      'history',
+      'id',
+    ];
+
     await makeParticipant(participant);
     const participants = await getParticipants({ isMoH: true });
     participant.id = participants.data[0].id;
 
-    const query = await getParticipantByID(participant);
-    expect(query[0].firstName).toEqual(participant.firstName);
-    participant.history = [{ timestamp: new Date(), changes: [{ field: 'firstName', from: 'Eduardo', to: 'Eddy' }] }];
-    await updateParticipant(participant);
-    const query2 = await getParticipantByID(participant);
+    const reduceParticipant = Object.keys(participant).reduce((o, k) => (patchableFields.includes(k)
+      ? { ...o, [k]: participant[k] }
+      : o
+    ), {});
+
+    const query = await getParticipantByID(reduceParticipant);
+    expect(query[0].firstName).toEqual(reduceParticipant.firstName);
+    reduceParticipant.history = [{ timestamp: new Date(), changes: [{ field: 'firstName', from: 'Eduardo', to: 'Eddy' }] }];
+    await updateParticipant(reduceParticipant);
+    const query2 = await getParticipantByID(reduceParticipant);
     expect(query2[0].firstName).toEqual('Eddy');
   });
 });

@@ -6,9 +6,16 @@ import Tab from '@material-ui/core/Tab';
 import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
 import InfoIcon from '@material-ui/icons/Info';
-import { ToastStatus, InterviewingFormSchema, RejectedFormSchema, HireFormSchema, HiredParticipantSchema } from '../../constants';
+import { 
+  ToastStatus, 
+  InterviewingFormSchema,
+  RejectedFormSchema,
+  HireFormSchema,
+  HiredParticipantSchema,
+  EditParticipantFormSchema,
+} from '../../constants';
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
-import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipantForm } from '../../components/modal-forms';
+import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipantForm, EditParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { ComponentTooltip } from '../../components/generic/ComponentTooltip';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
@@ -40,6 +47,7 @@ const sortOrder = [
   'crcClear',
   'callbackStatus',
   'engage',
+  'edit',
 ];
 
 const tabs = { // Tabs, associated allowed roles, displayed statuses
@@ -219,30 +227,30 @@ export default () => {
 
   const fetchParticipants = async (offset, regionFilter, fsaFilter, lastNameFilter,
     emailFilter, sortField, sortDirection, statusFilters) => {
-    const queries = [
-      sortField && `sortField=${sortField}`,
-      offset && `offset=${offset}`,
-      sortDirection && `sortDirection=${sortDirection}`,
-      regionFilter && `regionFilter=${regionFilter}`,
-      fsaFilter && `fsaFilter=${fsaFilter}`,
-      lastNameFilter && `lastNameFilter=${lastNameFilter}`,
-      emailFilter && `emailFilter=${emailFilter}`,
-      ...statusFilters && statusFilters.map(status => `statusFilters[]=${status}`),
-    ].filter(item => item).join('&');
+      const queries = [
+        sortField && `sortField=${sortField}`,
+        offset && `offset=${offset}`,
+        sortDirection && `sortDirection=${sortDirection}`,
+        regionFilter && `regionFilter=${regionFilter}`,
+        fsaFilter && `fsaFilter=${fsaFilter}`,
+        lastNameFilter && `lastNameFilter=${lastNameFilter}`,
+        emailFilter && `emailFilter=${emailFilter}`,
+        ...statusFilters && statusFilters.map(status => `statusFilters[]=${status}`),
+      ].filter(item => item).join('&');
 
-    const response = await fetch(`/api/v1/participants?${queries}`, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-type': 'application/json',
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
+      const response = await fetch(`/api/v1/participants?${queries}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-type': 'application/json',
+          'Authorization': `Bearer ${store.get('TOKEN')}`,
+        },
+        method: 'GET',
+      });
 
-    if (response.ok) {
-      return response.json();
-    }
-  };
+      if (response.ok) {
+        return response.json();
+      }
+    };
 
   const emailAddressMask = '***@***.***';
   const phoneNumberMask = '(***) ***-****';
@@ -391,6 +399,7 @@ export default () => {
             { id: 'interested', name: 'Interest' },
             { id: 'crcClear', name: 'CRC Clear' },
             { id: 'statusInfo', name: 'Status' },
+            { id: 'edit' },
           );
         }
 
@@ -478,6 +487,7 @@ export default () => {
     if (activeModalForm === 'interviewing') return 'Interview Participant';
     if (activeModalForm === 'rejected') return 'Archive Participant';
     if (activeModalForm === 'new-participant') return 'Add New Non-Portal Hire';
+    if (activeModalForm === 'edit-participant') return 'Edit Participant';
     return 'Change Participant Status';
   };
 
@@ -501,7 +511,7 @@ export default () => {
           alignItems: 'center',
           marginBottom: 10,
         }}><InfoIcon color="secondary" style={{ marginRight: 10 }} fontSize="small" />
-        This candidate was hired by another employer.</div>
+          This candidate was hired by another employer.</div>
         {tabValue !== 'Archived Candidates' && <div style={{
           display: 'flex',
           flexDirection: 'row',
@@ -588,18 +598,51 @@ export default () => {
           }}
           onClose={defaultOnClose}
         />}
+        {activeModalForm === 'edit-participant' && <EditParticipantForm
+          initialValues={{
+            ...actionMenuParticipant
+          }}
+          validationSchema={EditParticipantFormSchema}
+          onSubmit={async (values) => {
+            const history = {
+              timestamp: new Date(),
+              changes: [],
+            };
+            Object.keys(values).forEach(key => {
+              if (values[key] !== actionMenuParticipant[key]) {
+                history.changes.push({
+                  field: key,
+                  from: actionMenuParticipant[key],
+                  to: values[key],
+                });
+              }
+            });
+            values.history = (actionMenuParticipant.history)? [history, ...actionMenuParticipant.history] : [history];
+            const response = await fetch('/api/v1/participant', {
+              method: 'PATCH',
+              headers: {
+                'Authorization': `Bearer ${store.get('TOKEN')}`,
+                'Accept': 'application/json',
+                'Content-type': 'application/json',
+              },
+              body: JSON.stringify(values),
+            });
+
+            if (response.ok) {
+              forceReload(pagination);
+              defaultOnClose();
+            }
+          }}
+
+          onClose={defaultOnClose}
+
+        />}
         {activeModalForm === 'new-participant' && <NewParticipantForm
           sites={sites}
           initialValues={{
-            firstName: '',
-            lastName: '',
-            phoneNumber: '',
-            emailAddress: '',
-            origin: '',
             nonHcapOpportunity: false,
             positionTitle: '',
             positionType: '',
-            contactedDate: '',
             offerDate: '',
             startDate: '',
             site: '',
@@ -705,9 +748,9 @@ export default () => {
             </Grid>
             {tabValue === "Hired Candidates" && <Grid container item xs={2} style={{'marginLeft': 'auto', 'marginRight': 20}}>
               <Button
-              onClick={() => setActiveModalForm("new-participant")}
-              text="Add Non-Portal Hire"
-              size="medium"
+                onClick={() => setActiveModalForm("new-participant")}
+                text="Add Non-Portal Hire"
+                size="medium"
               />
             </Grid>}
           </Grid>
@@ -746,6 +789,30 @@ export default () => {
                       text="Actions"
                     />
                   }
+                  if (columnId === 'edit') {
+                    return <Button
+                      onClick={async () => {
+                        // Get data from row.id
+                        const response = await fetch(`/api/v1/participant?id=${row.id}`, {
+                          headers: {
+                            'Accept': 'application/json',
+                            'Content-type': 'application/json',
+                            'Authorization': `Bearer ${store.get('TOKEN')}`,
+                          },
+                          method: 'GET',
+                        });
+
+                        const participant = await response.json();
+
+                        setActionMenuParticipant(participant[0]);
+                        setActiveModalForm('edit-participant');
+                        setAnchorElement(null);
+                      }}
+                      variant="outlined"
+                      size="small"
+                      text="Edit"
+                    />
+                  }
                   return row[columnId];
                 }
               }
@@ -755,7 +822,7 @@ export default () => {
             />
           </Box>
         </Grid>
-        <Menu
+        {(!roles.includes('ministry_of_health')) && (!roles.includes('superuser')) && <Menu
           keepMounted
           open={actionMenuParticipant != null && activeModalForm == null}
           anchorEl={anchorElement}
@@ -768,6 +835,7 @@ export default () => {
           {['prospecting', 'interviewing', 'offer_made'].includes(actionMenuParticipant?.status) && <MenuItem onClick={() => setActiveModalForm('rejected')}>Archive</MenuItem>}
           {actionMenuParticipant?.status === 'rejected' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Re-engage</MenuItem>}
         </Menu>
+        }
       </CheckPermissions>
     </Page>
   );

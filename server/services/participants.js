@@ -71,6 +71,28 @@ const setParticipantStatus = async (
   return { status };
 });
 
+const getParticipantByID = async (participantInfo) => {
+  const participant = await dbClient.db[collections.PARTICIPANTS].findDoc({
+    id: participantInfo.id,
+  });
+  return participant;
+};
+
+const updateParticipant = async (participantInfo) => {
+  // The below reduce function unpacks the most recent changes in the history
+  // and builds them into an object to be used for the update request
+  const changes = participantInfo.history[0].changes.reduce((acc, change) => {
+    const { field, to } = change;
+    return { ...acc, [field]: to };
+  }, {});
+
+  const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc({
+    id: participantInfo.id,
+  }, changes);
+
+  return participant;
+};
+
 const getParticipants = async (user, pagination, sortField,
   regionFilter, fsaFilter, lastNameFilter, emailFilter, statusFilters) => {
   const participantsFinder = new ParticipantsFinder(dbClient, user);
@@ -271,6 +293,8 @@ const makeParticipant = async (participantJson) => {
 module.exports = {
   parseAndSaveParticipants,
   getParticipants,
+  getParticipantByID,
+  updateParticipant,
   setParticipantStatus,
   makeParticipant,
 };

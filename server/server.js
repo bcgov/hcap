@@ -5,7 +5,12 @@ const path = require('path');
 const dayjs = require('dayjs');
 const multer = require('multer');
 const {
-  getParticipants, parseAndSaveParticipants, setParticipantStatus, makeParticipant,
+  getParticipants,
+  getParticipantByID,
+  updateParticipant,
+  parseAndSaveParticipants,
+  setParticipantStatus,
+  makeParticipant,
 } = require('./services/participants.js');
 const { getEmployers, saveSites, getSites } = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
@@ -13,6 +18,7 @@ const { getUserSites } = require('./services/user.js');
 const {
   validate, EmployerFormSchema, AccessRequestApproval,
   ParticipantQuerySchema, ParticipantStatusChange,
+  ParticipantEditSchema,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -111,6 +117,60 @@ app.get(`${apiBaseUrl}/participants`,
       },
       // Slicing to one page of results
       ids_viewed: result.data.slice(0, 10).map((person) => person.id),
+    });
+    return res.json(result);
+  }));
+
+app.get(`${apiBaseUrl}/participant`,
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    await validate(ParticipantQuerySchema, req.query);
+    const user = req.hcapUserInfo;
+    const id = req.query;
+    const result = await getParticipantByID(id);
+    logger.info({
+      action: 'participant_get',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      on: {
+        id,
+      },
+    });
+    return res.json(result);
+  }));
+
+// Update participant data
+const patchableFields = [
+  'firstName',
+  'lastName',
+  'emailAddress',
+  'phoneNumber',
+  'interest',
+  'history',
+];
+
+app.patch(`${apiBaseUrl}/participant`,
+  keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    req.body = Object.keys(req.body).reduce((o, k) => (patchableFields.includes(k)
+      ? { ...o, [k]: req.body[k] }
+      : o
+    ), {});
+    console.log('req.body');
+    console.log(req.body);
+    await validate(ParticipantEditSchema, req.body);
+    const user = req.hcapUserInfo;
+    const result = await updateParticipant(req.body);
+    logger.info({
+      action: 'participant_updated',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
     });
     return res.json(result);
   }));

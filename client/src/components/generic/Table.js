@@ -180,7 +180,7 @@ export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows
             {columns.map((column, index) => (
               <StyledHeaderTableCell key={index}>
                 {column.name && <TableSortLabel // Disable sorting if column has no header
-                  disabled={isLoading}
+                  disabled={isLoading || column.sortable === false }
                   active={orderBy === column.id}
                   direction={orderBy === column.id ? order : 'asc'}
                   onClick={createSortHandler(column.id)}>

@@ -29,7 +29,7 @@ const defaultColumns = [
   { id: 'postalCodeFsa', name: 'FSA' },
   { id: 'preferredLocation', name: 'Preferred Region(s)' },
   { id: 'nonHCAP', name: 'Non-HCAP' },
-  { id: 'callbackStatus', name: 'Callback Status' },
+  { id: 'callbackStatus', name: 'Callback Status', sortable: false },
 ];
 
 const sortOrder = [

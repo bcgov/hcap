@@ -6,8 +6,8 @@ import Tab from '@material-ui/core/Tab';
 import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
 import InfoIcon from '@material-ui/icons/Info';
-import { 
-  ToastStatus, 
+import {
+  ToastStatus,
   InterviewingFormSchema,
   RejectedFormSchema,
   HireFormSchema,
@@ -647,9 +647,8 @@ export default () => {
             origin: '',
             otherOrigin: '',
             nonHcapOpportunity: false,
-            positionTitle: '',
-            positionType: '',
-            offerDate: '',
+            contactedDate: '',
+            hiredDate: '',
             startDate: '',
             site: '',
             acknowledge: false,
@@ -665,9 +664,10 @@ export default () => {
               otherOrigin: values.otherOrigin,
               nonHcapOpportunity: values.nonHcapOpportunity,
               contactedDate: values.contactedDate,
-              offerDate: values.offerDate,
+              hiredDate: values.hiredDate,
               startDate: values.startDate,
               site: values.site,
+              acknowledge: values.acknowledge,
             });
           }}
           onClose={defaultOnClose}

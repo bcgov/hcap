@@ -83,7 +83,7 @@ export const NewParticipantForm = ({ initialValues, validationSchema, onSubmit, 
             label="* Date Contacted"
           />
           <Field
-            name="offerDate"
+            name="hiredDate"
             component={RenderDateField}
             maxDate={getTodayDate()}
             label="* Date Offer Accepted"

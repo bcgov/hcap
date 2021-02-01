@@ -210,12 +210,12 @@ export const HiredParticipantSchema = yup.object().noUnknown('Unknown field in f
     then: yup.string().required('Please specify'),
     otherwise: yup.string().nullable().test('is-null', 'Other origin must be null', (v) => v == null || v === ''),
   }),
-  contactedDate: yup.string().required('Date of contact is required').test('is-date', 'Not a valid date in the past', validatePastDateString),
-  startDate: yup.string().required('Start date is required').test('is-date', 'Not a valid date', validateDateString),
-  offerDate: yup.string().required('Date offer accepted  is required').test('is-date', 'Not a valid date in the past', validatePastDateString),
   nonHcapOpportunity: yup.boolean().required('Non-Hcap Opportunity is required as true or false'),
-  acknowledge: yup.boolean().test('is-true', 'Must acknowledge participant acceptance', (v) => v === true),
+  contactedDate: yup.string().required('Date of contact is required').test('is-date', 'Not a valid date in the past', validatePastDateString),
+  hiredDate: yup.string().required('Date offer accepted  is required').test('is-date', 'Not a valid date in the past', validatePastDateString),
+  startDate: yup.string().required('Start date is required').test('is-date', 'Not a valid date', validateDateString),
   site: yup.number().required('Site is required'),
+  acknowledge: yup.boolean().test('is-true', 'Must acknowledge participant acceptance', (v) => v === true),
 });
 
 export const EditParticipantFormSchema = yup.object().shape({

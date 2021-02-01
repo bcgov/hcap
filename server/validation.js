@@ -69,6 +69,11 @@ const validateDateString = (s) => {
   return typeof date === 'number' && !Number.isNaN(date);
 };
 
+const validatePastDateString = (s) => {
+  if (!validateDateString(s)) return false;
+  return Date.parse(s) <= new Date();
+};
+
 const isBooleanValue = (val) => typeof val === 'string' && ['yes', 'no'].includes(val.toLowerCase());
 
 const evaluateBooleanAnswer = (val) => (isBooleanValue(val) && val.toLowerCase() === 'yes');
@@ -325,11 +330,12 @@ const NewParticipantSchema = yup.object().shape({
     then: yup.string().required('Please specify'),
     otherwise: yup.string().nullable().test('is-null', 'Other origin must be null', (v) => v == null || v === ''),
   }),
-  startDate: yup.string().required('Start date is required').test('is-date', 'Not a valid date', validateDateString),
-  hiredDate: yup.string().required('Date hired is required').test('is-date', 'Not a valid date', validateDateString),
   nonHcapOpportunity: yup.boolean().required('Non-Hcap Opportunity is required as true or false'),
-  acknowledge: yup.boolean().test('is-true', 'Must acknowledge participant acceptance', (v) => v === true),
+  contactedDate: yup.string().required('Date of contact is required').test('is-date', 'Not a valid date in the past', validatePastDateString),
+  hiredDate: yup.string().required('Date hired is required').test('is-date', 'Not a valid date', validateDateString),
+  startDate: yup.string().required('Start date is required').test('is-date', 'Not a valid date', validateDateString),
   site: yup.number().required('Site is required'),
+  acknowledge: yup.boolean().test('is-true', 'Must acknowledge participant acceptance', (v) => v === true),
 });
 
 const ParticipantQuerySchema = yup.object().shape({

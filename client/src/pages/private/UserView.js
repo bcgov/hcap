@@ -98,6 +98,7 @@ export default () => {
                 }
                 setModalOpen(true);
               }}
+              disabled={!pending} // TODO HCAP-328
               variant="outlined"
               size="small"
               text="Options"

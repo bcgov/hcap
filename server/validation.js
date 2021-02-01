@@ -349,6 +349,7 @@ const ParticipantEditSchema = yup.object().noUnknown('Unknown field in entry').s
   emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
   interested: yup.string().nullable(),
   history: yup.array().required('Edit history is required'),
+  id: yup.number().required('User ID is required'),
 });
 
 const validate = async (schema, data) => schema.validate(data, { strict: true });

@@ -71,7 +71,7 @@ export const NewParticipantForm = ({ initialValues, validationSchema, onSubmit, 
             options={[{value: "internal", label: "Internal"}, {value: "other", label: "Other"}]}
           />
           { values.origin === "other" && <Field
-            name="other-origin"
+            name="otherOrigin"
             component={RenderTextField}
             label="* Where did the offer originate?"
           />

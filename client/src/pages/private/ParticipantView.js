@@ -640,6 +640,12 @@ export default () => {
         {activeModalForm === 'new-participant' && <NewParticipantForm
           sites={sites}
           initialValues={{
+            firstName: '',
+            lastName: '',
+            phoneNumber: '',
+            emailAddress: '',
+            origin: '',
+            otherOrigin: '',
             nonHcapOpportunity: false,
             positionTitle: '',
             positionType: '',
@@ -656,6 +662,7 @@ export default () => {
               phoneNumber: values.phoneNumber,
               emailAddress: values.emailAddress,
               origin: values.origin,
+              otherOrigin: values.otherOrigin,
               nonHcapOpportunity: values.nonHcapOpportunity,
               contactedDate: values.contactedDate,
               offerDate: values.offerDate,

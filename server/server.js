@@ -157,13 +157,10 @@ app.patch(`${apiBaseUrl}/participant`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    console.log(req.body);
     req.body = Object.keys(req.body).reduce((o, k) => (patchableFields.includes(k)
       ? { ...o, [k]: req.body[k] }
       : o
     ), {});
-    console.log('changed to');
-    console.log(req.body);
     await validate(ParticipantEditSchema, req.body);
     const user = req.hcapUserInfo;
     const result = await updateParticipant(req.body);

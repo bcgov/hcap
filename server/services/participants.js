@@ -71,12 +71,12 @@ const setParticipantStatus = async (
   return { status };
 });
 
-const getParticipantByID = async (participantInfo) => dbClient.db.withTransaction(async (tx) => {
-  const participant = await tx[collections.PARTICIPANTS].findDoc({
+const getParticipantByID = async (participantInfo) => {
+  const participant = await dbClient.db[collections.PARTICIPANTS].findDoc({
     id: participantInfo.id,
   });
   return participant;
-});
+};
 
 const updateParticipant = async (participantInfo) => dbClient.db.withTransaction(async (tx) => {
   // The below reduce function unpacks the most recent changes in the history

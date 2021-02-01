@@ -78,7 +78,7 @@ const getParticipantByID = async (participantInfo) => {
   return participant;
 };
 
-const updateParticipant = async (participantInfo) => dbClient.db.withTransaction(async (tx) => {
+const updateParticipant = async (participantInfo) => {
   // The below reduce function unpacks the most recent changes in the history
   // and builds them into an object to be used for the update request
   const changes = participantInfo.history[0].changes.reduce((acc, change) => {
@@ -86,16 +86,12 @@ const updateParticipant = async (participantInfo) => dbClient.db.withTransaction
     return { ...acc, [field]: to };
   }, {});
 
-  await tx[collections.PARTICIPANTS].updateDoc({
+  const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc({
     id: participantInfo.id,
   }, changes);
 
-  const participant = await tx[collections.PARTICIPANTS].findDoc({
-    id: participantInfo.id,
-  });
-
   return participant;
-});
+};
 
 const getParticipants = async (user, pagination, sortField,
   regionFilter, fsaFilter, lastNameFilter, emailFilter, statusFilters) => {

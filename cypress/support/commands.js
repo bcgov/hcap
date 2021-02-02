@@ -92,15 +92,33 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
     },
   ];
 
-  const participant = [{
+  const today = new Date();
+  const yesterday = new Date();
+  const twoWeeksAgo = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  twoWeeksAgo.setDate(today.getDate() - 14);
+
+  const participants = [{
     "id":1,
     "emailAddress":"tasty@snac.ks",
     "username":"graham",
     "firstName":"Graham",
     "lastName":"Crackers",
     "phoneNumber": 1112223333,
-    "createdAt":"2020-11-12 18:33"
-  }];
+    "createdAt":"2020-11-12 18:33",
+    'updated_at': yesterday.toDateString(),
+  },
+    {
+      "id":2,
+      "emailAddress":"white@pine.grove",
+      "username":"whitepine",
+      "firstName":"White",
+      "lastName":"Pine",
+      "phoneNumber": 1112223333,
+      "createdAt":"2020-11-12 18:33",
+      'updated_at': twoWeeksAgo.toDateString(),
+    }
+  ];
 
   // This function defines the values that will be returned from the call to
   // /protocol/openid-connect/auth
@@ -113,17 +131,7 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
         total: 0,
       },
       roles: [],
-      data: [
-        {
-          "id":1,
-          "emailAddress":"tasty@snac.ks",
-          "username":"graham",
-          "firstName":"Graham",
-          "lastName":"Crackers",
-          "phoneNumber": 1112223333,
-          "createdAt":"2020-11-12 18:33"
-        },
-      ],
+      data: participants,
     };
 
     if (userType.includes("superuser")) {
@@ -174,7 +182,7 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
   cy.intercept("get", `${authBaseUrl}/realms/${realm}/protocol/openid-connect/auth`, userInfo(user));
   cy.intercept('get', 'api/v1/employer-sites', {data: sites});
   cy.intercept('get', 'api/v1/user', { "sites": [2], roles: userInfo(user).roles });
-  cy.intercept('get', `/api/v1/participant?id=1`, participant);
+  cy.intercept('get', `/api/v1/participant?id=1`, participants.filter((ppnt) => ppnt.id === 1));
 
   const url = new URL(`${Cypress.config().baseUrl}/${visitUrl}#state=${state}&session_state=${v4()}&code=${v4()}`);
   cy.visit(url.toString());

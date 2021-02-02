@@ -19,6 +19,7 @@ import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipa
 import { useToast } from '../../hooks';
 import { ComponentTooltip } from '../../components/generic/ComponentTooltip';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
+import { fuzzyDateOffset } from '../../utils';
 
 const pageSize = 10;
 
@@ -29,6 +30,7 @@ const defaultColumns = [
   { id: 'postalCodeFsa', name: 'FSA' },
   { id: 'preferredLocation', name: 'Preferred Region(s)' },
   { id: 'nonHCAP', name: 'Non-HCAP' },
+  { id: 'freshness', name: 'Last Updated' },
   { id: 'callbackStatus', name: 'Callback Status', sortable: false },
 ];
 
@@ -46,6 +48,7 @@ const sortOrder = [
   'nonHCAP',
   'crcClear',
   'callbackStatus',
+  'freshness',
   'engage',
   'edit',
 ];
@@ -131,6 +134,8 @@ export default () => {
   const [locations, setLocations] = useState([]);
 
   const handleRequestSort = (event, property) => {
+    if (property === 'freshness') property = 'updated_at';
+
     setOrder({
       field: property,
       direction: order.direction === 'desc' ? 'asc' : 'desc',
@@ -193,7 +198,8 @@ export default () => {
 
     const filteredRows = [];
     data && data.forEach(dataItem => {
-
+      console.log("raw data dumperino");
+      console.log(dataItem);
       const item = { ...dataItem };
       if (!item.emailAddress) {
         item.emailAddress = emailAddressMask;
@@ -358,6 +364,7 @@ export default () => {
       total: pagination.total,
       currentPage: currentPage,
     });
+
     const newRows = filterData(data, columns);
     setRows(newRows);
     setLoadingData(false);
@@ -819,6 +826,9 @@ export default () => {
                       size="small"
                       text="Edit"
                     />
+                  }
+                  if (columnId === 'freshness') {
+                    return fuzzyDateOffset(row.engage.updated_at);
                   }
                   return row[columnId];
                 }

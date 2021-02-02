@@ -156,6 +156,7 @@ const getParticipants = async (user, pagination, sortField,
           interested: item.interested,
           crcClear: item.crcClear,
           statusInfo: returnStatus,
+          updated_at: item.updated_at,
           progressStats,
         };
       }),
@@ -183,6 +184,7 @@ const getParticipants = async (user, pagination, sortField,
         postalCodeFsa: item.postalCodeFsa,
         preferredLocation: item.preferredLocation,
         nonHCAP: item.nonHCAP,
+        updated_at: item.updated_at,
         callbackStatus: callbackStatus(item),
       };
 

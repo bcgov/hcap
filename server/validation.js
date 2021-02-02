@@ -351,7 +351,7 @@ const ParticipantQuerySchema = yup.object().shape({
 const ParticipantEditSchema = yup.object().noUnknown('Unknown field in entry').shape({
   firstName: yup.string().required('First Name is required'),
   lastName: yup.string().required('Last Name is required'),
-  phoneNumber: yup.number().required('Phone number is required').test('is-phone', 'Not a valid phone number', (v) => /^\d{10}$/.test(v.toString())),
+  phoneNumber: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
   emailAddress: yup.string().required('Email address is required').matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
   interested: yup.string().nullable(),
   history: yup.array().required('Edit history is required'),

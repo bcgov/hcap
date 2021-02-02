@@ -604,6 +604,7 @@ export default () => {
           }}
           validationSchema={EditParticipantFormSchema}
           onSubmit={async (values) => {
+            if (values.phoneNumber && Number.isInteger(values.phoneNumber)) values.phoneNumber = values.phoneNumber.toString();
             const history = {
               timestamp: new Date(),
               changes: [],

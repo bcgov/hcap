@@ -228,30 +228,30 @@ export default () => {
 
   const fetchParticipants = async (offset, regionFilter, fsaFilter, lastNameFilter,
     emailFilter, sortField, sortDirection, statusFilters) => {
-      const queries = [
-        sortField && `sortField=${sortField}`,
-        offset && `offset=${offset}`,
-        sortDirection && `sortDirection=${sortDirection}`,
-        regionFilter && `regionFilter=${regionFilter}`,
-        fsaFilter && `fsaFilter=${fsaFilter}`,
-        lastNameFilter && `lastNameFilter=${lastNameFilter}`,
-        emailFilter && `emailFilter=${emailFilter}`,
-        ...statusFilters && statusFilters.map(status => `statusFilters[]=${status}`),
-      ].filter(item => item).join('&');
+    const queries = [
+      sortField && `sortField=${sortField}`,
+      offset && `offset=${offset}`,
+      sortDirection && `sortDirection=${sortDirection}`,
+      regionFilter && `regionFilter=${regionFilter}`,
+      fsaFilter && `fsaFilter=${fsaFilter}`,
+      lastNameFilter && `lastNameFilter=${lastNameFilter}`,
+      emailFilter && `emailFilter=${emailFilter}`,
+      ...statusFilters && statusFilters.map(status => `statusFilters[]=${status}`),
+    ].filter(item => item).join('&');
 
-      const response = await fetch(`/api/v1/participants?${queries}`, {
-        headers: {
-          'Accept': 'application/json',
-          'Content-type': 'application/json',
-          'Authorization': `Bearer ${store.get('TOKEN')}`,
-        },
-        method: 'GET',
-      });
+    const response = await fetch(`/api/v1/participants?${queries}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json',
+        'Authorization': `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
 
-      if (response.ok) {
-        return response.json();
-      }
-    };
+    if (response.ok) {
+      return response.json();
+    }
+  };
 
   const emailAddressMask = '***@***.***';
   const phoneNumberMask = '(***) ***-****';
@@ -323,7 +323,7 @@ export default () => {
         'Accept': 'application/json',
         'Content-type': 'application/json',
       },
-      body: JSON.stringify({participantInfo}),
+      body: JSON.stringify({ participantInfo }),
     });
 
     if (response.ok) {
@@ -398,7 +398,8 @@ export default () => {
         }
 
         // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
-        setLocations((isMoH || isSuperUser) ? Object.values(regionLabelsMap) : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean));
+        const regions = Object.values(regionLabelsMap).filter(value => value !== 'None');
+        setLocations((isMoH || isSuperUser) ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean));
 
         if (!isMoH) {
           resultColumns.push(
@@ -612,7 +613,7 @@ export default () => {
                 });
               }
             });
-            values.history = (actionMenuParticipant.history)? [history, ...actionMenuParticipant.history] : [history];
+            values.history = (actionMenuParticipant.history) ? [history, ...actionMenuParticipant.history] : [history];
             const response = await fetch('/api/v1/participant', {
               method: 'PATCH',
               headers: {
@@ -748,7 +749,7 @@ export default () => {
                 />}
               </Box>
             </Grid>
-            {tabValue === "Hired Candidates" && <Grid container item xs={2} style={{'marginLeft': 'auto', 'marginRight': 20}}>
+            {tabValue === "Hired Candidates" && <Grid container item xs={2} style={{ 'marginLeft': 'auto', 'marginRight': 20 }}>
               <Button
                 onClick={() => setActiveModalForm("new-participant")}
                 text="Add Non-Portal Hire"

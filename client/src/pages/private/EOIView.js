@@ -26,7 +26,7 @@ export default () => {
     { id: 'operatorName', name: 'Operator Name' },
     { id: 'details' },
   ]);
-  const [healthAuthorities, setHealthAuthorities ] = useState([
+  const [healthAuthorities, setHealthAuthorities] = useState([
     'Interior',
     'Fraser',
     'Vancouver Coastal',
@@ -58,8 +58,8 @@ export default () => {
   useEffect(() => {
     setHealthAuthorities(
       (roles.includes("superuser") || roles.includes("ministry_of_health"))
-      ? Object.values(regionLabelsMap) 
-      : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
+        ? Object.values(regionLabelsMap).filter(value => value !== 'None')
+        : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
     );
   }, [roles]);
 

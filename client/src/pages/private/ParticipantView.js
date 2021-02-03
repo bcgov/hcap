@@ -13,6 +13,7 @@ import {
   HireFormSchema,
   HiredParticipantSchema,
   EditParticipantFormSchema,
+  regionLabelsMap,
 } from '../../constants';
 import { Page, Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipantForm, EditParticipantForm } from '../../components/modal-forms';
@@ -366,13 +367,6 @@ export default () => {
   useEffect(() => {
     const resultColumns = [...defaultColumns];
     const currentPage = pagination.currentPage;
-    const locationRoles = {
-      region_interior: 'Interior',
-      region_fraser: 'Fraser',
-      region_vancouver_coastal: 'Vancouver Coastal',
-      region_vancouver_island: 'Vancouver Island',
-      region_northern: 'Northern'
-    };
 
     const fetchUserInfo = async () => {
       setLoadingUser(true);
@@ -404,7 +398,7 @@ export default () => {
         }
 
         // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
-        setLocations((isMoH || isSuperUser) ? Object.values(locationRoles) : roles.map((loc) => locationRoles[loc]).filter(Boolean));
+        setLocations((isMoH || isSuperUser) ? Object.values(regionLabelsMap) : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean));
 
         if (!isMoH) {
           resultColumns.push(

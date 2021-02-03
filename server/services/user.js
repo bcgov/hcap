@@ -15,6 +15,7 @@ const getUser = async (id) => {
 
 const getUserSites = async (id) => {
   const user = await getUser(id);
+  if (!user || !user.sites) return [];
   return dbClient.db[collections.EMPLOYER_SITES].findDoc({
     siteId: user.sites.map((item) => item.toString()),
   });

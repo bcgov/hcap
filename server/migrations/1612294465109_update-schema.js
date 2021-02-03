@@ -4,6 +4,8 @@ const { dbClient } = require('../db/db.js');
 
 exports.up = async () => {
   for (const schemaItem of schema) {
-    await dbClient.runRawQuery(schemaItem.participantsStatusTable);
+    for (const index of schemaItem.indexes) {
+      await dbClient.createIndexIfNotExists(schemaItem.collection, index);
+    }
   }
 };

@@ -1,6 +1,4 @@
 export const fuzzyDateOffset = (datestring) => {
-    console.log("datestring");
-    console.log(datestring);
     const offsetTime = new Date(datestring).getTime();
     const currentTime = new Date().getTime();
     const weekInMilliseconds = 7*24*60*60*1000; 

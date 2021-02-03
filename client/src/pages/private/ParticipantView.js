@@ -198,8 +198,6 @@ export default () => {
 
     const filteredRows = [];
     data && data.forEach(dataItem => {
-      console.log("raw data dumperino");
-      console.log(dataItem);
       const item = { ...dataItem };
       if (!item.emailAddress) {
         item.emailAddress = emailAddressMask;

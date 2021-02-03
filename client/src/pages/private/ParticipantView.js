@@ -30,7 +30,7 @@ const defaultColumns = [
   { id: 'postalCodeFsa', name: 'FSA' },
   { id: 'preferredLocation', name: 'Preferred Region(s)' },
   { id: 'nonHCAP', name: 'Non-HCAP' },
-  { id: 'freshness', name: 'Last Updated' },
+  { id: 'updated_at', name: 'Last Updated' },
   { id: 'callbackStatus', name: 'Callback Status', sortable: false },
 ];
 
@@ -48,7 +48,7 @@ const sortOrder = [
   'nonHCAP',
   'crcClear',
   'callbackStatus',
-  'freshness',
+  'updated_at',
   'engage',
   'edit',
 ];
@@ -134,8 +134,6 @@ export default () => {
   const [locations, setLocations] = useState([]);
 
   const handleRequestSort = (event, property) => {
-    if (property === 'freshness') property = 'updated_at';
-
     setOrder({
       field: property,
       direction: order.direction === 'desc' ? 'asc' : 'desc',
@@ -825,7 +823,7 @@ export default () => {
                       text="Edit"
                     />
                   }
-                  if (columnId === 'freshness') {
+                  if (columnId === 'updated_at') {
                     return fuzzyDateOffset(row.engage.updated_at);
                   }
                   return row[columnId];

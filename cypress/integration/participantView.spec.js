@@ -37,7 +37,7 @@ describe("Participant View", () => {
     cy.get('div.MuiSelect-selectMenu').should('not.have.class', 'Mui-disabled');
     cy.get('div.MuiSelect-selectMenu').click();
     cy.get('ul.MuiMenu-list[role=listbox]').should('be.visible');
-    cy.get('ul.MuiMenu-list[role=listbox] > li').should('have.length', 6);
+    cy.get('ul.MuiMenu-list[role=listbox] > li').should('have.length', 7);
   });
 
   it("Visits Participant View as a MoH user", () => {
@@ -45,7 +45,7 @@ describe("Participant View", () => {
     cy.get('div.MuiSelect-selectMenu').should('not.have.class', 'Mui-disabled');
     cy.get('div.MuiSelect-selectMenu').click();
     cy.get('ul.MuiMenu-list[role=listbox]').should('be.visible');
-    cy.get('ul.MuiMenu-list[role=listbox] > li').should('have.length', 6);
+    cy.get('ul.MuiMenu-list[role=listbox] > li').should('have.length', 7);
   });
 
   it("Tests the manual participant adder", () => {

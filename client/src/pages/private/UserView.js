@@ -47,9 +47,9 @@ export default () => {
 
   const handleSubmit = async (values) => {
     const isUserAccessRequest = location.pathname === Routes.UserPending;
-    const response = await fetch(`/api/v1/${isUserAccessRequest ? 'approve-user' : 'update-user'}`, {
+    const response = await fetch(`/api/v1/${isUserAccessRequest ? 'approve-user' : 'user-details'}`, {
       headers: { 'Content-type': 'application/json', 'Authorization': `Bearer ${store.get('TOKEN')}` },
-      method: 'POST',
+      method: isUserAccessRequest ? 'POST' : 'PATCH',
       body: JSON.stringify({ ...values, userId: selectedUserId }),
     });
     if (response.ok) {

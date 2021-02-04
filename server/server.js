@@ -361,7 +361,7 @@ app.get(`${apiBaseUrl}/employer-sites-detail`,
     return res.json({ data: '' });
   }));
 
-app.post(`${apiBaseUrl}/update-user`,
+app.patch(`${apiBaseUrl}/user-details`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -378,7 +378,7 @@ app.post(`${apiBaseUrl}/update-user`,
 
     const user = req.hcapUserInfo;
     logger.info({
-      action: 'update-user_post',
+      action: 'user-details_patch',
       performed_by: {
         username: user.username,
         id: user.id,

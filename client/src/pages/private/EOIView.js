@@ -58,7 +58,7 @@ export default () => {
   useEffect(() => {
     setHealthAuthorities(
       (roles.includes("superuser") || roles.includes("ministry_of_health"))
-        ? Object.values(regionLabelsMap).filter(value => value !== 'None')
+        ? Object.values(regionLabelsMap)
         : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
     );
   }, [roles]);

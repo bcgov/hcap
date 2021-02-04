@@ -311,12 +311,18 @@ app.get(`${apiBaseUrl}/users`,
     return res.json({ data: scrubbed });
   }));
 
-// Get user sites
-app.get(`${apiBaseUrl}/user-sites`,
+// Get user details - Different from /user, this returns the
+// full user sites and role specified in the query id
+app.get(`${apiBaseUrl}/user-details`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
-    const sites = await getUserSites(req.query.id);
-    return res.json({ data: sites });
+    const userId = req.query.id;
+    const roles = await keycloak.getUserRoles(userId);
+    const sites = await getUserSites(userId);
+    return res.json({
+      roles,
+      sites,
+    });
   }));
 
 app.post(`${apiBaseUrl}/employer-sites`,
@@ -355,12 +361,43 @@ app.get(`${apiBaseUrl}/employer-sites-detail`,
     return res.json({ data: '' });
   }));
 
+app.patch(`${apiBaseUrl}/user-details`,
+  keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    await validate(AccessRequestApproval, req.body);
+    await keycloak.setUserRoles(req.body.userId, req.body.role, req.body.regions);
+    await dbClient.db[collections.USERS].updateDoc(
+      {
+        keycloakId: req.body.userId,
+      },
+      {
+        sites: req.body.sites,
+      },
+    );
+
+    const user = req.hcapUserInfo;
+    logger.info({
+      action: 'user-details_patch',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      role_assigned: req.body.role,
+      granted_access_to: req.body.userId,
+      regions_assigned: req.body.regions,
+      siteIds_assigned: req.body.sites,
+    });
+
+    res.json({});
+  }));
+
 app.post(`${apiBaseUrl}/approve-user`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(AccessRequestApproval, req.body);
-    await keycloak.approvePendingRequest(req.body.userId, req.body.role, req.body.regions);
+    await keycloak.setUserRoles(req.body.userId, req.body.role, req.body.regions);
     await dbClient.db.saveDoc(collections.USERS, {
       keycloakId: req.body.userId,
       sites: req.body.sites,

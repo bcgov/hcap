@@ -147,7 +147,7 @@ class Keycloak { // Wrapper class around keycloak-connect
     return results.flat();
   }
 
-  async approvePendingRequest(userId, role, regions) {
+  async setUserRoles(userId, role, regions) {
     if (!Object.keys(this.roleIdMap).includes(role)) throw Error(`Invalid role: ${role}`);
     const regionToRole = (region) => {
       const roleName = Object.keys(regionMap).find((k) => regionMap[k] === region);
@@ -158,16 +158,25 @@ class Keycloak { // Wrapper class around keycloak-connect
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
     const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings/clients/${this.clientIdMap[this.clientNameFrontend]}`;
     {
+      const data = (await this.getUserRoles(userId))
+        .map((item) => ({ name: item, id: this.roleIdMap[item] }));
+      await axios.delete(url, { ...config, data });
+    }
+    {
       const data = [
         ...regions.map(regionToRole).filter((x) => x),
         { name: role, id: this.roleIdMap[role] },
       ];
       await axios.post(url, data, config);
     }
-    {
-      const data = [{ name: 'pending', id: this.roleIdMap.pending }];
-      await axios.delete(url, { ...config, data });
-    }
+  }
+
+  async getUserRoles(userId) {
+    await this.authenticateIfNeeded();
+    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings`;
+    const response = await axios.get(url, config);
+    return response.data.clientMappings[this.clientNameFrontend].mappings.map((item) => item.name);
   }
 
   async getPendingUsers() {

@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
-import { Routes } from '../../constants';
+import { Routes, regionLabelsMap } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 
 export default () => {
@@ -26,7 +26,7 @@ export default () => {
     { id: 'operatorName', name: 'Operator Name' },
     { id: 'details' },
   ]);
-  const [healthAuthorities, setHealthAuthorities ] = useState([
+  const [healthAuthorities, setHealthAuthorities] = useState([
     'Interior',
     'Fraser',
     'Vancouver Coastal',
@@ -56,19 +56,10 @@ export default () => {
   }
 
   useEffect(() => {
-    const locationRoles = {
-      region_interior: 'Interior',
-      region_fraser: 'Fraser',
-      region_vancouver_coastal: 'Vancouver Coastal',
-      region_vancouver_island: 'Vancouver Island',
-      region_northern: 'Northern',
-      none: 'None'
-    };
-
     setHealthAuthorities(
       (roles.includes("superuser") || roles.includes("ministry_of_health"))
-      ? Object.values(locationRoles) 
-      : roles.map((loc) => locationRoles[loc]).filter(Boolean)
+        ? Object.values(regionLabelsMap)
+        : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
     );
   }, [roles]);
 

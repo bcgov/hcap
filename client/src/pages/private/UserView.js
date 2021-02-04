@@ -6,7 +6,7 @@ import { Box, Typography } from '@material-ui/core';
 import store from 'store';
 import { useToast } from '../../hooks';
 import { Button, Page, Table, CheckPermissions, Dialog } from '../../components/generic';
-import { ApproveAccessRequestSchema, Routes, ToastStatus } from '../../constants';
+import { ApproveAccessRequestSchema, Routes, ToastStatus, regionLabelsMap } from '../../constants';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../../components/fields';
 import { useLocation } from 'react-router-dom'
@@ -30,7 +30,7 @@ export default () => {
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const [selectedUserSites, setSelectedUserSites] = useState(null); // TODO HCAP-328
+  const [selectedUserDetails, setSelectedUserDetails] = useState(null);
   const [rows, setRows] = useState([]);
 
   const [orderBy, setOrderBy] = useState(columns[4].id);
@@ -46,17 +46,18 @@ export default () => {
   };
 
   const handleSubmit = async (values) => {
-    const response = await fetch('/api/v1/approve-user', {
+    const isUserAccessRequest = location.pathname === Routes.UserPending;
+    const response = await fetch(`/api/v1/${isUserAccessRequest ? 'approve-user' : 'user-details'}`, {
       headers: { 'Content-type': 'application/json', 'Authorization': `Bearer ${store.get('TOKEN')}` },
-      method: 'POST',
+      method: isUserAccessRequest ? 'POST' : 'PATCH',
       body: JSON.stringify({ ...values, userId: selectedUserId }),
     });
     if (response.ok) {
       setModalOpen(false);
-      fetchUsers({ pending: location.pathname === Routes.UserPending });
-      openToast({ status: ToastStatus.Success, message: 'Access request approved' });
+      fetchUsers({ pending: isUserAccessRequest });
+      openToast({ status: ToastStatus.Success, message: isUserAccessRequest ? 'Access request approved' : 'User updated' });
     } else {
-      openToast({ status: ToastStatus.Error, message: 'Access request approval failed' });
+      openToast({ status: ToastStatus.Error, message: isUserAccessRequest ? 'Access request approval failed' : 'User update failed' });
     }
   };
 
@@ -84,21 +85,20 @@ export default () => {
               onClick={async () => {
                 setSelectedUserId(row.id);
                 if (!pending) {
-                  const response = await fetch(`/api/v1/user-sites?id=${row.id}`, {
+                  const response = await fetch(`/api/v1/user-details?id=${row.id}`, {
                     headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
                     method: 'GET',
                   });
 
                   if (response.ok) {
-                    const { data } = await response.json();
-                    setSelectedUserSites(data);
+                    const details = await response.json();
+                    setSelectedUserDetails(details);
                     setModalOpen(true);
                     return;
                   }
                 }
                 setModalOpen(true);
               }}
-              disabled={!pending} // TODO HCAP-328
               variant="outlined"
               size="small"
               text="Options"
@@ -151,10 +151,16 @@ export default () => {
     fetchSites();
   }, [history, location]);
 
+  const roleOptions = [
+    { value: 'health_authority', label: 'Health Authority' },
+    { value: 'employer', label: 'Private Employer' },
+    { value: 'ministry_of_health', label: 'Ministry Of Health' },
+  ];
+
   const initialValues = {
-    sites: [],
-    regions: [],
-    role: '',
+    sites: selectedUserDetails?.sites.map(site => site.siteId) || [],
+    regions: [regionLabelsMap[selectedUserDetails?.roles.find(role => role.includes('region_'))]] || [],
+    role: roleOptions.find(item => selectedUserDetails?.roles.includes(item.value))?.value || '',
     acknowledgement: false,
   };
 
@@ -185,11 +191,7 @@ export default () => {
                   name="role"
                   component={RenderSelectField}
                   label="* User Role"
-                  options={[
-                    { value: 'health_authority', label: 'Health Authority' },
-                    { value: 'employer', label: 'Private Employer' },
-                    { value: 'ministry_of_health', label: 'Ministry Of Health' },
-                  ]}
+                  options={roleOptions}
                   onChange={(e) => {
                     setFieldValue('regions', []);
                     setFieldValue('sites', []);

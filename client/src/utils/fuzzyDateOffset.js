@@ -8,15 +8,15 @@ export const fuzzyDateOffset = (datestring) => {
 
     if ( diff > weekInMilliseconds ) {
         const weeks = Math.floor(diff/weekInMilliseconds); 
-        return `${weeks} ${(weeks > 1)? "weeks":"week"} ago`;
+        return `${weeks} ${(weeks > 1 || weeks === 0)? "weeks":"week"} ago`;
     } else if ( diff > dayInMilliseconds) {
         const days = Math.floor(diff/dayInMilliseconds); 
-        return `${days} ${(days > 1)? "days":"day"} ago`;
+        return `${days} ${(days > 1 || days === 0)? "days":"day"} ago`;
     } else if ( diff > hourInMilliseconds) {
         const hours = Math.floor(diff/hourInMilliseconds); 
-        return `${hours} ${(hours > 1)? "hours":"hour"} ago`;
+        return `${hours} ${(hours > 1 || hours === 0)? "hours":"hour"} ago`;
     } else {
         const minutes = Math.floor(diff/60000);
-        return `${minutes} ${(minutes > 1)? "minutes":"minute"} ago`;
+        return `${minutes} ${(minutes > 1 || minutes === 0)? "minutes":"minute"} ago`;
     }
 }

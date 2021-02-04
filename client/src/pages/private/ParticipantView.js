@@ -19,6 +19,7 @@ import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipa
 import { useToast } from '../../hooks';
 import { ComponentTooltip } from '../../components/generic/ComponentTooltip';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
+import { fuzzyDateOffset } from '../../utils';
 
 const pageSize = 10;
 
@@ -29,6 +30,7 @@ const defaultColumns = [
   { id: 'postalCodeFsa', name: 'FSA' },
   { id: 'preferredLocation', name: 'Preferred Region(s)' },
   { id: 'nonHCAP', name: 'Non-HCAP' },
+  { id: 'updated_at', name: 'Last Updated' },
   { id: 'callbackStatus', name: 'Callback Status', sortable: false },
 ];
 
@@ -46,6 +48,7 @@ const sortOrder = [
   'nonHCAP',
   'crcClear',
   'callbackStatus',
+  'updated_at',
   'engage',
   'edit',
 ];
@@ -193,7 +196,6 @@ export default () => {
 
     const filteredRows = [];
     data && data.forEach(dataItem => {
-
       const item = { ...dataItem };
       if (!item.emailAddress) {
         item.emailAddress = emailAddressMask;
@@ -358,6 +360,7 @@ export default () => {
       total: pagination.total,
       currentPage: currentPage,
     });
+
     const newRows = filterData(data, columns);
     setRows(newRows);
     setLoadingData(false);
@@ -820,6 +823,9 @@ export default () => {
                       size="small"
                       text="Edit"
                     />
+                  }
+                  if (columnId === 'updated_at') {
+                    return fuzzyDateOffset(row.engage.updated_at);
                   }
                   return row[columnId];
                 }

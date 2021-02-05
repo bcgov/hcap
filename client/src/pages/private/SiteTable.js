@@ -18,7 +18,7 @@ const columns = [
   { id: 'earlyAdopterAllocation', name: 'Phase One Allocation' },
 ];
 
-export default () => {
+export default (props) => {
   const [roles, setRoles] = useState([]);
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
@@ -104,14 +104,16 @@ export default () => {
   }, [history, location]);
 
   useEffect(() => {
-    setRows(fetchedRows.filter((row) => healthAuthorities.includes(row.healthAuthority)));
-  },[healthAuthorities,fetchedRows]);
+    (props?.sites.length)
+      ? setRows(fetchedRows.filter((row) => healthAuthorities.includes(row.healthAuthority) && props.sites.includes(row.id)))
+      : setRows(fetchedRows.filter((row) => healthAuthorities.includes(row.healthAuthority)));
+  },[healthAuthorities,fetchedRows,props]);
 
   return (
     <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
       <Box pt={4} pb={4} pl={2} pr={2}>
         <Typography variant="subtitle1" gutterBottom>
-          My Sites
+          {(props.sites.length)? "My Sites" : "Sites" }
         </Typography>
       </Box>
       <Grid container alignContent="center" justify="flex-start" alignItems="center" direction="row">

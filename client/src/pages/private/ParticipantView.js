@@ -10,6 +10,7 @@ const SiteTable = lazy(() => import('./SiteTable'));
 
 export default () => {
   const [roles, setRoles] = useState([]);
+  const [sites, setSites] = useState([]);
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [tabValue, setTabValue] = useState(0);
 
@@ -23,9 +24,10 @@ export default () => {
     });
 
     if (response.ok) {
-      const { roles } = await response.json();
-      setLoadingUser(false);
+      const { roles, sites } = await response.json();
+      if (sites) setSites(sites);
       setRoles(roles);
+      setLoadingUser(false);
     }
   }
 
@@ -50,7 +52,7 @@ export default () => {
           </Grid>
           <Grid container alignItems="center" justify="flex-start" direction="column">
           { tabValue === 0 && <ParticipantTable hidden={isLoadingUser}/> }
-          { tabValue === 1 && <SiteTable hidden={isLoadingUser}/> }
+          { tabValue === 1 && <SiteTable hidden={isLoadingUser} sites={sites}/> }
           </Grid>
         </CheckPermissions>
       }

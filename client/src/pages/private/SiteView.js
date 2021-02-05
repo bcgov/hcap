@@ -1,4 +1,4 @@
-import React, { lazy, useState, useEffect } from 'react';
+import React, { useEffect, useState, lazy } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -9,9 +9,9 @@ const ParticipantTable = lazy(() => import('./ParticipantTable'));
 const SiteTable = lazy(() => import('./SiteTable'));
 
 export default () => {
+
   const [roles, setRoles] = useState([]);
   const [isLoadingUser, setLoadingUser] = useState(false);
-  const [tabValue, setTabValue] = useState(0);
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);
@@ -33,25 +33,16 @@ export default () => {
     fetchUserInfo();
   }, []);
 
-  const handleTabChange = (event, newTabValue) => {
-    setTabValue(newTabValue);
-  }
-
   return (
     <Page>
-      { roles.includes('employer')
-        ? <ParticipantTable /> 
-        : <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['maximus', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
-          <Grid container alignContent="center" justify="flex-start" alignItems="flex-start" direction="row">
-            <Tabs value={tabValue} onChange={handleTabChange} aria-label="tabs">
-              <Tab label="Participants" id='participantsTab' />
-              <Tab label="My Sites" id='sitesTab' />
-            </Tabs>
-          </Grid>
-          { tabValue === 0 && <ParticipantTable /> }
-          { tabValue === 1 && <SiteTable /> }
-        </CheckPermissions>
-      }
+      <CheckPermissions 
+        isLoading={isLoadingUser} 
+        roles={roles} 
+        permittedRoles={['maximus', 'health_authority', 'ministry_of_health']} 
+        renderErrorMessage={true}
+      >
+        <SiteTable />
+      </CheckPermissions>
     </Page>
   );
 };

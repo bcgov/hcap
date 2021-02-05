@@ -13,6 +13,7 @@ export default Object.freeze({
   UserEdit: '/user-edit',
   EOIView: '/eoi-view',
   EOIViewDetails: '/eoi-view-details',
+  SiteView: '/site-view',
   ParticipantView: '/participant-view',
   ParticipantUpload: '/participant-upload',
   ParticipantUploadResults: '/participant-upload-results',

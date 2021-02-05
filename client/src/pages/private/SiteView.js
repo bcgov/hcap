@@ -1,7 +1,11 @@
 import React, { useEffect, useState, lazy } from 'react';
+import Grid from '@material-ui/core/Grid';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import { Page, CheckPermissions } from '../../components/generic';
 import store from 'store';
 
+const ParticipantTable = lazy(() => import('./ParticipantTable'));
 const SiteTable = lazy(() => import('./SiteTable'));
 
 export default () => {

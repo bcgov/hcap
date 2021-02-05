@@ -156,6 +156,11 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
       );
     }
 
+    if (userType.includes("health_authority")) {
+      jsonOutput.name = "Test Health Authority";
+      jsonOutput.roles.push("health_authority");
+    }
+
     if (userType.includes("employer")) {
       jsonOutput.name = "Test Employer";
       jsonOutput.roles.push("employer");
@@ -172,6 +177,18 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
 
     if (userType.includes("fraser")) {
       jsonOutput.roles.push("region_fraser");
+    }
+
+    if (userType.includes("northern")) {
+      jsonOutput.roles.push("region_northern");
+    }
+
+    if (userType.includes("coastal")) {
+      jsonOutput.roles.push("region_vancouver_coastal");
+
+    if (userType.includes("interior")) {
+      jsonOutput.roles.push("region_interior");
+    }
     }
 
     return jsonOutput;

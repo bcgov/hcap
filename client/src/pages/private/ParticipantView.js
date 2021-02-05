@@ -42,14 +42,16 @@ export default () => {
       { roles.includes('employer')
         ? <ParticipantTable /> 
         : <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['maximus', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
-          <Grid container alignContent="center" justify="flex-start" alignItems="flex-start" direction="row">
+          <Grid container justify="flex-start" alignItems="flex-start" direction="row">
             <Tabs value={tabValue} onChange={handleTabChange} aria-label="tabs">
               <Tab label="Participants" id='participantsTab' />
               <Tab label="My Sites" id='sitesTab' />
             </Tabs>
           </Grid>
-          { tabValue === 0 && <ParticipantTable /> }
-          { tabValue === 1 && <SiteTable /> }
+          <Grid container alignItems="center" justify="flex-start" direction="column">
+          { tabValue === 0 && <ParticipantTable hidden={isLoadingUser}/> }
+          { tabValue === 1 && <SiteTable hidden={isLoadingUser}/> }
+          </Grid>
         </CheckPermissions>
       }
     </Page>

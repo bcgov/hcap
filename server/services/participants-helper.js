@@ -201,7 +201,10 @@ class RegionsFilteredParticipantsFinder {
     this.context = context;
   }
 
-  filterParticipantFields({ postalCodeFsa, lastName, emailAddress }) {
+  filterParticipantFields({
+    postalCodeFsa, lastName,
+    emailAddress,
+  }) {
     this.context.criteria = {
       ...this.context.criteria,
       ...postalCodeFsa && { 'body.postalCodeFsa ilike': `${postalCodeFsa}%` },

@@ -155,6 +155,7 @@ const getParticipants = async (user, pagination, sortField,
           nonHCAP: item.nonHCAP,
           interested: item.interested,
           crcClear: item.crcClear,
+          callbackStatus: item.callbackStatus,
           statusInfo: returnStatus,
           updated_at: item.updated_at,
           progressStats,
@@ -163,16 +164,6 @@ const getParticipants = async (user, pagination, sortField,
       ...pagination && { pagination: paginationData },
     };
   }
-
-  const callbackStatus = (participant) => {
-    const d = new Date(participant.updated_at);
-    if (d instanceof Date && !Number.isNaN(d.getTime())) {
-      if (d < new Date('2021-01-01T00:00:00-08:00')) {
-        return 'Primed';
-      }
-    }
-    return 'Available';
-  };
 
   // Returned participants for employers
   return {
@@ -185,7 +176,7 @@ const getParticipants = async (user, pagination, sortField,
         preferredLocation: item.preferredLocation,
         nonHCAP: item.nonHCAP,
         updated_at: item.updated_at,
-        callbackStatus: callbackStatus(item),
+        callbackStatus: item.callbackStatus,
       };
 
       const hiredBySomeoneElseStatus = item.statusInfos?.find((statusInfo) => statusInfo.status === 'hired'

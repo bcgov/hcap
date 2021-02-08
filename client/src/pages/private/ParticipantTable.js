@@ -710,7 +710,7 @@ export default () => {
           </Grid>
           <Box pt={2} pb={2} pl={2} pr={2} width="100%">
             <CustomTabs
-              value={tabValue || false}
+              value={ tabValue || false }
               onChange={handleTabChange}
             >
               {

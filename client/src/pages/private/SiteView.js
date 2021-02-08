@@ -34,7 +34,7 @@ export default () => {
       <CheckPermissions 
         isLoading={isLoadingUser} 
         roles={roles} 
-        permittedRoles={['maximus', 'health_authority', 'ministry_of_health']} 
+        permittedRoles={['health_authority', 'ministry_of_health']} 
         renderErrorMessage={true}
       >
         <SiteTable sites={[]}/>

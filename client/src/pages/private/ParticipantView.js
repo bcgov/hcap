@@ -74,21 +74,20 @@ export default () => {
 
   return (
     <Page>
-      { roles.includes('employer')
-        ? <ParticipantTable /> 
-        : <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['maximus', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
-          <Grid container justify="flex-start" alignItems="flex-start" direction="row">
-            <CustomTabs value={ tabValue } onChange={handleTabChange} aria-label="tabs">
-              <CustomTab label="Participants" id='participantsTab' key='participants' />
-              <CustomTab label="My Sites" id='sitesTab' key='sites' />
-            </CustomTabs>
-          </Grid>
-          <Grid container alignItems="center" justify="flex-start" direction="column">
-            { tabValue === 0 && <ParticipantTable hidden={isLoadingUser}/> }
-            { tabValue === 1 && <SiteTable hidden={isLoadingUser} sites={sites}/> }
-          </Grid>
-        </CheckPermissions>
-      }
+      <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
+        <Grid container justify="flex-start" alignItems="flex-start" direction="row">
+          <CustomTabs value={ tabValue } onChange={handleTabChange} aria-label="tabs">
+            <CustomTab label="Participants" id='participantsTab' key='participants' />
+            { !roles.includes('employer') &&
+            <CustomTab label="My Sites" id='sitesTab' key='sites' />
+            }
+          </CustomTabs>
+        </Grid>
+        <Grid container alignItems="center" justify="flex-start" direction="column">
+          { tabValue === 0 && <ParticipantTable /> }
+          { tabValue === 1 && <SiteTable  sites={sites}/> }
+        </Grid>
+      </CheckPermissions>
     </Page>
   );
 };

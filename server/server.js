@@ -216,6 +216,7 @@ app.post(`${apiBaseUrl}/new-hired-participant`,
       await setParticipantStatus(user.id, response.id, 'interviewing', { contacted_at: participantInfo.contactedDate });
       await setParticipantStatus(user.id, response.id, 'offer_made');
       await setParticipantStatus(user.id, response.id, 'hired', {
+        site: participantInfo.site,
         nonHcapOpportunity: participantInfo.nonHcapOpportunity,
         positionTitle: participantInfo.positionTitle,
         positionType: participantInfo.positionType,

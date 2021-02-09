@@ -105,4 +105,38 @@ const getParticipantsReport = async () => {
   }));
 };
 
-module.exports = { getReport, getParticipantsReport };
+const getHiredParticipantsReport = async () => {
+  const hiredEntries = await dbClient.db[collections.PARTICIPANTS_STATUS].join({
+    participantJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.PARTICIPANTS,
+      on: {
+        id: 'participant_id',
+      },
+    },
+    employerSiteJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.EMPLOYER_SITES,
+      on: {
+        'body.siteId': 'data.site',
+      },
+    },
+  }).find({
+    current: true,
+    status: 'hired',
+    'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
+  });
+
+  return hiredEntries.map((entry) => ({
+    participantId: entry.participant_id,
+    participantFsa: entry.participantJoin?.[0]?.body?.postalCodeFsa,
+    employerId: entry.employer_id,
+    hcapPosition: !(entry.data?.nonHcapOpportunity || false),
+    positionType: entry.data?.positionType,
+    positionTitle: entry.data?.positionTitle,
+    employerRegion: entry.employerSiteJoin?.[0]?.body?.healthAuthority,
+    employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,
+  }));
+};
+
+module.exports = { getReport, getParticipantsReport, getHiredParticipantsReport };

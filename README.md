@@ -143,9 +143,13 @@ Shows the EEOI submission stats of a given period of days. (Before running this 
 
 Exports all EEOI submissions from the database as a CSV file. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`)
 
-#### `npm run participant-stats`
+#### `npm run participant-stats-in-progress`
 
 Exports all participants In Progress from the database as a CSV file. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`)
+
+#### `npm run participant-stats-hired`
+
+Exports all hired participants from the database as a CSV file. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`). Records employer ID, position type, site.
 
 ### Database
 

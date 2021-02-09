@@ -11,7 +11,7 @@ import {
   InterviewingFormSchema,
   RejectedFormSchema,
   HireFormSchema,
-  HiredParticipantSchema,
+  ExternalHiredParticipantSchema,
   EditParticipantFormSchema,
   regionLabelsMap,
 } from '../../constants';
@@ -325,7 +325,7 @@ export default () => {
         'Accept': 'application/json',
         'Content-type': 'application/json',
       },
-      body: JSON.stringify({ participantInfo }),
+      body: JSON.stringify(participantInfo),
     });
 
     if (response.ok) {
@@ -645,14 +645,14 @@ export default () => {
             emailAddress: '',
             origin: '',
             otherOrigin: '',
-            nonHcapOpportunity: false,
+            hcapOpportunity: true,
             contactedDate: '',
             hiredDate: '',
             startDate: '',
             site: '',
             acknowledge: false,
           }}
-          validationSchema={HiredParticipantSchema}
+          validationSchema={ExternalHiredParticipantSchema}
           onSubmit={(values) => {
             handleExternalHire({
               firstName: values.firstName,
@@ -661,7 +661,7 @@ export default () => {
               emailAddress: values.emailAddress,
               origin: values.origin,
               otherOrigin: values.otherOrigin,
-              nonHcapOpportunity: values.nonHcapOpportunity,
+              hcapOpportunity: values.hcapOpportunity,
               contactedDate: values.contactedDate,
               hiredDate: values.hiredDate,
               startDate: values.startDate,

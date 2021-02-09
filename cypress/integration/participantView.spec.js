@@ -63,7 +63,7 @@ describe("Participant View", () => {
       "emailAddress": "tiddlywhiskers@ca.ts",
       "origin": "internal",
       "otherOrigin": '',
-      "nonHcapOpportunity": false,
+      "hcapOpportunity": true,
       "contactedDate": "2020/10/10",
       "hiredDate": "2020/11/11",
       "startDate": "2020/12/12",
@@ -73,7 +73,7 @@ describe("Participant View", () => {
 
     cy.kcNavAs('employer', 'participant-view');
     cy.intercept('post','api/v1/new-hired-participant', (req) => {
-      expect(req.body.participantInfo).to.deep.equal(participantInfo);
+      expect(req.body).to.deep.equal(participantInfo);
     });
 
     cy.contains('Hired Candidates').click();

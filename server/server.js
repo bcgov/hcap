@@ -18,7 +18,7 @@ const { getUserSites } = require('./services/user.js');
 const {
   validate, EmployerFormSchema, AccessRequestApproval,
   ParticipantQuerySchema, ParticipantStatusChange,
-  ParticipantEditSchema,
+  ParticipantEditSchema, NewParticipantSchema,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -204,6 +204,7 @@ app.post(`${apiBaseUrl}/new-hired-participant`,
   keycloak.allowRolesMiddleware('employer', 'health_authority'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
+    await validate(NewParticipantSchema, req.body);
     try {
       const user = req.hcapUserInfo;
       const { participantInfo } = req.body;

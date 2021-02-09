@@ -724,6 +724,9 @@ export default () => {
               currentPage={pagination.currentPage}
               renderCell={
                 (columnId, row) => {
+                  if (columnId === 'callbackStatus') {
+                    return row[columnId] ? 'Completed' : 'Pending';
+                  }
                   if (columnId === 'status') {
                     return prettifyStatus(row[columnId], row.id, tabValue, handleEngage);
                   }

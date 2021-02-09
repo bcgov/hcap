@@ -34,6 +34,7 @@ describe('Participants Service', () => {
 
   const allParticipants = [
     {
+      callbackStatus: false,
       nonHCAP: 'yes',
       crcClear: 'yes',
       lastName: 'Alex',
@@ -47,6 +48,7 @@ describe('Participants Service', () => {
       preferredLocation: 'Fraser',
     },
     {
+      callbackStatus: false,
       crcClear: 'yes',
       lastName: 'Bob',
       firstName: 'Burger',
@@ -59,6 +61,7 @@ describe('Participants Service', () => {
       preferredLocation: 'Interior',
     },
     {
+      callbackStatus: false,
       crcClear: 'yes',
       lastName: 'Cindy',
       firstName: 'Callback',
@@ -70,6 +73,7 @@ describe('Participants Service', () => {
       preferredLocation: 'Northern',
     },
     {
+      callbackStatus: false,
       lastName: 'Doug',
       firstName: 'Douglas',
       maximusId: 6488693,
@@ -81,6 +85,7 @@ describe('Participants Service', () => {
       preferredLocation: 'Vancouver Coastal;Vancouver Island',
     },
     {
+      callbackStatus: false,
       nonHCAP: 'yes',
       crcClear: 'no',
       lastName: 'Emily',
@@ -94,6 +99,7 @@ describe('Participants Service', () => {
       preferredLocation: 'Vancouver Island',
     },
     {
+      callbackStatus: false,
       lastName: 'Freddy',
       firstName: 'Foo',
       maximusId: 6488695,
@@ -105,6 +111,7 @@ describe('Participants Service', () => {
       preferredLocation: 'Vancouver Island',
     },
     {
+      callbackStatus: false,
       nonHCAP: 'yes',
       crcClear: 'yes',
       lastName: 'Gemma',
@@ -118,6 +125,7 @@ describe('Participants Service', () => {
       preferredLocation: 'Vancouver Coastal',
     },
     {
+      callbackStatus: false,
       nonHCAP: 'no',
       crcClear: 'yes',
       lastName: 'Jerry',
@@ -131,6 +139,7 @@ describe('Participants Service', () => {
       preferredLocation: 'Northern',
     },
     {
+      callbackStatus: false,
       lastName: 'Isabelle',
       firstName: 'Isaac',
       maximusId: 6488698,
@@ -141,6 +150,7 @@ describe('Participants Service', () => {
       preferredLocation: 'Interior',
     },
     {
+      callbackStatus: false,
       crcClear: 'yes',
       lastName: 'Hector',
       firstName: 'Hux',
@@ -213,6 +223,7 @@ describe('Participants Service', () => {
         'nonHCAP',
         'interested',
         'crcClear',
+        'callbackStatus',
         'statusInfo',
         'updated_at',
         'progressStats',
@@ -254,6 +265,7 @@ describe('Participants Service', () => {
         'nonHCAP',
         'interested',
         'crcClear',
+        'callbackStatus',
         'statusInfo',
         'updated_at',
         'progressStats',

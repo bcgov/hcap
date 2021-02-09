@@ -4,14 +4,14 @@ const csv = require('fast-csv');
 const path = require('path');
 const { writeFileSync } = require('fs');
 const { dbClient } = require('../db/db.js');
-const { getParticipantsReport } = require('../services/reporting');
+const { getHiredParticipantsReport } = require('../services/reporting');
 
 (async () => {
   if (require.main === module) {
     try {
       await dbClient.connect();
 
-      const results = await getParticipantsReport();
+      const results = await getHiredParticipantsReport();
 
       const csvStream = csv.format({ headers: true });
 
@@ -20,8 +20,11 @@ const { getParticipantsReport } = require('../services/reporting');
           'Participant ID': result.participantId,
           FSA: result.participantFsa,
           'Employer ID': result.employerId,
-          'Employer Email': result.employerEmail,
-          'Employer Health Region': result.employerhealthRegion,
+          'HCAP Position': result.hcapPosition,
+          'Position Type': result.positionType,
+          'Position Title': result.positionTitle,
+          'Employer Site Region': result.employerRegion,
+          'Employer Site': result.employerSite,
         });
       });
 
@@ -31,7 +34,7 @@ const { getParticipantsReport } = require('../services/reporting');
         .on('error', (error) => console.log(error))
         .on('end', () => {
           const string = Buffer.concat(chunks).toString();
-          writeFileSync(path.join(__dirname, 'participant-stats.csv'), string);
+          writeFileSync(path.join(__dirname, 'participant-stats-hired.csv'), string);
           console.log('Done');
         });
 

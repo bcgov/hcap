@@ -106,6 +106,8 @@ const getParticipantsReport = async () => {
 };
 
 const getHiredParticipantsReport = async () => {
+  const users = await keycloak.getUsers();
+
   const hiredEntries = await dbClient.db[collections.PARTICIPANTS_STATUS].join({
     participantJoin: {
       type: 'LEFT OUTER',
@@ -131,6 +133,7 @@ const getHiredParticipantsReport = async () => {
     participantId: entry.participant_id,
     participantFsa: entry.participantJoin?.[0]?.body?.postalCodeFsa,
     employerId: entry.employer_id,
+    employerEmail: users.find((user) => user.id === entry.employer_id)?.email,
     hcapPosition: !(entry.data?.nonHcapOpportunity || false),
     positionType: entry.data?.positionType,
     positionTitle: entry.data?.positionTitle,

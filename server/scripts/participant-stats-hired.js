@@ -20,6 +20,7 @@ const { getHiredParticipantsReport } = require('../services/reporting');
           'Participant ID': result.participantId,
           FSA: result.participantFsa,
           'Employer ID': result.employerId,
+          'Employer Email': result.employerEmail,
           'HCAP Position': result.hcapPosition,
           'Position Type': result.positionType,
           'Position Title': result.positionTitle,

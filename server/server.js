@@ -18,7 +18,7 @@ const { getUserSites } = require('./services/user.js');
 const {
   validate, EmployerFormSchema, AccessRequestApproval,
   ParticipantQuerySchema, ParticipantStatusChange,
-  ParticipantEditSchema, NewParticipantSchema,
+  ParticipantEditSchema, ExternalHiredParticipantSchema,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -204,10 +204,10 @@ app.post(`${apiBaseUrl}/new-hired-participant`,
   keycloak.allowRolesMiddleware('employer', 'health_authority'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    await validate(NewParticipantSchema, req.body);
+    await validate(ExternalHiredParticipantSchema, req.body);
     try {
       const user = req.hcapUserInfo;
-      const { participantInfo } = req.body;
+      const participantInfo = req.body;
       [participantInfo.preferredLocation] = user.regions;
       participantInfo.crcClear = 'yes';
       participantInfo.interested = 'yes';
@@ -218,7 +218,7 @@ app.post(`${apiBaseUrl}/new-hired-participant`,
       await setParticipantStatus(user.id, response.id, 'offer_made');
       await setParticipantStatus(user.id, response.id, 'hired', {
         site: participantInfo.site,
-        nonHcapOpportunity: participantInfo.nonHcapOpportunity,
+        nonHcapOpportunity: !participantInfo.hcapOpportunity,
         positionTitle: participantInfo.positionTitle,
         positionType: participantInfo.positionType,
         hiredDate: participantInfo.hiredDate,

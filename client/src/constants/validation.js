@@ -199,7 +199,7 @@ export const HireFormSchema = yup.object().noUnknown('Unknown field in form').sh
   site: yup.number().required('Site is required'),
 });
 
-export const HiredParticipantSchema = yup.object().noUnknown('Unknown field in form').shape({
+export const ExternalHiredParticipantSchema = yup.object().noUnknown('Unknown field in form').shape({
   firstName: yup.string().required('First Name is required'),
   lastName: yup.string().required('Last Name is required'),
   phoneNumber: yup.string().required('Phone number is required').matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
@@ -210,7 +210,7 @@ export const HiredParticipantSchema = yup.object().noUnknown('Unknown field in f
     then: yup.string().required('Please specify'),
     otherwise: yup.string().nullable().test('is-null', 'Other origin must be null', (v) => v == null || v === ''),
   }),
-  nonHcapOpportunity: yup.boolean().required('Non-Hcap Opportunity is required as true or false'),
+  hcapOpportunity: yup.boolean().test('is-true', 'Must be HCAP opportunity', (v) => v === true),
   contactedDate: yup.string().required('Date of contact is required').test('is-date', 'Not a valid date in the past', validatePastDateString),
   hiredDate: yup.string().required('Date offer accepted  is required').test('is-date', 'Not a valid date in the past', validatePastDateString),
   startDate: yup.string().required('Start date is required').test('is-date', 'Not a valid date', validateDateString),

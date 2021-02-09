@@ -36,7 +36,7 @@ export const NewParticipantForm = ({ initialValues, validationSchema, onSubmit, 
       <FormikForm>
         <Box>
           <Field
-            name="HcapOpportunity"
+            name="hcapOpportunity"
             component={RenderCheckbox}
             label="HCAP Opportunity"
             checked

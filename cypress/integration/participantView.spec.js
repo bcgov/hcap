@@ -49,10 +49,10 @@ describe("Participant View", () => {
     cy.get('ul.MuiMenu-list[role=listbox]').should('be.visible');
     cy.get('ul.MuiMenu-list[role=listbox] > li').should('have.length', 6);
 
-    // Testing Tabs
-    cy.get('ul.MuiMenu-list[role=listbox]').first().click();
-    cy.get("button#sitesTab").click();
-    cy.contains("My Sites").should('exist');
+    // Testing Tabs - DESCOPED FOR 165
+    // cy.get('ul.MuiMenu-list[role=listbox]').first().click();
+    // cy.get("button#sitesTab").click();
+    // cy.contains("My Sites").should('exist');
   });
 
   it("Tests the manual participant adder", () => {

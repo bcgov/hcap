@@ -330,6 +330,14 @@ app.get(`${apiBaseUrl}/user-details`,
 app.post(`${apiBaseUrl}/employer-sites`,
   keycloak.allowRolesMiddleware(),
   asyncMiddleware(async (req, res) => {
+    const user = req.hcapUserInfo;
+    logger.info({
+      action: 'employer-sites_post',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+    });
     try {
       const response = await saveSites(req.body);
       return res.json(response);
@@ -343,6 +351,15 @@ app.get(`${apiBaseUrl}/employer-sites`,
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     const result = await getSites();
+    const user = req.hcapUserInfo;
+    logger.info({
+      action: 'employer-sites_get',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      sites_accessed: result.map((site) => site.siteId),
+    });
     return res.json({ data: result });
   }));
 

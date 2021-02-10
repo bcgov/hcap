@@ -622,11 +622,6 @@ export default () => {
       </Dialog>
       <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
-          <Box pt={4} pb={4} pl={2} pr={2}>
-            <Typography variant="subtitle1" gutterBottom>
-              Participants
-            </Typography>
-          </Box>
           <Grid container alignContent="center" justify="flex-start" alignItems="center" direction="row">
             <Grid item>
               <Box pl={2} pr={2} pt={1}>

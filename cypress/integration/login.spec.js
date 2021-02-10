@@ -23,7 +23,7 @@ describe("Login", () => {
     cy.kcNavAs("superuser", "admin");
     cy.contains('Upload Participants').should('exist');
     cy.contains('View Participants').should('exist');
-    cy.contains('View Employers').should('exist');
+    cy.contains('View Employer EOIs').should('exist');
     cy.contains('View Access Requests').should('exist');
   });
 

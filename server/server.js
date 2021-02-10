@@ -352,6 +352,10 @@ app.get(`${apiBaseUrl}/employer-sites`,
   asyncMiddleware(async (req, res) => {
     const result = await getSites();
     const user = req.hcapUserInfo;
+    console.log('user');
+    console.log(user);
+    console.log('result');
+    console.log(result);
     logger.info({
       action: 'employer-sites_get',
       performed_by: {

@@ -78,7 +78,7 @@ export default () => {
         <Grid container justify="flex-start" alignItems="flex-start" direction="row">
           <CustomTabs value={ tabValue } onChange={handleTabChange} aria-label="tabs">
             <CustomTab label="Participants" id='participantsTab' key='participants' />
-            { !roles.includes('employer') &&
+            { roles.includes('superuser') &&
             <CustomTab label="My Sites" id='sitesTab' key='sites' />
             }
           </CustomTabs>

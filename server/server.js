@@ -358,7 +358,7 @@ app.get(`${apiBaseUrl}/employer-sites`,
         username: user.username,
         id: user.id,
       },
-      sites_accessed: result.map((site) => site.siteId),
+      sites_accessed: result.map((site) => site.siteId).filter((site) => user.sites.includes(site)),
     });
     return res.json({ data: result });
   }));

@@ -10,7 +10,7 @@ import { regionLabelsMap } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 
 const columns = [
-  { id: 'id', name: 'Site ID' },
+  { id: 'siteId', name: 'Site ID' },
   { id: 'siteName', name: 'Site Name' },
   { id: 'operatorName', name: 'Operator Name' },
   { id: 'healthAuthority', name: 'Health Authority' },
@@ -54,6 +54,7 @@ export default (props) => {
 
     if (response.ok) {
       const { data } = await response.json();
+      console.log(data);
       const rowsData = data.map((row) => {
         // Pull all relevant props from row based on columns constant
         const mappedRow = columns.reduce((accumulator, column) => ({

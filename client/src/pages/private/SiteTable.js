@@ -54,7 +54,6 @@ export default (props) => {
 
     if (response.ok) {
       const { data } = await response.json();
-      console.log(data);
       const rowsData = data.map((row) => {
         // Pull all relevant props from row based on columns constant
         const mappedRow = columns.reduce((accumulator, column) => ({

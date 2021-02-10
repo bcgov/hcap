@@ -30,7 +30,7 @@ const defaultColumns = [
   { id: 'preferredLocation', name: 'Preferred Region(s)' },
   { id: 'nonHCAP', name: 'Non-HCAP' },
   { id: 'updated_at', name: 'Last Updated' },
-  { id: 'callbackStatus', name: 'Callback Status', sortable: false },
+  { id: 'callbackStatus', name: 'Callback Status' },
 ];
 
 const sortOrder = [
@@ -724,6 +724,9 @@ export default () => {
               currentPage={pagination.currentPage}
               renderCell={
                 (columnId, row) => {
+                  if (columnId === 'callbackStatus') {
+                    return row[columnId] ? 'Completed' : 'Pending';
+                  }
                   if (columnId === 'status') {
                     return prettifyStatus(row[columnId], row.id, tabValue, handleEngage);
                   }

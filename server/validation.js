@@ -26,6 +26,7 @@ const sortFields = [
   'interested',
   'crcClear',
   'status',
+  'callbackStatus',
   'statusInfo',
   'updated_at',
 ];

@@ -11,6 +11,7 @@ server/*.pdf
 server/pdfs/*
 server/db/.migrate
 server/scripts/xlsx
+server/scripts/*.csv
 
 # Misc.
 docs
@@ -18,7 +19,6 @@ Dockerrun.aws.json
 audit-report.*
 .DS_Store
 .env
-cypress.env.json
 cypress/screenshots
 test-results
 npm-debug.log*

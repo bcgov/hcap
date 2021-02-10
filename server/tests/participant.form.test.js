@@ -548,6 +548,7 @@ describe('Participants Service', () => {
       contactedDate: '09/09/2020',
       hiredDate: '10/10/2020',
       startDate: '11/11/2020',
+      site: 2,
     });
 
     const participants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['hired']);

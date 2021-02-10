@@ -4,9 +4,9 @@ import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
-import { Table } from '../../components/generic';
+import { Table, Button } from '../../components/generic';
 import { useLocation } from 'react-router-dom'
-import { regionLabelsMap } from '../../constants';
+import { Routes, regionLabelsMap } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 
 const columns = [
@@ -15,7 +15,8 @@ const columns = [
   { id: 'operatorName', name: 'Operator Name' },
   { id: 'healthAuthority', name: 'Health Authority' },
   { id: 'postalCode', name: 'Postal Code' },
-  { id: 'phaseOneAllocation', name: 'Phase One Allocation' },
+  { id: 'earlyAdopterAllocation', name: 'Phase One Allocation' },
+  { id: 'details', name: 'Details' },
 ];
 
 export default ({ sites }) => {
@@ -139,6 +140,16 @@ export default ({ sites }) => {
           onRequestSort={handleRequestSort}
           rows={sort(rows)}
           isLoading={isLoadingData}
+          renderCell={(columnId, row) => {
+            if (columnId === "details") return <Button
+                onClick={() => history.push(Routes.SiteView + `/${row.id}`)}
+                variant="outlined"
+                size="small"
+                text="details"
+              />
+
+            return (row[columnId]);
+          }}
         />
       </Box>}
     </Grid>

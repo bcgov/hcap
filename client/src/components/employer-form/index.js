@@ -82,6 +82,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
   const { openToast } = useToast();
   const [submitLoading, setSubmitLoading] = useState(false);
 
+
   const [activeStep, setActiveStep] = useState(0);
   const isFirstStep = activeStep === 0;
   const isLastStep = activeStep === steps.length - 1;

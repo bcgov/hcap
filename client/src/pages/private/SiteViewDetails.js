@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { useLocation } from 'react-router-dom';
 import { Page, CheckPermissions } from '../../components/generic';
-import { Form } from '../../components/employer-form';
 import { scrollUp } from '../../utils';
 import store from 'store';
 
 export default (props) => {
   const [roles, setRoles] = useState([]);
-  const [user, setUser] = useState(undefined);
+  const [site, setSite] = useState([]);
   const [isLoadingUser, setLoadingUser] = useState(false);
-  const location = useLocation();
-  const ExpressionID = props.match.params.id;
+  const siteID = props.match.params.id;
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);
@@ -34,10 +31,8 @@ export default (props) => {
   }, []);
 
   useEffect(() => {
-    // This is only being used for logging at the moment
-    setLoadingUser(true);
     const fetchDetails = async () => {
-      const response = await fetch(`/api/v1/employer-form/${ExpressionID}`, {
+      const response = await fetch(`/api/v1/employer-sites/${siteID}`, {
         headers: {
           'Authorization': `Bearer ${store.get('TOKEN')}`,
         },
@@ -45,28 +40,19 @@ export default (props) => {
       });
 
       if (response.ok) {
-        setUser(await response.json());
-        setLoadingUser(false);
+        setSite(await response.json());
       }
     }
 
     fetchDetails();
-  }, [ExpressionID]);
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
+  }, [siteID]);
 
   scrollUp();
   return (
     <Page>
       <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
-          <Form
-            initialValues={user}
-            hideCollectionNotice
-            isDisabled
-          />
+          <p>{JSON.stringify(site)}</p>
         </Grid>
       </CheckPermissions>
     </Page>

@@ -12,7 +12,9 @@ const {
   setParticipantStatus,
   makeParticipant,
 } = require('./services/participants.js');
-const { getEmployers, saveSites, getSites } = require('./services/employers.js');
+const {
+  getEmployers, getEmployerByID, saveSites, getSites, getSiteByID,
+} = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
 const { getUserSites } = require('./services/user.js');
 const {
@@ -73,6 +75,15 @@ app.get(`${apiBaseUrl}/employer-form`,
     const user = req.hcapUserInfo;
     const result = await getEmployers(user);
     return res.json({ data: result });
+  }));
+
+app.get(`${apiBaseUrl}/employer-form/:id`,
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const user = req.hcapUserInfo;
+    const [result] = await getEmployerByID(req.params.id);
+    return res.json(result);
   }));
 
 // Get Report
@@ -368,6 +379,24 @@ app.get(`${apiBaseUrl}/employer-sites`,
       sites_accessed: result.map((site) => site.siteId),
     });
     return res.json({ data: result });
+  }));
+
+app.get(`${apiBaseUrl}/employer-sites/:id`,
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const user = req.hcapUserInfo;
+    const [result] = await getSiteByID(req.params.id);
+    logger.info({
+      action: 'employer-sites-detail_get',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      eeoi_id: req.query.id,
+      site: result,
+    });
+    return res.json(result);
   }));
 
 // In development

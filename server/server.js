@@ -394,7 +394,7 @@ app.get(`${apiBaseUrl}/employer-sites/:id`,
         id: user.id,
       },
       eeoi_id: req.query.id,
-      site: result,
+      siteID: result.siteID,
     });
     return res.json(result);
   }));

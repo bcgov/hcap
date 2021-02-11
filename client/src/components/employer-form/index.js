@@ -135,6 +135,8 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
     setFormValues(initialValues);
   };
 
+  console.log(formValues);
+
   const mapBaselineList = (values) => {
     let newWorkforceBaseline = [];
 

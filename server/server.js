@@ -347,16 +347,14 @@ app.post(`${apiBaseUrl}/employer-sites`,
   }));
 
 app.get(`${apiBaseUrl}/employer-sites`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     let result = await getSites();
     const user = req.hcapUserInfo;
 
     if (user.isHA) {
-      result = result.filter((site) => site.healthAuthority === user.regions[0]);
-    } else if (user.isEmployer) {
-      result = result.filter((site) => user.sites.includes(site.siteId));
+      result = result.filter((site) => user.regions.includes(site.healthAuthority));
     }
 
     logger.info({

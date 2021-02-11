@@ -10,7 +10,7 @@ import { regionLabelsMap } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 
 const columns = [
-  { id: 'id', name: 'Site ID' },
+  { id: 'siteId', name: 'Site ID' },
   { id: 'siteName', name: 'Site Name' },
   { id: 'operatorName', name: 'Operator Name' },
   { id: 'healthAuthority', name: 'Health Authority' },

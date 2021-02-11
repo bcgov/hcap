@@ -84,7 +84,7 @@ const updateParticipant = async (participantInfo) => {
   const changes = participantInfo.history[0].changes.reduce((acc, change) => {
     const { field, to } = change;
     return { ...acc, [field]: to };
-  }, { history: participantInfo.history, userUpdatedAt: new Date() });
+  }, { history: participantInfo.history, userUpdatedAt: new Date().toJSON() });
 
   const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc({
     id: participantInfo.id,

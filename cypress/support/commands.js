@@ -106,7 +106,7 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
     "lastName":"Crackers",
     "phoneNumber": 1112223333,
     "createdAt":"2020-11-12 18:33",
-    'updated_at': yesterday.toDateString(),
+    'userUpdatedAt': yesterday.toDateString(),
   },
     {
       "id":2,
@@ -116,7 +116,7 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
       "lastName":"Pine",
       "phoneNumber": 1112223333,
       "createdAt":"2020-11-12 18:33",
-      'updated_at': twoWeeksAgo.toDateString(),
+      'userUpdatedAt': twoWeeksAgo.toDateString(),
     }
   ];
 

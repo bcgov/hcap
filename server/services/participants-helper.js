@@ -27,7 +27,6 @@ const decomposeParticipantStatus = (raw, joinNames) => raw.map((participant) => 
   return {
     ...participant.body,
     id: participant.id,
-    updated_at: participant.updated_at || participant.created_at,
     statusInfos,
   };
 });

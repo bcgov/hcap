@@ -29,7 +29,7 @@ const defaultColumns = [
   { id: 'postalCodeFsa', name: 'FSA' },
   { id: 'preferredLocation', name: 'Preferred Region(s)' },
   { id: 'nonHCAP', name: 'Non-HCAP' },
-  { id: 'updated_at', name: 'Last Updated' },
+  { id: 'userUpdatedAt', name: 'Last Updated' },
   { id: 'callbackStatus', name: 'Callback Status' },
 ];
 
@@ -47,7 +47,7 @@ const sortOrder = [
   'nonHCAP',
   'crcClear',
   'callbackStatus',
-  'updated_at',
+  'userUpdatedAt',
   'engage',
   'edit',
 ];
@@ -765,8 +765,8 @@ export default () => {
                       text="Edit"
                     />
                   }
-                  if (columnId === 'updated_at') {
-                    return fuzzyDateOffset(row.engage.updated_at);
+                  if (columnId === 'userUpdatedAt') {
+                    return fuzzyDateOffset(row.engage.userUpdatedAt);
                   }
                   return row[columnId];
                 }

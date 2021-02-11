@@ -447,10 +447,14 @@ app.post(`${apiBaseUrl}/approve-user`,
 app.get(`${apiBaseUrl}/user`,
   keycloak.allowRolesMiddleware('*'),
   keycloak.getUserInfoMiddleware(),
-  (req, res) => res.json({
-    roles: req.hcapUserInfo.roles,
-    name: req.hcapUserInfo.name,
-    sites: req.hcapUserInfo.sites,
+  asyncMiddleware(async (req, res) => {
+    let sites = await getSites();
+    sites = sites.filter((i) => req.hcapUserInfo.sites.includes(i.siteId));
+    res.json({
+      roles: req.hcapUserInfo.roles,
+      name: req.hcapUserInfo.name,
+      sites,
+    });
   }));
 
 // Version number

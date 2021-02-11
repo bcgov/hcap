@@ -1,31 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box } from '@material-ui/core';
 import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { getTodayDate } from '../../utils';
-import store from 'store';
 
 export const HireForm = ({ initialValues, validationSchema, onSubmit, onClose, sites }) => {
-
-  const [sitesDetail, setSitesDetail] = useState([]);
-
-  useEffect(() => {
-    const fetchSites = async () => {
-      const response = await fetch('/api/v1/employer-sites', {
-        headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
-        method: 'GET',
-      });
-
-      if (response.ok) {
-        const { data } = await response.json();
-        setSitesDetail(data.filter((site) => sites.includes(site.siteId)));
-      }
-    };
-
-    fetchSites();
-  }, [sites]);
 
   return <Formik
     initialValues={initialValues}
@@ -74,7 +55,7 @@ export const HireForm = ({ initialValues, validationSchema, onSubmit, onClose, s
             name="site"
             component={RenderSelectField}
             label="* Site"
-            options={sitesDetail.map((siteDetail) => ({
+            options={sites.map((siteDetail) => ({
               value: siteDetail.siteId, label: siteDetail.siteName,
             }))}
           />

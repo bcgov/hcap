@@ -53,10 +53,6 @@ export default (props) => {
     fetchDetails();
   }, [ExpressionID]);
 
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
-
   scrollUp();
   return (
     <Page>

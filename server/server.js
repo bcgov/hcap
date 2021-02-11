@@ -347,7 +347,7 @@ app.post(`${apiBaseUrl}/employer-sites`,
   }));
 
 app.get(`${apiBaseUrl}/employer-sites`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     let result = await getSites();

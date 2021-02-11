@@ -29,6 +29,8 @@ exports.up = async () => {
   await dbClient.db.withTransaction(async (tx) => {
     await tx[collections.PARTICIPANTS].updateDoc({}, { callbackStatus: false });
 
+    await tx[collections.PARTICIPANTS].updateDoc({ 'created_at <': '2021-01-01' }, { callbackStatus: true });
+
     await tx[collections.PARTICIPANTS].updateDoc({
       'maximusId::int': inList,
     }, { callbackStatus: true });

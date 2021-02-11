@@ -78,19 +78,10 @@ const getStepFields = (step) => {
 }
 
 export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
-  const history = useHistory();
-  const { openToast } = useToast();
-  const [submitLoading, setSubmitLoading] = useState(false);
-
-
-  const [activeStep, setActiveStep] = useState(0);
-  const isFirstStep = activeStep === 0;
-  const isLastStep = activeStep === steps.length - 1;
-
-  const formValues = initialValues ? initialValues : {
+  const defaultValues = {
     // Operator contact info
     registeredBusinessName: '',
-    operatorName: '',
+    operatorName: '', 
     operatorContactFirstName: '',
     operatorContactLastName: '',
     operatorEmail: '',
@@ -131,8 +122,18 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
     // Collection certification
     doesCertify: false,
   };
+  const history = useHistory();
+  const { openToast } = useToast();
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [formValues, setFormValues] = useState(defaultValues);
 
-  console.log(formValues);
+  const [activeStep, setActiveStep] = useState(0);
+  const isFirstStep = activeStep === 0;
+  const isLastStep = activeStep === steps.length - 1;
+
+  if (initialValues && formValues !== initialValues) {
+    setFormValues(initialValues);
+  };
 
   const mapBaselineList = (values) => {
     let newWorkforceBaseline = [];

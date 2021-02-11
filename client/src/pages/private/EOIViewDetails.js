@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { useLocation } from 'react-router-dom';
 import { Page, CheckPermissions } from '../../components/generic';
 import { Form } from '../../components/employer-form';
 import { scrollUp } from '../../utils';
 import store from 'store';
 
-export default (props) => {
+export default ({ match }) => {
   const [roles, setRoles] = useState([]);
   const [user, setUser] = useState(undefined);
-  const [isLoadingUser, setLoadingUser] = useState(false);
-  const location = useLocation();
-  const ExpressionID = props.match.params.id;
+  const [isLoadingUser, setLoadingUser] = useState(true);
+  const expressionID = match.params.id;
 
   const fetchUserInfo = async () => {
-    setLoadingUser(true);
     const response = await fetch('/api/v1/user', {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
@@ -24,20 +21,13 @@ export default (props) => {
 
     if (response.ok) {
       const { roles } = await response.json();
-      setLoadingUser(false);
       setRoles(roles);
     }
   }
 
   useEffect(() => {
-    fetchUserInfo();
-  }, []);
-
-  useEffect(() => {
-    // This is only being used for logging at the moment
-    setLoadingUser(true);
     const fetchDetails = async () => {
-      const response = await fetch(`/api/v1/employer-form/${ExpressionID}`, {
+      const response = await fetch(`/api/v1/employer-form/${expressionID}`, {
         headers: {
           'Authorization': `Bearer ${store.get('TOKEN')}`,
         },
@@ -50,8 +40,10 @@ export default (props) => {
       }
     }
 
+    setLoadingUser(true);
+    fetchUserInfo();
     fetchDetails();
-  }, [ExpressionID]);
+  }, [expressionID]);
 
   scrollUp();
   return (

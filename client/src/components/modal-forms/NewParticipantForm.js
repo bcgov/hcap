@@ -9,24 +9,6 @@ import store from 'store';
 
 export const NewParticipantForm = ({ initialValues, validationSchema, onSubmit, onClose, sites }) => {
 
-  const [sitesDetail, setSitesDetail] = useState([]);
-
-  useEffect(() => {
-    const fetchSites = async () => {
-      const response = await fetch('/api/v1/employer-sites', {
-        headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
-        method: 'GET',
-      });
-
-      if (response.ok) {
-        const { data } = await response.json();
-        setSitesDetail(data.filter((site) => sites.includes(site.siteId)));
-      }
-    };
-
-    fetchSites();
-  }, [sites]);
-
   return <Formik
     initialValues={initialValues}
     validationSchema={validationSchema}
@@ -97,7 +79,7 @@ export const NewParticipantForm = ({ initialValues, validationSchema, onSubmit, 
             name="site"
             component={RenderSelectField}
             label="* Site"
-            options={sitesDetail.map((siteDetail) => ({
+            options={sites.map((siteDetail) => ({
               value: siteDetail.siteId, label: siteDetail.siteName,
             }))}
           />

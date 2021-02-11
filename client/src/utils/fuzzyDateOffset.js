@@ -15,8 +15,10 @@ export const fuzzyDateOffset = (datestring) => {
     } else if ( diff > hourInMilliseconds) {
         const hours = Math.floor(diff/hourInMilliseconds); 
         return `${hours} ${(hours === 1)? "hour":"hours"} ago`;
-    } else {
+    } else if ( diff > 60000) {
         const minutes = Math.floor(diff/60000);
         return `${minutes} ${(minutes === 1)? "minute":"minutes"} ago`;
+    } else {
+        return "Just now";
     }
 }

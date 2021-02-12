@@ -22,7 +22,7 @@ describe('Server V1 Form Endpoints', () => {
   const site = {
     siteId: 67,
     siteName: 'Test site',
-    earlyAdopterAllocation: 1,
+    phaseOneAllocation: 1,
     address: '123 XYZ',
     city: 'Victoria',
     healthAuthority: 'Vancouver Island',

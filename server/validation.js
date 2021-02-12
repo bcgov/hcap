@@ -206,7 +206,7 @@ const EmployerSiteBatchSchema = yup.array().of(
     return yup.object().noUnknown(`Unknown field in site data (index ${index})`).shape({
       siteId: yup.number().required(errorMessageIndex(index)),
       siteName: yup.string().required(errorMessageIndex(index)),
-      earlyAdopterAllocation: yup.number().nullable(errorMessageIndex(index)),
+      phaseOneAllocation: yup.number().nullable(errorMessageIndex(index)),
       address: yup.string().nullable(errorMessageIndex(index)),
       city: yup.string().nullable(errorMessageIndex(index)),
       healthAuthority: yup.string().required(errorMessageIndex(index)).oneOf(healthRegions, `Invalid location (index ${index})`),

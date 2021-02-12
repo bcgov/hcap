@@ -245,6 +245,7 @@ const parseAndSaveParticipants = async (fileBuffer) => {
 
     object.preferredLocation = preferredLocation.join(';');
     object.callbackStatus = 'false';
+    object.userUpdatedAt = new Date().toJSON();
 
     delete object.fraser;
     delete object.interior;

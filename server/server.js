@@ -212,6 +212,7 @@ app.post(`${apiBaseUrl}/new-hired-participant`,
       participantInfo.crcClear = 'yes';
       participantInfo.interested = 'yes';
       participantInfo.callbackStatus = 'false';
+      participantInfo.userUpdatedAt = new Date().toJSON();
 
       const response = await makeParticipant(participantInfo);
       await setParticipantStatus(user.id, response.id, 'prospecting');

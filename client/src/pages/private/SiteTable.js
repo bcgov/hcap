@@ -15,7 +15,7 @@ const columns = [
   { id: 'operatorName', name: 'Operator Name' },
   { id: 'healthAuthority', name: 'Health Authority' },
   { id: 'postalCode', name: 'Postal Code' },
-  { id: 'earlyAdopterAllocation', name: 'Phase One Allocation' },
+  { id: 'phaseOneAllocation', name: 'Phase One Allocation' },
 ];
 
 export default ({ sites }) => {

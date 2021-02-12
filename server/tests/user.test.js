@@ -28,7 +28,7 @@ describe('Users Service', () => {
         healthAuthority: 'Interior',
         siteContactLastName: 'Contact',
         siteContactFirstName: 'Cathy',
-        earlyAdopterAllocation: 20,
+        phaseOneAllocation: 20,
         registeredBusinessName: 'Interior Health Authority',
         siteContactPhoneNumber: '5555555555',
         operatorContactLastName: 'Haverston',

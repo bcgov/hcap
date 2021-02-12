@@ -3,10 +3,7 @@ const keycloak = require('../keycloak');
 
 const getReport = async () => {
   const total = await dbClient.db[collections.PARTICIPANTS].countDoc({});
-  const qualified = await dbClient.db[collections.PARTICIPANTS].countDoc({
-    interested: 'yes',
-    crcClear: 'yes',
-  });
+  const qualified = await dbClient.db[collections.PARTICIPANTS].countDoc({ interested: 'yes' });
 
   const inProgressEntries = await dbClient.db[collections.PARTICIPANTS_STATUS].join({
     hiredJoin: {

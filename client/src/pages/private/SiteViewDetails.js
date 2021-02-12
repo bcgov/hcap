@@ -8,11 +8,11 @@ import { Link } from 'react-router-dom';
 import routes from '../../constants/routes';
 
 
-export default (props) => {
+export default ({ match }) => {
   const [roles, setRoles] = useState([]);
   const [site, setSite] = useState([]);
   const [isLoadingUser, setLoadingUser] = useState(false);
-  const siteID = props.match.params.id;
+  const siteID = match.params.id;
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);

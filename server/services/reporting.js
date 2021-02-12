@@ -126,7 +126,7 @@ const getHiredParticipantsReport = async () => {
   }).find({
     current: true,
     status: 'hired',
-    'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
+    // 'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
   });
 
   return hiredEntries.map((entry) => ({

@@ -725,7 +725,7 @@ export default () => {
               renderCell={
                 (columnId, row) => {
                   if (columnId === 'callbackStatus') {
-                    return row[columnId] ? 'Completed' : 'Pending';
+                    return row[columnId] ? 'Primed' : 'Available';
                   }
                   if (columnId === 'status') {
                     return prettifyStatus(row[columnId], row.id, tabValue, handleEngage);

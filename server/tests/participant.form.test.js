@@ -225,7 +225,7 @@ describe('Participants Service', () => {
         'crcClear',
         'callbackStatus',
         'statusInfo',
-        'updated_at',
+        'userUpdatedAt',
         'progressStats',
       ])),
     );
@@ -267,7 +267,7 @@ describe('Participants Service', () => {
         'crcClear',
         'callbackStatus',
         'statusInfo',
-        'updated_at',
+        'userUpdatedAt',
         'progressStats',
       ])),
     );
@@ -288,7 +288,7 @@ describe('Participants Service', () => {
         'preferredLocation',
         'nonHCAP',
         'statusInfo',
-        'updated_at',
+        'userUpdatedAt',
         'progressStats',
       ];
       return a.map((i) => (
@@ -299,7 +299,7 @@ describe('Participants Service', () => {
     };
     const trimIds = (a) => a.map((i) => (
       Object.keys(i)
-        .filter((k) => !['id', 'callbackStatus', 'updated_at'].includes(k)) // TODO: Should not ignore callback status
+        .filter((k) => !['id', 'callbackStatus', 'userUpdatedAt'].includes(k)) // TODO: Should not ignore callback status
         .reduce((o, k) => ({ ...o, [k]: i[k] }), { nonHCAP: undefined })
     ));
 

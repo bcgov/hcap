@@ -84,7 +84,7 @@ const updateParticipant = async (participantInfo) => {
   const changes = participantInfo.history[0].changes.reduce((acc, change) => {
     const { field, to } = change;
     return { ...acc, [field]: to };
-  }, { history: participantInfo.history });
+  }, { history: participantInfo.history, userUpdatedAt: new Date().toJSON() });
 
   const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc({
     id: participantInfo.id,
@@ -157,7 +157,7 @@ const getParticipants = async (user, pagination, sortField,
           crcClear: item.crcClear,
           callbackStatus: item.callbackStatus,
           statusInfo: returnStatus,
-          updated_at: item.updated_at,
+          userUpdatedAt: item.userUpdatedAt,
           progressStats,
         };
       }),
@@ -175,7 +175,7 @@ const getParticipants = async (user, pagination, sortField,
         postalCodeFsa: item.postalCodeFsa,
         preferredLocation: item.preferredLocation,
         nonHCAP: item.nonHCAP,
-        updated_at: item.updated_at,
+        userUpdatedAt: item.userUpdatedAt,
         callbackStatus: item.callbackStatus,
       };
 
@@ -244,6 +244,8 @@ const parseAndSaveParticipants = async (fileBuffer) => {
     if (row.vancouverIsland === 1 || (isBooleanValue(row.vancouverIsland))) preferredLocation.push('Vancouver Island');
 
     object.preferredLocation = preferredLocation.join(';');
+    object.callbackStatus = 'false';
+    object.userUpdatedAt = new Date().toJSON();
 
     delete object.fraser;
     delete object.interior;

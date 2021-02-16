@@ -139,4 +139,29 @@ const getHiredParticipantsReport = async () => {
   }));
 };
 
-module.exports = { getReport, getParticipantsReport, getHiredParticipantsReport };
+const getRejectedParticipantsReport = async () => {
+  const rejectedEntries = await dbClient.db[collections.PARTICIPANTS_STATUS].join({
+    participantJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.PARTICIPANTS,
+      on: {
+        id: 'participant_id',
+      },
+    },
+  }).find({
+    current: true,
+    status: 'rejected',
+    // 'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
+  });
+
+  return rejectedEntries.map((entry) => ({
+    participantId: entry.participant_id,
+    employerId: entry.employer_id,
+    participantInfo: entry.participantJoin[0].body,
+    rejection: entry.data,
+  }));
+};
+
+module.exports = {
+  getReport, getParticipantsReport, getHiredParticipantsReport, getRejectedParticipantsReport,
+};

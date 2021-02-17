@@ -57,7 +57,7 @@ export const EditSiteForm = ({ initialValues, validationSchema, onSubmit, onClos
             label="* Postal Code"
           />
           <Field
-            name="earlyAdopterAllocation"
+            name="phaseOneAllocation"
             type="number"
             component={RenderTextField}
             label="* Phase 1 Allocation"

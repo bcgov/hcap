@@ -135,7 +135,7 @@ const getParticipants = async (user, pagination, sortField,
         };
 
         if (item.interested === 'no') returnStatus = 'Withdrawn';
-        if (item.interested === 'yes' && item.crcClear === 'yes') returnStatus = 'Available';
+        if (item.interested === 'yes') returnStatus = 'Available';
 
         item.statusInfos.forEach((entry) => {
           progressStats[entry.status] += 1;

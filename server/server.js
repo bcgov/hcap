@@ -92,10 +92,10 @@ app.get(`${apiBaseUrl}/employer-form/:id`,
       },
       form_viewed: req.params.id,
     });
-    if (user.regions.includes(result.healthAuthority)) {
-      return res.json(result);
+    if (user.isHA && !user.regions.includes(result.healthAuthority)) {
+      return res.status(403).json({ error: 'you do not have permissions to view this form' });
     }
-    return res.status(403).json({ error: 'you do not have permissions to view this form' });
+    return res.json(result);
   }));
 
 // Get Report
@@ -407,10 +407,10 @@ app.get(`${apiBaseUrl}/employer-sites/:id`,
       },
       site_id: result.siteID,
     });
-    if (user.regions.includes(result.healthAuthority)) {
-      return res.json(result);
+    if (user.isHA && !user.regions.includes(result.healthAuthority)) {
+      return res.status(403).json({ error: 'you do not have permissions to view this site' });
     }
-    return res.status(403).json({ error: 'you do not have permissions to view this site' });
+    return res.json(result);
   }));
 
 /**

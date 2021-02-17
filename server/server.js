@@ -83,6 +83,15 @@ app.get(`${apiBaseUrl}/employer-form/:id`,
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
     const [result] = await getEmployerByID(req.params.id);
+    logger.info({
+      action: 'employer-form_get_details',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+        regions: user.regions,
+      },
+      form_viewed: req.params.id,
+    });
     if (user.regions.includes(result.healthAuthority)) {
       return res.json(result);
     }
@@ -396,13 +405,17 @@ app.get(`${apiBaseUrl}/employer-sites/:id`,
         username: user.username,
         id: user.id,
       },
-      eeoi_id: req.query.id,
-      siteID: result.siteID,
+      site_id: result.siteID,
     });
-    return res.json(result);
+    if (user.regions.includes(result.healthAuthority)) {
+      return res.json(result);
+    }
+    return res.status(403).json({ error: 'you do not have permissions to view this site' });
   }));
 
-// In development
+/**
+  *  * @deprecated since Feb 2021
+  *   */
 app.get(`${apiBaseUrl}/employer-sites-detail`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),

@@ -101,7 +101,7 @@ export default () => {
         const row = mapItemToColumns(item, columns);
         row.details = (
           <Button
-            onClick={() => history.push(Routes.EOIView+`/details/${ item.id }`)}
+            onClick={() => history.push(`${Routes.EOIView}/details/${ item.id }`)}
             variant="outlined"
             size="small"
             text="Details"

@@ -55,6 +55,8 @@ export default ({ match }) => {
     'Site Contact': {
       'First Name': 'siteContactFirstName',
       'Last Name': 'siteContactLastName',
+      'Phone Number': 'siteContactPhone',
+      'Email Address': 'siteContactEmail',
     },
     'Site Info': {
       'Site Name': 'siteName',
@@ -62,14 +64,14 @@ export default ({ match }) => {
       'Address': 'address',
       'Postal Code': 'postalCode',
       'City': 'city',
-      'Phase 1 Allocation': 'earlyAdopterAllocation',
+      'Phase 1 Allocation': 'phaseOneAllocation',
       'Region': 'healthAuthority',
     },
-    'Operator Info': {
+    'Operator Contact Info': {
       'First Name': 'operatorContactFirstName',
       'Last Name': 'operatorContactLastName',
       'Phone Number': 'operatorPhone',
-      'Email address': 'operatorEmail',
+      'Email Address': 'operatorEmail',
     },
   };
 

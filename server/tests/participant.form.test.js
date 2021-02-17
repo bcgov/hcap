@@ -481,12 +481,28 @@ describe('Participants Service', () => {
       preferredLocation: 'Fraser',
     };
 
+    const participant3 = {
+      maximusId: 648692,
+      lastName: 'Extra',
+      firstName: 'Emanuel',
+      postalCode: 'V1V2V3',
+      postalCodeFsa: 'V1V',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy@example.com',
+      interested: 'no',
+      nonHCAP: 'yes',
+      crcClear: 'no',
+      preferredLocation: 'Fraser',
+    };
+
     await makeParticipant(participant1);
     await makeParticipant(participant2);
+    await makeParticipant(participant3);
 
     let participants = await getParticipants({ isMoH: true });
     expect(participants.data[0].statusInfo).toEqual('Available');
-    expect(participants.data[1].statusInfo).toEqual('Pending');
+    expect(participants.data[1].statusInfo).toEqual('Available');
+    expect(participants.data[2].statusInfo).toEqual('Withdrawn');
 
     await setParticipantStatus(employerAId, participants.data[0].id, 'prospecting');
 

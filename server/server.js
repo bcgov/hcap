@@ -14,6 +14,7 @@ const {
 } = require('./services/participants.js');
 const {
   getEmployers, getEmployerByID, saveSites, getSites, getSiteByID,
+  updateSite,
 } = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
 const { getUserSites } = require('./services/user.js');
@@ -21,6 +22,7 @@ const {
   validate, EmployerFormSchema, AccessRequestApproval,
   ParticipantQuerySchema, ParticipantStatusChange,
   ParticipantEditSchema, ExternalHiredParticipantSchema,
+  EditSiteSchema,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -365,6 +367,28 @@ app.post(`${apiBaseUrl}/employer-sites`,
     });
     try {
       const response = await saveSites(req.body);
+      return res.json(response);
+    } catch (excp) {
+      return res.status(400).send(`${excp}`);
+    }
+  }));
+
+app.patch(`${apiBaseUrl}/employer-sites/:id`,
+  keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    await validate(EditSiteSchema, req.body);
+    const user = req.hcapUserInfo;
+    logger.info({
+      action: 'employer-sites_patch',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      siteID: req.params.id,
+    });
+    try {
+      const response = await updateSite(req.params.id, req.body);
       return res.json(response);
     } catch (excp) {
       return res.status(400).send(`${excp}`);

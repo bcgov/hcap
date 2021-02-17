@@ -3,6 +3,7 @@ const { ValidationError } = require('yup');
 const app = require('../server');
 const {
   saveSites, getSites, getSiteByID, getEmployers, getEmployerByID,
+  updateSite,
 } = require('../services/employers.js');
 const { startDB, closeDB } = require('./util/db');
 
@@ -213,6 +214,11 @@ describe('Server V1 Form Endpoints', () => {
       { siteId: 67, status: 'Duplicate' },
     ];
     expect(res).toEqual(expectedRes);
+  });
+
+  it('Update site, receive success', async () => {
+    const res = await updateSite(1, { siteName: 'test' });
+    expect(res[0].siteName).toEqual('test');
   });
 
   it('fetches the list of employers', async () => {

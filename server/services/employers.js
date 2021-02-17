@@ -34,6 +34,9 @@ const saveSites = async (sitesArg) => {
   return response;
 };
 
+const updateSite = async (id, site) => dbClient.db[collections.EMPLOYER_SITES]
+  .updateDoc({ id }, site);
+
 const getSites = async () => dbClient.db[collections.EMPLOYER_SITES].findDoc({});
 const getSiteByID = async (id) => dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
 
@@ -41,6 +44,7 @@ module.exports = {
   getEmployers,
   getEmployerByID,
   saveSites,
+  updateSite,
   getSites,
   getSiteByID,
 };

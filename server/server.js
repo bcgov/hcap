@@ -81,8 +81,12 @@ app.get(`${apiBaseUrl}/employer-form/:id`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
+    const user = req.hcapUserInfo;
     const [result] = await getEmployerByID(req.params.id);
-    return res.json(result);
+    if (user.regions.includes(result.healthAuthority)) {
+      return res.json(result);
+    }
+    return res.status(403).json({ error: 'you do not have permissions to view this form' });
   }));
 
 // Get Report

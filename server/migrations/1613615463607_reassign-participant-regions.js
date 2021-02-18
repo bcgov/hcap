@@ -40,11 +40,31 @@ exports.up = async () => {
       .join(';'), // For some reason, we are using a semicolon-separated string instead of a JSON array here
   }));
 
+  const currentParticipants = await dbClient.db[collections.PARTICIPANTS].findDoc(
+    { 'maximusId::int': changes.map((i) => i.id) }, // Find all relevant participants to build history
+  );
+
+  for (const change of changes) {
+    const currentParticipant = currentParticipants.find((i) => i.maximusId === change.id);
+    // We could throw here if currentParticipant is undefined
+    // Currently, this is allowed and will set participant history item from value to null
+    // if (!currentParticipant) throw Error(`Could not find existing participant with Maximus ID ${change.id}`);
+    change.history = currentParticipant?.history || [];
+    change.history.push({
+      timestamp: new Date(),
+      changes: [{
+        field: 'preferredLocation',
+        to: change.preferredLocation,
+        from: currentParticipant?.preferredLocation || null,
+      }],
+    });
+  }
+
   await dbClient.db.withTransaction(async (tx) => {
     for (const change of changes) {
       await tx[collections.PARTICIPANTS].updateDoc(
         { maximusId: change.id },
-        { preferredLocation: change.preferredLocation },
+        { preferredLocation: change.preferredLocation, history: change.history },
       );
     }
   });

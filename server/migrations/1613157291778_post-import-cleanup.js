@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-/* eslint-disable quotes */
 const { dbClient } = require('../db/db.js');
 const { collections } = require('../db/schema.js');
 

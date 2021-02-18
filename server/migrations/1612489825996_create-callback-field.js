@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-/* eslint-disable quotes */
 const { dbClient } = require('../db/db.js');
 const { collections } = require('../db/schema.js');
 
@@ -9,7 +8,7 @@ exports.up = async () => {
   await dbClient.db.withTransaction(async (tx) => {
     await tx.query(`ALTER TABLE ${collections.PARTICIPANTS} DISABLE TRIGGER public_participants_updated`);
 
-    await tx.query("UPDATE participants SET updated_at=created_at WHERE updated_at IS NULL");
+    await tx.query('UPDATE participants SET updated_at=created_at WHERE updated_at IS NULL');
 
     await tx.query("UPDATE participants SET body=jsonb_set(body, '{userUpdatedAt}', ('\"' || (updated_at::TEXT) || '\"')::JSONB)");
 

@@ -48,7 +48,6 @@ exports.up = async () => {
     const currentParticipant = currentParticipants.find((i) => i.maximusId === change.id);
     // We could throw here if currentParticipant is undefined
     // Currently, this is allowed and will set participant history item from value to null
-    // if (!currentParticipant) throw Error(`Could not find existing participant with Maximus ID ${change.id}`);
     change.history = currentParticipant?.history || [];
     change.history.push({
       timestamp: new Date(),

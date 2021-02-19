@@ -41,7 +41,7 @@ exports.up = async () => {
   }));
 
   const currentParticipants = await dbClient.db[collections.PARTICIPANTS].findDoc(
-    { 'maximusId::int': changes.map((i) => i.id) }, // Find all relevant participants to build history
+    { maximusId: changes.map((i) => `${i.id}`) }, // Find all relevant participants to build history
   );
 
   for (const change of changes) {

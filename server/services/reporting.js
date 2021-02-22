@@ -148,6 +148,13 @@ const getRejectedParticipantsReport = async () => {
         id: 'participant_id',
       },
     },
+    employerJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.EMPLOYER_SITES,
+      on: {
+        'body.siteId': 'employer_id',
+      },
+    },
   }).find({
     current: true,
     status: 'rejected',
@@ -158,6 +165,7 @@ const getRejectedParticipantsReport = async () => {
     participantId: entry.participant_id,
     employerId: entry.employer_id,
     participantInfo: entry.participantJoin[0].body,
+    employerInfo: entry.employerJoin,
     rejection: entry.data,
   }));
 };

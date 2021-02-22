@@ -150,9 +150,9 @@ const getRejectedParticipantsReport = async () => {
     },
     employerJoin: {
       type: 'LEFT OUTER',
-      relation: collections.EMPLOYER_SITES,
+      relation: collections.USERS,
       on: {
-        'body.siteId': 'employer_id',
+        'body.keycloakId': 'employer_id',
       },
     },
   }).find({
@@ -161,11 +161,16 @@ const getRejectedParticipantsReport = async () => {
     // 'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
   });
 
+  const users = await keycloak.getUsers();
+
   return rejectedEntries.map((entry) => ({
     participantId: entry.participant_id,
     employerId: entry.employer_id,
     participantInfo: entry.participantJoin[0].body,
-    employerInfo: entry.employerJoin,
+    employerInfo: {
+      ...entry.employerJoin.map((employer) => employer.body)[0],
+      email: users.find((user) => user.id === entry.employer_id)?.email,
+    },
     rejection: entry.data,
   }));
 };

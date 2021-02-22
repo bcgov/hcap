@@ -13,8 +13,6 @@ const { getRejectedParticipantsReport } = require('../services/reporting');
 
       const results = await getRejectedParticipantsReport();
 
-      console.log(results);
-
       const csvStream = csv.format({ headers: true });
 
       results.forEach((result) => {

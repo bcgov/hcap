@@ -161,18 +161,25 @@ const getRejectedParticipantsReport = async () => {
     // 'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
   });
 
-  const users = await keycloak.getUsers();
+  const kcUser = await keycloak.getUsers();
+  const sites = await dbClient.db[collections.EMPLOYER_SITES].findDoc({});
 
-  return rejectedEntries.map((entry) => ({
-    participantId: entry.participant_id,
-    employerId: entry.employer_id,
-    participantInfo: entry.participantJoin[0].body,
-    employerInfo: {
-      ...entry.employerJoin.map((employer) => employer.body)[0],
-      email: users.find((user) => user.id === entry.employer_id)?.email,
-    },
-    rejection: entry.data,
-  }));
+  return rejectedEntries.map((entry) => {
+    const user = entry.employerJoin.map((employer) => employer.body)[0];
+    return {
+      participantId: entry.participant_id,
+      employerId: entry.employer_id,
+      participantInfo: entry.participantJoin[0].body,
+      employerInfo: {
+        ...user,
+        email: kcUser.find((item) => item.id === entry.employer_id)?.email,
+        regions: user.sites.map(
+          (site) => sites.find((item) => item.siteId === site).healthAuthority,
+        ),
+      },
+      rejection: entry.data,
+    };
+  });
 };
 
 module.exports = {

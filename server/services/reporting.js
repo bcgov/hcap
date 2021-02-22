@@ -178,6 +178,7 @@ const getRejectedParticipantsReport = async () => {
         ),
       },
       rejection: entry.data,
+      date: entry.created_at,
     };
   });
 };

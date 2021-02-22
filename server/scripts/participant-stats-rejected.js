@@ -13,11 +13,13 @@ const { getRejectedParticipantsReport } = require('../services/reporting');
 
       const results = await getRejectedParticipantsReport();
 
+      console.log('stream input');
+      console.log(results);
+
       const csvStream = csv.format({ headers: true });
 
       results.forEach((result) => {
         csvStream.write({
-          'Participant Name': `${result.participantInfo.firstName} ${result.participantInfo.lastName}`,
           'Participant ID': result.participantId,
           'Employer ID': result.employerId,
           'Reason for Rejection': result.rejection.final_status,

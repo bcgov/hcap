@@ -2,7 +2,7 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box } from '@material-ui/core';
-import { RenderTextField, RenderSelectField } from '../fields';
+import { RenderTextField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import Typography from '@material-ui/core/Typography';
 
@@ -61,18 +61,6 @@ export const EditSiteForm = ({ initialValues, validationSchema, onSubmit, onClos
             type="number"
             component={RenderTextField}
             label="* Phase 1 Allocation"
-          />
-          <Field
-            name="healthAuthority"
-            component={RenderSelectField}
-            label="* Region"
-            options={[
-              { value: 'Interior', label: 'Interior' },
-              { value: 'Fraser', label: 'Fraser' },
-              { value: 'Vancouver Coastal', label: 'Vancouver Coastal' },
-              { value: 'Vancouver Island', label: 'Vancouver Island' },
-              { value: 'Northern', label: 'Northern' },
-            ]}
           />
           <Box pt={2} pb={1}>
             <Typography variant="body1">

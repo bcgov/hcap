@@ -308,6 +308,33 @@ describe('Participants Service', () => {
     expect(trimIds(res.data)).toEqual(expect.arrayContaining(expected));
   });
 
+  it('confirms that reporting works properly', async () => {
+    const employerAId = v4();
+
+    const participant = {
+      maximusId: 648690,
+      lastName: 'Extra',
+      firstName: 'Eddy',
+      postalCode: 'V1V2V3',
+      postalCodeFsa: 'V1V',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Fraser',
+    };
+
+    await makeParticipant(participant);
+    const participants = await getParticipants({ isMoH: true });
+    const report1 = await getRejectedParticipantsReport();
+    expect(report1).toEqual([]);
+    await setParticipantStatus(employerAId, participants.data[0].id, 'prospecting');
+    await setParticipantStatus(employerAId, participants.data[0].id, 'rejected', { final_status: 'not responsive' });
+    const report2 = await getRejectedParticipantsReport();
+    expect(report2[0].rejection.final_status).toEqual('not responsive');
+  });
+
   it('Status change happy path', async () => {
     const employerAId = v4();
     const participants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['open']);
@@ -598,34 +625,5 @@ describe('Participants Service', () => {
     const query2 = await getParticipantByID(reduceParticipant);
     expect(query2[0].firstName).toEqual('Eddy');
     expect(query2[0].history.length).toEqual(1);
-  });
-
-  it('confirms that reporting works properly', async () => {
-    await closeDB();
-    await startDB();
-    const employerAId = v4();
-
-    const participant = {
-      maximusId: 648690,
-      lastName: 'Extra',
-      firstName: 'Eddy',
-      postalCode: 'V1V2V3',
-      postalCodeFsa: 'V1V',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy@example.com',
-      interested: 'yes',
-      nonHCAP: 'yes',
-      crcClear: 'yes',
-      preferredLocation: 'Fraser',
-    };
-
-    await makeParticipant(participant);
-    const participants = await getParticipants({ isMoH: true });
-    const report1 = await getRejectedParticipantsReport();
-    expect(report1).toEqual([]);
-    await setParticipantStatus(employerAId, participants.data[0].id, 'prospecting');
-    await setParticipantStatus(employerAId, participants.data[0].id, 'rejected', { final_status: 'not responsive' });
-    const report2 = await getRejectedParticipantsReport();
-    expect(report2[0].rejection.final_status).toEqual('not responsive');
   });
 });

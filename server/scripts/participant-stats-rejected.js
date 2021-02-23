@@ -22,7 +22,7 @@ const { getRejectedParticipantsReport } = require('../services/reporting');
           'Employer Email': result.employerInfo.email,
           'Employer Health Regions': result.employerInfo.regions,
           'Reason for Rejection': result.rejection.final_status,
-          Date: result.date,
+          'Date Rejected': result.date,
         });
       });
 

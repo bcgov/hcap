@@ -9,6 +9,8 @@ const getEmployers = async (user) => {
     : [];
 };
 
+const getEmployerByID = async (id) => dbClient.db[collections.EMPLOYER_FORMS].findDoc({ id });
+
 const saveSites = async (sitesArg) => {
   const sites = Array.isArray(sitesArg) ? sitesArg : [sitesArg];
   await validate(EmployerSiteBatchSchema, sites);
@@ -33,5 +35,12 @@ const saveSites = async (sitesArg) => {
 };
 
 const getSites = async () => dbClient.db[collections.EMPLOYER_SITES].findDoc({});
+const getSiteByID = async (id) => dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
 
-module.exports = { getEmployers, saveSites, getSites };
+module.exports = {
+  getEmployers,
+  getEmployerByID,
+  saveSites,
+  getSites,
+  getSiteByID,
+};

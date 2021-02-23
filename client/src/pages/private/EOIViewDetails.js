@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { Routes } from '../../constants';
-import { useLocation, Redirect } from 'react-router-dom';
 import { Page, CheckPermissions } from '../../components/generic';
 import { Form } from '../../components/employer-form';
 import { scrollUp } from '../../utils';
 import store from 'store';
 
-export default () => {
+export default ({ match }) => {
   const [roles, setRoles] = useState([]);
-  const [isLoadingUser, setLoadingUser] = useState(false);
-  const location = useLocation();
+  const [user, setUser] = useState(undefined);
+  const [isLoadingUser, setLoadingUser] = useState(true);
+  const expressionID = match.params.id;
 
   const fetchUserInfo = async () => {
-    setLoadingUser(true);
     const response = await fetch('/api/v1/user', {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
@@ -23,21 +21,13 @@ export default () => {
 
     if (response.ok) {
       const { roles } = await response.json();
-      setLoadingUser(false);
       setRoles(roles);
     }
   }
 
   useEffect(() => {
-    fetchUserInfo();
-  }, []);
-
-  useEffect(() => {
-    // This is only being used for logging at the moment
     const fetchDetails = async () => {
-      const id = location.state?.item.id;
-      if (!id) return;
-      const response = await fetch(`/api/v1/employer-sites-detail?id=${id}`, {
+      const response = await fetch(`/api/v1/employer-form/${expressionID}`, {
         headers: {
           'Authorization': `Bearer ${store.get('TOKEN')}`,
         },
@@ -45,21 +35,23 @@ export default () => {
       });
 
       if (response.ok) {
-        // do something with data
+        setUser(await response.json());
+        setLoadingUser(false);
       }
     }
 
+    setLoadingUser(true);
+    fetchUserInfo();
     fetchDetails();
-  }, [location.state?.item.id]);
+  }, [expressionID]);
 
-  if (!location.state) return <Redirect to={Routes.EOIView} />
   scrollUp();
   return (
     <Page>
       <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['health_authority', 'ministry_of_health']} renderErrorMessage={true}>
         <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
           <Form
-            initialValues={location.state?.item}
+            initialValues={user}
             hideCollectionNotice
             isDisabled
           />

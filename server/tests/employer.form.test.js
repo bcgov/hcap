@@ -1,7 +1,9 @@
 const request = require('supertest');
 const { ValidationError } = require('yup');
 const app = require('../server');
-const { saveSites, getSites } = require('../services/employers.js');
+const {
+  saveSites, getSites, getSiteByID, getEmployers, getEmployerByID,
+} = require('../services/employers.js');
 const { startDB, closeDB } = require('./util/db');
 
 describe('Server V1 Form Endpoints', () => {
@@ -190,6 +192,15 @@ describe('Server V1 Form Endpoints', () => {
     );
   });
 
+  it('Gets a single site', async () => {
+    const res = await getSiteByID(1);
+    expect(res).toEqual(
+      expect.arrayContaining(
+        [site].map((item) => (expect.objectContaining(item))),
+      ),
+    );
+  });
+
   it('Create new site, receive validation error', async () => {
     expect(
       saveSites({ ...site, siteContactPhoneNumber: '1' }),
@@ -202,5 +213,21 @@ describe('Server V1 Form Endpoints', () => {
       { siteId: 67, status: 'Duplicate' },
     ];
     expect(res).toEqual(expectedRes);
+  });
+
+  it('fetches the list of employers', async () => {
+    const res = await getEmployers({
+      isSuperUser: false, isMoH: false, isHA: true, regions: ['Vancouver Island'],
+    });
+    expect(res).toEqual([]);
+  });
+
+  it('fetches a single employer', async () => {
+    const res = await getEmployerByID(1);
+    expect(res).toEqual(
+      expect.arrayContaining(
+        [form].map((item) => (expect.objectContaining(item))),
+      ),
+    );
   });
 });

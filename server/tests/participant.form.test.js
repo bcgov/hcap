@@ -327,6 +327,7 @@ describe('Participants Service', () => {
 
     await makeParticipant(participant);
     const participants = await getParticipants({ isMoH: true });
+    await setParticipantStatus(employerAId, participants.data[0].id, 'prospecting');
     const report1 = await getRejectedParticipantsReport();
     expect(report1).toEqual([]);
     await setParticipantStatus(employerAId, participants.data[0].id, 'prospecting');

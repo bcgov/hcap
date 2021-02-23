@@ -155,10 +155,19 @@ const getRejectedParticipantsReport = async () => {
         'body.keycloakId': 'employer_id',
       },
     },
+    hiredJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.PARTICIPANTS_STATUS,
+      on: {
+        participant_id: 'participant_id',
+        status: 'hired',
+        current: true,
+      },
+    },
   }).find({
     current: true,
     status: 'rejected',
-    // 'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
+    'hiredJoin.status': null,
   });
 
   const kcUser = await keycloak.getUsers();

@@ -624,8 +624,8 @@ describe('Participants Service', () => {
     const report1 = await getRejectedParticipantsReport();
     expect(report1).toEqual([]);
     await setParticipantStatus(employerAId, participants.data[0].id, 'prospecting');
-    await setParticipantStatus(employerAId, participants.data[0].id, 'rejected', { final_status: 'hired by other', previous: 'prospecting' });
+    await setParticipantStatus(employerAId, participants.data[0].id, 'rejected', { final_status: 'not responsive' });
     const report2 = await getRejectedParticipantsReport();
-    expect(report2[0].rejection.final_status).toEqual('hired by other');
+    expect(report2[0].rejection.final_status).toEqual('not responsive');
   });
 });

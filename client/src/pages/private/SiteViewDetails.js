@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import { Page, CheckPermissions, Button } from '../../components/generic';
-import { Box, Typography } from '@material-ui/core';
-import { Dialog } from '../../components/generic';
+import { Button, Card, Dialog, Divider, Page, CheckPermissions } from '../../components/generic';
+import { Box, Grid, Link, Typography } from '@material-ui/core';
 import { scrollUp } from '../../utils';
 import store from 'store';
-import { Link } from 'react-router-dom';
 import routes from '../../constants/routes';
 import { EditSiteForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
@@ -169,64 +166,67 @@ export default ({ match }) => {
       </Dialog>
       <Page>
         <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['health_authority', 'ministry_of_health']} renderErrorMessage={true}>
-          <Box pt={4} pb={2} pl={4} pr={4}>
-            <Box pb={4}>
-              <Box pb={2}>
-                <Typography variant="body1">
-                  <Link to={routes.SiteView}>Sites</Link> / {site.siteName}
-                </Typography>
+          <Card>
+            <Box pt={4} pb={2} pl={4} pr={4}>
+              <Box pb={4}>
+                <Box pb={2}>
+                  <Typography variant="body1">
+                    <Link to={routes.SiteView}>Sites</Link> / {site.siteName}
+                  </Typography>
+                </Box>
+                <Grid container>
+                  <Typography variant="h2">
+                    <b>Site Details</b>
+                  </Typography>
+                  <Divider />
+                  <Box pl={2} pt={0.5}>
+                    <Button
+                      onClick={async () => {
+                        setActiveModalForm('edit-site');
+                      }}
+                      variant="outlined"
+                      fullWidth={false}
+                      size="small"
+                      text="Edit"
+                    />
+                  </Box>
+                </Grid>
               </Box>
               <Grid container>
-                <Typography variant="h2">
-                  <b>Site Details</b>
-                </Typography>
-                <Box pl={2} pt={0.5}>
-                  <Button
-                    onClick={async () => {
-                      setActiveModalForm('edit-site');
-                    }}
-                    variant="outlined"
-                    fullWidth={false}
-                    size="small"
-                    text="Edit"
-                  />
-                </Box>
+                {
+                  Object.keys(fieldsLabelMap).map(title =>
+                    <Grid key={title} item>
+                      <Box pr={12}>
+                        <Box pb={2}>
+                          <Typography variant="subtitle1">
+                            <b>{title}</b>
+                          </Typography>
+                        </Box>
+                        {
+                          Object.keys(fieldsLabelMap[title]).map(subTitle =>
+                            <Grid key={subTitle}
+                              justify="space-between"
+                              container>
+                              <Grid item>
+                                <Box pr={4} pb={1}>
+                                  <Typography variant="body1">
+                                    <b>{subTitle}</b>
+                                  </Typography>
+                                </Box>
+                              </Grid>
+                              <Grid item>
+                                <Typography variant="body1">
+                                  {site[fieldsLabelMap[title][subTitle]]}
+                                </Typography>
+                              </Grid>
+                            </Grid>)
+                        }
+                      </Box>
+                    </Grid>)
+                }
               </Grid>
             </Box>
-            <Grid container>
-              {
-                Object.keys(fieldsLabelMap).map(title =>
-                  <Grid key={title} item>
-                    <Box pr={12}>
-                      <Box pb={2}>
-                        <Typography variant="subtitle1">
-                          <b>{title}</b>
-                        </Typography>
-                      </Box>
-                      {
-                        Object.keys(fieldsLabelMap[title]).map(subTitle =>
-                          <Grid key={subTitle}
-                            justify="space-between"
-                            container>
-                            <Grid item>
-                              <Box pr={4} pb={1}>
-                                <Typography variant="body1">
-                                  <b>{subTitle}</b>
-                                </Typography>
-                              </Box>
-                            </Grid>
-                            <Grid item>
-                              <Typography variant="body1">
-                                {site[fieldsLabelMap[title][subTitle]]}
-                              </Typography>
-                            </Grid>
-                          </Grid>)
-                      }
-                    </Box>
-                  </Grid>)
-              }
-            </Grid>
-          </Box>
+          </Card>
         </CheckPermissions>
       </Page>
     </>

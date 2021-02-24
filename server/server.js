@@ -405,7 +405,8 @@ app.get(`${apiBaseUrl}/employer-sites/:id`,
         username: user.username,
         id: user.id,
       },
-      site_id: result.siteID,
+      site_internal_id: result[0].id,
+      site_id: result[0].siteId,
     });
     if (user.isHA && !user.regions.includes(result.healthAuthority)) {
       return res.status(403).json({ error: 'you do not have permissions to view this site' });
@@ -414,8 +415,11 @@ app.get(`${apiBaseUrl}/employer-sites/:id`,
   }));
 
 /**
-  *  * @deprecated since Feb 2021
-  *   */
+  * @deprecated since Feb 2021
+  * This endpoint was a misnomer, it was named sites but actually retrieved a single EEOI:
+  *   /employer-form/:id - EEOI details, direct replacement for this function
+  *   /employer-sites/:id - new site details endpoint
+  */
 app.get(`${apiBaseUrl}/employer-sites-detail`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),

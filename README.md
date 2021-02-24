@@ -52,11 +52,12 @@ To set up and run database, backend (server), and frontend (client) applications
 - You should see the application running at `localhost:4000`
 
 To tear down your environment:
-- Run `make close-local`
+- Run `make local-close`
+- Run `make local-clean`
 
 To run server tests:
 - Make sure containers are running
-  - `make local`
+  - `make local-run`
 - Shell into the server container by running
   - `make local-server-workspace`
   - `npm test`

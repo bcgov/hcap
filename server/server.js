@@ -379,16 +379,16 @@ app.patch(`${apiBaseUrl}/employer-sites/:id`,
   asyncMiddleware(async (req, res) => {
     await validate(EditSiteSchema, req.body);
     const user = req.hcapUserInfo;
-    logger.info({
-      action: 'employer-sites_patch',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-      siteID: req.params.id,
-    });
     try {
       const response = await updateSite(req.params.id, req.body);
+      logger.info({
+        action: 'employer-sites_patch',
+        performed_by: {
+          username: user.username,
+          id: user.id,
+        },
+        siteID: req.params.id,
+      });
       return res.json(response);
     } catch (excp) {
       return res.status(400).send(`${excp}`);

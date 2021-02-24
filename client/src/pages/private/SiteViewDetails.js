@@ -136,6 +136,19 @@ export default ({ match }) => {
           }}
           validationSchema={EditSiteSchema}
           onSubmit={(values) => {
+            const history = {
+              timestamp: new Date(),
+              changes: [],
+            };
+            Object.keys(values).forEach(key => {
+              if (values[key] !== site[key]) {
+                history.changes.push({
+                  field: key,
+                  from: site[key],
+                  to: values[key],
+                });
+              }
+            });
             handleSiteEdit({
               siteContactFirstName: values.siteContactFirstName,
               siteContactLastName: values.siteContactLastName,
@@ -148,6 +161,7 @@ export default ({ match }) => {
               operatorContactLastName: values.operatorContactLastName,
               operatorPhone: values.operatorPhone,
               operatorEmail: values.operatorEmail,
+              history: (site.history) ? [history, ...site.history] : [history],
             });
           }}
           onClose={defaultOnClose}

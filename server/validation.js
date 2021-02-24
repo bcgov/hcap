@@ -372,6 +372,7 @@ const EditSiteSchema = yup.object().shape({
   operatorContactLastName: yup.string().required(errorMessage),
   operatorPhone: yup.string().nullable(errorMessage).matches(/^([0-9]{10})?$/, 'Phone number must be provided as 10 digits'),
   operatorEmail: yup.string().nullable(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  history: yup.array().required('Edit history is required'),
 });
 
 const validate = async (schema, data) => schema.validate(data, { strict: true });

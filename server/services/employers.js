@@ -34,8 +34,15 @@ const saveSites = async (sitesArg) => {
   return response;
 };
 
-const updateSite = async (id, site) => dbClient.db[collections.EMPLOYER_SITES]
-  .updateDoc({ id }, site);
+const updateSite = async (id, site) => {
+  const changes = site.history[0].changes.reduce((acc, change) => {
+    const { field, to } = change;
+    return { ...acc, [field]: to };
+  }, { history: site.history, userUpdatedAt: new Date().toJSON() });
+
+  return dbClient.db[collections.EMPLOYER_SITES]
+    .updateDoc({ id }, changes);
+};
 
 const getSites = async () => dbClient.db[collections.EMPLOYER_SITES].findDoc({});
 const getSiteByID = async (id) => dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });

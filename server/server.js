@@ -429,8 +429,8 @@ app.get(`${apiBaseUrl}/employer-sites/:id`,
         username: user.username,
         id: user.id,
       },
-      site_internal_id: result[0].id,
-      site_id: result[0].siteId,
+      site_internal_id: result.id,
+      site_id: result.siteId,
     });
     if (user.isHA && !user.regions.includes(result.healthAuthority)) {
       return res.status(403).json({ error: 'you do not have permissions to view this site' });

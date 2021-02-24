@@ -91,29 +91,27 @@ services:
       - network
 
   keycloak:
-    image: jboss/keycloak
+    image: ${APP_NAME}-keycloak
+    build:
+      context: ./.docker/keycloak
+      dockerfile: Dockerfile.test
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres
-      DB_DATABASE: nest_api_dev
-      DB_USER: court_nestapi
-      DB_PASSWORD: court_nest123
-      KEYCLOAK_USER: admin
+      DB_DATABASE: db_test_keycloak
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KEYCLOAK_USER: test-admin
       KEYCLOAK_PASSWORD: password
       KEYCLOAK_IMPORT: /tmp/realm-testing.json -Dkeycloak.profile.feature.upload_scripts=enabled
     ports:
-      - 8080:8080
+      - 7000:8080
     expose:
-      - "8080"
-    volumes:
-      - ./.docker/keycloak/realm-testing.json:/tmp/realm-testing.json
-      - ./.docker/keycloak/create-users.sh:/opt/jboss/startup-scripts/create-users.sh
+      - "7000"
     depends_on:
       - postgres
     networks:
-      backend:
-        aliases:
-          - keycloak.local.freshworks.club
+      - network
 
 networks:
   network:

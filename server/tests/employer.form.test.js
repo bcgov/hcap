@@ -217,7 +217,10 @@ describe('Server V1 Form Endpoints', () => {
   });
 
   it('Update site, receive success', async () => {
-    const res = await updateSite(1, { siteName: 'test' });
+    const res = await updateSite(1, {
+      siteName: 'test',
+      history: [{ timestamp: new Date(), changes: [{ field: 'siteName', from: 'test1', to: 'test' }] }],
+    });
     expect(res[0].siteName).toEqual('test');
   });
 

@@ -1,6 +1,8 @@
 export const fuzzyDateOffset = (datestring) => {
     const offsetTime = new Date(datestring).getTime();
     const currentTime = new Date().getTime();
+    console.log("fuzzyDateOffset_Debug");
+    console.log(`offsetTime is ${offsetTime}, built from datestring ${datestring}, currentTime is ${currentTime}`);
     const weekInMilliseconds = 7*24*60*60*1000; 
     const dayInMilliseconds = 24*60*60*1000; 
     const hourInMilliseconds = 60*60*1000; 

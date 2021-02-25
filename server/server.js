@@ -14,6 +14,7 @@ const {
 } = require('./services/participants.js');
 const {
   getEmployers, getEmployerByID, saveSites, getSites, getSiteByID,
+  updateSite,
 } = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
 const { getUserSites } = require('./services/user.js');
@@ -21,6 +22,7 @@ const {
   validate, EmployerFormSchema, AccessRequestApproval,
   ParticipantQuerySchema, ParticipantStatusChange,
   ParticipantEditSchema, ExternalHiredParticipantSchema,
+  EditSiteSchema,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -371,6 +373,28 @@ app.post(`${apiBaseUrl}/employer-sites`,
     }
   }));
 
+app.patch(`${apiBaseUrl}/employer-sites/:id`,
+  keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    await validate(EditSiteSchema, req.body);
+    const user = req.hcapUserInfo;
+    try {
+      const response = await updateSite(req.params.id, req.body);
+      logger.info({
+        action: 'employer-sites_patch',
+        performed_by: {
+          username: user.username,
+          id: user.id,
+        },
+        siteID: req.params.id,
+      });
+      return res.json(response);
+    } catch (excp) {
+      return res.status(400).send(`${excp}`);
+    }
+  }));
+
 app.get(`${apiBaseUrl}/employer-sites`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
@@ -405,8 +429,8 @@ app.get(`${apiBaseUrl}/employer-sites/:id`,
         username: user.username,
         id: user.id,
       },
-      site_internal_id: result[0].id,
-      site_id: result[0].siteId,
+      site_internal_id: result.id,
+      site_id: result.siteId,
     });
     if (user.isHA && !user.regions.includes(result.healthAuthority)) {
       return res.status(403).json({ error: 'you do not have permissions to view this site' });

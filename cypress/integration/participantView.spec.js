@@ -55,43 +55,43 @@ describe("Participant View", () => {
     // cy.contains("My Sites").should('exist');
   });
 
-  it("Tests the manual participant adder", () => {
-    const participantInfo = {
-      "firstName": "Tiddly",
-      "lastName": "Whiskers",
-      "phoneNumber": "3141592654",
-      "emailAddress": "tiddlywhiskers@ca.ts",
-      "origin": "internal",
-      "otherOrigin": '',
-      "hcapOpportunity": true,
-      "contactedDate": "2020/10/10",
-      "hiredDate": "2020/11/11",
-      "startDate": "2020/12/12",
-      "site": 2,
-      "acknowledge": true,
-    };
+  // it("Tests the manual participant adder", () => {
+  //   const participantInfo = {
+  //     "firstName": "Tiddly",
+  //     "lastName": "Whiskers",
+  //     "phoneNumber": "3141592654",
+  //     "emailAddress": "tiddlywhiskers@ca.ts",
+  //     "origin": "internal",
+  //     "otherOrigin": '',
+  //     "hcapOpportunity": true,
+  //     "contactedDate": "2020/10/10",
+  //     "hiredDate": "2020/11/11",
+  //     "startDate": "2020/12/12",
+  //     "site": 2,
+  //     "acknowledge": true,
+  //   };
 
-    cy.kcNavAs('employer', 'participant-view');
-    cy.intercept('post','api/v1/new-hired-participant', (req) => {
-      expect(req.body).to.deep.equal(participantInfo);
-    });
+  //   cy.kcNavAs('employer', 'participant-view');
+  //   cy.intercept('post','api/v1/new-hired-participant', (req) => {
+  //     expect(req.body).to.deep.equal(participantInfo);
+  //   });
 
-    cy.contains('Hired Candidates').click();
-    cy.contains('Non-Portal').click();
-    cy.get('input[name=firstName]').type("Tiddly");
-    cy.get('input[name=lastName]').type("Whiskers");
-    cy.get('input[name=phoneNumber]').type("3141592654");
-    cy.get('input[name=emailAddress]').type("tiddlywhiskers@ca.ts");
-    cy.get('div#mui-component-select-origin').click();
-    cy.get('li').contains('Internal').click();
-    cy.get('input[name=DateContacted]').type("20201010");
-    cy.get('input[name=DateOfferAccepted]').type("20201111");
-    cy.get('input[name=StartDate]').type("20201212");
-    cy.get('div#mui-component-select-site').click();
-    cy.get('li[data-value=2]').click();
-    cy.get('input[name=acknowledge]').click();
-    cy.get('button').contains('Submit').click();
-  });
+  //   cy.contains('Hired Candidates').click();
+  //   cy.contains('Non-Portal').click();
+  //   cy.get('input[name=firstName]').type("Tiddly");
+  //   cy.get('input[name=lastName]').type("Whiskers");
+  //   cy.get('input[name=phoneNumber]').type("3141592654");
+  //   cy.get('input[name=emailAddress]').type("tiddlywhiskers@ca.ts");
+  //   cy.get('div#mui-component-select-origin').click();
+  //   cy.get('li').contains('Internal').click();
+  //   cy.get('input[name=DateContacted]').type("20201010");
+  //   cy.get('input[name=DateOfferAccepted]').type("20201111");
+  //   cy.get('input[name=StartDate]').type("20201212");
+  //   cy.get('div#mui-component-select-site').click();
+  //   cy.get('li[data-value=2]').click();
+  //   cy.get('input[name=acknowledge]').click();
+  //   cy.get('button').contains('Submit').click();
+  // });
 
   it("Uses the MoH edit feature", () => {
     cy.intercept('patch','/api/v1/participant', (req) => {

@@ -139,4 +139,59 @@ const getHiredParticipantsReport = async () => {
   }));
 };
 
-module.exports = { getReport, getParticipantsReport, getHiredParticipantsReport };
+const getRejectedParticipantsReport = async () => {
+  const rejectedEntries = await dbClient.db[collections.PARTICIPANTS_STATUS].join({
+    participantJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.PARTICIPANTS,
+      on: {
+        id: 'participant_id',
+      },
+    },
+    employerJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.USERS,
+      on: {
+        'body.keycloakId': 'employer_id',
+      },
+    },
+    hiredJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.PARTICIPANTS_STATUS,
+      on: {
+        participant_id: 'participant_id',
+        status: 'hired',
+        current: true,
+      },
+    },
+  }).find({
+    current: true,
+    status: 'rejected',
+    'hiredJoin.status': null,
+  });
+
+  const kcUser = await keycloak.getUsers();
+  const sites = await dbClient.db[collections.EMPLOYER_SITES].findDoc({});
+
+  return rejectedEntries.map((entry) => {
+    const user = entry.employerJoin.map((employer) => employer.body)[0];
+    return {
+      participantId: entry.participant_id,
+      employerId: entry.employer_id,
+      participantInfo: entry.participantJoin[0].body,
+      employerInfo: {
+        ...user,
+        email: kcUser.find((item) => item.id === entry.employer_id)?.email,
+        regions: user.sites.map(
+          (site) => sites.find((item) => item.siteId === site).healthAuthority,
+        ),
+      },
+      rejection: entry.data,
+      date: entry.created_at,
+    };
+  }).filter((entry) => entry.participantInfo.interested !== 'withdrawn');
+};
+
+module.exports = {
+  getReport, getParticipantsReport, getHiredParticipantsReport, getRejectedParticipantsReport,
+};

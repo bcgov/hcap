@@ -182,7 +182,7 @@ export default ({ match }) => {
                 </Box>
                 <Grid container>
                   <Typography variant="h2">
-                    <b>Site Details</b>
+                    <b>{site.siteName}</b>
                   </Typography>
                   <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
                     <Box pl={2} pt={0.5}>

@@ -152,6 +152,10 @@ Exports all participants In Progress from the database as a CSV file. (Before ru
 
 Exports all hired participants from the database as a CSV file. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`). Records employer ID, position type, site.
 
+#### `npm run participant-stats-rejected`
+
+Exports all rejected participants from the database as a CSV file. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`). Records participant ID, employer ID, employer email, employer health regions and the reason and date of rejection.
+
 ### Database
 
 This application uses both a PostgreSQL database as its main storage as well as a MongoDB database to store logging output.

@@ -31,6 +31,16 @@ export const EditSiteForm = ({ initialValues, validationSchema, onSubmit, onClos
             component={RenderTextField}
             label="* Last Name"
           />
+          <Field
+            name="siteContactPhone"
+            component={RenderTextField}
+            label="* Phone Number"
+          />
+          <Field
+            name="siteContactEmail"
+            component={RenderTextField}
+            label="* Email Address"
+          />
           <Box pt={2} pb={1}>
             <Typography variant="body1">
               <b>Site Info</b>
@@ -49,7 +59,12 @@ export const EditSiteForm = ({ initialValues, validationSchema, onSubmit, onClos
           <Field
             name="address"
             component={RenderTextField}
-            label="* Address"
+            label="* Street Address"
+          />
+          <Field
+            name="city"
+            component={RenderTextField}
+            label="* City"
           />
           <Field
             name="postalCode"
@@ -80,12 +95,12 @@ export const EditSiteForm = ({ initialValues, validationSchema, onSubmit, onClos
           <Field
             name="operatorPhone"
             component={RenderTextField}
-            label="Phone Number"
+            label="* Phone Number"
           />
           <Field
             name="operatorEmail"
             component={RenderTextField}
-            label="Email address"
+            label="* Email address"
           />
         </Box>
         <Box mt={3}>

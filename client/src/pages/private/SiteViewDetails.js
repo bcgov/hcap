@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Dialog, Divider, Page, CheckPermissions } from '../../components/generic';
+import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
 import { Box, Grid, Link, Typography } from '@material-ui/core';
 import { scrollUp } from '../../utils';
 import store from 'store';
@@ -91,7 +91,7 @@ export default ({ match }) => {
     'Site Info': {
       'Site Name': 'siteName',
       'Business Name': 'registeredBusinessName',
-      'Address': 'address',
+      'Street Address': 'address',
       'Postal Code': 'postalCode',
       'City': 'city',
       'Phase 1 Allocation': 'phaseOneAllocation',
@@ -121,9 +121,12 @@ export default ({ match }) => {
           initialValues={{
             siteContactFirstName: site.siteContactFirstName,
             siteContactLastName: site.siteContactLastName,
+            siteContactPhone: site.siteContactPhone,
+            siteContactEmail: site.siteContactEmail,
             siteName: site.siteName,
             registeredBusinessName: site.registeredBusinessName,
             address: site.address,
+            city: site.city,
             postalCode: site.postalCode,
             phaseOneAllocation: site.phaseOneAllocation,
             operatorContactFirstName: site.operatorContactFirstName,
@@ -149,9 +152,12 @@ export default ({ match }) => {
             handleSiteEdit({
               siteContactFirstName: values.siteContactFirstName,
               siteContactLastName: values.siteContactLastName,
+              siteContactPhone: values.siteContactPhone,
+              siteContactEmail: values.siteContactEmail,
               siteName: values.siteName,
               registeredBusinessName: values.registeredBusinessName,
               address: values.address,
+              city: values.city,
               postalCode: values.postalCode,
               phaseOneAllocation: values.phaseOneAllocation,
               operatorContactFirstName: values.operatorContactFirstName,
@@ -171,25 +177,26 @@ export default ({ match }) => {
               <Box pb={4}>
                 <Box pb={2}>
                   <Typography variant="body1">
-                    <Link to={routes.SiteView}>Sites</Link> / {site.siteName}
+                    <Link href={routes.SiteView}>Sites</Link> / {site.siteName}
                   </Typography>
                 </Box>
                 <Grid container>
                   <Typography variant="h2">
                     <b>Site Details</b>
                   </Typography>
-                  <Divider />
-                  <Box pl={2} pt={0.5}>
-                    <Button
-                      onClick={async () => {
-                        setActiveModalForm('edit-site');
-                      }}
-                      variant="outlined"
-                      fullWidth={false}
-                      size="small"
-                      text="Edit"
-                    />
-                  </Box>
+                  <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+                    <Box pl={2} pt={0.5}>
+                      <Button
+                        onClick={async () => {
+                          setActiveModalForm('edit-site');
+                        }}
+                        variant="outlined"
+                        fullWidth={false}
+                        size="small"
+                        text="Edit"
+                      />
+                    </Box>
+                  </CheckPermissions>
                 </Grid>
               </Box>
               <Grid container>

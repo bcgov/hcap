@@ -80,8 +80,10 @@ const BeforeYouBegin = () => {
             <b>Thank you for your interest in the Health Career Access Program. This current round of submissions will be open until March 2, 2021. Your submission will be assessed  and an HCAP team member will be in contact with the results within two weeks of the close date.</b>
           </Typography>
           <Typography variant="body1" paragraph>
-            We appreciate your interest in participating and we encourage you to reach out with any questions to:  
-              <a href="mailto:HCAPInfoQuery@gov.bc.ca"> HCAPInfoQuery@gov.bc.ca</a>
+            We appreciate your interest in participating and we encourage you to reach out with any questions to:&nbsp;
+              <Link href="mailto:HCAPInfoQuery@gov.bc.ca">
+                HCAPInfoQuery@gov.bc.ca
+              </Link>
           </Typography>
         </Card>
       </Box>

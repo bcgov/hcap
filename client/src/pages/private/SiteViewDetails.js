@@ -177,14 +177,13 @@ export default ({ match }) => {
               <Box pb={4}>
                 <Box pb={2}>
                   <Typography variant="body1">
-                    <Link to={routes.SiteView}>Sites</Link> / {site.siteName}
+                    <Link href={routes.SiteView}>Sites</Link> / {site.siteName}
                   </Typography>
                 </Box>
                 <Grid container>
                   <Typography variant="h2">
                     <b>Site Details</b>
                   </Typography>
-                  <Divider />
                   <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
                     <Box pl={2} pt={0.5}>
                       <Button
@@ -199,6 +198,7 @@ export default ({ match }) => {
                     </Box>
                   </CheckPermissions>
                 </Grid>
+                <Divider />
               </Box>
               <Grid container>
                 {

@@ -91,7 +91,7 @@ export default ({ match }) => {
     'Site Info': {
       'Site Name': 'siteName',
       'Business Name': 'registeredBusinessName',
-      'Address': 'address',
+      'Street Address': 'address',
       'Postal Code': 'postalCode',
       'City': 'city',
       'Phase 1 Allocation': 'phaseOneAllocation',
@@ -121,9 +121,12 @@ export default ({ match }) => {
           initialValues={{
             siteContactFirstName: site.siteContactFirstName,
             siteContactLastName: site.siteContactLastName,
+            siteContactPhone: site.siteContactPhone,
+            siteContactEmail: site.siteContactEmail,
             siteName: site.siteName,
             registeredBusinessName: site.registeredBusinessName,
             address: site.address,
+            city: site.city,
             postalCode: site.postalCode,
             phaseOneAllocation: site.phaseOneAllocation,
             operatorContactFirstName: site.operatorContactFirstName,
@@ -149,9 +152,12 @@ export default ({ match }) => {
             handleSiteEdit({
               siteContactFirstName: values.siteContactFirstName,
               siteContactLastName: values.siteContactLastName,
+              siteContactPhone: values.siteContactPhone,
+              siteContactEmail: values.siteContactEmail,
               siteName: values.siteName,
               registeredBusinessName: values.registeredBusinessName,
               address: values.address,
+              city: values.city,
               postalCode: values.postalCode,
               phaseOneAllocation: values.phaseOneAllocation,
               operatorContactFirstName: values.operatorContactFirstName,
@@ -179,17 +185,19 @@ export default ({ match }) => {
                     <b>Site Details</b>
                   </Typography>
                   <Divider />
-                  <Box pl={2} pt={0.5}>
-                    <Button
-                      onClick={async () => {
-                        setActiveModalForm('edit-site');
-                      }}
-                      variant="outlined"
-                      fullWidth={false}
-                      size="small"
-                      text="Edit"
-                    />
-                  </Box>
+                  <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+                    <Box pl={2} pt={0.5}>
+                      <Button
+                        onClick={async () => {
+                          setActiveModalForm('edit-site');
+                        }}
+                        variant="outlined"
+                        fullWidth={false}
+                        size="small"
+                        text="Edit"
+                      />
+                    </Box>
+                  </CheckPermissions>
                 </Grid>
               </Box>
               <Grid container>

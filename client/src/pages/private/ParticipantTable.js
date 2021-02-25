@@ -766,7 +766,7 @@ export default () => {
                     />
                   }
                   if (columnId === 'userUpdatedAt') {
-                    return fuzzyDateOffset(row.engage.userUpdatedAt);
+                    return fuzzyDateOffset(row.userUpdatedAt);
                   }
                   return row[columnId];
                 }

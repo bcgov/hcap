@@ -18,7 +18,8 @@ import { Table, CheckPermissions, Button, Dialog } from '../../components/generi
 import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipantForm, EditParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
-import { fuzzyDateOffset, getDialogTitle, prettifyStatus } from '../../utils';
+import { getDialogTitle, prettifyStatus } from '../../utils';
+import moment from 'moment';
 
 const pageSize = 10;
 
@@ -766,7 +767,7 @@ export default () => {
                     />
                   }
                   if (columnId === 'userUpdatedAt') {
-                    return fuzzyDateOffset(row.engage.userUpdatedAt);
+                    return moment(row.userUpdatedAt).fromNow();
                   }
                   return row[columnId];
                 }

@@ -1,7 +1,7 @@
 export const fuzzyDateOffset = (datestring) => {
     if (!datestring) return "Never Updated";
 
-    // Some browsers cannot parse datestrings of the following form:
+    // Some browsers (firefox, safari) cannot parse datestrings of the following form:
     // 2021-02-11 16:02:12.877406+00
     if (datestring.includes(" ")) {
         datestring = datestring.replace(' ','T').replace('+00', 'Z')
@@ -9,8 +9,6 @@ export const fuzzyDateOffset = (datestring) => {
 
     const offsetTime = new Date(datestring).getTime();
     const currentTime = new Date().getTime();
-    console.log("fuzzyDateOffset_Debug");
-    console.log(`offsetTime is ${offsetTime}, built from datestring ${datestring}, currentTime is ${currentTime}`);
     const weekInMilliseconds = 7*24*60*60*1000; 
     const dayInMilliseconds = 24*60*60*1000; 
     const hourInMilliseconds = 60*60*1000; 

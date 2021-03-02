@@ -226,23 +226,42 @@ describe('Server V1 Form Endpoints', () => {
       preferredLocation: 'Fraser',
     };
 
+    const participant2 = {
+      maximusId: 648691,
+      lastName: 'Finkleman',
+      firstName: 'Freduardo',
+      postalCode: 'V1V2V3',
+      postalCodeFsa: 'V1V',
+      phoneNumber: '2502223333',
+      emailAddress: 'freddy@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Fraser',
+    };
+
     const [res] = await getSiteByID(1);
     expect(res.hcapHires).toEqual('0');
     expect(res.nonHcapHires).toEqual('0');
     await makeParticipant(participant1);
-    const { data: [ppt] } = await getParticipants({ isMoH: true });
-    console.log('ppt');
-    console.log(ppt);
+    await makeParticipant(participant2);
+    const { data: [ppt, ppt2] } = await getParticipants({ isMoH: true });
+    await setParticipantStatus(employerAId, ppt.id, 'prospecting');
+    await setParticipantStatus(employerAId, ppt.id, 'interviewing');
+    await setParticipantStatus(employerAId, ppt.id, 'offer_made');
     await setParticipantStatus(employerAId, ppt.id, 'hired', {
-      site: 1,
+      site: res.siteId,
       nonHcapOpportunity: false,
       positionTitle: 'title',
       positionType: 'posType',
       hiredDate: new Date(),
       startDate: new Date(),
     });
-    await setParticipantStatus(employerBId, ppt.id, 'hired', {
-      site: 1,
+    await setParticipantStatus(employerBId, ppt2.id, 'prospecting');
+    await setParticipantStatus(employerBId, ppt2.id, 'interviewing');
+    await setParticipantStatus(employerBId, ppt2.id, 'offer_made');
+    await setParticipantStatus(employerBId, ppt2.id, 'hired', {
+      site: res.siteId,
       nonHcapOpportunity: true,
       positionTitle: 'title',
       positionType: 'posType',

@@ -45,7 +45,17 @@ const updateSite = async (id, site) => {
 };
 
 const getSites = async () => dbClient.db[collections.EMPLOYER_SITES].findDoc({});
-const getSiteByID = async (id) => dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
+const getSiteByID = async (id) => {
+  const site = await dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
+  const test = await dbClient.db[collections.PARTICIPANTS_STATUS].count();
+  console.log('how many status are there');
+  console.log(test);
+  const hcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS].count({ 'data.site': site[0].siteId, 'data.nonHcapOpportunity': 'false' });
+  const nonHcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS].count({ 'data.site': site[0].siteId, 'data.nonHcapOpportunity': 'true' });
+  site[0].hcapHires = hcapHires;
+  site[0].nonHcapHires = nonHcapHires;
+  return site;
+};
 
 module.exports = {
   getEmployers,

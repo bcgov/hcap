@@ -103,6 +103,10 @@ export default ({ match }) => {
       'Phone Number': 'operatorPhone',
       'Email Address': 'operatorEmail',
     },
+    'Positions Overview': {
+      'HCAP Hires': 'hcapHires',
+      'Non-HCAP': 'nonHcapHires',
+    },
   };
 
   const defaultOnClose = () => {
@@ -172,8 +176,9 @@ export default ({ match }) => {
       </Dialog>
       <Page>
         <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['health_authority', 'ministry_of_health']} renderErrorMessage={true}>
+          <Box p={1} />
           <Card>
-            <Box pt={4} pb={2} pl={4} pr={4}>
+            <Box pt={0} pb={2} pl={4} pr={4}>
               <Box pb={4}>
                 <Box pb={2}>
                   <Typography variant="body1">
@@ -199,7 +204,7 @@ export default ({ match }) => {
                   </CheckPermissions>
                 </Grid>
               </Box>
-              <Grid container>
+              <Grid container direction="row">
                 {
                   Object.keys(fieldsLabelMap).map(title =>
                     <Grid key={title} item>

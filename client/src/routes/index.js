@@ -73,7 +73,17 @@ export default () => {
   if (!keycloakInfo) {
     return 'Server unavailable';
   }
+  
+  console.log(`This is the current href: ${window.location.href}`);
+  console.log("If the path ends with \'demo\' then the base page will display a dummy component");
 
+  const DummyComponent = ({component: Component }) => {
+    return (
+      <div>
+        <p>Demo</p>
+      </div>
+    );
+  }
   return (
     <KeycloakProvider
       keycloak={keycloakInfo}
@@ -107,7 +117,7 @@ export default () => {
             <PrivateRoute exact path={Routes.ParticipantUploadResults} component={ParticipantUploadResults} />
             <PrivateRoute exact path={Routes.Admin} component={Admin} />
             <Route exact path={Routes.Keycloak} component={KeycloackRedirect} />
-            <Route component={EmployerForm} />
+            <Route component={(window.location.href.includes('demo'))? DummyComponent : EmployerForm} />
           </Switch>
         </Suspense>
       </BrowserRouter>

@@ -1,10 +1,17 @@
 const request = require('supertest');
 const { ValidationError } = require('yup');
+const { v4 } = require('uuid');
 const app = require('../server');
 const {
   saveSites, getSites, getSiteByID, getEmployers, getEmployerByID,
   updateSite,
 } = require('../services/employers.js');
+const {
+  getParticipants,
+  makeParticipant,
+  setParticipantStatus,
+} = require('../services/participants.js');
+
 const { startDB, closeDB } = require('./util/db');
 
 describe('Server V1 Form Endpoints', () => {
@@ -200,6 +207,51 @@ describe('Server V1 Form Endpoints', () => {
         [site].map((item) => (expect.objectContaining(item))),
       ),
     );
+  });
+
+  it('gets a site before and after hires have been made', async () => {
+    const employerAId = v4();
+    const employerBId = v4();
+    const participant1 = {
+      maximusId: 648690,
+      lastName: 'Extra',
+      firstName: 'Eddy',
+      postalCode: 'V1V2V3',
+      postalCodeFsa: 'V1V',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Fraser',
+    };
+
+    const [res] = await getSiteByID(1);
+    expect(res.hcapHires).toEqual('0');
+    expect(res.nonHcapHires).toEqual('0');
+    await makeParticipant(participant1);
+    const { data: [ppt] } = await getParticipants({ isMoH: true });
+    console.log('ppt');
+    console.log(ppt);
+    await setParticipantStatus(employerAId, ppt.id, 'hired', {
+      site: 1,
+      nonHcapOpportunity: false,
+      positionTitle: 'title',
+      positionType: 'posType',
+      hiredDate: new Date(),
+      startDate: new Date(),
+    });
+    await setParticipantStatus(employerBId, ppt.id, 'hired', {
+      site: 1,
+      nonHcapOpportunity: true,
+      positionTitle: 'title',
+      positionType: 'posType',
+      hiredDate: new Date(),
+      startDate: new Date(),
+    });
+    const [res1] = await getSiteByID(1);
+    expect(res1.hcapHires).toEqual('1');
+    expect(res1.nonHcapHires).toEqual('1');
   });
 
   it('Create new site, receive validation error', async () => {

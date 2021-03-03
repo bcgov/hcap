@@ -323,7 +323,6 @@ app.post(`${apiBaseUrl}/participants`,
       callbackStatus: false,
       userUpdatedAt: new Date().toJSON(),
     };
-    delete participant.consent; // Not persisted to DB
 
     try {
       const response = await makeParticipant(participant);

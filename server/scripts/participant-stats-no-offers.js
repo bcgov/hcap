@@ -18,11 +18,11 @@ const { getNoOfferParticipantsReport } = require('../services/reporting');
       results.forEach((result) => {
         csvStream.write({
           'Participant ID': result.id,
-          'Participant Email': result.email,
-          FSA: result.FSA,
-          Regions: result.regions,
+          'Participant Email': result.emailAddress,
+          FSA: result.postalCodeFsa,
+          Regions: result.preferredLocation,
           Interest: result.interested,
-          'Date Last Updated': result.lastUpdated,
+          'Date Last Updated': result.userUpdatedAt,
         });
       });
 

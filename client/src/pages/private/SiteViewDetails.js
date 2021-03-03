@@ -94,7 +94,6 @@ export default ({ match }) => {
       'Street Address': 'address',
       'City': 'city',
       'Postal Code': 'postalCode',
-      'Phase 1 Allocation': 'phaseOneAllocation',
       'Region': 'healthAuthority',
     },
     'Operator Contact Info': {
@@ -104,8 +103,9 @@ export default ({ match }) => {
       'Email Address': 'operatorEmail',
     },
     'Positions Overview': {
+      'Phase 1 Allocation': 'phaseOneAllocation',
       'HCAP Hires': 'hcapHires',
-      'Non-HCAP': 'nonHcapHires',
+      'Non-HCAP Hires': 'nonHcapHires',
     },
   };
 
@@ -206,7 +206,7 @@ export default ({ match }) => {
               <Grid container>
                 {
                   Object.keys(fieldsLabelMap).map(title =>
-                    <Grid key={title} item>
+                    <Grid key={title} item style={{marginBottom: 40 }}>
                       <Box pr={12}>
                         <Box pb={2}>
                           <Typography variant="subtitle1">
@@ -217,7 +217,7 @@ export default ({ match }) => {
                           Object.keys(fieldsLabelMap[title]).map(subTitle =>
                             <Grid key={subTitle}
                               justify="space-between"
-                              container>
+                              container >
                               <Grid item>
                                 <Box pr={4} pb={1}>
                                   <Typography variant="body1">

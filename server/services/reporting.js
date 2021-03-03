@@ -192,6 +192,60 @@ const getRejectedParticipantsReport = async () => {
   }).filter((entry) => entry.participantInfo.interested !== 'withdrawn');
 };
 
+const getNoOfferParticipantsReport = async () => {
+  const currentEntries = await dbClient.db[collections.PARTICIPANTS_STATUS].join({
+    participantJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.PARTICIPANTS,
+      on: {
+        id: 'participant_id',
+      },
+    },
+  }).find({
+    current: true,
+  });
+
+  const idToExcludedStatusMap = {};
+  const invalidStatus = ['hired', 'offer_made'];
+  const offerlessParticipants = new Set();
+
+  currentEntries.forEach((entry) => {
+    const pptData = entry.participantJoin[0].body;
+
+    // here we need to keep track of whether the status is valid. It cannot be
+    // added to the set because then if would make the participant object
+    // non-unique. true implies hired or offer made, false implies otherwise
+    if (!idToExcludedStatusMap[entry.participant_id]) {
+      idToExcludedStatusMap[entry.participant_id] = invalidStatus.includes(entry.status);
+    }
+
+    offerlessParticipants.add({
+      id: entry.participant_id,
+      email: pptData.emailAddress,
+      lastUpdated: pptData.userUpdatedAt,
+      interested: pptData.interested,
+      FSA: pptData.postalCodeFsa,
+      regions: pptData.preferredLocation.split(';'),
+    });
+  });
+
+  // Remove entries from the set if any of their statuses match the removal
+  // conditions
+  offerlessParticipants.forEach((ppt) => {
+    if (idToExcludedStatusMap[ppt.id]
+      || ppt.regions === ['Northern']
+      || ppt.interested === 'withdrawn'
+      || ppt.interested === 'no'
+    ) offerlessParticipants.delete(ppt);
+  });
+
+  return offerlessParticipants;
+};
+
 module.exports = {
-  getReport, getParticipantsReport, getHiredParticipantsReport, getRejectedParticipantsReport,
+  getReport,
+  getParticipantsReport,
+  getHiredParticipantsReport,
+  getRejectedParticipantsReport,
+  getNoOfferParticipantsReport,
 };

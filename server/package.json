@@ -12,6 +12,7 @@
     "participant-stats-hired": "node scripts/participant-stats-hired.js",
     "participant-stats-in-progress": "node scripts/participant-stats-in-progress.js",
     "participant-stats-rejected": "node scripts/participant-stats-rejected.js",
+    "participant-stats-no-offers": "node scripts/participant-stats-no-offers.js",
     "export": "node scripts/export.js",
     "watch": "NODE_ENV=development nodemon main.js",
     "start": "NODE_ENV=production node main.js",

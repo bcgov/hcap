@@ -201,18 +201,11 @@ const getNoOfferParticipantsReport = async () => {
         id: 'participant_id',
       },
     },
-    employerJoin: {
-      type: 'LEFT OUTER',
-      relation: collections.USERS,
-      on: {
-        'body.keycloakId': 'employer_id',
-      },
-    },
   }).find({
     current: true,
   });
 
-  const idToInvalidStatusMap = {};
+  const idToExcludedStatusMap = {};
   const invalidStatus = ['hired', 'offer_made'];
   const offerlessParticipants = new Set();
 
@@ -222,8 +215,8 @@ const getNoOfferParticipantsReport = async () => {
     // here we need to keep track of whether the status is valid. It cannot be
     // added to the set because then if would make the participant object
     // non-unique. true implies hired or offer made, false implies otherwise
-    if (!idToInvalidStatusMap[entry.participant_id]) {
-      idToInvalidStatusMap[entry.participant_id] = !!invalidStatus.includes(entry.status);
+    if (!idToExcludedStatusMap[entry.participant_id]) {
+      idToExcludedStatusMap[entry.participant_id] = invalidStatus.includes(entry.status);
     }
 
     offerlessParticipants.add({
@@ -244,7 +237,7 @@ const getNoOfferParticipantsReport = async () => {
   console.log(offerlessParticipants);
 
   offerlessParticipants.forEach((ppt) => {
-    if (idToInvalidStatusMap[ppt.id]
+    if (idToExcludedStatusMap[ppt.id]
       || ppt.regions === ['Northern']
       || ppt.interested === 'withdrawn'
     ) offerlessParticipants.delete(ppt);

@@ -1,10 +1,17 @@
 const request = require('supertest');
 const { ValidationError } = require('yup');
+const { v4 } = require('uuid');
 const app = require('../server');
 const {
   saveSites, getSites, getSiteByID, getEmployers, getEmployerByID,
   updateSite,
 } = require('../services/employers.js');
+const {
+  getParticipants,
+  makeParticipant,
+  setParticipantStatus,
+} = require('../services/participants.js');
+
 const { startDB, closeDB } = require('./util/db');
 
 describe('Server V1 Form Endpoints', () => {
@@ -200,6 +207,70 @@ describe('Server V1 Form Endpoints', () => {
         [site].map((item) => (expect.objectContaining(item))),
       ),
     );
+  });
+
+  it('gets a site before and after hires have been made', async () => {
+    const employerAId = v4();
+    const employerBId = v4();
+    const participant1 = {
+      maximusId: 648690,
+      lastName: 'Extra',
+      firstName: 'Eddy',
+      postalCode: 'V1V2V3',
+      postalCodeFsa: 'V1V',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Fraser',
+    };
+
+    const participant2 = {
+      maximusId: 648691,
+      lastName: 'Finkleman',
+      firstName: 'Freduardo',
+      postalCode: 'V1V2V3',
+      postalCodeFsa: 'V1V',
+      phoneNumber: '2502223333',
+      emailAddress: 'freddy@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Fraser',
+    };
+
+    const [res] = await getSiteByID(1);
+    expect(res.hcapHires).toEqual('0');
+    expect(res.nonHcapHires).toEqual('0');
+    await makeParticipant(participant1);
+    await makeParticipant(participant2);
+    const { data: [ppt, ppt2] } = await getParticipants({ isMoH: true });
+    await setParticipantStatus(employerAId, ppt.id, 'prospecting');
+    await setParticipantStatus(employerAId, ppt.id, 'interviewing');
+    await setParticipantStatus(employerAId, ppt.id, 'offer_made');
+    await setParticipantStatus(employerAId, ppt.id, 'hired', {
+      site: res.siteId,
+      nonHcapOpportunity: false,
+      positionTitle: 'title',
+      positionType: 'posType',
+      hiredDate: new Date(),
+      startDate: new Date(),
+    });
+    await setParticipantStatus(employerBId, ppt2.id, 'prospecting');
+    await setParticipantStatus(employerBId, ppt2.id, 'interviewing');
+    await setParticipantStatus(employerBId, ppt2.id, 'offer_made');
+    await setParticipantStatus(employerBId, ppt2.id, 'hired', {
+      site: res.siteId,
+      nonHcapOpportunity: true,
+      positionTitle: 'title',
+      positionType: 'posType',
+      hiredDate: new Date(),
+      startDate: new Date(),
+    });
+    const [res1] = await getSiteByID(1);
+    expect(res1.hcapHires).toEqual('1');
+    expect(res1.nonHcapHires).toEqual('1');
   });
 
   it('Create new site, receive validation error', async () => {

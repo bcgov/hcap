@@ -264,7 +264,7 @@ const ParticipantSchema = yup.object().noUnknown('Unknown field in form').shape(
   // Contact info
   firstName: yup.string().required(errorMessage),
   lastName: yup.string().required(errorMessage),
-  phoneNumber: yup.string().matches(/^\d{10}?$/, 'Phone number must be provided as 10 digits'),
+  phoneNumber: yup.string().required(errorMessage).matches(/^\d{10}?$/, 'Phone number must be provided as 10 digits'),
   emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
   postalCode: yup.string().required(errorMessage).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Postal code must be in format A1A 1A1'),
 

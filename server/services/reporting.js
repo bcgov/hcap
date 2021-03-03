@@ -203,7 +203,10 @@ const getNoOfferParticipantsReport = async () => {
       },
     },
   }).find({
-    'body.interested <>': ['withdrawn', 'no'],
+    or: [
+      { 'body.interested <>': ['withdrawn', 'no'] },
+      { 'body.interested IS': null },
+    ],
     'body.preferredLocation <>': 'Northern',
   });
 

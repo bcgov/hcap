@@ -59,7 +59,7 @@ export default () => {
     setLoadingData(true);
     const data = new FormData();
     data.append('file', file);
-    const response = await fetch('/api/v1/participants', {
+    const response = await fetch('/api/v1/participants/batch', {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },

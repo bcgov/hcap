@@ -235,6 +235,7 @@ const getNoOfferParticipantsReport = async () => {
     if (idToExcludedStatusMap[ppt.id]
       || ppt.regions === ['Northern']
       || ppt.interested === 'withdrawn'
+      || ppt.interested === 'no'
     ) offerlessParticipants.delete(ppt);
   });
 

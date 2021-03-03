@@ -22,7 +22,7 @@ const {
   validate, EmployerFormSchema, AccessRequestApproval,
   ParticipantQuerySchema, ParticipantStatusChange,
   ParticipantEditSchema, ExternalHiredParticipantSchema,
-  EditSiteSchema,
+  EditSiteSchema, ParticipantSchema,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -268,7 +268,7 @@ app.post(`${apiBaseUrl}/new-hired-participant`,
   }));
 
 // Create participant records from uploaded XLSX file
-app.post(`${apiBaseUrl}/participants`,
+app.post(`${apiBaseUrl}/participants/batch`,
   keycloak.allowRolesMiddleware('maximus'),
   keycloak.getUserInfoMiddleware(),
   multer({
@@ -305,6 +305,36 @@ app.post(`${apiBaseUrl}/participants`,
       return res.json(response);
     } catch (excp) {
       return res.status(400).send(`${excp}`);
+    }
+  }));
+
+app.post(`${apiBaseUrl}/participants`,
+  asyncMiddleware(async (req, res) => {
+    await validate(ParticipantSchema, req.body);
+
+    const participant = {
+      ...req.body,
+      maximusId: null,
+      postalCodeFsa: req.body.postalCode.substr(0, 3),
+      preferredLocation: req.body.preferredLocation.join(';'),
+      interested: true,
+      nonHCAP: null,
+      crcClear: null,
+      callbackStatus: false,
+      userUpdatedAt: new Date().toJSON(),
+    };
+
+    try {
+      const response = await makeParticipant(participant);
+      logger.info({
+        action: 'single_participant_post',
+        performed_by: null,
+        id: response.id,
+      });
+
+      return res.json(response);
+    } catch (excp) {
+      return res.status(500).send('Failed to create participant');
     }
   }));
 

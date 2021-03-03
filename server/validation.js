@@ -90,6 +90,8 @@ const validateOptionalBooleanMixed = (n) => (
 
 const validatePreferredLocation = (n) => (typeof n === 'object' && (n.fraser || n.interior || n.vancouverCoastal || n.vancouverIsland || n.northern));
 
+const validateUniqueArray = (a) => (Array.isArray(a) && new Set(a).size === a.length);
+
 const errorMessage = ({ path }) => {
   const errorMessages = {
     // Common fields
@@ -246,6 +248,7 @@ const ParticipantBatchSchema = yup.array().of(
       northern: yup.mixed().optional(errorMessageIndex(index, indexName)).test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
       vancouverCoastal: yup.mixed().optional(errorMessageIndex(index, indexName)).test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
       vancouverIsland: yup.mixed().optional(errorMessageIndex(index, indexName)).test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
+
       // Others
       interested: yup.mixed().optional(errorMessageIndex(index, indexName)).test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
       nonHCAP: yup.mixed().optional(errorMessageIndex(index, indexName)).test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
@@ -253,6 +256,26 @@ const ParticipantBatchSchema = yup.array().of(
     }).test('is-preferred-location-specified', () => `Please specify a preferred (EOI) location for participant of row ${index}`, validatePreferredLocation);
   }),
 );
+
+const ParticipantSchema = yup.object().shape({
+  // Eligibility
+  eligibility: yup.boolean().typeError(errorMessage).required(errorMessage).test('is-true', errorMessage, (v) => v === true),
+
+  // Contact info
+  firstName: yup.string().required(errorMessage),
+  lastName: yup.string().required(errorMessage),
+  phoneNumber: yup.string().matches(/(^[0-9]{10})?$/, 'Phone number must be provided as 10 digits'),
+  emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
+  postalCode: yup.string().required(errorMessage).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Postal code must be in format A1A 1A1'),
+
+  // Preferred location
+  preferredLocation: yup.array().required(errorMessage).of(
+    yup.string().oneOf(healthRegions, 'Invalid location'),
+  ).test('is-unique-array', 'Preferred locations must be unique', validateUniqueArray),
+
+  // Consent
+  consent: yup.boolean().typeError('Must consent').required('Must consent').test('is-true', 'Must consent', (v) => v === true),
+});
 
 const AccessRequestApproval = yup.object().noUnknown('Unknown field in form').shape({
   userId: yup.string().required('User ID is required'),
@@ -381,6 +404,7 @@ const EditSiteSchema = yup.object().shape({
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
+  ParticipantSchema,
   EmployerFormSchema,
   ParticipantBatchSchema,
   ParticipantStatusChange,

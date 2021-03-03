@@ -231,21 +231,12 @@ const getNoOfferParticipantsReport = async () => {
 
   // Remove entries from the set if any of their statuses match the removal
   // conditions
-
-  console.log('initial state');
-  console.log('offerlessParticipants');
-  console.log(offerlessParticipants);
-
   offerlessParticipants.forEach((ppt) => {
     if (idToExcludedStatusMap[ppt.id]
       || ppt.regions === ['Northern']
       || ppt.interested === 'withdrawn'
     ) offerlessParticipants.delete(ppt);
   });
-
-  console.log('final state');
-  console.log('offerlessParticipants');
-  console.log(offerlessParticipants);
 
   return offerlessParticipants;
 };

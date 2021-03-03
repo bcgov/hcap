@@ -193,53 +193,28 @@ const getRejectedParticipantsReport = async () => {
 };
 
 const getNoOfferParticipantsReport = async () => {
-  const currentEntries = await dbClient.db[collections.PARTICIPANTS_STATUS].join({
-    participantJoin: {
+  const participants = await dbClient.db[collections.PARTICIPANTS].join({
+    statusJoin: {
       type: 'LEFT OUTER',
-      relation: collections.PARTICIPANTS,
+      relation: collections.PARTICIPANTS_STATUS,
       on: {
-        id: 'participant_id',
+        participant_id: 'id',
+        current: true,
       },
     },
   }).find({
-    current: true,
+    'body.interested <>': ['withdrawn', 'no'],
+    'body.preferredLocation <>': 'Northern',
   });
 
-  const idToExcludedStatusMap = {};
-  const invalidStatus = ['hired', 'offer_made'];
-  const offerlessParticipants = new Set();
+  const noOffer = participants.filter((participant) => (
+    participant.statusJoin.every((status) => !['hired', 'offer_made'].includes(status.status))
+  ));
 
-  currentEntries.forEach((entry) => {
-    const pptData = entry.participantJoin[0].body;
-
-    // here we need to keep track of whether the status is valid. It cannot be
-    // added to the set because then if would make the participant object
-    // non-unique. true implies hired or offer made, false implies otherwise
-    if (!idToExcludedStatusMap[entry.participant_id]) {
-      idToExcludedStatusMap[entry.participant_id] = invalidStatus.includes(entry.status);
-    }
-
-    offerlessParticipants.add({
-      id: entry.participant_id,
-      email: pptData.emailAddress,
-      lastUpdated: pptData.userUpdatedAt,
-      interested: pptData.interested,
-      FSA: pptData.postalCodeFsa,
-      regions: pptData.preferredLocation.split(';'),
-    });
-  });
-
-  // Remove entries from the set if any of their statuses match the removal
-  // conditions
-  offerlessParticipants.forEach((ppt) => {
-    if (idToExcludedStatusMap[ppt.id]
-      || ppt.regions === ['Northern']
-      || ppt.interested === 'withdrawn'
-      || ppt.interested === 'no'
-    ) offerlessParticipants.delete(ppt);
-  });
-
-  return offerlessParticipants;
+  return noOffer.map((participant) => ({
+    id: participant.id,
+    ...participant.body,
+  }));
 };
 
 module.exports = {

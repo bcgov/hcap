@@ -12,7 +12,7 @@ const {
   getParticipantByID,
   updateParticipant,
 } = require('../services/participants.js');
-const { getReport, getRejectedParticipantsReport } = require('../services/reporting.js');
+const { getReport } = require('../services/reporting.js');
 const { evaluateBooleanAnswer } = require('../validation');
 
 describe('Participants Service', () => {
@@ -184,6 +184,14 @@ describe('Participants Service', () => {
     expect(res).toEqual(expectedRes);
   });
 
+  it('Parse participants xlsx, force lowercase interested', async () => {
+    const file = readFileSync(join(__dirname, './mock/xlsx/participants-data.xlsx'));
+    await parseAndSaveParticipants(file);
+    const participants = await getParticipants({ isSuperUser: true });
+    const participant = participants.data.find((p) => p.firstName === 'Hux' && p.lastName === 'Hector');
+    expect(participant.interested).toEqual('yes');
+  });
+
   it('Parse participants xlsx, receive duplicate errors', async () => {
     const file = readFileSync(join(__dirname, './mock/xlsx/participants-data.xlsx'));
     const res = await parseAndSaveParticipants(file);
@@ -327,12 +335,8 @@ describe('Participants Service', () => {
 
     await makeParticipant(participant);
     const participants = await getParticipants({ isMoH: true });
-    //const report1 = await getRejectedParticipantsReport();
-    //expect(report1).toEqual([]);
     await setParticipantStatus(employerAId, participants.data[0].id, 'prospecting');
     await setParticipantStatus(employerAId, participants.data[0].id, 'rejected', { final_status: 'not responsive' });
-    //const report2 = await getRejectedParticipantsReport();
-    //expect(report2[0].rejection.final_status).toEqual('not responsive');
   });
 
   it('Status change happy path', async () => {

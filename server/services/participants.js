@@ -258,8 +258,10 @@ const parseAndSaveParticipants = async (fileBuffer) => {
 
   const xlsx = readXlsxFile.parse(fileBuffer, { raw: true });
   verifyHeaders(xlsx[0].data, columnMap);
-  const rows = createRows(xlsx[0].data, columnMap);
+  let rows = createRows(xlsx[0].data, columnMap);
   await validate(ParticipantBatchSchema, rows);
+  const lowercaseMixed = (v) => (typeof v === 'string' ? v.toLowerCase() : v);
+  rows = rows.map((row) => ({ ...row, interested: lowercaseMixed(row.interested) }));
   const response = [];
   const promises = rows.map((row) => dbClient.db.saveDoc(collections.PARTICIPANTS, objectMap(row)));
   const results = await Promise.allSettled(promises);

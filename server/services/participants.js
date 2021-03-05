@@ -71,6 +71,22 @@ const setParticipantStatus = async (
   return { status };
 });
 
+const getHiredParticipantsBySite = async (siteID) => {
+  const participants = await dbClient.db[collections.PARTICIPANTS_STATUS].join({
+    participantJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.PARTICIPANTS,
+      decomposeTo: 'object',
+      on: { id: 'participant_id' },
+    },
+  }).find({
+    current: true,
+    'data.site': String(siteID),
+  });
+
+  return participants;
+};
+
 const getParticipantByID = async (participantInfo) => {
   const participant = await dbClient.db[collections.PARTICIPANTS].findDoc({
     id: participantInfo.id,
@@ -290,6 +306,7 @@ const makeParticipant = async (participantJson) => {
 module.exports = {
   parseAndSaveParticipants,
   getParticipants,
+  getHiredParticipantsBySite,
   getParticipantByID,
   updateParticipant,
   setParticipantStatus,

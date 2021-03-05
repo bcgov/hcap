@@ -6,6 +6,7 @@ const dayjs = require('dayjs');
 const multer = require('multer');
 const {
   getParticipants,
+  getHiredParticipantsBySite,
   getParticipantByID,
   updateParticipant,
   parseAndSaveParticipants,
@@ -156,6 +157,28 @@ app.get(`${apiBaseUrl}/participant`,
     const result = await getParticipantByID(id);
     logger.info({
       action: 'participant_get',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      on: {
+        id,
+      },
+    });
+    return res.json(result);
+  }));
+
+app.get(`${apiBaseUrl}/site-participants`,
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    // await validate(ParticipantQuerySchema, req.query);
+    const user = req.hcapUserInfo;
+    const { id } = req.query;
+    console.log(`we got here, id is ${id}`);
+    const result = await getHiredParticipantsBySite(id);
+    logger.info({
+      action: 'site-participants_get',
       performed_by: {
         username: user.username,
         id: user.id,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, useEffect, useState } from 'react';
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
 import { Box, Grid, Link, Typography } from '@material-ui/core';
 import { scrollUp } from '../../utils';
@@ -10,6 +10,8 @@ import {
   ToastStatus,
   EditSiteSchema,
 } from '../../constants';
+
+const SiteParticipantsTable = lazy(() => import('./SiteParticipantsTable'));
 
 export default ({ match }) => {
 
@@ -111,6 +113,10 @@ export default ({ match }) => {
 
   const defaultOnClose = () => {
     setActiveModalForm(null);
+  };
+
+  const logSite = () => {
+    console.log(site);
   };
 
   scrollUp();
@@ -236,7 +242,8 @@ export default ({ match }) => {
                     </Grid>)
                 }
               </Grid>
-            </Box>
+              </Box>
+              <SiteParticipantsTable siteId={site.siteId}/>
           </Card>
         </CheckPermissions>
       </Page>

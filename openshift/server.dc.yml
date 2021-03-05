@@ -22,6 +22,8 @@ objects:
     kind: Route
     metadata:
       name: ${APP_NAME}-server
+      annotations:
+        haproxy.router.openshift.io/timeout: 90s
     spec:
       host: ""
       port:

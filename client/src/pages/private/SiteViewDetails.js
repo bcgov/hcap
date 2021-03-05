@@ -115,10 +115,6 @@ export default ({ match }) => {
     setActiveModalForm(null);
   };
 
-  const logSite = () => {
-    console.log(site);
-  };
-
   scrollUp();
   return (
     <>

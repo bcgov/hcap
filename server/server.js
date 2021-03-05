@@ -114,8 +114,6 @@ app.get(`${apiBaseUrl}/participants`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-    await delay(60000);
     await validate(ParticipantQuerySchema, req.query);
     const user = req.hcapUserInfo;
     const {

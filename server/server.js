@@ -491,6 +491,30 @@ app.get(`${apiBaseUrl}/employer-sites/:id`,
     return res.json(result);
   }));
 
+app.get(`${apiBaseUrl}/employer-sites/:id/participants`,
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    // await validate(ParticipantQuerySchema, req.query);
+    const user = req.hcapUserInfo;
+    const { id } = req.params;
+    const result = await getHiredParticipantsBySite(id);
+    logger.info({
+      action: 'site-participants_get',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      on: {
+        site: id,
+      },
+      for: {
+        participants: result.map((ppt) => ppt.participantJoin.id),
+      },
+    });
+    return res.json(result);
+  }));
+
 /**
   * @deprecated since Feb 2021
   * This endpoint was a misnomer, it was named sites but actually retrieved a single EEOI:

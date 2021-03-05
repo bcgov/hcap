@@ -81,6 +81,7 @@ const getHiredParticipantsBySite = async (siteID) => {
     },
   }).find({
     current: true,
+    status: 'hired',
     'data.site': String(siteID),
   });
 

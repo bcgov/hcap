@@ -242,8 +242,11 @@ export default ({ match }) => {
                     </Grid>)
                 }
               </Grid>
-              </Box>
-              <SiteParticipantsTable siteId={site.siteId}/>
+            </Box>
+            <Box pl={4}>
+              <Typography variant='h2'>Hired Participants</Typography>
+            </Box>
+            <SiteParticipantsTable siteId={site.siteId}/>
           </Card>
         </CheckPermissions>
       </Page>

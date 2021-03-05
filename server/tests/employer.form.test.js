@@ -10,6 +10,7 @@ const {
   getParticipants,
   makeParticipant,
   setParticipantStatus,
+  getHiredParticipantsBySite,
 } = require('../services/participants.js');
 
 const { startDB, closeDB } = require('./util/db');
@@ -271,6 +272,13 @@ describe('Server V1 Form Endpoints', () => {
     const [res1] = await getSiteByID(1);
     expect(res1.hcapHires).toEqual('1');
     expect(res1.nonHcapHires).toEqual('1');
+  });
+
+  it('checks response from the site participants endpoint', async () => {
+    const [site1] = await getSiteByID(1);
+    const res = await getHiredParticipantsBySite(site1.siteId);
+    // Two participants were added in the previous test
+    expect(res.length).toEqual(2);
   });
 
   it('Create new site, receive validation error', async () => {

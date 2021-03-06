@@ -6,7 +6,7 @@ import store from 'store';
 import { Table } from '../../components/generic';
 
 const columns = [
-  { id: 'pptId', name: 'ID' },
+  { id: 'participantId', name: 'ID' },
   { id: 'pptName', name: 'Name' },
   { id: 'status', name: 'Status' },
   { id: 'emailAddress', name: 'Email Address' },
@@ -43,7 +43,7 @@ export default ({ siteId }) => {
         const rowsData = participants.map((row) => {
           // Pull all relevant props from row based on columns constant
           const values = {
-            pptId: row.participant_id,
+            participantId: row.participant_id,
             pptName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
             emailAddress: row.participantJoin.body.emailAddress,
             phoneNumber: row.participantJoin.body.phoneNumber,

@@ -40,7 +40,6 @@ export default ({ siteId }) => {
 
       if (response.ok) {
         const participants = await response.json();
-        console.log(participants);
         const rowsData = participants.map((row) => {
           // Pull all relevant props from row based on columns constant
           const values = {

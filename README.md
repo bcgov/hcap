@@ -156,6 +156,10 @@ Exports all hired participants from the database as a CSV file. (Before running 
 
 Exports all rejected participants from the database as a CSV file. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`). Records participant ID, employer ID, employer email, employer health regions and the reason and date of rejection.
 
+#### `npm run participant-stats-no-offers`
+
+Exports participants from the database as a CSV file who have not: withdrawn from the program; been hired; or had an offer made by any employer. Participants exclusively interested in the Northern Health Authority are also excluded as additional participant engagement support is not required for this region. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`). Records participant ID, email address, preferred health regions, current interest indicator, and the date the record was last updated. The results of this report must be handled appropriately as PII.
+
 ### Database
 
 This application uses both a PostgreSQL database as its main storage as well as a MongoDB database to store logging output.

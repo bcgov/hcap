@@ -129,9 +129,10 @@ export default () => {
 
   // The following values all work with the same useEffect, leading to some
   // complicated logic depending on what was used last and how it was input.
-  // This seems like a prime case for implementing useReducer in order to
-  // assemble them into an object with a filterReducer with a state for all of
-  // the filter objects with an action type for each filter.
+  // This seems like a prime case for implementing useReducer, which would
+  // assemble them into an object with a filterReducer. This state could then
+  // be used to manage all of the filters, writing a specific case for each
+  // action that a filter might take.
   const [locationFilter, setLocationFilter] = useState(null);
   const [fsaFilter, setFsaFilter] = useState(null);
   const [fsaText, setFsaText] = useState(null);

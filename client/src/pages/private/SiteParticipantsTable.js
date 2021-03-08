@@ -7,10 +7,10 @@ import { Table } from '../../components/generic';
 
 const columns = [
   { id: 'participantId', name: 'ID' },
-  { id: 'pptName', name: 'Name' },
-  { id: 'status', name: 'Status' },
-  { id: 'emailAddress', name: 'Email Address' },
-  { id: 'phoneNumber', name: 'Phone Number' },
+  { id: 'participantName', name: 'Name' },
+  { id: 'hiredDate', name: 'Hire Date' },
+  { id: 'startDate', name: 'Start Date' },
+  { id: 'nonHCAP', name: 'Position' },
 ];
 
 export default ({ siteId }) => {
@@ -40,14 +40,15 @@ export default ({ siteId }) => {
 
       if (response.ok) {
         const participants = await response.json();
+        console.log(participants);
         const rowsData = participants.map((row) => {
           // Pull all relevant props from row based on columns constant
           const values = {
             participantId: row.participant_id,
-            pptName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
-            emailAddress: row.participantJoin.body.emailAddress,
-            phoneNumber: row.participantJoin.body.phoneNumber,
-            status: row.status,
+            participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
+            hiredDate: row.data.hiredDate,
+            startDate: row.data.startDate,
+            nonHCAP: row.data.nonHcapOpportunity,
           }
 
           const mappedRow = columns.reduce((accumulator, column) => ({
@@ -95,6 +96,9 @@ export default ({ siteId }) => {
             if (columnId === 'status') {
               const status = String(row['status']);
               return `${status.substring(0,1).toUpperCase()}${status.substring(1)}`
+            }
+            if (columnId === 'nonHCAP') {
+              return (row[columnId]) ? "Non-HCAP" : "HCAP";
             }
             return (row[columnId]);
           }}

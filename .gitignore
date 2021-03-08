@@ -18,8 +18,7 @@ docs
 Dockerrun.aws.json
 audit-report.*
 .DS_Store
-.env
-.env.ocp
+.env*
 cypress/screenshots
 test-results
 npm-debug.log*

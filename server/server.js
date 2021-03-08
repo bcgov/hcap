@@ -473,7 +473,6 @@ app.get(`${apiBaseUrl}/employer-sites/:id/participants`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    // await validate(ParticipantQuerySchema, req.query);
     const user = req.hcapUserInfo;
     const { id } = req.params;
     const result = await getHiredParticipantsBySite(id);

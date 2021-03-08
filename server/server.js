@@ -6,6 +6,7 @@ const dayjs = require('dayjs');
 const multer = require('multer');
 const {
   getParticipants,
+  getHiredParticipantsBySite,
   getParticipantByID,
   updateParticipant,
   parseAndSaveParticipants,
@@ -465,6 +466,29 @@ app.get(`${apiBaseUrl}/employer-sites/:id`,
     if (user.isHA && !user.regions.includes(result.healthAuthority)) {
       return res.status(403).json({ error: 'you do not have permissions to view this site' });
     }
+    return res.json(result);
+  }));
+
+app.get(`${apiBaseUrl}/employer-sites/:id/participants`,
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const user = req.hcapUserInfo;
+    const { id } = req.params;
+    const result = await getHiredParticipantsBySite(id);
+    logger.info({
+      action: 'site-participants_get',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      on: {
+        site: id,
+      },
+      for: {
+        participants: result.map((ppt) => ppt.participantJoin.id),
+      },
+    });
     return res.json(result);
   }));
 

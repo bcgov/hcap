@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, useEffect, useState } from 'react';
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
 import { Box, Grid, Link, Typography } from '@material-ui/core';
 import { scrollUp } from '../../utils';
@@ -10,6 +10,8 @@ import {
   ToastStatus,
   EditSiteSchema,
 } from '../../constants';
+
+const SiteParticipantsTable = lazy(() => import('./SiteParticipantsTable'));
 
 export default ({ match }) => {
 
@@ -237,6 +239,10 @@ export default ({ match }) => {
                 }
               </Grid>
             </Box>
+            <Box pl={4}>
+              <Typography variant='h2'>Hired Participants</Typography>
+            </Box>
+            <SiteParticipantsTable siteId={site.siteId}/>
           </Card>
         </CheckPermissions>
       </Page>

@@ -108,16 +108,30 @@ const CustomTab = withStyles((theme) => ({
 }))((props) => <Tab disableRipple {...props} />);
 
 export default () => {
-
   const { openToast } = useToast();
+
+  // Wowee, look at all these state components. Lets break them down...
+
+  // Roles and sites are both retrieved from the user object, which is
+  // consistent across multiple components throughout the app. This is a prime
+  // example of something that could be moved into Redux instead of querying
+  // with every single component that requires user roles and sites
   const [roles, setRoles] = useState([]);
   const [sites, setSites] = useState([]);
+
+  // Order and pagination are both properties of the table component, which
+  // affect how/what the table displays. These properties are independent
+  // despite both affecting how the table displays (the order doesn't affect
+  // which page you're on, the page you're on doesn't affect the list order),
+  // so a useState hook will be sufficient here
   const [order, setOrder] = useState({ field: 'id', direction: 'asc' });
-  const [isLoadingData, setLoadingData] = useState(false);
-  const [isLoadingUser, setLoadingUser] = useState(false);
-  const [rows, setRows] = useState([]);
   const [pagination, setPagination] = useState({ currentPage: 0 });
-  const [columns, setColumns] = useState(defaultColumns);
+
+  // The following values all work with the same useEffect, leading to some
+  // complicated logic depending on what was used last and how it was input.
+  // This seems like a prime case for implementing useReducer in order to
+  // assemble them into an object with a filterReducer with a state for all of
+  // the filter objects with an action type for each filter.
   const [locationFilter, setLocationFilter] = useState(null);
   const [fsaFilter, setFsaFilter] = useState(null);
   const [fsaText, setFsaText] = useState(null);
@@ -125,12 +139,62 @@ export default () => {
   const [lastNameText, setLastNameText] = useState(null);
   const [emailFilter, setEmailFilter] = useState(null);
   const [emailText, setEmailText] = useState(null);
+
+  // These are simple boolean variables for deciding when to display
+  // component content. useState seems like a good choice here.
+  const [isLoadingData, setLoadingData] = useState(false);
+  const [isLoadingUser, setLoadingUser] = useState(false);
+
+  // Here is somewhere that could be significantly improved (potentially) with
+  // the use of Redux. If the full list of rows is held within the Redux state,
+  // then it would not need to be re-requested every time it is required by
+  // a component. The application could plausibly get all of the row data and
+  // then filter certain subsets based on what needs to be displayed. 
+  //
+  // Caveat:
+  // Not getting a fresh list of rows each time could introduce staleness and
+  // compatibility issues if two users are operating on the same participant.
+  // Either this could be handled every time a post request is made, or a listener
+  // could be implemented to update the individual rows every time a post
+  // request modifies them server-side, or an alternative solution could be
+  // used - but persisting a list of participants would dramatically increase
+  // application performance.
+  const [rows, setRows] = useState([]);
+
+  // Here are some more examples of states that implement complicated logic
+  // depending on the condition of other table states. The columns that are
+  // displayed depend on the user's role (which is an application-level state
+  // rather than a component-level state) and the tab value, which is
+  // a component-level state. It might ease the logic to create a map of tabs
+  // available for each user along with the columns that would be displayed in
+  // each tab and store that in Redux. The active tab value would remain
+  // component-side and specify which tab to activate at a given time.
+  const [columns, setColumns] = useState(defaultColumns);
+  const [tabValue, setTabValue] = useState(null);
+
+  // This state is used to display certain filters conditionally depending on
+  // tab. This could also be moved into the tab map to suggest when to display
+  // or hide certain filters based on the active tab.
   const [hideLastNameAndEmailFilter, setHideLastNameAndEmailFilter] = useState(true);
+
+  // The following values are used to implement modal forms. In the current
+  // status of the project, modal forms are embedded within specific
+  // components and would be set with useState, or potentially useReducer since
+  // the actionMenuParticipant is used within the activeModal form... though
+  // they do operate independently. 
+  //
+  // That said, it would be useful to make modal-forms an application-wide
+  // object and have them appear overlaying the individual tables, as they
+  // operate on other application-wide states (the list of participants, for
+  // example). In this case, the actionMenuParticipant and activeModalForm
+  // would become application-wide, and the anchorElement for the actionMenu
+  // would remain as a simple state component
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
-  const [tabValue, setTabValue] = useState(null);
 
+  // This is a list of locations that are visible available to the user, and as
+  // such would be moved to Redux and set on user authentication.
   const [locations, setLocations] = useState([]);
 
   const handleRequestSort = (event, property) => {

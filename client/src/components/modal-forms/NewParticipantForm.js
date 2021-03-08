@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box } from '@material-ui/core';
 import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { getTodayDate } from '../../utils';
-import store from 'store';
 
 export const NewParticipantForm = ({ initialValues, validationSchema, onSubmit, onClose, sites }) => {
 

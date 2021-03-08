@@ -40,7 +40,7 @@ export const Fields = ({ isDisabled }) => {
         </Grid>
         <Grid item xs={12}>
           <Typography>
-            <b>* Are you a Canadian citizen, permanent resident or <Link href="https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/permit/temporary/eligibility.html" target="__blank" rel="noreferrer noopener">otherwise legally eligible to work in Canada?</Link></b>
+            <b>* Are you a Canadian citizen, permanent resident or <Link href="https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada.html" target="__blank" rel="noreferrer noopener">otherwise legally eligible to work in Canada?</Link></b>
           </Typography>
         </Grid>
         <Grid item xs={12}>

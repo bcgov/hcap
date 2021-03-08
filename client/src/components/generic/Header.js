@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Header = () => {
+export const Header = ({hideEmployers=false}) => {
   const history = useHistory();
   const location = useLocation();
   const classes = useStyles();
@@ -83,6 +83,12 @@ export const Header = () => {
   const handleLogoutClick = async () => {
     store.remove('TOKEN');
     await keycloak.logout({ redirectUri: window.location.origin });
+  };
+
+  const title = () => {
+    if (hideEmployers) return 'Participant Expression of Interest';
+    if (location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation) return 'Employer Expression of Interest';
+    return 'Employer Portal';
   };
 
   return (
@@ -112,13 +118,11 @@ export const Header = () => {
                 The Health Career Access Program
               </Typography>
               <Typography noWrap className={classes.title} variant="h1">
-                {location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation
-                  ? 'Employer Expression of Interest'
-                  : 'Employer Portal'}
+                {title()}
               </Typography>
             </div>
           </div>
-          <div className={classes.buttonWrapper}>
+          {!hideEmployers && <div className={classes.buttonWrapper}>
             {(keycloak.authenticated && location.pathname !== Routes.Admin) && (
               <Button
                 className={classes.button}
@@ -148,7 +152,7 @@ export const Header = () => {
                 onClick={handleLoginClick}
               />
             }
-          </div>
+          </div>}
         </Toolbar>
       </AppBar>
     </div>

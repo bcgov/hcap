@@ -1,8 +1,11 @@
 export default Object.freeze({
+  // Hostname
+  ParticipantHostname: 'hcapparticipants.gov.bc.ca',
+
   // Public routes
   Login: '/login',
   Keycloak: '/keycloak',
-  EmployerForm: '/',
+  Base: '/', // This routes to employer form or participant form based on hostname
   ParticipantForm: '/participant-form',
   ParticipantConfirmation: '/participant-confirmation',
   EmployerConfirmation: '/employer-confirmation',

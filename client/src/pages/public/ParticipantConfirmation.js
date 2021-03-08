@@ -13,7 +13,7 @@ export default () => {
   if (!location.state) return <Redirect to={Routes.ParticipantForm} />
   return (
     <div id="confirmation">
-      <Page>
+      <Page hideEmployers={true}>
         <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
 
           {/** Status */}

@@ -90,6 +90,12 @@ export default ({ match }) => {
       'Phone Number': 'siteContactPhone',
       'Email Address': 'siteContactEmail',
     },
+    'Operator Contact': {
+      'First Name': 'operatorContactFirstName',
+      'Last Name': 'operatorContactLastName',
+      'Phone Number': 'operatorPhone',
+      'Email Address': 'operatorEmail',
+    },
     'Site Info': {
       'Site Name': 'siteName',
       'Business Name': 'registeredBusinessName',
@@ -97,12 +103,6 @@ export default ({ match }) => {
       'City': 'city',
       'Postal Code': 'postalCode',
       'Region': 'healthAuthority',
-    },
-    'Operator Contact Info': {
-      'First Name': 'operatorContactFirstName',
-      'Last Name': 'operatorContactLastName',
-      'Phone Number': 'operatorPhone',
-      'Email Address': 'operatorEmail',
     },
     'Positions Overview': {
       'Phase 1 Allocation': 'phaseOneAllocation',
@@ -180,7 +180,7 @@ export default ({ match }) => {
         <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['health_authority', 'ministry_of_health']} renderErrorMessage={true}>
           <Card>
             <Box pt={4} pb={2} pl={4} pr={4}>
-              <Box pb={4}>
+              <Box pb={4} pl={2}>
                 <Box pb={2}>
                   <Typography variant="body1">
                     <Link href={routes.SiteView}>Sites</Link> / {site.siteName}
@@ -208,8 +208,8 @@ export default ({ match }) => {
               <Grid container>
                 {
                   Object.keys(fieldsLabelMap).map(title =>
-                    <Grid key={title} item style={{marginBottom: 40 }}>
-                      <Box pr={12}>
+                    <Grid key={title} item xs={12} sm={6} xl={3} style={{marginBottom: 40 }}>
+                      <Box pr={2} pl={2}>
                         <Box pb={2}>
                           <Typography variant="subtitle1">
                             <b>{title}</b>
@@ -218,19 +218,16 @@ export default ({ match }) => {
                         {
                           Object.keys(fieldsLabelMap[title]).map(subTitle =>
                             <Grid key={subTitle}
-                              justify="space-between"
-                              container >
-                              <Grid item>
+                              container style={{ marginBottom: 5 }}>
+                              <Grid item xs={12}>
                                 <Box pr={4} pb={1}>
                                   <Typography variant="body1">
                                     <b>{subTitle}</b>
                                   </Typography>
+                                  <Typography variant="body1">
+                                    {site[fieldsLabelMap[title][subTitle]]}
+                                  </Typography>
                                 </Box>
-                              </Grid>
-                              <Grid item>
-                                <Typography variant="body1">
-                                  {site[fieldsLabelMap[title][subTitle]]}
-                                </Typography>
                               </Grid>
                             </Grid>)
                         }
@@ -240,7 +237,7 @@ export default ({ match }) => {
               </Grid>
             </Box>
             <Box pl={4}>
-              <Typography variant='h2'>Hired Participants</Typography>
+              <Typography variant='subtitle1'><b>Hired Participants</b></Typography>
             </Box>
             <SiteParticipantsTable siteId={site.siteId}/>
           </Card>

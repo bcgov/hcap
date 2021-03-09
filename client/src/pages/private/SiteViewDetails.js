@@ -90,6 +90,12 @@ export default ({ match }) => {
       'Phone Number': 'siteContactPhone',
       'Email Address': 'siteContactEmail',
     },
+    'Operator Contact': {
+      'First Name': 'operatorContactFirstName',
+      'Last Name': 'operatorContactLastName',
+      'Phone Number': 'operatorPhone',
+      'Email Address': 'operatorEmail',
+    },
     'Site Info': {
       'Site Name': 'siteName',
       'Business Name': 'registeredBusinessName',
@@ -97,12 +103,6 @@ export default ({ match }) => {
       'City': 'city',
       'Postal Code': 'postalCode',
       'Region': 'healthAuthority',
-    },
-    'Operator Contact Info': {
-      'First Name': 'operatorContactFirstName',
-      'Last Name': 'operatorContactLastName',
-      'Phone Number': 'operatorPhone',
-      'Email Address': 'operatorEmail',
     },
     'Positions Overview': {
       'Phase 1 Allocation': 'phaseOneAllocation',
@@ -208,7 +208,7 @@ export default ({ match }) => {
               <Grid container>
                 {
                   Object.keys(fieldsLabelMap).map(title =>
-                    <Grid key={title} item xs={12} sm={6} md={3} style={{marginBottom: 40 }}>
+                    <Grid key={title} item xs={12} sm={6} xl={3} style={{marginBottom: 40 }}>
                       <Box pr={2} pl={2}>
                         <Box pb={2}>
                           <Typography variant="subtitle1">
@@ -219,17 +219,15 @@ export default ({ match }) => {
                           Object.keys(fieldsLabelMap[title]).map(subTitle =>
                             <Grid key={subTitle}
                               container style={{ marginBottom: 5 }}>
-                              <Grid item xs={4}>
+                              <Grid item xs={12}>
                                 <Box pr={4} pb={1}>
                                   <Typography variant="body1">
                                     <b>{subTitle}</b>
                                   </Typography>
+                                  <Typography variant="body1">
+                                    {site[fieldsLabelMap[title][subTitle]]}
+                                  </Typography>
                                 </Box>
-                              </Grid>
-                              <Grid item xs={8}>
-                                <Typography variant="body1">
-                                  {site[fieldsLabelMap[title][subTitle]]}
-                                </Typography>
                               </Grid>
                             </Grid>)
                         }

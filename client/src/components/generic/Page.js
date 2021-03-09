@@ -10,11 +10,12 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const Page = ({ children }) => {
+// hideEmployers set to true for participant-facing pages
+export const Page = ({ children, hideEmployers=false }) => {
   const classes = useStyles();
   return (
     <Fragment>
-      <Header />
+      <Header hideEmployers={hideEmployers}/>
       <Grid className={classes.root} container justify="center">
         {children}
       </Grid>

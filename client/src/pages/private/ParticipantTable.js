@@ -160,6 +160,12 @@ export default () => {
   // request modifies them server-side, or an alternative solution could be
   // used - but persisting a list of participants would dramatically increase
   // application performance.
+  //
+  // Revisiting, SWR is a react hook developed by Vercel that addresses a lot
+  // of these caveats. It returns a stale version of the request without
+  // waiting for the response, but still makes the request and eventually
+  // updates the cache with the new data and updates the page if the old data
+  // was invalid.
   const [rows, setRows] = useState([]);
 
   // Here are some more examples of states that implement complicated logic

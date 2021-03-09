@@ -11,8 +11,8 @@ describe("Participant View", () => {
     cy.get('ul.MuiMenu-list[role=listbox] > li').should('have.length', 3);
 
     // Testing for freshness
-    cy.contains('a day ago').should('exist');
-    cy.contains('14 days ago').should('exist');
+    cy.contains('2 days ago').should('exist');
+    cy.contains('15 days ago').should('exist');
 
     // Testing Tabs
     cy.contains("My Sites").should('not.exist');

@@ -211,7 +211,7 @@ export const Fields = ({ isDisabled }) => {
                 name="consent"
                 disabled={isDisabled}
                 component={RenderCheckbox}
-                label="I consent to have my personal information shared with the Health Career Access Program and Health Careers Recruitment Initiative."
+                label="I consent to have my personal information shared with the Health Career Access Program."
               />
             </Grid>
           </Grid>

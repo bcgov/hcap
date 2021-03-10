@@ -22,7 +22,10 @@ export default () => {
               <Grid container alignItems="center" justify="space-between">
                 <Grid item>
                   <Typography variant="subtitle1" paragraph>
-                    Thank you for your submission. Write down this confirmation number and print or save a copy of this page for your records. We will contact you within 3 weeks with more information.
+                    Thank you for your submission. We will contact you within 3 weeks with more information.
+                  </Typography>
+                  <Typography variant="subtitle1" paragraph>
+                    To protect your personal information from third parties, we will not send you a copy of this form by email. If you want to keep a copy for your records, you can download a copy using the Download PDF button below.
                   </Typography>
                 </Grid>
                 <Grid container
@@ -32,7 +35,7 @@ export default () => {
                   <Grid item>
                     <PDFButton
                       target="confirmation"
-                      fileName={`submission_${location.state?.id}.pdf`}
+                      fileName={`HCAP-Participant-EOI-Submission.pdf`}
                       filter={(node) => !['pdfButtonWrapper'].includes(node.id)}
                     />
                   </Grid>
@@ -45,12 +48,6 @@ export default () => {
               justify="center" item>
               <Typography variant="body1" paragraph>
                 Your form has been submitted.
-                  </Typography>
-              <Typography variant="body1" gutterBottom>
-                Confirmation number:
-                  </Typography>
-              <Typography variant="subtitle2" paragraph>
-                <b>{location.state?.id || 'Failed to retrieve'}</b>
               </Typography>
             </Grid>
             <Divider />

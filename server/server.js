@@ -237,7 +237,7 @@ app.post(`${apiBaseUrl}/new-hired-participant`,
       [participantInfo.preferredLocation] = user.regions;
       participantInfo.crcClear = 'yes';
       participantInfo.interested = 'yes';
-      participantInfo.callbackStatus = 'false';
+      participantInfo.callbackStatus = false;
       participantInfo.userUpdatedAt = new Date().toJSON();
 
       const response = await makeParticipant(participantInfo);

@@ -261,7 +261,7 @@ const parseAndSaveParticipants = async (fileBuffer) => {
     if (row.vancouverIsland === 1 || (isBooleanValue(row.vancouverIsland))) preferredLocation.push('Vancouver Island');
 
     object.preferredLocation = preferredLocation.join(';');
-    object.callbackStatus = 'false';
+    object.callbackStatus = false;
     object.userUpdatedAt = new Date().toJSON();
 
     delete object.fraser;

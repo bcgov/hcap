@@ -93,10 +93,10 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
   ];
 
   const today = new Date();
-  const yesterday = new Date();
-  const twoWeeksAgo = new Date();
-  yesterday.setDate(today.getDate() - 1);
-  twoWeeksAgo.setDate(today.getDate() - 14);
+  const yesterday = new Date(today);
+  const twoWeeksAgo = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 
   const participants = [{
     "id":1,

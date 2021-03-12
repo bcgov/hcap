@@ -26,6 +26,7 @@ const { getHiredParticipantsReport } = require('../services/reporting');
           'Position Title': result.positionTitle,
           'Employer Site Region': result.employerRegion,
           'Employer Site': result.employerSite,
+          'Start Date': result.startDate,
         });
       });
 

@@ -15,7 +15,7 @@ services:
     depends_on:
       - server
     networks:
-      - network
+      - backend
 
   server:
     image: ${APP_NAME}-server
@@ -43,7 +43,6 @@ services:
       - KEYCLOAK_SA_PASSWORD=${KEYCLOAK_SA_PASSWORD}
     ports:
       - "8080:8080"
-      - "9229:9229"
     volumes:
       - ./server:/server # Use server dir in host for hot reloading
       - /server/node_modules # Use node_modules in container
@@ -51,7 +50,7 @@ services:
       - postgres
       - mongodb
     networks:
-      - network
+      - backend
 
   postgres:
     image: postgres:13-alpine
@@ -69,7 +68,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - network
+      - backend
 
   mongodb:
     container_name: ${APP_NAME}-mongodb
@@ -88,7 +87,7 @@ services:
       - mongo-log-configdb:/data/configdb
       - mongo-log-db:/data/db
     networks:
-      - network
+      - backend
 
   keycloak:
     image: ${APP_NAME}-keycloak
@@ -111,12 +110,13 @@ services:
     depends_on:
       - postgres
     networks:
-      - network
+      backend:
+        aliases:
+          - keycloak.local.freshworks.club
 
 networks:
-  network:
-    name: ${APP_NAME}-network
-    driver: bridge
+  backend:
+    driver: "bridge"
 
 volumes:
   mongo-log-configdb:

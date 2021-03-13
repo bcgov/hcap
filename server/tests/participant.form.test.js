@@ -14,6 +14,7 @@ const {
 } = require('../services/participants.js');
 const { getReport } = require('../services/reporting.js');
 const { evaluateBooleanAnswer } = require('../validation');
+const { saveSites } = require('../services/employers');
 
 describe('Participants Service', () => {
   beforeAll(async () => {
@@ -629,5 +630,45 @@ describe('Participants Service', () => {
     const query2 = await getParticipantByID(reduceParticipant);
     expect(query2[0].firstName).toEqual('Eddy');
     expect(query2[0].history.length).toEqual(1);
+  });
+
+  it('checks the site name of a hired participant', async () => {
+    await closeDB();
+    await startDB();
+    const employerAId = v4();
+
+    const participant1 = {
+      lastName: 'Extra',
+      firstName: 'Eddy',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Fraser',
+      contactedDate: '09/09/2020',
+    };
+
+    await saveSites({
+      siteId: 2,
+      siteName: 'test',
+      postalCode: 'A1A 1A1',
+      healthAuthority: 'Fraser',
+    });
+
+    const response = await makeParticipant(participant1);
+    await setParticipantStatus(employerAId, response.id, 'prospecting');
+    await setParticipantStatus(employerAId, response.id, 'interviewing', { contacted_at: participant1.contactedDate });
+    await setParticipantStatus(employerAId, response.id, 'offer_made');
+    await setParticipantStatus(employerAId, response.id, 'hired', {
+      nonHcapOpportunity: 'no',
+      contactedDate: '09/09/2020',
+      hiredDate: '10/10/2020',
+      startDate: '11/11/2020',
+      site: 2,
+    });
+
+    const participants = await getParticipants({ isEmployer: true, id: employerAId, regions }, null, null, null, null, null, null, ['hired']);
+    expect(participants.data[0].statusInfos[0].data.siteName).toEqual('test');
   });
 });

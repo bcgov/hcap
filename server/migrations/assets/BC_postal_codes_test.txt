@@ -1,0 +1,10 @@
+CA	V0A 1A0	Athalmer	British Columbia	02					50.5402	-116.0019	6
+CA	V0A 1B0	Brisco	British Columbia	02					50.827	-116.27	6
+CA	V0A 1E0	Edgewater	British Columbia	02					50.7033	-116.1405	6
+CA	V0A 1G0	Field	British Columbia	02					51.3954	-116.4822	6
+CA	V0A 1H0	Golden	British Columbia	02					51.3362	-117.1221	6
+CA	V0A 1H1	Golden	British Columbia	02					51.3267	-116.9792	6
+CA	V0A 1H2	Golden	British Columbia	02					51.3095	-116.9766	6
+CA	V0A 1H3	Golden	British Columbia	02					51.3031	-116.9426	6
+CA	V0A 1H4	Golden	British Columbia	02					51.1715	-116.8149	6
+CA	V0A 1H6	Golden	British Columbia	02					51.2894	-116.9526	6

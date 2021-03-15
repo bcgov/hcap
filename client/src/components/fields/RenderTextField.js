@@ -20,16 +20,23 @@ export const RenderTextField = ({
 
   return (
     <Fragment>
-      {label && <InputFieldLabel label={label} />}
+      <label htmlFor={fieldRest.name}>
+        {label && <InputFieldLabel label={label} />}
+      </label>
       <TextField
+        id={fieldRest.name}
+        name={fieldRest.name}
         variant="filled"
         fullWidth
         error={touched && !!error}
         value={sanitizeValue(value)}
+        aria-required
+        aria-invalid={!!error}
+        aria-describedby={`${fieldRest.name}Error`}
         {...fieldRest}
         {...props}
       />
-      <InputFieldError error={<ErrorMessage name={fieldRest.name} />} />
+      <InputFieldError id={`${fieldRest.name}Error`} error={<ErrorMessage name={fieldRest.name} />} />
     </Fragment>
   );
 };

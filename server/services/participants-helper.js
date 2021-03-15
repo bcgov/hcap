@@ -31,11 +31,29 @@ const decomposeParticipantStatus = (raw, joinNames) => raw.map((participant) => 
   };
 });
 
+const addSiteNameToStatusData = (raw, employerSpecificJoin,
+  siteJoin) => raw.map((participant) => ({
+  ...participant,
+  [employerSpecificJoin]: participant[employerSpecificJoin]?.map((item) => ({
+    ...item,
+    data: {
+      ...item.data,
+      siteName: participant[siteJoin]?.find((site) => site.siteId === item.site)?.body.siteName,
+    },
+  })),
+}));
+
 const run = async (context) => {
   const {
     table, criteria, options, user, employerSpecificJoin, hiredGlobalJoin,
+    siteJoin,
   } = context;
   let participants = await table.find(criteria, options);
+  participants = addSiteNameToStatusData(
+    participants,
+    employerSpecificJoin,
+    siteJoin,
+  );
   participants = decomposeParticipantStatus(
     participants,
     (user.isEmployer || user.isHA) && [
@@ -107,6 +125,7 @@ class FieldsFilteredParticipantsFinder {
   filterStatus(statusFilters) {
     const {
       user, criteria, employerSpecificJoin, hiredGlobalJoin,
+      siteJoin,
     } = this.context;
 
     if (user.isEmployer || user.isHA) {
@@ -127,6 +146,15 @@ class FieldsFilteredParticipantsFinder {
             participant_id: 'id',
             current: true,
             status: 'hired',
+          },
+        },
+        ...statusFilters.includes('hired') && {
+          [siteJoin]: {
+            type: 'LEFT OUTER',
+            relation: collections.EMPLOYER_SITES,
+            on: {
+              'body.siteId': `${hiredGlobalJoin}.data.site`,
+            },
           },
         },
       });
@@ -225,6 +253,7 @@ class ParticipantsFinder {
     this.table = dbClient.db[collections.PARTICIPANTS];
     this.employerSpecificJoin = 'employerSpecificJoin';
     this.hiredGlobalJoin = 'hiredGlobalJoin';
+    this.siteJoin = 'siteJoin';
   }
 
   filterRegion(regionFilter) {

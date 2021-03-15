@@ -208,6 +208,7 @@ export default () => {
       const row = mapItemToColumns(item, columns);
 
       row.engage = item;
+      row.siteName = item?.statusInfos?.[0].data?.siteName;
 
       if (item.statusInfos && item.statusInfos.length > 0) {
         if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
@@ -462,8 +463,14 @@ export default () => {
             ...oldColumns.slice(3),
           ];
 
-        if (tabValue === 'Hired Candidates')
+        if (tabValue === 'Hired Candidates') {
           oldColumns = oldColumns.filter(column => column.id !== 'engage');
+          return [
+            ...oldColumns.slice(0, 8),
+            { id: 'siteName', name: 'Site Name' },
+            ...oldColumns.slice(8),
+          ];
+        }
 
         if (!['My Candidates', 'Archived Candidates'].includes(tabValue))
           return oldColumns.filter(column => column.id !== 'status');

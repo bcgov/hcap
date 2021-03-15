@@ -208,7 +208,7 @@ export default () => {
       const row = mapItemToColumns(item, columns);
 
       row.engage = item;
-      row.siteName = item.statusInfos && item.statusInfos.length > 0 && item.statusInfos[0].data?.siteName;
+      row.siteName = item?.statusInfos?.[0].data?.siteName;
 
       if (item.statusInfos && item.statusInfos.length > 0) {
         if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {

@@ -239,7 +239,7 @@ const ParticipantBatchSchema = yup.array().of(
       firstName: yup.string().required(errorMessageIndex(index, indexName)),
       lastName: yup.string().required(errorMessageIndex(index, indexName)),
       phoneNumber: yup.string().required(errorMessage).matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
-      emailAddress: yup.string().required(errorMessage).email(`should be a valid email address (index ${index})`).nullable(errorMessageIndex(index)),
+      emailAddress: yup.string().required(errorMessage).email(`should be a valid email address (index ${index})`),
       postalCode: yup.string().required(errorMessageIndex(index, indexName)).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, `Format as A1A 1A1 (row ${index})`),
 
       // Preferred location

@@ -238,7 +238,7 @@ const ParticipantBatchSchema = yup.array().of(
       // Contact info
       firstName: yup.string().required(errorMessageIndex(index, indexName)),
       lastName: yup.string().required(errorMessageIndex(index, indexName)),
-      phoneNumber: yup.string().matches(/^([0-9]{10})$/, { excludeEmptyString: true, message: `Phone number must be provided as 10 digits (index ${index})` }).nullable(errorMessageIndex(index)),
+      phoneNumber: yup.string().required(errorMessage).matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
       emailAddress: yup.string().email(`should be a valid email address (index ${index})`).nullable(errorMessageIndex(index)),
       postalCode: yup.string().required(errorMessageIndex(index, indexName)).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, `Format as A1A 1A1 (row ${index})`),
 
@@ -347,7 +347,7 @@ const ParticipantStatusChange = yup.object().noUnknown('Unknown field in form').
 const ExternalHiredParticipantSchema = yup.object().shape({
   firstName: yup.string().required('First Name is required'),
   lastName: yup.string().required('Last Name is required'),
-  phoneNumber: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  phoneNumber: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
   emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
   origin: yup.string().required('Must indicate origin of offer').oneOf(['internal', 'other'], 'Invalid entry'),
   otherOrigin: yup.string().when('origin', {
@@ -376,7 +376,7 @@ const ParticipantQuerySchema = yup.object().shape({
 const ParticipantEditSchema = yup.object().noUnknown('Unknown field in entry').shape({
   firstName: yup.string().required('First Name is required'),
   lastName: yup.string().required('Last Name is required'),
-  phoneNumber: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  phoneNumber: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
   emailAddress: yup.string().required('Email address is required').email('Invalid email address'),
   interested: yup.string().nullable(),
   history: yup.array().required('Edit history is required'),

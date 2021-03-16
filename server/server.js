@@ -19,6 +19,7 @@ const {
 } = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
 const { getUserSites } = require('./services/user.js');
+const { getPointsFromPostalCodes } = require('./services/geocodes.js');
 const {
   validate, EmployerFormSchema, AccessRequestApproval,
   ParticipantQuerySchema, ParticipantStatusChange,
@@ -98,6 +99,14 @@ app.get(`${apiBaseUrl}/employer-form/:id`,
     if (user.isHA && !user.regions.includes(result.healthAuthority)) {
       return res.status(403).json({ error: 'you do not have permissions to view this form' });
     }
+    return res.json(result);
+  }));
+
+app.get(`${apiBaseUrl}/coords`,
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  asyncMiddleware(async (req, res) => {
+    const { postalCode } = req.query;
+    const result = await getPointsFromPostalCodes(postalCode);
     return res.json(result);
   }));
 

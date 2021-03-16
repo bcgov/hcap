@@ -19,7 +19,6 @@ export default ({ siteId }) => {
   const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
-
   const [orderBy, setOrderBy] = useState(columns[4].id);
 
   const handleRequestSort = (event, property) => {
@@ -38,9 +37,21 @@ export default ({ siteId }) => {
         method: 'GET',
       });
 
+      const testLookup = async (row) => {
+        const postalCode = row.participantJoin.body.postalCode;
+        const api_test = await fetch(`/api/v1/coords?postalCode=${postalCode}`, {
+          headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
+          method: 'GET',
+        });
+        console.log(await api_test.json());
+      }
+
+
       if (response.ok) {
         const participants = await response.json();
         const rowsData = participants.map((row) => {
+          testLookup(row);
+
           // Pull all relevant props from row based on columns constant
           const values = {
             participantId: row.participant_id,

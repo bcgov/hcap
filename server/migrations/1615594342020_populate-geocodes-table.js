@@ -2,9 +2,7 @@
 const fs = require('fs');
 const { join } = require('path');
 const readline = require('readline');
-const { dbClient } = require('../db/db.js');
-
-const tableName = 'geocodes';
+const { dbClient, collections } = require('../db');
 
 const objectMap = (row) => {
   const split_row = row.split('\t');
@@ -20,7 +18,7 @@ const objectMap = (row) => {
 };
 
 exports.up = async () => {
-  const file = join(__dirname, 'assets', 'BC_postal_codes_test.txt');
+  const file = join(__dirname, 'assets', 'BC_postal_codes.txt');
 
   const readInterface = readline.createInterface({
     input: fs.createReadStream(file),
@@ -28,12 +26,15 @@ exports.up = async () => {
     console: false,
   });
 
-  console.log(dbClient.db);
-
-  readInterface.on('line', (line) => {
-    dbClient.db[tableName].save(objectMap(line), (err, res) => {
-      if (err) console.error(err);
-      console.log(res);
-    });
+  readInterface.on('line', async (line) => {
+    try {
+      await dbClient.db[collections.GEOCODES].save(objectMap(line), (err, res) => {
+        if (err) console.error(err);
+        console.log(res);
+      });
+    } catch (error) {
+      // 23505 is a duplication error
+      if (error.code !== 23505) throw error;
+    }
   });
 };

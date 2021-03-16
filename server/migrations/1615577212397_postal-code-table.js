@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
-const { dbClient } = require('../db/db.js');
+const { dbClient, collections } = require('../db');
 
-const query = `CREATE TABLE IF NOT EXISTS geocodes(
+const query = `CREATE TABLE IF NOT EXISTS ${collections.GEOCODES}(
       id serial primary key, 
       "country_code" varchar(2) not null, 
       "postal_code" varchar(20) not null, 
@@ -12,7 +12,7 @@ const query = `CREATE TABLE IF NOT EXISTS geocodes(
       "longitude" real not null
       )`;
 
-const makeIndexQuery = 'CREATE UNIQUE INDEX postal_code ON geocodes(postal_code);';
+const makeIndexQuery = `CREATE UNIQUE INDEX postal_code ON ${collections.GEOCODES}(postal_code);`;
 
 exports.up = async () => {
   await dbClient.runRawQuery(query);

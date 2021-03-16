@@ -8,6 +8,7 @@ const collections = {
   EMPLOYER_FORMS: 'employer_forms',
   EMPLOYER_SITES: 'employer_sites',
   USERS: 'users',
+  GEOCODES: 'geocodes',
 };
 
 const views = {

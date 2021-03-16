@@ -1,4 +1,4 @@
-version: "3.7"
+version: "2.4" # Depending on service condition was removed in v3+
 
 services:
   client:
@@ -47,8 +47,12 @@ services:
       - ./server:/server # Use server dir in host for hot reloading
       - /server/node_modules # Use node_modules in container
     depends_on:
-      - postgres
-      - mongodb
+      postgres:
+        condition: service_started
+      mongodb: 
+        condition: service_started
+      keycloak:
+        condition: service_healthy
     networks:
       - backend
 
@@ -111,6 +115,12 @@ services:
       backend:
         aliases:
           - keycloak.local.freshworks.club
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/auth"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 20s
 
 networks:
   backend:

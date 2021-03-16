@@ -14,7 +14,7 @@ exports.up = async () => {
 
   if (!headers.every((e, i) => columnNames[i] === e)) throw Error('Unexpected headers');
 
-  const changes = data.map((row) => ({
+  let changes = data.map((row) => ({
     participantId: row?.[0],
     employerId: row?.[1],
     siteId: row?.[2],
@@ -35,9 +35,14 @@ exports.up = async () => {
     status: 'hired',
   });
 
+  // Filter out changes for statuses that are not found in the DB
+  // This allows the migration to pass on dev and test
+  changes = changes.filter((change) => currentStatuses.includes((currentStatus) => (
+    currentStatus.participant_id === change.participantId
+  )));
+
   const errors = changes.map((change) => {
     const currentStatus = currentStatuses.find((i) => i.participant_id === change.participantId);
-    if (!currentStatus) return `${change.participantId} status not found`;
     if (change.employerId !== currentStatus.employer_id) return `${change.participantId} mismatched employer ID`;
     return null;
   }).filter((error) => error);
@@ -64,4 +69,5 @@ exports.up = async () => {
   });
 
   console.log(`Updated the site ID of ${changes.length} hired participant statuses`);
+  console.log(`Skipped ${data.length - changes.length} rows that were not found in the DB`);
 };

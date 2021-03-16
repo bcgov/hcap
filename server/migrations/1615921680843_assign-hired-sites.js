@@ -43,6 +43,7 @@ exports.up = async () => {
 
   const errors = changes.map((change) => {
     const currentStatus = currentStatuses.find((i) => i.participant_id === change.participantId);
+    if (currentStatus.data.siteId) return `${change.participantId} has existing site ID`;
     if (change.employerId !== currentStatus.employer_id) return `${change.participantId} mismatched employer ID`;
     return null;
   }).filter((error) => error);

@@ -153,7 +153,7 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape
   operatorName: yup.string().nullable(errorMessage),
   operatorContactFirstName: yup.string().nullable(errorMessage),
   operatorContactLastName: yup.string().nullable(errorMessage),
-  operatorEmail: yup.string().nullable(errorMessage).matches(/(^(.+@.+\..+)?)?$/, 'Invalid email address'),
+  operatorEmail: yup.string().nullable(errorMessage).email('Invalid email address'),
   operatorPhone: yup.string().matches(/(^[0-9]{10})?$/, 'Phone number must be provided as 10 digits').nullable(true),
   operatorAddress: yup.string().nullable(errorMessage),
   operatorPostalCode: yup.string().nullable(errorMessage).matches(/(^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)?$/, 'Format as A1A 1A1'),
@@ -165,7 +165,7 @@ const EmployerFormSchema = yup.object().noUnknown('Unknown field in form').shape
   siteContactFirstName: yup.string().nullable(errorMessage),
   siteContactLastName: yup.string().nullable(errorMessage),
   phoneNumber: yup.string().matches(/(^[0-9]{10})?$/, 'Phone number must be provided as 10 digits').nullable(true),
-  emailAddress: yup.string().nullable(errorMessage).matches(/(^(.+@.+\..+)?)?$/, 'Invalid email address'),
+  emailAddress: yup.string().nullable(errorMessage).email('Invalid email address'),
 
   // Site type and size info
   check: yup.object().shape(),
@@ -238,8 +238,8 @@ const ParticipantBatchSchema = yup.array().of(
       // Contact info
       firstName: yup.string().required(errorMessageIndex(index, indexName)),
       lastName: yup.string().required(errorMessageIndex(index, indexName)),
-      phoneNumber: yup.mixed().required(errorMessageIndex(index, indexName)),
-      emailAddress: yup.string().required(errorMessageIndex(index, indexName)).matches(/^(.+@.+\..+)?$/, `Invalid email address (row ${index})`),
+      phoneNumber: yup.string().required(errorMessage).matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
+      emailAddress: yup.string().required(errorMessage).email(`should be a valid email address (index ${index})`),
       postalCode: yup.string().required(errorMessageIndex(index, indexName)).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, `Format as A1A 1A1 (row ${index})`),
 
       // Preferred location
@@ -347,8 +347,8 @@ const ParticipantStatusChange = yup.object().noUnknown('Unknown field in form').
 const ExternalHiredParticipantSchema = yup.object().shape({
   firstName: yup.string().required('First Name is required'),
   lastName: yup.string().required('Last Name is required'),
-  phoneNumber: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
-  emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  phoneNumber: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
   origin: yup.string().required('Must indicate origin of offer').oneOf(['internal', 'other'], 'Invalid entry'),
   otherOrigin: yup.string().when('origin', {
     is: 'other',
@@ -376,8 +376,8 @@ const ParticipantQuerySchema = yup.object().shape({
 const ParticipantEditSchema = yup.object().noUnknown('Unknown field in entry').shape({
   firstName: yup.string().required('First Name is required'),
   lastName: yup.string().required('Last Name is required'),
-  phoneNumber: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
-  emailAddress: yup.string().required('Email address is required').matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  phoneNumber: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  emailAddress: yup.string().required('Email address is required').email('Invalid email address'),
   interested: yup.string().nullable(),
   history: yup.array().required('Edit history is required'),
   id: yup.number().required('User ID is required'),
@@ -387,7 +387,7 @@ const EditSiteSchema = yup.object().shape({
   siteContactFirstName: yup.string().required(errorMessage),
   siteContactLastName: yup.string().required(errorMessage),
   siteContactPhone: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
-  siteContactEmail: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  siteContactEmail: yup.string().required(errorMessage).email('Invalid email address'),
   siteName: yup.string().required(errorMessage),
   registeredBusinessName: yup.string().required(errorMessage),
   address: yup.string().required(errorMessage),
@@ -397,7 +397,7 @@ const EditSiteSchema = yup.object().shape({
   operatorContactFirstName: yup.string().required(errorMessage),
   operatorContactLastName: yup.string().required(errorMessage),
   operatorPhone: yup.string().required(errorMessage).matches(/^([0-9]{10})?$/, 'Phone number must be provided as 10 digits'),
-  operatorEmail: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  operatorEmail: yup.string().required(errorMessage).email('Invalid email address'),
   history: yup.array().required('Edit history is required'),
 });
 

@@ -126,7 +126,7 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
   operatorName: yup.string().nullable(errorMessage),
   operatorContactFirstName: yup.string().nullable(errorMessage),
   operatorContactLastName: yup.string().nullable(errorMessage),
-  operatorEmail: yup.string().nullable(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  operatorEmail: yup.string().nullable(errorMessage).email('Invalid email address'),
   operatorPhone: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
   operatorAddress: yup.string().nullable(errorMessage),
   operatorPostalCode: yup.string().nullable(errorMessage).matches(/^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/, 'Format as A1A 1A1'),
@@ -138,7 +138,7 @@ export const EmployerFormSchema = yup.object().noUnknown('Unknown field for form
   siteContactFirstName: yup.string().nullable(errorMessage),
   siteContactLastName: yup.string().nullable(errorMessage),
   phoneNumber: yup.string().nullable(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
-  emailAddress: yup.string().nullable(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  emailAddress: yup.string().nullable(errorMessage).email('Invalid email address'),
 
   // Site type and size info
   siteType: yup.string().nullable(errorMessage).oneOf([...siteTypes, ''], 'Invalid site type'),
@@ -203,7 +203,7 @@ export const ExternalHiredParticipantSchema = yup.object().noUnknown('Unknown fi
   firstName: yup.string().required('First Name is required'),
   lastName: yup.string().required('Last Name is required'),
   phoneNumber: yup.string().required('Phone number is required').matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
-  emailAddress: yup.string().required('Email address is required').matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  emailAddress: yup.string().required('Email address is required').email('Invalid email address'),
   origin: yup.string().required('Must indicate origin of offer').oneOf(['internal', 'other'], 'Invalid entry'),
   otherOrigin: yup.string().when('origin', {
     is: 'other',
@@ -222,7 +222,7 @@ export const EditParticipantFormSchema = yup.object().shape({
   firstName: yup.string().required(errorMessage),
   lastName: yup.string().required(errorMessage),
   phoneNumber: yup.string().required(errorMessage).matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
-  emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
   interested: yup.string().nullable(),
 });
 
@@ -230,7 +230,7 @@ export const EditSiteSchema = yup.object().shape({
   siteContactFirstName: yup.string().required(errorMessage),
   siteContactLastName: yup.string().required(errorMessage),
   siteContactPhone: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
-  siteContactEmail: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  siteContactEmail: yup.string().required(errorMessage).email('Invalid email address'),
   siteName: yup.string().required(errorMessage),
   registeredBusinessName: yup.string().required(errorMessage),
   address: yup.string().required(errorMessage),
@@ -240,7 +240,7 @@ export const EditSiteSchema = yup.object().shape({
   operatorContactFirstName: yup.string().required(errorMessage),
   operatorContactLastName: yup.string().required(errorMessage),
   operatorPhone: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
-  operatorEmail: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  operatorEmail: yup.string().required(errorMessage).email('Invalid email address'),
 });
 
 export const RejectedFormSchema = yup.object().noUnknown('Unknown field in form').shape({
@@ -258,7 +258,7 @@ export const ParticipantFormSchema = yup.object().noUnknown('Unknown field for f
   firstName: yup.string().required(errorMessage),
   lastName: yup.string().required(errorMessage),
   phoneNumber: yup.string().required(errorMessage).matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
-  emailAddress: yup.string().required(errorMessage).matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
   postalCode: yup.string().required(errorMessage).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
 
   // Preferred location

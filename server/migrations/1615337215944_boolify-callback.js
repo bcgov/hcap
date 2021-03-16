@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+/* eslint-disable no-console */
 const { dbClient } = require('../db/db.js');
 const { collections } = require('../db/schema.js');
 

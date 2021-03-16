@@ -41,7 +41,14 @@ export const BaselineList = ({
   const sanitizeValue = (value) => {
     if (value === '') return value;
     return typeof value === 'undefined' ? '' : Number(value);
-  }
+  };
+
+  const getIndividualValue = (optionValue, property) => {
+    const initialValue = Array.isArray(value) && value.find(item => item.role === optionValue)
+    const result = initialValue
+      || value[optionValue];
+    return sanitizeValue(result[property]);
+  };
 
   return (
     <Fragment>
@@ -74,7 +81,7 @@ export const BaselineList = ({
                       variant="filled"
                       fullWidth
                       type="number"
-                      value={sanitizeValue(value[option.value]?.currentFullTime)}
+                      value={getIndividualValue(option.value, 'currentFullTime')}
                       onChange={(e) => setValue(option, {
                         ...value[option.value],
                         currentFullTime: sanitizeValue(e.target.value),
@@ -91,7 +98,7 @@ export const BaselineList = ({
                       variant="filled"
                       fullWidth
                       type="number"
-                      value={sanitizeValue(value[option.value]?.currentPartTime)}
+                      value={getIndividualValue(option.value, 'currentPartTime')}
                       onChange={(e) => setValue(option, {
                         ...value[option.value],
                         currentPartTime: sanitizeValue(e.target.value),
@@ -108,7 +115,7 @@ export const BaselineList = ({
                       variant="filled"
                       fullWidth
                       type="number"
-                      value={sanitizeValue(value[option.value]?.currentCasual)}
+                      value={getIndividualValue(option.value, 'currentCasual')}
                       onChange={(e) => setValue(option, {
                         ...value[option.value],
                         currentCasual: sanitizeValue(e.target.value),
@@ -131,7 +138,7 @@ export const BaselineList = ({
                         variant="filled"
                         fullWidth
                         type="number"
-                        value={sanitizeValue(value[option.value]?.vacancyFullTime)}
+                        value={getIndividualValue(option.value, 'vacancyFullTime')}
                         onChange={(e) => setValue(option, {
                           ...value[option.value],
                           vacancyFullTime: sanitizeValue(e.target.value),
@@ -148,7 +155,7 @@ export const BaselineList = ({
                         variant="filled"
                         fullWidth
                         type="number"
-                        value={sanitizeValue(value[option.value]?.vacancyPartTime)}
+                        value={getIndividualValue(option.value, 'vacancyPartTime')}
                         onChange={(e) => setValue(option, {
                           ...value[option.value],
                           vacancyPartTime: sanitizeValue(e.target.value),
@@ -165,7 +172,7 @@ export const BaselineList = ({
                         variant="filled"
                         fullWidth
                         type="number"
-                        value={sanitizeValue(value[option.value]?.vacancyCasual)}
+                        value={getIndividualValue(option.value, 'vacancyCasual')}
                         onChange={(e) => setValue(option, {
                           ...value[option.value],
                           vacancyCasual: sanitizeValue(e.target.value),

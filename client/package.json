@@ -2,7 +2,7 @@
   "name": "health-career-access-program-client",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://server:8080",
+  "proxy": "http://server:8081",
   "scripts": {
     "start": "CI=true PORT=4000 react-scripts start",
     "build": "react-scripts build",

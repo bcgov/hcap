@@ -3,7 +3,7 @@ const logger = require('./logger.js');
 const { dbClient } = require('./db');
 const keycloak = require('./keycloak');
 
-const port = process.env.SERVER_PORT || 8080;
+const port = process.env.SERVER_PORT || 8081;
 
 /** @type {http.Server|undefined} */
 let server;

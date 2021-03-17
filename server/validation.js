@@ -238,7 +238,7 @@ const ParticipantBatchSchema = yup.array().of(
       // Contact info
       firstName: yup.string().required(errorMessageIndex(index, indexName)),
       lastName: yup.string().required(errorMessageIndex(index, indexName)),
-      phoneNumber: yup.mixed().required(errorMessage).test({ name: 'isPhone', test: ((value) => !!String(value).match(/\d{10}/)) }),
+      phoneNumber: yup.mixed().required(errorMessage).test({ name: 'isPhone', test: ((value) => !!String(value).match(/^\d{10}$/)) }),
       emailAddress: yup.string().required(errorMessage).email(`should be a valid email address (index ${index})`),
       postalCode: yup.string().required(errorMessageIndex(index, indexName)).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, `Format as A1A 1A1 (row ${index})`),
 

@@ -80,7 +80,7 @@ class FilteredParticipantsFinder {
   }
 
   paginate(pagination, sortField) {
-    const { user, employerSpecificJoin } = this.context;
+    const { user, employerSpecificJoin, siteJoin } = this.context;
     this.context.options = pagination && {
       // ID is the default sort column
       order: [{
@@ -96,15 +96,23 @@ class FilteredParticipantsFinder {
     };
 
     if (sortField && sortField !== 'id' && this.context.options.order) {
-      // If a field to sort is provided we put that as first priority
-      const statusField = (user.isEmployer || user.isHA)
-        ? `${employerSpecificJoin}.status`
-        : 'status_infos';
+      let joinFieldName;
 
+      if (sortField === 'status') {
+        joinFieldName = (user.isEmployer || user.isHA)
+          ? `${employerSpecificJoin}.status`
+          : 'status_infos';
+      }
+
+      if (sortField === 'siteName') {
+        joinFieldName = `${siteJoin}.body.${sortField}`;
+      } else {
+        joinFieldName = `body.${sortField}`;
+      }
+
+      // If a field to sort is provided we put that as first priority
       this.context.options.order.unshift({
-        field: sortField === 'status'
-          ? statusField
-          : `body.${sortField}`,
+        field: joinFieldName,
         direction: pagination.direction || 'asc',
       });
     }

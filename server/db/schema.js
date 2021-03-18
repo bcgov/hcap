@@ -14,31 +14,39 @@ const views = {
   PARTICIPANTS_STATUS_INFOS: 'participants_status_infos',
 };
 
-const schema = [
-  {
-    participantsStatusTable: `CREATE TABLE IF NOT EXISTS ${collections.PARTICIPANTS_STATUS}(
-      id serial primary key, 
-      "employer_id" varchar(255) not null, 
-      "participant_id" integer not null, 
-      "status" varchar(255) not null,
-      "current" boolean not null, 
-      "created_at" timestamp with time zone DEFAULT now(),
-      "data" jsonb
-      )`,
-    indexes: [],
-  },
-  {
-    collection: collections.PARTICIPANTS,
-    indexes: ['maximusId'],
-  },
-  {
-    collection: collections.EMPLOYER_SITES,
-    indexes: ['siteId'],
-  },
-  {
-    collection: collections.USERS,
-    indexes: ['keycloakId'],
-  },
-];
+// Relational tables should contain a `definition` property
+// Document tables should contain `collection` and `indexes` properties
+// `definition` is a raw SQL string used to create the table
+// `collection` is the name of the document table
+// `indexes` are JSONB field names on which unique indexes should be created
+const schema = {
+  relationalTables: [
+    {
+      definition: `CREATE TABLE IF NOT EXISTS ${collections.PARTICIPANTS_STATUS} (
+        id serial primary key,
+        "employer_id" varchar(255) not null,
+        "participant_id" integer not null,
+        "status" varchar(255) not null,
+        "current" boolean not null,
+        "created_at" timestamp with time zone DEFAULT now(),
+        "data" jsonb
+        )`,
+    },
+  ],
+  documentTables: [
+    {
+      collection: collections.PARTICIPANTS,
+      indexes: ['maximusId'],
+    },
+    {
+      collection: collections.EMPLOYER_SITES,
+      indexes: ['siteId'],
+    },
+    {
+      collection: collections.USERS,
+      indexes: ['keycloakId'],
+    },
+  ],
+};
 
 module.exports = { collections, views, schema };

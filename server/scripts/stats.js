@@ -3,8 +3,7 @@ require('dotenv').config({ path: '../.env' });
 const inquirer = require('inquirer');
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
-const { dbClient } = require('../db/db.js');
-const { collections } = require('../db/schema.js');
+const { dbClient, collections } = require('../db');
 
 dayjs.extend(utc);
 

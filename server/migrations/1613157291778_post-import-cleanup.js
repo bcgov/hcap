@@ -1,6 +1,5 @@
 /* eslint-disable max-len */
-const { dbClient } = require('../db/db.js');
-const { collections } = require('../db/schema.js');
+const { dbClient, collections } = require('../db');
 
 exports.up = async () => {
   await dbClient.db.withTransaction(async (tx) => {

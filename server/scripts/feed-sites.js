@@ -2,7 +2,7 @@
 require('dotenv').config({ path: '../.env' });
 const readXlsxFile = require('node-xlsx').default;
 const path = require('path');
-const { dbClient } = require('../db/db.js');
+const { dbClient } = require('../db');
 const { saveSites } = require('../services/employers.js');
 const { createRows, verifyHeaders } = require('../utils');
 

@@ -1,4 +1,4 @@
-const { ERROR_UNIDENTIFIED_TABLE } = require('../db/common');
+const { ERROR_UNIDENTIFIED_TABLE } = require('../db');
 
 exports.up = async (pgm) => {
   try {

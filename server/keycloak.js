@@ -85,7 +85,7 @@ class Keycloak { // Wrapper class around keycloak-connect
   }
 
   async authenticateServiceAccount() {
-    logger.info('Authenticating Keycloak service account')
+    logger.info('Authenticating Keycloak service account');
     const data = querystring.stringify({
       grant_type: 'password',
       client_id: this.clientNameBackend,
@@ -93,7 +93,6 @@ class Keycloak { // Wrapper class around keycloak-connect
       username: this.serviceAccountUsername,
       password: this.serviceAccountPassword,
     });
-    logger.info(data)
     const url = `${this.authUrl}/realms/${this.realm}/protocol/openid-connect/token`;
     const config = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } };
     const response = await axios.post(url, data, config);
@@ -113,7 +112,7 @@ class Keycloak { // Wrapper class around keycloak-connect
   async buildInternalIdMap() {
     // Creates maps of Keycloak role and client names to IDs
     // See Keycloak docs https://www.keycloak.org/docs-api/5.0/rest-api/index.html#_clients_resource
-    logger.info('Building internal keycloak id map')
+    logger.info('Building internal keycloak id map');
     await this.authenticateIfNeeded();
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
     { // Map of clients to their internal Keycloak ID

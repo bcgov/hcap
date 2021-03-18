@@ -1,6 +1,8 @@
 export default Object.freeze({
   // Hostname
-  ParticipantHostname: 'hcapparticipants.gov.bc.ca',
+  // ParticipantHostname: 'hcapparticipants.gov.bc.ca',
+  ParticipantHostname: 'hcapparticipants.local.freshworks.club',
+  EmployerHostname: 'hcapemployers.local.freshworks.club',
 
   // Public routes
   Login: '/login',

@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
-const { dbClient } = require('../db/db.js');
-const { collections } = require('../db/schema.js');
+const { dbClient, collections } = require('../db');
 
 exports.up = async () => {
   const results = await dbClient.db[collections.PARTICIPANTS].updateDoc(

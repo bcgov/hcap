@@ -34,7 +34,7 @@ class DBClient {
         migrationsTable: 'pgmigrations', // default, do not change
         dir: 'migrations', // default, do not change
       });
-      await this.db.reload();
+      await this.reload();
       return results;
     } catch (err) {
       throw Error(`Migration error: ${err}`);
@@ -44,6 +44,10 @@ class DBClient {
   async connect() {
     if (this.db) return;
     this.db = await massive(this.settings);
+  }
+
+  async reload() {
+    return this.db.reload();
   }
 
   async runRawQuery(query) {

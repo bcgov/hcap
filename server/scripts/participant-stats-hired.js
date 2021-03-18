@@ -3,7 +3,7 @@ require('dotenv').config({ path: '../.env' });
 const csv = require('fast-csv');
 const path = require('path');
 const { writeFileSync } = require('fs');
-const { dbClient } = require('../db/db.js');
+const { dbClient } = require('../db');
 const { getHiredParticipantsReport } = require('../services/reporting');
 
 (async () => {

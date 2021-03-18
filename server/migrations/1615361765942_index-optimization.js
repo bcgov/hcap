@@ -1,4 +1,4 @@
-const { collections } = require('../db/schema.js');
+const { collections } = require('../db');
 
 exports.up = async (pgm) => {
   await pgm.createIndex(collections.PARTICIPANTS_STATUS, 'status');

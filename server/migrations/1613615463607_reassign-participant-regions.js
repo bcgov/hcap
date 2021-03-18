@@ -2,8 +2,7 @@
 const { readFileSync } = require('fs');
 const { join } = require('path');
 const readXlsxFile = require('node-xlsx').default;
-const { dbClient } = require('../db/db.js');
-const { collections } = require('../db/schema.js');
+const { dbClient, collections } = require('../db');
 
 const columnNames = ['ClientID', 'EOI - FHA', 'EOI - IHA', 'EOI - NHA', 'EOI - VCHA', 'EOI - VIHA'];
 const columnValues = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];

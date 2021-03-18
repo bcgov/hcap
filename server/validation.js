@@ -29,6 +29,7 @@ const sortFields = [
   'callbackStatus',
   'statusInfo',
   'userUpdatedAt',
+  'siteName',
 ];
 
 const roles = [

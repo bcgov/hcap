@@ -25,13 +25,8 @@ exports.up = async () => {
     output: process.stdout,
     console: false,
   });
-
-  readInterface.on('line', async (line) => {
-    try {
-      await dbClient.db[collections.GEOCODES].save(objectMap(line));
-    } catch (error) {
-      // 23505 is a duplication error
-      if (error.code !== 23505) throw error;
-    }
+  const items = [];
+  readInterface.on('line', (item) => items.push(objectMap(item))); // No async callback
+  await dbClient.db[collections.GEOCODES].insert(items);
   });
 };

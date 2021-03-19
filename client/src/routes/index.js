@@ -95,11 +95,10 @@ export default () => {
           <Switch>
             <Route exact path={Routes.Login} component={Login} />
             <Route exact path={Routes.Keycloak} component={KeycloakRedirect} />
-            <Redirect to='/' />
           </Switch>
           <RootUrlSwitch rootUrl={Routes.ParticipantHostname}>
             <Route exact path={Routes.ParticipantConfirmation} component={ParticipantConfirmation} />
-            <Route exact path={Routes.Base} component={ParticipantForm} />
+            <Route component={ParticipantForm} />
           </RootUrlSwitch>
           <RootUrlSwitch rootUrl={Routes.EmployerHostname}>
             <PrivateRoute exact path={Routes.Admin} component={Admin} />
@@ -114,7 +113,7 @@ export default () => {
             <PrivateRoute exact path={Routes.ParticipantView} component={ParticipantView} />
             <PrivateRoute exact path={Routes.ParticipantUpload} component={ParticipantUpload} />
             <PrivateRoute exact path={Routes.ParticipantUploadResults} component={ParticipantUploadResults} />
-            <Route exact path={Routes.Base} component={EmployerForm} />
+            <Route component={EmployerForm} />
           </RootUrlSwitch>
         </Suspense>
       </BrowserRouter>

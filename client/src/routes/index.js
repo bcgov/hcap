@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useEffect, useState, } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import { useKeycloak, KeycloakProvider } from '@react-keycloak/web';
+import { matchRuleShort } from '../utils'
 import store from 'store';
 import Keycloak from 'keycloak-js';
 
@@ -43,6 +44,8 @@ const PrivateRoute = ({ component: Component, path, ...rest }) => {
     />
   );
 };
+
+const RootUrlSwitch = ({ rootUrl, children }) => matchRuleShort(window.location.hostname, rootUrl) && <Switch>{children}</Switch>
 
 export default () => {
 
@@ -91,12 +94,15 @@ export default () => {
         <Suspense fallback={<LinearProgress />}>
           <Switch>
             <Route exact path={Routes.Login} component={Login} />
-            <Route exact path={Routes.Base} render={() => {
-              if (window.location.hostname === Routes.ParticipantHostname) return <ParticipantForm/>
-              return <EmployerForm/>
-            }} />
-            <Route exact path={Routes.ParticipantForm} component={ParticipantForm} />
+            <Route exact path={Routes.Keycloak} component={KeycloakRedirect} />
+            <Redirect to='/' />
+          </Switch>
+          <RootUrlSwitch rootUrl={Routes.ParticipantHostname}>
             <Route exact path={Routes.ParticipantConfirmation} component={ParticipantConfirmation} />
+            <Route exact path={Routes.Base} component={ParticipantForm} />
+          </RootUrlSwitch>
+          <RootUrlSwitch rootUrl={Routes.EmployerHostname}>
+            <PrivateRoute exact path={Routes.Admin} component={Admin} />
             <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />
             <PrivateRoute exact path={Routes.UserPending} component={UserView} />
             <PrivateRoute exact path={Routes.UserEdit} component={UserView} />
@@ -108,10 +114,8 @@ export default () => {
             <PrivateRoute exact path={Routes.ParticipantView} component={ParticipantView} />
             <PrivateRoute exact path={Routes.ParticipantUpload} component={ParticipantUpload} />
             <PrivateRoute exact path={Routes.ParticipantUploadResults} component={ParticipantUploadResults} />
-            <PrivateRoute exact path={Routes.Admin} component={Admin} />
-            <Route exact path={Routes.Keycloak} component={KeycloakRedirect} />
-            <Route component={EmployerForm} />
-          </Switch>
+            <Route exact path={Routes.Base} component={EmployerForm} />
+          </RootUrlSwitch>
         </Suspense>
       </BrowserRouter>
     </KeycloakProvider>

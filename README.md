@@ -66,6 +66,12 @@ To run server tests:
 - Cypress tests may be run with
   - `make local-cypress-tests`
 
+This application depends on your hostname suffix to server the right routes. To access the
+employer content you need to specify http://`hcapemployers`.local.freshworks.club in your
+browser or http://`hcapparticipants`.local.freshworks.club for the participant's. In case you
+don't want an external DNS resolving to your localhost you can add an alias to your `hosts` file
+resolving to `*.your-prefix`.
+
 ### Public Front End Views
 
 ##### /

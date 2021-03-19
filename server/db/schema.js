@@ -5,6 +5,7 @@
 const collections = {
   PARTICIPANTS: 'participants',
   PARTICIPANTS_STATUS: 'participants_status',
+  GEOCODES: 'geocodes',
   EMPLOYER_FORMS: 'employer_forms',
   EMPLOYER_SITES: 'employer_sites',
   USERS: 'users',
@@ -30,6 +31,18 @@ const schema = {
         "current" boolean not null,
         "created_at" timestamp with time zone DEFAULT now(),
         "data" jsonb
+        )`,
+    },
+    {
+      definition: `CREATE TABLE IF NOT EXISTS ${collections.GEOCODES} (
+			  id serial primary key, 
+        "country_code" varchar(2) not null, 
+        "postal_code" varchar(20) not null, 
+        "place_name" varchar(180) not null,
+        "province" varchar(50) not null,
+        "province_code" integer not null, 
+        "latitude" real not null,
+        "longitude" real not null
         )`,
     },
   ],

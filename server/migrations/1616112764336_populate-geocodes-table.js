@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+/* eslint-disable camelcase, no-restricted-syntax, no-await-in-loop */
 const fs = require('fs');
 const { join } = require('path');
 const readline = require('readline');
@@ -25,8 +25,19 @@ exports.up = async () => {
     output: process.stdout,
     console: false,
   });
+
   const items = [];
-  readInterface.on('line', (item) => items.push(objectMap(item))); // No async callback
-  await dbClient.db[collections.GEOCODES].insert(items);
-  });
+
+  for await (const line of readInterface) {
+    items.push(objectMap(line));
+  }
+
+  console.log(`adding ${items.length} to the geocodes db`);
+  // Add data in 10k increments
+  while (items.length > 0) {
+    const subset = items.splice(0, 10000);
+    await dbClient.db[collections.GEOCODES].insert(subset);
+    console.log(`${items.length} entries remaining`);
+  }
+  console.log('Done!');
 };

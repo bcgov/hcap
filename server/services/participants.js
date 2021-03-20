@@ -2,6 +2,7 @@ const readXlsxFile = require('node-xlsx').default;
 const {
   validate, ParticipantBatchSchema, isBooleanValue,
 } = require('../validation.js');
+const { getPointsFromPostalCodes } = require('./geocodes');
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
@@ -251,6 +252,7 @@ const parseAndSaveParticipants = async (fileBuffer) => {
 
   const objectMap = (row) => {
     const object = { ...row };
+    const coords = getPointsFromPostalCodes(row.postalCode);
 
     const preferredLocation = [];
 
@@ -263,6 +265,7 @@ const parseAndSaveParticipants = async (fileBuffer) => {
     object.preferredLocation = preferredLocation.join(';');
     object.callbackStatus = false;
     object.userUpdatedAt = new Date().toJSON();
+    object.coords = coords;
 
     delete object.fraser;
     delete object.interior;

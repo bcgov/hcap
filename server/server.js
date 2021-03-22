@@ -475,8 +475,6 @@ app.patch(`${apiBaseUrl}/employer-sites/:id`,
     try {
       req.body.coords = await getPointsFromPostalCodes(req.body.postalCode);
       const response = await updateSite(req.params.id, req.body);
-      console.log('req.body');
-      console.log(req.body);
       logger.info({
         action: 'employer-sites_patch',
         performed_by: {

@@ -252,7 +252,6 @@ const parseAndSaveParticipants = async (fileBuffer) => {
 
   const objectMap = (row) => {
     const object = { ...row };
-    const coords = getPointsFromPostalCodes(row.postalCode);
 
     const preferredLocation = [];
 
@@ -265,7 +264,6 @@ const parseAndSaveParticipants = async (fileBuffer) => {
     object.preferredLocation = preferredLocation.join(';');
     object.callbackStatus = false;
     object.userUpdatedAt = new Date().toJSON();
-    object.coords = coords;
 
     delete object.fraser;
     delete object.interior;
@@ -279,9 +277,15 @@ const parseAndSaveParticipants = async (fileBuffer) => {
   const xlsx = readXlsxFile.parse(fileBuffer, { raw: true });
   verifyHeaders(xlsx[0].data, columnMap);
   let rows = createRows(xlsx[0].data, columnMap);
+  const postalCodes = rows.map((row) => row.postalCode);
+  const coordinates = await getPointsFromPostalCodes(postalCodes);
   await validate(ParticipantBatchSchema, rows);
   const lowercaseMixed = (v) => (typeof v === 'string' ? v.toLowerCase() : v);
-  rows = rows.map((row) => ({ ...row, interested: lowercaseMixed(row.interested) }));
+  rows = rows.map((row) => ({
+    ...row,
+    interested: lowercaseMixed(row.interested),
+    coords: coordinates[row.postalCode],
+  }));
   const response = [];
   const promises = rows.map((row) => dbClient.db.saveDoc(collections.PARTICIPANTS, objectMap(row)));
   const results = await Promise.allSettled(promises);

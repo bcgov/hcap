@@ -22,6 +22,7 @@ const getPointsFromPostalCodes = async (postalCodes) => {
     });
 
     if (approxRequest) {
+      // Slightly contented path
       return {
         lat: approxRequest.latitude,
         lng: approxRequest.longitude,
@@ -29,14 +30,17 @@ const getPointsFromPostalCodes = async (postalCodes) => {
       };
     }
 
+    // Unhappy path
     return { match: null };
   };
 
   if (Array.isArray(postalCodes)) {
-    return postalCodes.reduce((acc, postalCode) => (
+    const points = postalCodes.map((postalCode) => queryPoint(postalCode));
+    const values = await Promise.allSettled(points);
+    return postalCodes.reduce((acc, postalCode, i) => (
       {
         ...acc,
-        [postalCode]: queryPoint(postalCode),
+        [postalCode]: values[i].value,
       }), {});
   }
   const point = await queryPoint(postalCodes);

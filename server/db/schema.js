@@ -35,9 +35,9 @@ const schema = {
     },
     {
       definition: `CREATE TABLE IF NOT EXISTS ${collections.GEOCODES} (
-			  id serial primary key, 
+        id serial primary key, 
         "country_code" varchar(2) not null, 
-        "postal_code" varchar(20) not null, 
+        "postal_code" varchar(20) unique not null, 
         "place_name" varchar(180) not null,
         "province" varchar(50) not null,
         "province_code" integer not null, 

@@ -11,8 +11,8 @@ on:
 
 
 jobs:
-  checkout-env:
-    name: Checkout and env vars
+  npm-test:
+    name: Tests (e2e)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -24,26 +24,13 @@ jobs:
           ${{ secrets.ENVFILE }}
           EOF
 
-  npm-test:
-    name: NPM Test - Backend only (e2e)
-    needs: checkout-env
-    runs-on: ubuntu-latest
-    steps:
       - name: Build Locally
         run: make local-kc-up
 
-      - name: Run Tests
+      - name: Run Tests - Backend only
         run: make local-server-tests
 
-  cypress-test:
-    name: Cypress Test (e2e)
-    needs: checkout-env
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build Locally
-        run: make local-build
-
-      - name: Cypress run
+      - name: Cypress run - Frontend + Backend
         uses: cypress-io/github-action@v2
         with:
           start: make local-run

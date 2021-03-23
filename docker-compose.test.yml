@@ -32,9 +32,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - MONGO_DB=${MONGO_DB}
-      - MONGO_USER=${MONGO_USER}
-      - MONGO_PASSWORD=${MONGO_PASSWORD}
       - VERSION=${COMMIT_SHA}
       - KEYCLOAK_REALM=${KEYCLOAK_REALM}
       - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
@@ -53,8 +50,6 @@ services:
       - /server/node_modules # Use node_modules in container
     depends_on:
       postgres:
-        condition: service_started
-      mongodb: 
         condition: service_started
       keycloak:
         condition: service_healthy
@@ -79,25 +74,6 @@ services:
     networks:
       - backend
 
-  mongodb:
-    container_name: ${APP_NAME}-mongodb
-    image: mongo:3.6-xenial
-    restart: always
-    expose:
-        - "27017"
-    ports:
-        - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_INITDB_DATABASE=${MONGO_DB}
-    volumes:
-      - ./.docker/mongo/databaseInit:/docker-entrypoint-initdb.d
-      - mongo-log-configdb:/data/configdb
-      - mongo-log-db:/data/db
-    networks:
-      - backend
-
   keycloak:
     image: ${APP_NAME}-keycloak
     build:
@@ -109,8 +85,8 @@ services:
       DB_DATABASE: db_test_keycloak
       DB_USER: ${POSTGRES_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
-      KEYCLOAK_USER: test-admin
-      KEYCLOAK_PASSWORD: password
+      KEYCLOAK_USER: ${KEYCLOAK_SA_USERNAME}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_SA_PASSWORD}
       KEYCLOAK_IMPORT: /tmp/realm-testing.json -Dkeycloak.profile.feature.upload_scripts=enabled
     ports:
       - 8080:8080
@@ -132,9 +108,5 @@ networks:
     driver: "bridge"
 
 volumes:
-  mongo-log-configdb:
-    name: ${APP_NAME}-mongo-log-configdb
-  mongo-log-db:
-    name: ${APP_NAME}-mongo-log-db
   postgres-data-db:
     name: ${APP_NAME}-postgres-data-db

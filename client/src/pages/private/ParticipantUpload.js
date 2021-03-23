@@ -37,7 +37,7 @@ export default () => {
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);
-    const response = await fetch('/api/v1/user', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/user`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },
@@ -59,7 +59,7 @@ export default () => {
     setLoadingData(true);
     const data = new FormData();
     data.append('file', file);
-    const response = await fetch('/api/v1/participants/batch', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/participants/batch`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },

@@ -47,7 +47,7 @@ export default () => {
 
   const handleSubmit = async (values) => {
     const isUserAccessRequest = location.pathname === Routes.UserPending;
-    const response = await fetch(`/api/v1/${isUserAccessRequest ? 'approve-user' : 'user-details'}`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/${isUserAccessRequest ? 'approve-user' : 'user-details'}`, {
       headers: { 'Content-type': 'application/json', 'Authorization': `Bearer ${store.get('TOKEN')}` },
       method: isUserAccessRequest ? 'POST' : 'PATCH',
       body: JSON.stringify({ ...values, userId: selectedUserId }),
@@ -63,7 +63,7 @@ export default () => {
 
   const fetchUsers = async ({ pending }) => {
     setLoadingData(true);
-    const response = await fetch(`/api/v1/${pending ? 'pending-users' : 'users'}`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/${pending ? 'pending-users' : 'users'}`, {
       headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
       method: 'GET',
     });
@@ -85,7 +85,7 @@ export default () => {
               onClick={async () => {
                 setSelectedUserId(row.id);
                 if (!pending) {
-                  const response = await fetch(`/api/v1/user-details?id=${row.id}`, {
+                  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/user-details?id=${row.id}`, {
                     headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
                     method: 'GET',
                   });
@@ -117,7 +117,7 @@ export default () => {
 
   const fetchSites = async () => {
     setLoadingData(true);
-    const response = await fetch('/api/v1/employer-sites', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/employer-sites`, {
       headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
       method: 'GET',
     });
@@ -134,7 +134,7 @@ export default () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       setLoadingUser(true);
-      const response = await fetch('/api/v1/user', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/user`, {
         headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
         method: 'GET',
       });

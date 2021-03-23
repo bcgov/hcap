@@ -14,13 +14,14 @@
     "participant-stats-rejected": "node scripts/participant-stats-rejected.js",
     "participant-stats-no-offers": "node scripts/participant-stats-no-offers.js",
     "export": "node scripts/export.js",
-    "watch": "NODE_ENV=development nodemon main.js",
+    "watch": "NODE_ENV=local nodemon main.js",
     "start": "NODE_ENV=production node main.js",
     "test": "NODE_ENV=test jest --runInBand --forceExit"
   },
   "dependencies": {
     "axios": "0.21.1",
     "body-parser": "1.19.0",
+    "cors": "2.8.5",
     "dayjs": "1.9.3",
     "dotenv": "8.2.0",
     "express": "4.17.1",

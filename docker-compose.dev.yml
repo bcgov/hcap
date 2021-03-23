@@ -4,6 +4,8 @@ services:
   client:
     image: ${APP_NAME}-client
     container_name: ${APP_NAME}-client
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080
     build:
       context: ./client
       dockerfile: Dockerfile.dev
@@ -43,9 +45,10 @@ services:
       - KEYCLOAK_FE_CLIENTID=${KEYCLOAK_FE_CLIENTID}
       - KEYCLOAK_SA_USERNAME=${KEYCLOAK_SA_USERNAME}
       - KEYCLOAK_SA_PASSWORD=${KEYCLOAK_SA_PASSWORD}
+    expose:
+      - "8080"
     ports:
       - "8080:8080"
-      - "9229:9229"
     volumes:
       - ./server:/server # Use server dir in host for hot reloading
       - /server/node_modules # Use node_modules in container

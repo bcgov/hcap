@@ -4,6 +4,8 @@ services:
   client:
     image: ${APP_NAME}-client
     container_name: ${APP_NAME}-client
+    environment:
+      - REACT_APP_API_URL=http://localhost:8081
     build:
       context: ./client
       dockerfile: Dockerfile.dev
@@ -41,6 +43,8 @@ services:
       - KEYCLOAK_FE_CLIENTID=${KEYCLOAK_FE_CLIENTID}
       - KEYCLOAK_SA_USERNAME=${KEYCLOAK_SA_USERNAME}
       - KEYCLOAK_SA_PASSWORD=${KEYCLOAK_SA_PASSWORD}
+    expose:
+      - "8081"
     ports:
       - "8081:8081"
     volumes:

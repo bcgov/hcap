@@ -52,7 +52,7 @@ export default () => {
   const [keycloakInfo, setKeycloakInfo] = useState();
 
   const getKeycloakInfo = async () => {
-    const response = await fetch('/api/v1/keycloak-realm-client-info', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/keycloak-realm-client-info`, {
       headers: {
         'Accept': 'application/json',
         'Content-type': 'application/json',

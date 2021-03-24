@@ -24,8 +24,15 @@ jobs:
           ${{ secrets.ENVFILE }}
           EOF
 
-      - name: Build Locally
+      - name: Build & Run Locally
         run: make local-kc-up
+
+      - name: Check localhost
+        uses: jtalk/url-health-check-action@v1.5
+        with:
+          url: http://localhost:4000
+          max-attempts: 2
+          retry-delay: 60s
 
       - name: Run Tests - Backend only
         run: make local-server-tests
@@ -33,7 +40,7 @@ jobs:
       - name: Cypress run - Frontend + Backend
         uses: cypress-io/github-action@v2
         with:
-          start: make local-run
+          start: make local-kc-up
           wait-on: 'http://localhost:4000'
 
 

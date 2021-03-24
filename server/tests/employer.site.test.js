@@ -83,7 +83,8 @@ describe('Employer Site Endpoints', () => {
     const expectedRes = [
       { siteId: 90, status: 'Success' },
     ];
-    expect(res).toEqual(expectedRes);
+    expect(res.statusCode).toEqual(200);
+    expect(res.siteId).toEqual(expectedRes.siteId);
   });
 
   it('Create duplicate single site, receive dupe', async () => {
@@ -93,7 +94,8 @@ describe('Employer Site Endpoints', () => {
     const expectedRes = [
       { siteId: 91, status: 'Success' },
     ];
-    expect(res).toEqual(expectedRes);
+    expect(res.statusCode).toEqual(200);
+    expect(res.siteId).toEqual(expectedRes.siteId);
 
     const dupeRes = await saveSingleSite(singleSite);
     const expectedDupeRes = [

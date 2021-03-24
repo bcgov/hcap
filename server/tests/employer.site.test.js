@@ -83,7 +83,7 @@ describe('Employer Site Endpoints', () => {
     const expectedRes = [
       { siteId: 90, status: 'Success' },
     ];
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toEqual(201);
     expect(res.siteId).toEqual(expectedRes.siteId);
   });
 
@@ -94,7 +94,7 @@ describe('Employer Site Endpoints', () => {
     const expectedRes = [
       { siteId: 91, status: 'Success' },
     ];
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toEqual(201);
     expect(res.siteId).toEqual(expectedRes.siteId);
 
     const dupeRes = await saveSingleSite(singleSite);

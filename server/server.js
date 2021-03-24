@@ -405,7 +405,7 @@ app.post(`${apiBaseUrl}/employer-sites`,
         site_id: response.siteId,
       });
 
-      return res.json(response);
+      return res.status(201).json(response);
     } catch (excp) {
       return res.status(400).send(`${excp}`);
     }

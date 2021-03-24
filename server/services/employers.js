@@ -1,6 +1,7 @@
 const { dbClient, collections } = require('../db');
 const { validate, EmployerSiteBatchSchema } = require('../validation');
 const { userRegionQuery } = require('./user.js');
+const { updateSiteCoords } = require('./geocodes.js');
 
 const getEmployers = async (user) => {
   const criteria = user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'healthAuthority');

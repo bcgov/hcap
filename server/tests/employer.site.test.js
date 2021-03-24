@@ -80,20 +80,20 @@ describe('Employer Site Endpoints', () => {
     const singleSite = site;
     singleSite.siteId = 90;
     const res = await saveSingleSite(singleSite);
-    const expectedRes = [
-      { siteId: 90, status: 'Success' },
-    ];
-    expect(res.siteId).toEqual(expectedRes.siteId);
+    // const expectedRes = [
+    //   { siteId: 90, status: 'Success' },
+    // ];
+    expect(res.siteId).toEqual(90);
   });
 
   it('Create duplicate single site, receive dupe', async () => {
     const singleSite = site;
     singleSite.siteId = 91;
     const res = await saveSingleSite(singleSite);
-    const expectedRes = [
-      { siteId: 91, status: 'Success' },
-    ];
-    expect(res.siteId).toEqual(expectedRes.siteId);
+    // const expectedRes = [
+    //   { siteId: 91, status: 'Success' },
+    // ];
+    expect(res.siteId).toEqual(91);
 
     const dupeRes = await saveSingleSite(singleSite);
     const expectedDupeRes = [

@@ -384,7 +384,27 @@ const ParticipantEditSchema = yup.object().noUnknown('Unknown field in entry').s
   id: yup.number().required('User ID is required'),
 });
 
-const EditSiteSchema = yup.object().shape({
+const CreateSiteSchema = yup.object().noUnknown('Unknown field in entry').shape({
+  siteId: yup.number().required('Site ID is required'),
+  siteName: yup.string().required(errorMessage),
+  phaseOneAllocation: yup.number().nullable().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+  address: yup.string().nullable(),
+  city: yup.string().nullable(),
+  healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
+  postalCode: yup.string().required(errorMessage).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
+  registeredBusinessName: yup.string().nullable(),
+  operatorName: yup.string().nullable(),
+  operatorContactFirstName: yup.string().nullable(),
+  operatorContactLastName: yup.string().nullable(),
+  operatorEmail: yup.string().nullable().email('Invalid email address'),
+  operatorPhone: yup.string().nullable().matches(/^([0-9]{10})?$/, 'Phone number must be provided as 10 digits'),
+  siteContactFirstName: yup.string().nullable(),
+  siteContactLastName: yup.string().nullable(),
+  siteContactPhone: yup.string().nullable().matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  siteContactEmail: yup.string().nullable().email('Invalid email address'),
+});
+
+const EditSiteSchema = yup.object().noUnknown('Unknown field in entry').shape({
   siteContactFirstName: yup.string().required(errorMessage),
   siteContactLastName: yup.string().required(errorMessage),
   siteContactPhone: yup.string().required(errorMessage).matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
@@ -417,5 +437,6 @@ module.exports = {
   ParticipantQuerySchema,
   ParticipantEditSchema,
   EmployerSiteBatchSchema,
+  CreateSiteSchema,
   EditSiteSchema,
 };

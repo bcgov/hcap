@@ -14,7 +14,7 @@ const {
   makeParticipant,
 } = require('./services/participants.js');
 const {
-  getEmployers, getEmployerByID, saveSites, getSites, getSiteByID,
+  getEmployers, getEmployerByID, saveSingleSite, getSites, getSiteByID,
   updateSite,
 } = require('./services/employers.js');
 const { getReport } = require('./services/reporting.js');
@@ -23,7 +23,7 @@ const {
   validate, EmployerFormSchema, AccessRequestApproval,
   ParticipantQuerySchema, ParticipantStatusChange,
   ParticipantEditSchema, ExternalHiredParticipantSchema,
-  EditSiteSchema, ParticipantSchema,
+  CreateSiteSchema, EditSiteSchema, ParticipantSchema,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -386,19 +386,25 @@ app.get(`${apiBaseUrl}/user-details`,
     });
   }));
 
+// Create single employer site
 app.post(`${apiBaseUrl}/employer-sites`,
-  keycloak.allowRolesMiddleware(),
+  keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    const user = req.hcapUserInfo;
-    logger.info({
-      action: 'employer-sites_post',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-    });
+    await validate(CreateSiteSchema, req.body);
     try {
-      const response = await saveSites(req.body);
+      const user = req.hcapUserInfo;
+      const response = await saveSingleSite(req.body);
+
+      logger.info({
+        action: 'employer-sites_post',
+        performed_by: {
+          username: user.username,
+          id: user.id,
+        },
+        site_id: response.siteId,
+      });
+
       return res.json(response);
     } catch (excp) {
       return res.status(400).send(`${excp}`);

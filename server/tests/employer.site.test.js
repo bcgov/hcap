@@ -2,7 +2,7 @@ const { ValidationError } = require('yup');
 const { v4 } = require('uuid');
 const app = require('../server');
 const {
-  saveSites, getSites, getSiteByID, updateSite,
+  saveSingleSite, saveSites, getSites, getSiteByID, updateSite,
 } = require('../services/employers.js');
 const {
   getParticipants,
@@ -75,6 +75,32 @@ describe('Employer Site Endpoints', () => {
     siteContactPhoneNumber: '2219909091',
     siteContactEmailAddress: 'test.site@hcpa.fresh',
   };
+
+  it('Create new single site, receive success', async () => {
+    const singleSite = site;
+    singleSite.siteId = 90;
+    const res = await saveSingleSite(singleSite);
+    const expectedRes = [
+      { siteId: 90, status: 'Success' },
+    ];
+    expect(res).toEqual(expectedRes);
+  });
+
+  it('Create duplicate single site, receive dupe', async () => {
+    const singleSite = site;
+    singleSite.siteId = 91;
+    const res = await saveSingleSite(singleSite);
+    const expectedRes = [
+      { siteId: 91, status: 'Success' },
+    ];
+    expect(res).toEqual(expectedRes);
+
+    const dupeRes = await saveSingleSite(singleSite);
+    const expectedDupeRes = [
+      { siteId: 91, status: 'Duplicate' },
+    ];
+    expect(dupeRes).toEqual(expectedDupeRes);
+  });
 
   it('Create new site via batch, receive success', async () => {
     const res = await saveSites(site);

@@ -11,9 +11,8 @@ on:
 
 
 jobs:
-  npm-test:
-    name: Tests (e2e)
-    runs-on: ubuntu-latest
+  cypress-test:
+    runs-on: ubuntu-16.04
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -23,52 +22,42 @@ jobs:
           cat > .env << EOF
           ${{ secrets.ENVFILE }}
           EOF
+      - name: Build Locally
+        run: make local-build
 
-      - name: Build & Run Locally
-        run: make local-kc-up
-
-      - name: Check localhost
-        uses: jtalk/url-health-check-action@v1.4
-        with:
-          url: http://localhost:4000
-          max-attempts: 10
-          retry-delay: 30s
-
-      - name: Run Tests - Backend only
-        run: make local-server-tests
-
-      - name: Cypress run - Frontend + Backend
+      - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: make local-kc-up
+          start: make local-run
           wait-on: 'http://localhost:4000'
 
+  test:
+    name: Run NPM Test (e2e)
+    runs-on: ubuntu-latest
+    container: node:14-alpine
+    services:
+      postgres:
+        image: postgres:13-alpine
+        env:
+          POSTGRES_DB: db_test
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    # container: node:14-alpine
-    # services:
-    #   postgres:
-    #     image: postgres:13-alpine
-    #     env:
-    #       POSTGRES_DB: db_test
-    #       POSTGRES_USER: admin
-    #       POSTGRES_PASSWORD: admin
-    #     # Set health checks to wait until postgres has started
-    #     options: >-
-    #       --health-cmd pg_isready
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 5
-
-    # steps:
-    #   - name: Checkout
-    #     uses: actions/checkout@v2
-
-    #   - name: NPM Test
-    #     working-directory: ./server
-    #     env:
-    #       POSTGRES_DB: db_test
-    #       POSTGRES_USER: admin
-    #       POSTGRES_PASSWORD: admin
-    #     run: |
-    #       npm ci
-    #       npm test
+      - name: NPM Test
+        working-directory: ./server
+        env:
+          POSTGRES_DB: db_test
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+        run: |
+          npm ci
+          npm test

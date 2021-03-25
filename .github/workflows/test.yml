@@ -29,6 +29,7 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           start: make local-kc-run
+          wait-on-timeout: 120
           wait-on: 'http://localhost:4000'
 
   test:

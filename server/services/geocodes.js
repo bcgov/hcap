@@ -8,20 +8,21 @@ const queryPoint = async (postalCode) => {
     postal_code: spacedCode,
   });
 
+  // Happy path, full match on postal code
   if (request) {
-    // Happy path, full match on postal code
     return {
       lat: request.latitude,
       lng: request.longitude,
       match: request.postal_code.replace(' ', ''),
     };
   }
+
+  // Slightly contented path
   const approxRequest = await dbClient.db[collections.GEOCODES].findOne({
     'postal_code like': `${spacedCode.slice(0, -1)}%`,
   });
 
   if (approxRequest) {
-    // Slightly contented path
     return {
       lat: approxRequest.latitude,
       lng: approxRequest.longitude,
@@ -52,12 +53,7 @@ const updateParticipantCoords = async (participantID) => {
     id: participantID,
   });
 
-  console.log('participant');
-  console.log(participant);
-
   const coordObject = await queryPoint(participant.body.postalCode);
-  console.log('coordObject');
-  console.log(coordObject);
   if (coordObject.match !== null) {
     dbClient.runRawQuery(`UPDATE ${collections.PARTICIPANTS} SET coords = ST_SetSRID(ST_MakePoint(${coordObject.lng}, ${coordObject.lat}),4326) where id=${participant.id}`);
   }
@@ -68,7 +64,7 @@ const updateSiteCoords = async (siteID) => {
     id: siteID,
   });
 
-  const coordObject = await queryPoint(site.postalCode);
+  const coordObject = await queryPoint(site.body.postalCode);
   if (coordObject.match !== null) {
     dbClient.runRawQuery(`UPDATE ${collections.EMPLOYER_SITES} SET coords = ST_SetSRID(ST_MakePoint(${coordObject.lng}, ${coordObject.lat}),4326) where id=${site.id}`);
   }

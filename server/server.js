@@ -320,7 +320,7 @@ app.post(`${apiBaseUrl}/participants`,
 
     const participant = {
       ...req.body,
-      formVersion: 'v1',
+      formVersion: 'v2',
       maximusId: null,
       postalCodeFsa: req.body.postalCode.substr(0, 3),
       preferredLocation: req.body.preferredLocation.join(';'),

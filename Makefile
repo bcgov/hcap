@@ -40,7 +40,7 @@ local-run:
 local-kc-up:
 	@echo "Starting local app container"
 	@docker-compose -f docker-compose.test.yml build
-	@docker-compose -f docker-compose.test.yml up -d
+	@docker-compose -f docker-compose.test.yml up
 
 local-kc-down:
 	@echo "Stopping local app container"

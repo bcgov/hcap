@@ -72,7 +72,7 @@ app.post(`${apiBaseUrl}/employer-form`,
     await validate(EmployerFormSchema, req.body);
     const result = await dbClient.db.saveDoc(collections.EMPLOYER_FORMS, req.body);
     logger.info(`Form ${result.id} successfully created.`);
-    return res.json({ id: result.id });
+    return res.status(201).json({ id: result.id });
   }));
 
 // Get employer forms
@@ -227,7 +227,7 @@ app.post(`${apiBaseUrl}/employer-actions`,
       participant_id: req.body.participantId,
       status: req.body.status,
     });
-    return res.json({ data: result });
+    return res.status(201).json({ data: result });
   }));
 
 // Add Hired Participant to Database
@@ -267,7 +267,7 @@ app.post(`${apiBaseUrl}/new-hired-participant`,
         participant_id: response.id,
       });
 
-      return res.json(response);
+      return res.status(201).json(response);
     } catch (excp) {
       return res.status(400).send(`${excp}`);
     }
@@ -308,7 +308,7 @@ app.post(`${apiBaseUrl}/participants/batch`,
         ids_posted: response.slice(0, 10).map((entry) => entry.id),
       });
 
-      return res.json(response);
+      return res.status(201).json(response);
     } catch (excp) {
       return res.status(400).send(`${excp}`);
     }
@@ -339,7 +339,7 @@ app.post(`${apiBaseUrl}/participants`,
         id: response.id,
       });
 
-      return res.json(response);
+      return res.status(201).json(response);
     } catch (excp) {
       return res.status(500).send('Failed to create participant');
     }
@@ -557,7 +557,7 @@ app.patch(`${apiBaseUrl}/user-details`,
       siteIds_assigned: req.body.sites,
     });
 
-    res.json({});
+    return res.json({});
   }));
 
 app.post(`${apiBaseUrl}/approve-user`,
@@ -584,7 +584,7 @@ app.post(`${apiBaseUrl}/approve-user`,
       siteIds_assigned: req.body.sites,
     });
 
-    res.json({});
+    return res.status(201).json({});
   }));
 
 // Get user info from token
@@ -594,7 +594,7 @@ app.get(`${apiBaseUrl}/user`,
   asyncMiddleware(async (req, res) => {
     let sites = await getSites();
     sites = sites.filter((i) => req.hcapUserInfo.sites.includes(i.siteId));
-    res.json({
+    return res.json({
       roles: req.hcapUserInfo.roles,
       name: req.hcapUserInfo.name,
       sites,

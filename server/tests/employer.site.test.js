@@ -56,6 +56,28 @@ describe('Employer Site Endpoints', () => {
     preferredLocation: 'Fraser',
   };
 
+  // Used for single site POST
+  // siteId must be assigned by the test
+  const siteBaseFields = {
+    siteName: 'Test site',
+    phaseOneAllocation: 1,
+    address: '123 XYZ',
+    city: 'Victoria',
+    healthAuthority: 'Vancouver Island',
+    postalCode: 'V8V 1M5',
+    registeredBusinessName: 'AAA',
+    operatorName: 'Test Operator',
+    operatorContactFirstName: 'AABB',
+    operatorContactLastName: 'CCC',
+    operatorEmail: 'test@hcpa.fresh',
+    operatorPhone: '2219909090',
+    siteContactFirstName: 'NNN',
+    siteContactLastName: 'PCP',
+    siteContactPhone: '2219909091',
+    siteContactEmail: 'test.site@hcpa.fresh',
+  };
+
+  // Used for batch site POST
   const site = {
     siteId: 67,
     siteName: 'Test site',
@@ -77,29 +99,23 @@ describe('Employer Site Endpoints', () => {
   };
 
   it('Create new single site, receive success', async () => {
-    const singleSite = site;
-    singleSite.siteId = 90;
-    const res = await saveSingleSite(singleSite);
-    // const expectedRes = [
-    //   { siteId: 90, status: 'Success' },
-    // ];
+    siteBaseFields.siteId = 90;
+    const res = await saveSingleSite(siteBaseFields);
     expect(res.siteId).toEqual(90);
+    expect(res.id).toBeDefined();
   });
 
   it('Create duplicate single site, receive dupe', async () => {
-    const singleSite = site;
-    singleSite.siteId = 91;
-    const res = await saveSingleSite(singleSite);
-    // const expectedRes = [
-    //   { siteId: 91, status: 'Success' },
-    // ];
+    siteBaseFields.siteId = 91;
+    const res = await saveSingleSite(siteBaseFields);
     expect(res.siteId).toEqual(91);
+    expect(res.id).toBeDefined();
 
-    const dupeRes = await saveSingleSite(singleSite);
-    const expectedDupeRes = [
-      { siteId: 91, status: 'Duplicate' },
-    ];
-    expect(dupeRes).toEqual(expectedDupeRes);
+    try {
+      await saveSingleSite(siteBaseFields);
+    } catch (excp) {
+      expect(excp.code).toEqual('23505');
+    }
   });
 
   it('Create new site via batch, receive success', async () => {
@@ -120,10 +136,15 @@ describe('Employer Site Endpoints', () => {
   });
 
   it('Gets a single site', async () => {
-    const res = await getSiteByID(1);
+    siteBaseFields.siteId = 92;
+    const sitePostRes = await saveSingleSite(siteBaseFields);
+    expect(sitePostRes.siteId).toEqual(92);
+    expect(sitePostRes.id).toBeDefined();
+
+    const res = await getSiteByID(sitePostRes.id);
     expect(res).toEqual(
       expect.arrayContaining(
-        [site].map((item) => (expect.objectContaining(item))),
+        [siteBaseFields].map((item) => (expect.objectContaining(item))),
       ),
     );
   });

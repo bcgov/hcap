@@ -407,6 +407,9 @@ app.post(`${apiBaseUrl}/employer-sites`,
 
       return res.status(201).json(response);
     } catch (excp) {
+      if (excp.code === '23505') {
+        return res.status(400).send({ siteId: req.body.siteId, status: 'Duplicate' });
+      }
       return res.status(400).send(`${excp}`);
     }
   }));

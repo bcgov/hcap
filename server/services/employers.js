@@ -12,23 +12,8 @@ const getEmployers = async (user) => {
 const getEmployerByID = async (id) => dbClient.db[collections.EMPLOYER_FORMS].findDoc({ id });
 
 const saveSingleSite = async (siteJson) => {
-  const res = dbClient.db.saveDoc(collections.EMPLOYER_SITES, siteJson);
+  const res = await dbClient.db.saveDoc(collections.EMPLOYER_SITES, siteJson);
   return res;
-
-  // const res = await dbClient.db.saveDoc(collections.EMPLOYER_SITES, siteJson);
-  // const { siteId } = res;
-  // switch (res.status) {
-  //   case 'fulfilled':
-  //     res.push({ siteId, status: 'Success' });
-  //     break;
-  //   default:
-  //     if (res.reason.code === '23505') {
-  //       res.push({ siteId, status: 'Duplicate' });
-  //     } else {
-  //       res.push({ siteId, status: 'Error', message: res.reason });
-  //     }
-  // }
-  // return res;
 };
 
 const saveSites = async (sitesArg) => {

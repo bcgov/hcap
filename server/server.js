@@ -109,7 +109,7 @@ app.get(`${apiBaseUrl}/employer-form/:id`,
   }));
 
 app.get(`${apiBaseUrl}/coords`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.allowRolesMiddleware('employer', 'health_authority', 'ministry_of_health'),
   asyncMiddleware(async (req, res) => {
     const { postalCode } = req.query;
     const result = await getPointsFromPostalCodes(postalCode);

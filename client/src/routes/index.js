@@ -92,16 +92,14 @@ export default () => {
     >
       <BrowserRouter>
         <Suspense fallback={<LinearProgress />}>
-          <Switch>
-            <Route exact path={Routes.Login} component={Login} />
-            <Route exact path={Routes.Keycloak} component={KeycloakRedirect} />
-          </Switch>
           <RootUrlSwitch rootUrl={Routes.ParticipantHostname}>
             <Route exact path={Routes.ParticipantConfirmation} component={ParticipantConfirmation} />
             <Route exact path={Routes.Base} component={ParticipantForm} />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>
           <RootUrlSwitch rootUrl={Routes.EmployerHostname}>
+            <Route exact path={Routes.Login} component={Login} />
+            <Route exact path={Routes.Keycloak} component={KeycloakRedirect} />
             <PrivateRoute exact path={Routes.Admin} component={Admin} />
             <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />
             <PrivateRoute exact path={Routes.UserPending} component={UserView} />

@@ -294,9 +294,6 @@ const parseAndSaveParticipants = async (fileBuffer) => {
   const results = await Promise.allSettled(promises);
 
   results.forEach((result, index) => {
-    // create coordinates now that all the new participants have been saved
-    updateParticipantCoords(result.value.id);
-
     const id = rows[index].maximusId;
     switch (result.status) {
       case 'fulfilled':

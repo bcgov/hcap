@@ -127,11 +127,11 @@ describe('Server V1 Form Endpoints', () => {
     doesCertify: true,
   };
 
-  it('Create new form, receive 200', async () => {
+  it('Create new form, receive 201', async () => {
     const res = await request.agent(app)
       .post(formEndpoint)
       .send(form);
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toEqual(201);
   });
 
   it('Create new form using an invalid field, receive 400', async () => {

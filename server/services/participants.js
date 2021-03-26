@@ -295,12 +295,11 @@ const parseAndSaveParticipants = async (fileBuffer) => {
   const results = await Promise.allSettled(promises);
 
   results.forEach((result, index) => {
-    // create coordinates now that all the new participants have been saved
-    updateParticipantCoords(result.value.id);
-
     const id = rows[index].maximusId;
     switch (result.status) {
       case 'fulfilled':
+        // Update coordinates for all fulfilled promises
+        updateParticipantCoords(result.value.id);
         response.push({ id, status: 'Success' });
         break;
       default:
@@ -315,7 +314,8 @@ const parseAndSaveParticipants = async (fileBuffer) => {
 };
 
 const makeParticipant = async (participantJson) => {
-  const res = dbClient.db.saveDoc(collections.PARTICIPANTS, participantJson);
+  const res = await dbClient.db.saveDoc(collections.PARTICIPANTS, participantJson);
+  await updateParticipantCoords(res.id);
   return res;
 };
 

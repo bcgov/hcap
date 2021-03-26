@@ -3,7 +3,8 @@ const { v4 } = require('uuid');
 const { startDB, closeDB } = require('./util/db');
 const { getUserSites, makeUser } = require('../services/user.js');
 const { saveSites } = require('../services/employers.js');
-const { makeParticipant, getParticipantj } = require('../services/participants.js');
+const { makeParticipant, getParticipants } = require('../services/participants.js');
+const { getParticipantCoords } = require('../services/geocodes.js');
 
 describe('Geocodes Service', () => {
   beforeAll(async () => {
@@ -25,7 +26,7 @@ describe('Geocodes Service', () => {
       maximusId: 648690,
       lastName: 'Extra',
       firstName: 'Eddy',
-      postalCode: 'V1V2V3',
+      postalCode: 'V0A2V3',
       postalCodeFsa: 'V1V',
       phoneNumber: '2502223333',
       emailAddress: 'eddy@example.com',
@@ -35,9 +36,10 @@ describe('Geocodes Service', () => {
       preferredLocation: 'Fraser',
     };
 
-    // const res = await makeParticipant(participant);
+    const res = await makeParticipant(participant);
+    const coords = await getParticipantCoords(res.id);
 
-    // console.log(res);
+    console.log(coords);
   });
 
   // it('Adds a site and updates the postal code, checking for coords', async () => {

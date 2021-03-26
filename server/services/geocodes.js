@@ -48,6 +48,12 @@ const getPointsFromPostalCodes = async (postalCodes) => {
   return { [postalCodes]: point };
 };
 
+const getParticipantCoords = async (participantID) => {
+  console.log(`Running this command: SELECT ST_AsText(coords) FROM ${collections.PARTICIPANTS} where id=${Number(participantID)}`);
+  const res = await dbClient.runRawQuery(`SELECT ST_AsText(coords) FROM ${collections.PARTICIPANTS} where id=${Number(participantID)};`);
+  return res;
+};
+
 const updateParticipantCoords = async (participantID) => {
   const participant = await dbClient.db[collections.PARTICIPANTS].findOne({
     id: participantID,
@@ -57,6 +63,11 @@ const updateParticipantCoords = async (participantID) => {
   if (coordObject.match !== null) {
     dbClient.runRawQuery(`UPDATE ${collections.PARTICIPANTS} SET coords = ST_SetSRID(ST_MakePoint(${coordObject.lng}, ${coordObject.lat}),4326) where id=${participant.id}`);
   }
+};
+
+const getSiteCoords = async (siteID) => {
+  const res = await dbClient.runRawQuery(`SELECT ST_AsText(coords) FROM ${collections.EMPLOYER_SITES} where id=${Number(siteID)}`);
+  return res;
 };
 
 const updateSiteCoords = async (siteID) => {
@@ -72,6 +83,8 @@ const updateSiteCoords = async (siteID) => {
 
 module.exports = {
   getPointsFromPostalCodes,
+  getParticipantCoords,
+  getSiteCoords,
   updateParticipantCoords,
   updateSiteCoords,
 };

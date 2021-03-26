@@ -17,6 +17,12 @@ async function startDB() {
   await dbClient.runMigration();
 }
 
+async function cleanDB() {
+  await dbClient.db[collections.PARTICIPANTS].destroy({});
+  await dbClient.db[collections.PARTICIPANTS_STATUS].destroy({});
+  await dbClient.db[collections.EMPLOYER_SITES].destroy({});
+}
+
 async function closeDB() {
   await clearDB();
 }
@@ -24,4 +30,5 @@ async function closeDB() {
 module.exports = {
   startDB,
   closeDB,
+  cleanDB,
 };

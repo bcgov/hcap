@@ -1,10 +1,11 @@
 const request = require('supertest');
+const { v4 } = require('uuid');
 const app = require('../server');
 const {
   getEmployers, getEmployerByID,
 } = require('../services/employers.js');
 
-const { startDB, closeDB } = require('./util/db');
+const { startDB, closeDB, cleanDB } = require('./util/db');
 
 describe('Server V1 Form Endpoints', () => {
   let server;
@@ -20,6 +21,56 @@ describe('Server V1 Form Endpoints', () => {
   });
 
   const formEndpoint = '/api/v1/employer-form';
+
+  const employerAId = v4();
+  const employerBId = v4();
+  const participant1 = {
+    maximusId: 648690,
+    lastName: 'Extra',
+    firstName: 'Eddy',
+    postalCode: 'V1V2V3',
+    postalCodeFsa: 'V1V',
+    phoneNumber: '2502223333',
+    emailAddress: 'eddy@example.com',
+    interested: 'yes',
+    nonHCAP: 'yes',
+    crcClear: 'yes',
+    preferredLocation: 'Fraser',
+  };
+
+  const participant2 = {
+    maximusId: 648691,
+    lastName: 'Finkleman',
+    firstName: 'Freduardo',
+    postalCode: 'V1V2V3',
+    postalCodeFsa: 'V1V',
+    phoneNumber: '2502223333',
+    emailAddress: 'freddy@example.com',
+    interested: 'yes',
+    nonHCAP: 'yes',
+    crcClear: 'yes',
+    preferredLocation: 'Fraser',
+  };
+
+  const site = {
+    siteId: 67,
+    siteName: 'Test site',
+    phaseOneAllocation: 1,
+    address: '123 XYZ',
+    city: 'Victoria',
+    healthAuthority: 'Vancouver Island',
+    postalCode: 'V0A 1M5',
+    registeredBusinessName: 'AAA',
+    operatorName: 'Test Operator',
+    operatorContactFirstName: 'AABB',
+    operatorContactLastName: 'CCC',
+    operatorEmail: 'test@hcpa.fresh',
+    operatorPhone: '2219909090',
+    siteContactFirstName: 'NNN',
+    siteContactLastName: 'PCP',
+    siteContactPhoneNumber: '2219909091',
+    siteContactEmailAddress: 'test.site@hcpa.fresh',
+  };
 
   const form = {
 
@@ -169,5 +220,45 @@ describe('Server V1 Form Endpoints', () => {
         [form].map((item) => (expect.objectContaining(item))),
       ),
     );
+  });
+
+  it('checks response from the site participants endpoint', async () => {
+    await cleanDB();
+
+    const [siteResponse] = await saveSites(site);
+    const expectedResponse = { siteId: 67, status: 'Success' };
+    expect(siteResponse).toEqual(expectedResponse);
+
+    const sites = await getSites();
+    const [siteData] = sites.filter((entry) => entry.siteId === siteResponse.siteId);
+
+    const [res] = await getSiteByID(siteData.id);
+    await makeParticipant(participant1);
+    await makeParticipant(participant2);
+    const { data: [ppt, ppt2] } = await getParticipants({ isMoH: true });
+    await setParticipantStatus(employerAId, ppt.id, 'prospecting');
+    await setParticipantStatus(employerAId, ppt.id, 'interviewing');
+    await setParticipantStatus(employerAId, ppt.id, 'offer_made');
+    await setParticipantStatus(employerAId, ppt.id, 'hired', {
+      site: res.siteId,
+      nonHcapOpportunity: false,
+      positionTitle: 'title',
+      positionType: 'posType',
+      hiredDate: new Date(),
+      startDate: new Date(),
+    });
+    await setParticipantStatus(employerBId, ppt2.id, 'prospecting');
+    await setParticipantStatus(employerBId, ppt2.id, 'interviewing');
+    await setParticipantStatus(employerBId, ppt2.id, 'offer_made');
+    await setParticipantStatus(employerBId, ppt2.id, 'hired', {
+      site: res.siteId,
+      nonHcapOpportunity: true,
+      positionTitle: 'title',
+      positionType: 'posType',
+      hiredDate: new Date(),
+      startDate: new Date(),
+    });
+    const res2 = await getHiredParticipantsBySite(siteData.siteId);
+    expect(res2.length).toEqual(2);
   });
 });

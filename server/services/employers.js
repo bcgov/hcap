@@ -56,6 +56,9 @@ const updateSite = async (id, site) => {
 const getSites = async () => dbClient.db[collections.EMPLOYER_SITES].findDoc({});
 const getSiteByID = async (id) => {
   const site = await dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
+  if (site.length === 0) {
+    return [{ error: `No site found with id ${id}` }];
+  }
   const hcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS].count({ 'data.site': site[0].siteId, 'data.nonHcapOpportunity': 'false' });
   const nonHcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS].count({ 'data.site': site[0].siteId, 'data.nonHcapOpportunity': 'true' });
   site[0].hcapHires = hcapHires;

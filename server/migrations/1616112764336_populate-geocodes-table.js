@@ -18,9 +18,11 @@ const objectMap = (row) => {
 };
 
 exports.up = async () => {
-  // Erase all entries before importing data
-  await dbClient.db[collections.GEOCODES].destroy({});
-  const file = join(__dirname, 'assets', 'BC_postal_codes.txt');
+  let filename = 'BC_postal_codes.txt';
+  if (process.env.NODE_ENV === 'test') {
+    filename = '100_postal_codes.txt';
+  }
+  const file = join(__dirname, 'assets', filename);
 
   const readInterface = readline.createInterface({
     input: fs.createReadStream(file),

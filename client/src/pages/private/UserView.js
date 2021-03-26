@@ -226,10 +226,10 @@ export default () => {
                   component={RenderMultiSelectField}
                   label="* Employer Sites (allocation number) - select one or more"
                   options={_orderBy(sites, ['siteName'])
-                    .filter(item => item.phaseOneAllocation > 0)
+                    .filter(item => item.allocation > 0)
                     .filter(item => values.role === 'health_authority' ? values.regions.includes(item.healthAuthority) : true)
                     .map(item => ({
-                      value: item.siteId, label: `${item.siteName} (${item.phaseOneAllocation})`
+                      value: item.siteId, label: `${item.siteName} (${item.allocation})`
                     }))
                   }
                   onChange={(e) => {

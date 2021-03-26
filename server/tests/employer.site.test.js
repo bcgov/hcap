@@ -60,7 +60,7 @@ describe('Employer Site Endpoints', () => {
   // siteId must be assigned by the test
   const siteBaseFields = {
     siteName: 'Test site',
-    phaseOneAllocation: 1,
+    allocation: 1,
     address: '123 XYZ',
     city: 'Victoria',
     healthAuthority: 'Vancouver Island',
@@ -81,7 +81,7 @@ describe('Employer Site Endpoints', () => {
   const site = {
     siteId: 67,
     siteName: 'Test site',
-    phaseOneAllocation: 1,
+    allocation: 1,
     address: '123 XYZ',
     city: 'Victoria',
     healthAuthority: 'Vancouver Island',

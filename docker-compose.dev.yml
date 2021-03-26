@@ -6,11 +6,10 @@ services:
     container_name: ${APP_NAME}-client
     environment:
       - REACT_APP_API_URL=http://localhost:8080
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
     build:
       context: ./client
       dockerfile: Dockerfile.dev
-    environment:
-      - DANGEROUSLY_DISABLE_HOST_CHECK=true
     ports:
       - 4000:4000
     volumes:

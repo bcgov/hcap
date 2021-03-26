@@ -80,7 +80,7 @@ Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
       "healthAuthority":"Northern",
       "siteContactLastName":"Homebody",
       "siteContactFirstName":"Hannah",
-      "phaseOneAllocation":10,
+      "allocation":10,
       "registeredBusinessName":"HOME SWEET HOME, HOME SERVICES",
       "siteContactPhoneNumber":"1234567890",
       "operatorContactLastName":"Homebody",

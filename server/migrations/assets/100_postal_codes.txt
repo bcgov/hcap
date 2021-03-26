@@ -1,0 +1,100 @@
+CA	V0A 1A0	Athalmer	British Columbia	02					50.5402	-116.0019	6
+CA	V0A 1B0	Brisco	British Columbia	02					50.827	-116.27	6
+CA	V0A 1E0	Edgewater	British Columbia	02					50.7033	-116.1405	6
+CA	V0A 1G0	Field	British Columbia	02					51.3954	-116.4822	6
+CA	V0A 1H0	Golden	British Columbia	02					51.3362	-117.1221	6
+CA	V0A 1H1	Golden	British Columbia	02					51.3267	-116.9792	6
+CA	V0A 1H2	Golden	British Columbia	02					51.3095	-116.9766	6
+CA	V0A 1H3	Golden	British Columbia	02					51.3031	-116.9426	6
+CA	V0A 1H4	Golden	British Columbia	02					51.1715	-116.8149	6
+CA	V0A 1H6	Golden	British Columbia	02					51.2894	-116.9526	6
+CA	V0A 1H7	Golden	British Columbia	02					51.1799	-116.8146	6
+CA	V0A 1J0	Harrogate	British Columbia	02					50.9681	-116.4329	6
+CA	V0A 1K0	Invermere	British Columbia	02					50.5174	-116.036	6
+CA	V0A 1K2	Invermere	British Columbia	02					50.5643	-116.0259	6
+CA	V0A 1K3	Invermere	British Columbia	02					50.5148	-116.0099	6
+CA	V0A 1K4	Invermere	British Columbia	02					50.4927	-116.0414	6
+CA	V0A 1K5	Invermere	British Columbia	02					50.5439	-116.0597	6
+CA	V0A 1K6	Invermere	British Columbia	02					50.5114	-116.0289	6
+CA	V0A 1K7	Invermere	British Columbia	02					50.5531	-115.9228	6
+CA	V0A 1L0	Parson	British Columbia	02					51.0368	-116.4887	6
+CA	V0A 1M0	Radium Hot Springs	British Columbia	02					50.6224	-116.0716	6
+CA	V0A 1P0	Spillimacheen	British Columbia	02					50.6164	-116.123	6
+CA	V0A 1T0	Panorama	British Columbia	02					50.4573	-116.2407	6
+CA	V0B 1A1	Kuskanook	British Columbia	02					50.04	-115.3855	6
+CA	V0B 1A2	Sanca	British Columbia	02					50.04	-115.3855	6
+CA	V0B 1A3	Destiny Bay	British Columbia	02					50.04	-115.3855	6
+CA	V0B 1A4	Boswell	British Columbia	02					49.4777	-116.7678	6
+CA	V0B 1B0	Canal Flats	British Columbia	02					50.1548	-115.8081	6
+CA	V0B 1C0	Canyon	British Columbia	02					49.0376	-116.4202	6
+CA	V0B 1C1	Canyon	British Columbia	02					49.0592	-116.4448	6
+CA	V0B 1E0	Crawford Bay	British Columbia	02					49.6824	-116.8261	6
+CA	V0B 1G0	Creston	British Columbia	02					49.0925	-116.4964	6
+CA	V0B 1G1	Creston	British Columbia	02					49.0893	-116.493	6
+CA	V0B 1G2	Creston	British Columbia	02					49.0673	-116.5034	6
+CA	V0B 1G3	Creston	British Columbia	02					49.0881	-116.5121	6
+CA	V0B 1G4	Creston	British Columbia	02					49.1026	-116.5118	6
+CA	V0B 1G5	Creston	British Columbia	02					49.0947	-116.4968	6
+CA	V0B 1G6	Creston	British Columbia	02					49.0885	-116.5057	6
+CA	V0B 1G7	Creston	British Columbia	02					49.085	-116.5985	6
+CA	V0B 1G8	Creston	British Columbia	02					49.1199	-116.5301	6
+CA	V0B 1G9	Creston	British Columbia	02					49.0884	-116.463	6
+CA	V0B 1H0	Elkford	British Columbia	02					50.0342	-114.8791	6
+CA	V0B 1J0	Elko	British Columbia	02					49.296	-115.1135	6
+CA	V0B 1K0	Erickson	British Columbia	02					49.0729	-116.4737	6
+CA	V0B 1L0	Fairmont Hot Springs	British Columbia	02					50.3359	-115.8512	6
+CA	V0B 1L1	Fairmont Hot Springs	British Columbia	02					50.3334	-115.8634	6
+CA	V0B 1L2	Fairmont Hot Springs	British Columbia	02					50.2874	-115.8789	6
+CA	V0B 1M0	Fernie	British Columbia	02					49.4924	-115.0718	6
+CA	V0B 1M1	Fernie	British Columbia	02					49.4963	-115.081	6
+CA	V0B 1M2	Fernie	British Columbia	02					49.501	-115.0581	6
+CA	V0B 1M3	Fernie	British Columbia	02					49.4946	-115.0662	6
+CA	V0B 1M4	Fernie	British Columbia	02					49.4896	-115.063	6
+CA	V0B 1M5	Fernie	British Columbia	02					49.511	-115.0539	6
+CA	V0B 1M6	Fernie	British Columbia	02					49.4581	-115.077	6
+CA	V0B 1M7	Fernie	British Columbia	02					49.4875	-115.0788	6
+CA	V0B 1N0	Fort Steele	British Columbia	02					49.6155	-115.6301	6
+CA	V0B 1P0	Galloway	British Columbia	02					49.2914	-115.179	6
+CA	V0B 1R0	Grasmere	British Columbia	02					49.091	-115.075	6
+CA	V0B 1R1	Grasmere	British Columbia	02					49.1473	-115.1075	6
+CA	V0B 1S0	Gray Creek	British Columbia	02					49.6219	-116.771	6
+CA	V0B 1T0	Jaffray	British Columbia	02					49.3753	-115.3003	6
+CA	V0B 1T1	Jaffray	British Columbia	02					49.3768	-115.2972	6
+CA	V0B 1T2	Galloway	British Columbia	02					49.3719	-115.2406	6
+CA	V0B 1T3	Elko	British Columbia	02					49.3018	-115.1149	6
+CA	V0B 1T4	Baynes Lake	British Columbia	02					49.2295	-115.2214	6
+CA	V0B 1T5	Koocanusa - West	British Columbia	02					49.3768	-115.2972	6
+CA	V0B 1T6	Gold Creek	British Columbia	02					54.6245	-124.9003	6
+CA	V0B 1T7	Newgate	British Columbia	02					49.3768	-115.2972	6
+CA	V0B 1V0	Kingsgate	British Columbia	02					49.0826	-116.0915	6
+CA	V0B 1V1	Kingsgate	British Columbia	02					49.029	-116.1087	6
+CA	V0B 1W1	Kitchener	British Columbia	02					49.1605	-116.2762	6
+CA	V0B 1W2	Kitchener	British Columbia	02					49.158	-116.3357	6
+CA	V0B 1X0	Kootenay Bay	British Columbia	02					49.6847	-116.8667	6
+CA	V0B 2A0	Moyie	British Columbia	02					49.3051	-115.8358	6
+CA	V0B 2B0	Riondel	British Columbia	02					49.7572	-116.8551	6
+CA	V0B 2C0	Sirdar	British Columbia	02					49.3289	-116.7162	6
+CA	V0B 2E0	Skookumchuck	British Columbia	02					49.7948	-115.6568	6
+CA	V0B 2G0	Sparwood	British Columbia	02					49.7465	-114.9013	6
+CA	V0B 2G1	Sparwood	British Columbia	02					49.7443	-114.8855	6
+CA	V0B 2G2	Sparwood	British Columbia	02					49.7513	-114.895	6
+CA	V0B 2G3	Sparwood	British Columbia	02					49.8326	-114.8811	6
+CA	V0B 2H0	Ta Ta Creek	British Columbia	02					49.7828	-115.7364	6
+CA	V0B 2J0	Wardner	British Columbia	02					49.4161	-115.4268	6
+CA	V0B 2K0	Wasa	British Columbia	02					49.9126	-116.0085	6
+CA	V0B 2L1	Windermere	British Columbia	02					50.4739	-115.9986	6
+CA	V0B 2L2	Windermere	British Columbia	02					50.5729	-115.6521	6
+CA	V0B 2N0	Wynndel	British Columbia	02					49.1358	-116.5289	6
+CA	V0B 2N1	Wynndel	British Columbia	02					49.1604	-116.5644	6
+CA	V0B 2N2	Wynndel	British Columbia	02					49.1905	-116.5737	6
+CA	V0B 2P0	Yahk	British Columbia	02					49.0851	-116.0787	6
+CA	V0C 1C1	Two Rivers	British Columbia	02					56.2169	-120.6744	6
+CA	V0C 1C2	Baldonnel	British Columbia	02					56.2169	-120.6744	6
+CA	V0C 1C3	Baldonnel	British Columbia	02					56.2169	-120.6744	6
+CA	V0C 1C4	Baldonnel	British Columbia	02					56.2169	-120.6744	6
+CA	V0C 1C5	Baldonnel	British Columbia	02					56.2169	-120.6744	6
+CA	V0C 1C6	Baldonnel	British Columbia	02					56.2169	-120.6744	6
+CA	V0C 1C7	Baldonnel	British Columbia	02					56.2169	-120.6744	6
+CA	V0C 1G0	Cecil Lake	British Columbia	02					56.3048	-120.5708	6
+CA	V0C 1H0	Charlie Lake	British Columbia	02					56.2725	-120.945	6
+CA	V0C 1J0	Chetwynd	British Columbia	02					55.6976	-121.6296	6

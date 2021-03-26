@@ -37,6 +37,18 @@ local-run:
 	@echo "Running local app container"
 	@docker-compose -f docker-compose.dev.yml up
 
+local-kc-build:
+	@echo "Building test local app container"
+	@docker-compose -f docker-compose.test.yml build
+
+local-kc-run:
+	@echo "Starting test local app container"
+	@docker-compose -f docker-compose.test.yml up
+
+local-kc-down:
+	@echo "Stopping local app container"
+	@docker-compose -f docker-compose.test.yml down
+
 local-run-db:
 	@echo "Running local DB container"
 	@docker-compose -f docker-compose.dev.yml up postgres

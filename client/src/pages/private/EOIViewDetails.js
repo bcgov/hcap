@@ -12,7 +12,7 @@ export default ({ match }) => {
   const expressionID = match.params.id;
 
   const fetchUserInfo = async () => {
-    const response = await fetch('/api/v1/user', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/user`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },
@@ -27,7 +27,7 @@ export default ({ match }) => {
 
   useEffect(() => {
     const fetchDetails = async () => {
-      const response = await fetch(`/api/v1/employer-form/${expressionID}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/employer-form/${expressionID}`, {
         headers: {
           'Authorization': `Bearer ${store.get('TOKEN')}`,
         },

@@ -1,16 +1,14 @@
-version: "3.7"
+version: "2.4" # Depending on service condition was removed in v3+
 
 services:
   client:
     image: ${APP_NAME}-client
     container_name: ${APP_NAME}-client
     environment:
-      - REACT_APP_API_URL=http://localhost:8080
+      - REACT_APP_API_URL=http://localhost:8081
     build:
       context: ./client
       dockerfile: Dockerfile.dev
-    environment:
-      - DANGEROUSLY_DISABLE_HOST_CHECK=true
     ports:
       - 4000:4000
     volumes:
@@ -19,7 +17,7 @@ services:
     depends_on:
       - server
     networks:
-      - network
+      - backend
 
   server:
     image: ${APP_NAME}-server
@@ -34,10 +32,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - MONGO_HOST=mongodb
-      - MONGO_DB=${MONGO_DB}
-      - MONGO_USER=${MONGO_USER}
-      - MONGO_PASSWORD=${MONGO_PASSWORD}
       - VERSION=${COMMIT_SHA}
       - KEYCLOAK_REALM=${KEYCLOAK_REALM}
       - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
@@ -46,18 +40,21 @@ services:
       - KEYCLOAK_FE_CLIENTID=${KEYCLOAK_FE_CLIENTID}
       - KEYCLOAK_SA_USERNAME=${KEYCLOAK_SA_USERNAME}
       - KEYCLOAK_SA_PASSWORD=${KEYCLOAK_SA_PASSWORD}
+      - SERVER_PORT=8081
     expose:
-      - "8080"
+      - "8081"
     ports:
-      - "8080:8080"
+      - "8081:8081"
     volumes:
       - ./server:/server # Use server dir in host for hot reloading
       - /server/node_modules # Use node_modules in container
     depends_on:
-      - postgres
-      - mongodb
+      postgres:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
     networks:
-      - network
+      - backend
 
   postgres:
     image: postgres:13-alpine
@@ -75,36 +72,41 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - network
+      - backend
 
-  mongodb:
-    container_name: ${APP_NAME}-mongodb
-    image: mongo:3.6-xenial
-    restart: always
-    expose:
-        - "27017"
-    ports:
-        - "27017:27017"
+  keycloak:
+    image: ${APP_NAME}-keycloak
+    build:
+      context: ./.docker/keycloak
+      dockerfile: Dockerfile.test
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_INITDB_DATABASE=${MONGO_DB}
-    volumes:
-      - ./.docker/mongo/databaseInit:/docker-entrypoint-initdb.d
-      - mongo-log-configdb:/data/configdb
-      - mongo-log-db:/data/db
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: db_test_keycloak
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KEYCLOAK_USER: ${KEYCLOAK_SA_USERNAME}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_SA_PASSWORD}
+      KEYCLOAK_IMPORT: /tmp/realm-testing.json -Dkeycloak.profile.feature.upload_scripts=enabled
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
     networks:
-      - network
+      backend:
+        aliases:
+          - keycloak.local.freshworks.club
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/auth"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 20s
 
 networks:
-  network:
-    name: ${APP_NAME}-network
-    driver: bridge
+  backend:
+    driver: "bridge"
 
 volumes:
-  mongo-log-configdb:
-    name: ${APP_NAME}-mongo-log-configdb
-  mongo-log-db:
-    name: ${APP_NAME}-mongo-log-db
   postgres-data-db:
     name: ${APP_NAME}-postgres-data-db

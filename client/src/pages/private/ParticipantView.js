@@ -49,7 +49,7 @@ export default () => {
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);
-    const response = await fetch('/api/v1/user', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/user`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },

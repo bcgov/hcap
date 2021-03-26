@@ -13,6 +13,4 @@ WORKDIR /server
 COPY package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 
-# Run dev server
-EXPOSE 8080
 CMD [ "npm", "run", "watch" ]

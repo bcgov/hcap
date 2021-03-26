@@ -1,6 +1,7 @@
 const massive = require('massive');
 const migrationRunner = require('node-pg-migrate');
 const { ERROR_DUPLICATED } = require('./common');
+const logger = require('../logger.js');
 
 /**
  * This utility module provides helper methods to allow the application
@@ -26,7 +27,7 @@ class DBClient {
       user,
       password,
     } = this.settings;
-
+    logger.info('Running db migrations');
     try {
       const results = await migrationRunner.default({
         databaseUrl: `postgres://${user}:${password}@${host}:${port}/${database}`,
@@ -43,6 +44,7 @@ class DBClient {
 
   async connect() {
     if (this.db) return;
+    logger.info('Connecting to database')
     this.db = await massive(this.settings);
   }
 

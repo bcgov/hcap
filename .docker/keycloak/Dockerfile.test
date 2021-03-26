@@ -1,0 +1,7 @@
+FROM jboss/keycloak:9.0.3
+
+USER 0
+COPY create-users.sh /opt/jboss/startup-scripts/create-users.sh
+RUN chmod +x /opt/jboss/startup-scripts/create-users.sh
+COPY realm-testing.json /tmp/realm-testing.json
+USER 1000

@@ -33,7 +33,7 @@ export default ({ siteId }) => {
   useEffect(() => {
     const fetchParticipants = async () => {
       setLoadingData(true);
-      const response = await fetch(`/api/v1/employer-sites/${siteId}/participants`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/employer-sites/${siteId}/participants`, {
         headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
         method: 'GET',
       });

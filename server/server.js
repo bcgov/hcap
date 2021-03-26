@@ -1,3 +1,4 @@
+const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
@@ -32,6 +33,10 @@ const keycloak = require('./keycloak.js');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
+
+if (process.env.NODE_ENV === 'local') {
+  app.use(cors());
+}
 
 app.use(helmet({
   contentSecurityPolicy: {

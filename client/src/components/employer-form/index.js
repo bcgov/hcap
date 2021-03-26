@@ -156,7 +156,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
 
-    const response = await fetch('/api/v1/employer-form', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/employer-form`, {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
       body: JSON.stringify(mapBaselineList(values)),

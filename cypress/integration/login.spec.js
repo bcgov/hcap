@@ -4,7 +4,7 @@ describe("Login", () => {
   })
 
   it("logs in via Keycloak API", () => {
-    cy.kcGetToken("service-account")
+    cy.kcGetToken("test-admin")
       .then(token => {
         cy.request({
           url: Cypress.env("KEYCLOAK_AUTH_URL"),

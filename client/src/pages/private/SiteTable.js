@@ -15,7 +15,7 @@ const columns = [
   { id: 'operatorName', name: 'Operator Name' },
   { id: 'healthAuthority', name: 'Health Authority' },
   { id: 'postalCode', name: 'Postal Code' },
-  { id: 'phaseOneAllocation', name: 'Phase One Allocation' },
+  { id: 'allocation', name: 'Allocation' },
   { id: 'details' },
 ];
 

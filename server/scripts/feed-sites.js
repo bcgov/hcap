@@ -12,7 +12,7 @@ const { createRows, verifyHeaders } = require('../utils');
       const columnMap = {
         'HCAP Site ID': 'siteId',
         'Site Name': 'siteName',
-        'Early Adopter Allocation': 'phaseOneAllocation',
+        Allocation: 'allocation',
         'Street Address': 'address',
         'Health Authority': 'healthAuthority',
         City: 'city',

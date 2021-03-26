@@ -209,7 +209,7 @@ const EmployerSiteBatchSchema = yup.array().of(
     return yup.object().noUnknown(`Unknown field in site data (index ${index})`).shape({
       siteId: yup.number().required(errorMessageIndex(index)),
       siteName: yup.string().required(errorMessageIndex(index)),
-      phaseOneAllocation: yup.number().nullable(errorMessageIndex(index)),
+      allocation: yup.number().nullable(errorMessageIndex(index)),
       address: yup.string().nullable(errorMessageIndex(index)),
       city: yup.string().nullable(errorMessageIndex(index)),
       healthAuthority: yup.string().required(errorMessageIndex(index)).oneOf(healthRegions, `Invalid location (index ${index})`),
@@ -387,7 +387,7 @@ const ParticipantEditSchema = yup.object().noUnknown('Unknown field in entry').s
 const CreateSiteSchema = yup.object().noUnknown('Unknown field in entry').shape({
   siteId: yup.number().required('Site ID is required'),
   siteName: yup.string().required(errorMessage),
-  phaseOneAllocation: yup.number().nullable().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+  allocation: yup.number().nullable().test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
   address: yup.string().nullable(),
   city: yup.string().nullable(),
   healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
@@ -414,7 +414,7 @@ const EditSiteSchema = yup.object().noUnknown('Unknown field in entry').shape({
   address: yup.string().required(errorMessage),
   city: yup.string().required(errorMessage),
   postalCode: yup.string().required(errorMessage).matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
-  phaseOneAllocation: yup.number().required('Allocation number is required').test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+  allocation: yup.number().required('Allocation number is required').test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
   operatorContactFirstName: yup.string().required(errorMessage),
   operatorContactLastName: yup.string().required(errorMessage),
   operatorPhone: yup.string().required(errorMessage).matches(/^([0-9]{10})?$/, 'Phone number must be provided as 10 digits'),

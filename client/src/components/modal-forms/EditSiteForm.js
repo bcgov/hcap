@@ -72,10 +72,10 @@ export const EditSiteForm = ({ initialValues, validationSchema, onSubmit, onClos
             label="* Postal Code"
           />
           <Field
-            name="phaseOneAllocation"
+            name="allocation"
             type="number"
             component={RenderTextField}
-            label="* Phase 1 Allocation"
+            label="* Allocation"
           />
           <Box pt={2} pb={1}>
             <Typography variant="body1">

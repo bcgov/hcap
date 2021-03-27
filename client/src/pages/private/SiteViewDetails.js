@@ -50,13 +50,8 @@ export default ({ match }) => {
     });
 
     if (response.ok) {
-      const { error } = await response.json();
-      if (error) {
-        openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
-      } else {
-        setActiveModalForm(null);
-        fetchDetails(id)
-      }
+      setActiveModalForm(null);
+      fetchDetails(id)
     } else {
       openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
     }

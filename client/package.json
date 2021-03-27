@@ -17,6 +17,7 @@
     "classnames": "2.2.6",
     "cross-fetch": "3.0.6",
     "dom-to-image": "2.6.0",
+    "file-saver": "^2.0.5",
     "formik": "2.1.5",
     "jspdf": "2.1.1",
     "keycloak-js": "9.0.2",

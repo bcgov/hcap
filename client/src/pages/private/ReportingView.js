@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
-import { Page, CheckPermissions } from '../../components/generic';
+import { saveAs } from 'file-saver';
+import { Page, CheckPermissions, Button } from '../../components/generic';
 
 export default () => {
 
   const [roles, setRoles] = useState([]);
   const [isLoadingUser, setLoadingUser] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [report, setReport] = useState({ 'total': 0, 'qualified': 0, 'inProgress': 0, 'hired': 0, 'hiredPerRegion': {} });
 
   const fetchUserInfo = async () => {
@@ -26,6 +28,21 @@ export default () => {
     }
   }
 
+  const handleDownloadHiringClick = async () => {
+    setLoading(true);
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/milestone-report/csv/hired`, {
+      headers: {
+        'Authorization': `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      saveAs(blob, `participant-stats-hired-${new Date().toJSON()}.csv`);
+      setLoading(false);
+    }
+  }
 
   const fetchReport = async () => {
     const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/milestone-report`, {
@@ -92,10 +109,17 @@ export default () => {
               Hired Per Region
             </Typography>
             <ul>
-              {Object.keys(report.hiredPerRegion).map((k) => <li>{k}: {report.hiredPerRegion[k]}</li>)}
+              {Object.keys(report.hiredPerRegion).map((k) => <li key={k}>{k}: {report.hiredPerRegion[k]}</li>)}
             </ul>
           </Box>
         </Grid>
+        <Button
+          fullWidth={false}
+          loading={isLoading}
+          size="small"
+          onClick={() => handleDownloadHiringClick()}
+          text="Download hiring report (CSV)"
+        />
       </CheckPermissions>
     </Page>
   );

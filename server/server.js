@@ -119,7 +119,9 @@ app.get(`${apiBaseUrl}/milestone-report`,
 // Get hired report
 app.get(`${apiBaseUrl}/milestone-report/csv/hired`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
+    const user = req.hcapUserInfo;
     res.attachment('report.csv');
     const csvStream = csv.format({ headers: true });
     csvStream.pipe(res);
@@ -138,6 +140,14 @@ app.get(`${apiBaseUrl}/milestone-report/csv/hired`,
         'Employer Site': result.employerSite,
         'Start Date': result.startDate,
       });
+    });
+
+    logger.info({
+      action: 'milestone-report_get_csv_hired',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
     });
 
     csvStream.end();

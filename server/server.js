@@ -3,6 +3,7 @@ const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
+const csv = require('fast-csv');
 const dayjs = require('dayjs');
 const multer = require('multer');
 const {
@@ -18,7 +19,7 @@ const {
   getEmployers, getEmployerByID, saveSingleSite, getSites, getSiteByID,
   updateSite,
 } = require('./services/employers.js');
-const { getReport } = require('./services/reporting.js');
+const { getReport, getHiredParticipantsReport } = require('./services/reporting.js');
 const { getUserSites } = require('./services/user.js');
 const {
   validate, EmployerFormSchema, AccessRequestApproval,
@@ -113,6 +114,43 @@ app.get(`${apiBaseUrl}/milestone-report`,
   asyncMiddleware(async (req, res) => {
     const result = await getReport();
     return res.json({ data: result });
+  }));
+
+// Get hired report
+app.get(`${apiBaseUrl}/milestone-report/csv/hired`,
+  keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const user = req.hcapUserInfo;
+    res.attachment('report.csv');
+    const csvStream = csv.format({ headers: true });
+    csvStream.pipe(res);
+
+    const results = await getHiredParticipantsReport();
+    results.forEach((result) => {
+      csvStream.write({
+        'Participant ID': result.participantId,
+        FSA: result.participantFsa,
+        'Employer ID': result.employerId,
+        'Employer Email': result.employerEmail,
+        'HCAP Position': result.hcapPosition,
+        'Position Type': result.positionType,
+        'Position Title': result.positionTitle,
+        'Employer Site Region': result.employerRegion,
+        'Employer Site': result.employerSite,
+        'Start Date': result.startDate,
+      });
+    });
+
+    logger.info({
+      action: 'milestone-report_get_csv_hired',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+    });
+
+    csvStream.end();
   }));
 
 // Get participant records

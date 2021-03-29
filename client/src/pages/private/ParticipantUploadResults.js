@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
-import { Routes } from '../../constants';
+import { API_URL, Routes } from '../../constants';
 import store from 'store';
 
 export default () => {
@@ -40,7 +40,7 @@ export default () => {
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/user`, {
+    const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },

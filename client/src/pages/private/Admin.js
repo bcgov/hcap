@@ -4,7 +4,7 @@ import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import { Page, Button, CheckPermissions } from '../../components/generic';
-import { Routes } from '../../constants';
+import { API_URL, Routes } from '../../constants';
 import store from 'store';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,7 +23,7 @@ export default () => {
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/user`, {
+    const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },

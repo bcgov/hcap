@@ -4,6 +4,7 @@ import { Box, Typography } from '@material-ui/core';
 import store from 'store';
 import { saveAs } from 'file-saver';
 import { Page, CheckPermissions, Button } from '../../components/generic';
+import { API_URL } from '../../constants';
 
 export default () => {
 
@@ -14,7 +15,7 @@ export default () => {
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/user`, {
+    const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },
@@ -30,7 +31,7 @@ export default () => {
 
   const handleDownloadHiringClick = async () => {
     setLoading(true);
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/milestone-report/csv/hired`, {
+    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/hired`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },
@@ -45,7 +46,7 @@ export default () => {
   }
 
   const fetchReport = async () => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/milestone-report`, {
+    const response = await fetch(`${API_URL}/api/v1/milestone-report`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },

@@ -13,6 +13,7 @@ import {
   ExternalHiredParticipantSchema,
   EditParticipantFormSchema,
   regionLabelsMap,
+  API_URL,
 } from '../../constants';
 import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipantForm, EditParticipantForm } from '../../components/modal-forms';
@@ -241,7 +242,7 @@ export default () => {
       ...statusFilters && statusFilters.map(status => `statusFilters[]=${status}`),
     ].filter(item => item).join('&');
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/participants?${queries}`, {
+    const response = await fetch(`${API_URL}/api/v1/participants?${queries}`, {
       headers: {
         'Accept': 'application/json',
         'Content-type': 'application/json',
@@ -259,7 +260,7 @@ export default () => {
   const phoneNumberMask = '(***) ***-****';
 
   const handleEngage = async (participantId, status, additional = {}) => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/employer-actions`, {
+    const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
@@ -317,7 +318,7 @@ export default () => {
   };
 
   const handleExternalHire = async (participantInfo) => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/new-hired-participant`, {
+    const response = await fetch(`${API_URL}/api/v1/new-hired-participant`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
@@ -367,7 +368,7 @@ export default () => {
 
     const fetchUserInfo = async () => {
       setLoadingUser(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/user`, {
+      const response = await fetch(`${API_URL}/api/v1/user`, {
         headers: {
           'Authorization': `Bearer ${store.get('TOKEN')}`,
         },
@@ -567,7 +568,7 @@ export default () => {
               }
             });
             values.history = (actionMenuParticipant.history) ? [history, ...actionMenuParticipant.history] : [history];
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/participant`, {
+            const response = await fetch(`${API_URL}/api/v1/participant`, {
               method: 'PATCH',
               headers: {
                 'Authorization': `Bearer ${store.get('TOKEN')}`,
@@ -747,7 +748,7 @@ export default () => {
                     return <Button
                       onClick={async () => {
                         // Get data from row.id
-                        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/participant?id=${row.id}`, {
+                        const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
                           headers: {
                             'Accept': 'application/json',
                             'Content-type': 'application/json',

@@ -5,6 +5,7 @@ import Tab from '@material-ui/core/Tab';
 import { withStyles } from '@material-ui/core/styles';
 import { Page, CheckPermissions } from '../../components/generic';
 import store from 'store';
+import { API_URL } from '../../constants';
 
 const ParticipantTable = lazy(() => import('./ParticipantTable'));
 const SiteTable = lazy(() => import('./SiteTable'));
@@ -49,7 +50,7 @@ export default () => {
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/user`, {
+    const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },

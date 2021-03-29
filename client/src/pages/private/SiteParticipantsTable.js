@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { Box } from '@material-ui/core';
 import store from 'store';
 import { Table } from '../../components/generic';
+import { API_URL } from '../../constants';
 
 const columns = [
   { id: 'participantId', name: 'ID' },
@@ -33,7 +34,7 @@ export default ({ siteId }) => {
   useEffect(() => {
     const fetchParticipants = async () => {
       setLoadingData(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/employer-sites/${siteId}/participants`, {
+      const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
         headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
         method: 'GET',
       });

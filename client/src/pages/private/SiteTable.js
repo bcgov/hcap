@@ -7,7 +7,7 @@ import store from 'store';
 import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
 import { NewSiteForm } from '../../components/modal-forms';
 import { useLocation } from 'react-router-dom'
-import { Routes, regionLabelsMap } from '../../constants';
+import { Routes, regionLabelsMap, API_URL } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import {
@@ -56,7 +56,7 @@ export default ({ sites }) => {
 
   const fetchSites = async () => {
     setLoadingData(true);
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/employer-sites`, {
+    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
       headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
       method: 'GET',
     });
@@ -86,7 +86,7 @@ export default ({ sites }) => {
   };
 
   const handleSiteCreate = async (site) => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/employer-sites`, {
+    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
@@ -121,7 +121,7 @@ export default ({ sites }) => {
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/user`, {
+      const response = await fetch(`${API_URL}/api/v1/user`, {
         headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
         method: 'GET',
       });

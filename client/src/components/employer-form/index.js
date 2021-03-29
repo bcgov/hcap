@@ -14,7 +14,7 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import Typography from '@material-ui/core/Typography';
 
-import { EmployerFormSchema, Routes, ToastStatus } from '../../constants';
+import { API_URL, EmployerFormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 import { scrollUp, mapObjectProps } from '../../utils';
 import { Card, Button } from '../generic';
@@ -156,7 +156,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/employer-form`, {
+    const response = await fetch(`${API_URL}/api/v1/employer-form`, {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
       body: JSON.stringify(mapBaselineList(values)),

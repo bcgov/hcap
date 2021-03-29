@@ -9,6 +9,7 @@ import { useToast } from '../../hooks';
 import {
   ToastStatus,
   EditSiteSchema,
+  API_URL,
 } from '../../constants';
 
 const SiteParticipantsTable = lazy(() => import('./SiteParticipantsTable'));
@@ -24,7 +25,7 @@ export default ({ match }) => {
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/user`, {
+    const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },
@@ -39,7 +40,7 @@ export default ({ match }) => {
   }
 
   const handleSiteEdit = async (site) => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/employer-sites/${id}`, {
+    const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
@@ -62,7 +63,7 @@ export default ({ match }) => {
   }, []);
 
   const fetchDetails = async (id) => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/employer-sites/${id}`, {
+    const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },

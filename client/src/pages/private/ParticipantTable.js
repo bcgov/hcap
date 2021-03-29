@@ -270,10 +270,9 @@ export default () => {
     });
 
     if (response.ok) {
-      const { data: statusData, error } = await response.json();
-      if (error) {
-        openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
-      } else if (status === 'prospecting') { // Modal appears after submitting
+      const { data: statusData } = await response.json();
+
+      if (status === 'prospecting') { // Modal appears after submitting
         setActiveModalForm('prospecting');
       } else {
 
@@ -329,14 +328,9 @@ export default () => {
     });
 
     if (response.ok) {
-      const { error } = await response.json();
-      if (error) {
-        openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
-      } else {
-        setActionMenuParticipant(null);
-        setActiveModalForm(null);
-        forceReload(pagination);
-      }
+      setActionMenuParticipant(null);
+      setActiveModalForm(null);
+      forceReload(pagination);
     } else {
       openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
     }

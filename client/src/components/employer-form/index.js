@@ -81,7 +81,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
   const defaultValues = {
     // Operator contact info
     registeredBusinessName: '',
-    operatorName: '', 
+    operatorName: '',
     operatorContactFirstName: '',
     operatorContactLastName: '',
     operatorEmail: '',
@@ -163,13 +163,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
     });
 
     if (response.ok) {
-      const { error } = await response.json();
-      if (error) {
-        openToast({ status: ToastStatus.Error, message: error.message || 'Failed to submit this form' });
-      } else {
-        history.push(Routes.EmployerConfirmation, { formValues: values });
-        return;
-      }
+      history.push(Routes.EmployerConfirmation, { formValues: values });
     } else {
       openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
     }

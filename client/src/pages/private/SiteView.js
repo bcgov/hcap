@@ -32,10 +32,10 @@ export default () => {
 
   return (
     <Page>
-      <CheckPermissions 
-        isLoading={isLoadingUser} 
-        roles={roles} 
-        permittedRoles={['health_authority', 'ministry_of_health']} 
+      <CheckPermissions
+        isLoading={isLoadingUser}
+        roles={roles}
+        permittedRoles={['health_authority', 'ministry_of_health']}
         renderErrorMessage={true}
       >
         <Box pt={4} pb={4} pl={2} pr={2}>

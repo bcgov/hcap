@@ -397,10 +397,10 @@ const CreateSiteSchema = yup.object().noUnknown('Unknown field in entry').shape(
   operatorContactFirstName: yup.string().nullable(),
   operatorContactLastName: yup.string().nullable(),
   operatorEmail: yup.string().nullable().email('Invalid email address'),
-  operatorPhone: yup.string().nullable().matches(/^([0-9]{10})?$/, 'Phone number must be provided as 10 digits'),
+  operatorPhone: yup.mixed().nullable().test({ name: 'isPhone', test: ((value) => value === '' || !!String(value).match(/^\d{10}$/)) }),
   siteContactFirstName: yup.string().nullable(),
   siteContactLastName: yup.string().nullable(),
-  siteContactPhone: yup.string().nullable().matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  siteContactPhone: yup.mixed().nullable().test({ name: 'isPhone', test: ((value) => value === '' || !!String(value).match(/^\d{10}$/)) }),
   siteContactEmail: yup.string().nullable().email('Invalid email address'),
 });
 

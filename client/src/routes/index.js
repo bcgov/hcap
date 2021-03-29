@@ -6,7 +6,7 @@ import { matchRuleShort } from '../utils'
 import store from 'store';
 import Keycloak from 'keycloak-js';
 
-import { Routes } from '../constants';
+import { API_URL, Routes } from '../constants';
 
 const Admin = lazy(() => import('../pages/private/Admin'));
 const UserView = lazy(() => import('../pages/private/UserView'));
@@ -52,7 +52,7 @@ export default () => {
   const [keycloakInfo, setKeycloakInfo] = useState();
 
   const getKeycloakInfo = async () => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/keycloak-realm-client-info`, {
+    const response = await fetch(`${API_URL}/api/v1/keycloak-realm-client-info`, {
       headers: {
         'Accept': 'application/json',
         'Content-type': 'application/json',

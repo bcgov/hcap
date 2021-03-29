@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
-import { Routes, regionLabelsMap } from '../../constants';
+import { Routes, regionLabelsMap, API_URL } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 
 export default () => {
@@ -41,7 +41,7 @@ export default () => {
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/user`, {
+    const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
         'Authorization': `Bearer ${store.get('TOKEN')}`,
       },
@@ -114,7 +114,7 @@ export default () => {
 
     const getEOIs = async () => {
       setLoadingData(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/employer-form`, {
+      const response = await fetch(`${API_URL}/api/v1/employer-form`, {
         headers: {
           'Accept': 'application/json',
           'Content-type': 'application/json',

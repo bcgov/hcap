@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { Formik, Form as FormikForm } from 'formik';
 import { useHistory } from 'react-router-dom';
 
-import { ParticipantFormSchema, Routes, ToastStatus } from '../../constants';
+import { API_URL, ParticipantFormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 import { scrollUp } from '../../utils';
 
@@ -31,7 +31,7 @@ export const Form = ({ initialValues, isDisabled }) => {
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/participants`, {
+    const response = await fetch(`${API_URL}/api/v1/participants`, {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
       body: JSON.stringify(values),

@@ -8,6 +8,7 @@ export const RenderTextField = ({
   field: { value, name, ...fieldRest },
   form,
   label,
+  type,
   ...props
 }) => {
   const touched = form.touched[name];
@@ -27,6 +28,8 @@ export const RenderTextField = ({
         id={name}
         name={name}
         variant="filled"
+        type={type}
+        onKeyDown={(e) => type === 'number' && ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()}
         fullWidth
         error={touched && !!error}
         value={sanitizeValue(value)}

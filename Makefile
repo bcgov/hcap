@@ -63,7 +63,7 @@ local-clean:
 
 local-server-tests:
 	@echo "Running tests in local app container"
-	@docker exec -it $(APP_NAME)-server npm test
+	@docker exec $(APP_NAME)-server npm test
 
 local-cypress-tests:
 	@echo "Running all available Cypress tests"

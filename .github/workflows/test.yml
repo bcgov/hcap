@@ -32,13 +32,13 @@ jobs:
           wait-on-timeout: 120
           wait-on: 'http://localhost:4000'
 
+      - name: Run
+        run: make local-kc-run
       - name: Sleep for 30 seconds
         uses: jakejarvis/wait-action@master
         with:
           time: '30s'
 
-      - name: Run
-        run: make local-kc-run
       - name: Jest run
         run: make local-server-tests
 

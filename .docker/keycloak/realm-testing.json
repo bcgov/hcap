@@ -60,115 +60,6 @@
       }
     ],
     "client": {
-      "hcap-fe": [
-        {
-          "id": "13b26a68-4ba6-45e7-8c22-0be9ec02a1c0",
-          "name": "ministry_of_health",
-          "description": "MOH users who can access all application data",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "7f1c8e0a-4b51-4f01-99a6-56a655550224",
-          "attributes": {}
-        },
-        {
-          "id": "8a2ce8f4-d60f-4748-bd0d-027e90cfaef6",
-          "name": "employer",
-          "description": "Employer users who interact with site and participant data",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "7f1c8e0a-4b51-4f01-99a6-56a655550224",
-          "attributes": {}
-        },
-        {
-          "id": "fb6c1558-0f7b-46cb-8ca0-bca24fee4bbd",
-          "name": "maximus",
-          "description": "Users who handle participant data upload",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "7f1c8e0a-4b51-4f01-99a6-56a655550224",
-          "attributes": {}
-        },
-        {
-          "id": "1dda97f8-237c-4b8a-beb3-407e7493f55a",
-          "name": "region_fraser",
-          "description": "Users with access to Fraser Health region data",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "7f1c8e0a-4b51-4f01-99a6-56a655550224",
-          "attributes": {}
-        },
-        {
-          "id": "6972a1e6-b84f-48cb-bf03-748eb652a112",
-          "name": "region_vancouver_coastal",
-          "description": "Users with access to Vancouver Coastal Health region data",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "7f1c8e0a-4b51-4f01-99a6-56a655550224",
-          "attributes": {}
-        },
-        {
-          "id": "76863b0f-bec6-4e6a-812f-0f03559a5bf3",
-          "name": "region_northern",
-          "description": "Users with access to Northern Health region data",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "7f1c8e0a-4b51-4f01-99a6-56a655550224",
-          "attributes": {}
-        },
-        {
-          "id": "ce7eed98-1ec7-4520-993d-8fce57fdf327",
-          "name": "pending",
-          "description": "Default role added to new users",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "7f1c8e0a-4b51-4f01-99a6-56a655550224",
-          "attributes": {}
-        },
-        {
-          "id": "ac29f955-a14d-43d8-a495-e9df0ef892b3",
-          "name": "superuser",
-          "description": "Users able to perform all functions in the application",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "7f1c8e0a-4b51-4f01-99a6-56a655550224",
-          "attributes": {}
-        },
-        {
-          "id": "9a34745e-624e-4783-9f80-498c14ac4b53",
-          "name": "region_interior",
-          "description": "Users with access to Interior Health region data",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "7f1c8e0a-4b51-4f01-99a6-56a655550224",
-          "attributes": {}
-        },
-        {
-          "id": "1a2a8e8e-6a12-4af2-8000-e2c05f6f370c",
-          "name": "health_authority",
-          "description": "Health Authority users dealing with participants and employer sites in their region",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "7f1c8e0a-4b51-4f01-99a6-56a655550224",
-          "attributes": {}
-        },
-        {
-          "id": "97d1bf3b-5e37-49c2-b6da-94a6d9ce4839",
-          "name": "uma_protection",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "7f1c8e0a-4b51-4f01-99a6-56a655550224",
-          "attributes": {}
-        },
-        {
-          "id": "1467da65-9d19-4257-ae87-7fcdc4f54386",
-          "name": "region_vancouver_island",
-          "description": "Users with access to Vancouver Island Health region data",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "7f1c8e0a-4b51-4f01-99a6-56a655550224",
-          "attributes": {}
-        }
-      ],
       "realm-management": [
         {
           "id": "480cdb7d-0d70-46c6-a3ae-b47fbc818f6d",
@@ -575,16 +466,6 @@
           "containerId": "078233db-8f2f-4372-8e2f-678943a599a6",
           "attributes": {}
         }
-      ],
-      "hcap-api": [
-        {
-          "id": "99bc3a28-e56e-4dc2-84b8-6a9ee3ee3fac",
-          "name": "uma_protection",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "5ecd4011-7f08-4618-93e6-e39432c72aac",
-          "attributes": {}
-        }
       ]
     }
   },
@@ -645,32 +526,6 @@
   "webAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister": false,
   "webAuthnPolicyPasswordlessAcceptableAaguids": [],
   "users": [
-    {
-      "id": "22ce0190-1a3c-4ac5-9156-12ae558b024d",
-      "createdTimestamp": 1604520080197,
-      "username": "service-account-hcap-api",
-      "enabled": true,
-      "totp": false,
-      "emailVerified": false,
-      "serviceAccountClientId": "hcap-api",
-      "disableableCredentialTypes": [],
-      "requiredActions": [],
-      "realmRoles": [
-        "offline_access",
-        "uma_authorization"
-      ],
-      "clientRoles": {
-        "account": [
-          "view-profile",
-          "manage-account"
-        ],
-        "hcap-api": [
-          "uma_protection"
-        ]
-      },
-      "notBefore": 0,
-      "groups": []
-    },
     {
       "id": "ff9ff374-645e-4e83-9a09-df1ba52399cc",
       "createdTimestamp": 1605205461323,
@@ -898,158 +753,6 @@
       ]
     },
     {
-      "id": "5ecd4011-7f08-4618-93e6-e39432c72aac",
-      "clientId": "hcap-api",
-      "name": "Health Career Access Program - API",
-      "rootUrl": "https://hcap-server-rupaog-dev.pathfinder.gov.bc.ca",
-      "adminUrl": "https://hcap-server-rupaog-dev.pathfinder.gov.bc.ca",
-      "baseUrl": "https://hcap-server-rupaog-dev.pathfinder.gov.bc.ca",
-      "surrogateAuthRequired": false,
-      "enabled": true,
-      "alwaysDisplayInConsole": false,
-      "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
-      "redirectUris": [
-        "/*"
-      ],
-      "webOrigins": [
-        "*"
-      ],
-      "notBefore": 0,
-      "bearerOnly": false,
-      "consentRequired": false,
-      "standardFlowEnabled": true,
-      "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
-      "serviceAccountsEnabled": true,
-      "authorizationServicesEnabled": true,
-      "publicClient": false,
-      "frontchannelLogout": false,
-      "protocol": "openid-connect",
-      "attributes": {
-        "saml.assertion.signature": "false",
-        "saml.force.post.binding": "false",
-        "saml.multivalued.roles": "false",
-        "saml.encrypt": "false",
-        "saml.server.signature": "false",
-        "saml.server.signature.keyinfo.ext": "false",
-        "exclude.session.state.from.auth.response": "false",
-        "saml_force_name_id_format": "false",
-        "saml.client.signature": "false",
-        "tls.client.certificate.bound.access.tokens": "false",
-        "saml.authnstatement": "false",
-        "display.on.consent.screen": "false",
-        "pkce.code.challenge.method": "S256",
-        "saml.onetimeuse.condition": "false"
-      },
-      "authenticationFlowBindingOverrides": {},
-      "fullScopeAllowed": true,
-      "nodeReRegistrationTimeout": -1,
-      "protocolMappers": [
-        {
-          "id": "a5845e57-b818-463c-97e7-036931a2f5bb",
-          "name": "Client IP Address",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-usersessionmodel-note-mapper",
-          "consentRequired": false,
-          "config": {
-            "user.session.note": "clientAddress",
-            "userinfo.token.claim": "true",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "claim.name": "clientAddress",
-            "jsonType.label": "String"
-          }
-        },
-        {
-          "id": "f4a87111-070d-4f1f-93b3-36314181c098",
-          "name": "Client Host",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-usersessionmodel-note-mapper",
-          "consentRequired": false,
-          "config": {
-            "user.session.note": "clientHost",
-            "userinfo.token.claim": "true",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "claim.name": "clientHost",
-            "jsonType.label": "String"
-          }
-        },
-        {
-          "id": "5c959596-74d9-47f0-aafa-b79e6efdef1d",
-          "name": "Client ID",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-usersessionmodel-note-mapper",
-          "consentRequired": false,
-          "config": {
-            "user.session.note": "clientId",
-            "userinfo.token.claim": "true",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "claim.name": "clientId",
-            "jsonType.label": "String"
-          }
-        }
-      ],
-      "defaultClientScopes": [
-        "web-origins",
-        "role_list",
-        "profile",
-        "roles",
-        "email"
-      ],
-      "optionalClientScopes": [
-        "address",
-        "phone",
-        "offline_access",
-        "microprofile-jwt"
-      ],
-      "authorizationSettings": {
-        "allowRemoteResourceManagement": true,
-        "policyEnforcementMode": "ENFORCING",
-        "resources": [
-          {
-            "name": "Default Resource",
-            "type": "urn:hcap-api:resources:default",
-            "ownerManagedAccess": false,
-            "attributes": {},
-            "_id": "7f2a0828-4ea9-46ca-9170-ded252006a13",
-            "uris": [
-              "/*"
-            ]
-          }
-        ],
-        "policies": [
-          {
-            "id": "b16b8502-5d0f-48a2-b567-15a9effd5fd8",
-            "name": "Default Policy",
-            "description": "A policy that grants access only for users within this realm",
-            "type": "js",
-            "logic": "POSITIVE",
-            "decisionStrategy": "AFFIRMATIVE",
-            "config": {
-              "code": "// by default, grants any permission associated with this policy\n$evaluation.grant();\n"
-            }
-          },
-          {
-            "id": "917cb543-b5fb-44ec-bc57-8812674351d9",
-            "name": "Default Permission",
-            "description": "A permission that applies to the default resource type",
-            "type": "resource",
-            "logic": "POSITIVE",
-            "decisionStrategy": "UNANIMOUS",
-            "config": {
-              "defaultResourceType": "urn:hcap-api:resources:default",
-              "applyPolicies": "[\"Default Policy\"]"
-            }
-          }
-        ],
-        "scopes": [],
-        "decisionStrategy": "UNANIMOUS"
-      }
-    },
-    {
       "id": "98545a41-eff8-4a4f-b889-5aed55d4afb2",
       "clientId": "hcap-api-local",
       "name": "Health Career Access Program - API",
@@ -1060,7 +763,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "bf49b5d9-dd6b-46a1-b011-9ac75337cadb",
       "redirectUris": [
         "/*"
       ],
@@ -1080,8 +783,8 @@
       "protocol": "openid-connect",
       "attributes": {
         "saml.assertion.signature": "false",
-        "saml.force.post.binding": "false",
         "saml.multivalued.roles": "false",
+        "saml.force.post.binding": "false",
         "saml.encrypt": "false",
         "saml.server.signature": "false",
         "saml.server.signature.keyinfo.ext": "false",
@@ -1202,118 +905,6 @@
       }
     },
     {
-      "id": "7f1c8e0a-4b51-4f01-99a6-56a655550224",
-      "clientId": "hcap-fe",
-      "name": "Health Career Access Program - Front-end",
-      "rootUrl": "https://hcap-server-rupaog-dev.pathfinder.gov.bc.ca",
-      "adminUrl": "https://hcap-server-rupaog-dev.pathfinder.gov.bc.ca",
-      "baseUrl": "https://hcap-server-rupaog-dev.pathfinder.gov.bc.ca",
-      "surrogateAuthRequired": false,
-      "enabled": true,
-      "alwaysDisplayInConsole": false,
-      "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
-      "defaultRoles": [
-        "pending"
-      ],
-      "redirectUris": [
-        "/*"
-      ],
-      "webOrigins": [
-        "*"
-      ],
-      "notBefore": 0,
-      "bearerOnly": false,
-      "consentRequired": false,
-      "standardFlowEnabled": true,
-      "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
-      "serviceAccountsEnabled": false,
-      "publicClient": true,
-      "frontchannelLogout": false,
-      "protocol": "openid-connect",
-      "attributes": {
-        "saml.assertion.signature": "false",
-        "saml.force.post.binding": "false",
-        "saml.multivalued.roles": "false",
-        "saml.encrypt": "false",
-        "login_theme": "keycloak",
-        "saml.server.signature": "false",
-        "saml.server.signature.keyinfo.ext": "false",
-        "exclude.session.state.from.auth.response": "false",
-        "saml_force_name_id_format": "false",
-        "saml.client.signature": "false",
-        "tls.client.certificate.bound.access.tokens": "false",
-        "saml.authnstatement": "false",
-        "display.on.consent.screen": "false",
-        "pkce.code.challenge.method": "S256",
-        "saml.onetimeuse.condition": "false"
-      },
-      "authenticationFlowBindingOverrides": {},
-      "fullScopeAllowed": true,
-      "nodeReRegistrationTimeout": -1,
-      "protocolMappers": [
-        {
-          "id": "090bf2f9-1ca4-4c6f-9ac2-441112b081e1",
-          "name": "Client IP Address",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-usersessionmodel-note-mapper",
-          "consentRequired": false,
-          "config": {
-            "user.session.note": "clientAddress",
-            "userinfo.token.claim": "true",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "claim.name": "clientAddress",
-            "jsonType.label": "String"
-          }
-        },
-        {
-          "id": "c66e1a84-bf79-42f8-993c-2826f95661ff",
-          "name": "Client ID",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-usersessionmodel-note-mapper",
-          "consentRequired": false,
-          "config": {
-            "user.session.note": "clientId",
-            "userinfo.token.claim": "true",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "claim.name": "clientId",
-            "jsonType.label": "String"
-          }
-        },
-        {
-          "id": "fc343b1a-38aa-4da0-852b-d83f7646cade",
-          "name": "Client Host",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-usersessionmodel-note-mapper",
-          "consentRequired": false,
-          "config": {
-            "user.session.note": "clientHost",
-            "userinfo.token.claim": "true",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "claim.name": "clientHost",
-            "jsonType.label": "String"
-          }
-        }
-      ],
-      "defaultClientScopes": [
-        "web-origins",
-        "role_list",
-        "profile",
-        "roles",
-        "email"
-      ],
-      "optionalClientScopes": [
-        "address",
-        "phone",
-        "offline_access",
-        "microprofile-jwt"
-      ]
-    },
-    {
       "id": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9",
       "clientId": "hcap-fe-local",
       "name": "Health Career Access Program - Front-end",
@@ -1346,8 +937,8 @@
       "protocol": "openid-connect",
       "attributes": {
         "saml.assertion.signature": "false",
-        "saml.force.post.binding": "false",
         "saml.multivalued.roles": "false",
+        "saml.force.post.binding": "false",
         "saml.encrypt": "false",
         "login_theme": "keycloak",
         "saml.server.signature": "false",
@@ -2045,162 +1636,6 @@
   "enabledEventTypes": [],
   "adminEventsEnabled": false,
   "adminEventsDetailsEnabled": false,
-  "identityProviders": [
-    {
-      "alias": "idir",
-      "displayName": "IDIR",
-      "internalId": "a6e41ec6-1e67-4689-a8d5-5ae3ae395dfd",
-      "providerId": "keycloak-oidc",
-      "enabled": true,
-      "updateProfileFirstLoginMode": "on",
-      "trustEmail": false,
-      "storeToken": false,
-      "addReadTokenRoleOnCreate": false,
-      "authenticateByDefault": false,
-      "linkOnly": false,
-      "firstBrokerLoginFlowAlias": "first broker login",
-      "config": {
-        "userInfoUrl": "https://dev.oidc.gov.bc.ca/auth/realms/idir/protocol/openid-connect/userinfo",
-        "validateSignature": "true",
-        "clientId": "https://dev.oidc.gov.bc.ca/auth/realms/4qjrpzzl",
-        "tokenUrl": "https://dev.oidc.gov.bc.ca/auth/realms/idir/protocol/openid-connect/token",
-        "authorizationUrl": "https://dev.oidc.gov.bc.ca/auth/realms/idir/protocol/openid-connect/auth",
-        "jwksUrl": "https://dev.oidc.gov.bc.ca/auth/realms/idir/protocol/openid-connect/certs",
-        "logoutUrl": "https://dev.oidc.gov.bc.ca/auth/realms/idir/protocol/openid-connect/logout",
-        "clientSecret": "**********",
-        "backchannelSupported": "true",
-        "issuer": "https://dev.oidc.gov.bc.ca/auth/realms/idir",
-        "useJwksUrl": "true"
-      }
-    },
-    {
-      "alias": "bceid",
-      "displayName": "BCeID",
-      "internalId": "3b13eb06-9fed-4fa8-88e5-fee03a5f2054",
-      "providerId": "keycloak-oidc",
-      "enabled": true,
-      "updateProfileFirstLoginMode": "on",
-      "trustEmail": false,
-      "storeToken": false,
-      "addReadTokenRoleOnCreate": false,
-      "authenticateByDefault": false,
-      "linkOnly": false,
-      "firstBrokerLoginFlowAlias": "first broker login",
-      "config": {
-        "userInfoUrl": "https://dev.oidc.gov.bc.ca/auth/realms/_bceid/protocol/openid-connect/userinfo",
-        "validateSignature": "true",
-        "clientId": "https://dev.oidc.gov.bc.ca/auth/realms/4qjrpzzl",
-        "tokenUrl": "https://dev.oidc.gov.bc.ca/auth/realms/_bceid/protocol/openid-connect/token",
-        "authorizationUrl": "https://dev.oidc.gov.bc.ca/auth/realms/_bceid/protocol/openid-connect/auth",
-        "jwksUrl": "https://dev.oidc.gov.bc.ca/auth/realms/_bceid/protocol/openid-connect/certs",
-        "logoutUrl": "https://dev.oidc.gov.bc.ca/auth/realms/_bceid/protocol/openid-connect/logout",
-        "clientSecret": "**********",
-        "backchannelSupported": "true",
-        "issuer": "https://dev.oidc.gov.bc.ca/auth/realms/_bceid",
-        "useJwksUrl": "true"
-      }
-    }
-  ],
-  "identityProviderMappers": [
-    {
-      "id": "fadbe96a-c64e-4acf-bb99-618408932ad1",
-      "name": "displayName",
-      "identityProviderAlias": "idir",
-      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
-      "config": {
-        "claim": "displayName",
-        "user.attribute": "displayName"
-      }
-    },
-    {
-      "id": "1acb9491-fe11-44d7-9798-1bae4b75db7b",
-      "name": "idir_guid",
-      "identityProviderAlias": "idir",
-      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
-      "config": {
-        "claim": "idir_userid",
-        "user.attribute": "idir_user_guid"
-      }
-    },
-    {
-      "id": "f433312b-c4db-4689-8237-a4876917176c",
-      "name": "firstName",
-      "identityProviderAlias": "idir",
-      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
-      "config": {
-        "claim": "firstName",
-        "user.attribute": "firstName"
-      }
-    },
-    {
-      "id": "7598109b-dd08-4067-b829-5e4a2afc196f",
-      "name": "displayName",
-      "identityProviderAlias": "bceid",
-      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
-      "config": {
-        "claim": "displayName",
-        "user.attribute": "displayName"
-      }
-    },
-    {
-      "id": "682e4271-04bc-49b7-8531-eb76f1383786",
-      "name": "email",
-      "identityProviderAlias": "idir",
-      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
-      "config": {
-        "claim": "email",
-        "user.attribute": "email"
-      }
-    },
-    {
-      "id": "626b36bc-e9ee-4c5e-8909-eda83f2dfaf6",
-      "name": "idir_userid",
-      "identityProviderAlias": "idir",
-      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
-      "config": {
-        "claim": "idir_userid",
-        "user.attribute": "idir_userid"
-      }
-    },
-    {
-      "id": "a58f0725-87dd-4e13-97b1-f401f92d07e3",
-      "name": "email",
-      "identityProviderAlias": "bceid",
-      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
-      "config": {
-        "claim": "email",
-        "user.attribute": "email"
-      }
-    },
-    {
-      "id": "5e0b132b-d871-4b3e-8cfd-17eb2420d241",
-      "name": "lastName",
-      "identityProviderAlias": "idir",
-      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
-      "config": {
-        "claim": "lastName",
-        "user.attribute": "lastName"
-      }
-    },
-    {
-      "id": "2db22f4e-df5b-4fa4-bca5-0599b8a0bd82",
-      "name": "username",
-      "identityProviderAlias": "idir",
-      "identityProviderMapper": "oidc-username-idp-mapper",
-      "config": {
-        "template": "${CLAIM.preferred_username}@${ALIAS}"
-      }
-    },
-    {
-      "id": "b6a220d1-9d3f-467b-990c-b1f72b3533cb",
-      "name": "username",
-      "identityProviderAlias": "bceid",
-      "identityProviderMapper": "oidc-username-idp-mapper",
-      "config": {
-        "template": "${CLAIM.preferred_username}@${ALIAS}"
-      }
-    }
-  ],
   "components": {
     "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy": [
       {

@@ -32,33 +32,29 @@ jobs:
           wait-on-timeout: 120
           wait-on: 'http://localhost:4000'
 
-  test:
-    name: Run NPM Test (e2e)
-    runs-on: ubuntu-latest
-    container: node:14-alpine
-    services:
-      postgres:
-        image: postgres:13-alpine
-        env:
-          POSTGRES_DB: db_test
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: admin
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+  endpoints-test:
+    runs-on: ubuntu-16.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v1
 
-      - name: NPM Test
-        working-directory: ./server
-        env:
-          POSTGRES_DB: db_test
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: admin
+      - name: Make env
         run: |
-          npm ci
-          npm test
+          cat > .env << EOF
+          ${{ secrets.ENVFILE }}
+          EOF
+      - name: Build Locally
+        run: make local-kc-build
+
+      - name: Run
+        run: make local-kc-run
+
+      - name: Check endpoint
+        uses: jtalk/url-health-check-action@v1.5
+        with:
+          url: http://localhost:8081/api/v1/keycloak-realm-client-info
+          max-attempts: 3
+          retry-delay: 10s
+
+      - name: Run tests
+        run: make local-server-tests

@@ -9,9 +9,9 @@ on:
     branches:
       - master
 
-
 jobs:
-  cypress-test:
+  tests:
+    name: Cypress / Jest
     runs-on: ubuntu-16.04
     steps:
       - name: Checkout
@@ -32,29 +32,8 @@ jobs:
           wait-on-timeout: 120
           wait-on: 'http://localhost:4000'
 
-  endpoints-test:
-    runs-on: ubuntu-16.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-
-      - name: Make env
-        run: |
-          cat > .env << EOF
-          ${{ secrets.ENVFILE }}
-          EOF
-      - name: Build Locally
-        run: make local-kc-build
-
-      - name: Run
-        run: make local-kc-run
-
-      - name: Check endpoint
-        uses: jtalk/url-health-check-action@v1.5
-        with:
-          url: http://localhost:8081/api/v1/keycloak-realm-client-info
-          max-attempts: 3
-          retry-delay: 10s
-
-      - name: Run tests
+      - name: Jest run
         run: make local-server-tests
+
+
+

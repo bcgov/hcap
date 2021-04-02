@@ -70,6 +70,20 @@ class PaginatedParticipantsFinder {
   }
 
   async run() {
+    if (typeof this.context.siteID === 'number') {
+      // This query is going to need to be slimmed down. In order for sortation to
+      // work properly, we are going to need to run this query before the sorting
+      // takes place, and find some way to add it as a sortable field. The other
+      // option would be to refactor the participants helper.
+      const distances = await this.context.dbClient.db.query(
+        `select ppt.id, ST_DistanceSphere(ppt.coords, site.coords) as distance from participants as ppt, employer_sites as site where site.body->'siteId'='${this.context.siteID}' order by distance ASC;`,
+      );
+      console.log('distances');
+      console.log(distances);
+
+      console.log('testing');
+    }
+
     return run(this.context);
   }
 }
@@ -77,6 +91,11 @@ class PaginatedParticipantsFinder {
 class FilteredParticipantsFinder {
   constructor(context) {
     this.context = context;
+  }
+
+  getDistances(siteID) {
+    this.context.siteID = !!siteID && Number(siteID);
+    return new FilteredParticipantsFinder(this.context);
   }
 
   paginate(pagination, sortField) {

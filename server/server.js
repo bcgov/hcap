@@ -168,10 +168,11 @@ app.get(`${apiBaseUrl}/participants`,
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantQuerySchema, req.query);
+
     const user = req.hcapUserInfo;
     const {
       offset, regionFilter, sortField, sortDirection,
-      fsaFilter, lastNameFilter, emailFilter, statusFilters,
+      fsaFilter, lastNameFilter, emailFilter, siteSelector, statusFilters,
     } = req.query;
     const result = await getParticipants(
       user,
@@ -185,6 +186,7 @@ app.get(`${apiBaseUrl}/participants`,
       fsaFilter,
       lastNameFilter,
       emailFilter,
+      siteSelector,
       statusFilters,
     );
     logger.info({

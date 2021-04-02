@@ -45,6 +45,7 @@ const sortOrder = [
   'phoneNumber',
   'emailAddress',
   'preferredLocation',
+  'distance',
   'interested',
   'nonHCAP',
   'crcClear',
@@ -120,6 +121,7 @@ export default () => {
   const [pagination, setPagination] = useState({ currentPage: 0 });
   const [columns, setColumns] = useState(defaultColumns);
   const [locationFilter, setLocationFilter] = useState(null);
+  const [siteSelector, setSiteSelector] = useState(null);
   const [fsaFilter, setFsaFilter] = useState(null);
   const [fsaText, setFsaText] = useState(null);
   const [lastNameFilter, setLastNameFilter] = useState(null);
@@ -155,6 +157,14 @@ export default () => {
 
   const handleLocationFilter = (value) => {
     setLocationFilter(value);
+    setPagination(oldPagination => ({
+      ...oldPagination,
+      currentPage: 0,
+    }));
+  };
+
+  const handleSiteSelector = (value) => {
+    setSiteSelector(value);
     setPagination(oldPagination => ({
       ...oldPagination,
       currentPage: 0,
@@ -230,7 +240,8 @@ export default () => {
   };
 
   const fetchParticipants = async (offset, regionFilter, fsaFilter, lastNameFilter,
-    emailFilter, sortField, sortDirection, statusFilters) => {
+    emailFilter, sortField, sortDirection, siteSelector, statusFilters) => {
+      console.log(`siteSelector is ${siteSelector}`);
     const queries = [
       sortField && `sortField=${sortField}`,
       offset && `offset=${offset}`,
@@ -238,6 +249,7 @@ export default () => {
       regionFilter && `regionFilter=${regionFilter}`,
       fsaFilter && `fsaFilter=${fsaFilter}`,
       lastNameFilter && `lastNameFilter=${lastNameFilter}`,
+      siteSelector && `siteSelector=${siteSelector}`,
       emailFilter && `emailFilter=${emailFilter}`,
       ...statusFilters && statusFilters.map(status => `statusFilters[]=${status}`),
     ].filter(item => item).join('&');
@@ -349,6 +361,7 @@ export default () => {
       emailFilter,
       order.field,
       order.direction,
+      siteSelector,
       tabs[tabValue].statuses,
     );
 
@@ -403,6 +416,7 @@ export default () => {
           resultColumns.push(
             { id: 'phoneNumber', name: 'Phone Number' },
             { id: 'emailAddress', name: 'Email Address' },
+            { id: 'distance', name: 'Site Distance' },
           )
         }
 
@@ -430,6 +444,7 @@ export default () => {
         emailFilter,
         order.field,
         order.direction,
+        siteSelector,
         tabs[tabValue].statuses,
       );
 
@@ -474,7 +489,8 @@ export default () => {
       });
     };
     runAsync();
-  }, [pagination.currentPage, locationFilter, fsaFilter, lastNameFilter, emailFilter, order, tabValue]);
+    console.log(`siteSelector is: ${siteSelector}`);
+  }, [pagination.currentPage, locationFilter, siteSelector, fsaFilter, lastNameFilter, emailFilter, order, tabValue]);
 
   const handlePageChange = (oldPage, newPage) => {
     setPagination(pagination => ({ ...pagination, currentPage: newPage }));
@@ -655,6 +671,7 @@ export default () => {
                   }
                 </TextField>
               </Box>
+              
             </Grid>
             <Grid item>
               <Box pl={2}>
@@ -696,6 +713,30 @@ export default () => {
                   onChange={({ target }) => setEmailText(target.value)}
                   placeholder='Email'
                 />}
+              </Box>
+            </Grid>
+            <Grid item style={{ 'marginLeft': 20 }}>
+              <Typography>Site for distance calculation: </Typography>
+              <Box>
+                <TextField
+                  select
+                  fullWidth
+                  variant="filled"
+                  inputProps={{ displayEmpty: true }}
+                  value={siteSelector || ''}
+                  disabled={isLoadingData || sites.length === 1}
+                  onChange={({ target }) => handleSiteSelector(target.value)}
+                  aria-label="site selector"
+                >
+                  {
+                    sites.length === 1 ?
+                      <MenuItem value={sites[0].siteId}>{sites[0].siteName}</MenuItem>
+                      :
+                      [{siteName:'Select Site', siteId: null}, ...sites].map((option, index) => (
+                        <MenuItem key={option.siteId} value={index === 0 ? '' : option.siteId} aria-label={option.siteName}>{option.siteName}</MenuItem>
+                      ))
+                  }
+                </TextField>
               </Box>
             </Grid>
             {tabValue === "Hired Candidates" && <Grid container item xs={2} style={{ 'marginLeft': 'auto', 'marginRight': 20 }}>

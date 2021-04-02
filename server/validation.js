@@ -368,6 +368,7 @@ const ParticipantQuerySchema = yup.object().shape({
   regionFilter: yup.string().oneOf(healthRegions, 'Invalid region'),
   sortField: yup.string().oneOf(sortFields, 'Invalid sort field'),
   sortDirection: yup.string().oneOf(orderDirections, 'Invalid sort direction'),
+  siteSelector: yup.string().matches(/^\d+$/, 'Site Selector must be a `number` type'),
   offset: yup.string().matches(/^\d+$/, 'Offset must be a `number` type'),
   statusFilters: yup.array().of(
     yup.string().oneOf(participantStatuses, 'Invalid status'),

@@ -116,7 +116,7 @@ const updateParticipant = async (participantInfo) => {
 };
 
 const getParticipants = async (user, pagination, sortField,
-  regionFilter, fsaFilter, lastNameFilter, emailFilter, statusFilters) => {
+  regionFilter, fsaFilter, lastNameFilter, emailFilter, siteSelector, statusFilters) => {
   const participantsFinder = new ParticipantsFinder(dbClient, user);
 
   // While an employer, if we add 'open' as one of the status filters we won't
@@ -127,6 +127,9 @@ const getParticipants = async (user, pagination, sortField,
   const filterLastNameAndEmail = user.isSuperUser || user.isMoH
     || ((user.isHA || user.isEmployer) && !statusFilters.includes('open'));
 
+  console.log('Hi this is me running get participants. My siteFilter value is here: ');
+  console.log(siteSelector);
+
   const participants = await participantsFinder
     .filterRegion(regionFilter)
     .filterParticipantFields({
@@ -135,6 +138,7 @@ const getParticipants = async (user, pagination, sortField,
       emailAddress: filterLastNameAndEmail && emailFilter,
     })
     .filterStatus(statusFilters)
+    .getDistances(siteSelector)
     .paginate(pagination, sortField)
     .run();
 

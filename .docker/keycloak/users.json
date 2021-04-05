@@ -18,11 +18,11 @@
         "manage": true
       }
     },
-    "mappings": [
+    "roles": [
       {
-        "id": "8ff4b3d8-8854-46ab-9ff2-0f13a577763f",
-        "name": "superuser",
-        "description": "Users able to perform all functions in the application",
+        "id": "1fb5d3b3-ef4f-422d-8901-1b3e40451534",
+        "name": "pending",
+        "description": "Default role added to new users",
         "composite": false,
         "clientRole": true,
         "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
@@ -31,8 +31,8 @@
   },
   {
     "user": {
-      "id": "029fb9e3-0408-412a-b367-31d93bfdd065",
-      "createdTimestamp": 1617311976507,
+      "id": "93af9fd7-1100-4767-8eaf-9b0fb1040c05",
+      "createdTimestamp": 1617649072694,
       "username": "test-employer",
       "enabled": true,
       "totp": false,
@@ -41,9 +41,7 @@
       "lastName": "Doe",
       "email": "john.doe@test.com",
       "disableableCredentialTypes": [],
-      "requiredActions": [
-        "UPDATE_PASSWORD"
-      ],
+      "requiredActions": [],
       "notBefore": 0,
       "access": {
         "manageGroupMembership": true,
@@ -53,11 +51,44 @@
         "manage": true
       }
     },
-    "mappings": [
+    "roles": [
       {
         "id": "b1b6a9d7-ad35-423f-873b-96c2e146196b",
         "name": "employer",
         "description": "Employer users who interact with site and participant data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      }
+    ]
+  },
+  {
+    "user": {
+      "id": "31f96ec6-4fea-4ac7-b469-80194065f0c5",
+      "createdTimestamp": 1617649193439,
+      "username": "test-superuser",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": true,
+      "firstName": "Carl",
+      "lastName": "Smith",
+      "email": "carl.smith@test.com",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "notBefore": 0,
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": true,
+        "manage": true
+      }
+    },
+    "roles": [
+      {
+        "id": "8ff4b3d8-8854-46ab-9ff2-0f13a577763f",
+        "name": "superuser",
+        "description": "Users able to perform all functions in the application",
         "composite": false,
         "clientRole": true,
         "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"

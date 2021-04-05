@@ -28,6 +28,6 @@ users="[]"
 
 jq -c '.[]' -r .docker/keycloak/users.json | while read i; do
     userId=$(echo $i | jq -r '.id')
-    users=$(echo $users | jq ". + [{ \"user\": $i, \"mappings\": $(exportUserRoleMappings $userId) }]")
+    users=$(echo $users | jq ". + [{ \"user\": $i, \"roles\": $(exportUserRoleMappings $userId) }]")
     echo $users | jq . > .docker/keycloak/users.json
 done

@@ -1,7 +1,7 @@
 const axios = require('axios');
 const querystring = require('querystring');
 
-const superuser = { username: 'test-admin', password: 'password' };
+const superuser = { username: 'test-superuser', password: 'password' };
 const employer = { username: 'test-employer', password: 'password' };
 
 const getKeycloakToken = async ({ username, password }) => {

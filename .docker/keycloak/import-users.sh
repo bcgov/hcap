@@ -16,6 +16,15 @@ function importUser() {
         "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users"
 }
 
+function setPassword() {
+    curl --fail \
+        -X PUT \
+        -H "Authorization: bearer ${accessToken}" \
+        -H "Content-Type: application/json" \
+        -d '{"type":"password","value":"password","temporary":false}' \
+        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/reset-password"
+}
+
 function importRoleMappings() {
     curl --fail \
         -H "Authorization: bearer ${accessToken}" \
@@ -24,8 +33,35 @@ function importRoleMappings() {
         "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/${KEYCLOAK_FE_ID}"
 }
 
+function deleteRoleMappings() {
+    curl --fail \
+        -X DELETE \
+        -H "Authorization: bearer ${accessToken}" \
+        -H "Content-Type: application/json" \
+        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/${KEYCLOAK_FE_ID}"
+}
+
+function exportUsers() {
+    curl --fail --silent \
+        -H "Authorization: bearer ${accessToken}" \
+        -H "Content-Type: application/json" \
+        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users"
+}
+
 jq -c '.[]' .docker/keycloak/users.json | while read i; do
     importUser "$(echo $i | jq -c '.user')"
-    importRoleMappings $(echo $i | jq -r '.user | .id') "$(echo $i | jq -c '.mappings')"
 done
 
+# everytime we import users KC will generate new ids for them, therefore we need to export again
+# to catch up those new ids
+exportUsers | jq . > .docker/keycloak/users-only-tmp.json
+
+jq -c '.[]' .docker/keycloak/users.json | while read i; do
+    userName=$(echo $i | jq -r '.user | .username')
+    id=$(jq ".[] | select(.username==\"$userName\")" .docker/keycloak/users-only-tmp.json | jq -r .id)
+    deleteRoleMappings $id
+    setPassword $id
+    importRoleMappings $id "$(echo $i | jq -c '.roles')"
+done
+
+rm .docker/keycloak/users-only-tmp.json

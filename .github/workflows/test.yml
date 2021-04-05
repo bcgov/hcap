@@ -39,6 +39,9 @@ jobs:
         with:
           time: '30s'
 
+      - name: Feed KC users
+        run: make kc-export-users
+
       - name: Jest run
         run: make local-server-tests
 

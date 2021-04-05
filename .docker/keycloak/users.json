@@ -1,0 +1,67 @@
+[
+  {
+    "user": {
+      "id": "2e334364-4fb7-4b68-86c4-6a757e710ea7",
+      "createdTimestamp": 1617239192807,
+      "username": "test-admin",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": false,
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "notBefore": 0,
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": true,
+        "manage": true
+      }
+    },
+    "mappings": [
+      {
+        "id": "8ff4b3d8-8854-46ab-9ff2-0f13a577763f",
+        "name": "superuser",
+        "description": "Users able to perform all functions in the application",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      }
+    ]
+  },
+  {
+    "user": {
+      "id": "029fb9e3-0408-412a-b367-31d93bfdd065",
+      "createdTimestamp": 1617311976507,
+      "username": "test-employer",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": true,
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@test.com",
+      "disableableCredentialTypes": [],
+      "requiredActions": [
+        "UPDATE_PASSWORD"
+      ],
+      "notBefore": 0,
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": true,
+        "manage": true
+      }
+    },
+    "mappings": [
+      {
+        "id": "b1b6a9d7-ad35-423f-873b-96c2e146196b",
+        "name": "employer",
+        "description": "Employer users who interact with site and participant data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      }
+    ]
+  }
+]

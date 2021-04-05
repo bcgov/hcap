@@ -19,14 +19,13 @@ print-status:
 	@echo "TOOLS_NAMESPACE: $(TOOLS_NAMESPACE)"
 	@echo "COMMIT_SHA: $(COMMIT_SHA)"
 
-kc-export-json:
-	@docker exec -it $(APP_NAME)-keycloak opt/jboss/keycloak/bin/standalone.sh -Dkeycloak.migration.action=export \
-		-Dkeycloak.migration.provider=singleFile \
-		-Dkeycloak.migration.realmName=$(KEYCLOAK_REALM) \
-		-Dkeycloak.migration.usersExportStrategy=REALM_FILE \
-		-Dkeycloak.migration.file=/tmp/realm-testing.json \
-		-Djboss.socket.binding.port-offset=100
-	@docker cp $(APP_NAME)-keycloak:/tmp/realm-testing.json .docker/keycloak/realm-testing.json
+# Keycloak
+
+kc-export-users:
+	@sh .docker/keycloak/export-users.sh
+
+kc-import-users:
+	@sh .docker/keycloak/import-users.sh
 
 # Migration (depends on DATABASE_URL)
 

@@ -9,14 +9,14 @@ accessToken=$(
         | jq -r '.access_token'
 )
 
-function exportUsers {
+function exportUsers() {
     curl --fail --silent \
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \
         "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users"
 }
 
-function exportUserRoleMappings {
+function exportUserRoleMappings() {
     curl --fail --silent \
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \

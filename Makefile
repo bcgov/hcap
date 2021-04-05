@@ -22,10 +22,10 @@ print-status:
 # Keycloak
 
 kc-export-users:
-	@sh .docker/keycloak/export-users.sh
+	@/bin/bash .docker/keycloak/export-users.sh
 
 kc-import-users:
-	@sh .docker/keycloak/import-users.sh
+	@/bin/bash .docker/keycloak/import-users.sh
 
 # Migration (depends on DATABASE_URL)
 
@@ -70,7 +70,7 @@ local-clean:
 	@docker-compose -f docker-compose.dev.yml down -v
 
 local-server-tests:
-	@sh .docker/keycloak/import-users.sh	
+	@/bin/bash .docker/keycloak/import-users.sh	
 	@echo "Running tests in local app container"
 	@docker exec $(APP_NAME)-server npm test
 

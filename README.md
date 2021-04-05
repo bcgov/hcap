@@ -55,9 +55,17 @@ To tear down your environment:
 - Run `make local-close`
 - Run `make local-clean`
 
+To create KC test users as well as assign roles:
+- Run `make local-kc-build`
+- Run `make local-kc-run`
+- Run `make kc-import-users`
+Go to `http://keycloak.local.freshworks.club:8080/auth` console and add users/assign roles under the client `hcap-fe-local`
+- Run `make kc-export-users` to save your changes
+`409 Conflict` errors are ok if the user already exists, only the role change will be applied
+
 To run server tests:
 - Make sure containers are running
-  - `make local-run`
+  - `make local-kc-run`
 - Shell into the server container by running
   - `make local-server-workspace`
   - `npm test`

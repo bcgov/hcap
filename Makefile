@@ -70,6 +70,7 @@ local-clean:
 	@docker-compose -f docker-compose.dev.yml down -v
 
 local-server-tests:
+	@sh .docker/keycloak/import-users.sh	
 	@echo "Running tests in local app container"
 	@docker exec $(APP_NAME)-server npm test
 

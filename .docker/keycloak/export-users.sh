@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 accessToken=$(
     curl -s --fail \
         -d "username=${KEYCLOAK_SA_USERNAME}" \

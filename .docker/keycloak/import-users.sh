@@ -9,7 +9,7 @@ accessToken=$(
         | jq -r '.access_token'
 )
 
-function importUser() {
+function importUser {
     curl --fail \
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \
@@ -17,7 +17,7 @@ function importUser() {
         "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users"
 }
 
-function setPassword() {
+function setPassword {
     curl --fail \
         -X PUT \
         -H "Authorization: bearer ${accessToken}" \
@@ -26,7 +26,7 @@ function setPassword() {
         "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/reset-password"
 }
 
-function importRoleMappings() {
+function importRoleMappings {
     curl --fail \
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \
@@ -34,7 +34,7 @@ function importRoleMappings() {
         "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/${KEYCLOAK_FE_ID}"
 }
 
-function deleteRoleMappings() {
+function deleteRoleMappings {
     curl --fail \
         -X DELETE \
         -H "Authorization: bearer ${accessToken}" \
@@ -42,7 +42,7 @@ function deleteRoleMappings() {
         "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/${KEYCLOAK_FE_ID}"
 }
 
-function exportUsers() {
+function exportUsers {
     curl --fail --silent \
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \

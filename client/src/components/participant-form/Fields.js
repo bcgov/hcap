@@ -263,6 +263,18 @@ export const Fields = ({ isDisabled }) => {
             Use the submit button to complete your expression of interest. We will contact you within 3
             weeks with more information.
           </Typography>
+          <Typography variant="body1" gutterBottom>
+            <b>Need Help?</b>
+          </Typography>
+          <Typography variant="body2" paragraph>
+            Contact a Health Career Access Program agent.
+            <br />
+            <Link href="tel:+18773740463">
+              Dial 1-877-374-0463
+            </Link>
+            <br />
+            <b>Service is available from 8:00 am - 4:30 pm Pacific Time</b>
+          </Typography>
         </Grid>}
       </Grid>
     </Card>

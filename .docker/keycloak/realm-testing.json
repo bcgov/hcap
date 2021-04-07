@@ -920,7 +920,9 @@
         "pending"
       ],
       "redirectUris": [
-        "/*"
+        "http://hcapemployers.local.freshworks.club:4000/*",
+        "/*",
+        "http://hcapparticipants.local.freshworks.club:4000/*"
       ],
       "webOrigins": [
         "*"

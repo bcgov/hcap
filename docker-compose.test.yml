@@ -76,6 +76,7 @@ services:
 
   keycloak:
     image: ${APP_NAME}-keycloak
+    container_name: ${APP_NAME}-keycloak
     build:
       context: ./.docker/keycloak
       dockerfile: Dockerfile.test

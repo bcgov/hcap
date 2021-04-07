@@ -9,9 +9,9 @@ on:
     branches:
       - master
 
-
 jobs:
-  cypress-test:
+  tests:
+    name: Cypress / Jest
     runs-on: ubuntu-16.04
     steps:
       - name: Checkout
@@ -32,33 +32,15 @@ jobs:
           wait-on-timeout: 120
           wait-on: 'http://localhost:4000'
 
-  test:
-    name: Run NPM Test (e2e)
-    runs-on: ubuntu-latest
-    container: node:14-alpine
-    services:
-      postgres:
-        image: postgres:13-alpine
-        env:
-          POSTGRES_DB: db_test
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: admin
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Run
+        run: make local-kc-run
+      - name: Sleep for 30 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '30s'
 
-      - name: NPM Test
-        working-directory: ./server
-        env:
-          POSTGRES_DB: db_test
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: admin
-        run: |
-          npm ci
-          npm test
+      - name: Jest run
+        run: make local-server-tests
+
+
+

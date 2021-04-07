@@ -19,6 +19,14 @@ print-status:
 	@echo "TOOLS_NAMESPACE: $(TOOLS_NAMESPACE)"
 	@echo "COMMIT_SHA: $(COMMIT_SHA)"
 
+# Keycloak
+
+kc-export-users:
+	@/bin/bash .docker/keycloak/export-users.sh
+
+kc-import-users:
+	@/bin/bash .docker/keycloak/import-users.sh
+
 # Migration (depends on DATABASE_URL)
 
 migrate-up:
@@ -43,7 +51,7 @@ local-kc-build:
 
 local-kc-run:
 	@echo "Starting test local app container"
-	@docker-compose -f docker-compose.test.yml up
+	@docker-compose -f docker-compose.test.yml up -d
 
 local-kc-down:
 	@echo "Stopping local app container"
@@ -62,8 +70,9 @@ local-clean:
 	@docker-compose -f docker-compose.dev.yml down -v
 
 local-server-tests:
+	@/bin/bash .docker/keycloak/import-users.sh	
 	@echo "Running tests in local app container"
-	@docker exec -it $(APP_NAME)-server npm test
+	@docker exec $(APP_NAME)-server npm test
 
 local-cypress-tests:
 	@echo "Running all available Cypress tests"

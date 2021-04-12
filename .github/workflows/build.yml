@@ -6,8 +6,8 @@ on:
       - dev
 
 env:
-  CLUSTER: https://console.pathfinder.gov.bc.ca:8443
-  AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+  CLUSTER: https://api.silver.devops.gov.bc.ca:6443
+  AUTH_TOKEN: ${{ secrets.AUTH_TOKEN_OCP4 }}
   PROJECT: hcap
 
 jobs:

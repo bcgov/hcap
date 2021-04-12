@@ -4,8 +4,10 @@
 export $(shell sed 's/=.*//' .env)
 .DEFAULT_GOAL:=print-status
 export APP_NAME:=hcap
-export OS_NAMESPACE_PREFIX:=rupaog
+export OS_NAMESPACE_PREFIX:=f047a2
 export OS_NAMESPACE_SUFFIX?=dev
+export IMAGE_REGISTRY?=image-registry.apps.silver.devops.gov.bc.ca
+export APP_BASE_IMAGE?=node:14-alpine
 export COMMIT_SHA:=$(shell git rev-parse --short=7 HEAD)
 export TARGET_NAMESPACE=$(OS_NAMESPACE_PREFIX)-$(OS_NAMESPACE_SUFFIX)
 export TOOLS_NAMESPACE=$(OS_NAMESPACE_PREFIX)-tools
@@ -102,9 +104,16 @@ tag-prod:
 
 # OpenShift Aliases
 
-server-prep: # TODO: Move role binding command to a server prep template
+add-role:
+	@oc policy add-role-to-user admin system:serviceaccount:$(TARGET_NAMESPACE):default -n $(TOOLS_NAMESPACE)
+
+server-prep:
 	@oc process -f openshift/keycloak.prep.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -
-	@oc policy add-role-to-user system:image-puller system:serviceaccount:$(TARGET_NAMESPACE):default -n $(TOOLS_NAMESPACE)
+
+push-base-image:
+	@docker login -u `oc whoami` -p `oc whoami --show-token` $(IMAGE_REGISTRY)
+	@docker image tag $(APP_BASE_IMAGE) $(IMAGE_REGISTRY)/$(TOOLS_NAMESPACE)/$(APP_BASE_IMAGE)
+	@docker push $(IMAGE_REGISTRY)/$(TOOLS_NAMESPACE)/$(APP_BASE_IMAGE)
 
 server-create:
 	@oc process -f openshift/server.bc.yml -p APP_NAME=$(APP_NAME) | oc apply -n $(TOOLS_NAMESPACE) -f -

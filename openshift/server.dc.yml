@@ -140,7 +140,7 @@ objects:
                 - name: MONGO_REPLICA
                   value: rs0
               name: ${APP_NAME}-server
-              image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
+              image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
               ports:
                 - containerPort: "${{SERVER_PORT}}"
                   protocol: TCP

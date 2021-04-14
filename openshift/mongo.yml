@@ -52,7 +52,7 @@ parameters:
   required: true
 - name: MONGODB_IMAGE
   description: A reference to a supported MongoDB Docker image
-  value: image-registry.openshift-image-registry.svc:5000/openshift/mongodb
+  value: registry.hub.docker.com/library/mongo
   required: true
 - name: MONGODB_IMAGE_TAG
   description: Name of the MongoDB tag that should be used

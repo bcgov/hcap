@@ -1,4 +1,4 @@
-Kind: Template
+kind: Template
 apiVersion: v1
 labels:
   app: ${APP_NAME}
@@ -51,7 +51,7 @@ parameters:
   from: "[a-zA-Z0-9]{255}"
   required: true
 - name: MONGODB_IMAGE
-  description: A reference to a supported MongoDB Docker image
+  description: A reference to a supported MongoDB image
   value: image-registry.openshift-image-registry.svc:5000/openshift/mongodb
   required: true
 - name: MONGODB_IMAGE_TAG
@@ -110,12 +110,15 @@ objects:
     selector:
       name: ${APP_NAME}-mongodb
 - kind: StatefulSet
-  apiVersion: apps/v1beta1
+  apiVersion: apps/v1
   metadata:
     name: ${APP_NAME}-mongodb
   spec:
     serviceName: ${APP_NAME}-mongodb-internal
-    replicas: ${MONGODB_REPLICAS}
+    replicas: ${{MONGODB_REPLICAS}}
+    selector:
+      matchLabels:
+        name: ${APP_NAME}-mongodb
     template:
       metadata:
         labels:
@@ -128,7 +131,7 @@ objects:
                 matchExpressions:
                 - key: name
                   operator: In
-                  values: 
+                  values:
                   - ${APP_NAME}-mongodb
               topologyKey: kubernetes.io/hostname
         containers:
@@ -199,4 +202,3 @@ objects:
         resources:
           requests:
             storage: ${VOLUME_CAPACITY}
-

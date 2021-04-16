@@ -24,7 +24,7 @@ parameters:
     required: true
   - name: MONGODB_REPLICAS
     description: Number of MongoDB replica pods
-    value: "2"
+    value: "1"
     required: true
   - name: MONGODB_USER
     description: Username for MongoDB user that will be used for accessing the database

@@ -59,6 +59,13 @@ objects:
     metadata:
       name: ${APP_NAME}-patroni
     spec:
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2Gi
+        limits:
+          cpu: "1"
+          memory: 4Gi
       output:
         to:
           kind: ImageStreamTag

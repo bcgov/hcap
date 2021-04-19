@@ -8,23 +8,23 @@ parameters:
     required: true
   - name: MEMORY_REQUEST
     description: Amount of Memory to Request.
-    value: 2Gi
+    value: 1Gi
     required: true
   - name: MEMORY_LIMIT
     description: Amount of Memory to Limit.
-    value: 5Gi
+    value: 2Gi
     required: true
   - name: CPU_REQUEST
     description: Amount of CPU to Request.
-    value: 500m
+    value: 250m
     required: true
   - name: CPU_LIMIT
     description: Amount of CPU to Limit.
-    value: "2"
+    value: 500m
     required: true
   - name: MONGODB_REPLICAS
     description: Number of MongoDB replica pods
-    value: "1"
+    value: "3"
     required: true
   - name: MONGODB_USER
     description: Username for MongoDB user that will be used for accessing the database

@@ -121,7 +121,14 @@ server-deploy:
 	@oc tag $(APP_NAME)-server:$(COMMIT_SHA) $(APP_NAME)-server:$(OS_NAMESPACE_SUFFIX)
 
 mongo-prep:
-	@oc process -f openshift/mongo.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -
+	@oc process -f openshift/mongo.yml -p APP_NAME=$(APP_NAME) | oc apply -n $(TARGET_NAMESPACE) -f -
+
+build-db-backup:
+	@oc -n $(TOOLS_NAMESPACE) process -f openshift/universal.bc.yml -p NAME=$(APP_NAME)-backup -p TAG="latest" -p BASE_IMAGE_NAME="postgresql-12-rhel7" -p BASE_IMAGE_TAG="latest" -p BASE_IMAGE_REPO="registry.redhat.io/rhscl/" -p SOURCE_REPOSITORY_URL="https://github.com/BCDevOps/backup-container.git" -p SOURCE_REPOSITORY_REF="master" -p SOURCE_CONTEXT_DIR="docker" | oc -n $(TOOLS_NAMESPACE) apply -f -
+	@oc -n $(TOOLS_NAMESPACE) start-build bc/$(APP_NAME)-backup --wait
+
+deploy-db-backup:
+	@oc -n $(TARGET_NAMESPACE) process -f openshift/backup.dc.yml -p NAME=$(APP_NAME)-backup -p IMAGE_STREAM_TAG=$(APP_NAME)-backup:latest -p BUILD_NAMESPACE=$(TOOLS_NAMESPACE) -p DB_NAME=$(APP_NAME)  | oc -n $(TARGET_NAMESPACE) apply -f -
 
 db-prep:
 	@oc process -f openshift/patroni.prep.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -

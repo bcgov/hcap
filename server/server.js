@@ -65,6 +65,17 @@ app.use(helmet({
   },
 }));
 
+app.use(helmet.cors({
+  accessControlAllowOrigin: 'https://*.silver.devops.gov.bc.ca',
+  accessControlAllowCredentials: 'BASIC',
+  accessControlExposeHeaders: 'WWW-Authenticate',
+  accessControlMaxAge: '86400',
+  accessControlAllowMethods: 'POST, PUT, GET',
+  accessControlAllowHeaders: 'Authorization, Referer',
+  accessControlRequestMethod: 'OPTIONS',
+  accessControlRequestHeaders: '',
+}));
+
 app.use(keycloak.expressMiddleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));

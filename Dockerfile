@@ -7,7 +7,8 @@ WORKDIR /client
 COPY client/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 COPY client/. .
-RUN INLINE_RUNTIME_CHUNK=false npm run build
+ARG API_HOST 
+RUN INLINE_RUNTIME_CHUNK=false REACT_APP_API_URL=${API_HOST} npm run build
 
 # Server
 FROM node:14-alpine AS server

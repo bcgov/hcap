@@ -18,6 +18,7 @@ parameters:
     description: ImageStream tag for build and deploy
     value: latest
     required: true
+  - name: API_URL
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -43,6 +44,9 @@ objects:
           ref: ${REF}
       strategy:
         type: Docker
+        dockerStrategy:
+          buildArgs: 
+            API_URL: ${API_URL}
       output:
         to:
           kind: ImageStreamTag

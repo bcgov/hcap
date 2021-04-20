@@ -106,9 +106,14 @@ server-prep: # TODO: Move role binding command to a server prep template
 	@oc process -f openshift/keycloak.prep.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -
 	@oc policy add-role-to-user system:image-puller system:serviceaccount:$(TARGET_NAMESPACE):default -n $(TOOLS_NAMESPACE)
 
-server-create:
-	@oc process -f openshift/server.bc.yml -p APP_NAME=$(APP_NAME) | oc apply -n $(TOOLS_NAMESPACE) -f -
+server-create: server-create-build
 	@oc process -f openshift/server.dc.yml -p APP_NAME=$(APP_NAME) IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) IMAGE_TAG=$(OS_NAMESPACE_SUFFIX) | oc apply -n $(TARGET_NAMESPACE) -f -
+
+server-create-build:
+	@oc process -f openshift/server.bc.yml \
+		-p APP_NAME=$(APP_NAME) \
+		-p API_URL="https://hcap-server-f047a2-$(OS_NAMESPACE_SUFFIX).apps.silver.devops.gov.bc.ca" \
+		| oc apply -n $(TOOLS_NAMESPACE) -f -
 
 server-build:
 	@oc cancel-build bc/$(APP_NAME)-server -n $(TOOLS_NAMESPACE)

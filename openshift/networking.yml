@@ -44,9 +44,3 @@ objects:
       ingress:
       - from:
         - podSelector: {}
-parameters:
-  - name: NAMESPACE
-    displayName: Namespace
-    description: |
-      The namespace this policy is being deployed to;
-    required: true

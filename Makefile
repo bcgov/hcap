@@ -105,6 +105,9 @@ tag-prod:
 add-role:
 	@oc policy add-role-to-user admin system:serviceaccount:$(TARGET_NAMESPACE):default -n $(TOOLS_NAMESPACE)
 
+networking-prep:
+	@oc process -f openshift/networking.yml | oc apply -n $(TARGET_NAMESPACE) -f -
+
 server-prep:
 	@oc process -f openshift/keycloak.prep.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -
 

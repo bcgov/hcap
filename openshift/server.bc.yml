@@ -19,6 +19,7 @@ parameters:
     value: latest
     required: true
   - name: API_URL
+    required: true
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -45,8 +46,9 @@ objects:
       strategy:
         type: Docker
         dockerStrategy:
-          buildArgs: 
-            API_URL: ${API_URL}
+          buildArgs:
+            - name: API_URL
+              value: ${API_URL}
       output:
         to:
           kind: ImageStreamTag

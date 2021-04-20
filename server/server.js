@@ -35,9 +35,7 @@ const keycloak = require('./keycloak.js');
 const apiBaseUrl = '/api/v1';
 const app = express();
 
-if (process.env.NODE_ENV === 'local') {
-  app.use(cors());
-}
+app.use(cors());
 
 app.use(helmet({
   contentSecurityPolicy: {
@@ -63,17 +61,6 @@ app.use(helmet({
       'form-action': ["'self'"],
     },
   },
-}));
-
-app.use(helmet.cors({
-  accessControlAllowOrigin: 'https://*.silver.devops.gov.bc.ca',
-  accessControlAllowCredentials: 'BASIC',
-  accessControlExposeHeaders: 'WWW-Authenticate',
-  accessControlMaxAge: '86400',
-  accessControlAllowMethods: 'POST, PUT, GET',
-  accessControlAllowHeaders: 'Authorization, Referer',
-  accessControlRequestMethod: 'OPTIONS',
-  accessControlRequestHeaders: '',
 }));
 
 app.use(keycloak.expressMiddleware());

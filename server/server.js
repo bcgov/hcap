@@ -43,7 +43,13 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       'default-src': ["'self'"],
-      'connect-src': ["'self'", 'https://*.apps.gov.bc.ca', 'https://orgbook.gov.bc.ca', 'https://*.oidc.gov.bc.ca', 'https://oidc.gov.bc.ca'],
+      'connect-src': ["'self'",
+        'https://*.silver.devops.gov.bc.ca',
+        'https://*.apps.gov.bc.ca',
+        'https://orgbook.gov.bc.ca',
+        'https://*.oidc.gov.bc.ca',
+        'https://oidc.gov.bc.ca',
+      ],
       'base-uri': ["'self'"],
       'block-all-mixed-content': [],
       'font-src': ["'self'", 'https:', 'data:'],

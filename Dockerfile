@@ -7,7 +7,7 @@ WORKDIR /client
 COPY client/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 COPY client/. .
-RUN INLINE_RUNTIME_CHUNK=false REACT_APP_API_URL="https://hcap-server-f047a2-dev.apps.silver.devops.gov.bc.ca" npm run build
+RUN INLINE_RUNTIME_CHUNK=false REACT_APP_API_URL="https://hcap-server-f047a2-test.apps.silver.devops.gov.bc.ca" npm run build
 
 # Server
 FROM node:14-alpine AS server

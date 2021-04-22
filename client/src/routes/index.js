@@ -8,6 +8,7 @@ import Keycloak from 'keycloak-js';
 
 import { API_URL, Routes } from '../constants';
 
+const Maintenance = lazy(() => import('../pages/public/Maintenance'));
 const Admin = lazy(() => import('../pages/private/Admin'));
 const UserView = lazy(() => import('../pages/private/UserView'));
 const ParticipantView = lazy(() => import('../pages/private/ParticipantView'));
@@ -93,12 +94,16 @@ export default () => {
       <BrowserRouter>
         <Suspense fallback={<LinearProgress />}>
           <RootUrlSwitch rootUrl={Routes.ParticipantHostname}>
-            <Route exact path={Routes.ParticipantConfirmation} component={ParticipantConfirmation} />
-            <Route exact path={Routes.Base} component={ParticipantForm} />
+            {/* <Route exact path={Routes.ParticipantConfirmation} component={ParticipantConfirmation} />
+            <Route exact path={Routes.Base} component={ParticipantForm} /> */}
+            <Route exact path={Routes.Base}
+              render={(props) => (
+                <Maintenance {...props} hideEmployers={true} />
+              )} />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>
           <RootUrlSwitch rootUrl={Routes.EmployerHostname}>
-            <Route exact path={Routes.Login} component={Login} />
+            {/* <Route exact path={Routes.Login} component={Login} />
             <Route exact path={Routes.Keycloak} component={KeycloakRedirect} />
             <PrivateRoute exact path={Routes.Admin} component={Admin} />
             <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />
@@ -112,11 +117,15 @@ export default () => {
             <PrivateRoute exact path={Routes.ParticipantView} component={ParticipantView} />
             <PrivateRoute exact path={Routes.ParticipantUpload} component={ParticipantUpload} />
             <PrivateRoute exact path={Routes.ParticipantUploadResults} component={ParticipantUploadResults} />
-            <Route exact path={Routes.Base} component={EmployerForm} />
+            <Route exact path={Routes.Base} component={EmployerForm} /> */}
+            <Route exact path={Routes.Base}
+              render={(props) => (
+                <Maintenance {...props} hideEmployers={false} />
+              )} />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>
         </Suspense>
       </BrowserRouter>
-    </KeycloakProvider>
+    </KeycloakProvider >
   );
 };

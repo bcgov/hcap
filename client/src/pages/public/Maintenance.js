@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   logo: {
     height: '130px',
     marginBottom: theme.spacing(1.5),
-    flexShrink: 0, // Logo should hold its own
+    flexShrink: 0,
   },
 }));
 

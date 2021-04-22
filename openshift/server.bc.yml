@@ -18,6 +18,10 @@ parameters:
     description: ImageStream tag for build and deploy
     value: latest
     required: true
+  - name: API_URL
+    description: Override default relative API URL
+    value: ""
+    required: true
 objects:
   - kind: ImageStream
     apiVersion: v1

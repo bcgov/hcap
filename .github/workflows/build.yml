@@ -54,7 +54,7 @@ jobs:
       - name: Build & Deploy
         run: |
           cd "$GITHUB_WORKSPACE"
-          oc login "$CLUSTER" --token="$AUTH_TOKEN_OCP4"
+          oc login --token="$AUTH_TOKEN_OCP4" --server="$CLUSTER"
           make server-build
           make server-deploy
 

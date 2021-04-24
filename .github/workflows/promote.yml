@@ -44,6 +44,6 @@ jobs:
       - name: Promote
         run: |
           cd "$GITHUB_WORKSPACE"
-          oc login "$CLUSTER" --token="$AUTH_TOKEN"
+          oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
           export OS_NAMESPACE_SUFFIX=${{ env.OS_NAMESPACE_SUFFIX }}
           make server-deploy

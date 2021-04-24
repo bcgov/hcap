@@ -55,8 +55,7 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           oc login --token="$AUTH_TOKEN_OCP4" --server="$CLUSTER"
-          make server-build
-          make server-deploy
+          oc project
 
       # TODO make wait for server-deploy and run the ZAP Scan
       # - name: ZAP Scan

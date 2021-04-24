@@ -7,8 +7,7 @@ WORKDIR /client
 COPY client/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 COPY client/. .
-ARG API_HOST 
-RUN INLINE_RUNTIME_CHUNK=false REACT_APP_API_URL=${API_HOST} npm run build
+RUN INLINE_RUNTIME_CHUNK=false npm run build
 
 # Server
 FROM registry.hub.docker.com/library/node:14-alpine AS server

@@ -54,7 +54,7 @@ jobs:
       - name: Build & Deploy
         run: |
           cd "$GITHUB_WORKSPACE"
-          oc login --token="$AUTH_TOKEN_OCP4" --server="$CLUSTER"
+          oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
           oc project
 
       # TODO make wait for server-deploy and run the ZAP Scan

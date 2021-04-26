@@ -275,8 +275,7 @@ export const Fields = ({ isDisabled }) => {
               <b>Submit Your Form</b>
             </Typography>
             <Typography variant="body2" paragraph>
-              Use the submit button to complete your expression of interest. We will contact you within 3
-              weeks with more information.
+              Use the submit button to complete your expression of interest.
           </Typography>
           </Grid>}
         </Grid>

@@ -4,7 +4,7 @@
 export $(shell sed 's/=.*//' .env)
 .DEFAULT_GOAL:=print-status
 export APP_NAME:=hcap
-export OS_NAMESPACE_PREFIX:=rupaog
+export OS_NAMESPACE_PREFIX:=f047a2
 export OS_NAMESPACE_SUFFIX?=dev
 export COMMIT_SHA:=$(shell git rev-parse --short=7 HEAD)
 export TARGET_NAMESPACE=$(OS_NAMESPACE_PREFIX)-$(OS_NAMESPACE_SUFFIX)
@@ -102,9 +102,14 @@ tag-prod:
 
 # OpenShift Aliases
 
-server-prep: # TODO: Move role binding command to a server prep template
+add-role:
+	@oc policy add-role-to-user admin system:serviceaccount:$(TARGET_NAMESPACE):default -n $(TOOLS_NAMESPACE)
+
+networking-prep:
+	@oc process -f openshift/networking.yml | oc apply -n $(TARGET_NAMESPACE) -f -
+
+server-prep:
 	@oc process -f openshift/keycloak.prep.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -
-	@oc policy add-role-to-user system:image-puller system:serviceaccount:$(TARGET_NAMESPACE):default -n $(TOOLS_NAMESPACE)
 
 server-create:
 	@oc process -f openshift/server.bc.yml -p APP_NAME=$(APP_NAME) | oc apply -n $(TOOLS_NAMESPACE) -f -
@@ -117,6 +122,16 @@ server-build:
 
 server-deploy:
 	@oc tag $(APP_NAME)-server:$(COMMIT_SHA) $(APP_NAME)-server:$(OS_NAMESPACE_SUFFIX)
+
+mongo-prep:
+	@oc process -f openshift/mongo.yml -p APP_NAME=$(APP_NAME) | oc apply -n $(TARGET_NAMESPACE) -f -
+
+build-db-backup:
+	@oc -n $(TOOLS_NAMESPACE) process -f openshift/universal.bc.yml -p NAME=$(APP_NAME)-backup -p TAG="latest" -p BASE_IMAGE_NAME="postgresql-12-rhel7" -p BASE_IMAGE_TAG="latest" -p BASE_IMAGE_REPO="registry.redhat.io/rhscl/" -p SOURCE_REPOSITORY_URL="https://github.com/BCDevOps/backup-container.git" -p SOURCE_REPOSITORY_REF="master" -p SOURCE_CONTEXT_DIR="docker" | oc -n $(TOOLS_NAMESPACE) apply -f -
+	@oc -n $(TOOLS_NAMESPACE) start-build bc/$(APP_NAME)-backup --wait
+
+deploy-db-backup:
+	@oc -n $(TARGET_NAMESPACE) process -f openshift/backup.dc.yml -p NAME=$(APP_NAME)-backup -p IMAGE_STREAM_TAG=$(APP_NAME)-backup:latest -p BUILD_NAMESPACE=$(TOOLS_NAMESPACE) -p DB_NAME=$(APP_NAME)  | oc -n $(TARGET_NAMESPACE) apply -f -
 
 db-prep:
 	@oc process -f openshift/patroni.prep.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -

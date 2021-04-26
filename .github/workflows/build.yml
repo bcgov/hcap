@@ -6,8 +6,8 @@ on:
       - dev
 
 env:
-  CLUSTER: https://console.pathfinder.gov.bc.ca:8443
-  AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+  CLUSTER: https://api.silver.devops.gov.bc.ca:6443
+  AUTH_TOKEN: ${{ secrets.AUTH_TOKEN_OCP4 }}
   PROJECT: hcap
 
 jobs:
@@ -54,7 +54,7 @@ jobs:
       - name: Build & Deploy
         run: |
           cd "$GITHUB_WORKSPACE"
-          oc login "$CLUSTER" --token="$AUTH_TOKEN"
+          oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
           make server-build
           make server-deploy
 

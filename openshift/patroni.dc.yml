@@ -16,15 +16,15 @@ parameters:
     required: true
   - name: CPU_LIMIT
     description: Maximum amount of CPU the container can use
-    value: "1"
+    value: 500m
     required: true
   - name: MEMORY_REQUEST
     description: Starting amount of memory the container can use
-    value: 512Mi
+    value: 1Gi
     required: true
   - name: MEMORY_LIMIT
     description: Maximum amount of memory the container can use
-    value: 512Mi
+    value: 2Gi
     required: true
   - name: IMAGE_NAMESPACE
     description: Namespace from which to pull the image
@@ -152,7 +152,7 @@ objects:
                 value: 0.0.0.0:5432
               - name: PATRONI_RESTAPI_LISTEN
                 value: 0.0.0.0:8008
-              image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-patroni:${IMAGE_TAG}
+              image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-patroni:${IMAGE_TAG}
               imagePullPolicy: Always
               name: postgresql
               ports:

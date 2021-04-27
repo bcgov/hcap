@@ -36,7 +36,9 @@ const keycloak = require('./keycloak.js');
 const apiBaseUrl = '/api/v1';
 const app = express();
 
-app.use(cors());
+if (process.env.NODE_ENV === 'local') {
+  app.use(cors());
+}
 
 app.use(helmet({
   contentSecurityPolicy: {

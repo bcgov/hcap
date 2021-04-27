@@ -100,7 +100,7 @@ export const Header = ({hideEmployers=false}) => {
                 <img
                   className={classes.logo}
                   src={BcLogo}
-                  alt="Government of british columbia home"
+                  alt="Government of British Columbia Home"
                   onClick={handleLogoClick}
                 />
               </Hidden>
@@ -108,7 +108,7 @@ export const Header = ({hideEmployers=false}) => {
                 <img
                   className={classes.logo}
                   src={BcLogoMini}
-                  alt="Government of british columbia home"
+                  alt="Government of British Columbia Home"
                   onClick={handleLogoClick}
                 />
               </Hidden>

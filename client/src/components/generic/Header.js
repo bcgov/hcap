@@ -49,7 +49,6 @@ const useStyles = makeStyles((theme) => ({
   logo: {
     height: '40px',
     marginBottom: theme.spacing(1.1),
-    cursor: 'pointer',
     flexShrink: 0, // Logo should hold its own
   },
   verticalDivider: {
@@ -96,22 +95,24 @@ export const Header = ({hideEmployers=false}) => {
       <AppBar className={classes.appBar} position="static">
         <Toolbar className={classes.toolbar}>
           <div className={classes.logoWrapper}>
-            <Hidden smDown>
-              <img
-                className={classes.logo}
-                src={BcLogo}
-                alt="Government of B.C."
-                onClick={handleLogoClick}
-              />
-            </Hidden>
-            <Hidden mdUp>
-              <img
-                className={classes.logo}
-                src={BcLogoMini}
-                alt="Government of B.C."
-                onClick={handleLogoClick}
-              />
-            </Hidden>
+            <a href="https://www2.gov.bc.ca/gov/content/home">
+              <Hidden smDown>
+                <img
+                  className={classes.logo}
+                  src={BcLogo}
+                  alt="Government of British Columbia Home"
+                  onClick={handleLogoClick}
+                />
+              </Hidden>
+              <Hidden mdUp>
+                <img
+                  className={classes.logo}
+                  src={BcLogoMini}
+                  alt="Government of British Columbia Home"
+                  onClick={handleLogoClick}
+                />
+              </Hidden>
+            </a>
             <hr className={classes.verticalDivider} />
             <div className={classes.logoTextWrapper}>
               <Typography noWrap className={classes.titleSmall} variant="body2">

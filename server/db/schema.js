@@ -6,6 +6,7 @@ const collections = {
   PARTICIPANTS: 'participants',
   PARTICIPANTS_STATUS: 'participants_status',
   GEOCODES: 'geocodes',
+  PARTICIPANTS_DISTANCE: 'participants_distance',
   EMPLOYER_FORMS: 'employer_forms',
   EMPLOYER_SITES: 'employer_sites',
   USERS: 'users',
@@ -31,6 +32,14 @@ const schema = {
         "current" boolean not null,
         "created_at" timestamp with time zone DEFAULT now(),
         "data" jsonb
+        )`,
+    },
+    {
+      definition: `CREATE TABLE IF NOT EXISTS ${collections.PARTICIPANTS_DISTANCE} (
+        id serial primary key,
+        "participant_id" integer not null,
+        "site_id" integer not null,
+        "distance" integer not null
         )`,
     },
     {

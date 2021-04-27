@@ -2,7 +2,7 @@
 const fs = require('fs');
 const { join } = require('path');
 const readline = require('readline');
-const { dbClient, collections } = require('../db');
+const { dbClient, collections, schema } = require('../db');
 
 const objectMap = (row) => {
   const split_row = row.split('\t');
@@ -18,6 +18,10 @@ const objectMap = (row) => {
 };
 
 exports.up = async () => {
+  for (const schemaItem of schema.relationalTables) {
+    await dbClient.runRawQuery(schemaItem.definition);
+  }
+  await dbClient.reload();
   let filename = 'BC_postal_codes.txt';
   if (process.env.NODE_ENV === 'test') {
     filename = '100_postal_codes.txt';

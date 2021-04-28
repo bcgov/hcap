@@ -6,12 +6,29 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { FastField } from 'formik';
+import { SpeakerNotesOutlined } from '@material-ui/icons';
+
 
 import { Card, Divider } from '../generic';
 import { RenderCheckbox, RenderCheckboxGroup, RenderTextField, RenderRadioGroup } from '../fields';
-import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
+  info: {
+    color: 'rgb(13, 60, 97)',
+    backgroundColor: 'rgb(232, 244, 253)',
+    borderRadius: '4px',
+    border: "1px solid rgb(175, 217, 252)",
+  },
+  infoHeader: {
+    fontSize: '16px',
+    marginBottom: theme.spacing(1),
+    fontWeight: 'bold',
+  },
+  infoIcon: {
+    color: 'rgb(21, 153, 222)',
+    fontSize: '80px',
+    marginRight: theme.spacing(2),
+  },
   line: {
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
@@ -25,18 +42,13 @@ export const Fields = ({ isDisabled }) => {
 
   return (
     <>
-      <Box mb={2}>
-        <Alert severity="info">
-          <Typography variant="body2" gutterBottom>
-            <b>Need Help?</b><br />
-            Contact a Health Career Access Program agent.
-            <br />
-            <Link href="tel:+18773740463">
-              Dial 1-877-374-0463
-            </Link>
-            <b> Service is available from 8:00 am - 4:30 pm Pacific Time</b>
-          </Typography>
-        </Alert>
+      <Box mb={2} py={1} px={2} display="flex" alignItems="center" className={classes.info}>
+        <SpeakerNotesOutlined className={classes.infoIcon} />
+        <Box py={1}>
+          <Typography className={classes.infoHeader} component="h3">Need Help?</Typography>
+          <Typography variant="body2">Contact a Health Career Access Program agent.</Typography>
+          <Typography variant="body2">Service is available from 8:00 am - 4:30 pm Pacific Time</Typography>
+        </Box>
       </Box>
       <Card noShadow={isDisabled}>
         <Grid container spacing={2}>

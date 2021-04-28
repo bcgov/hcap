@@ -49,7 +49,6 @@ const getPointsFromPostalCodes = async (postalCodes) => {
 };
 
 const getParticipantCoords = async (participantID) => {
-  console.log(`Running this command: SELECT ST_AsText(coords) FROM ${collections.PARTICIPANTS} where id=${Number(participantID)}`);
   const res = await dbClient.runRawQuery(`SELECT ST_AsText(coords) FROM ${collections.PARTICIPANTS} where id=${Number(participantID)};`);
   return res;
 };

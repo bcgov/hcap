@@ -95,7 +95,7 @@ export const Header = ({hideEmployers=false}) => {
       <AppBar className={classes.appBar} position="static">
         <Toolbar className={classes.toolbar}>
           <div className={classes.logoWrapper}>
-            <a href="https://www2.gov.bc.ca/gov/content/home">
+            <a href="/">
               <Hidden smDown>
                 <img
                   className={classes.logo}

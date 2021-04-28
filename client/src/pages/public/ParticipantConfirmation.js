@@ -22,7 +22,7 @@ export default () => {
               <Grid container alignItems="center" justify="space-between">
                 <Grid item>
                   <Typography variant="subtitle1" paragraph>
-                    Thank you for your submission. We will contact you within 3 weeks with more information.
+                    Thank you for your submission.
                   </Typography>
                   <Typography variant="subtitle1" paragraph>
                     To protect your personal information from third parties, we will not send you a copy of this form by email. If you want to keep a copy for your records, you can download a copy using the Download PDF button below.

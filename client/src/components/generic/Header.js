@@ -11,6 +11,7 @@ import BcLogoMini from '../../assets/images/bc-logo-mini.svg';
 import Hidden from '@material-ui/core/Hidden';
 import { Routes } from '../../constants';
 import { Button } from './Button';
+import Link from '@material-ui/core/Link';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -95,7 +96,7 @@ export const Header = ({hideEmployers=false}) => {
       <AppBar className={classes.appBar} position="static">
         <Toolbar className={classes.toolbar}>
           <div className={classes.logoWrapper}>
-            <a href="https://www2.gov.bc.ca/gov/content/home">
+            <Link href="/">
               <Hidden smDown>
                 <img
                   className={classes.logo}
@@ -112,7 +113,7 @@ export const Header = ({hideEmployers=false}) => {
                   onClick={handleLogoClick}
                 />
               </Hidden>
-            </a>
+            </Link>
             <hr className={classes.verticalDivider} />
             <div className={classes.logoTextWrapper}>
               <Typography noWrap className={classes.titleSmall} variant="body2">

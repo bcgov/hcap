@@ -2,7 +2,6 @@ const readXlsxFile = require('node-xlsx').default;
 const {
   validate, ParticipantBatchSchema, isBooleanValue,
 } = require('../validation.js');
-const { getPointsFromPostalCodes, updateParticipantCoords } = require('./geocodes');
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
@@ -108,10 +107,6 @@ const updateParticipant = async (participantInfo) => {
     id: participantInfo.id,
   }, changes);
 
-  if (changes.postalCode !== undefined) {
-    updateParticipantCoords(participantInfo.id);
-  }
-
   return participant;
 };
 
@@ -127,9 +122,6 @@ const getParticipants = async (user, pagination, sortField,
   const filterLastNameAndEmail = user.isSuperUser || user.isMoH
     || ((user.isHA || user.isEmployer) && !statusFilters.includes('open'));
 
-  console.log('Hi this is me running get participants. My siteFilter value is here: ');
-  console.log(siteSelector);
-
   const participants = await participantsFinder
     .filterRegion(regionFilter)
     .filterParticipantFields({
@@ -138,7 +130,6 @@ const getParticipants = async (user, pagination, sortField,
       emailAddress: filterLastNameAndEmail && emailFilter,
     })
     .filterStatus(statusFilters)
-    .getDistances(siteSelector)
     .paginate(pagination, sortField)
     .run();
 
@@ -285,8 +276,6 @@ const parseAndSaveParticipants = async (fileBuffer) => {
   const xlsx = readXlsxFile.parse(fileBuffer, { raw: true });
   verifyHeaders(xlsx[0].data, columnMap);
   let rows = createRows(xlsx[0].data, columnMap);
-  const postalCodes = rows.map((row) => row.postalCode);
-  const coordinates = await getPointsFromPostalCodes(postalCodes);
   await validate(ParticipantBatchSchema, rows);
   const lowercaseMixed = (v) => (typeof v === 'string' ? v.toLowerCase() : v);
   rows = rows.map((row) => ({

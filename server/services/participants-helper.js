@@ -79,11 +79,6 @@ class FilteredParticipantsFinder {
     this.context = context;
   }
 
-  getDistances(siteID) {
-    this.context.siteID = !!siteID && Number(siteID);
-    return new FilteredParticipantsFinder(this.context);
-  }
-
   paginate(pagination, sortField) {
     const { user, employerSpecificJoin, siteJoin } = this.context;
     this.context.options = pagination && {

@@ -81,7 +81,7 @@ export const NewParticipantForm = ({ initialValues, validationSchema, onSubmit, 
             label="* Site"
             options={sites.map((siteDetail) => ({
               value: siteDetail.siteId, label: siteDetail.siteName,
-            }))}
+            })).sort((a, b) => a.label.localeCompare(b.label))}
           />
           <Field
             name="acknowledge"

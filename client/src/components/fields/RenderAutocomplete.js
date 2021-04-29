@@ -2,16 +2,20 @@ import React, { Fragment } from 'react';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from "@material-ui/core/styles"
-import { ErrorMessage, useFormikContext } from 'formik';
+import { ErrorMessage } from 'formik';
 
 import { InputFieldError, InputFieldLabel } from '../generic';
 
 const useStyles = makeStyles({
   inputRoot: {
-    display: "flex",
-    justifyContent: "left",
     paddingTop: '0 !important',
   },
+  option: {
+    backgroundColor: 'white !important',
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.04) !important',
+    }
+  }
 })
 
 export const RenderAutocomplete = ({
@@ -23,8 +27,7 @@ export const RenderAutocomplete = ({
   const classes = useStyles()
   const touched = form.touched[name];
   const error = form.errors[name];
-
-  const { setFieldValue } = useFormikContext();
+  const { setFieldValue } = form;
 
   return (
     <Fragment>
@@ -40,12 +43,12 @@ export const RenderAutocomplete = ({
           <TextField
             {...params}
             error={touched && !!error}
+            variant="filled"
             inputProps={{
               ...params.inputProps,
-              autoComplete: 'new-password',
+              autoComplete: 'none',
               placeholder: 'Please Select'
             }}
-            variant="filled"
           />
         )}
       />

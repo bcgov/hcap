@@ -18,6 +18,8 @@ const saveSingleSite = async (siteJson) => {
 
 const saveSites = async (sitesArg) => {
   const sites = Array.isArray(sitesArg) ? sitesArg : [sitesArg];
+  console.log('this is the sites variable');
+  console.log(sites);
   await validate(EmployerSiteBatchSchema, sites);
   const promises = sites.map((site) => dbClient.db.saveDoc(collections.EMPLOYER_SITES, site));
   const results = await Promise.allSettled(promises);

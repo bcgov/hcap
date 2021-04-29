@@ -5,6 +5,7 @@ import { Box } from '@material-ui/core';
 import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { getTodayDate } from '../../utils';
+import { RenderAutocomplete } from '../fields/RenderAutocomplete';
 
 export const NewParticipantForm = ({ initialValues, validationSchema, onSubmit, onClose, sites }) => {
 
@@ -76,11 +77,11 @@ export const NewParticipantForm = ({ initialValues, validationSchema, onSubmit, 
           />
           <Field
             name="site"
-            component={RenderSelectField}
+            component={RenderAutocomplete}
             label="* Site"
             options={sites.map((siteDetail) => ({
               value: siteDetail.siteId, label: siteDetail.siteName,
-            }))}
+            })).sort((a, b) => a.label.localeCompare(b.label))}
           />
           <Field
             name="acknowledge"

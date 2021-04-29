@@ -2,8 +2,15 @@ const request = require('supertest');
 const { v4 } = require('uuid');
 const app = require('../server');
 const {
-  getEmployers, getEmployerByID,
+  getEmployers, getEmployerByID, getSites, getSiteByID, saveSites,
 } = require('../services/employers.js');
+
+const {
+  getParticipants,
+  getHiredParticipantsBySite,
+  setParticipantStatus,
+  makeParticipant,
+} = require('../services/participants.js');
 
 const { startDB, closeDB, cleanDB } = require('./util/db');
 

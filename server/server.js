@@ -473,7 +473,6 @@ app.patch(`${apiBaseUrl}/employer-sites/:id`,
     await validate(EditSiteSchema, req.body);
     const user = req.hcapUserInfo;
     try {
-      req.body.coords = await getPointsFromPostalCodes(req.body.postalCode);
       const response = await updateSite(req.params.id, req.body);
       logger.info({
         action: 'employer-sites_patch',

@@ -49,12 +49,12 @@ const getPointsFromPostalCodes = async (postalCodes) => {
 };
 
 const getParticipantCoords = async (participantID) => {
-  const res = await dbClient.runRawQuery(`SELECT ST_AsText(coords) FROM ${collections.PARTICIPANTS} where id=${Number(participantID)};`);
+  const res = await dbClient.runRawQuery(`SELECT body->'location' FROM ${collections.PARTICIPANTS} where id=${Number(participantID)};`);
   return res;
 };
 
 const getSiteCoords = async (siteID) => {
-  const res = await dbClient.runRawQuery(`SELECT ST_AsText(coords) FROM ${collections.EMPLOYER_SITES} where id=${Number(siteID)}`);
+  const res = await dbClient.runRawQuery(`SELECT body->'location' FROM ${collections.EMPLOYER_SITES} where id=${Number(siteID)}`);
   return res;
 };
 

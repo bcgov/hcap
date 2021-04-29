@@ -2,7 +2,7 @@ const readXlsxFile = require('node-xlsx').default;
 const {
   validate, ParticipantBatchSchema, isBooleanValue,
 } = require('../validation.js');
-const { getPointsFromPostalCodes, updateParticipantCoords } = require('./geocodes');
+const { getPointsFromPostalCodes } = require('./geocodes');
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
@@ -107,10 +107,6 @@ const updateParticipant = async (participantInfo) => {
   const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc({
     id: participantInfo.id,
   }, changes);
-
-  if (changes.postalCode !== undefined) {
-    updateParticipantCoords(participantInfo.id);
-  }
 
   return participant;
 };
@@ -299,7 +295,6 @@ const parseAndSaveParticipants = async (fileBuffer) => {
     switch (result.status) {
       case 'fulfilled':
         // Update coordinates for all fulfilled promises
-        updateParticipantCoords(result.value.id);
         response.push({ id, status: 'Success' });
         break;
       default:
@@ -315,7 +310,6 @@ const parseAndSaveParticipants = async (fileBuffer) => {
 
 const makeParticipant = async (participantJson) => {
   const res = await dbClient.db.saveDoc(collections.PARTICIPANTS, participantJson);
-  await updateParticipantCoords(res.id);
   return res;
 };
 

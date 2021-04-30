@@ -2,7 +2,6 @@ const readXlsxFile = require('node-xlsx').default;
 const {
   validate, ParticipantBatchSchema, isBooleanValue,
 } = require('../validation.js');
-const { getPointsFromPostalCodes } = require('./geocodes');
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
@@ -277,14 +276,11 @@ const parseAndSaveParticipants = async (fileBuffer) => {
   const xlsx = readXlsxFile.parse(fileBuffer, { raw: true });
   verifyHeaders(xlsx[0].data, columnMap);
   let rows = createRows(xlsx[0].data, columnMap);
-  const postalCodes = rows.map((row) => row.postalCode);
-  const coordinates = await getPointsFromPostalCodes(postalCodes);
   await validate(ParticipantBatchSchema, rows);
   const lowercaseMixed = (v) => (typeof v === 'string' ? v.toLowerCase() : v);
   rows = rows.map((row) => ({
     ...row,
     interested: lowercaseMixed(row.interested),
-    coords: coordinates[row.postalCode],
   }));
   const response = [];
   const promises = rows.map((row) => dbClient.db.saveDoc(collections.PARTICIPANTS, objectMap(row)));

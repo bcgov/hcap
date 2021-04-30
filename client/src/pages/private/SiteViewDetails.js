@@ -131,7 +131,6 @@ export default ({ match }) => {
             city: site.city,
             postalCode: site.postalCode,
             allocation: site.allocation,
-            coords: site.coords,
             operatorContactFirstName: site.operatorContactFirstName,
             operatorContactLastName: site.operatorContactLastName,
             operatorPhone: site.operatorPhone,

@@ -5,8 +5,7 @@
     "jest/globals": true
   },
   "rules": {
-    "no-underscore-dangle": ["error", { "allowAfterThis": true }],
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
+    "no-underscore-dangle": ["error", { "allowAfterThis": true }]
   },
   "parserOptions": {
     "ecmaVersion": 2020

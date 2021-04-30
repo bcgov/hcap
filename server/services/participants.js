@@ -120,7 +120,7 @@ const getParticipants = async (user, pagination, sortField,
   // lastName or email with statuses 'open' AND 'hired', for example. Setting this
   // as a TODO since there's no such case in the application yet.
   const filterLastNameAndEmail = user.isSuperUser || user.isMoH
-    || ((user.isHA || user.isEmployer) && !statusFilters.includes('open'));
+    || ((user.isHA || user.isEmployer) && !statusFilters?.includes('open'));
 
   const participants = await participantsFinder
     .filterRegion(regionFilter)

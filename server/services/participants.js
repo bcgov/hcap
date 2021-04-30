@@ -175,6 +175,7 @@ const getParticipants = async (user, pagination, sortField,
           callbackStatus: item.callbackStatus,
           statusInfo: returnStatus,
           userUpdatedAt: item.userUpdatedAt,
+          distance: item.distance,
           progressStats,
         };
       }),
@@ -194,6 +195,7 @@ const getParticipants = async (user, pagination, sortField,
         nonHCAP: item.nonHCAP,
         userUpdatedAt: item.userUpdatedAt,
         callbackStatus: item.callbackStatus,
+        distance: item.distance,
       };
 
       const hiredBySomeoneElseStatus = item.statusInfos?.find((statusInfo) => statusInfo.status === 'hired'

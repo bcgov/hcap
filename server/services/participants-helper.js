@@ -48,7 +48,7 @@ const addDistanceToParticipantFields = (raw, siteDistanceJoin) => raw.map((parti
   ...participant[siteDistanceJoin] && {
     body: {
       ...participant.body,
-      distance: participant[siteDistanceJoin][0].distance,
+      distance: participant[siteDistanceJoin][0]?.distance,
     },
   },
 }));
@@ -93,7 +93,7 @@ class FilteredParticipantsFinder {
 
   paginate(pagination, sortField) {
     const {
-      user, employerSpecificJoin, siteJoin, siteDistanceJoin,
+      user, employerSpecificJoin, siteJoin, siteDistanceJoin, siteIdDistance,
     } = this.context;
     this.context.options = pagination && {
       // ID is the default sort column
@@ -110,7 +110,7 @@ class FilteredParticipantsFinder {
     };
 
     if (sortField && sortField !== 'id' && this.context.options.order) {
-      let joinFieldName;
+      let joinFieldName = `body.${sortField}`;
 
       if (sortField === 'status') {
         joinFieldName = (user.isEmployer || user.isHA)
@@ -118,14 +118,12 @@ class FilteredParticipantsFinder {
           : 'status_infos';
       }
 
-      if (sortField === 'distance') {
+      if (sortField === 'distance' && siteIdDistance) {
         joinFieldName = `${siteDistanceJoin}.distance`;
       }
 
       if (sortField === 'siteName') {
         joinFieldName = `${siteJoin}.body.${sortField}`;
-      } else {
-        joinFieldName = `body.${sortField}`;
       }
 
       // If a field to sort is provided we put that as first priority
@@ -153,6 +151,7 @@ class FieldsFilteredParticipantsFinder {
       user, criteria, employerSpecificJoin, hiredGlobalJoin,
       siteJoin, siteDistanceJoin,
     } = this.context;
+    this.context.siteIdDistance = siteIdDistance;
 
     if (user.isEmployer || user.isHA) {
       this.context.table = this.context.table.join({

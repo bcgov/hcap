@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import math from 'lodash/math';
 import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
 import {
@@ -460,7 +461,7 @@ export default () => {
     const runAsync = async () => {
       await fetchUserInfo();
       await getParticipants();
-
+      
       setColumns(oldColumns => {
         setHideLastNameAndEmailFilter(['Available Participants', 'Archived Candidates'].includes(tabValue));
 
@@ -489,7 +490,6 @@ export default () => {
       });
     };
     runAsync();
-    console.log(`siteSelector is: ${siteSelector}`);
   }, [pagination.currentPage, locationFilter, siteSelector, fsaFilter, lastNameFilter, emailFilter, order, tabValue]);
 
   const handlePageChange = (oldPage, newPage) => {
@@ -773,6 +773,9 @@ export default () => {
                   }
                   if (columnId === 'status') {
                     return prettifyStatus(row[columnId], row.id, tabValue, handleEngage);
+                  }
+                  if (columnId === 'distance') {
+                    return row[columnId] ? `${math.round(row[columnId]/1000, 1)} Km` : '';
                   }
                   if (columnId === 'engage') {
                     return !row.status.includes('already_hired') && <Button

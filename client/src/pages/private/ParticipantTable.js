@@ -242,7 +242,6 @@ export default () => {
 
   const fetchParticipants = async (offset, regionFilter, fsaFilter, lastNameFilter,
     emailFilter, sortField, sortDirection, siteSelector, statusFilters) => {
-      console.log(`siteSelector is ${siteSelector}`);
     const queries = [
       sortField && `sortField=${sortField}`,
       offset && `offset=${offset}`,
@@ -461,7 +460,7 @@ export default () => {
     const runAsync = async () => {
       await fetchUserInfo();
       await getParticipants();
-      
+
       setColumns(oldColumns => {
         setHideLastNameAndEmailFilter(['Available Participants', 'Archived Candidates'].includes(tabValue));
 
@@ -671,7 +670,6 @@ export default () => {
                   }
                 </TextField>
               </Box>
-              
             </Grid>
             <Grid item>
               <Box pl={2}>

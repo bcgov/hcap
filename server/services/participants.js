@@ -129,7 +129,7 @@ const getParticipants = async (user, pagination, sortField,
       lastName: filterLastNameAndEmail && lastNameFilter,
       emailAddress: filterLastNameAndEmail && emailFilter,
     })
-    .filterStatus(statusFilters)
+    .filterExternalFields({ statusFilters, siteIdDistance: siteSelector })
     .paginate(pagination, sortField)
     .run();
 

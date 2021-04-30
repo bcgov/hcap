@@ -30,6 +30,7 @@ const sortFields = [
   'statusInfo',
   'userUpdatedAt',
   'siteName',
+  'distance',
 ];
 
 const roles = [

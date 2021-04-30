@@ -2,7 +2,7 @@
 const { collections, views } = require('../db');
 const { userRegionQuery } = require('./user.js');
 
-const decomposeParticipantStatus = (raw, joinNames) => raw.map((participant) => {
+const scrubParticipantData = (raw, joinNames) => raw.map((participant) => {
   const statusInfos = [];
 
   const decomposeStatusInfo = (statusInfo) => ({
@@ -43,9 +43,20 @@ const addSiteNameToStatusData = (raw, employerSpecificJoin,
   })),
 }));
 
+const addDistanceToParticipantFields = (raw, siteDistanceJoin) => raw.map((participant) => ({
+  ...participant,
+  ...participant[siteDistanceJoin] && {
+    body: {
+      ...participant.body,
+      distance: participant[siteDistanceJoin][0].distance,
+    },
+  },
+}));
+
 const run = async (context) => {
   const {
     table, criteria, options, user, employerSpecificJoin, hiredGlobalJoin,
+    siteDistanceJoin,
     siteJoin,
   } = context;
   let participants = await table.find(criteria, options);
@@ -54,7 +65,8 @@ const run = async (context) => {
     employerSpecificJoin,
     siteJoin,
   );
-  participants = decomposeParticipantStatus(
+  participants = addDistanceToParticipantFields(participants, siteDistanceJoin);
+  participants = scrubParticipantData(
     participants,
     (user.isEmployer || user.isHA) && [
       employerSpecificJoin,
@@ -80,7 +92,9 @@ class FilteredParticipantsFinder {
   }
 
   paginate(pagination, sortField) {
-    const { user, employerSpecificJoin, siteJoin } = this.context;
+    const {
+      user, employerSpecificJoin, siteJoin, siteDistanceJoin,
+    } = this.context;
     this.context.options = pagination && {
       // ID is the default sort column
       order: [{
@@ -102,6 +116,10 @@ class FilteredParticipantsFinder {
         joinFieldName = (user.isEmployer || user.isHA)
           ? `${employerSpecificJoin}.status`
           : 'status_infos';
+      }
+
+      if (sortField === 'distance') {
+        joinFieldName = `${siteDistanceJoin}.distance`;
       }
 
       if (sortField === 'siteName') {
@@ -130,10 +148,10 @@ class FieldsFilteredParticipantsFinder {
     this.context = context;
   }
 
-  filterStatus(statusFilters) {
+  filterExternalFields({ statusFilters, siteIdDistance }) {
     const {
       user, criteria, employerSpecificJoin, hiredGlobalJoin,
-      siteJoin,
+      siteJoin, siteDistanceJoin,
     } = this.context;
 
     if (user.isEmployer || user.isHA) {
@@ -154,6 +172,16 @@ class FieldsFilteredParticipantsFinder {
             participant_id: 'id',
             current: true,
             status: 'hired',
+          },
+        },
+        ...siteIdDistance && {
+          [siteDistanceJoin]: {
+            type: 'LEFT OUTER',
+            relation: collections.PARTICIPANTS_DISTANCE,
+            on: {
+              participant_id: 'id',
+              site_id: siteIdDistance,
+            },
           },
         },
         ...statusFilters.includes('hired') && {
@@ -262,6 +290,7 @@ class ParticipantsFinder {
     this.employerSpecificJoin = 'employerSpecificJoin';
     this.hiredGlobalJoin = 'hiredGlobalJoin';
     this.siteJoin = 'siteJoin';
+    this.siteDistanceJoin = 'siteDistanceJoin';
   }
 
   filterRegion(regionFilter) {

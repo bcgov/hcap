@@ -278,14 +278,19 @@ const parseAndSaveParticipants = async (fileBuffer) => {
   let rows = createRows(xlsx[0].data, columnMap);
   await validate(ParticipantBatchSchema, rows);
   const lowercaseMixed = (v) => (typeof v === 'string' ? v.toLowerCase() : v);
-  rows = rows.map((row) => ({ ...row, interested: lowercaseMixed(row.interested) }));
+  rows = rows.map((row) => ({
+    ...row,
+    interested: lowercaseMixed(row.interested),
+  }));
   const response = [];
   const promises = rows.map((row) => dbClient.db.saveDoc(collections.PARTICIPANTS, objectMap(row)));
   const results = await Promise.allSettled(promises);
+
   results.forEach((result, index) => {
     const id = rows[index].maximusId;
     switch (result.status) {
       case 'fulfilled':
+        // Update coordinates for all fulfilled promises
         response.push({ id, status: 'Success' });
         break;
       default:
@@ -300,7 +305,7 @@ const parseAndSaveParticipants = async (fileBuffer) => {
 };
 
 const makeParticipant = async (participantJson) => {
-  const res = dbClient.db.saveDoc(collections.PARTICIPANTS, participantJson);
+  const res = await dbClient.db.saveDoc(collections.PARTICIPANTS, participantJson);
   return res;
 };
 

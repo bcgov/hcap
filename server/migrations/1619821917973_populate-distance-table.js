@@ -10,18 +10,15 @@ exports.up = async (pgm) => {
     'location IS NOT': null,
   });
 
-  const aWholeLottaPromises = sites.flatMap((site) => participants.map((participant, i) => {
-    if (i < 10) console.log(JSON.stringify(participant.location), JSON.stringify(site.location));
-    return pgm.sql(`
-      INSERT INTO participants_distance (participant_id, site_id, distance) VALUES (
-        ${participant.id},
-        ${site.siteId},
-        ST_DistanceSphere(
-          ST_GeomFromGeoJSON('${JSON.stringify(site.location)}'),
-          ST_GeomFromGeoJSON('${JSON.stringify(participant.location)}')
-        )
-      );`);
-  }));
+  const aWholeLottaPromises = sites.flatMap((site) => participants.map((participant) => pgm.sql(`
+    INSERT INTO participants_distance (participant_id, site_id, distance) VALUES (
+      ${participant.id},
+      ${site.siteId},
+      ST_DistanceSphere(
+        ST_GeomFromGeoJSON('${JSON.stringify(site.location)}'),
+        ST_GeomFromGeoJSON('${JSON.stringify(participant.location)}')
+      )
+    );`)));
 
   await Promise.allSettled(aWholeLottaPromises);
 };

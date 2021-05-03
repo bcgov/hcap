@@ -12,7 +12,7 @@ exports.up = async (pgm) => {
 
   await pgm.dropTrigger(collections.EMPLOYER_SITES, 'update_postal_code_s', { ifExists: true });
   await pgm.createTrigger(collections.EMPLOYER_SITES, 'update_postal_code_s', {
-    when: 'AFTER',
+    when: 'BEFORE',
     operation: ['INSERT', 'UPDATE OF body'],
     language: 'plpgsql',
     level: 'ROW',
@@ -48,7 +48,7 @@ exports.up = async (pgm) => {
 
   await pgm.dropTrigger(collections.PARTICIPANTS, 'update_postal_code_p', { ifExists: true });
   await pgm.createTrigger(collections.PARTICIPANTS, 'update_postal_code_p', {
-    when: 'AFTER',
+    when: 'BEFORE',
     operation: ['INSERT', 'UPDATE OF body'],
     language: 'plpgsql',
     level: 'ROW',

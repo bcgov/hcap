@@ -100,6 +100,7 @@ class FilteredParticipantsFinder {
       order: [{
         field: 'id',
         direction: pagination.direction || 'asc',
+        nulls: 'last',
       }],
       //  Using limit/offset pagination may decrease performance in the Postgres instance,
       //  however this is the only way to sort columns that does not have a deterministic

@@ -22,18 +22,17 @@ exports.up = async (pgm) => {
   DECLARE
    loc record;
    participant record;
-   loc_count integer := 0;
   BEGIN
     IF NEW.body->>'postalCode' = OLD.body->>'postalCode' THEN
       RETURN NEW;
     END IF;
 
-    select count(*) into loc_count FROM geocodes WHERE REPLACE(postal_code, ' ', '')=REPLACE(NEW.body->>'postalCode', ' ', '');
-    if loc_count = 0 then
-      RETURN NEW;
-    end if;
-
     SELECT longitude::text,latitude::text INTO loc FROM geocodes WHERE REPLACE(postal_code, ' ', '')=REPLACE(NEW.body->>'postalCode', ' ', '');
+
+    IF NOT FOUND THEN
+      RETURN NEW;
+    END IF;
+
     NEW.body = jsonb_set(NEW.body::jsonb, '{location}', ('{"type":"Point","coordinates":[' || loc.longitude || ',' || loc.latitude || ']}')::jsonb);
     IF OLD IS NULL THEN
       FOR participant IN
@@ -65,19 +64,17 @@ exports.up = async (pgm) => {
   DECLARE
    loc record;
    site record;
-   loc_count integer := 0;
   BEGIN
     IF NEW.body->>'postalCode' = OLD.body->>'postalCode' THEN
       RETURN NEW;
     END IF;
 
-    select count(*) into loc_count FROM geocodes WHERE REPLACE(postal_code, ' ', '')=REPLACE(NEW.body->>'postalCode', ' ', '');
-
-    if loc_count = 0 then
-        RETURN NEW;
-    end if;
-
     SELECT longitude::text,latitude::text INTO loc FROM geocodes WHERE REPLACE(postal_code, ' ', '')=REPLACE(NEW.body->>'postalCode', ' ', '');
+
+    IF NOT FOUND THEN
+      RETURN NEW;
+    END IF;
+
     NEW.body = jsonb_set(NEW.body::jsonb, '{location}', ('{"type":"Point","coordinates":[' || loc.longitude || ',' || loc.latitude || ']}')::jsonb);
     IF OLD IS NULL THEN
       FOR site IN

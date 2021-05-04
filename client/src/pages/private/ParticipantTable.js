@@ -166,6 +166,10 @@ export default () => {
 
   const handleSiteSelector = (value) => {
     setSiteSelector(value);
+    setOrder({
+      field: 'distance',
+      direction: 'asc',
+    });
     setPagination(prev => ({
       ...prev,
       currentPage: 0,

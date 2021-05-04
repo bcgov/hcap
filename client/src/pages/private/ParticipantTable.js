@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import math from 'lodash/math';
 import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
 import store from 'store';
 import {
@@ -45,6 +46,7 @@ const sortOrder = [
   'phoneNumber',
   'emailAddress',
   'preferredLocation',
+  'distance',
   'interested',
   'nonHCAP',
   'crcClear',
@@ -120,6 +122,7 @@ export default () => {
   const [pagination, setPagination] = useState({ currentPage: 0 });
   const [columns, setColumns] = useState(defaultColumns);
   const [locationFilter, setLocationFilter] = useState(null);
+  const [siteSelector, setSiteSelector] = useState(null);
   const [fsaFilter, setFsaFilter] = useState(null);
   const [fsaText, setFsaText] = useState(null);
   const [lastNameFilter, setLastNameFilter] = useState(null);
@@ -139,15 +142,15 @@ export default () => {
       field: property,
       direction: order.direction === 'desc' ? 'asc' : 'desc',
     });
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
   };
 
   const handleTabChange = (event, newValue) => {
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
     setTabValue(newValue);
@@ -155,31 +158,39 @@ export default () => {
 
   const handleLocationFilter = (value) => {
     setLocationFilter(value);
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
+      currentPage: 0,
+    }));
+  };
+
+  const handleSiteSelector = (value) => {
+    setSiteSelector(value);
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
   };
 
   const handleFsaFilter = (value) => {
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
     setFsaFilter(value);
   };
 
   const handleLastNameFilter = (value) => {
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
     setLastNameFilter(value);
   };
 
   const handleEmailFilter = (value) => {
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
     setEmailFilter(value);
@@ -189,9 +200,11 @@ export default () => {
 
     const mapItemToColumns = (item, columns) => {
       const row = {};
-      columns.map(column => column.id).forEach(columnId => {
-        row[columnId] = item[columnId] || '';
+
+      columns.forEach((column) => {
+        row[column.id] = item[column.id];
       });
+
       return row;
     };
 
@@ -230,7 +243,7 @@ export default () => {
   };
 
   const fetchParticipants = async (offset, regionFilter, fsaFilter, lastNameFilter,
-    emailFilter, sortField, sortDirection, statusFilters) => {
+    emailFilter, sortField, sortDirection, siteSelector, statusFilters) => {
     const queries = [
       sortField && `sortField=${sortField}`,
       offset && `offset=${offset}`,
@@ -238,6 +251,7 @@ export default () => {
       regionFilter && `regionFilter=${regionFilter}`,
       fsaFilter && `fsaFilter=${fsaFilter}`,
       lastNameFilter && `lastNameFilter=${lastNameFilter}`,
+      siteSelector && `siteSelector=${siteSelector}`,
       emailFilter && `emailFilter=${emailFilter}`,
       ...statusFilters && statusFilters.map(status => `statusFilters[]=${status}`),
     ].filter(item => item).join('&');
@@ -349,6 +363,7 @@ export default () => {
       emailFilter,
       order.field,
       order.direction,
+      siteSelector,
       tabs[tabValue].statuses,
     );
 
@@ -403,6 +418,7 @@ export default () => {
           resultColumns.push(
             { id: 'phoneNumber', name: 'Phone Number' },
             { id: 'emailAddress', name: 'Email Address' },
+            { id: 'distance', name: 'Site Distance' },
           )
         }
 
@@ -430,6 +446,7 @@ export default () => {
         emailFilter,
         order.field,
         order.direction,
+        siteSelector,
         tabs[tabValue].statuses,
       );
 
@@ -474,7 +491,7 @@ export default () => {
       });
     };
     runAsync();
-  }, [pagination.currentPage, locationFilter, fsaFilter, lastNameFilter, emailFilter, order, tabValue]);
+  }, [pagination.currentPage, locationFilter, siteSelector, fsaFilter, lastNameFilter, emailFilter, order, tabValue]);
 
   const handlePageChange = (oldPage, newPage) => {
     setPagination(pagination => ({ ...pagination, currentPage: newPage }));
@@ -698,6 +715,27 @@ export default () => {
                 />}
               </Box>
             </Grid>
+            <Grid item style={{ 'marginLeft': 20 }}>
+              <Typography>Site for distance calculation: </Typography>
+              <Box>
+                <TextField
+                  select
+                  fullWidth
+                  variant="filled"
+                  inputProps={{ displayEmpty: true }}
+                  value={siteSelector || ''}
+                  disabled={isLoadingData}
+                  onChange={({ target }) => handleSiteSelector(target.value)}
+                  aria-label="site selector"
+                >
+                  {
+                      [{siteName:'Select Site', siteId: null}, ...sites].map((option, index) => (
+                        <MenuItem key={option.siteId} value={index === 0 ? '' : option.siteId} aria-label={option.siteName}>{option.siteName}</MenuItem>
+                      ))
+                  }
+                </TextField>
+              </Box>
+            </Grid>
             {tabValue === "Hired Candidates" && <Grid container item xs={2} style={{ 'marginLeft': 'auto', 'marginRight': 20 }}>
               <Button
                 onClick={() => setActiveModalForm("new-participant")}
@@ -732,6 +770,12 @@ export default () => {
                   }
                   if (columnId === 'status') {
                     return prettifyStatus(row[columnId], row.id, tabValue, handleEngage);
+                  }
+                  if (columnId === 'distance') {
+                    if (row[columnId] !== null && row[columnId] !== undefined) {
+                      return `${math.round(row[columnId]/1000) || '<1'} Km`;
+                    }
+                    return 'N/A';
                   }
                   if (columnId === 'engage') {
                     return !row.status.includes('already_hired') && <Button

@@ -2,7 +2,7 @@
 const { collections, views } = require('../db');
 const { userRegionQuery } = require('./user.js');
 
-const decomposeParticipantStatus = (raw, joinNames) => raw.map((participant) => {
+const scrubParticipantData = (raw, joinNames) => raw.map((participant) => {
   const statusInfos = [];
 
   const decomposeStatusInfo = (statusInfo) => ({
@@ -43,9 +43,20 @@ const addSiteNameToStatusData = (raw, employerSpecificJoin,
   })),
 }));
 
+const addDistanceToParticipantFields = (raw, siteDistanceJoin) => raw.map((participant) => ({
+  ...participant,
+  ...participant[siteDistanceJoin] && {
+    body: {
+      ...participant.body,
+      distance: participant[siteDistanceJoin][0]?.distance,
+    },
+  },
+}));
+
 const run = async (context) => {
   const {
     table, criteria, options, user, employerSpecificJoin, hiredGlobalJoin,
+    siteDistanceJoin,
     siteJoin,
   } = context;
   let participants = await table.find(criteria, options);
@@ -54,7 +65,8 @@ const run = async (context) => {
     employerSpecificJoin,
     siteJoin,
   );
-  participants = decomposeParticipantStatus(
+  participants = addDistanceToParticipantFields(participants, siteDistanceJoin);
+  participants = scrubParticipantData(
     participants,
     (user.isEmployer || user.isHA) && [
       employerSpecificJoin,
@@ -80,12 +92,15 @@ class FilteredParticipantsFinder {
   }
 
   paginate(pagination, sortField) {
-    const { user, employerSpecificJoin, siteJoin } = this.context;
+    const {
+      user, employerSpecificJoin, siteJoin, siteDistanceJoin, siteIdDistance,
+    } = this.context;
     this.context.options = pagination && {
       // ID is the default sort column
       order: [{
         field: 'id',
         direction: pagination.direction || 'asc',
+        nulls: 'last', // Relevant for sorting by ascending distance
       }],
       //  Using limit/offset pagination may decrease performance in the Postgres instance,
       //  however this is the only way to sort columns that does not have a deterministic
@@ -96,7 +111,7 @@ class FilteredParticipantsFinder {
     };
 
     if (sortField && sortField !== 'id' && this.context.options.order) {
-      let joinFieldName;
+      let joinFieldName = `body.${sortField}`;
 
       if (sortField === 'status') {
         joinFieldName = (user.isEmployer || user.isHA)
@@ -104,10 +119,12 @@ class FilteredParticipantsFinder {
           : 'status_infos';
       }
 
+      if (sortField === 'distance' && siteIdDistance) {
+        joinFieldName = `${siteDistanceJoin}.distance`;
+      }
+
       if (sortField === 'siteName') {
         joinFieldName = `${siteJoin}.body.${sortField}`;
-      } else {
-        joinFieldName = `body.${sortField}`;
       }
 
       // If a field to sort is provided we put that as first priority
@@ -130,11 +147,12 @@ class FieldsFilteredParticipantsFinder {
     this.context = context;
   }
 
-  filterStatus(statusFilters) {
+  filterExternalFields({ statusFilters, siteIdDistance }) {
     const {
       user, criteria, employerSpecificJoin, hiredGlobalJoin,
-      siteJoin,
+      siteJoin, siteDistanceJoin,
     } = this.context;
+    this.context.siteIdDistance = siteIdDistance;
 
     if (user.isEmployer || user.isHA) {
       this.context.table = this.context.table.join({
@@ -154,6 +172,16 @@ class FieldsFilteredParticipantsFinder {
             participant_id: 'id',
             current: true,
             status: 'hired',
+          },
+        },
+        ...siteIdDistance && {
+          [siteDistanceJoin]: {
+            type: 'LEFT OUTER',
+            relation: collections.PARTICIPANTS_DISTANCE,
+            on: {
+              participant_id: 'id',
+              site_id: siteIdDistance,
+            },
           },
         },
         ...statusFilters.includes('hired') && {
@@ -262,6 +290,7 @@ class ParticipantsFinder {
     this.employerSpecificJoin = 'employerSpecificJoin';
     this.hiredGlobalJoin = 'hiredGlobalJoin';
     this.siteJoin = 'siteJoin';
+    this.siteDistanceJoin = 'siteDistanceJoin';
   }
 
   filterRegion(regionFilter) {

@@ -111,7 +111,7 @@ const updateParticipant = async (participantInfo) => {
 };
 
 const getParticipants = async (user, pagination, sortField,
-  regionFilter, fsaFilter, lastNameFilter, emailFilter, statusFilters) => {
+  regionFilter, fsaFilter, lastNameFilter, emailFilter, siteSelector, statusFilters) => {
   const participantsFinder = new ParticipantsFinder(dbClient, user);
 
   // While an employer, if we add 'open' as one of the status filters we won't
@@ -120,7 +120,7 @@ const getParticipants = async (user, pagination, sortField,
   // lastName or email with statuses 'open' AND 'hired', for example. Setting this
   // as a TODO since there's no such case in the application yet.
   const filterLastNameAndEmail = user.isSuperUser || user.isMoH
-    || ((user.isHA || user.isEmployer) && !statusFilters.includes('open'));
+    || ((user.isHA || user.isEmployer) && !statusFilters?.includes('open'));
 
   const participants = await participantsFinder
     .filterRegion(regionFilter)
@@ -129,7 +129,7 @@ const getParticipants = async (user, pagination, sortField,
       lastName: filterLastNameAndEmail && lastNameFilter,
       emailAddress: filterLastNameAndEmail && emailFilter,
     })
-    .filterStatus(statusFilters)
+    .filterExternalFields({ statusFilters, siteIdDistance: siteSelector })
     .paginate(pagination, sortField)
     .run();
 
@@ -175,6 +175,7 @@ const getParticipants = async (user, pagination, sortField,
           callbackStatus: item.callbackStatus,
           statusInfo: returnStatus,
           userUpdatedAt: item.userUpdatedAt,
+          distance: item.distance,
           progressStats,
         };
       }),
@@ -194,6 +195,7 @@ const getParticipants = async (user, pagination, sortField,
         nonHCAP: item.nonHCAP,
         userUpdatedAt: item.userUpdatedAt,
         callbackStatus: item.callbackStatus,
+        distance: item.distance,
       };
 
       const hiredBySomeoneElseStatus = item.statusInfos?.find((statusInfo) => statusInfo.status === 'hired'

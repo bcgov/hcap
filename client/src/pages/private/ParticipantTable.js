@@ -142,15 +142,15 @@ export default () => {
       field: property,
       direction: order.direction === 'desc' ? 'asc' : 'desc',
     });
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
   };
 
   const handleTabChange = (event, newValue) => {
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
     setTabValue(newValue);
@@ -158,8 +158,8 @@ export default () => {
 
   const handleLocationFilter = (value) => {
     setLocationFilter(value);
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
   };
@@ -173,24 +173,24 @@ export default () => {
   };
 
   const handleFsaFilter = (value) => {
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
     setFsaFilter(value);
   };
 
   const handleLastNameFilter = (value) => {
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
     setLastNameFilter(value);
   };
 
   const handleEmailFilter = (value) => {
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
     setEmailFilter(value);

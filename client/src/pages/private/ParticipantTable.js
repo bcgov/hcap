@@ -200,9 +200,11 @@ export default () => {
 
     const mapItemToColumns = (item, columns) => {
       const row = {};
-      columns.map(column => column.id).forEach(columnId => {
-        row[columnId] = item[columnId] || '';
+
+      columns.forEach((column) => {
+        row[column.id] = item[column.id];
       });
+
       return row;
     };
 
@@ -773,7 +775,11 @@ export default () => {
                     return prettifyStatus(row[columnId], row.id, tabValue, handleEngage);
                   }
                   if (columnId === 'distance') {
-                    return row[columnId] ? `${math.round(row[columnId]/1000, 1)} Km` : '';
+                    if (row[columnId !== null && row[columnId !== undefined]]) {
+                      return `${math.round(row[columnId]/1000)} Km`;
+                    }
+                    
+                    return 'N/A';
                   }
                   if (columnId === 'engage') {
                     return !row.status.includes('already_hired') && <Button

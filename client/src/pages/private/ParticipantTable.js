@@ -775,7 +775,7 @@ export default () => {
                     return prettifyStatus(row[columnId], row.id, tabValue, handleEngage);
                   }
                   if (columnId === 'distance') {
-                    if (row[columnId !== null && row[columnId !== undefined]]) {
+                    if (row[columnId] !== null && row[columnId] !== undefined) {
                       return `${math.round(row[columnId]/1000)} Km`;
                     }
                     

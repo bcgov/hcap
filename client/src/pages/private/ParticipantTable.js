@@ -724,14 +724,11 @@ export default () => {
                   variant="filled"
                   inputProps={{ displayEmpty: true }}
                   value={siteSelector || ''}
-                  disabled={isLoadingData || sites.length === 1}
+                  disabled={isLoadingData}
                   onChange={({ target }) => handleSiteSelector(target.value)}
                   aria-label="site selector"
                 >
                   {
-                    sites.length === 1 ?
-                      <MenuItem value={sites[0].siteId}>{sites[0].siteName}</MenuItem>
-                      :
                       [{siteName:'Select Site', siteId: null}, ...sites].map((option, index) => (
                         <MenuItem key={option.siteId} value={index === 0 ? '' : option.siteId} aria-label={option.siteName}>{option.siteName}</MenuItem>
                       ))

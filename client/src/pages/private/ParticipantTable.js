@@ -19,8 +19,9 @@ import {
 import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipantForm, EditParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
-import { DebounceTextField } from '../../components/generic/DebounceTextField';
-import { getDialogTitle, prettifyStatus } from '../../utils';
+import { DebounceTextField } from '../../components/generic/DebounceTextField'
+;
+import { getDialogTitle, prettifyStatus, updateWithoutWhiteSpace } from '../../utils';
 import moment from 'moment';
 
 const pageSize = 10;
@@ -136,7 +137,6 @@ export default () => {
   const [tabValue, setTabValue] = useState(null);
 
   const [locations, setLocations] = useState([]);
-
   const handleRequestSort = (event, property) => {
     setOrder({
       field: property,
@@ -173,24 +173,33 @@ export default () => {
   };
 
   const handleFsaFilter = (value) => {
-    setPagination(prev => ({
-      ...prev,
+    if(value !== value.trim()){
+      return
+    }
+    setPagination(oldPagination => ({
+      ...oldPagination,
       currentPage: 0,
     }));
     setFsaFilter(value);
   };
 
   const handleLastNameFilter = (value) => {
-    setPagination(prev => ({
-      ...prev,
+    if(value !== value.trim()){
+      return
+    }
+    setPagination(oldPagination => ({
+      ...oldPagination,
       currentPage: 0,
     }));
     setLastNameFilter(value);
   };
 
   const handleEmailFilter = (value) => {
-    setPagination(prev => ({
-      ...prev,
+    if(value !== value.trim()){
+      return
+    }
+    setPagination(oldPagination => ({
+      ...oldPagination,
       currentPage: 0,
     }));
     setEmailFilter(value);
@@ -682,7 +691,7 @@ export default () => {
                   value={fsaText || ''}
                   disabled={isLoadingData}
                   onDebounce={(text) => handleFsaFilter(text)}
-                  onChange={({ target }) => setFsaText(target.value)}
+                  onChange={({ target }) => updateWithoutWhiteSpace(target.value, setFsaText)}
                   placeholder='Forward Sortation Area'
                 />
               </Box>
@@ -696,7 +705,7 @@ export default () => {
                   value={lastNameText || ''}
                   disabled={isLoadingData}
                   onDebounce={(text) => handleLastNameFilter(text)}
-                  onChange={({ target }) => setLastNameText(target.value)}
+                  onChange={({ target }) => updateWithoutWhiteSpace(target.value, setLastNameText)}
                   placeholder='Last Name'
                 />}
               </Box>
@@ -710,7 +719,7 @@ export default () => {
                   value={emailText || ''}
                   disabled={isLoadingData}
                   onDebounce={(text) => handleEmailFilter(text)}
-                  onChange={({ target }) => setEmailText(target.value)}
+                  onChange={({ target }) => updateWithoutWhiteSpace(target.value, setEmailText)}
                   placeholder='Email'
                 />}
               </Box>

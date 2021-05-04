@@ -14,3 +14,11 @@ export const mapObjectProps = (o, f) => {
   });
   return m;
 };
+// Input string and update function. 
+// Will only update if the text has no spaces in it. 
+export const updateWithoutWhiteSpace = (str, fn )=>{
+  let trimmed = str.trim();
+  if(trimmed===str){
+    fn(trimmed);
+  }
+}

@@ -173,36 +173,36 @@ export default () => {
   };
 
   const handleFsaFilter = (value) => {
-    if(value !== value.trim()){
+    if(fsaText && fsaText.trim() === value.trim()){
       return
     }
     setPagination(oldPagination => ({
       ...oldPagination,
       currentPage: 0,
     }));
-    setFsaFilter(value);
+    setFsaFilter(value.trim());
   };
 
   const handleLastNameFilter = (value) => {
-    if(value !== value.trim()){
+    if(lastNameText && lastNameText.trim() === value.trim()){
       return
     }
     setPagination(oldPagination => ({
       ...oldPagination,
       currentPage: 0,
     }));
-    setLastNameFilter(value);
+    setLastNameFilter(value.trim());
   };
 
   const handleEmailFilter = (value) => {
-    if(value !== value.trim()){
+    if(emailText && emailText.trim() === value.trim()){
       return
     }
     setPagination(oldPagination => ({
       ...oldPagination,
       currentPage: 0,
     }));
-    setEmailFilter(value);
+    setEmailFilter(value.trim());
   };
 
   const filterData = (data, columns) => {
@@ -691,7 +691,7 @@ export default () => {
                   value={fsaText || ''}
                   disabled={isLoadingData}
                   onDebounce={(text) => handleFsaFilter(text)}
-                  onChange={({ target }) => updateWithoutWhiteSpace(target.value, setFsaText)}
+                  onChange={({ target }) => updateWithoutWhiteSpace(target.value, fsaText, setFsaText)}
                   placeholder='Forward Sortation Area'
                 />
               </Box>
@@ -705,7 +705,7 @@ export default () => {
                   value={lastNameText || ''}
                   disabled={isLoadingData}
                   onDebounce={(text) => handleLastNameFilter(text)}
-                  onChange={({ target }) => updateWithoutWhiteSpace(target.value, setLastNameText)}
+                  onChange={({ target }) => updateWithoutWhiteSpace(target.value, lastNameText,setLastNameText)}
                   placeholder='Last Name'
                 />}
               </Box>
@@ -719,7 +719,7 @@ export default () => {
                   value={emailText || ''}
                   disabled={isLoadingData}
                   onDebounce={(text) => handleEmailFilter(text)}
-                  onChange={({ target }) => updateWithoutWhiteSpace(target.value, setEmailText)}
+                  onChange={({ target }) => updateWithoutWhiteSpace(target.value,emailText, setEmailText)}
                   placeholder='Email'
                 />}
               </Box>

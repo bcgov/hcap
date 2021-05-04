@@ -776,7 +776,7 @@ export default () => {
                   }
                   if (columnId === 'distance') {
                     if (row[columnId] !== null && row[columnId] !== undefined) {
-                      return `${math.round(row[columnId]/1000)} Km`;
+                      return `${math.round(row[columnId]/1000)|| "<1"} Km`;
                     }
                     
                     return 'N/A';

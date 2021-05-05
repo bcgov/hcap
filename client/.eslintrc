@@ -1,6 +1,8 @@
 {
-  "extends": "react-app",
+  "extends": ["react-app", "prettier"],
+  "plugins": ["prettier"],
   "rules": {
-    "import/no-anonymous-default-export": [2, {"allowArrowFunction": true}]
+    "import/no-anonymous-default-export": [2, { "allowArrowFunction": true }],
+    "prettier/prettier": ["error"]
   }
 }

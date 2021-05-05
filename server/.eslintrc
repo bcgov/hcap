@@ -1,11 +1,12 @@
 {
-  "extends": "airbnb-base",
-  "plugins": ["jest"],
+  "extends": ["airbnb-base", "prettier"],
+  "plugins": ["jest", "prettier"],
   "env": {
     "jest/globals": true
   },
   "rules": {
-    "no-underscore-dangle": ["error", { "allowAfterThis": true }]
+    "no-underscore-dangle": ["error", { "allowAfterThis": true }],
+    "prettier/prettier": "error"
   },
   "parserOptions": {
     "ecmaVersion": 2020

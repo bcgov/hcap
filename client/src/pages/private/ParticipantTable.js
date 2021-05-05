@@ -175,8 +175,8 @@ export default () => {
     if(fsaText && fsaText.trim() === value.trim()){
       return
     }
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
     setFsaFilter(value.trim());
@@ -186,8 +186,8 @@ export default () => {
     if(lastNameText?.trim() === value?.trim()){
       return
     }
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
     setLastNameFilter(value.trim());
@@ -197,8 +197,8 @@ export default () => {
     if(emailText && emailText.trim() === value.trim()){
       return
     }
-    setPagination(oldPagination => ({
-      ...oldPagination,
+    setPagination(prev => ({
+      ...prev,
       currentPage: 0,
     }));
     setEmailFilter(value.trim());

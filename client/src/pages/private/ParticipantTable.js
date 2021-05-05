@@ -136,7 +136,6 @@ export default () => {
   const [tabValue, setTabValue] = useState(null);
 
   const [locations, setLocations] = useState([]);
-
   const handleRequestSort = (event, property) => {
     setOrder({
       field: property,
@@ -177,27 +176,33 @@ export default () => {
   };
 
   const handleFsaFilter = (value) => {
+    if(fsaText?.trim() === value?.trim()) return;
+
     setPagination(prev => ({
       ...prev,
       currentPage: 0,
     }));
-    setFsaFilter(value);
+    setFsaFilter(value.trim());
   };
 
   const handleLastNameFilter = (value) => {
+    if(lastNameText?.trim() === value?.trim()) return;
+    
     setPagination(prev => ({
       ...prev,
       currentPage: 0,
     }));
-    setLastNameFilter(value);
+    setLastNameFilter(value.trim());
   };
 
   const handleEmailFilter = (value) => {
+    if(emailText?.trim() === value?.trim()) return;
+    
     setPagination(prev => ({
       ...prev,
       currentPage: 0,
     }));
-    setEmailFilter(value);
+    setEmailFilter(value.trim());
   };
 
   const filterData = (data, columns) => {

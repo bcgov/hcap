@@ -21,7 +21,7 @@ import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipa
 import { useToast } from '../../hooks';
 import { DebounceTextField } from '../../components/generic/DebounceTextField'
 ;
-import { getDialogTitle, prettifyStatus, updateWithoutWhiteSpace } from '../../utils';
+import { getDialogTitle, prettifyStatus } from '../../utils';
 import moment from 'moment';
 
 const pageSize = 10;
@@ -691,7 +691,7 @@ export default () => {
                   value={fsaText || ''}
                   disabled={isLoadingData}
                   onDebounce={(text) => handleFsaFilter(text)}
-                  onChange={({ target }) => updateWithoutWhiteSpace(target.value, fsaText, setFsaText)}
+                  onChange={({ target }) => setFsaText(target.value)}
                   placeholder='Forward Sortation Area'
                 />
               </Box>
@@ -705,7 +705,7 @@ export default () => {
                   value={lastNameText || ''}
                   disabled={isLoadingData}
                   onDebounce={(text) => handleLastNameFilter(text)}
-                  onChange={({ target }) => updateWithoutWhiteSpace(target.value, lastNameText,setLastNameText)}
+                  onChange={({ target }) => setLastNameText(target.value)}
                   placeholder='Last Name'
                 />}
               </Box>
@@ -719,7 +719,7 @@ export default () => {
                   value={emailText || ''}
                   disabled={isLoadingData}
                   onDebounce={(text) => handleEmailFilter(text)}
-                  onChange={({ target }) => updateWithoutWhiteSpace(target.value,emailText, setEmailText)}
+                  onChange={({ target }) => setEmailText(target.value)}
                   placeholder='Email'
                 />}
               </Box>

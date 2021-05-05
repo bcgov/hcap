@@ -19,8 +19,7 @@ import {
 import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipantForm, EditParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
-import { DebounceTextField } from '../../components/generic/DebounceTextField'
-;
+import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { getDialogTitle, prettifyStatus } from '../../utils';
 import moment from 'moment';
 

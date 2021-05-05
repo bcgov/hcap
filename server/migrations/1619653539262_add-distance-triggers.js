@@ -30,6 +30,10 @@ exports.up = async (pgm) => {
     SELECT longitude::text,latitude::text INTO loc FROM geocodes WHERE REPLACE(postal_code, ' ', '')=REPLACE(NEW.body->>'postalCode', ' ', '');
 
     IF NOT FOUND THEN
+      IF NEW.body->>'location' IS NOT NULL THEN
+        NEW.body = NEW.body::jsonb - 'location';
+        DELETE FROM participants_distance WHERE site_id=(site.body->>'siteId')::int;
+      END IF;
       RETURN NEW;
     END IF;
 
@@ -45,7 +49,7 @@ exports.up = async (pgm) => {
       FOR participant IN
         SELECT * FROM participants
       LOOP
-        UPDATE participants_distance SET distance = ST_DistanceSphere(ST_GeomFromGeoJSON(NEW.body->>'location'), ST_GeomFromGeoJSON(participant.body->>'location')) where participant_id=participant.id AND site_id=(NEW.body->>'siteId')::int;
+        UPDATE participants_distance SET distance = ST_DistanceSphere(ST_GeomFromGeoJSON(NEW.body->>'location'), ST_GeomFromGeoJSON(participant.body->>'location')) WHERE participant_id=participant.id AND site_id=(NEW.body->>'siteId')::int;
       END LOOP;
     END IF;
     RETURN NEW;
@@ -72,6 +76,10 @@ exports.up = async (pgm) => {
     SELECT longitude::text,latitude::text INTO loc FROM geocodes WHERE REPLACE(postal_code, ' ', '')=REPLACE(NEW.body->>'postalCode', ' ', '');
 
     IF NOT FOUND THEN
+      IF NEW.body->>'location' IS NOT NULL THEN
+        NEW.body = NEW.body::jsonb - 'location';
+        DELETE FROM participants_distance WHERE participant_id=NEW.id;
+      END IF;
       RETURN NEW;
     END IF;
 
@@ -87,7 +95,7 @@ exports.up = async (pgm) => {
       FOR site IN
         SELECT * FROM employer_sites
       LOOP
-        UPDATE participants_distance SET distance = ST_DistanceSphere(ST_GeomFromGeoJSON(NEW.body->>'location'), ST_GeomFromGeoJSON(site.body->>'location')) where participant_id=NEW.id AND site_id=(site.body->>'siteId')::int;
+        UPDATE participants_distance SET distance = ST_DistanceSphere(ST_GeomFromGeoJSON(NEW.body->>'location'), ST_GeomFromGeoJSON(site.body->>'location')) WHERE participant_id=NEW.id AND site_id=(site.body->>'siteId')::int;
       END LOOP;
     END IF;
     RETURN NEW;

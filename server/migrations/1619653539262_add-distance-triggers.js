@@ -30,6 +30,9 @@ exports.up = async (pgm) => {
     SELECT longitude::text,latitude::text INTO loc FROM geocodes WHERE REPLACE(postal_code, ' ', '')=REPLACE(NEW.body->>'postalCode', ' ', '');
 
     IF NOT FOUND THEN
+      IF NEW.body->>'location' IS NOT NULL THEN
+        NEW.body = NEW.body::jsonb - 'location';
+      END IF;
       RETURN NEW;
     END IF;
 
@@ -72,6 +75,9 @@ exports.up = async (pgm) => {
     SELECT longitude::text,latitude::text INTO loc FROM geocodes WHERE REPLACE(postal_code, ' ', '')=REPLACE(NEW.body->>'postalCode', ' ', '');
 
     IF NOT FOUND THEN
+      IF NEW.body->>'location' IS NOT NULL THEN
+        NEW.body = NEW.body::jsonb - 'location';
+      END IF;
       RETURN NEW;
     END IF;
 

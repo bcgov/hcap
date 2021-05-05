@@ -173,9 +173,8 @@ export default () => {
   };
 
   const handleFsaFilter = (value) => {
-    if(fsaText && fsaText.trim() === value.trim()){
-      return
-    }
+    if(fsaText?.trim() === value?.trim()) return;
+
     setPagination(oldPagination => ({
       ...oldPagination,
       currentPage: 0,
@@ -184,9 +183,8 @@ export default () => {
   };
 
   const handleLastNameFilter = (value) => {
-    if(lastNameText?.trim() === value?.trim()){
-      return
-    }
+    if(lastNameText?.trim() === value?.trim()) return;
+    
     setPagination(oldPagination => ({
       ...oldPagination,
       currentPage: 0,
@@ -195,9 +193,8 @@ export default () => {
   };
 
   const handleEmailFilter = (value) => {
-    if(emailText && emailText.trim() === value.trim()){
-      return
-    }
+    if(emailText?.trim() === value?.trim()) return;
+    
     setPagination(oldPagination => ({
       ...oldPagination,
       currentPage: 0,

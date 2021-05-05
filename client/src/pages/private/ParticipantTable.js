@@ -183,7 +183,7 @@ export default () => {
   };
 
   const handleLastNameFilter = (value) => {
-    if(lastNameText && lastNameText.trim() === value.trim()){
+    if(lastNameText?.trim() === value?.trim()){
       return
     }
     setPagination(oldPagination => ({

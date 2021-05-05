@@ -724,7 +724,7 @@ export default () => {
                 />}
               </Box>
             </Grid>
-            <Grid item style={{ 'marginLeft': 20 }}>
+            {!roles.includes('ministry_of_health') && <Grid item style={{ 'marginLeft': 20 }}>
               <Typography>Site for distance calculation: </Typography>
               <Box>
                 <TextField
@@ -744,7 +744,7 @@ export default () => {
                   }
                 </TextField>
               </Box>
-            </Grid>
+            </Grid>}
             {tabValue === "Hired Candidates" && <Grid container item xs={2} style={{ 'marginLeft': 'auto', 'marginRight': 20 }}>
               <Button
                 onClick={() => setActiveModalForm("new-participant")}

@@ -16,7 +16,8 @@
     "export": "node scripts/export.js",
     "watch": "NODE_ENV=local nodemon main.js",
     "start": "NODE_ENV=production node main.js",
-    "test": "NODE_ENV=test jest --runInBand --forceExit"
+    "test": "NODE_ENV=test jest --runInBand --forceExit",
+    "lint": "eslint --ext js,jsx ./ --fix"
   },
   "dependencies": {
     "axios": "0.21.1",

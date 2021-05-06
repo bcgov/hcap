@@ -3,6 +3,10 @@ const { dbClient, collections } = require('../db');
 exports.shorthands = undefined;
 
 exports.up = async (pgm) => {
+  pgm.sql(`DELETE FROM ${collections.PARTICIPANTS_DISTANCE};`);
+
+  pgm.sql(`CREATE INDEX unique_site_participant ON ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id);`);
+
   const participants = await dbClient.db[collections.PARTICIPANTS].findDoc({
     'location IS NOT': null,
   });
@@ -11,7 +15,7 @@ exports.up = async (pgm) => {
   });
 
   const aWholeLottaPromises = sites.flatMap((site) => participants.map((participant) => pgm.sql(`
-    INSERT INTO participants_distance (participant_id, site_id, distance) VALUES (
+    INSERT INTO ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id, distance) VALUES (
       ${participant.id},
       ${site.siteId},
       ST_DistanceSphere(

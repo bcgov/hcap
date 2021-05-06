@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
@@ -15,6 +15,10 @@ import {
   EditParticipantFormSchema,
   regionLabelsMap,
   API_URL,
+  sortOrder,
+  pageSize,
+  defaultColumns,
+  tabs
 } from '../../constants';
 import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import {
@@ -30,62 +34,6 @@ import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { getDialogTitle, prettifyStatus } from '../../utils';
 import moment from 'moment';
 
-const pageSize = 10;
-
-const defaultColumns = [
-  { id: 'id', name: 'ID' },
-  { id: 'lastName', name: 'Last Name' },
-  { id: 'firstName', name: 'First Name' },
-  { id: 'postalCodeFsa', name: 'FSA' },
-  { id: 'preferredLocation', name: 'Preferred Region(s)' },
-  { id: 'nonHCAP', name: 'Non-HCAP' },
-  { id: 'userUpdatedAt', name: 'Last Updated' },
-  { id: 'callbackStatus', name: 'Callback Status' },
-];
-
-const sortOrder = [
-  'id',
-  'lastName',
-  'firstName',
-  'status',
-  'statusInfo',
-  'postalCodeFsa',
-  'phoneNumber',
-  'emailAddress',
-  'preferredLocation',
-  'distance',
-  'interested',
-  'nonHCAP',
-  'crcClear',
-  'callbackStatus',
-  'userUpdatedAt',
-  'engage',
-  'edit',
-];
-
-const tabs = {
-  // Tabs, associated allowed roles, displayed statuses
-  'Available Participants': {
-    roles: ['employer', 'health_authority'],
-    statuses: ['open'],
-  },
-  'My Candidates': {
-    roles: ['employer', 'health_authority'],
-    statuses: ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
-  },
-  'Archived Candidates': {
-    roles: ['employer', 'health_authority'],
-    statuses: ['rejected'],
-  },
-  'Hired Candidates': {
-    roles: ['employer', 'health_authority'],
-    statuses: ['hired'],
-  },
-  Participants: {
-    roles: ['ministry_of_health', 'superuser'],
-    statuses: ['open', 'prospecting', 'interviewing', 'offer_made', 'rejected', 'hired'],
-  },
-};
 
 const CustomTabs = withStyles((theme) => ({
   root: {
@@ -118,6 +66,8 @@ const CustomTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
+
+
 export default () => {
   const { openToast } = useToast();
   const [roles, setRoles] = useState([]);
@@ -131,18 +81,45 @@ export default () => {
   const [locationFilter, setLocationFilter] = useState(null);
   const [siteSelector, setSiteSelector] = useState(null);
   const [fsaFilter, setFsaFilter] = useState(null);
-  const [fsaText, setFsaText] = useState(null);
   const [lastNameFilter, setLastNameFilter] = useState(null);
-  const [lastNameText, setLastNameText] = useState(null);
   const [emailFilter, setEmailFilter] = useState(null);
-  const [emailText, setEmailText] = useState(null);
   const [hideLastNameAndEmailFilter, setHideLastNameAndEmailFilter] = useState(true);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [tabValue, setTabValue] = useState(null);
-
   const [locations, setLocations] = useState([]);
+
+  const textReducer = (state,action)=>{
+    switch (action.type){
+      case 'updateFSA':
+        return {
+          ...state, 
+          fsaText:action.text
+        }
+      case 'updateEmail':
+        return {
+          ...state, 
+          emailText:action.text
+        }
+      case 'updateLastname':
+        return {
+          ...state, 
+          lastNameText:action.text
+        }
+      default:
+      return state 
+    }
+  }
+
+
+  const [textState, dispatch ] = useReducer(textReducer,{
+    fsaText:'',
+    emailText:'',
+    lastNameText:''
+  })
+
+
   const handleRequestSort = (event, property) => {
     setOrder({
       field: property,
@@ -153,6 +130,7 @@ export default () => {
       currentPage: 0,
     }));
   };
+
 
   const handleTabChange = (event, newValue) => {
     setPagination((prev) => ({
@@ -183,7 +161,7 @@ export default () => {
   };
 
   const handleFsaFilter = (value) => {
-    if (fsaText?.trim() === value?.trim()) return;
+    if(textState.fsaText?.trim() === value?.trim()) return;
 
     setPagination((prev) => ({
       ...prev,
@@ -193,9 +171,9 @@ export default () => {
   };
 
   const handleLastNameFilter = (value) => {
-    if (lastNameText?.trim() === value?.trim()) return;
-
-    setPagination((prev) => ({
+    if(textState.lastNameText?.trim() === value?.trim()) return;
+    
+    setPagination(prev => ({
       ...prev,
       currentPage: 0,
     }));
@@ -203,9 +181,9 @@ export default () => {
   };
 
   const handleEmailFilter = (value) => {
-    if (emailText?.trim() === value?.trim()) return;
-
-    setPagination((prev) => ({
+    if(textState.emailText?.trim() === value?.trim()) return;
+    
+    setPagination(prev => ({
       ...prev,
       currentPage: 0,
     }));
@@ -556,6 +534,60 @@ export default () => {
     setActionMenuParticipant(null);
   };
 
+  const renderCell = (columnId, row) => {
+    if (columnId === 'callbackStatus') {
+      return row[columnId] ? 'Primed' : 'Available';
+    }
+    if (columnId === 'status') {
+      return prettifyStatus(row[columnId], row.id, tabValue, handleEngage);
+    }
+    if (columnId === 'distance') {
+      if (row[columnId] !== null && row[columnId] !== undefined) {
+        return `${math.round(row[columnId]/1000) || '<1'} Km`;
+      }
+      return 'N/A';
+    }
+    if (columnId === 'engage') {
+      return !row.status.includes('already_hired') && <Button
+        onClick={(event) => {
+          setActionMenuParticipant(row[columnId]);
+          setAnchorElement(event.currentTarget);
+        }}
+        variant="outlined"
+        size="small"
+        text="Actions"
+      />
+    }
+    if (columnId === 'edit') {
+      return <Button
+        onClick={async () => {
+          // Get data from row.id
+          const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-type': 'application/json',
+              'Authorization': `Bearer ${store.get('TOKEN')}`,
+            },
+            method: 'GET',
+          });
+  
+          const participant = await response.json();
+  
+          setActionMenuParticipant(participant[0]);
+          setActiveModalForm('edit-participant');
+          setAnchorElement(null);
+        }}
+        variant="outlined"
+        size="small"
+        text="Edit"
+      />
+    }
+    if (columnId === 'userUpdatedAt') {
+      return moment(row.userUpdatedAt).fromNow();
+    }
+    return row[columnId];
+  }
+
   return (
     <>
       <Dialog
@@ -767,44 +799,61 @@ export default () => {
                   time={1000}
                   variant='filled'
                   fullWidth
-                  value={fsaText || ''}
+                  value={textState.fsaText || ''}
                   disabled={isLoadingData}
                   onDebounce={(text) => handleFsaFilter(text)}
-                  onChange={({ target }) => setFsaText(target.value)}
+                  onChange={({ target }) => dispatch({type:'updateFSA', text:target.value})}
                   placeholder='Forward Sortation Area'
                 />
               </Box>
             </Grid>
             <Grid item>
               <Box pl={2}>
-                {!hideLastNameAndEmailFilter && (
-                  <DebounceTextField
-                    time={1000}
-                    variant='filled'
-                    fullWidth
-                    value={lastNameText || ''}
-                    disabled={isLoadingData}
-                    onDebounce={(text) => handleLastNameFilter(text)}
-                    onChange={({ target }) => setLastNameText(target.value)}
-                    placeholder='Last Name'
-                  />
-                )}
+                {!hideLastNameAndEmailFilter && <DebounceTextField
+                  time={1000}
+                  variant="filled"
+                  fullWidth
+                  value={textState.lastNameText || ''}
+                  disabled={isLoadingData}
+                  onDebounce={(text) => handleLastNameFilter(text)}
+                  onChange={({ target }) => dispatch({type:'updateLastName', text:target.value})}
+                  placeholder='Last Name'
+                />}
               </Box>
             </Grid>
             <Grid item>
               <Box pl={2}>
-                {!hideLastNameAndEmailFilter && (
-                  <DebounceTextField
-                    time={1000}
-                    variant='filled'
-                    fullWidth
-                    value={emailText || ''}
-                    disabled={isLoadingData}
-                    onDebounce={(text) => handleEmailFilter(text)}
-                    onChange={({ target }) => setEmailText(target.value)}
-                    placeholder='Email'
-                  />
-                )}
+                {!hideLastNameAndEmailFilter && <DebounceTextField
+                  time={1000}
+                  variant="filled"
+                  fullWidth
+                  value={textState.emailText || ''}
+                  disabled={isLoadingData}
+                  onDebounce={(text) => handleEmailFilter(text)}
+                  onChange={({ target }) =>dispatch({type:'updateEmail',text:target.value})}
+                  placeholder='Email'
+                />}
+              </Box>
+            </Grid>
+            <Grid item style={{ 'marginLeft': 20 }}>
+              <Typography>Site for distance calculation: </Typography>
+              <Box>
+                <TextField
+                  select
+                  fullWidth
+                  variant="filled"
+                  inputProps={{ displayEmpty: true }}
+                  value={siteSelector || ''}
+                  disabled={isLoadingData}
+                  onChange={({ target }) => handleSiteSelector(target.value)}
+                  aria-label="site selector"
+                >
+                  {
+                      [{siteName:'Select Site', siteId: null}, ...sites].map((option, index) => (
+                        <MenuItem key={option.siteId} value={index === 0 ? '' : option.siteId} aria-label={option.siteName}>{option.siteName}</MenuItem>
+                      ))
+                  }
+                </TextField>
               </Box>
             </Grid>
             {!roles.includes('ministry_of_health') && (
@@ -862,65 +911,7 @@ export default () => {
               onChangePage={handlePageChange}
               rowsPerPage={pageSize}
               currentPage={pagination.currentPage}
-              renderCell={(columnId, row) => {
-                if (columnId === 'callbackStatus') {
-                  return row[columnId] ? 'Primed' : 'Available';
-                }
-                if (columnId === 'status') {
-                  return prettifyStatus(row[columnId], row.id, tabValue, handleEngage);
-                }
-                if (columnId === 'distance') {
-                  if (row[columnId] !== null && row[columnId] !== undefined) {
-                    return `${math.round(row[columnId] / 1000) || '<1'} Km`;
-                  }
-                  return 'N/A';
-                }
-                if (columnId === 'engage') {
-                  return (
-                    !row.status.includes('already_hired') && (
-                      <Button
-                        onClick={(event) => {
-                          setActionMenuParticipant(row[columnId]);
-                          setAnchorElement(event.currentTarget);
-                        }}
-                        variant='outlined'
-                        size='small'
-                        text='Actions'
-                      />
-                    )
-                  );
-                }
-                if (columnId === 'edit') {
-                  return (
-                    <Button
-                      onClick={async () => {
-                        // Get data from row.id
-                        const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
-                          headers: {
-                            Accept: 'application/json',
-                            'Content-type': 'application/json',
-                            Authorization: `Bearer ${store.get('TOKEN')}`,
-                          },
-                          method: 'GET',
-                        });
-
-                        const participant = await response.json();
-
-                        setActionMenuParticipant(participant[0]);
-                        setActiveModalForm('edit-participant');
-                        setAnchorElement(null);
-                      }}
-                      variant='outlined'
-                      size='small'
-                      text='Edit'
-                    />
-                  );
-                }
-                if (columnId === 'userUpdatedAt') {
-                  return moment(row.userUpdatedAt).fromNow();
-                }
-                return row[columnId];
-              }}
+              renderCell={renderCell}
               onRequestSort={handleRequestSort}
               rows={rows}
               isLoading={isLoadingData}

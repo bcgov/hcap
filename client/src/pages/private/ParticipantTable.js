@@ -68,6 +68,27 @@ const CustomTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
+
+const textReducer = (state,action)=>{
+  const {type,key,value} = action
+  let newstate = {...state};
+  switch (type){
+    case 'updateText':
+      newstate[key] = value;
+      return newstate;
+    case 'updateFilter': 
+      if(state[key]?.trim() === value?.trim()) return state;
+      setPagination(prev => ({
+        ...prev,
+        currentPage: 0,
+      }));
+      newstate[key] = value? value.trim() : '';
+      return newstate;
+    default:
+      return state;
+  }
+}
+
 export default () => {
   const { openToast } = useToast();
   const [roles, setRoles] = useState([]);
@@ -87,26 +108,8 @@ export default () => {
   const [tabValue, setTabValue] = useState(null);
   const [locations, setLocations] = useState([]);
 
-  const textReducer = (state,action)=>{
-    const {type,key,value} = action
-    let newstate = {...state};
-    switch (type){
-      case 'updateText':
-        newstate[key] = value;
-        return newstate;
-      case 'updateFilter': 
-        if(state[key]?.trim() === value?.trim()) return state;
-        setPagination(prev => ({
-          ...prev,
-          currentPage: 0,
-        }));
-        newstate[key] = value? value.trim() : '';
-        return newstate;
-      default:
-        return state;
-    }
-  }
   const [textState, dispatch ] = useReducer(textReducer,defaultTableState);
+
   const handleRequestSort = (event, property) => {
     setOrder({
       field: property,

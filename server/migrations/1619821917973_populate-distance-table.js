@@ -5,7 +5,7 @@ exports.shorthands = undefined;
 exports.up = async (pgm) => {
   pgm.sql(`DELETE FROM ${collections.PARTICIPANTS_DISTANCE};`);
 
-  pgm.sql(`CREATE INDEX unique_site_participant ON ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id);`);
+  pgm.sql(`CREATE UNIQUE INDEX unique_site_participant ON ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id);`);
 
   const participants = await dbClient.db[collections.PARTICIPANTS].findDoc({
     'location IS NOT': null,

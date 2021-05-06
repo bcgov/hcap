@@ -53,3 +53,41 @@ export const tabs = { // Tabs, associated allowed roles, displayed statuses
     statuses: ['open', 'prospecting', 'interviewing', 'offer_made', 'rejected', 'hired'],
   },
 };
+
+
+export const makeToasts = (firstName,lastName, ToastStatus) =>{
+    return{
+    open: {
+      status: ToastStatus.Info,
+      message: `${firstName} ${lastName} is has been disengaged`,
+    },
+    interviewing: {
+      status: ToastStatus.Info,
+      message: `${firstName} ${lastName} is now being interviewed`,
+    },
+    offer_made: {
+      status: ToastStatus.Info,
+      message: `${firstName} ${lastName} has been made a job offer`,
+    },
+    hired: {
+      status: ToastStatus.Success,
+      message: `${firstName} ${lastName} has been hired`,
+    },
+    rejected: {
+      status: ToastStatus.Info,
+      message: `${firstName} ${lastName} has been archived`,
+    },
+    already_hired: {
+      status: ToastStatus.Info,
+      message: `${firstName} ${lastName} is already hired by someone else`,
+    }}
+};
+
+export const defaultTableState = {
+    fsaText:'',
+    emailText:'',
+    lastNameText:'',
+    fsaFilter:'',
+    emailFilter:'',
+    lastNameFilter:''
+  }

@@ -18,7 +18,9 @@ import {
   sortOrder,
   pageSize,
   defaultColumns,
-  tabs
+  tabs,
+  makeToasts,
+  defaultTableState
 } from '../../constants';
 import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import {
@@ -66,8 +68,6 @@ const CustomTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-
-
 export default () => {
   const { openToast } = useToast();
   const [roles, setRoles] = useState([]);
@@ -80,9 +80,6 @@ export default () => {
   const [columns, setColumns] = useState(defaultColumns);
   const [locationFilter, setLocationFilter] = useState(null);
   const [siteSelector, setSiteSelector] = useState(null);
-  const [fsaFilter, setFsaFilter] = useState(null);
-  const [lastNameFilter, setLastNameFilter] = useState(null);
-  const [emailFilter, setEmailFilter] = useState(null);
   const [hideLastNameAndEmailFilter, setHideLastNameAndEmailFilter] = useState(true);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
@@ -91,35 +88,25 @@ export default () => {
   const [locations, setLocations] = useState([]);
 
   const textReducer = (state,action)=>{
-    switch (action.type){
-      case 'updateFSA':
-        return {
-          ...state, 
-          fsaText:action.text
-        }
-      case 'updateEmail':
-        return {
-          ...state, 
-          emailText:action.text
-        }
-      case 'updateLastname':
-        return {
-          ...state, 
-          lastNameText:action.text
-        }
+    const {type,key,value} = action
+    let newstate = {...state};
+    switch (type){
+      case 'updateText':
+        newstate[key] = value;
+        return newstate;
+      case 'updateFilter': 
+        if(state[key]?.trim() === value?.trim()) return state;
+        setPagination(prev => ({
+          ...prev,
+          currentPage: 0,
+        }));
+        newstate[key] = value? value.trim() : '';
+        return newstate;
       default:
-      return state 
+        return state;
     }
   }
-
-
-  const [textState, dispatch ] = useReducer(textReducer,{
-    fsaText:'',
-    emailText:'',
-    lastNameText:''
-  })
-
-
+  const [textState, dispatch ] = useReducer(textReducer,defaultTableState);
   const handleRequestSort = (event, property) => {
     setOrder({
       field: property,
@@ -158,36 +145,6 @@ export default () => {
       ...prev,
       currentPage: 0,
     }));
-  };
-
-  const handleFsaFilter = (value) => {
-    if(textState.fsaText?.trim() === value?.trim()) return;
-
-    setPagination((prev) => ({
-      ...prev,
-      currentPage: 0,
-    }));
-    setFsaFilter(value.trim());
-  };
-
-  const handleLastNameFilter = (value) => {
-    if(textState.lastNameText?.trim() === value?.trim()) return;
-    
-    setPagination(prev => ({
-      ...prev,
-      currentPage: 0,
-    }));
-    setLastNameFilter(value.trim());
-  };
-
-  const handleEmailFilter = (value) => {
-    if(textState.emailText?.trim() === value?.trim()) return;
-    
-    setPagination(prev => ({
-      ...prev,
-      currentPage: 0,
-    }));
-    setEmailFilter(value.trim());
   };
 
   const filterData = (data, columns) => {
@@ -301,34 +258,7 @@ export default () => {
       } else {
         const index = rows.findIndex((row) => row.id === participantId);
         const { firstName, lastName } = rows[index];
-
-        const toasts = {
-          open: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} is has been disengaged`,
-          },
-          interviewing: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} is now being interviewed`,
-          },
-          offer_made: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} has been made a job offer`,
-          },
-          hired: {
-            status: ToastStatus.Success,
-            message: `${firstName} ${lastName} has been hired`,
-          },
-          rejected: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} has been archived`,
-          },
-          already_hired: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} is already hired by someone else`,
-          },
-        };
-
+        const toasts = makeToasts(firstName,lastName,ToastStatus);
         openToast(toasts[statusData?.status === 'already_hired' ? statusData.status : status]);
         setActionMenuParticipant(null);
         setActiveModalForm(null);
@@ -372,9 +302,9 @@ export default () => {
     const { data, pagination } = await fetchParticipants(
       currentPage * pageSize,
       locationFilter,
-      fsaFilter,
-      lastNameFilter,
-      emailFilter,
+      textState.fsaFilter,
+      textState.lastNameFilter,
+      textState.emailFilter,
       order.field,
       order.direction,
       siteSelector,
@@ -458,9 +388,9 @@ export default () => {
       const { data, pagination } = await fetchParticipants(
         currentPage * pageSize,
         locationFilter,
-        fsaFilter,
-        lastNameFilter,
-        emailFilter,
+        textState.fsaFilter || '',
+        textState.lastNameFilter || '',
+        textState.emailFilter || '',
         order.field,
         order.direction,
         siteSelector,
@@ -514,16 +444,7 @@ export default () => {
       });
     };
     runAsync();
-  }, [
-    pagination.currentPage,
-    locationFilter,
-    siteSelector,
-    fsaFilter,
-    lastNameFilter,
-    emailFilter,
-    order,
-    tabValue,
-  ]);
+  }, [pagination.currentPage, locationFilter, siteSelector, textState.emailFilter, textState.locationFilter, textState.lastNameFilter,  textState.fsaFilter, order, tabValue]);
 
   const handlePageChange = (oldPage, newPage) => {
     setPagination((pagination) => ({ ...pagination, currentPage: newPage }));
@@ -799,10 +720,10 @@ export default () => {
                   time={1000}
                   variant='filled'
                   fullWidth
-                  value={textState.fsaText || ''}
+                  value={textState.fsaText}
                   disabled={isLoadingData}
-                  onDebounce={(text) => handleFsaFilter(text)}
-                  onChange={({ target }) => dispatch({type:'updateFSA', text:target.value})}
+                  onDebounce={(text) => dispatch({type:'updateFilter',key:'fsaFilter', value:text})}
+                  onChange={({ target }) => dispatch({type:'updateText',key:'fsaText',  value:target.value})}
                   placeholder='Forward Sortation Area'
                 />
               </Box>
@@ -813,10 +734,10 @@ export default () => {
                   time={1000}
                   variant="filled"
                   fullWidth
-                  value={textState.lastNameText || ''}
+                  value={textState.lastNameText}
                   disabled={isLoadingData}
-                  onDebounce={(text) => handleLastNameFilter(text)}
-                  onChange={({ target }) => dispatch({type:'updateLastName', text:target.value})}
+                  onDebounce={(text) => dispatch({type:'updateFilter',key:'lastNameFilter', value:text})}
+                  onChange={({ target }) => dispatch({type:'updateText',key:'lastNameText',  value:target.value})}
                   placeholder='Last Name'
                 />}
               </Box>
@@ -827,10 +748,10 @@ export default () => {
                   time={1000}
                   variant="filled"
                   fullWidth
-                  value={textState.emailText || ''}
+                  value={textState.emailText}
                   disabled={isLoadingData}
-                  onDebounce={(text) => handleEmailFilter(text)}
-                  onChange={({ target }) =>dispatch({type:'updateEmail',text:target.value})}
+                  onDebounce={(text) => dispatch({type:'updateFilter',key:'emailFilter', value:text})}
+                  onChange={({ target }) => dispatch({type:'updateText',key:'emailNameText',  value:target.value})}
                   placeholder='Email'
                 />}
               </Box>

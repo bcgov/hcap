@@ -39,7 +39,8 @@ const schema = {
         id serial primary key,
         "participant_id" integer not null,
         "site_id" integer not null,
-        "distance" integer
+        "distance" integer,
+        UNIQUE (participant_id, site_id),
         )`,
     },
     {

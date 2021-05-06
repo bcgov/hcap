@@ -18,7 +18,7 @@ exports.up = async (pgm) => {
         ST_GeomFromGeoJSON('${JSON.stringify(site.location)}'),
         ST_GeomFromGeoJSON('${JSON.stringify(participant.location)}')
       )
-    );`)));
+    ) ON CONFLICT DO NOTHING;`)));
 
   await Promise.allSettled(aWholeLottaPromises);
 };

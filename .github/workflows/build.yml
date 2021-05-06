@@ -21,7 +21,7 @@ jobs:
       - name: NPM Audit
         run: |
           cd "$GITHUB_WORKSPACE/client" && npm audit --production
-          cd "$GITHUB_WORKSPACE/server" && npm audit
+          cd "$GITHUB_WORKSPACE/server" && npm audit --production
           cd "$GITHUB_WORKSPACE"
 
   build:

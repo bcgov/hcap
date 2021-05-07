@@ -80,6 +80,12 @@ browser or http://`hcapparticipants`.local.freshworks.club for the participant's
 don't want an external DNS resolving to your localhost you can add an alias to your `hosts` file
 resolving to `*.your-prefix`.
 
+### Formatting
+
+This project is formatted with prettier, make sure to install the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
+
+**Note:** If you didn't have prettier installed previously, be sure to enable  `"prettier.requireConfig": true,` to avoid formatting files without configurations.
+
 ### Public Front End Views
 
 ##### /

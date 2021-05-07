@@ -22,7 +22,7 @@ exports.up = async (pgm) => {
     participantsBatches.push(participants.splice(0, batchSize));
   }
 
-  const promises = sites.flatMap((site) => participantsBatches.map((batch, i) => async () => {
+  const promises = sites.flatMap((site) => participantsBatches.map(async (batch, i) => {
     await pgm.sql(`
     INSERT INTO ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id, distance) VALUES
       ${batch.map((participant) => `(

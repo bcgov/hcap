@@ -35,7 +35,7 @@ parameters:
     required: true
   - name: PVC_SIZE
     description: The size of the persistent volume to create
-    value: 1Gi
+    value: 5Gi
     required: true
   - name: STORAGE_CLASS
     description: Type of storage used by the PVC

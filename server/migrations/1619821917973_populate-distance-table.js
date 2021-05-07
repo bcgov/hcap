@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const { collections } = require('../db');
 
 exports.shorthands = undefined;

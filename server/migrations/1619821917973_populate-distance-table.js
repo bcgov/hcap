@@ -14,15 +14,23 @@ exports.up = async (pgm) => {
     'location IS NOT': null,
   });
 
-  const aWholeLottaPromises = sites.flatMap((site) => participants.map((participant) => pgm.sql(`
-    INSERT INTO ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id, distance) VALUES (
-      ${participant.id},
-      ${site.siteId},
-      ST_DistanceSphere(
-        ST_GeomFromGeoJSON('${JSON.stringify(site.location)}'),
-        ST_GeomFromGeoJSON('${JSON.stringify(participant.location)}')
-      )
-    ) ON CONFLICT DO NOTHING;`)));
+  const participantsBatches = [];
+  const batchSize = 1000;
+
+  while (participants.length) {
+    participantsBatches.push(participants.splice(0, batchSize));
+  }
+
+  const aWholeLottaPromises = sites.flatMap((site) => participantsBatches.map((batch) => pgm.sql(`
+    INSERT INTO ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id, distance) VALUES 
+      ${batch.map((participant) => `(
+        ${participant.id},
+        ${site.siteId},
+        ST_DistanceSphere(
+          ST_GeomFromGeoJSON('${JSON.stringify(site.location)}'),
+          ST_GeomFromGeoJSON('${JSON.stringify(participant.location)}')
+        )
+      )`).join(',')} ON CONFLICT DO NOTHING;`)));
 
   await Promise.allSettled(aWholeLottaPromises);
 };

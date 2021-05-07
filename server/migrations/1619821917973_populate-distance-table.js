@@ -16,8 +16,8 @@ exports.up = async (pgm) => {
       ST_DistanceSphere(
         ST_GeomFromGeoJSON(site.body->>'location'),
         ST_GeomFromGeoJSON(participant.body->>'location')
-    ) FROM participant
-    CROSS JOIN site
+    ) FROM ${collections.PARTICIPANTS} as participant
+    CROSS JOIN ${collections.EMPLOYER_SITES} as site
     ON CONFLICT DO NOTHING;
   `);
 };

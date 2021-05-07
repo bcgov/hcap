@@ -10,14 +10,15 @@ exports.up = async (pgm) => {
 
   await pgm.sql(`
     INSERT INTO ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id, distance)
-    SELECT (
+    SELECT
       participant.id,
-      site.body->>'siteId',
+      (site.body->>'siteId')::int,
       ST_DistanceSphere(
         ST_GeomFromGeoJSON(site.body->>'location'),
         ST_GeomFromGeoJSON(participant.body->>'location')
-    ) FROM ${collections.PARTICIPANTS} as participant
-    CROSS JOIN ${collections.EMPLOYER_SITES} as site
+      )
+    FROM ${collections.PARTICIPANTS} AS participant
+    CROSS JOIN ${collections.EMPLOYER_SITES} AS site
     ON CONFLICT DO NOTHING;
   `);
 };

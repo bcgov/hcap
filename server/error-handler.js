@@ -1,7 +1,8 @@
 const logger = require('./logger.js');
 
 // Middleware to log and sanitize errors
-const errorHandler = (error, _, res) => {
+// eslint-disable-next-line no-unused-vars
+const errorHandler = (error, req, res, next) => {
   logger.error(error.message);
   switch (error.name) {
     case 'ValidationError':

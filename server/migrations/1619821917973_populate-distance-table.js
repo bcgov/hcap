@@ -1,4 +1,4 @@
-const { dbClient, collections } = require('../db');
+const { collections } = require('../db');
 
 exports.shorthands = undefined;
 
@@ -7,22 +7,18 @@ exports.up = async (pgm) => {
 
   pgm.sql(`CREATE UNIQUE INDEX IF NOT EXISTS unique_site_participant ON ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id);`);
 
-  const participants = await dbClient.db[collections.PARTICIPANTS].findDoc({
-    'location IS NOT': null,
-  });
-  const sites = await dbClient.db[collections.EMPLOYER_SITES].findDoc({
-    'location IS NOT': null,
-  });
-
-  const aWholeLottaPromises = sites.flatMap((site) => participants.map((participant) => pgm.sql(`
-    INSERT INTO ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id, distance) VALUES (
-      ${participant.id},
-      ${site.siteId},
+  await pgm.sql(`
+    INSERT INTO ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id, distance)
+    SELECT
+      participant.id,
+      (site.body->>'siteId')::int,
       ST_DistanceSphere(
-        ST_GeomFromGeoJSON('${JSON.stringify(site.location)}'),
-        ST_GeomFromGeoJSON('${JSON.stringify(participant.location)}')
+        ST_GeomFromGeoJSON(site.body->>'location'),
+        ST_GeomFromGeoJSON(participant.body->>'location')
       )
-    ) ON CONFLICT DO NOTHING;`)));
-
-  await Promise.allSettled(aWholeLottaPromises);
+    FROM ${collections.PARTICIPANTS} AS participant
+    CROSS JOIN ${collections.EMPLOYER_SITES} AS site
+    WHERE site.body->>'location' IS NOT NULL AND participant.body->>'location' IS NOT NULL
+    ON CONFLICT DO NOTHING;
+  `);
 };

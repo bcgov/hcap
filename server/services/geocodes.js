@@ -38,23 +38,29 @@ const getPointsFromPostalCodes = async (postalCodes) => {
   if (Array.isArray(postalCodes)) {
     const points = postalCodes.map((postalCode) => queryPoint(postalCode));
     const values = await Promise.allSettled(points);
-    return postalCodes.reduce((acc, postalCode, i) => (
-      {
+    return postalCodes.reduce(
+      (acc, postalCode, i) => ({
         ...acc,
         [postalCode.replace(/\s/g, '')]: values[i].value,
-      }), {});
+      }),
+      {}
+    );
   }
   const point = await queryPoint(postalCodes);
   return { [postalCodes]: point };
 };
 
 const getParticipantCoords = async (participantID) => {
-  const res = await dbClient.runRawQuery(`SELECT body->'location' FROM ${collections.PARTICIPANTS} where id=${Number(participantID)};`);
+  const res = await dbClient.runRawQuery(
+    `SELECT body->'location' FROM ${collections.PARTICIPANTS} where id=${Number(participantID)};`
+  );
   return res;
 };
 
 const getSiteCoords = async (siteID) => {
-  const res = await dbClient.runRawQuery(`SELECT body->'location' FROM ${collections.EMPLOYER_SITES} where id=${Number(siteID)}`);
+  const res = await dbClient.runRawQuery(
+    `SELECT body->'location' FROM ${collections.EMPLOYER_SITES} where id=${Number(siteID)}`
+  );
   return res;
 };
 

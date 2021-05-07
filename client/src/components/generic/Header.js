@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Header = ({hideEmployers=false}) => {
+export const Header = ({ hideEmployers = false }) => {
   const history = useHistory();
   const location = useLocation();
   const classes = useStyles();
@@ -87,21 +87,25 @@ export const Header = ({hideEmployers=false}) => {
 
   const title = () => {
     if (hideEmployers) return 'Participant Expression of Interest';
-    if (location.pathname === Routes.EmployerForm || location.pathname === Routes.EmployerConfirmation) return 'Employer Expression of Interest';
+    if (
+      location.pathname === Routes.EmployerForm ||
+      location.pathname === Routes.EmployerConfirmation
+    )
+      return 'Employer Expression of Interest';
     return 'Employer Portal';
   };
 
   return (
     <div className={classes.root}>
-      <AppBar className={classes.appBar} position="static">
+      <AppBar className={classes.appBar} position='static'>
         <Toolbar className={classes.toolbar}>
           <div className={classes.logoWrapper}>
-            <Link href="/">
+            <Link href='/'>
               <Hidden smDown>
                 <img
                   className={classes.logo}
                   src={BcLogo}
-                  alt="Government of British Columbia Home"
+                  alt='Government of British Columbia Home'
                   onClick={handleLogoClick}
                 />
               </Hidden>
@@ -109,52 +113,54 @@ export const Header = ({hideEmployers=false}) => {
                 <img
                   className={classes.logo}
                   src={BcLogoMini}
-                  alt="Government of British Columbia Home"
+                  alt='Government of British Columbia Home'
                   onClick={handleLogoClick}
                 />
               </Hidden>
             </Link>
             <hr className={classes.verticalDivider} />
             <div className={classes.logoTextWrapper}>
-              <Typography noWrap className={classes.titleSmall} variant="body2">
+              <Typography noWrap className={classes.titleSmall} variant='body2'>
                 The Health Career Access Program
               </Typography>
-              <Typography noWrap className={classes.title} variant="h1">
+              <Typography noWrap className={classes.title} variant='h1'>
                 {title()}
               </Typography>
             </div>
           </div>
-          {!hideEmployers && <div className={classes.buttonWrapper}>
-            {(keycloak.authenticated && location.pathname !== Routes.Admin) && (
-              <Button
-                className={classes.button}
-                text="Home"
-                fullWidth={false}
-                variant="outlined"
-                color="inherit"
-                onClick={() => history.push(Routes.Admin)}
-              />
-            )}
-            {(keycloak.authenticated && !keycloak.loginRequired) ?
-              <Button
-                className={classes.button}
-                text="Logout"
-                fullWidth={false}
-                variant="outlined"
-                color="inherit"
-                onClick={handleLogoutClick}
-              />
-              :
-              <Button
-                className={classes.button}
-                text="Login"
-                fullWidth={false}
-                variant="outlined"
-                color="inherit"
-                onClick={handleLoginClick}
-              />
-            }
-          </div>}
+          {!hideEmployers && (
+            <div className={classes.buttonWrapper}>
+              {keycloak.authenticated && location.pathname !== Routes.Admin && (
+                <Button
+                  className={classes.button}
+                  text='Home'
+                  fullWidth={false}
+                  variant='outlined'
+                  color='inherit'
+                  onClick={() => history.push(Routes.Admin)}
+                />
+              )}
+              {keycloak.authenticated && !keycloak.loginRequired ? (
+                <Button
+                  className={classes.button}
+                  text='Logout'
+                  fullWidth={false}
+                  variant='outlined'
+                  color='inherit'
+                  onClick={handleLogoutClick}
+                />
+              ) : (
+                <Button
+                  className={classes.button}
+                  text='Login'
+                  fullWidth={false}
+                  variant='outlined'
+                  color='inherit'
+                  onClick={handleLoginClick}
+                />
+              )}
+            </div>
+          )}
         </Toolbar>
       </AppBar>
     </div>

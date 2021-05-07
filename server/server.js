@@ -16,16 +16,26 @@ const {
   makeParticipant,
 } = require('./services/participants.js');
 const {
-  getEmployers, getEmployerByID, saveSingleSite, getSites, getSiteByID,
+  getEmployers,
+  getEmployerByID,
+  saveSingleSite,
+  getSites,
+  getSiteByID,
   updateSite,
 } = require('./services/employers.js');
 const { getReport, getHiredParticipantsReport } = require('./services/reporting.js');
 const { getUserSites } = require('./services/user.js');
 const {
-  validate, EmployerFormSchema, AccessRequestApproval,
-  ParticipantQuerySchema, ParticipantStatusChange,
-  ParticipantEditSchema, ExternalHiredParticipantSchema,
-  CreateSiteSchema, EditSiteSchema, ParticipantSchema,
+  validate,
+  EmployerFormSchema,
+  AccessRequestApproval,
+  ParticipantQuerySchema,
+  ParticipantStatusChange,
+  ParticipantEditSchema,
+  ExternalHiredParticipantSchema,
+  CreateSiteSchema,
+  EditSiteSchema,
+  ParticipantSchema,
 } = require('./validation.js');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
@@ -39,54 +49,68 @@ if (process.env.NODE_ENV === 'local') {
   app.use(cors());
 }
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      'default-src': ["'self'"],
-      'connect-src': ["'self'", 'https://*.apps.gov.bc.ca', 'https://orgbook.gov.bc.ca', 'https://*.oidc.gov.bc.ca', 'https://oidc.gov.bc.ca'],
-      'base-uri': ["'self'"],
-      'block-all-mixed-content': [],
-      'font-src': ["'self'", 'https:', 'data:'],
-      'frame-ancestors': ["'self'"],
-      'img-src': ["'self'", 'data:'],
-      'object-src': ["'none'"],
-      'script-src': ["'self'", 'https://*.gov.bc.ca'],
-      'script-src-attr': ["'none'"],
-      'style-src': ["'self'", 'https:', "'unsafe-inline'"],
-      'upgrade-insecure-requests': [],
-      'form-action': ["'self'"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        'default-src': ["'self'"],
+        'connect-src': [
+          "'self'",
+          'https://*.apps.gov.bc.ca',
+          'https://orgbook.gov.bc.ca',
+          'https://*.oidc.gov.bc.ca',
+          'https://oidc.gov.bc.ca',
+        ],
+        'base-uri': ["'self'"],
+        'block-all-mixed-content': [],
+        'font-src': ["'self'", 'https:', 'data:'],
+        'frame-ancestors': ["'self'"],
+        'img-src': ["'self'", 'data:'],
+        'object-src': ["'none'"],
+        'script-src': ["'self'", 'https://*.gov.bc.ca'],
+        'script-src-attr': ["'none'"],
+        'style-src': ["'self'", 'https:', "'unsafe-inline'"],
+        'upgrade-insecure-requests': [],
+        'form-action': ["'self'"],
+      },
     },
-  },
-}));
+  })
+);
 
 app.use(keycloak.expressMiddleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
 // Return client info for Keycloak realm for the current environment
-app.get(`${apiBaseUrl}/keycloak-realm-client-info`,
-  (req, res) => res.json(keycloak.RealmInfoFrontend()));
+app.get(`${apiBaseUrl}/keycloak-realm-client-info`, (req, res) =>
+  res.json(keycloak.RealmInfoFrontend())
+);
 
 // Create new employer form
-app.post(`${apiBaseUrl}/employer-form`,
+app.post(
+  `${apiBaseUrl}/employer-form`,
   asyncMiddleware(async (req, res) => {
     await validate(EmployerFormSchema, req.body);
     const result = await dbClient.db.saveDoc(collections.EMPLOYER_FORMS, req.body);
     logger.info(`Form ${result.id} successfully created.`);
     return res.status(201).json({ id: result.id });
-  }));
+  })
+);
 
 // Get employer forms
-app.get(`${apiBaseUrl}/employer-form`,
+app.get(
+  `${apiBaseUrl}/employer-form`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
     const result = await getEmployers(user);
     return res.json({ data: result });
-  }));
+  })
+);
 
-app.get(`${apiBaseUrl}/employer-form/:id`,
+app.get(
+  `${apiBaseUrl}/employer-form/:id`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -105,19 +129,23 @@ app.get(`${apiBaseUrl}/employer-form/:id`,
       return res.status(403).json({ error: 'you do not have permissions to view this form' });
     }
     return res.json(result);
-  }));
+  })
+);
 
 // Get Report
-app.get(`${apiBaseUrl}/milestone-report`,
+app.get(
+  `${apiBaseUrl}/milestone-report`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     const result = await getReport();
     return res.json({ data: result });
-  }));
+  })
+);
 
 // Get hired report
-app.get(`${apiBaseUrl}/milestone-report/csv/hired`,
+app.get(
+  `${apiBaseUrl}/milestone-report/csv/hired`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -151,10 +179,12 @@ app.get(`${apiBaseUrl}/milestone-report/csv/hired`,
     });
 
     csvStream.end();
-  }));
+  })
+);
 
 // Get participant records
-app.get(`${apiBaseUrl}/participants`,
+app.get(
+  `${apiBaseUrl}/participants`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -162,8 +192,15 @@ app.get(`${apiBaseUrl}/participants`,
 
     const user = req.hcapUserInfo;
     const {
-      offset, regionFilter, sortField, sortDirection,
-      fsaFilter, lastNameFilter, emailFilter, siteSelector, statusFilters,
+      offset,
+      regionFilter,
+      sortField,
+      sortDirection,
+      fsaFilter,
+      lastNameFilter,
+      emailFilter,
+      siteSelector,
+      statusFilters,
     } = req.query;
     const result = await getParticipants(
       user,
@@ -178,7 +215,7 @@ app.get(`${apiBaseUrl}/participants`,
       lastNameFilter,
       emailFilter,
       siteSelector,
-      statusFilters,
+      statusFilters
     );
     logger.info({
       action: 'participant_get',
@@ -190,9 +227,11 @@ app.get(`${apiBaseUrl}/participants`,
       ids_viewed: result.data.slice(0, 10).map((person) => person.id),
     });
     return res.json(result);
-  }));
+  })
+);
 
-app.get(`${apiBaseUrl}/participant`,
+app.get(
+  `${apiBaseUrl}/participant`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -211,7 +250,8 @@ app.get(`${apiBaseUrl}/participant`,
       },
     });
     return res.json(result);
-  }));
+  })
+);
 
 // Update participant data
 const patchableFields = [
@@ -224,14 +264,15 @@ const patchableFields = [
   'id',
 ];
 
-app.patch(`${apiBaseUrl}/participant`,
+app.patch(
+  `${apiBaseUrl}/participant`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    req.body = Object.keys(req.body).reduce((o, k) => (patchableFields.includes(k)
-      ? { ...o, [k]: req.body[k] }
-      : o
-    ), {});
+    req.body = Object.keys(req.body).reduce(
+      (o, k) => (patchableFields.includes(k) ? { ...o, [k]: req.body[k] } : o),
+      {}
+    );
     await validate(ParticipantEditSchema, req.body);
     const user = req.hcapUserInfo;
     const result = await updateParticipant(req.body);
@@ -243,10 +284,12 @@ app.patch(`${apiBaseUrl}/participant`,
       },
     });
     return res.json(result);
-  }));
+  })
+);
 
 // Engage participant
-app.post(`${apiBaseUrl}/employer-actions`,
+app.post(
+  `${apiBaseUrl}/employer-actions`,
   keycloak.allowRolesMiddleware('health_authority', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -256,7 +299,7 @@ app.post(`${apiBaseUrl}/employer-actions`,
       user.id,
       req.body.participantId,
       req.body.status,
-      req.body.data,
+      req.body.data
     );
     logger.info({
       action: 'employer-actions_post',
@@ -268,10 +311,12 @@ app.post(`${apiBaseUrl}/employer-actions`,
       status: req.body.status,
     });
     return res.status(201).json({ data: result });
-  }));
+  })
+);
 
 // Add Hired Participant to Database
-app.post(`${apiBaseUrl}/new-hired-participant`,
+app.post(
+  `${apiBaseUrl}/new-hired-participant`,
   keycloak.allowRolesMiddleware('employer', 'health_authority'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -287,7 +332,9 @@ app.post(`${apiBaseUrl}/new-hired-participant`,
 
       const response = await makeParticipant(participantInfo);
       await setParticipantStatus(user.id, response.id, 'prospecting');
-      await setParticipantStatus(user.id, response.id, 'interviewing', { contacted_at: participantInfo.contactedDate });
+      await setParticipantStatus(user.id, response.id, 'interviewing', {
+        contacted_at: participantInfo.contactedDate,
+      });
       await setParticipantStatus(user.id, response.id, 'offer_made');
       await setParticipantStatus(user.id, response.id, 'hired', {
         site: participantInfo.site,
@@ -311,10 +358,12 @@ app.post(`${apiBaseUrl}/new-hired-participant`,
     } catch (excp) {
       return res.status(400).send(`${excp}`);
     }
-  }));
+  })
+);
 
 // Create participant records from uploaded XLSX file
-app.post(`${apiBaseUrl}/participants/batch`,
+app.post(
+  `${apiBaseUrl}/participants/batch`,
   keycloak.allowRolesMiddleware('maximus'),
   keycloak.getUserInfoMiddleware(),
   multer({
@@ -352,9 +401,11 @@ app.post(`${apiBaseUrl}/participants/batch`,
     } catch (excp) {
       return res.status(400).send(`${excp}`);
     }
-  }));
+  })
+);
 
-app.post(`${apiBaseUrl}/participants`,
+app.post(
+  `${apiBaseUrl}/participants`,
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantSchema, req.body);
 
@@ -383,10 +434,12 @@ app.post(`${apiBaseUrl}/participants`,
     } catch (excp) {
       return res.status(500).send('Failed to create participant');
     }
-  }));
+  })
+);
 
 // Get pending users from Keycloak
-app.get(`${apiBaseUrl}/pending-users`,
+app.get(
+  `${apiBaseUrl}/pending-users`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
     const users = await keycloak.getPendingUsers();
@@ -399,10 +452,12 @@ app.get(`${apiBaseUrl}/pending-users`,
       createdAt: dayjs(user.createdTimestamp).format('YYYY-MM-DD HH:mm'),
     }));
     return res.json({ data: scrubbed });
-  }));
+  })
+);
 
 // Get users from Keycloak
-app.get(`${apiBaseUrl}/users`,
+app.get(
+  `${apiBaseUrl}/users`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
     const users = await keycloak.getUsers(true);
@@ -415,11 +470,13 @@ app.get(`${apiBaseUrl}/users`,
       createdAt: dayjs(user.createdTimestamp).format('YYYY-MM-DD HH:mm'),
     }));
     return res.json({ data: scrubbed });
-  }));
+  })
+);
 
 // Get user details - Different from /user, this returns the
 // full user sites and role specified in the query id
-app.get(`${apiBaseUrl}/user-details`,
+app.get(
+  `${apiBaseUrl}/user-details`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
     const userId = req.query.id;
@@ -429,10 +486,12 @@ app.get(`${apiBaseUrl}/user-details`,
       roles,
       sites,
     });
-  }));
+  })
+);
 
 // Create single employer site
-app.post(`${apiBaseUrl}/employer-sites`,
+app.post(
+  `${apiBaseUrl}/employer-sites`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -457,9 +516,11 @@ app.post(`${apiBaseUrl}/employer-sites`,
       }
       return res.status(400).send(`${excp}`);
     }
-  }));
+  })
+);
 
-app.patch(`${apiBaseUrl}/employer-sites/:id`,
+app.patch(
+  `${apiBaseUrl}/employer-sites/:id`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -479,9 +540,11 @@ app.patch(`${apiBaseUrl}/employer-sites/:id`,
     } catch (excp) {
       return res.status(400).send(`${excp}`);
     }
-  }));
+  })
+);
 
-app.get(`${apiBaseUrl}/employer-sites`,
+app.get(
+  `${apiBaseUrl}/employer-sites`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -501,9 +564,11 @@ app.get(`${apiBaseUrl}/employer-sites`,
       sites_accessed: result.map((site) => site.siteId),
     });
     return res.json({ data: result });
-  }));
+  })
+);
 
-app.get(`${apiBaseUrl}/employer-sites/:id`,
+app.get(
+  `${apiBaseUrl}/employer-sites/:id`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -522,9 +587,11 @@ app.get(`${apiBaseUrl}/employer-sites/:id`,
       return res.status(403).json({ error: 'you do not have permissions to view this site' });
     }
     return res.json(result);
-  }));
+  })
+);
 
-app.get(`${apiBaseUrl}/employer-sites/:id/participants`,
+app.get(
+  `${apiBaseUrl}/employer-sites/:id/participants`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -545,15 +612,17 @@ app.get(`${apiBaseUrl}/employer-sites/:id/participants`,
       },
     });
     return res.json(result);
-  }));
+  })
+);
 
 /**
-  * @deprecated since Feb 2021
-  * This endpoint was a misnomer, it was named sites but actually retrieved a single EEOI:
-  *   /employer-form/:id - EEOI details, direct replacement for this function
-  *   /employer-sites/:id - new site details endpoint
-  */
-app.get(`${apiBaseUrl}/employer-sites-detail`,
+ * @deprecated since Feb 2021
+ * This endpoint was a misnomer, it was named sites but actually retrieved a single EEOI:
+ *   /employer-form/:id - EEOI details, direct replacement for this function
+ *   /employer-sites/:id - new site details endpoint
+ */
+app.get(
+  `${apiBaseUrl}/employer-sites-detail`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -567,9 +636,11 @@ app.get(`${apiBaseUrl}/employer-sites-detail`,
       eeoi_id: req.query.id,
     });
     return res.json({ data: '' });
-  }));
+  })
+);
 
-app.patch(`${apiBaseUrl}/user-details`,
+app.patch(
+  `${apiBaseUrl}/user-details`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -581,7 +652,7 @@ app.patch(`${apiBaseUrl}/user-details`,
       },
       {
         sites: req.body.sites,
-      },
+      }
     );
 
     const user = req.hcapUserInfo;
@@ -598,9 +669,11 @@ app.patch(`${apiBaseUrl}/user-details`,
     });
 
     return res.json({});
-  }));
+  })
+);
 
-app.post(`${apiBaseUrl}/approve-user`,
+app.post(
+  `${apiBaseUrl}/approve-user`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -625,10 +698,12 @@ app.post(`${apiBaseUrl}/approve-user`,
     });
 
     return res.status(201).json({});
-  }));
+  })
+);
 
 // Get user info from token
-app.get(`${apiBaseUrl}/user`,
+app.get(
+  `${apiBaseUrl}/user`,
   keycloak.allowRolesMiddleware('*'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -639,11 +714,11 @@ app.get(`${apiBaseUrl}/user`,
       name: req.hcapUserInfo.name,
       sites,
     });
-  }));
+  })
+);
 
 // Version number
-app.get(`${apiBaseUrl}/version`,
-  (req, res) => res.json({ version: process.env.VERSION }));
+app.get(`${apiBaseUrl}/version`, (req, res) => res.json({ version: process.env.VERSION }));
 
 // Client app
 if (process.env.NODE_ENV === 'production') {

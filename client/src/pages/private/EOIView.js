@@ -9,7 +9,6 @@ import { Routes, regionLabelsMap, API_URL } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 
 export default () => {
-
   const [roles, setRoles] = useState([]);
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
@@ -43,7 +42,7 @@ export default () => {
     setLoadingUser(true);
     const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
       method: 'GET',
     });
@@ -53,11 +52,11 @@ export default () => {
       setLoadingUser(false);
       setRoles(roles);
     }
-  }
+  };
 
   useEffect(() => {
     setHealthAuthorities(
-      (roles.includes("superuser") || roles.includes("ministry_of_health"))
+      roles.includes('superuser') || roles.includes('ministry_of_health')
         ? Object.values(regionLabelsMap)
         : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
     );
@@ -71,24 +70,26 @@ export default () => {
 
   const sortConfig = () => {
     if (orderBy === 'siteName') {
-      return [item => item.siteName.toLowerCase(), 'operatorName'];
+      return [(item) => item.siteName.toLowerCase(), 'operatorName'];
     } else if (orderBy === 'healthAuthority') {
-      return [item => item.healthAuthority.toLowerCase(), 'operatorName'];
+      return [(item) => item.healthAuthority.toLowerCase(), 'operatorName'];
     }
     return [orderBy, 'operatorName'];
   };
 
   const mapItemToColumns = (item, columns) => {
     const row = {};
-    columns.map(column => column.id).forEach(columnId => {
-      for (const [key, value] of Object.entries(item)) {
-        if (key === columnId) {
-          row[key] = value || '';
+    columns
+      .map((column) => column.id)
+      .forEach((columnId) => {
+        for (const [key, value] of Object.entries(item)) {
+          if (key === columnId) {
+            row[key] = value || '';
+          }
         }
-      }
-    });
+      });
     return row;
-  }
+  };
 
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 
@@ -97,28 +98,28 @@ export default () => {
 
     const filterData = (data) => {
       const rows = [];
-      data.forEach(item => {
+      data.forEach((item) => {
         const row = mapItemToColumns(item, columns);
         row.details = (
           <Button
-            onClick={() => history.push(`${Routes.EOIView}/details/${ item.id }`)}
-            variant="outlined"
-            size="small"
-            text="Details"
+            onClick={() => history.push(`${Routes.EOIView}/details/${item.id}`)}
+            variant='outlined'
+            size='small'
+            text='Details'
           />
         );
         rows.push(row);
       });
       return rows;
-    }
+    };
 
     const getEOIs = async () => {
       setLoadingData(true);
       const response = await fetch(`${API_URL}/api/v1/employer-form`, {
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-type': 'application/json',
-          'Authorization': `Bearer ${store.get('TOKEN')}`,
+          Authorization: `Bearer ${store.get('TOKEN')}`,
         },
         method: 'GET',
       });
@@ -139,19 +140,36 @@ export default () => {
 
   return (
     <Page>
-      <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['health_authority', 'ministry_of_health']} renderErrorMessage={true}>
-        <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
+      <CheckPermissions
+        isLoading={isLoadingUser}
+        roles={roles}
+        permittedRoles={['health_authority', 'ministry_of_health']}
+        renderErrorMessage={true}
+      >
+        <Grid
+          container
+          alignContent='center'
+          justify='center'
+          alignItems='center'
+          direction='column'
+        >
           <Box pt={4} pb={4} pl={2} pr={2}>
-            <Typography variant="subtitle1" gutterBottom>
+            <Typography variant='subtitle1' gutterBottom>
               Employer Expressions of Interest
             </Typography>
           </Box>
-          <Grid container alignContent="center" justify="flex-start" alignItems="center" direction="row">
+          <Grid
+            container
+            alignContent='center'
+            justify='flex-start'
+            alignItems='center'
+            direction='row'
+          >
             <Grid item>
               <Box pl={2} pr={2} pt={1}>
-                <Typography variant="body1" gutterBottom>
+                <Typography variant='body1' gutterBottom>
                   Filter:
-              </Typography>
+                </Typography>
               </Box>
             </Grid>
             <Grid item>
@@ -160,13 +178,13 @@ export default () => {
                   onFilter={(filteredRows) => setRows(filteredRows)}
                   values={healthAuthorities}
                   rows={fetchedRows}
-                  label="Health Authority"
-                  filterField="healthAuthority"
+                  label='Health Authority'
+                  filterField='healthAuthority'
                 />
               </Box>
             </Grid>
           </Grid>
-          <Box pt={2} pb={2} pl={2} pr={2} width="100%">
+          <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
             <Table
               columns={columns}
               order={order}

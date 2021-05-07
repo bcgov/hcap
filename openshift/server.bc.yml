@@ -49,5 +49,5 @@ objects:
           name: ${APP_NAME}-server:${IMAGE_TAG}
       resources:
         limits:
-          cpu: "2"
+          cpu: '2'
           memory: 4Gi

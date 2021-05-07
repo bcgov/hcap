@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Redirect, } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import { Routes } from '../../constants';
 import store from 'store';
@@ -13,13 +13,11 @@ export default () => {
     }
   }, [keycloak.authenticated, keycloak.token]);
 
-  return keycloak.authenticated
-    ?
+  return keycloak.authenticated ? (
     <Redirect to={store.get('REDIRECT')} />
-    :
-    keycloak.loginRequired
-      ?
-      <Redirect to={Routes.Login} />
-      :
-      'Authenticating...';
+  ) : keycloak.loginRequired ? (
+    <Redirect to={Routes.Login} />
+  ) : (
+    'Authenticating...'
+  );
 };

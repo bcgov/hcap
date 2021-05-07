@@ -1,4 +1,4 @@
-version: "3.7"
+version: '3.7'
 
 services:
   client:
@@ -46,9 +46,9 @@ services:
       - KEYCLOAK_SA_USERNAME=${KEYCLOAK_SA_USERNAME}
       - KEYCLOAK_SA_PASSWORD=${KEYCLOAK_SA_PASSWORD}
     expose:
-      - "8080"
+      - '8080'
     ports:
-      - "8080:8080"
+      - '8080:8080'
     volumes:
       - ./server:/server # Use server dir in host for hot reloading
       - /server/node_modules # Use node_modules in container
@@ -63,7 +63,7 @@ services:
     container_name: ${APP_NAME}-postgres
     restart: always
     expose:
-      - "5432"
+      - '5432'
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -72,7 +72,7 @@ services:
       - postgres-data-db:/var/lib/postgresql/data
       - ./.docker/postgres/sql-init:/docker-entrypoint-initdb.d
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
       - network
 
@@ -81,9 +81,9 @@ services:
     image: mongo:3.6-xenial
     restart: always
     expose:
-        - "27017"
+      - '27017'
     ports:
-        - "27017:27017"
+      - '27017:27017'
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}

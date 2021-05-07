@@ -9,7 +9,6 @@ import { API_URL, Routes } from '../../constants';
 import store from 'store';
 
 export default () => {
-
   const [roles, setRoles] = useState([]);
   const [order, setOrder] = useState('asc');
   const [isLoadingUser, setLoadingUser] = useState(false);
@@ -22,7 +21,7 @@ export default () => {
   ]);
   const history = useHistory();
   const location = useLocation();
-  if (!location.state) return <Redirect to={Routes.ParticipantUpload} />
+  if (!location.state) return <Redirect to={Routes.ParticipantUpload} />;
 
   const [orderBy, setOrderBy] = useState(columns[0].id);
 
@@ -42,7 +41,7 @@ export default () => {
     setLoadingUser(true);
     const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
       method: 'GET',
     });
@@ -52,11 +51,11 @@ export default () => {
       setLoadingUser(false);
       setRoles(roles);
     }
-  }
+  };
 
   useEffect(() => {
     fetchUserInfo();
-    const insertMissingMessage = (row) => row.message ? row : {...row, message: ''};
+    const insertMissingMessage = (row) => (row.message ? row : { ...row, message: '' });
     setSummary({
       duplicates: location.state?.results?.filter((x) => x.status === 'Duplicate').length || 0,
       errors: location.state?.results?.filter((x) => x.status === 'Error').length || 0,
@@ -66,27 +65,36 @@ export default () => {
 
   return (
     <Page>
-      <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['maximus']} renderErrorMessage={true}>
-        <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
+      <CheckPermissions
+        isLoading={isLoadingUser}
+        roles={roles}
+        permittedRoles={['maximus']}
+        renderErrorMessage={true}
+      >
+        <Grid
+          container
+          alignContent='center'
+          justify='center'
+          alignItems='center'
+          direction='column'
+        >
           <Box pt={4} pb={4} pl={2} pr={2}>
-            <Typography variant="subtitle1" gutterBottom>
+            <Typography variant='subtitle1' gutterBottom>
               Participant Upload Results
             </Typography>
           </Box>
           <Alert severity={summary.errors ? 'error' : summary.duplicates ? 'warning' : 'success'}>
-            <Typography variant="body2" gutterBottom>
+            <Typography variant='body2' gutterBottom>
               <b>
-                Processed {rows.length} participants. There were {summary.errors} errors and {summary.duplicates} duplicates. See results below.
+                Processed {rows.length} participants. There were {summary.errors} errors and{' '}
+                {summary.duplicates} duplicates. See results below.
               </b>
             </Typography>
           </Alert>
           <Box pt={4} pb={4} pl={2} pr={2}>
-            <Button
-              onClick={() => history.goBack()}
-              text="Return to Participant Upload"
-            />
+            <Button onClick={() => history.goBack()} text='Return to Participant Upload' />
           </Box>
-          <Box pb={2} pl={2} pr={2} width="100%">
+          <Box pb={2} pl={2} pr={2} width='100%'>
             <Table
               columns={columns}
               order={order}

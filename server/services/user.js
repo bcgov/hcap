@@ -29,5 +29,8 @@ const makeUser = async ({ keycloakId, sites }) => {
 };
 
 module.exports = {
-  getUser, getUserSites, userRegionQuery, makeUser,
+  getUser,
+  getUserSites,
+  userRegionQuery,
+  makeUser,
 };

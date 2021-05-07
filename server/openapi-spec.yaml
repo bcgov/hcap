@@ -7,7 +7,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 servers:
-- url: https://healthcareeraccessprogram.gov.bc.ca/api/v1
+  - url: https://healthcareeraccessprogram.gov.bc.ca/api/v1
 paths:
   /form:
     post:
@@ -45,14 +45,14 @@ components:
           type: string
     Form:
       required:
-      - consent
-      - eligibility
-      - emailAddress
-      - firstName
-      - lastName
-      - postalCode
-      - preferredLocation
-      - phoneNumber
+        - consent
+        - eligibility
+        - emailAddress
+        - firstName
+        - lastName
+        - postalCode
+        - preferredLocation
+        - phoneNumber
       type: object
       properties:
         eligibility:
@@ -74,11 +74,11 @@ components:
           items:
             type: string
             enum:
-            - Interior
-            - Fraser
-            - Vancouver Coastal
-            - Vancouver Island
-            - Northern
+              - Interior
+              - Fraser
+              - Vancouver Coastal
+              - Vancouver Island
+              - Northern
           uniqueItems: true
           minItems: 1
         consent:

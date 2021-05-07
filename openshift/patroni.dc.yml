@@ -8,7 +8,7 @@ parameters:
     required: true
   - name: REPLICAS
     description: The number of stateful set replicas to use
-    value: "3"
+    value: '3'
     required: true
   - name: CPU_REQUEST
     description: Starting amount of CPU the container can use
@@ -79,79 +79,79 @@ objects:
           affinity:
             podAntiAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
-              - labelSelector:
-                  matchExpressions:
-                  - key: statefulset
-                    operator: In
-                    values:
-                    - ${APP_NAME}-patroni
-                topologyKey: "kubernetes.io/hostname"
+                - labelSelector:
+                    matchExpressions:
+                      - key: statefulset
+                        operator: In
+                        values:
+                          - ${APP_NAME}-patroni
+                  topologyKey: 'kubernetes.io/hostname'
           containers:
             - env:
-              - name: POD_IP
-                valueFrom:
-                  fieldRef:
-                    apiVersion: v1
-                    fieldPath: status.podIP
-              - name: PATRONI_KUBERNETES_NAMESPACE
-                valueFrom:
-                  fieldRef:
-                    apiVersion: v1
-                    fieldPath: metadata.namespace
-              - name: PATRONI_KUBERNETES_LABELS
-                value: '{"cluster-name": "${APP_NAME}-patroni", "app.kubernetes.io/name": "patroni"}'
-              - name: PATRONI_SUPERUSER_USERNAME
-                valueFrom:
-                  secretKeyRef:
-                    key: superuser-username
-                    name: ${APP_NAME}-patroni
-              - name: PATRONI_SUPERUSER_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    key: superuser-password
-                    name: ${APP_NAME}-patroni
-              - name: PATRONI_REPLICATION_USERNAME
-                valueFrom:
-                  secretKeyRef:
-                    key: replication-username
-                    name: ${APP_NAME}-patroni
-              - name: PATRONI_REPLICATION_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    key: replication-password
-                    name: ${APP_NAME}-patroni
-              - name: APP_USER
-                valueFrom:
-                  secretKeyRef:
-                    key: db-username
-                    name: ${APP_NAME}-patroni
-              - name: APP_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    key: db-password
-                    name: ${APP_NAME}-patroni
-              - name: APP_DATABASE
-                valueFrom:
-                  secretKeyRef:
-                    key: db-name
-                    name: ${APP_NAME}-patroni
-              - name: PATRONI_SCOPE
-                value: ${APP_NAME}-patroni
-              - name: PATRONI_NAME
-                valueFrom:
-                  fieldRef:
-                    apiVersion: v1
-                    fieldPath: metadata.name
-              - name: PATRONI_LOG_LEVEL
-                value: WARNING
-              - name: PATRONI_POSTGRESQL_DATA_DIR
-                value: /home/postgres/pgdata/pgroot/data
-              - name: PATRONI_POSTGRESQL_PGPASS
-                value: /tmp/pgpass
-              - name: PATRONI_POSTGRESQL_LISTEN
-                value: 0.0.0.0:5432
-              - name: PATRONI_RESTAPI_LISTEN
-                value: 0.0.0.0:8008
+                - name: POD_IP
+                  valueFrom:
+                    fieldRef:
+                      apiVersion: v1
+                      fieldPath: status.podIP
+                - name: PATRONI_KUBERNETES_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      apiVersion: v1
+                      fieldPath: metadata.namespace
+                - name: PATRONI_KUBERNETES_LABELS
+                  value: '{"cluster-name": "${APP_NAME}-patroni", "app.kubernetes.io/name": "patroni"}'
+                - name: PATRONI_SUPERUSER_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: superuser-username
+                      name: ${APP_NAME}-patroni
+                - name: PATRONI_SUPERUSER_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: superuser-password
+                      name: ${APP_NAME}-patroni
+                - name: PATRONI_REPLICATION_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: replication-username
+                      name: ${APP_NAME}-patroni
+                - name: PATRONI_REPLICATION_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: replication-password
+                      name: ${APP_NAME}-patroni
+                - name: APP_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: db-username
+                      name: ${APP_NAME}-patroni
+                - name: APP_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: db-password
+                      name: ${APP_NAME}-patroni
+                - name: APP_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      key: db-name
+                      name: ${APP_NAME}-patroni
+                - name: PATRONI_SCOPE
+                  value: ${APP_NAME}-patroni
+                - name: PATRONI_NAME
+                  valueFrom:
+                    fieldRef:
+                      apiVersion: v1
+                      fieldPath: metadata.name
+                - name: PATRONI_LOG_LEVEL
+                  value: WARNING
+                - name: PATRONI_POSTGRESQL_DATA_DIR
+                  value: /home/postgres/pgdata/pgroot/data
+                - name: PATRONI_POSTGRESQL_PGPASS
+                  value: /tmp/pgpass
+                - name: PATRONI_POSTGRESQL_LISTEN
+                  value: 0.0.0.0:5432
+                - name: PATRONI_RESTAPI_LISTEN
+                  value: 0.0.0.0:8008
               image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-patroni:${IMAGE_TAG}
               imagePullPolicy: Always
               name: postgresql

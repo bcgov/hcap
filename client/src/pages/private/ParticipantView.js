@@ -10,7 +10,7 @@ import { API_URL } from '../../constants';
 const ParticipantTable = lazy(() => import('./ParticipantTable'));
 const SiteTable = lazy(() => import('./SiteTable'));
 
-const CustomTabs = withStyles(theme => ({
+const CustomTabs = withStyles((theme) => ({
   root: {
     borderBottom: `1px solid ${theme.palette.gray.secondary}`,
     marginBottom: theme.spacing(2),
@@ -41,7 +41,6 @@ const CustomTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-
 export default () => {
   const [roles, setRoles] = useState([]);
   const [sites, setSites] = useState([]);
@@ -52,7 +51,7 @@ export default () => {
     setLoadingUser(true);
     const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
       method: 'GET',
     });
@@ -63,7 +62,7 @@ export default () => {
       setRoles(roles);
       setLoadingUser(false);
     }
-  }
+  };
 
   useEffect(() => {
     fetchUserInfo();
@@ -71,22 +70,27 @@ export default () => {
 
   const handleTabChange = (event, newTabValue) => {
     setTabValue(newTabValue);
-  }
+  };
 
   return (
     <Page>
-      <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
-        <Grid container justify="flex-start" alignItems="flex-start" direction="row">
-          <CustomTabs value={ tabValue } onChange={handleTabChange} aria-label="tabs">
-            <CustomTab label="Participants" id='participantsTab' key='participants' />
-            { roles.includes('superuser') &&
-            <CustomTab label="My Sites" id='sitesTab' key='sites' />
-            }
+      <CheckPermissions
+        isLoading={isLoadingUser}
+        roles={roles}
+        permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
+        renderErrorMessage={true}
+      >
+        <Grid container justify='flex-start' alignItems='flex-start' direction='row'>
+          <CustomTabs value={tabValue} onChange={handleTabChange} aria-label='tabs'>
+            <CustomTab label='Participants' id='participantsTab' key='participants' />
+            {roles.includes('superuser') && (
+              <CustomTab label='My Sites' id='sitesTab' key='sites' />
+            )}
           </CustomTabs>
         </Grid>
-        <Grid container alignItems="center" justify="flex-start" direction="column">
-          { tabValue === 0 && <ParticipantTable /> }
-          { tabValue === 1 && <SiteTable  sites={sites}/> }
+        <Grid container alignItems='center' justify='flex-start' direction='column'>
+          {tabValue === 0 && <ParticipantTable />}
+          {tabValue === 1 && <SiteTable sites={sites} />}
         </Grid>
       </CheckPermissions>
     </Page>

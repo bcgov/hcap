@@ -12,7 +12,7 @@ parameters:
     required: true
   - name: KEYCLOAK_AUTH_URL
     description: Placeholder for URL used to request authentication actions with Keycloak
-    value: " "
+    value: ' '
     required: true
   - name: KEYCLOAK_FE_CLIENTID_SUFFIX
     description: Client ID suffix for the application frontend
@@ -24,15 +24,15 @@ parameters:
     required: true
   - name: KEYCLOAK_API_SECRET
     description: Placeholder for secret required to access the Keycloak API
-    value: " "
+    value: ' '
     required: true
   - name: KEYCLOAK_SA_USERNAME
     description: Placeholder for service account username
-    value: " "
+    value: ' '
     required: true
   - name: KEYCLOAK_SA_PASSWORD
     description: Placeholder for service account password
-    value: " "
+    value: ' '
     required: true
 objects:
   - kind: Secret

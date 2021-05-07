@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-import { makeStyles } from "@material-ui/core/styles"
+import { makeStyles } from '@material-ui/core/styles';
 import { ErrorMessage } from 'formik';
 
 import { InputFieldError, InputFieldLabel } from '../generic';
@@ -14,17 +14,12 @@ const useStyles = makeStyles({
     backgroundColor: 'white !important',
     '&:hover': {
       backgroundColor: 'rgba(0, 0, 0, 0.04) !important',
-    }
-  }
-})
+    },
+  },
+});
 
-export const RenderAutocomplete = ({
-  field: { value, name },
-  form,
-  label,
-  options,
-}) => {
-  const classes = useStyles()
+export const RenderAutocomplete = ({ field: { value, name }, form, label, options }) => {
+  const classes = useStyles();
   const touched = form.touched[name];
   const error = form.errors[name];
   const { setFieldValue } = form;
@@ -43,11 +38,11 @@ export const RenderAutocomplete = ({
           <TextField
             {...params}
             error={touched && !!error}
-            variant="filled"
+            variant='filled'
             inputProps={{
               ...params.inputProps,
               autoComplete: 'none',
-              placeholder: 'Please Select'
+              placeholder: 'Please Select',
             }}
           />
         )}

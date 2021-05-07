@@ -2,76 +2,77 @@
 const { collections, views } = require('../db');
 const { userRegionQuery } = require('./user.js');
 
-const scrubParticipantData = (raw, joinNames) => raw.map((participant) => {
-  const statusInfos = [];
+const scrubParticipantData = (raw, joinNames) =>
+  raw.map((participant) => {
+    const statusInfos = [];
 
-  const decomposeStatusInfo = (statusInfo) => ({
-    createdAt: statusInfo.created_at,
-    employerId: statusInfo.employer_id,
-    ...statusInfo.data && Object.keys(statusInfo.data).length > 0 ? { data: statusInfo.data }
-      : {},
-    status: statusInfo.status,
+    const decomposeStatusInfo = (statusInfo) => ({
+      createdAt: statusInfo.created_at,
+      employerId: statusInfo.employer_id,
+      ...(statusInfo.data && Object.keys(statusInfo.data).length > 0
+        ? { data: statusInfo.data }
+        : {}),
+      status: statusInfo.status,
+    });
+
+    if (joinNames) {
+      joinNames.forEach((joinName) => {
+        if (!participant[joinName]) return;
+        statusInfos.push(...participant[joinName].map(decomposeStatusInfo));
+      });
+    } else {
+      participant.status_infos?.forEach((statusInfo) => {
+        statusInfos.push(decomposeStatusInfo(statusInfo));
+      });
+    }
+
+    return {
+      ...participant.body,
+      id: participant.id,
+      statusInfos,
+    };
   });
 
-  if (joinNames) {
-    joinNames.forEach((joinName) => {
-      if (!participant[joinName]) return;
-      statusInfos.push(...participant[joinName].map(decomposeStatusInfo));
-    });
-  } else {
-    participant.status_infos?.forEach((statusInfo) => {
-      statusInfos.push(decomposeStatusInfo(statusInfo));
-    });
-  }
+const addSiteNameToStatusData = (raw, employerSpecificJoin, siteJoin) =>
+  raw.map((participant) => ({
+    ...participant,
+    [employerSpecificJoin]: participant[employerSpecificJoin]?.map((item) => ({
+      ...item,
+      data: {
+        ...item.data,
+        siteName: participant[siteJoin]?.find((site) => site.siteId === item.site)?.body.siteName,
+      },
+    })),
+  }));
 
-  return {
-    ...participant.body,
-    id: participant.id,
-    statusInfos,
-  };
-});
-
-const addSiteNameToStatusData = (raw, employerSpecificJoin,
-  siteJoin) => raw.map((participant) => ({
-  ...participant,
-  [employerSpecificJoin]: participant[employerSpecificJoin]?.map((item) => ({
-    ...item,
-    data: {
-      ...item.data,
-      siteName: participant[siteJoin]?.find((site) => site.siteId === item.site)?.body.siteName,
-    },
-  })),
-}));
-
-const addDistanceToParticipantFields = (raw, siteDistanceJoin) => raw.map((participant) => ({
-  ...participant,
-  ...participant[siteDistanceJoin] && {
-    body: {
-      ...participant.body,
-      distance: participant[siteDistanceJoin][0]?.distance,
-    },
-  },
-}));
+const addDistanceToParticipantFields = (raw, siteDistanceJoin) =>
+  raw.map((participant) => ({
+    ...participant,
+    ...(participant[siteDistanceJoin] && {
+      body: {
+        ...participant.body,
+        distance: participant[siteDistanceJoin][0]?.distance,
+      },
+    }),
+  }));
 
 const run = async (context) => {
   const {
-    table, criteria, options, user, employerSpecificJoin, hiredGlobalJoin,
+    table,
+    criteria,
+    options,
+    user,
+    employerSpecificJoin,
+    hiredGlobalJoin,
     siteDistanceJoin,
     siteJoin,
   } = context;
   let participants = await table.find(criteria, options);
-  participants = addSiteNameToStatusData(
-    participants,
-    employerSpecificJoin,
-    siteJoin,
-  );
+  participants = addSiteNameToStatusData(participants, employerSpecificJoin, siteJoin);
   participants = addDistanceToParticipantFields(participants, siteDistanceJoin);
   participants = scrubParticipantData(
     participants,
-    (user.isEmployer || user.isHA) && [
-      employerSpecificJoin,
-      hiredGlobalJoin,
-    ],
+    (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin]
   );
   return participants;
 };
@@ -92,31 +93,30 @@ class FilteredParticipantsFinder {
   }
 
   paginate(pagination, sortField) {
-    const {
-      user, employerSpecificJoin, siteJoin, siteDistanceJoin, siteIdDistance,
-    } = this.context;
+    const { user, employerSpecificJoin, siteJoin, siteDistanceJoin, siteIdDistance } = this.context;
     this.context.options = pagination && {
       // ID is the default sort column
-      order: [{
-        field: 'id',
-        direction: pagination.direction || 'asc',
-        nulls: 'last', // Relevant for sorting by ascending distance
-      }],
+      order: [
+        {
+          field: 'id',
+          direction: pagination.direction || 'asc',
+          nulls: 'last', // Relevant for sorting by ascending distance
+        },
+      ],
       //  Using limit/offset pagination may decrease performance in the Postgres instance,
       //  however this is the only way to sort columns that does not have a deterministic
       //  ordering such as firstName.
       //  See more details: https://massivejs.org/docs/options-objects#keyset-pagination
-      ...pagination.offset && { offset: pagination.offset },
-      ...pagination.pageSize && { limit: pagination.pageSize },
+      ...(pagination.offset && { offset: pagination.offset }),
+      ...(pagination.pageSize && { limit: pagination.pageSize }),
     };
 
     if (sortField && sortField !== 'id' && this.context.options.order) {
       let joinFieldName = `body.${sortField}`;
 
       if (sortField === 'status') {
-        joinFieldName = (user.isEmployer || user.isHA)
-          ? `${employerSpecificJoin}.status`
-          : 'status_infos';
+        joinFieldName =
+          user.isEmployer || user.isHA ? `${employerSpecificJoin}.status` : 'status_infos';
       }
 
       if (sortField === 'distance' && siteIdDistance) {
@@ -149,8 +149,12 @@ class FieldsFilteredParticipantsFinder {
 
   filterExternalFields({ statusFilters, siteIdDistance }) {
     const {
-      user, criteria, employerSpecificJoin, hiredGlobalJoin,
-      siteJoin, siteDistanceJoin,
+      user,
+      criteria,
+      employerSpecificJoin,
+      hiredGlobalJoin,
+      siteJoin,
+      siteDistanceJoin,
     } = this.context;
     this.context.siteIdDistance = siteIdDistance;
 
@@ -174,7 +178,7 @@ class FieldsFilteredParticipantsFinder {
             status: 'hired',
           },
         },
-        ...siteIdDistance && {
+        ...(siteIdDistance && {
           [siteDistanceJoin]: {
             type: 'LEFT OUTER',
             relation: collections.PARTICIPANTS_DISTANCE,
@@ -183,8 +187,8 @@ class FieldsFilteredParticipantsFinder {
               site_id: siteIdDistance,
             },
           },
-        },
-        ...statusFilters.includes('hired') && {
+        }),
+        ...(statusFilters.includes('hired') && {
           [siteJoin]: {
             type: 'LEFT OUTER',
             relation: collections.EMPLOYER_SITES,
@@ -192,18 +196,19 @@ class FieldsFilteredParticipantsFinder {
               'body.siteId': `${hiredGlobalJoin}.data.site`,
             },
           },
-        },
+        }),
       });
 
       if (statusFilters) {
         const newStatusFilters = statusFilters.includes('open')
-          //  if 'open' is found adds also null because no status
-          //  means that the participant is open as well
-          ? [null, ...statusFilters]
+          ? //  if 'open' is found adds also null because no status
+            //  means that the participant is open as well
+            [null, ...statusFilters]
           : statusFilters;
 
         const statusQuery = {
-          or: newStatusFilters.filter((item) => item !== 'unavailable')
+          or: newStatusFilters
+            .filter((item) => item !== 'unavailable')
             .map((status) => ({ [`${employerSpecificJoin}.status`]: status })),
         };
         if (criteria.or) {
@@ -213,7 +218,11 @@ class FieldsFilteredParticipantsFinder {
         }
 
         // we don't want hired participants listed with such statuses:
-        if (statusFilters.some((item) => ['open', 'prospecting', 'interviewing', 'offer_made'].includes(item))) {
+        if (
+          statusFilters.some((item) =>
+            ['open', 'prospecting', 'interviewing', 'offer_made'].includes(item)
+          )
+        ) {
           criteria.or[0].and.push({ [`${hiredGlobalJoin}.status`]: null });
         }
 
@@ -222,10 +231,13 @@ class FieldsFilteredParticipantsFinder {
         //  been hired by someone else
         if (statusFilters.includes('unavailable')) {
           const unavailableQuery = {
-            and: [{
-              or: ['prospecting', 'interviewing', 'offer_made'].map((status) => ({ [`${employerSpecificJoin}.status`]: status })),
-            },
-            { [`${hiredGlobalJoin}.status`]: 'hired' },
+            and: [
+              {
+                or: ['prospecting', 'interviewing', 'offer_made'].map((status) => ({
+                  [`${employerSpecificJoin}.status`]: status,
+                })),
+              },
+              { [`${hiredGlobalJoin}.status`]: 'hired' },
             ],
           };
 
@@ -247,11 +259,13 @@ class FieldsFilteredParticipantsFinder {
           : statusFilters || [];
         this.context.criteria = {
           ...this.context.criteria,
-          or: statuses.map((status) => (status
-            ? {
-              'status_infos::text ilike': `%{%"status": "${status}"%}%`,
-            }
-            : { status_infos: null })),
+          or: statuses.map((status) =>
+            status
+              ? {
+                  'status_infos::text ilike': `%{%"status": "${status}"%}%`,
+                }
+              : { status_infos: null }
+          ),
         };
       }
     }
@@ -264,15 +278,12 @@ class RegionsFilteredParticipantsFinder {
     this.context = context;
   }
 
-  filterParticipantFields({
-    postalCodeFsa, lastName,
-    emailAddress,
-  }) {
+  filterParticipantFields({ postalCodeFsa, lastName, emailAddress }) {
     this.context.criteria = {
       ...this.context.criteria,
-      ...postalCodeFsa && { 'body.postalCodeFsa ilike': `${postalCodeFsa}%` },
-      ...lastName && { 'body.lastName ilike': `${lastName}%` },
-      ...emailAddress && { 'body.emailAddress ilike': `${emailAddress}%` },
+      ...(postalCodeFsa && { 'body.postalCodeFsa ilike': `${postalCodeFsa}%` }),
+      ...(lastName && { 'body.lastName ilike': `${lastName}%` }),
+      ...(emailAddress && { 'body.emailAddress ilike': `${emailAddress}%` }),
     };
     return new FieldsFilteredParticipantsFinder(this.context);
   }
@@ -294,19 +305,20 @@ class ParticipantsFinder {
   }
 
   filterRegion(regionFilter) {
-    this.criteria = this.user.isSuperUser || this.user.isMoH
-      ? {
-        ...regionFilter && { 'body.preferredLocation ilike': `%${regionFilter}%` },
-      }
-      : {
-        ...(regionFilter && this.user.regions.includes(regionFilter))
-          ? { 'body.preferredLocation ilike': `%${regionFilter}%` }
-          //  as an employer/HA, the first inner AND array is used to filter regions
-          //  and statuses (unless when the status is 'unavailable', in this case
-          //  we handle in the upper OR array)
-          : { or: [{ and: [userRegionQuery(this.user.regions, 'body.preferredLocation')] }] },
-        'body.interested': 'yes',
-      };
+    this.criteria =
+      this.user.isSuperUser || this.user.isMoH
+        ? {
+            ...(regionFilter && { 'body.preferredLocation ilike': `%${regionFilter}%` }),
+          }
+        : {
+            ...(regionFilter && this.user.regions.includes(regionFilter)
+              ? { 'body.preferredLocation ilike': `%${regionFilter}%` }
+              : //  as an employer/HA, the first inner AND array is used to filter regions
+                //  and statuses (unless when the status is 'unavailable', in this case
+                //  we handle in the upper OR array)
+                { or: [{ and: [userRegionQuery(this.user.regions, 'body.preferredLocation')] }] }),
+            'body.interested': 'yes',
+          };
     return new RegionsFilteredParticipantsFinder(this);
   }
 }

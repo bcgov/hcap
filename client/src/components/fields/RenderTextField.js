@@ -17,19 +17,19 @@ export const RenderTextField = ({
   const sanitizeValue = (value) => {
     if (value === null) return '';
     return typeof value === 'undefined' ? '' : value;
-  }
+  };
 
   return (
     <Fragment>
-      <label htmlFor={name}>
-        {label && <InputFieldLabel label={label} />}
-      </label>
+      <label htmlFor={name}>{label && <InputFieldLabel label={label} />}</label>
       <TextField
         id={name}
         name={name}
-        variant="filled"
+        variant='filled'
         type={type}
-        onKeyDown={(e) => type === 'number' && ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()}
+        onKeyDown={(e) =>
+          type === 'number' && ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()
+        }
         fullWidth
         error={touched && !!error}
         value={sanitizeValue(value)}

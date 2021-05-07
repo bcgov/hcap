@@ -5,7 +5,7 @@ export const mapObjectProps = (o, f) => {
     if (Array.isArray(value)) {
       m[key] = value.map((item) => {
         const itemObj = {};
-        Object.keys(item).forEach((key) => itemObj[key] = f());
+        Object.keys(item).forEach((key) => (itemObj[key] = f()));
         return itemObj;
       });
     } else {

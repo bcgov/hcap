@@ -1,4 +1,4 @@
-version: "2.4" # Depending on service condition was removed in v3+
+version: '2.4' # Depending on service condition was removed in v3+
 
 services:
   client:
@@ -42,9 +42,9 @@ services:
       - KEYCLOAK_SA_PASSWORD=${KEYCLOAK_SA_PASSWORD}
       - SERVER_PORT=8081
     expose:
-      - "8081"
+      - '8081'
     ports:
-      - "8081:8081"
+      - '8081:8081'
     volumes:
       - ./server:/server # Use server dir in host for hot reloading
       - /server/node_modules # Use node_modules in container
@@ -61,7 +61,7 @@ services:
     container_name: ${APP_NAME}-postgres
     restart: always
     expose:
-      - "5432"
+      - '5432'
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -70,7 +70,7 @@ services:
       - postgres-data-db:/var/lib/postgresql/data
       - ./.docker/postgres/sql-init:/docker-entrypoint-initdb.d
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
       - backend
 
@@ -98,7 +98,7 @@ services:
         aliases:
           - keycloak.local.freshworks.club
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/auth"]
+      test: ['CMD-SHELL', 'curl -f http://localhost:8080/auth']
       interval: 10s
       timeout: 10s
       retries: 20
@@ -106,7 +106,7 @@ services:
 
 networks:
   backend:
-    driver: "bridge"
+    driver: 'bridge'
 
 volumes:
   postgres-data-db:

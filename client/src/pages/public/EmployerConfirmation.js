@@ -10,18 +10,17 @@ import { Form } from '../../components/employer-form';
 
 export default () => {
   const location = useLocation();
-  if (!location.state) return <Redirect to={Routes.EmployerForm} />
+  if (!location.state) return <Redirect to={Routes.EmployerForm} />;
   return (
-    <div id="confirmation">
+    <div id='confirmation'>
       <Page>
         <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
-
           {/** Status */}
           <Box pt={5} pb={2} pl={2} pr={2}>
             <Box mb={2}>
-              <Grid container alignItems="center" justify="space-between">
+              <Grid container alignItems='center' justify='space-between'>
                 <Grid item>
-                  <Typography variant="subtitle1" paragraph>
+                  <Typography variant='subtitle1' paragraph>
                     Thank you. Your form has been submitted.
                   </Typography>
                 </Grid>
@@ -30,10 +29,7 @@ export default () => {
           </Box>
 
           {/** Form */}
-          <Form
-            initialValues={location.state?.formValues}
-            isDisabled
-          />
+          <Form initialValues={location.state?.formValues} isDisabled />
         </Grid>
       </Page>
     </div>

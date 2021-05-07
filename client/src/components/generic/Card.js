@@ -31,14 +31,22 @@ export const Card = ({ children, title, noPadding, noShadow, className, ...props
   const classes = useStyles();
   return (
     <MuiCard
-      className={classNames(classes.root, {
-        [classes.noPadding]: noPadding,
-        [classes.noShadow]: noShadow,
-      }, className)}
+      className={classNames(
+        classes.root,
+        {
+          [classes.noPadding]: noPadding,
+          [classes.noShadow]: noShadow,
+        },
+        className
+      )}
       {...props}
     >
-      {title && <Typography className={classes.title} variant="h3" noWrap>{title}</Typography>}
+      {title && (
+        <Typography className={classes.title} variant='h3' noWrap>
+          {title}
+        </Typography>
+      )}
       {children}
     </MuiCard>
-  )
+  );
 };

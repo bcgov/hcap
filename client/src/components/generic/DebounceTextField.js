@@ -1,12 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { TextField } from '@material-ui/core';
 
-export const DebounceTextField = ({
-  time,
-  onDebounce,
-  onChange,
-  ...props
-}) => {
+export const DebounceTextField = ({ time, onDebounce, onChange, ...props }) => {
   const [text, setText] = useState(null);
   //wrapping onDebounce using useRef to avoid adding it in the useEffect dependecy list
   const onDebounceRef = useRef(onDebounce);
@@ -14,7 +9,7 @@ export const DebounceTextField = ({
   useEffect(() => {
     if (!text && text !== '') return;
     const timeout = setTimeout(() => {
-      onDebounceRef.current(text)
+      onDebounceRef.current(text);
     }, time);
 
     return () => clearTimeout(timeout);
@@ -25,10 +20,5 @@ export const DebounceTextField = ({
     onChange(element);
   };
 
-  return (
-    <TextField
-      {...props}
-      onChange={(element) => handleOnChange(element)}
-    />
-  )
+  return <TextField {...props} onChange={(element) => handleOnChange(element)} />;
 };

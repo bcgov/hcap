@@ -29,42 +29,42 @@ describe('Participant Expression of Interest Form Endpoints', () => {
   };
 
   it('Create new form, receive 201', async () => {
-    const res = await request.agent(app)
-      .post(formEndpoint)
-      .send(form);
+    const res = await request.agent(app).post(formEndpoint).send(form);
     expect(res.statusCode).toEqual(201);
   });
 
   it('Create new form with multiple regions, receive 201', async () => {
-    const res = await request.agent(app)
+    const res = await request
+      .agent(app)
       .post(formEndpoint)
       .send({ ...form, preferredLocation: ['Fraser', 'Vancouver Coastal'] });
     expect(res.statusCode).toEqual(201);
   });
 
   it('Create new form with unspaced postal code, receive 201', async () => {
-    const res = await request.agent(app)
+    const res = await request
+      .agent(app)
       .post(formEndpoint)
       .send({ ...form, postalCode: 'V1V1V1' });
     expect(res.statusCode).toEqual(201);
   });
 
   it('Create new empty form, receive 400', async () => {
-    const res = await request.agent(app)
-      .post(formEndpoint)
-      .send({ });
+    const res = await request.agent(app).post(formEndpoint).send({});
     expect(res.statusCode).toEqual(400);
   });
 
   it('Create new form that fails validation, receive 400', async () => {
-    const res = await request.agent(app)
+    const res = await request
+      .agent(app)
       .post(formEndpoint)
       .send({ ...form, consent: false });
     expect(res.statusCode).toEqual(400);
   });
 
   it('Create new form using an invalid field, receive 400', async () => {
-    const res = await request.agent(app)
+    const res = await request
+      .agent(app)
       .post(formEndpoint)
       .send({ ...form, nonExistentField: '1' });
     expect(res.statusCode).toEqual(400);

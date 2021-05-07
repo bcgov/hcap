@@ -13,40 +13,37 @@ export const SiteInfo = ({ isDisabled }) => {
   return (
     <Card noShadow={isDisabled}>
       <Grid container spacing={2}>
-
         <Grid item xs={12}>
-          <Typography variant="subtitle2">
-            Site Contact Information
-          </Typography>
+          <Typography variant='subtitle2'>Site Contact Information</Typography>
           <Divider />
         </Grid>
         <Box pt={1} pb={2} pl={2} pr={2}>
-          <Typography variant="body1">
+          <Typography variant='body1'>
             Please complete <b>one Expression of Interest form for each site</b> that may be
             interested in participating in the Health Career Access Program.
           </Typography>
         </Box>
         <Grid item xs={12} sm={12}>
           <FastField
-            name="siteName"
+            name='siteName'
             component={RenderTextField}
-            label="* Site name"
+            label='* Site name'
             disabled={isDisabled}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
-            name="address"
+            name='address'
             component={RenderTextField}
-            label="* Site address"
+            label='* Site address'
             disabled={isDisabled}
           />
         </Grid>
         <Grid item xs={12} md={6}>
           <FastField
-            name="healthAuthority"
+            name='healthAuthority'
             component={RenderSelectField}
-            label="* Health authority"
+            label='* Health authority'
             disabled={isDisabled}
             options={[
               { value: 'Interior', label: 'Interior Health' },
@@ -59,49 +56,47 @@ export const SiteInfo = ({ isDisabled }) => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
-            name="siteContactFirstName"
+            name='siteContactFirstName'
             component={RenderTextField}
-            label="* First name"
+            label='* First name'
             disabled={isDisabled}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
-            name="siteContactLastName"
+            name='siteContactLastName'
             component={RenderTextField}
-            label="* Last name"
+            label='* Last name'
             disabled={isDisabled}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
-            name="emailAddress"
-            type="email"
+            name='emailAddress'
+            type='email'
             component={RenderTextField}
-            label="* Email address"
+            label='* Email address'
             disabled={isDisabled}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <FastField
-            name="phoneNumber"
-            type="tel"
+            name='phoneNumber'
+            type='tel'
             component={RenderTextField}
-            label="* Phone number"
+            label='* Phone number'
             disabled={isDisabled}
           />
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="subtitle2">
-            Site Type and Size
-          </Typography>
+          <Typography variant='subtitle2'>Site Type and Size</Typography>
           <Divider />
         </Grid>
         <Grid item xs={12}>
           <FastField
-            name="siteType"
+            name='siteType'
             component={RenderRadioGroup}
-            label="* Site type"
+            label='* Site type'
             disabled={isDisabled}
             options={[
               { value: 'Long-term care', label: 'Long-term care' },
@@ -116,61 +111,56 @@ export const SiteInfo = ({ isDisabled }) => {
           <Fragment>
             <Grid item xs={12} md={6}>
               <FastField
-                name="otherSite"
+                name='otherSite'
                 component={RenderTextField}
-                label="* Please specify"
+                label='* Please specify'
                 disabled={isDisabled}
               />
             </Grid>
           </Fragment>
         )}
         <Grid item xs={12}>
-          <Typography variant="subtitle2">
-            Long-term care beds
-          </Typography>
+          <Typography variant='subtitle2'>Long-term care beds</Typography>
         </Grid>
         <Grid item xs={12}>
           <FastField
-            name="numPublicLongTermCare"
-            type="number"
+            name='numPublicLongTermCare'
+            type='number'
             component={RenderTextField}
-            label="* Number of publicly funded beds"
+            label='* Number of publicly funded beds'
             disabled={isDisabled}
           />
         </Grid>
         <Grid item xs={12}>
           <FastField
-            name="numPrivateLongTermCare"
-            type="number"
+            name='numPrivateLongTermCare'
+            type='number'
             component={RenderTextField}
-            label="* Number of privately funded beds"
+            label='* Number of privately funded beds'
             disabled={isDisabled}
           />
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="subtitle2">
-            Assisted living beds
-          </Typography>
+          <Typography variant='subtitle2'>Assisted living beds</Typography>
         </Grid>
         <Grid item xs={12}>
           <FastField
-            name="numPublicAssistedLiving"
-            type="number"
+            name='numPublicAssistedLiving'
+            type='number'
             component={RenderTextField}
-            label="* Number of publicly funded beds"
+            label='* Number of publicly funded beds'
             disabled={isDisabled}
           />
         </Grid>
         <Grid item xs={12}>
           <FastField
-            name="numPrivateAssistedLiving"
-            type="number"
+            name='numPrivateAssistedLiving'
+            type='number'
             component={RenderTextField}
-            label="* Number of privately funded beds"
+            label='* Number of privately funded beds'
             disabled={isDisabled}
           />
         </Grid>
-
       </Grid>
     </Card>
   );

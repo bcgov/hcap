@@ -55,16 +55,18 @@ export const OrgBookSearch = ({
         renderInput={(params) => (
           <TextField
             {...params}
-            placeholder="Start typing to search the OrgBook database. If your business name does not appear, please enter your business name manually."
-            variant="filled"
+            placeholder='Start typing to search the OrgBook database. If your business name does not appear, please enter your business name manually.'
+            variant='filled'
             error={touched && !!error}
             InputProps={{
               ...params.InputProps,
               endAdornment: (
                 <Fragment>
-                  {!isLoading ? params.InputProps.endAdornment : (
+                  {!isLoading ? (
+                    params.InputProps.endAdornment
+                  ) : (
                     <Box pl={1.5} pr={1.5}>
-                      <CircularProgress color="inherit" size={20} />
+                      <CircularProgress color='inherit' size={20} />
                     </Box>
                   )}
                 </Fragment>

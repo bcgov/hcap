@@ -8,8 +8,9 @@ export const ToastProvider = ({ children }) => {
     message: '',
   });
 
-  const showToast = (payload) => setState(prevState => ({ ...prevState, ...payload, isOpen: true }));
-  const hideToast = () => setState(prevState => ({ ...prevState, isOpen: false }));
+  const showToast = (payload) =>
+    setState((prevState) => ({ ...prevState, ...payload, isOpen: true }));
+  const hideToast = () => setState((prevState) => ({ ...prevState, isOpen: false }));
 
   const contextValue = {
     showToast,
@@ -19,9 +20,7 @@ export const ToastProvider = ({ children }) => {
 
   return (
     <ToastProviderContext.Provider value={contextValue}>
-      <Fragment>
-        {children}
-      </Fragment>
+      <Fragment>{children}</Fragment>
     </ToastProviderContext.Provider>
   );
 };

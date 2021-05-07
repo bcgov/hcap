@@ -8,7 +8,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { FastField } from 'formik';
 import { SpeakerNotesOutlined } from '@material-ui/icons';
 
-
 import { Card, Divider } from '../generic';
 import { RenderCheckbox, RenderCheckboxGroup, RenderTextField, RenderRadioGroup } from '../fields';
 
@@ -17,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     color: 'rgb(13, 60, 97)',
     backgroundColor: 'rgb(232, 244, 253)',
     borderRadius: '4px',
-    border: "1px solid rgb(175, 217, 252)",
+    border: '1px solid rgb(175, 217, 252)',
   },
   infoHeader: {
     fontSize: '16px',
@@ -38,32 +37,36 @@ const useStyles = makeStyles((theme) => ({
 
 export const Fields = ({ isDisabled }) => {
   const classes = useStyles();
-  const [isCollectionNoticeExpanded, setCollectionNoticeExpanded] = useState(window.innerWidth > 750);
+  const [isCollectionNoticeExpanded, setCollectionNoticeExpanded] = useState(
+    window.innerWidth > 750
+  );
 
   return (
     <>
-      <Box mb={2} py={1} px={2} display="flex" alignItems="center" className={classes.info}>
+      <Box mb={2} py={1} px={2} display='flex' alignItems='center' className={classes.info}>
         <SpeakerNotesOutlined className={classes.infoIcon} />
         <Box py={1}>
-          <Typography className={classes.infoHeader} component="h3">Need Help?</Typography>
-          <Typography variant="body2">Contact a Health Career Access Program agent.</Typography>
-          <Typography variant="body2">Service is available from 8:00 am - 4:30 pm Pacific Time</Typography>
+          <Typography className={classes.infoHeader} component='h3'>
+            Need Help?
+          </Typography>
+          <Typography variant='body2'>Contact a Health Career Access Program agent.</Typography>
+          <Typography variant='body2'>
+            Service is available from 8:00 am - 4:30 pm Pacific Time
+          </Typography>
         </Box>
       </Box>
       <Card noShadow={isDisabled}>
         <Grid container spacing={2}>
-
           {/** Eligibility */}
           <Grid item xs={12}>
-            <Typography variant="subtitle2">
-              Check Your Eligibility
-          </Typography>
+            <Typography variant='subtitle2'>Check Your Eligibility</Typography>
             <Divider />
           </Grid>
           <Grid item xs={12}>
             <Typography>
-              <b>Please note:</b> A criminal record check is required for most positions in the health sector.
-          </Typography>
+              <b>Please note:</b> A criminal record check is required for most positions in the
+              health sector.
+            </Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography>
@@ -72,7 +75,7 @@ export const Fields = ({ isDisabled }) => {
           </Grid>
           <Grid item xs={12}>
             <FastField
-              name="eligibility"
+              name='eligibility'
               component={RenderRadioGroup}
               disabled={isDisabled}
               setTouched
@@ -86,142 +89,143 @@ export const Fields = ({ isDisabled }) => {
 
           {/** Contact Info */}
           <Grid item xs={12}>
-            <Typography variant="subtitle2">
-              Provide Your Contact Information
-          </Typography>
+            <Typography variant='subtitle2'>Provide Your Contact Information</Typography>
             <Divider />
           </Grid>
           <Grid item xs={12} sm={6}>
             <FastField
-              name="firstName"
+              name='firstName'
               component={RenderTextField}
-              label="* First Name"
+              label='* First Name'
               disabled={isDisabled}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <FastField
-              name="lastName"
+              name='lastName'
               component={RenderTextField}
-              label="* Last Name"
+              label='* Last Name'
               disabled={isDisabled}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <FastField
-              name="phoneNumber"
-              type="tel"
+              name='phoneNumber'
+              type='tel'
               component={RenderTextField}
-              label="* Phone Number"
+              label='* Phone Number'
               disabled={isDisabled}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <FastField
-              name="emailAddress"
-              type="email"
+              name='emailAddress'
+              type='email'
               component={RenderTextField}
-              label="* Email Address"
+              label='* Email Address'
               disabled={isDisabled}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <FastField
-              name="postalCode"
+              name='postalCode'
               component={RenderTextField}
-              label="* Postal Code"
+              label='* Postal Code'
               disabled={isDisabled}
             />
           </Grid>
 
           {/** Preferred Work Location */}
           <Grid item xs={12}>
-            <Typography variant="subtitle2">
-              Select Your Preferred Work Location(s)
-          </Typography>
+            <Typography variant='subtitle2'>Select Your Preferred Work Location(s)</Typography>
             <Divider />
           </Grid>
           <Grid item xs={12}>
             <FastField
-              name="preferredLocation"
+              name='preferredLocation'
               component={RenderCheckboxGroup}
-              label="* Please select your preferred health region(s)"
+              label='* Please select your preferred health region(s)'
               disabled={isDisabled}
               options={[
                 {
-                  value: 'Interior', label: (
+                  value: 'Interior',
+                  label: (
                     <span>
                       Interior (
                       <Link
-                        href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/1_interior_health_authority.pdf"
-                        target="__blank"
-                        rel="noreferrer noopener"
+                        href='https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/1_interior_health_authority.pdf'
+                        target='__blank'
+                        rel='noreferrer noopener'
                       >
                         PDF map
-                  </Link>
-                  )
+                      </Link>
+                      )
                     </span>
-                  )
+                  ),
                 },
                 {
-                  value: 'Fraser', label: (
+                  value: 'Fraser',
+                  label: (
                     <span>
                       Fraser (
                       <Link
-                        href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/2_fraser_health_authority.pdf"
-                        target="__blank"
-                        rel="noreferrer noopener"
+                        href='https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/2_fraser_health_authority.pdf'
+                        target='__blank'
+                        rel='noreferrer noopener'
                       >
                         PDF map
-                  </Link>
-                  )
+                      </Link>
+                      )
                     </span>
-                  )
+                  ),
                 },
                 {
-                  value: 'Vancouver Coastal', label: (
+                  value: 'Vancouver Coastal',
+                  label: (
                     <span>
                       Vancouver Coastal (
                       <Link
-                        href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/3_vancouver_coastal_health_authority.pdf"
-                        target="__blank"
-                        rel="noreferrer noopener"
+                        href='https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/3_vancouver_coastal_health_authority.pdf'
+                        target='__blank'
+                        rel='noreferrer noopener'
                       >
                         PDF map
-                  </Link>
-                  )
+                      </Link>
+                      )
                     </span>
-                  )
+                  ),
                 },
                 {
-                  value: 'Vancouver Island', label: (
+                  value: 'Vancouver Island',
+                  label: (
                     <span>
                       Vancouver Island (
                       <Link
-                        href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/4_vancouver_island_health_authority.pdf"
-                        target="__blank"
-                        rel="noreferrer noopener"
+                        href='https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/4_vancouver_island_health_authority.pdf'
+                        target='__blank'
+                        rel='noreferrer noopener'
                       >
                         PDF map
-                  </Link>
-                  )
+                      </Link>
+                      )
                     </span>
-                  )
+                  ),
                 },
                 {
-                  value: 'Northern', label: (
+                  value: 'Northern',
+                  label: (
                     <span>
                       Northern (
                       <Link
-                        href="https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/5_northern_health_authority.pdf"
-                        target="__blank"
-                        rel="noreferrer noopener"
+                        href='https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/5_northern_health_authority.pdf'
+                        target='__blank'
+                        rel='noreferrer noopener'
                       >
                         PDF map
-                  </Link>
-                  )
+                      </Link>
+                      )
                     </span>
-                  )
+                  ),
                 },
               ]}
             />
@@ -235,61 +239,64 @@ export const Fields = ({ isDisabled }) => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <FastField
-                  name="consent"
+                  name='consent'
                   disabled={isDisabled}
                   component={RenderCheckbox}
-                  label="I consent to have my personal information shared with the Health Career Access Program."
+                  label='I consent to have my personal information shared with the Health Career Access Program.'
                 />
               </Grid>
             </Grid>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="body1" gutterBottom>
+            <Typography variant='body1' gutterBottom>
               <b>Collection Notice</b>
             </Typography>
-            <Typography variant="body2" paragraph>
+            <Typography variant='body2' paragraph>
               Personal information is collected via this form under&nbsp;
-            <Link
-                href="https://www.bclaws.ca/civix/document/id/complete/statreg/96165_03#section26"
-                target="__blank"
-                rel="noreferrer noopener"
+              <Link
+                href='https://www.bclaws.ca/civix/document/id/complete/statreg/96165_03#section26'
+                target='__blank'
+                rel='noreferrer noopener'
               >
                 sections 26(c) and (e) of the Freedom of Information and Protection of Privacy Act
-            </Link>
-            &nbsp;(FOIPPA) for the purposes of administering the Health Career Access Program.
-          </Typography>
+              </Link>
+              &nbsp;(FOIPPA) for the purposes of administering the Health Career Access Program.
+            </Typography>
             <Collapse in={isCollectionNoticeExpanded || isDisabled}>
-              <Typography variant="body2" paragraph>
-                Personal information will only be used by authorized personnel to fulfill the purpose for
-                which it was originally collected or for a use consistent with that purpose unless you
-                expressly consent otherwise. We do not disclose your information to other public bodies or
-                individuals except as authorized by FOIPPA.
-            </Typography>
-              <Typography variant="body2" paragraph>
-                If you have any questions about our collection or use of personal information, please direct
-                your inquiries to the Director, Planning, Integration and Partnerships, 1515 Blanshard Street,
-              Victoria, British Columbia, V8W 3C8. Telephone: <Link href="tel:+12364783520">236-478-3520</Link>,
-              Email: <Link href="mailto:HCAPInfoQuery@gov.bc.ca">HCAPInfoQuery@gov.bc.ca</Link>.
-            </Typography>
+              <Typography variant='body2' paragraph>
+                Personal information will only be used by authorized personnel to fulfill the
+                purpose for which it was originally collected or for a use consistent with that
+                purpose unless you expressly consent otherwise. We do not disclose your information
+                to other public bodies or individuals except as authorized by FOIPPA.
+              </Typography>
+              <Typography variant='body2' paragraph>
+                If you have any questions about our collection or use of personal information,
+                please direct your inquiries to the Director, Planning, Integration and
+                Partnerships, 1515 Blanshard Street, Victoria, British Columbia, V8W 3C8. Telephone:{' '}
+                <Link href='tel:+12364783520'>236-478-3520</Link>, Email:{' '}
+                <Link href='mailto:HCAPInfoQuery@gov.bc.ca'>HCAPInfoQuery@gov.bc.ca</Link>.
+              </Typography>
             </Collapse>
-            {
-              !isDisabled && <Box
+            {!isDisabled && (
+              <Box
                 mt={0.25}
                 style={{ cursor: 'pointer', textDecoration: 'underline' }}
-                onClick={() => setCollectionNoticeExpanded(prevState => !prevState)}
+                onClick={() => setCollectionNoticeExpanded((prevState) => !prevState)}
               >
                 {!isCollectionNoticeExpanded ? 'Show More' : 'Show Less'}
               </Box>
-            }
+            )}
           </Grid>
-          {!isDisabled && <Grid item xs={12}>
-            <Typography variant="body1" gutterBottom>
-              <b>Submit Your Form</b>
-            </Typography>
-            <Typography variant="body2" paragraph>
-              Use the submit button to complete your expression of interest.
-          </Typography>
-          </Grid>}
+          {!isDisabled && (
+            <Grid item xs={12}>
+              <Typography variant='body1' gutterBottom>
+                <b>Submit Your Form</b>
+              </Typography>
+              <Typography variant='body2' paragraph>
+                Use the submit button to complete your expression of interest.
+              </Typography>
+            </Grid>
+          )}
         </Grid>
       </Card>
     </>

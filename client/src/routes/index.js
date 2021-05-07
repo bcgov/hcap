@@ -1,8 +1,8 @@
-import React, { Suspense, lazy, useEffect, useState, } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import { useKeycloak, KeycloakProvider } from '@react-keycloak/web';
-import { matchRuleShort } from '../utils'
+import { matchRuleShort } from '../utils';
 import store from 'store';
 import Keycloak from 'keycloak-js';
 
@@ -31,30 +31,32 @@ const PrivateRoute = ({ component: Component, path, ...rest }) => {
     <Route
       path={path}
       {...rest}
-      render={props =>
-        keycloak.authenticated && !keycloak.loginRequired ?
+      render={(props) =>
+        keycloak.authenticated && !keycloak.loginRequired ? (
           <Component {...props} />
-          :
+        ) : (
           <Redirect
             to={{
               pathname: Routes.Login,
-              state: { redirectOnLogin: path }
-            }} />
+              state: { redirectOnLogin: path },
+            }}
+          />
+        )
       }
     />
   );
 };
 
-const RootUrlSwitch = ({ rootUrl, children }) => matchRuleShort(window.location.hostname, rootUrl) && <Switch>{children}</Switch>
+const RootUrlSwitch = ({ rootUrl, children }) =>
+  matchRuleShort(window.location.hostname, rootUrl) && <Switch>{children}</Switch>;
 
 export default () => {
-
   const [keycloakInfo, setKeycloakInfo] = useState();
 
   const getKeycloakInfo = async () => {
     const response = await fetch(`${API_URL}/api/v1/keycloak-realm-client-info`, {
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json',
       },
       method: 'GET',
@@ -62,11 +64,13 @@ export default () => {
 
     const result = await response.json();
 
-    setKeycloakInfo(new Keycloak({
-      realm: result.realm,
-      url: result.url,
-      clientId: result.clientId
-    }))
+    setKeycloakInfo(
+      new Keycloak({
+        realm: result.realm,
+        url: result.url,
+        clientId: result.clientId,
+      })
+    );
   };
 
   useEffect(() => {
@@ -93,7 +97,11 @@ export default () => {
       <BrowserRouter>
         <Suspense fallback={<LinearProgress />}>
           <RootUrlSwitch rootUrl={Routes.ParticipantHostname}>
-            <Route exact path={Routes.ParticipantConfirmation} component={ParticipantConfirmation} />
+            <Route
+              exact
+              path={Routes.ParticipantConfirmation}
+              component={ParticipantConfirmation}
+            />
             <Route exact path={Routes.Base} component={ParticipantForm} />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>
@@ -111,7 +119,11 @@ export default () => {
             <PrivateRoute exact path={Routes.EOIViewDetails} component={EOIViewDetails} />
             <PrivateRoute exact path={Routes.ParticipantView} component={ParticipantView} />
             <PrivateRoute exact path={Routes.ParticipantUpload} component={ParticipantUpload} />
-            <PrivateRoute exact path={Routes.ParticipantUploadResults} component={ParticipantUploadResults} />
+            <PrivateRoute
+              exact
+              path={Routes.ParticipantUploadResults}
+              component={ParticipantUploadResults}
+            />
             <Route exact path={Routes.Base} component={EmployerForm} />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>

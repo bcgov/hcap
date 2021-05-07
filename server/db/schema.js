@@ -40,7 +40,7 @@ const schema = {
         "participant_id" integer not null,
         "site_id" integer not null,
         "distance" integer,
-        UNIQUE (participant_id, site_id),
+        UNIQUE (participant_id, site_id)
         )`,
     },
     {

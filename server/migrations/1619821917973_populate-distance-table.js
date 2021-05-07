@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { dbClient, collections } = require('../db');
 
 exports.shorthands = undefined;
@@ -21,8 +22,9 @@ exports.up = async (pgm) => {
     participantsBatches.push(participants.splice(0, batchSize));
   }
 
-  const aWholeLottaPromises = sites.flatMap((site) => participantsBatches.map((batch) => pgm.sql(`
-    INSERT INTO ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id, distance) VALUES 
+  const promises = sites.flatMap((site) => participantsBatches.map((batch, i) => async () => {
+    await pgm.sql(`
+    INSERT INTO ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id, distance) VALUES
       ${batch.map((participant) => `(
         ${participant.id},
         ${site.siteId},
@@ -30,7 +32,9 @@ exports.up = async (pgm) => {
           ST_GeomFromGeoJSON('${JSON.stringify(site.location)}'),
           ST_GeomFromGeoJSON('${JSON.stringify(participant.location)}')
         )
-      )`).join(',')} ON CONFLICT DO NOTHING;`)));
+      )`).join(',')} ON CONFLICT DO NOTHING;`);
+    console.log(`Batch ${i} complete`);
+  }));
 
-  await Promise.allSettled(aWholeLottaPromises);
+  await Promise.allSettled(promises);
 };

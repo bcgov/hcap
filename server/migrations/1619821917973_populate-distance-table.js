@@ -19,6 +19,7 @@ exports.up = async (pgm) => {
       )
     FROM ${collections.PARTICIPANTS} AS participant
     CROSS JOIN ${collections.EMPLOYER_SITES} AS site
+    WHERE site.body->>'location' IS NOT NULL AND participant.body->>'location' IS NOT NULL
     ON CONFLICT DO NOTHING;
   `);
 };

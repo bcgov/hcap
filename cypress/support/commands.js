@@ -1,14 +1,26 @@
 // These commands were sourced from the cypress-keycloak-login package
-const utils_1 = require('./utils');
 const { v4 } = require('uuid');
 
-Cypress.Commands.add('kcGetToken', function (user) {
-  Cypress.log({ name: 'Login' });
-  cy.fixture('users/' + user).then(function (userData) {
-    userData.password ? null : (userData.password = Cypress.env('KEYCLOAK_SA_PASSWORD'));
-    let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
-    let realm = Cypress.env('KEYCLOAK_REALM');
-    let client_id = Cypress.env('KEYCLOAK_FE_CLIENTID');
+const getAuthCodeFromLocation = (location) => {
+  let url = new URL(location);
+  let params = url.search.substring(1).split("&");
+  for (let _i = 0, params_1 = params; _i < params_1.length; _i++) {
+    let param = params_1[_i];
+    let _a = param.split("="), key = _a[0], value = _a[1];
+    if (key === "code") {
+      return value;
+    }
+  }
+}
+
+// also no longer useful
+Cypress.Commands.add("kcGetToken", function (user) {
+  Cypress.log({ name: "Login" });
+  cy.fixture("users/" + user).then(function (userData) {
+    (userData.password)? null : userData.password = Cypress.env("KEYCLOAK_SA_PASSWORD")
+    let authBaseUrl = Cypress.env("KEYCLOAK_AUTH_URL");
+    let realm = Cypress.env("KEYCLOAK_REALM");
+    let client_id = Cypress.env("KEYCLOAK_FE_CLIENTID");
     cy.request({
       method: 'POST',
       url: authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/token',
@@ -28,23 +40,78 @@ Cypress.Commands.add('kcGetToken', function (user) {
   });
 });
 
-Cypress.Commands.add('kcLogout', function () {
-  Cypress.log({ name: 'Logout' });
-  let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
-  let realm = Cypress.env('KEYCLOAK_REALM');
-  return cy.request({
-    url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/logout`,
+Cypress.Commands.add("kcLogin", (user) => {
+  Cypress.log({ name: "Login" });
+  cy.fixture("users/" + user).then((userData) => {
+    let authBaseUrl = Cypress.env("auth_base_url");
+    let realm = Cypress.env("auth_realm");
+    let client_id = Cypress.env("auth_client_id");
+    let client_secret = Cypress.env("KEYCLOAK_LOCAL_SECRET");
+    cy.request({
+      url: authBaseUrl + "/realms/" + realm + "/protocol/openid-connect/auth",
+      followRedirect: false,
+      qs: {
+        scope: "openid",
+        response_type: "code",
+        approval_prompt: "auto",
+        redirect_uri: Cypress.config("baseUrl"),
+        client_id: client_id,
+      }
+    })
+      .then(function (response) {
+        let html = document.createElement("html");
+        html.innerHTML = response.body;
+        let form = html.getElementsByTagName("form")[0];
+        let url = form.action;
+        return cy.request({
+          method: "POST",
+          url: url,
+          followRedirect: false,
+          form: true,
+          body: {
+            username: userData.username,
+            password: userData.password
+          }
+        });
+      })
+      .then(function (response) {
+        let code = getAuthCodeFromLocation(response.headers["location"]);
+        cy.request({
+          method: "post",
+          url: authBaseUrl + "/realms/" + realm + "/protocol/openid-connect/token",
+          body: {
+            client_id: client_id,
+            client_secret: 'bf49b5d9-dd6b-46a1-b011-9ac75337cadb',
+            redirect_uri: Cypress.config("baseUrl"),
+            code: code,
+            grant_type: "authorization_code"
+          },
+          form: true,
+          followRedirect: false
+        }).its("body");
+      });
   });
 });
 
-Cypress.Commands.add('kcNavAs', function (user, visitUrl) {
-  visitUrl = visitUrl || '';
-  Cypress.log({ name: 'Fake Login' });
-  let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
-  let realm = Cypress.env('KEYCLOAK_REALM');
-  let access_token = Cypress.env('ACCESS_TOKEN');
-  let refresh_token = Cypress.env('REFRESH_TOKEN');
-  let id_token = Cypress.env('ID_TOKEN');
+
+Cypress.Commands.add("kcLogout", function () {
+    Cypress.log({ name: "Logout" });
+    let authBaseUrl = Cypress.env("KEYCLOAK_AUTH_URL");
+    let realm = Cypress.env("KEYCLOAK_REALM");
+    return cy.request({
+        url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/logout`
+    });
+});
+
+// Trying to phase this one out of existence
+Cypress.Commands.add("kcNavAs", function (user, visitUrl) {
+  visitUrl = visitUrl || ""
+  Cypress.log({ name: "Fake Login" });
+  let authBaseUrl = Cypress.env("KEYCLOAK_AUTH_URL");
+  let realm = Cypress.env("KEYCLOAK_REALM");
+  let access_token = Cypress.env("ACCESS_TOKEN");
+  let refresh_token = Cypress.env("REFRESH_TOKEN");
+  let id_token = Cypress.env("ID_TOKEN");
   let state = v4();
   let nonce = utils_1.decodeToken(access_token).nonce;
   let token = {

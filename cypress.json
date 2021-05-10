@@ -1,5 +1,10 @@
 {
   "baseUrl": "http://hcapemployers.local.freshworks.club:4000",
   "chromeWebSecurity": false,
-  "video": false
+  "video": false,
+  "env": {
+    "auth_base_url": "http://keycloak.local.freshworks.club:8080/auth",
+    "auth_realm": "4qjrpzzl",
+    "auth_client_id": "hcap-api-local"
+  }
 }

@@ -81,7 +81,7 @@ Cypress.Commands.add("kcLogin", (user) => {
           url: authBaseUrl + "/realms/" + realm + "/protocol/openid-connect/token",
           body: {
             client_id: client_id,
-            client_secret: 'bf49b5d9-dd6b-46a1-b011-9ac75337cadb',
+            client_secret,
             redirect_uri: Cypress.config("baseUrl"),
             code: code,
             grant_type: "authorization_code"

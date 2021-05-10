@@ -13,7 +13,7 @@ parameters:
   - name: PATRONI_SUPERUSER_PASSWORD
     description: Password of the superuser account for initialization.
     generate: expression
-    from: "[a-zA-Z0-9]{32}"
+    from: '[a-zA-Z0-9]{32}'
     required: true
   - name: PATRONI_REPLICATION_USERNAME
     description: Username of the replication account for initialization.
@@ -31,7 +31,7 @@ parameters:
   - name: DB_PASSWORD
     description: Password for the Postgres connection user
     generate: expression
-    from: "[a-zA-Z0-9]{16}"
+    from: '[a-zA-Z0-9]{16}'
     required: true
 objects:
   - kind: Secret
@@ -55,16 +55,16 @@ objects:
     metadata:
       name: ${APP_NAME}-patroni
     rules:
-      - apiGroups: [""]
+      - apiGroups: ['']
         resources: [services]
         verbs: [create, get, list, patch, update, watch, delete]
-      - apiGroups: [""]
+      - apiGroups: ['']
         resources: [configmaps]
         verbs: [create, get, list, patch, update, watch, delete]
-      - apiGroups: [""]
+      - apiGroups: ['']
         resources: [endpoints]
         verbs: [get, patch, update, create, list, watch, delete]
-      - apiGroups: [""]
+      - apiGroups: ['']
         resources: [pods]
         verbs: [get, list, patch, update, watch]
   - kind: RoleBinding

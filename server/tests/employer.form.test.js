@@ -2,7 +2,11 @@ const request = require('supertest');
 const { v4 } = require('uuid');
 const app = require('../server');
 const {
-  getEmployers, getEmployerByID, getSites, getSiteByID, saveSites,
+  getEmployers,
+  getEmployerByID,
+  getSites,
+  getSiteByID,
+  saveSites,
 } = require('../services/employers.js');
 
 const {
@@ -80,7 +84,6 @@ describe('Server V1 Form Endpoints', () => {
   };
 
   const form = {
-
     // Operator Contact Information
     registeredBusinessName: 'Test Company',
     operatorName: 'John Doe',
@@ -179,35 +182,34 @@ describe('Server V1 Form Endpoints', () => {
     ],
 
     // Staffing Challenges
-    staffingChallenges: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+    staffingChallenges:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
 
     // Certification
     doesCertify: true,
   };
 
   it('Create new form, receive 201', async () => {
-    const res = await request.agent(app)
-      .post(formEndpoint)
-      .send(form);
+    const res = await request.agent(app).post(formEndpoint).send(form);
     expect(res.statusCode).toEqual(201);
   });
 
   it('Create new form using an invalid field, receive 400', async () => {
-    const res = await request.agent(app)
+    const res = await request
+      .agent(app)
       .post(formEndpoint)
       .send({ ...form, nonExistentField: '1' });
     expect(res.statusCode).toEqual(400);
   });
 
   it('Create new empty form, receive 400', async () => {
-    const res = await request.agent(app)
-      .post(formEndpoint)
-      .send({});
+    const res = await request.agent(app).post(formEndpoint).send({});
     expect(res.statusCode).toEqual(400);
   });
 
   it('Create new form that fails validation, receive 400', async () => {
-    const res = await request.agent(app)
+    const res = await request
+      .agent(app)
       .post(formEndpoint)
       .send({ ...form, doesCertify: false });
     expect(res.statusCode).toEqual(400);
@@ -215,7 +217,10 @@ describe('Server V1 Form Endpoints', () => {
 
   it('fetches the list of employer expression of interest forms', async () => {
     const res = await getEmployers({
-      isSuperUser: false, isMoH: false, isHA: true, regions: ['Vancouver Island'],
+      isSuperUser: false,
+      isMoH: false,
+      isHA: true,
+      regions: ['Vancouver Island'],
     });
     expect(res).toEqual([]);
   });
@@ -223,9 +228,7 @@ describe('Server V1 Form Endpoints', () => {
   it('fetches a single employer expression of interest form', async () => {
     const res = await getEmployerByID(1);
     expect(res).toEqual(
-      expect.arrayContaining(
-        [form].map((item) => (expect.objectContaining(item))),
-      ),
+      expect.arrayContaining([form].map((item) => expect.objectContaining(item)))
     );
   });
 
@@ -242,7 +245,9 @@ describe('Server V1 Form Endpoints', () => {
     const [res] = await getSiteByID(siteData.id);
     await makeParticipant(participant1);
     await makeParticipant(participant2);
-    const { data: [ppt, ppt2] } = await getParticipants({ isMoH: true });
+    const {
+      data: [ppt, ppt2],
+    } = await getParticipants({ isMoH: true });
     await setParticipantStatus(employerAId, ppt.id, 'prospecting');
     await setParticipantStatus(employerAId, ppt.id, 'interviewing');
     await setParticipantStatus(employerAId, ppt.id, 'offer_made');

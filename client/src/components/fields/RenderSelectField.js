@@ -20,7 +20,7 @@ export const RenderSelectField = ({
       <TextField
         select
         fullWidth
-        variant="filled"
+        variant='filled'
         error={touched && !!error}
         inputProps={{ displayEmpty: true }}
         value={value || ''}
@@ -28,9 +28,13 @@ export const RenderSelectField = ({
         {...fieldRest}
         {...props}
       >
-        <MenuItem value="" disabled>Please Select</MenuItem>
+        <MenuItem value='' disabled>
+          Please Select
+        </MenuItem>
         {options.map((option) => (
-          <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
         ))}
       </TextField>
       <InputFieldError error={<ErrorMessage name={name} />} />

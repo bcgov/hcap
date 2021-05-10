@@ -7,7 +7,6 @@ import { API_URL } from '../../constants';
 const SiteTable = lazy(() => import('./SiteTable'));
 
 export default () => {
-
   const [roles, setRoles] = useState([]);
   const [isLoadingUser, setLoadingUser] = useState(false);
 
@@ -15,7 +14,7 @@ export default () => {
     setLoadingUser(true);
     const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
       method: 'GET',
     });
@@ -25,7 +24,7 @@ export default () => {
       setRoles(roles);
       setLoadingUser(false);
     }
-  }
+  };
 
   useEffect(() => {
     fetchUserInfo();
@@ -40,11 +39,11 @@ export default () => {
         renderErrorMessage={true}
       >
         <Box pt={4} pb={4} pl={2} pr={2}>
-          <Typography variant="subtitle1" gutterBottom>
+          <Typography variant='subtitle1' gutterBottom>
             Sites
           </Typography>
         </Box>
-        <SiteTable sites={[]}/>
+        <SiteTable sites={[]} />
       </CheckPermissions>
     </Page>
   );

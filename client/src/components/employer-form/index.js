@@ -64,18 +64,13 @@ const getStepFields = (step) => {
         'numPrivateAssistedLiving',
       ];
     case 3:
-      return [
-        'workforceBaseline',
-      ];
+      return ['workforceBaseline'];
     case 4:
-      return [
-        'hcswFteNumber',
-        'staffingChallenges',
-      ];
+      return ['hcswFteNumber', 'staffingChallenges'];
     default:
       return [];
   }
-}
+};
 
 export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
   const defaultValues = {
@@ -110,7 +105,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
       'Licensed Practical Nurse': {},
       'Health Care Assistant': {},
       'Food Services Worker': {},
-      'Housekeeping': {},
+      Housekeeping: {},
       'COVID-19 IPC Response': {},
       'Site Administrative Staff': {},
     },
@@ -133,7 +128,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
 
   if (initialValues && formValues !== initialValues) {
     setFormValues(initialValues);
-  };
+  }
 
   const mapBaselineList = (values) => {
     let newWorkforceBaseline = [];
@@ -147,25 +142,28 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
         vacancyFullTime: value.vacancyFullTime,
         vacancyPartTime: value.vacancyPartTime,
         vacancyCasual: value.vacancyCasual,
-      })
+      });
     });
 
-    return { ...values, workforceBaseline: newWorkforceBaseline }
-  }
+    return { ...values, workforceBaseline: newWorkforceBaseline };
+  };
 
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
 
     const response = await fetch(`${API_URL}/api/v1/employer-form`, {
       method: 'POST',
-      headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
+      headers: { Accept: 'application/json', 'Content-type': 'application/json' },
       body: JSON.stringify(mapBaselineList(values)),
     });
 
     if (response.ok) {
       history.push(Routes.EmployerConfirmation, { formValues: values });
     } else {
-      openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
     }
 
     setSubmitLoading(false);
@@ -178,7 +176,9 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
       .reduce((a, v) => ({ ...a, [v]: values[v] }), {});
     const fieldsToTouch = mapObjectProps(filtered, () => true);
     const errors = await setTouched(fieldsToTouch);
-    const hasOutstandingErrors = Object.keys(errors).some((key) => fieldsForCurrentStep.includes(key));
+    const hasOutstandingErrors = Object.keys(errors).some((key) =>
+      fieldsForCurrentStep.includes(key)
+    );
     if (!hasOutstandingErrors) {
       setActiveStep(index);
       scrollUp();
@@ -188,7 +188,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
   const handleEditClicked = (index) => {
     setActiveStep(index);
     scrollUp();
-  }
+  };
 
   const handleBackClicked = (setTouched, values) => {
     moveStepper(activeStep - 1, setTouched, values);
@@ -203,7 +203,14 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
   };
 
   return (
-    <Grid item xs={12} sm={isDisabled ? 12 : 11} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8} xl={isDisabled ? 12 : 6}>
+    <Grid
+      item
+      xs={12}
+      sm={isDisabled ? 12 : 11}
+      md={isDisabled ? 12 : 10}
+      lg={isDisabled ? 12 : 8}
+      xl={isDisabled ? 12 : 6}
+    >
       <Formik
         initialValues={formValues}
         validationSchema={EmployerFormSchema}
@@ -214,14 +221,9 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
             {!isDisabled && (
               <Box pt={4} pb={1} pl={2} pr={2}>
                 <Card noPadding>
-
                   {/** Desktop Stepper */}
                   <Hidden xsDown>
-                    <Stepper
-                      nonLinear
-                      alternativeLabel
-                      activeStep={activeStep}
-                    >
+                    <Stepper nonLinear alternativeLabel activeStep={activeStep}>
                       {steps.map((label, index) => (
                         <Step key={label}>
                           <StepButton onClick={() => moveStepper(index, setTouched, values)}>
@@ -235,11 +237,13 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
                   {/** Mobile Stepper - Text */}
                   <Hidden smUp>
                     <Box p={2}>
-                      <Typography variant="body1" color="primary" gutterBottom>
+                      <Typography variant='body1' color='primary' gutterBottom>
                         Step {activeStep + 1} of {steps.length}
                       </Typography>
-                      <Typography variant="body1">
-                        <b>{activeStep + 1}. {steps[activeStep]}</b>
+                      <Typography variant='body1'>
+                        <b>
+                          {activeStep + 1}. {steps[activeStep]}
+                        </b>
                       </Typography>
                     </Box>
                   </Hidden>
@@ -248,7 +252,6 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
             )}
 
             <Box pt={2} pb={4} pl={2} pr={2}>
-
               {/** Form Sections */}
               {!isDisabled ? (
                 <Fragment>
@@ -260,8 +263,8 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
                   {activeStep === 5 && <Review handleEditClick={handleEditClicked} />}
                 </Fragment>
               ) : (
-                  <Review hideCollectionNotice={hideCollectionNotice} isDisabled />
-                )}
+                <Review hideCollectionNotice={hideCollectionNotice} isDisabled />
+              )}
 
               {/** Desktop Prev / Next */}
               {!isDisabled && (
@@ -273,7 +276,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
                           <Button
                             disabled={isFirstStep}
                             onClick={() => handleBackClicked(setTouched, values)}
-                            text="Back"
+                            text='Back'
                             fullWidth={false}
                           />
                         </Grid>
@@ -281,8 +284,8 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
                       <Grid item>
                         <Button
                           onClick={() => handleNextClicked(submitForm, setTouched, values)}
-                          variant="contained"
-                          color="primary"
+                          variant='contained'
+                          color='primary'
                           fullWidth={false}
                           loading={submitLoading}
                           text={isLastStep ? 'Submit' : 'Next'}
@@ -302,33 +305,37 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
                     <MobileStepper
                       style={{ backgroundColor: '#FFFFFF' }}
                       steps={steps.length}
-                      variant="text"
-                      position="static"
+                      variant='text'
+                      position='static'
                       activeStep={activeStep}
-                      backButton={(
+                      backButton={
                         <Button
                           fullWidth={false}
                           disabled={isFirstStep}
                           onClick={handleBackClicked}
-                          text={(
+                          text={
                             <Fragment>
                               <KeyboardArrowLeft /> Back
                             </Fragment>
-                          )}
+                          }
                         />
-                      )}
-                      nextButton={(
+                      }
+                      nextButton={
                         <Button
                           fullWidth={false}
                           loading={submitLoading}
                           onClick={() => handleNextClicked(submitForm, setTouched, values)}
-                          text={isLastStep ? 'Submit' : (
-                            <Fragment>
-                              Next <KeyboardArrowRight />
-                            </Fragment>
-                          )}
+                          text={
+                            isLastStep ? (
+                              'Submit'
+                            ) : (
+                              <Fragment>
+                                Next <KeyboardArrowRight />
+                              </Fragment>
+                            )
+                          }
                         />
-                      )}
+                      }
                     />
                   </Card>
                 </Box>

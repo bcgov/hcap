@@ -20,13 +20,7 @@ class DBClient {
   }
 
   async runMigration() {
-    const {
-      host,
-      port,
-      database,
-      user,
-      password,
-    } = this.settings;
+    const { host, port, database, user, password } = this.settings;
     logger.info('Running db migrations');
     try {
       const results = await migrationRunner.default({

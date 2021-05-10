@@ -7,42 +7,30 @@ import { Field, Formik, Form as FormikForm } from 'formik';
 import { getTodayDate } from '../../utils';
 
 export const InterviewingForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
-
-  return <Formik
-    initialValues={initialValues}
-    validationSchema={validationSchema}
-    onSubmit={onSubmit}
-  >
-    {({ submitForm }) => (
-      <FormikForm>
-        <Box>
-          <Field
-            name="contactedDate"
-            component={RenderDateField}
-            maxDate={getTodayDate()}
-            label="* Contacted Date"
-          />
-        </Box>
-        <Box mt={3}>
-          <Grid container spacing={2} justify="flex-end">
-            <Grid item>
-              <Button
-                onClick={onClose}
-                color="default"
-                text="Cancel"
-              />
+  return (
+    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+      {({ submitForm }) => (
+        <FormikForm>
+          <Box>
+            <Field
+              name='contactedDate'
+              component={RenderDateField}
+              maxDate={getTodayDate()}
+              label='* Contacted Date'
+            />
+          </Box>
+          <Box mt={3}>
+            <Grid container spacing={2} justify='flex-end'>
+              <Grid item>
+                <Button onClick={onClose} color='default' text='Cancel' />
+              </Grid>
+              <Grid item>
+                <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />
+              </Grid>
             </Grid>
-            <Grid item>
-              <Button
-                onClick={submitForm}
-                variant="contained"
-                color="primary"
-                text="Submit"
-              />
-            </Grid>
-          </Grid>
-        </Box>
-      </FormikForm>
-    )}
-  </Formik>;
+          </Box>
+        </FormikForm>
+      )}
+    </Formik>
+  );
 };

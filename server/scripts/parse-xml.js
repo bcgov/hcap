@@ -21,7 +21,7 @@ const postHcapSubmission = async (endpoint, data) => {
 
 const getDirContent = (pathString) => {
   try {
-    const fileNames = fs.readdirSync(pathString).filter((file) => (file.slice(-4) === '.xml'));
+    const fileNames = fs.readdirSync(pathString).filter((file) => file.slice(-4) === '.xml');
     const filesString = [];
 
     fileNames.forEach((name) => {
@@ -31,15 +31,19 @@ const getDirContent = (pathString) => {
 
     return filesString;
   } catch (e) {
-    if (typeof pathString === 'undefined') throw Error('Provide a path to a folder containing XMLs as the first command line argument');
+    if (typeof pathString === 'undefined')
+      throw Error('Provide a path to a folder containing XMLs as the first command line argument');
     throw Error(`Could not read contents of file ${pathString}`);
   }
 };
 
 const fromXmlStrings = (xmlStrings) => parser.parse(xmlStrings);
 
-const getUserInput = async () => { // Prompt user for query, output format
-  const { 'Select Endpoint': endpoint } = await inquirer.prompt([{ name: 'Select Endpoint', type: 'list', choices: endpoints }]);
+const getUserInput = async () => {
+  // Prompt user for query, output format
+  const { 'Select Endpoint': endpoint } = await inquirer.prompt([
+    { name: 'Select Endpoint', type: 'list', choices: endpoints },
+  ]);
   const { Proceed: proceed } = await inquirer.prompt([{ name: 'Proceed', type: 'confirm' }]);
   if (!proceed) throw Error('User cancelled operation');
   return { endpoint };
@@ -59,7 +63,10 @@ const extractPreferredLocations = (preferredLocationString) => {
   });
 };
 
-const extractOrbeonId = (name) => name.match(/^Health Career Access Program - Expression of Interest - ([\w-]{16})( \([0-9]+\))?.xml$/)[1];
+const extractOrbeonId = (name) =>
+  name.match(
+    /^Health Career Access Program - Expression of Interest - ([\w-]{16})( \([0-9]+\))?.xml$/
+  )[1];
 
 const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint, d);
 
@@ -88,7 +95,9 @@ const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint
         phoneNumber: _.get(jsonObj, 'form.contactInformation.grid-1.phoneNumber').toString(),
         emailAddress: _.get(jsonObj, 'form.contactInformation.grid-1.emailAddress'),
         postalCode: _.get(jsonObj, 'form.contactInformation.grid-1.postalCode'),
-        preferredLocation: extractPreferredLocations(_.get(jsonObj, 'form.locationPreference.grid-2.healthRegion')),
+        preferredLocation: extractPreferredLocations(
+          _.get(jsonObj, 'form.locationPreference.grid-2.healthRegion')
+        ),
         consent: _.get(jsonObj, 'form.consent.grid-3.confirmed') === 'Yes',
       };
       try {
@@ -108,7 +117,9 @@ const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint
 
     if (validationErrors.length > 0) {
       console.error(`Found ${validationErrors.length} invalid file(s) of ${xmlStrings.length}.`);
-      validationErrors.forEach((item) => console.error(`---\nFile: ${item.fileName}\nError: ${item.error}`));
+      validationErrors.forEach((item) =>
+        console.error(`---\nFile: ${item.fileName}\nError: ${item.error}`)
+      );
       return;
     }
 

@@ -7,21 +7,21 @@ exports.up = async () => {
       {
         postalCode: 'Z1Z1Z1',
       },
-      { postalCode: '' },
+      { postalCode: '' }
     );
 
     const nonHCAPs = await tx[collections.PARTICIPANTS].updateDoc(
       {
         nonHCAP: 'NULL',
       },
-      { nonHCAP: '' },
+      { nonHCAP: '' }
     );
 
     const crcClears = await tx[collections.PARTICIPANTS].updateDoc(
       {
         crcClear: 'NULL',
       },
-      { crcClear: '' },
+      { crcClear: '' }
     );
 
     console.log(`Updated ${postalCodes.length} postalCode fields`);

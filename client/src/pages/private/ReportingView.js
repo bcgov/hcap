@@ -7,17 +7,22 @@ import { Page, CheckPermissions, Button } from '../../components/generic';
 import { API_URL } from '../../constants';
 
 export default () => {
-
   const [roles, setRoles] = useState([]);
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [isLoading, setLoading] = useState(false);
-  const [report, setReport] = useState({ 'total': 0, 'qualified': 0, 'inProgress': 0, 'hired': 0, 'hiredPerRegion': {} });
+  const [report, setReport] = useState({
+    total: 0,
+    qualified: 0,
+    inProgress: 0,
+    hired: 0,
+    hiredPerRegion: {},
+  });
 
   const fetchUserInfo = async () => {
     setLoadingUser(true);
     const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
       method: 'GET',
     });
@@ -27,13 +32,13 @@ export default () => {
       setLoadingUser(false);
       setRoles(roles);
     }
-  }
+  };
 
   const handleDownloadHiringClick = async () => {
     setLoading(true);
     const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/hired`, {
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
       method: 'GET',
     });
@@ -43,12 +48,12 @@ export default () => {
       saveAs(blob, `participant-stats-hired-${new Date().toJSON()}.csv`);
       setLoading(false);
     }
-  }
+  };
 
   const fetchReport = async () => {
     const response = await fetch(`${API_URL}/api/v1/milestone-report`, {
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
       method: 'GET',
     });
@@ -63,7 +68,7 @@ export default () => {
         hiredPerRegion: results.data.hiredPerRegion,
       });
     }
-  }
+  };
 
   useEffect(() => {
     fetchUserInfo();
@@ -72,54 +77,61 @@ export default () => {
 
   return (
     <Page>
-      <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
-        <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
+      <CheckPermissions
+        isLoading={isLoadingUser}
+        roles={roles}
+        permittedRoles={['ministry_of_health']}
+        renderErrorMessage={true}
+      >
+        <Grid
+          container
+          alignContent='center'
+          justify='center'
+          alignItems='center'
+          direction='column'
+        >
           <Box width={0.6} py={4} px={2}>
-            <Typography variant="subtitle1" gutterBottom>
+            <Typography variant='subtitle1' gutterBottom>
               Milestone Reporting
             </Typography>
-            <Grid container spacing={3} direction="row">
+            <Grid container spacing={3} direction='row'>
               <Grid item xs={3}>
-                <Typography variant="h4">
-                  {report.total}
-                </Typography>
+                <Typography variant='h4'>{report.total}</Typography>
                 Total Participants
               </Grid>
               <Grid item xs={3}>
-                <Typography variant="h4">
-                  {report.qualified}
-                </Typography>
+                <Typography variant='h4'>{report.qualified}</Typography>
                 Qualified
               </Grid>
               <Grid item xs={3}>
-                <Typography variant="h4">
-                  {report.inProgress}
-                </Typography>
+                <Typography variant='h4'>{report.inProgress}</Typography>
                 In Progress
               </Grid>
               <Grid item xs={3}>
-                <Typography variant="h4">
-                  {report.hired}
-                </Typography>
+                <Typography variant='h4'>{report.hired}</Typography>
                 Participants Hired
               </Grid>
             </Grid>
           </Box>
           <Box width={0.6} py={4} px={2}>
-            <Typography variant="subtitle1" gutterBottom>
+            <Typography variant='subtitle1' gutterBottom>
               Hired Per Region
             </Typography>
             <ul>
-              {Object.keys(report.hiredPerRegion).map((k) => <li key={k}>{k}: {report.hiredPerRegion[k]}</li>)}
+              {Object.keys(report.hiredPerRegion).map((k) => (
+                <li key={k}>
+                  {k}: {report.hiredPerRegion[k]}
+                </li>
+              ))}
             </ul>
           </Box>
         </Grid>
         <Button
           fullWidth={false}
           loading={isLoading}
-          size="small"
+          size='small'
           onClick={() => handleDownloadHiringClick()}
-          text="Download hiring report (CSV)"
+          text='Download hiring report (CSV)'
         />
       </CheckPermissions>
     </Page>

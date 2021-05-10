@@ -6,8 +6,13 @@ import { convertElementToPDF } from '../../utils';
 
 import { Button } from '../../components/generic';
 
-export const PDFButton = ({ onStart = () => {}, onFinish = () => {}, target, fileName, filter }) => {
-
+export const PDFButton = ({
+  onStart = () => {},
+  onFinish = () => {},
+  target,
+  fileName,
+  filter,
+}) => {
   const { openToast } = useToast();
   const [isPDFLoading, setPDFLoading] = useState(false);
 
@@ -26,11 +31,6 @@ export const PDFButton = ({ onStart = () => {}, onFinish = () => {}, target, fil
   };
 
   return (
-    <Button
-      id="downloadBtn"
-      text="Download PDF"
-      onClick={handlePDFClick}
-      loading={isPDFLoading}
-    />
+    <Button id='downloadBtn' text='Download PDF' onClick={handlePDFClick} loading={isPDFLoading} />
   );
 };

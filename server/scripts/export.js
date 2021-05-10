@@ -28,13 +28,18 @@ const mapToObject = (m) => {
     try {
       await dbClient.connect();
       const db = await dbClient.db[collections.EMPLOYER_FORMS];
-      const results = await db.find({}, {
-        order: [{
-          field: 'created_at',
-          direction: 'desc',
-          nulls: 'first',
-        }],
-      });
+      const results = await db.find(
+        {},
+        {
+          order: [
+            {
+              field: 'created_at',
+              direction: 'desc',
+              nulls: 'first',
+            },
+          ],
+        }
+      );
 
       console.log(`Found ${results.length} record(s), writing CSV file...`);
 
@@ -66,12 +71,30 @@ const mapToObject = (m) => {
         columns.set('Number of Private Assisted Living Beds', result.body.numPrivateAssistedLiving);
 
         roles.forEach((role) => {
-          columns.set(`${role} Current Full Time`, result.body.workforceBaseline.find((i) => i.role === role).currentFullTime);
-          columns.set(`${role} Current Part Time`, result.body.workforceBaseline.find((i) => i.role === role).currentPartTime);
-          columns.set(`${role} Current Casual`, result.body.workforceBaseline.find((i) => i.role === role).currentCasual);
-          columns.set(`${role} Vacancy Full Time`, result.body.workforceBaseline.find((i) => i.role === role).vacancyFullTime);
-          columns.set(`${role} Vacancy Part Time`, result.body.workforceBaseline.find((i) => i.role === role).vacancyPartTime);
-          columns.set(`${role} Vacancy Casual`, result.body.workforceBaseline.find((i) => i.role === role).vacancyCasual);
+          columns.set(
+            `${role} Current Full Time`,
+            result.body.workforceBaseline.find((i) => i.role === role).currentFullTime
+          );
+          columns.set(
+            `${role} Current Part Time`,
+            result.body.workforceBaseline.find((i) => i.role === role).currentPartTime
+          );
+          columns.set(
+            `${role} Current Casual`,
+            result.body.workforceBaseline.find((i) => i.role === role).currentCasual
+          );
+          columns.set(
+            `${role} Vacancy Full Time`,
+            result.body.workforceBaseline.find((i) => i.role === role).vacancyFullTime
+          );
+          columns.set(
+            `${role} Vacancy Part Time`,
+            result.body.workforceBaseline.find((i) => i.role === role).vacancyPartTime
+          );
+          columns.set(
+            `${role} Vacancy Casual`,
+            result.body.workforceBaseline.find((i) => i.role === role).vacancyCasual
+          );
         });
 
         columns.set('Health Care Support Workers for Site', result.body.hcswFteNumber);

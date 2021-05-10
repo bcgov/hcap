@@ -29,7 +29,9 @@ const { createRows, verifyHeaders } = require('../utils');
         'Site Contact Email': 'siteContactEmailAddress',
       };
 
-      const xlsx = readXlsxFile.parse(path.resolve(__dirname, `xlsx/${process.argv[2]}`), { raw: true });
+      const xlsx = readXlsxFile.parse(path.resolve(__dirname, `xlsx/${process.argv[2]}`), {
+        raw: true,
+      });
       verifyHeaders(xlsx[0].data, columnMap);
 
       const objectMap = (row) => ({

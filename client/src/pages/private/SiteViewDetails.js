@@ -6,16 +6,11 @@ import store from 'store';
 import routes from '../../constants/routes';
 import { EditSiteForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
-import {
-  ToastStatus,
-  EditSiteSchema,
-  API_URL,
-} from '../../constants';
+import { ToastStatus, EditSiteSchema, API_URL } from '../../constants';
 
 const SiteParticipantsTable = lazy(() => import('./SiteParticipantsTable'));
 
 export default ({ match }) => {
-
   const { openToast } = useToast();
   const [roles, setRoles] = useState([]);
   const [site, setSite] = useState([]);
@@ -27,7 +22,7 @@ export default ({ match }) => {
     setLoadingUser(true);
     const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
       method: 'GET',
     });
@@ -37,14 +32,14 @@ export default ({ match }) => {
       setLoadingUser(false);
       setRoles(roles);
     }
-  }
+  };
 
   const handleSiteEdit = async (site) => {
     const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
       method: 'PATCH',
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
-        'Accept': 'application/json',
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
         'Content-type': 'application/json',
       },
       body: JSON.stringify(site),
@@ -52,9 +47,12 @@ export default ({ match }) => {
 
     if (response.ok) {
       setActiveModalForm(null);
-      fetchDetails(id)
+      fetchDetails(id);
     } else {
-      openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
     }
   };
 
@@ -65,7 +63,7 @@ export default ({ match }) => {
   const fetchDetails = async (id) => {
     const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
       method: 'GET',
     });
@@ -73,7 +71,7 @@ export default ({ match }) => {
     if (response.ok) {
       setSite(await response.json());
     }
-  }
+  };
 
   useEffect(() => {
     fetchDetails(id);
@@ -96,12 +94,12 @@ export default ({ match }) => {
       'Site Name': 'siteName',
       'Business Name': 'registeredBusinessName',
       'Street Address': 'address',
-      'City': 'city',
+      City: 'city',
       'Postal Code': 'postalCode',
-      'Region': 'healthAuthority',
+      Region: 'healthAuthority',
     },
     'Positions Overview': {
-      'Allocation': 'allocation',
+      Allocation: 'allocation',
       'HCAP Hires': 'hcapHires',
       'Non-HCAP Hires': 'nonHcapHires',
     },
@@ -119,71 +117,78 @@ export default ({ match }) => {
         open={activeModalForm != null}
         onClose={defaultOnClose}
       >
-        {activeModalForm === 'edit-site' && <EditSiteForm
-          initialValues={{
-            siteContactFirstName: site.siteContactFirstName,
-            siteContactLastName: site.siteContactLastName,
-            siteContactPhone: site.siteContactPhone,
-            siteContactEmail: site.siteContactEmail,
-            siteName: site.siteName,
-            registeredBusinessName: site.registeredBusinessName,
-            address: site.address,
-            city: site.city,
-            postalCode: site.postalCode,
-            allocation: site.allocation,
-            operatorContactFirstName: site.operatorContactFirstName,
-            operatorContactLastName: site.operatorContactLastName,
-            operatorPhone: site.operatorPhone,
-            operatorEmail: site.operatorEmail,
-          }}
-          validationSchema={EditSiteSchema}
-          onSubmit={(values) => {
-            const history = {
-              timestamp: new Date(),
-              changes: [],
-            };
-            Object.keys(values).forEach(key => {
-              if (values[key] !== site[key]) {
-                history.changes.push({
-                  field: key,
-                  from: site[key],
-                  to: values[key],
-                });
-              }
-            });
-            handleSiteEdit({
-              siteContactFirstName: values.siteContactFirstName,
-              siteContactLastName: values.siteContactLastName,
-              siteContactPhone: values.siteContactPhone,
-              siteContactEmail: values.siteContactEmail,
-              siteName: values.siteName,
-              registeredBusinessName: values.registeredBusinessName,
-              address: values.address,
-              city: values.city,
-              postalCode: values.postalCode,
-              allocation: values.allocation,
-              operatorContactFirstName: values.operatorContactFirstName,
-              operatorContactLastName: values.operatorContactLastName,
-              operatorPhone: values.operatorPhone,
-              operatorEmail: values.operatorEmail,
-              history: (site.history) ? [history, ...site.history] : [history],
-            });
-          }}
-          onClose={defaultOnClose}
-        />}
+        {activeModalForm === 'edit-site' && (
+          <EditSiteForm
+            initialValues={{
+              siteContactFirstName: site.siteContactFirstName,
+              siteContactLastName: site.siteContactLastName,
+              siteContactPhone: site.siteContactPhone,
+              siteContactEmail: site.siteContactEmail,
+              siteName: site.siteName,
+              registeredBusinessName: site.registeredBusinessName,
+              address: site.address,
+              city: site.city,
+              postalCode: site.postalCode,
+              allocation: site.allocation,
+              operatorContactFirstName: site.operatorContactFirstName,
+              operatorContactLastName: site.operatorContactLastName,
+              operatorPhone: site.operatorPhone,
+              operatorEmail: site.operatorEmail,
+            }}
+            validationSchema={EditSiteSchema}
+            onSubmit={(values) => {
+              const history = {
+                timestamp: new Date(),
+                changes: [],
+              };
+              Object.keys(values).forEach((key) => {
+                if (values[key] !== site[key]) {
+                  history.changes.push({
+                    field: key,
+                    from: site[key],
+                    to: values[key],
+                  });
+                }
+              });
+              handleSiteEdit({
+                siteContactFirstName: values.siteContactFirstName,
+                siteContactLastName: values.siteContactLastName,
+                siteContactPhone: values.siteContactPhone,
+                siteContactEmail: values.siteContactEmail,
+                siteName: values.siteName,
+                registeredBusinessName: values.registeredBusinessName,
+                address: values.address,
+                city: values.city,
+                postalCode: values.postalCode,
+                allocation: values.allocation,
+                operatorContactFirstName: values.operatorContactFirstName,
+                operatorContactLastName: values.operatorContactLastName,
+                operatorPhone: values.operatorPhone,
+                operatorEmail: values.operatorEmail,
+                history: site.history ? [history, ...site.history] : [history],
+              });
+            }}
+            onClose={defaultOnClose}
+          />
+        )}
       </Dialog>
       <Page>
-        <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['health_authority', 'ministry_of_health']} renderErrorMessage={true}>
+        <CheckPermissions
+          isLoading={isLoadingUser}
+          roles={roles}
+          permittedRoles={['health_authority', 'ministry_of_health']}
+          renderErrorMessage={true}
+        >
           <Card>
             <Box pt={4} pb={2} pl={4} pr={4}>
               <Box pb={4} pl={2}>
                 <Box pb={2}>
-                  <Typography variant="body1">
+                  <Typography variant='body1'>
                     <Link href={routes.SiteView}>Sites</Link> / {site.siteName}
                   </Typography>
                 </Box>
                 <Grid container>
-                  <Typography variant="h2">
+                  <Typography variant='h2'>
                     <b>{site.siteName}</b>
                   </Typography>
                   <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
@@ -192,50 +197,49 @@ export default ({ match }) => {
                         onClick={async () => {
                           setActiveModalForm('edit-site');
                         }}
-                        variant="outlined"
+                        variant='outlined'
                         fullWidth={false}
-                        size="small"
-                        text="Edit"
+                        size='small'
+                        text='Edit'
                       />
                     </Box>
                   </CheckPermissions>
                 </Grid>
               </Box>
               <Grid container>
-                {
-                  Object.keys(fieldsLabelMap).map(title =>
-                    <Grid key={title} item xs={12} sm={6} xl={3} style={{marginBottom: 40 }}>
-                      <Box pr={2} pl={2}>
-                        <Box pb={2}>
-                          <Typography variant="subtitle1">
-                            <b>{title}</b>
-                          </Typography>
-                        </Box>
-                        {
-                          Object.keys(fieldsLabelMap[title]).map(subTitle =>
-                            <Grid key={subTitle}
-                              container style={{ marginBottom: 5 }}>
-                              <Grid item xs={12}>
-                                <Box pr={4} pb={1}>
-                                  <Typography variant="body1">
-                                    <b>{subTitle}</b>
-                                  </Typography>
-                                  <Typography variant="body1">
-                                    {site[fieldsLabelMap[title][subTitle]]}
-                                  </Typography>
-                                </Box>
-                              </Grid>
-                            </Grid>)
-                        }
+                {Object.keys(fieldsLabelMap).map((title) => (
+                  <Grid key={title} item xs={12} sm={6} xl={3} style={{ marginBottom: 40 }}>
+                    <Box pr={2} pl={2}>
+                      <Box pb={2}>
+                        <Typography variant='subtitle1'>
+                          <b>{title}</b>
+                        </Typography>
                       </Box>
-                    </Grid>)
-                }
+                      {Object.keys(fieldsLabelMap[title]).map((subTitle) => (
+                        <Grid key={subTitle} container style={{ marginBottom: 5 }}>
+                          <Grid item xs={12}>
+                            <Box pr={4} pb={1}>
+                              <Typography variant='body1'>
+                                <b>{subTitle}</b>
+                              </Typography>
+                              <Typography variant='body1'>
+                                {site[fieldsLabelMap[title][subTitle]]}
+                              </Typography>
+                            </Box>
+                          </Grid>
+                        </Grid>
+                      ))}
+                    </Box>
+                  </Grid>
+                ))}
               </Grid>
             </Box>
             <Box pl={4}>
-              <Typography variant='subtitle1'><b>Hired Participants</b></Typography>
+              <Typography variant='subtitle1'>
+                <b>Hired Participants</b>
+              </Typography>
             </Box>
-            <SiteParticipantsTable siteId={site.siteId}/>
+            <SiteParticipantsTable siteId={site.siteId} />
           </Card>
         </CheckPermissions>
       </Page>

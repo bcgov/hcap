@@ -11,14 +11,17 @@ exports.up = async (pgm) => {
   await pgm.createIndex(collections.PARTICIPANTS_DISTANCE, 'distance', { ifNotExists: true });
 
   await pgm.dropTrigger(collections.EMPLOYER_SITES, 'update_postal_code_s', { ifExists: true });
-  await pgm.createTrigger(collections.EMPLOYER_SITES, 'update_postal_code_s', {
-    when: 'BEFORE',
-    operation: ['INSERT', 'UPDATE OF body'],
-    language: 'plpgsql',
-    level: 'ROW',
-    replace: true,
-  },
-  `
+  await pgm.createTrigger(
+    collections.EMPLOYER_SITES,
+    'update_postal_code_s',
+    {
+      when: 'BEFORE',
+      operation: ['INSERT', 'UPDATE OF body'],
+      language: 'plpgsql',
+      level: 'ROW',
+      replace: true,
+    },
+    `
   DECLARE
    loc record;
    participant record;
@@ -53,17 +56,21 @@ exports.up = async (pgm) => {
     END IF;
     RETURN NEW;
   END;
-  `);
+  `
+  );
 
   await pgm.dropTrigger(collections.PARTICIPANTS, 'update_postal_code_p', { ifExists: true });
-  await pgm.createTrigger(collections.PARTICIPANTS, 'update_postal_code_p', {
-    when: 'BEFORE',
-    operation: ['INSERT', 'UPDATE OF body'],
-    language: 'plpgsql',
-    level: 'ROW',
-    replace: true,
-  },
-  `
+  await pgm.createTrigger(
+    collections.PARTICIPANTS,
+    'update_postal_code_p',
+    {
+      when: 'BEFORE',
+      operation: ['INSERT', 'UPDATE OF body'],
+      language: 'plpgsql',
+      level: 'ROW',
+      replace: true,
+    },
+    `
   DECLARE
    loc record;
    site record;
@@ -98,35 +105,48 @@ exports.up = async (pgm) => {
     END IF;
     RETURN NEW;
   END;
-  `);
-
-  await pgm.dropTrigger(collections.PARTICIPANTS, 'delete_participant_distance_p', { ifExists: true });
-  await pgm.createTrigger(collections.PARTICIPANTS, 'delete_participant_distance_p', {
-    when: 'AFTER',
-    operation: 'DELETE',
-    language: 'plpgsql',
-    level: 'ROW',
-    replace: true,
-  },
   `
+  );
+
+  await pgm.dropTrigger(collections.PARTICIPANTS, 'delete_participant_distance_p', {
+    ifExists: true,
+  });
+  await pgm.createTrigger(
+    collections.PARTICIPANTS,
+    'delete_participant_distance_p',
+    {
+      when: 'AFTER',
+      operation: 'DELETE',
+      language: 'plpgsql',
+      level: 'ROW',
+      replace: true,
+    },
+    `
   BEGIN
     DELETE FROM participants_distance WHERE participant_id=OLD.id;
     RETURN OLD;
   END;
-  `);
-
-  await pgm.dropTrigger(collections.EMPLOYER_SITES, 'delete_participant_distance_s', { ifExists: true });
-  await pgm.createTrigger(collections.EMPLOYER_SITES, 'delete_participant_distance_s', {
-    when: 'AFTER',
-    operation: 'DELETE',
-    language: 'plpgsql',
-    level: 'ROW',
-    replace: true,
-  },
   `
+  );
+
+  await pgm.dropTrigger(collections.EMPLOYER_SITES, 'delete_participant_distance_s', {
+    ifExists: true,
+  });
+  await pgm.createTrigger(
+    collections.EMPLOYER_SITES,
+    'delete_participant_distance_s',
+    {
+      when: 'AFTER',
+      operation: 'DELETE',
+      language: 'plpgsql',
+      level: 'ROW',
+      replace: true,
+    },
+    `
   BEGIN
     DELETE FROM participants_distance WHERE site_id=(site.body->>'siteId')::int;
     RETURN OLD;
   END;
-  `);
+  `
+  );
 };

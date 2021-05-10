@@ -17,23 +17,18 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const Button = ({
-  text,
-  loading,
-  disabled,
-  ...props
-}) => {
+export const Button = ({ text, loading, disabled, ...props }) => {
   const classes = useStyles();
   return (
     <MuiButton
       classes={{ root: classes.root, sizeSmall: classes.small, sizeLarge: classes.large }}
       disabled={loading || disabled}
-      variant="contained"
-      color="primary"
+      variant='contained'
+      color='primary'
       fullWidth
       {...props}
     >
       {loading ? <CircularProgress size={24} /> : text}
     </MuiButton>
-  )
+  );
 };

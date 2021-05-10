@@ -17,7 +17,14 @@ import {
   API_URL,
 } from '../../constants';
 import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
-import { ProspectingForm, InterviewingForm, RejectedForm, HireForm, NewParticipantForm, EditParticipantForm } from '../../components/modal-forms';
+import {
+  ProspectingForm,
+  InterviewingForm,
+  RejectedForm,
+  HireForm,
+  NewParticipantForm,
+  EditParticipantForm,
+} from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { getDialogTitle, prettifyStatus } from '../../utils';
@@ -56,7 +63,8 @@ const sortOrder = [
   'edit',
 ];
 
-const tabs = { // Tabs, associated allowed roles, displayed statuses
+const tabs = {
+  // Tabs, associated allowed roles, displayed statuses
   'Available Participants': {
     roles: ['employer', 'health_authority'],
     statuses: ['open'],
@@ -79,7 +87,7 @@ const tabs = { // Tabs, associated allowed roles, displayed statuses
   },
 };
 
-const CustomTabs = withStyles(theme => ({
+const CustomTabs = withStyles((theme) => ({
   root: {
     borderBottom: `1px solid ${theme.palette.gray.secondary}`,
     marginBottom: theme.spacing(2),
@@ -111,7 +119,6 @@ const CustomTab = withStyles((theme) => ({
 }))((props) => <Tab disableRipple {...props} />);
 
 export default () => {
-
   const { openToast } = useToast();
   const [roles, setRoles] = useState([]);
   const [sites, setSites] = useState([]);
@@ -141,14 +148,14 @@ export default () => {
       field: property,
       direction: order.direction === 'desc' ? 'asc' : 'desc',
     });
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
       currentPage: 0,
     }));
   };
 
   const handleTabChange = (event, newValue) => {
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
       currentPage: 0,
     }));
@@ -157,7 +164,7 @@ export default () => {
 
   const handleLocationFilter = (value) => {
     setLocationFilter(value);
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
       currentPage: 0,
     }));
@@ -169,16 +176,16 @@ export default () => {
       field: 'distance',
       direction: 'asc',
     });
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
       currentPage: 0,
     }));
   };
 
   const handleFsaFilter = (value) => {
-    if(fsaText?.trim() === value?.trim()) return;
+    if (fsaText?.trim() === value?.trim()) return;
 
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
       currentPage: 0,
     }));
@@ -186,9 +193,9 @@ export default () => {
   };
 
   const handleLastNameFilter = (value) => {
-    if(lastNameText?.trim() === value?.trim()) return;
-    
-    setPagination(prev => ({
+    if (lastNameText?.trim() === value?.trim()) return;
+
+    setPagination((prev) => ({
       ...prev,
       currentPage: 0,
     }));
@@ -196,9 +203,9 @@ export default () => {
   };
 
   const handleEmailFilter = (value) => {
-    if(emailText?.trim() === value?.trim()) return;
-    
-    setPagination(prev => ({
+    if (emailText?.trim() === value?.trim()) return;
+
+    setPagination((prev) => ({
       ...prev,
       currentPage: 0,
     }));
@@ -206,7 +213,6 @@ export default () => {
   };
 
   const filterData = (data, columns) => {
-
     const mapItemToColumns = (item, columns) => {
       const row = {};
 
@@ -218,41 +224,54 @@ export default () => {
     };
 
     const filteredRows = [];
-    data && data.forEach(dataItem => {
-      const item = { ...dataItem };
-      if (!item.emailAddress) {
-        item.emailAddress = emailAddressMask;
-      }
-
-      if (!item.phoneNumber) {
-        item.phoneNumber = phoneNumberMask;
-      }
-
-      const row = mapItemToColumns(item, columns);
-
-      row.engage = item;
-      row.siteName = item?.statusInfos?.[0].data?.siteName;
-
-      if (item.statusInfos && item.statusInfos.length > 0) {
-        if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
-          const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
-          row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'already_hired'];
-        } else {
-          row.status = [item.statusInfos[0].status];
+    data &&
+      data.forEach((dataItem) => {
+        const item = { ...dataItem };
+        if (!item.emailAddress) {
+          item.emailAddress = emailAddressMask;
         }
-      } else {
-        row.status = ['open'];
-      }
 
-      row.engage.status = row.status[0];
+        if (!item.phoneNumber) {
+          item.phoneNumber = phoneNumberMask;
+        }
 
-      filteredRows.push(row);
-    });
+        const row = mapItemToColumns(item, columns);
+
+        row.engage = item;
+        row.siteName = item?.statusInfos?.[0].data?.siteName;
+
+        if (item.statusInfos && item.statusInfos.length > 0) {
+          if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
+            const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
+            row.status = [
+              previousStatus?.data.previous || item.statusInfos[0].status,
+              'already_hired',
+            ];
+          } else {
+            row.status = [item.statusInfos[0].status];
+          }
+        } else {
+          row.status = ['open'];
+        }
+
+        row.engage.status = row.status[0];
+
+        filteredRows.push(row);
+      });
     return filteredRows;
   };
 
-  const fetchParticipants = async (offset, regionFilter, fsaFilter, lastNameFilter,
-    emailFilter, sortField, sortDirection, siteSelector, statusFilters) => {
+  const fetchParticipants = async (
+    offset,
+    regionFilter,
+    fsaFilter,
+    lastNameFilter,
+    emailFilter,
+    sortField,
+    sortDirection,
+    siteSelector,
+    statusFilters
+  ) => {
     const queries = [
       sortField && `sortField=${sortField}`,
       offset && `offset=${offset}`,
@@ -262,14 +281,16 @@ export default () => {
       lastNameFilter && `lastNameFilter=${lastNameFilter}`,
       siteSelector && `siteSelector=${siteSelector}`,
       emailFilter && `emailFilter=${emailFilter}`,
-      ...statusFilters && statusFilters.map(status => `statusFilters[]=${status}`),
-    ].filter(item => item).join('&');
+      ...(statusFilters && statusFilters.map((status) => `statusFilters[]=${status}`)),
+    ]
+      .filter((item) => item)
+      .join('&');
 
     const response = await fetch(`${API_URL}/api/v1/participants?${queries}`, {
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json',
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
       method: 'GET',
     });
@@ -286,8 +307,8 @@ export default () => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
-        'Accept': 'application/json',
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
         'Content-type': 'application/json',
       },
       body: JSON.stringify({ participantId, status, data: additional }),
@@ -296,11 +317,11 @@ export default () => {
     if (response.ok) {
       const { data: statusData } = await response.json();
 
-      if (status === 'prospecting') { // Modal appears after submitting
+      if (status === 'prospecting') {
+        // Modal appears after submitting
         setActiveModalForm('prospecting');
       } else {
-
-        const index = rows.findIndex(row => row.id === participantId);
+        const index = rows.findIndex((row) => row.id === participantId);
         const { firstName, lastName } = rows[index];
 
         const toasts = {
@@ -327,7 +348,7 @@ export default () => {
           already_hired: {
             status: ToastStatus.Info,
             message: `${firstName} ${lastName} is already hired by someone else`,
-          }
+          },
         };
 
         openToast(toasts[statusData?.status === 'already_hired' ? statusData.status : status]);
@@ -336,7 +357,10 @@ export default () => {
         forceReload(pagination);
       }
     } else {
-      openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
     }
   };
 
@@ -344,8 +368,8 @@ export default () => {
     const response = await fetch(`${API_URL}/api/v1/new-hired-participant`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
-        'Accept': 'application/json',
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
         'Content-type': 'application/json',
       },
       body: JSON.stringify(participantInfo),
@@ -356,7 +380,10 @@ export default () => {
       setActiveModalForm(null);
       forceReload(pagination);
     } else {
-      openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
     }
   };
 
@@ -373,7 +400,7 @@ export default () => {
       order.field,
       order.direction,
       siteSelector,
-      tabs[tabValue].statuses,
+      tabs[tabValue].statuses
     );
 
     setPagination({
@@ -394,7 +421,7 @@ export default () => {
       setLoadingUser(true);
       const response = await fetch(`${API_URL}/api/v1/user`, {
         headers: {
-          'Authorization': `Bearer ${store.get('TOKEN')}`,
+          Authorization: `Bearer ${store.get('TOKEN')}`,
         },
         method: 'GET',
       });
@@ -405,8 +432,10 @@ export default () => {
         setSites(sites);
         setRoles(roles);
         if (!tabValue) {
-          setTabValue(Object.keys(tabs) // Set selected tab to first tab allowed for role
-            .find((key) => tabs[key].roles.some((role) => roles.includes(role))));
+          setTabValue(
+            Object.keys(tabs) // Set selected tab to first tab allowed for role
+              .find((key) => tabs[key].roles.some((role) => roles.includes(role)))
+          );
         }
         const isMoH = roles.includes('ministry_of_health');
         const isSuperUser = roles.includes('superuser');
@@ -415,34 +444,35 @@ export default () => {
             { id: 'interested', name: 'Interest' },
             { id: 'crcClear', name: 'CRC Clear' },
             { id: 'statusInfo', name: 'Status' },
-            { id: 'edit' },
+            { id: 'edit' }
           );
         }
 
         // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
-        const regions = Object.values(regionLabelsMap).filter(value => value !== 'None');
-        setLocations((isMoH || isSuperUser) ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean));
+        const regions = Object.values(regionLabelsMap).filter((value) => value !== 'None');
+        setLocations(
+          isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
+        );
 
         if (!isMoH) {
           resultColumns.push(
             { id: 'phoneNumber', name: 'Phone Number' },
             { id: 'emailAddress', name: 'Email Address' },
-            { id: 'distance', name: 'Site Distance' },
-          )
+            { id: 'distance', name: 'Site Distance' }
+          );
         }
 
         if (!isMoH && !isSuperUser) {
-          resultColumns.push(
-            { id: 'engage' },
-          )
+          resultColumns.push({ id: 'engage' });
         }
 
-        resultColumns.sort((colum1, column2) => (sortOrder.indexOf(colum1.id) - sortOrder.indexOf(column2.id)));
+        resultColumns.sort(
+          (colum1, column2) => sortOrder.indexOf(colum1.id) - sortOrder.indexOf(column2.id)
+        );
 
         setColumns(resultColumns);
       }
     };
-
 
     const getParticipants = async () => {
       if (!tabValue) return;
@@ -456,7 +486,7 @@ export default () => {
         order.field,
         order.direction,
         siteSelector,
-        tabs[tabValue].statuses,
+        tabs[tabValue].statuses
       );
 
       setPagination({
@@ -472,12 +502,18 @@ export default () => {
       await fetchUserInfo();
       await getParticipants();
 
-      setColumns(oldColumns => {
-        setHideLastNameAndEmailFilter(['Available Participants', 'Archived Candidates'].includes(tabValue));
+      setColumns((oldColumns) => {
+        setHideLastNameAndEmailFilter(
+          ['Available Participants', 'Archived Candidates'].includes(tabValue)
+        );
 
-        if (tabValue !== 'Available Participants') oldColumns = oldColumns.filter(column => column.id !== 'callbackStatus');
+        if (tabValue !== 'Available Participants')
+          oldColumns = oldColumns.filter((column) => column.id !== 'callbackStatus');
 
-        if (['My Candidates', 'Archived Candidates'].includes(tabValue) && !oldColumns.find(column => column.id === 'status'))
+        if (
+          ['My Candidates', 'Archived Candidates'].includes(tabValue) &&
+          !oldColumns.find((column) => column.id === 'status')
+        )
           return [
             ...oldColumns.slice(0, 3),
             { id: 'status', name: 'Status' },
@@ -485,7 +521,7 @@ export default () => {
           ];
 
         if (tabValue === 'Hired Candidates') {
-          oldColumns = oldColumns.filter(column => column.id !== 'engage');
+          oldColumns = oldColumns.filter((column) => column.id !== 'engage');
           return [
             ...oldColumns.slice(0, 8),
             { id: 'siteName', name: 'Site Name' },
@@ -494,16 +530,25 @@ export default () => {
         }
 
         if (!['My Candidates', 'Archived Candidates'].includes(tabValue))
-          return oldColumns.filter(column => column.id !== 'status');
+          return oldColumns.filter((column) => column.id !== 'status');
 
         return oldColumns;
       });
     };
     runAsync();
-  }, [pagination.currentPage, locationFilter, siteSelector, fsaFilter, lastNameFilter, emailFilter, order, tabValue]);
+  }, [
+    pagination.currentPage,
+    locationFilter,
+    siteSelector,
+    fsaFilter,
+    lastNameFilter,
+    emailFilter,
+    order,
+    tabValue,
+  ]);
 
   const handlePageChange = (oldPage, newPage) => {
-    setPagination(pagination => ({ ...pagination, currentPage: newPage }));
+    setPagination((pagination) => ({ ...pagination, currentPage: newPage }));
   };
 
   const defaultOnClose = () => {
@@ -518,143 +563,176 @@ export default () => {
         open={activeModalForm != null}
         onClose={defaultOnClose}
       >
-
-        {activeModalForm === 'prospecting' && <ProspectingForm
-          name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
-          onClose={() => {
-            forceReload(pagination);
-            defaultOnClose();
-          }}
-          onSubmit={() => {
-            defaultOnClose();
-            handleTabChange(null, 'My Candidates');
-          }}
-        />}
-
-        {activeModalForm === 'interviewing' && <InterviewingForm
-          initialValues={{ contactedDate: '' }}
-          validationSchema={InterviewingFormSchema}
-          onSubmit={(values) => {
-            handleEngage(actionMenuParticipant.id, 'interviewing', { contacted_at: values.contactedDate });
-          }}
-          onClose={defaultOnClose}
-        />}
-
-        {activeModalForm === 'rejected' && <RejectedForm
-          initialValues={{ contactedDate: '' }}
-          validationSchema={RejectedFormSchema}
-          onSubmit={(values) => {
-            handleEngage(actionMenuParticipant.id, 'rejected', { final_status: values.finalStatus });
-          }}
-          onClose={defaultOnClose}
-        />}
-
-        {activeModalForm === 'hired' && <HireForm
-          sites={sites}
-          initialValues={{
-            nonHcapOpportunity: false,
-            positionTitle: '',
-            positionType: '',
-            hiredDate: '',
-            startDate: '',
-            site: '',
-            acknowledge: false,
-          }}
-          validationSchema={HireFormSchema}
-          onSubmit={(values) => {
-            handleEngage(actionMenuParticipant.id, 'hired', {
-              nonHcapOpportunity: values.nonHcapOpportunity,
-              positionTitle: values.positionTitle,
-              positionType: values.positionType,
-              hiredDate: values.hiredDate,
-              startDate: values.startDate,
-              site: values.site,
-            });
-          }}
-          onClose={defaultOnClose}
-        />}
-        {activeModalForm === 'edit-participant' && <EditParticipantForm
-          initialValues={{
-            ...actionMenuParticipant
-          }}
-          validationSchema={EditParticipantFormSchema}
-          onSubmit={async (values) => {
-            if (values.phoneNumber && Number.isInteger(values.phoneNumber)) values.phoneNumber = values.phoneNumber.toString();
-            const history = {
-              timestamp: new Date(),
-              changes: [],
-            };
-            Object.keys(values).forEach(key => {
-              if (values[key] !== actionMenuParticipant[key]) {
-                history.changes.push({
-                  field: key,
-                  from: actionMenuParticipant[key],
-                  to: values[key],
-                });
-              }
-            });
-            values.history = (actionMenuParticipant.history) ? [history, ...actionMenuParticipant.history] : [history];
-            const response = await fetch(`${API_URL}/api/v1/participant`, {
-              method: 'PATCH',
-              headers: {
-                'Authorization': `Bearer ${store.get('TOKEN')}`,
-                'Accept': 'application/json',
-                'Content-type': 'application/json',
-              },
-              body: JSON.stringify(values),
-            });
-
-            if (response.ok) {
+        {activeModalForm === 'prospecting' && (
+          <ProspectingForm
+            name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
+            onClose={() => {
               forceReload(pagination);
               defaultOnClose();
-            }
-          }}
+            }}
+            onSubmit={() => {
+              defaultOnClose();
+              handleTabChange(null, 'My Candidates');
+            }}
+          />
+        )}
 
-          onClose={defaultOnClose}
+        {activeModalForm === 'interviewing' && (
+          <InterviewingForm
+            initialValues={{ contactedDate: '' }}
+            validationSchema={InterviewingFormSchema}
+            onSubmit={(values) => {
+              handleEngage(actionMenuParticipant.id, 'interviewing', {
+                contacted_at: values.contactedDate,
+              });
+            }}
+            onClose={defaultOnClose}
+          />
+        )}
 
-        />}
-        {activeModalForm === 'new-participant' && <NewParticipantForm
-          sites={sites}
-          initialValues={{
-            firstName: '',
-            lastName: '',
-            phoneNumber: '',
-            emailAddress: '',
-            origin: '',
-            otherOrigin: '',
-            hcapOpportunity: true,
-            contactedDate: '',
-            hiredDate: '',
-            startDate: '',
-            site: '',
-            acknowledge: false,
-          }}
-          validationSchema={ExternalHiredParticipantSchema}
-          onSubmit={(values) => {
-            handleExternalHire({
-              firstName: values.firstName,
-              lastName: values.lastName,
-              phoneNumber: values.phoneNumber,
-              emailAddress: values.emailAddress,
-              origin: values.origin,
-              otherOrigin: values.otherOrigin,
-              hcapOpportunity: values.hcapOpportunity,
-              contactedDate: values.contactedDate,
-              hiredDate: values.hiredDate,
-              startDate: values.startDate,
-              site: values.site,
-              acknowledge: values.acknowledge,
-            });
-          }}
-          onClose={defaultOnClose}
-        />}
+        {activeModalForm === 'rejected' && (
+          <RejectedForm
+            initialValues={{ contactedDate: '' }}
+            validationSchema={RejectedFormSchema}
+            onSubmit={(values) => {
+              handleEngage(actionMenuParticipant.id, 'rejected', {
+                final_status: values.finalStatus,
+              });
+            }}
+            onClose={defaultOnClose}
+          />
+        )}
+
+        {activeModalForm === 'hired' && (
+          <HireForm
+            sites={sites}
+            initialValues={{
+              nonHcapOpportunity: false,
+              positionTitle: '',
+              positionType: '',
+              hiredDate: '',
+              startDate: '',
+              site: '',
+              acknowledge: false,
+            }}
+            validationSchema={HireFormSchema}
+            onSubmit={(values) => {
+              handleEngage(actionMenuParticipant.id, 'hired', {
+                nonHcapOpportunity: values.nonHcapOpportunity,
+                positionTitle: values.positionTitle,
+                positionType: values.positionType,
+                hiredDate: values.hiredDate,
+                startDate: values.startDate,
+                site: values.site,
+              });
+            }}
+            onClose={defaultOnClose}
+          />
+        )}
+        {activeModalForm === 'edit-participant' && (
+          <EditParticipantForm
+            initialValues={{
+              ...actionMenuParticipant,
+            }}
+            validationSchema={EditParticipantFormSchema}
+            onSubmit={async (values) => {
+              if (values.phoneNumber && Number.isInteger(values.phoneNumber))
+                values.phoneNumber = values.phoneNumber.toString();
+              const history = {
+                timestamp: new Date(),
+                changes: [],
+              };
+              Object.keys(values).forEach((key) => {
+                if (values[key] !== actionMenuParticipant[key]) {
+                  history.changes.push({
+                    field: key,
+                    from: actionMenuParticipant[key],
+                    to: values[key],
+                  });
+                }
+              });
+              values.history = actionMenuParticipant.history
+                ? [history, ...actionMenuParticipant.history]
+                : [history];
+              const response = await fetch(`${API_URL}/api/v1/participant`, {
+                method: 'PATCH',
+                headers: {
+                  Authorization: `Bearer ${store.get('TOKEN')}`,
+                  Accept: 'application/json',
+                  'Content-type': 'application/json',
+                },
+                body: JSON.stringify(values),
+              });
+
+              if (response.ok) {
+                forceReload(pagination);
+                defaultOnClose();
+              }
+            }}
+            onClose={defaultOnClose}
+          />
+        )}
+        {activeModalForm === 'new-participant' && (
+          <NewParticipantForm
+            sites={sites}
+            initialValues={{
+              firstName: '',
+              lastName: '',
+              phoneNumber: '',
+              emailAddress: '',
+              origin: '',
+              otherOrigin: '',
+              hcapOpportunity: true,
+              contactedDate: '',
+              hiredDate: '',
+              startDate: '',
+              site: '',
+              acknowledge: false,
+            }}
+            validationSchema={ExternalHiredParticipantSchema}
+            onSubmit={(values) => {
+              handleExternalHire({
+                firstName: values.firstName,
+                lastName: values.lastName,
+                phoneNumber: values.phoneNumber,
+                emailAddress: values.emailAddress,
+                origin: values.origin,
+                otherOrigin: values.otherOrigin,
+                hcapOpportunity: values.hcapOpportunity,
+                contactedDate: values.contactedDate,
+                hiredDate: values.hiredDate,
+                startDate: values.startDate,
+                site: values.site,
+                acknowledge: values.acknowledge,
+              });
+            }}
+            onClose={defaultOnClose}
+          />
+        )}
       </Dialog>
-      <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['employer', 'health_authority', 'ministry_of_health']} renderErrorMessage={true}>
-        <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
-          <Grid container alignContent="center" justify="flex-start" alignItems="center" direction="row">
+      <CheckPermissions
+        isLoading={isLoadingUser}
+        roles={roles}
+        permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
+        renderErrorMessage={true}
+      >
+        <Grid
+          container
+          alignContent='center'
+          justify='center'
+          alignItems='center'
+          direction='column'
+        >
+          <Grid
+            container
+            alignContent='center'
+            justify='flex-start'
+            alignItems='center'
+            direction='row'
+          >
             <Grid item>
               <Box pl={2} pr={2} pt={1}>
-                <Typography variant="body1" gutterBottom>
+                <Typography variant='body1' gutterBottom>
                   Filter:
                 </Typography>
               </Box>
@@ -664,21 +742,22 @@ export default () => {
                 <TextField
                   select
                   fullWidth
-                  variant="filled"
+                  variant='filled'
                   inputProps={{ displayEmpty: true }}
                   value={locationFilter || ''}
                   disabled={isLoadingData || locations.length === 1}
                   onChange={({ target }) => handleLocationFilter(target.value)}
-                  aria-label="location filter"
+                  aria-label='location filter'
                 >
-                  {
-                    locations.length === 1 ?
-                      <MenuItem value=''>{locations[0]}</MenuItem>
-                      :
-                      ['Preferred Location', ...locations].map((option, index) => (
-                        <MenuItem key={option} value={index === 0 ? '' : option} aria-label={option}>{option}</MenuItem>
-                      ))
-                  }
+                  {locations.length === 1 ? (
+                    <MenuItem value=''>{locations[0]}</MenuItem>
+                  ) : (
+                    ['Preferred Location', ...locations].map((option, index) => (
+                      <MenuItem key={option} value={index === 0 ? '' : option} aria-label={option}>
+                        {option}
+                      </MenuItem>
+                    ))
+                  )}
                 </TextField>
               </Box>
             </Grid>
@@ -686,7 +765,7 @@ export default () => {
               <Box pl={2}>
                 <DebounceTextField
                   time={1000}
-                  variant="filled"
+                  variant='filled'
                   fullWidth
                   value={fsaText || ''}
                   disabled={isLoadingData}
@@ -698,70 +777,81 @@ export default () => {
             </Grid>
             <Grid item>
               <Box pl={2}>
-                {!hideLastNameAndEmailFilter && <DebounceTextField
-                  time={1000}
-                  variant="filled"
-                  fullWidth
-                  value={lastNameText || ''}
-                  disabled={isLoadingData}
-                  onDebounce={(text) => handleLastNameFilter(text)}
-                  onChange={({ target }) => setLastNameText(target.value)}
-                  placeholder='Last Name'
-                />}
+                {!hideLastNameAndEmailFilter && (
+                  <DebounceTextField
+                    time={1000}
+                    variant='filled'
+                    fullWidth
+                    value={lastNameText || ''}
+                    disabled={isLoadingData}
+                    onDebounce={(text) => handleLastNameFilter(text)}
+                    onChange={({ target }) => setLastNameText(target.value)}
+                    placeholder='Last Name'
+                  />
+                )}
               </Box>
             </Grid>
             <Grid item>
               <Box pl={2}>
-                {!hideLastNameAndEmailFilter && <DebounceTextField
-                  time={1000}
-                  variant="filled"
-                  fullWidth
-                  value={emailText || ''}
-                  disabled={isLoadingData}
-                  onDebounce={(text) => handleEmailFilter(text)}
-                  onChange={({ target }) => setEmailText(target.value)}
-                  placeholder='Email'
-                />}
+                {!hideLastNameAndEmailFilter && (
+                  <DebounceTextField
+                    time={1000}
+                    variant='filled'
+                    fullWidth
+                    value={emailText || ''}
+                    disabled={isLoadingData}
+                    onDebounce={(text) => handleEmailFilter(text)}
+                    onChange={({ target }) => setEmailText(target.value)}
+                    placeholder='Email'
+                  />
+                )}
               </Box>
             </Grid>
-            {!roles.includes('ministry_of_health') && <Grid item style={{ 'marginLeft': 20 }}>
-              <Typography>Site for distance calculation: </Typography>
-              <Box>
-                <TextField
-                  select
-                  fullWidth
-                  variant="filled"
-                  inputProps={{ displayEmpty: true }}
-                  value={siteSelector || ''}
-                  disabled={isLoadingData}
-                  onChange={({ target }) => handleSiteSelector(target.value)}
-                  aria-label="site selector"
-                >
-                  {
-                      [{siteName:'Select Site', siteId: null}, ...sites].map((option, index) => (
-                        <MenuItem key={option.siteId} value={index === 0 ? '' : option.siteId} aria-label={option.siteName}>{option.siteName}</MenuItem>
-                      ))
-                  }
-                </TextField>
-              </Box>
-            </Grid>}
-            {tabValue === "Hired Candidates" && <Grid container item xs={2} style={{ 'marginLeft': 'auto', 'marginRight': 20 }}>
-              <Button
-                onClick={() => setActiveModalForm("new-participant")}
-                text="Add Non-Portal Hire"
-                size="medium"
-              />
-            </Grid>}
+            {!roles.includes('ministry_of_health') && (
+              <Grid item style={{ marginLeft: 20 }}>
+                <Typography>Site for distance calculation: </Typography>
+                <Box>
+                  <TextField
+                    select
+                    fullWidth
+                    variant='filled'
+                    inputProps={{ displayEmpty: true }}
+                    value={siteSelector || ''}
+                    disabled={isLoadingData}
+                    onChange={({ target }) => handleSiteSelector(target.value)}
+                    aria-label='site selector'
+                  >
+                    {[{ siteName: 'Select Site', siteId: null }, ...sites].map((option, index) => (
+                      <MenuItem
+                        key={option.siteId}
+                        value={index === 0 ? '' : option.siteId}
+                        aria-label={option.siteName}
+                      >
+                        {option.siteName}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Box>
+              </Grid>
+            )}
+            {tabValue === 'Hired Candidates' && (
+              <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
+                <Button
+                  onClick={() => setActiveModalForm('new-participant')}
+                  text='Add Non-Portal Hire'
+                  size='medium'
+                />
+              </Grid>
+            )}
           </Grid>
-          <Box pt={2} pb={2} pl={2} pr={2} width="100%">
-            <CustomTabs
-              value={tabValue || false}
-              onChange={handleTabChange}
-            >
+          <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
+            <CustomTabs value={tabValue || false} onChange={handleTabChange}>
               {
                 Object.keys(tabs)
                   .filter((key) => roles.some((role) => tabs[key].roles.includes(role))) // Only display tabs for user role
-                  .map((key) => <CustomTab key={key} label={key} value={key} disabled={isLoadingData} />) // Tab component with tab name as value
+                  .map((key) => (
+                    <CustomTab key={key} label={key} value={key} disabled={isLoadingData} />
+                  )) // Tab component with tab name as value
               }
             </CustomTabs>
             <Table
@@ -772,40 +862,44 @@ export default () => {
               onChangePage={handlePageChange}
               rowsPerPage={pageSize}
               currentPage={pagination.currentPage}
-              renderCell={
-                (columnId, row) => {
-                  if (columnId === 'callbackStatus') {
-                    return row[columnId] ? 'Primed' : 'Available';
+              renderCell={(columnId, row) => {
+                if (columnId === 'callbackStatus') {
+                  return row[columnId] ? 'Primed' : 'Available';
+                }
+                if (columnId === 'status') {
+                  return prettifyStatus(row[columnId], row.id, tabValue, handleEngage);
+                }
+                if (columnId === 'distance') {
+                  if (row[columnId] !== null && row[columnId] !== undefined) {
+                    return `${math.round(row[columnId] / 1000) || '<1'} Km`;
                   }
-                  if (columnId === 'status') {
-                    return prettifyStatus(row[columnId], row.id, tabValue, handleEngage);
-                  }
-                  if (columnId === 'distance') {
-                    if (row[columnId] !== null && row[columnId] !== undefined) {
-                      return `${math.round(row[columnId]/1000) || '<1'} Km`;
-                    }
-                    return 'N/A';
-                  }
-                  if (columnId === 'engage') {
-                    return !row.status.includes('already_hired') && <Button
-                      onClick={(event) => {
-                        setActionMenuParticipant(row[columnId]);
-                        setAnchorElement(event.currentTarget);
-                      }}
-                      variant="outlined"
-                      size="small"
-                      text="Actions"
-                    />
-                  }
-                  if (columnId === 'edit') {
-                    return <Button
+                  return 'N/A';
+                }
+                if (columnId === 'engage') {
+                  return (
+                    !row.status.includes('already_hired') && (
+                      <Button
+                        onClick={(event) => {
+                          setActionMenuParticipant(row[columnId]);
+                          setAnchorElement(event.currentTarget);
+                        }}
+                        variant='outlined'
+                        size='small'
+                        text='Actions'
+                      />
+                    )
+                  );
+                }
+                if (columnId === 'edit') {
+                  return (
+                    <Button
                       onClick={async () => {
                         // Get data from row.id
                         const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
                           headers: {
-                            'Accept': 'application/json',
+                            Accept: 'application/json',
                             'Content-type': 'application/json',
-                            'Authorization': `Bearer ${store.get('TOKEN')}`,
+                            Authorization: `Bearer ${store.get('TOKEN')}`,
                           },
                           method: 'GET',
                         });
@@ -816,37 +910,56 @@ export default () => {
                         setActiveModalForm('edit-participant');
                         setAnchorElement(null);
                       }}
-                      variant="outlined"
-                      size="small"
-                      text="Edit"
+                      variant='outlined'
+                      size='small'
+                      text='Edit'
                     />
-                  }
-                  if (columnId === 'userUpdatedAt') {
-                    return moment(row.userUpdatedAt).fromNow();
-                  }
-                  return row[columnId];
+                  );
                 }
-              }
+                if (columnId === 'userUpdatedAt') {
+                  return moment(row.userUpdatedAt).fromNow();
+                }
+                return row[columnId];
+              }}
               onRequestSort={handleRequestSort}
               rows={rows}
               isLoading={isLoadingData}
             />
           </Box>
         </Grid>
-        {(!roles.includes('ministry_of_health')) && (!roles.includes('superuser')) && <Menu
-          keepMounted
-          open={actionMenuParticipant != null && activeModalForm == null}
-          anchorEl={anchorElement}
-          onClose={() => setActionMenuParticipant(null)}
-        >
-          {actionMenuParticipant?.status === 'open' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Engage</MenuItem>}
-          {actionMenuParticipant?.status === 'prospecting' && <MenuItem onClick={() => setActiveModalForm('interviewing')}>Interviewing</MenuItem>}
-          {actionMenuParticipant?.status === 'interviewing' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'offer_made')}>Offer Made</MenuItem>}
-          {actionMenuParticipant?.status === 'offer_made' && <MenuItem onClick={() => setActiveModalForm('hired')}>Hire</MenuItem>}
-          {['prospecting', 'interviewing', 'offer_made'].includes(actionMenuParticipant?.status) && <MenuItem onClick={() => setActiveModalForm('rejected')}>Archive</MenuItem>}
-          {actionMenuParticipant?.status === 'rejected' && <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>Re-engage</MenuItem>}
-        </Menu>
-        }
+        {!roles.includes('ministry_of_health') && !roles.includes('superuser') && (
+          <Menu
+            keepMounted
+            open={actionMenuParticipant != null && activeModalForm == null}
+            anchorEl={anchorElement}
+            onClose={() => setActionMenuParticipant(null)}
+          >
+            {actionMenuParticipant?.status === 'open' && (
+              <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>
+                Engage
+              </MenuItem>
+            )}
+            {actionMenuParticipant?.status === 'prospecting' && (
+              <MenuItem onClick={() => setActiveModalForm('interviewing')}>Interviewing</MenuItem>
+            )}
+            {actionMenuParticipant?.status === 'interviewing' && (
+              <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'offer_made')}>
+                Offer Made
+              </MenuItem>
+            )}
+            {actionMenuParticipant?.status === 'offer_made' && (
+              <MenuItem onClick={() => setActiveModalForm('hired')}>Hire</MenuItem>
+            )}
+            {['prospecting', 'interviewing', 'offer_made'].includes(
+              actionMenuParticipant?.status
+            ) && <MenuItem onClick={() => setActiveModalForm('rejected')}>Archive</MenuItem>}
+            {actionMenuParticipant?.status === 'rejected' && (
+              <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>
+                Re-engage
+              </MenuItem>
+            )}
+          </Menu>
+        )}
       </CheckPermissions>
     </>
   );

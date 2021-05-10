@@ -49,13 +49,13 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: "${NAME}:${TAG}"
+          name: '${NAME}:${TAG}'
       runPolicy: SerialLatestOnly
       source:
-        contextDir: "${SOURCE_CONTEXT_DIR}"
+        contextDir: '${SOURCE_CONTEXT_DIR}'
         git:
-          uri: "${SOURCE_REPOSITORY_URL}"
-          ref: "${SOURCE_REPOSITORY_REF}"
+          uri: '${SOURCE_REPOSITORY_URL}'
+          ref: '${SOURCE_REPOSITORY_REF}'
         type: Git
       strategy:
         dockerStrategy:
@@ -84,20 +84,20 @@ parameters:
   - name: SOURCE_REPOSITORY_REF
     required: true
   - name: TAG
-    value: "latest"
+    value: 'latest'
   - name: BASE_IMAGE_REPO
   - name: BASE_IMAGE_NAME
     required: true
   - name: BASE_IMAGE_TAG
     required: true
   - name: CPU_LIMIT
-    value: "2"
+    value: '2'
   - name: MEMORY_LIMIT
-    value: "4Gi"
+    value: '4Gi'
   - name: CPU_REQUEST
-    value: "1"
+    value: '1'
   - name: MEMORY_REQUEST
-    value: "2Gi"
+    value: '2Gi'
   # Arg keys and values are provided to the underlying docker build command
   # Supports up to four optional arguments
   # Default arguments will be injected in the form ARG_KEY_1="" and can be ignored

@@ -23,7 +23,7 @@ const StyledTableCell = withStyles((theme) => ({
   },
   body: {
     ...theme.typography.body1,
-  }
+  },
 }))(TableCell);
 
 const StyledHeaderTableCell = withStyles((theme) => ({
@@ -31,13 +31,13 @@ const StyledHeaderTableCell = withStyles((theme) => ({
     ...theme.typography.body1,
     backgroundColor: theme.palette.common.white,
     borderBottom: `2px solid ${theme.palette.secondary.main}`,
-  }
+  },
 }))(TableCell);
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
     '&:nth-child(1)': {
-      borderTop: `2px solid ${theme.palette.secondary.main}`
+      borderTop: `2px solid ${theme.palette.secondary.main}`,
     },
     '&:nth-of-type(odd)': {
       backgroundColor: '#FAFAFA',
@@ -85,59 +85,56 @@ const TablePaginationActions = (props) => {
 
   const handleClickListItem = (event) => {
     setAnchorEl(event.currentTarget);
-  }
+  };
 
   const handleMenuItemClick = (event, index) => {
     onChangePage(event, index);
     setAnchorEl(null);
-  }
+  };
 
   const handleClose = () => {
     setAnchorEl(null);
-  }
+  };
 
   return (
     <div className={classes.root}>
       <IconButton
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
-        aria-label="first page"
+        aria-label='first page'
       >
         <FirstPageIcon />
       </IconButton>
-      <IconButton onClick={handleBackButtonClick}
-        disabled={page === 0}
-        aria-label="previous page"
-      >
+      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label='previous page'>
         <KeyboardArrowLeft />
       </IconButton>
       <IconButton
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
+        aria-label='next page'
       >
         <KeyboardArrowRight />
       </IconButton>
       <IconButton
         onClick={handleLastPageButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
+        aria-label='last page'
       >
         <LastPageIcon />
       </IconButton>
-      <List component="nav" aria-label="Page Selector">
+      <List component='nav' aria-label='Page Selector'>
         <ListItem
           button
-          aria-haspopup="true"
-          aria-controls="page-select"
-          aria-label="go to page"
+          aria-haspopup='true'
+          aria-controls='page-select'
+          aria-label='go to page'
           onClick={handleClickListItem}
         >
-          <ListItemText primary="Skip to page..." />
+          <ListItemText primary='Skip to page...' />
         </ListItem>
       </List>
       <Menu
-        id="page-select"
+        id='page-select'
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
@@ -155,11 +152,22 @@ const TablePaginationActions = (props) => {
         ))}
       </Menu>
     </div>
-  )
+  );
 };
 
-export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows, isLoading, currentPage = 0, rowsPerPage, onChangePage, rowsCount, }) => {
-
+export const Table = ({
+  order,
+  orderBy,
+  renderCell,
+  onRequestSort,
+  columns,
+  rows,
+  isLoading,
+  currentPage = 0,
+  rowsPerPage,
+  onChangePage,
+  rowsCount,
+}) => {
   const [page, setPage] = useState(currentPage);
 
   const createSortHandler = (property) => (event) => {
@@ -173,49 +181,50 @@ export const Table = ({ order, orderBy, renderCell, onRequestSort, columns, rows
 
   return (
     <Fragment>
-      <MuiTable
-        stickyHeader>
+      <MuiTable stickyHeader>
         <TableHead>
           <TableRow>
             {columns.map((column, index) => (
               <StyledHeaderTableCell key={index}>
-                {column.name && <TableSortLabel // Disable sorting if column has no header
-                  disabled={isLoading || column.sortable === false }
-                  active={orderBy === column.id}
-                  direction={orderBy === column.id ? order : 'asc'}
-                  onClick={createSortHandler(column.id)}>
-                  {column.name}
-                </TableSortLabel>}
+                {column.name && (
+                  <TableSortLabel // Disable sorting if column has no header
+                    disabled={isLoading || column.sortable === false}
+                    active={orderBy === column.id}
+                    direction={orderBy === column.id ? order : 'asc'}
+                    onClick={createSortHandler(column.id)}
+                  >
+                    {column.name}
+                  </TableSortLabel>
+                )}
               </StyledHeaderTableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {isLoading ? [...Array(8)].map((_, i) => (
-            <StyledTableRow key={i}>
-              {[...Array(columns.length)].map((_, i) => (
-                <StyledTableCell key={i}><Skeleton animation="wave" /></StyledTableCell>
+          {isLoading
+            ? [...Array(8)].map((_, i) => (
+                <StyledTableRow key={i}>
+                  {[...Array(columns.length)].map((_, i) => (
+                    <StyledTableCell key={i}>
+                      <Skeleton animation='wave' />
+                    </StyledTableCell>
+                  ))}
+                </StyledTableRow>
+              ))
+            : rows.map((row, index) => (
+                <StyledTableRow hover key={index}>
+                  {columns.map((column) => (
+                    <StyledTableCell key={column.id}>
+                      {renderCell ? renderCell(column.id, row) : row[column.id] || ''}
+                    </StyledTableCell>
+                  ))}
+                </StyledTableRow>
               ))}
-            </StyledTableRow>
-          )) : rows.map((row, index) => (
-            <StyledTableRow hover key={index}>
-              {columns.map((column) => (
-                <StyledTableCell key={column.id}>
-                  {
-                    renderCell ?
-                      renderCell(column.id, row)
-                      :
-                      row[column.id] || ''
-                  }
-                </StyledTableCell>
-              ))}
-            </StyledTableRow>
-          ))}
         </TableBody>
       </MuiTable>
       <TablePagination
         rowsPerPageOptions={[]}
-        component="div"
+        component='div'
         count={rowsCount || rows.length}
         rowsPerPage={rowsPerPage || rows.length || 10}
         page={page}

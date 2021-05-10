@@ -17,23 +17,25 @@ export const Form = ({ initialValues, isDisabled }) => {
   const { openToast } = useToast();
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  const formValues = initialValues ? initialValues : {
-    eligibility: '',
-    firstName: '',
-    lastName: '',
-    phoneNumber: '',
-    emailAddress: '',
-    postalCode: '',
-    preferredLocation: [],
-    consent: '',
-  };
+  const formValues = initialValues
+    ? initialValues
+    : {
+        eligibility: '',
+        firstName: '',
+        lastName: '',
+        phoneNumber: '',
+        emailAddress: '',
+        postalCode: '',
+        preferredLocation: [],
+        consent: '',
+      };
 
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
 
     const response = await fetch(`${API_URL}/api/v1/participants`, {
       method: 'POST',
-      headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
+      headers: { Accept: 'application/json', 'Content-type': 'application/json' },
       body: JSON.stringify(values),
     });
 
@@ -41,7 +43,10 @@ export const Form = ({ initialValues, isDisabled }) => {
       const { id } = await response.json();
       history.push(Routes.ParticipantConfirmation, { formValues: values, id });
     } else {
-      openToast({ status: ToastStatus.Error, message: response.error || response.statusText || 'Server error' });
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
     }
 
     setSubmitLoading(false);
@@ -53,7 +58,14 @@ export const Form = ({ initialValues, isDisabled }) => {
   };
 
   return (
-    <Grid item xs={12} sm={isDisabled ? 12 : 11} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8} xl={isDisabled ? 12 : 6}>
+    <Grid
+      item
+      xs={12}
+      sm={isDisabled ? 12 : 11}
+      md={isDisabled ? 12 : 10}
+      lg={isDisabled ? 12 : 8}
+      xl={isDisabled ? 12 : 6}
+    >
       <Formik
         initialValues={formValues}
         validationSchema={ParticipantFormSchema}
@@ -61,7 +73,6 @@ export const Form = ({ initialValues, isDisabled }) => {
       >
         {({ errors, submitForm, setTouched, values }) => (
           <FormikForm>
-
             <Box pt={4} pb={4} pl={2} pr={2}>
               <Summary />
             </Box>
@@ -71,16 +82,17 @@ export const Form = ({ initialValues, isDisabled }) => {
             </Box>
 
             {!isDisabled && (
-              <Box display="flex" justifyContent="center" pt={0} pb={4} pl={2} pr={2}>
+              <Box display='flex' justifyContent='center' pt={0} pb={4} pl={2} pr={2}>
                 <Button
                   onClick={() => handleSubmitButton(submitForm)}
-                  variant="contained"
-                  color="primary"
+                  variant='contained'
+                  color='primary'
                   fullWidth={false}
                   loading={submitLoading}
-                  text="Submit"
+                  text='Submit'
                 />
-              </Box>)}
+              </Box>
+            )}
           </FormikForm>
         )}
       </Formik>

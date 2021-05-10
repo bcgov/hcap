@@ -2,7 +2,11 @@ const { ValidationError } = require('yup');
 const { v4 } = require('uuid');
 const app = require('../server');
 const {
-  saveSingleSite, saveSites, getSites, getSiteByID, updateSite,
+  saveSingleSite,
+  saveSites,
+  getSites,
+  getSiteByID,
+  updateSite,
 } = require('../services/employers.js');
 const {
   getParticipants,
@@ -120,18 +124,14 @@ describe('Employer Site Endpoints', () => {
 
   it('Create new site via batch, receive success', async () => {
     const res = await saveSites(site);
-    const expectedRes = [
-      { siteId: 67, status: 'Success' },
-    ];
+    const expectedRes = [{ siteId: 67, status: 'Success' }];
     expect(res).toEqual(expectedRes);
   });
 
   it('Get sites, receive all successfully', async () => {
     const res = await getSites();
     expect(res).toEqual(
-      expect.arrayContaining(
-        [site].map((item) => (expect.objectContaining(item))),
-      ),
+      expect.arrayContaining([site].map((item) => expect.objectContaining(item)))
     );
   });
 
@@ -143,9 +143,7 @@ describe('Employer Site Endpoints', () => {
 
     const res = await getSiteByID(sitePostRes.id);
     expect(res).toEqual(
-      expect.arrayContaining(
-        [siteBaseFields].map((item) => (expect.objectContaining(item))),
-      ),
+      expect.arrayContaining([siteBaseFields].map((item) => expect.objectContaining(item)))
     );
   });
 
@@ -155,7 +153,9 @@ describe('Employer Site Endpoints', () => {
     expect(res.nonHcapHires).toEqual('0');
     await makeParticipant(participant1);
     await makeParticipant(participant2);
-    const { data: [ppt, ppt2] } = await getParticipants({ isMoH: true });
+    const {
+      data: [ppt, ppt2],
+    } = await getParticipants({ isMoH: true });
     await setParticipantStatus(employerAId, ppt.id, 'prospecting');
     await setParticipantStatus(employerAId, ppt.id, 'interviewing');
     await setParticipantStatus(employerAId, ppt.id, 'offer_made');
@@ -184,23 +184,23 @@ describe('Employer Site Endpoints', () => {
   });
 
   it('Create new site, receive validation error', async () => {
-    expect(
-      saveSites({ ...site, siteContactPhoneNumber: '1' }),
-    ).rejects.toEqual(new ValidationError('Phone number must be provided as 10 digits (index 0)'));
+    expect(saveSites({ ...site, siteContactPhoneNumber: '1' })).rejects.toEqual(
+      new ValidationError('Phone number must be provided as 10 digits (index 0)')
+    );
   });
 
   it('Create new site, receive duplicated', async () => {
     const res = await saveSites(site);
-    const expectedRes = [
-      { siteId: 67, status: 'Duplicate' },
-    ];
+    const expectedRes = [{ siteId: 67, status: 'Duplicate' }];
     expect(res).toEqual(expectedRes);
   });
 
   it('Update site, receive success', async () => {
     const res = await updateSite(1, {
       siteName: 'test',
-      history: [{ timestamp: new Date(), changes: [{ field: 'siteName', from: 'test1', to: 'test' }] }],
+      history: [
+        { timestamp: new Date(), changes: [{ field: 'siteName', from: 'test1', to: 'test' }] },
+      ],
     });
     expect(res[0].siteName).toEqual('test');
   });
@@ -210,15 +210,15 @@ describe('Employer Site Endpoints', () => {
     await startDB();
 
     const siteResponse = await saveSites(site);
-    const expectedSite = [
-      { siteId: 67, status: 'Success' },
-    ];
+    const expectedSite = [{ siteId: 67, status: 'Success' }];
     expect(siteResponse).toEqual(expectedSite);
 
     const [res] = await getSiteByID(1);
     await makeParticipant(participant1);
     await makeParticipant(participant2);
-    const { data: [ppt, ppt2] } = await getParticipants({ isMoH: true });
+    const {
+      data: [ppt, ppt2],
+    } = await getParticipants({ isMoH: true });
     await setParticipantStatus(employerAId, ppt.id, 'prospecting');
     await setParticipantStatus(employerAId, ppt.id, 'interviewing');
     await setParticipantStatus(employerAId, ppt.id, 'offer_made');

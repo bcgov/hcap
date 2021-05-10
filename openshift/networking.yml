@@ -42,5 +42,5 @@ objects:
       # to one another.
       podSelector:
       ingress:
-      - from:
-        - podSelector: {}
+        - from:
+            - podSelector: {}

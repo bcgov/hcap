@@ -40,7 +40,7 @@ exports.up = async () => {
   }));
 
   const currentParticipants = await dbClient.db[collections.PARTICIPANTS].findDoc(
-    { maximusId: changes.map((i) => `${i.id}`) }, // Find all relevant participants to build history
+    { maximusId: changes.map((i) => `${i.id}`) } // Find all relevant participants to build history
   );
 
   for (const change of changes) {
@@ -50,11 +50,13 @@ exports.up = async () => {
     change.history = currentParticipant?.history || [];
     change.history.push({
       timestamp: new Date(),
-      changes: [{
-        field: 'preferredLocation',
-        to: change.preferredLocation,
-        from: currentParticipant?.preferredLocation || null,
-      }],
+      changes: [
+        {
+          field: 'preferredLocation',
+          to: change.preferredLocation,
+          from: currentParticipant?.preferredLocation || null,
+        },
+      ],
     });
   }
 
@@ -62,7 +64,7 @@ exports.up = async () => {
     for (const change of changes) {
       await tx[collections.PARTICIPANTS].updateDoc(
         { maximusId: change.id },
-        { preferredLocation: change.preferredLocation, history: change.history },
+        { preferredLocation: change.preferredLocation, history: change.history }
       );
     }
   });

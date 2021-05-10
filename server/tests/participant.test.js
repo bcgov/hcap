@@ -35,7 +35,8 @@ describe('Participants Endpoint', () => {
   const participantsXlsx = readFileSync(join(__dirname, './mock/xlsx/participants-data.xlsx'));
 
   it('Upload participants xlsx as superuser, receive success', async () => {
-    const res = await request.agent(app)
+    const res = await request
+      .agent(app)
       .post('/api/v1/participants/batch')
       .set(await getKeycloakToken(superuser))
       .attach('file', participantsXlsx, 'participants-data.xlsx');
@@ -44,7 +45,8 @@ describe('Participants Endpoint', () => {
   });
 
   it('Upload participants xlsx as employer, receive forbidden', async () => {
-    const res = await request.agent(app)
+    const res = await request
+      .agent(app)
       .post('/api/v1/participants/batch')
       .set(await getKeycloakToken(employer))
       .attach('file', participantsXlsx, 'participants-data.xlsx');

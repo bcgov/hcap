@@ -6,19 +6,14 @@ import { dateToString, stringToDate } from '../../utils';
 
 import { InputFieldError, InputFieldLabel } from '../generic';
 
-export const RenderDateField = ({
-  field,
-  form,
-  label,
-  ...props
-}) => {
+export const RenderDateField = ({ field, form, label, ...props }) => {
   const [, , helpers] = useField(field.name);
   const { setValue, setTouched } = helpers;
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} />}
       <KeyboardDatePicker
-        format="YYYY/MM/DD"
+        format='YYYY/MM/DD'
         name={label.replace(/[ *]/g, '')}
         value={!field.value ? null : stringToDate(field.value)}
         onChange={(value) => setValue(dateToString(value))}
@@ -26,9 +21,9 @@ export const RenderDateField = ({
         invalidDateMessage={null}
         minDateMessage={null}
         maxDateMessage={null}
-        openTo="date"
-        variant="dialog"
-        inputVariant="filled"
+        openTo='date'
+        variant='dialog'
+        inputVariant='filled'
         fullWidth
         {...props}
       />

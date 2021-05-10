@@ -14,9 +14,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ComponentTooltip = ({
-  ...props
-}) => {
+export const ComponentTooltip = ({ ...props }) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
@@ -31,10 +29,12 @@ export const ComponentTooltip = ({
   return (
     <Tooltip
       classes={{ tooltip: classes.tooltip, arrow: classes.arrow }}
-      open={open} onClose={handleClose} onOpen={handleOpen}
+      open={open}
+      onClose={handleClose}
+      onOpen={handleOpen}
       onClick={handleOpen} //enable onClick due to mobile devices limitation
       interactive={true}
       {...props}
     />
-  )
+  );
 };

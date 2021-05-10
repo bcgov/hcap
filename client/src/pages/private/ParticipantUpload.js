@@ -21,12 +21,11 @@ const useStyles = makeStyles((theme) => ({
   },
   previewChip: {
     minWidth: 160,
-    maxWidth: 210
+    maxWidth: 210,
   },
 }));
 
 export default () => {
-
   const [roles, setRoles] = useState([]);
   const [file, setFile] = useState();
   const [isLoadingData, setLoadingData] = useState(false);
@@ -39,7 +38,7 @@ export default () => {
     setLoadingUser(true);
     const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
       method: 'GET',
     });
@@ -49,7 +48,7 @@ export default () => {
       setLoadingUser(false);
       setRoles(roles);
     }
-  }
+  };
 
   useEffect(() => {
     fetchUserInfo();
@@ -61,7 +60,7 @@ export default () => {
     data.append('file', file);
     const response = await fetch(`${API_URL}/api/v1/participants/batch`, {
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
       method: 'POST',
       body: data,
@@ -88,16 +87,27 @@ export default () => {
   };
 
   return (
-    <Page >
-      <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['maximus']} renderErrorMessage={true}>
-        <Grid container alignContent="center" justify="center" alignItems="center" direction="column">
-          <Typography variant="subtitle1" gutterBottom>
+    <Page>
+      <CheckPermissions
+        isLoading={isLoadingUser}
+        roles={roles}
+        permittedRoles={['maximus']}
+        renderErrorMessage={true}
+      >
+        <Grid
+          container
+          alignContent='center'
+          justify='center'
+          alignItems='center'
+          direction='column'
+        >
+          <Typography variant='subtitle1' gutterBottom>
             Please upload pre-screened participants:
           </Typography>
           <Box pt={4} pl={4} pr={4}>
             <DropzoneArea
               useChipsForPreview
-              previewText="Selected file:"
+              previewText='Selected file:'
               previewGridProps={{ container: { spacing: 1, direction: 'row' } }}
               previewChipProps={{ classes: { root: classes.previewChip } }}
               showPreviews={true}
@@ -107,23 +117,26 @@ export default () => {
               filesLimit={1}
               dropzoneClass={classes.dropzone}
               dropzoneParagraphClass={classes.dropzoneText}
-              dropzoneText="Drop your participant sheet here or click the box"
+              dropzoneText='Drop your participant sheet here or click the box'
             />
           </Box>
           <Box pl={4} pr={4} pt={2}>
-            {errors.length > 0 && errors.map(
-              (item, index) => <Alert key={index} severity="error">{item}</Alert>
-            )}
+            {errors.length > 0 &&
+              errors.map((item, index) => (
+                <Alert key={index} severity='error'>
+                  {item}
+                </Alert>
+              ))}
           </Box>
           <Box pb={4} pl={4} pr={4} pt={2}>
             <Button
               onClick={handleSubmit}
               loading={isLoadingData}
-              variant="contained"
+              variant='contained'
               disabled={!file || errors.length > 0}
-              color="primary"
+              color='primary'
               fullWidth={false}
-              text="Upload"
+              text='Upload'
             />
           </Box>
         </Grid>

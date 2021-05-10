@@ -15,7 +15,7 @@ export default ({ match }) => {
   const fetchUserInfo = async () => {
     const response = await fetch(`${API_URL}/api/v1/user`, {
       headers: {
-        'Authorization': `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
       method: 'GET',
     });
@@ -24,13 +24,13 @@ export default ({ match }) => {
       const { roles } = await response.json();
       setRoles(roles);
     }
-  }
+  };
 
   useEffect(() => {
     const fetchDetails = async () => {
       const response = await fetch(`${API_URL}/api/v1/employer-form/${expressionID}`, {
         headers: {
-          'Authorization': `Bearer ${store.get('TOKEN')}`,
+          Authorization: `Bearer ${store.get('TOKEN')}`,
         },
         method: 'GET',
       });
@@ -39,7 +39,7 @@ export default ({ match }) => {
         setUser(await response.json());
         setLoadingUser(false);
       }
-    }
+    };
 
     setLoadingUser(true);
     fetchUserInfo();
@@ -49,13 +49,14 @@ export default ({ match }) => {
   scrollUp();
   return (
     <Page>
-      <CheckPermissions isLoading={isLoadingUser} roles={roles} permittedRoles={['health_authority', 'ministry_of_health']} renderErrorMessage={true}>
+      <CheckPermissions
+        isLoading={isLoadingUser}
+        roles={roles}
+        permittedRoles={['health_authority', 'ministry_of_health']}
+        renderErrorMessage={true}
+      >
         <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
-          <Form
-            initialValues={user}
-            hideCollectionNotice
-            isDisabled
-          />
+          <Form initialValues={user} hideCollectionNotice isDisabled />
         </Grid>
       </CheckPermissions>
     </Page>

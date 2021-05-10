@@ -5,19 +5,15 @@ import { ErrorMessage } from 'formik';
 import { InputFieldError, InputFieldLabel } from '../generic';
 import { Select } from '@material-ui/core';
 
-export const RenderMultiSelectField = ({
-  field,
-  form,
-  label,
-  options,
-  ...props
-}) => {
+export const RenderMultiSelectField = ({ field, form, label, options, ...props }) => {
   const touched = form.touched[field.name];
   const error = form.errors[field.name];
   const placeholder = 'Please Select';
 
   const renderValue = (selecteds) => {
-    const labels = selecteds.map(selected => options.find(option => option.value === selected)?.label);
+    const labels = selecteds.map(
+      (selected) => options.find((option) => option.value === selected)?.label
+    );
     if (labels.length > 0) {
       return labels.map((item, index) => <div key={index}>{item}</div>);
     }
@@ -32,15 +28,19 @@ export const RenderMultiSelectField = ({
         multiple
         renderValue={renderValue}
         fullWidth
-        variant="filled"
+        variant='filled'
         error={touched && !!error}
         inputProps={{ displayEmpty: true }}
         value={field.value || []}
         {...props}
       >
-        <MenuItem value="" disabled>{placeholder}</MenuItem>
+        <MenuItem value='' disabled>
+          {placeholder}
+        </MenuItem>
         {options.map((option) => (
-          <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
         ))}
       </Select>
       <InputFieldError error={<ErrorMessage name={field.name} />} />

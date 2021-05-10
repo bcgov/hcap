@@ -1,7 +1,5 @@
 const readXlsxFile = require('node-xlsx').default;
-const {
-  validate, ParticipantBatchSchema, isBooleanValue,
-} = require('../validation.js');
+const { validate, ParticipantBatchSchema, isBooleanValue } = require('../validation.js');
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
@@ -10,80 +8,91 @@ const setParticipantStatus = async (
   employerId,
   participantId,
   status,
-  data, // JSONB on the status row
-) => dbClient.db.withTransaction(async (tx) => {
-  if (status !== 'rejected') {
-    const items = await tx[collections.PARTICIPANTS_STATUS].find({
+  data // JSONB on the status row
+) =>
+  dbClient.db.withTransaction(async (tx) => {
+    if (status !== 'rejected') {
+      const items = await tx[collections.PARTICIPANTS_STATUS].find({
+        participant_id: participantId,
+        status: 'hired',
+        current: true,
+      });
+
+      if (items.length > 0) return { status: 'already_hired' };
+    }
+
+    const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
       participant_id: participantId,
-      status: 'hired',
+      employer_id: employerId,
       current: true,
     });
 
-    if (items.length > 0) return { status: 'already_hired' };
-  }
+    // Check the desired status against the current status:
+    // -- Rejecting a participant is allowed even if they've been hired elsewhere (handled above)
+    // -- Open is the starting point, there is no way to transition here from any other status
+    // -- If engaging (prospecting), participant must be coming from open, null, or rejected status
+    // -- If interviewing, participant must be coming from prospecting status
+    // -- If offer made, must be coming from interviewing
+    // -- If hiring, must be coming from offer made
+    if (
+      status === 'open' ||
+      (status === 'prospecting' &&
+        item !== null &&
+        item.status !== 'open' &&
+        item.status !== 'rejected') ||
+      (status === 'interviewing' && item?.status !== 'prospecting') ||
+      (status === 'offer_made' && item?.status !== 'interviewing') ||
+      (status === 'hired' && item?.status !== 'offer_made')
+    )
+      return { status: 'invalid_status_transition' };
 
-  const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
-    participant_id: participantId,
-    employer_id: employerId,
-    current: true,
-  });
+    await tx[collections.PARTICIPANTS_STATUS].update(
+      {
+        employer_id: employerId,
+        participant_id: participantId,
+        current: true,
+      },
+      { current: false }
+    );
 
-  // Check the desired status against the current status:
-  // -- Rejecting a participant is allowed even if they've been hired elsewhere (handled above)
-  // -- Open is the starting point, there is no way to transition here from any other status
-  // -- If engaging (prospecting), participant must be coming from open, null, or rejected status
-  // -- If interviewing, participant must be coming from prospecting status
-  // -- If offer made, must be coming from interviewing
-  // -- If hiring, must be coming from offer made
-  if ((status === 'open')
-    || (status === 'prospecting' && item !== null && item.status !== 'open' && item.status !== 'rejected')
-    || (status === 'interviewing' && item?.status !== 'prospecting')
-    || (status === 'offer_made' && item?.status !== 'interviewing')
-    || (status === 'hired' && item?.status !== 'offer_made')
-  ) return { status: 'invalid_status_transition' };
-
-  await tx[collections.PARTICIPANTS_STATUS].update({
-    employer_id: employerId,
-    participant_id: participantId,
-    current: true,
-  }, { current: false });
-
-  await tx[collections.PARTICIPANTS_STATUS].save({
-    employer_id: employerId,
-    participant_id: participantId,
-    status,
-    current: true,
-    data,
-  });
-
-  const participant = await tx[collections.PARTICIPANTS].findDoc({
-    id: participantId,
-  });
-
-  if (['prospecting', 'interviewing', 'offer_made', 'hired'].includes(status)) {
-    return {
-      emailAddress: participant[0].emailAddress,
-      phoneNumber: participant[0].phoneNumber,
+    await tx[collections.PARTICIPANTS_STATUS].save({
+      employer_id: employerId,
+      participant_id: participantId,
       status,
-    };
-  }
+      current: true,
+      data,
+    });
 
-  return { status };
-});
+    const participant = await tx[collections.PARTICIPANTS].findDoc({
+      id: participantId,
+    });
+
+    if (['prospecting', 'interviewing', 'offer_made', 'hired'].includes(status)) {
+      return {
+        emailAddress: participant[0].emailAddress,
+        phoneNumber: participant[0].phoneNumber,
+        status,
+      };
+    }
+
+    return { status };
+  });
 
 const getHiredParticipantsBySite = async (siteID) => {
-  const participants = await dbClient.db[collections.PARTICIPANTS_STATUS].join({
-    participantJoin: {
-      type: 'LEFT OUTER',
-      relation: collections.PARTICIPANTS,
-      decomposeTo: 'object',
-      on: { id: 'participant_id' },
-    },
-  }).find({
-    current: true,
-    status: 'hired',
-    'data.site': String(siteID),
-  });
+  const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]
+    .join({
+      participantJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS,
+        decomposeTo: 'object',
+        on: { id: 'participant_id' },
+      },
+    })
+    .find({
+      current: true,
+      status: 'hired',
+      'data.site': String(siteID),
+    });
 
   return participants;
 };
@@ -98,20 +107,35 @@ const getParticipantByID = async (participantInfo) => {
 const updateParticipant = async (participantInfo) => {
   // The below reduce function unpacks the most recent changes in the history
   // and builds them into an object to be used for the update request
-  const changes = participantInfo.history[0].changes.reduce((acc, change) => {
-    const { field, to } = change;
-    return { ...acc, [field]: to };
-  }, { history: participantInfo.history, userUpdatedAt: new Date().toJSON() });
+  const changes = participantInfo.history[0].changes.reduce(
+    (acc, change) => {
+      const { field, to } = change;
+      return { ...acc, [field]: to };
+    },
+    { history: participantInfo.history, userUpdatedAt: new Date().toJSON() }
+  );
 
-  const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc({
-    id: participantInfo.id,
-  }, changes);
+  const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc(
+    {
+      id: participantInfo.id,
+    },
+    changes
+  );
 
   return participant;
 };
 
-const getParticipants = async (user, pagination, sortField,
-  regionFilter, fsaFilter, lastNameFilter, emailFilter, siteSelector, statusFilters) => {
+const getParticipants = async (
+  user,
+  pagination,
+  sortField,
+  regionFilter,
+  fsaFilter,
+  lastNameFilter,
+  emailFilter,
+  siteSelector,
+  statusFilters
+) => {
   const participantsFinder = new ParticipantsFinder(dbClient, user);
 
   // While an employer, if we add 'open' as one of the status filters we won't
@@ -119,8 +143,10 @@ const getParticipants = async (user, pagination, sortField,
   // creating one more AND/OR clausule to handle edge cases when we need to filter
   // lastName or email with statuses 'open' AND 'hired', for example. Setting this
   // as a TODO since there's no such case in the application yet.
-  const filterLastNameAndEmail = user.isSuperUser || user.isMoH
-    || ((user.isHA || user.isEmployer) && !statusFilters?.includes('open'));
+  const filterLastNameAndEmail =
+    user.isSuperUser ||
+    user.isMoH ||
+    ((user.isHA || user.isEmployer) && !statusFilters?.includes('open'));
 
   const participants = await participantsFinder
     .filterRegion(regionFilter)
@@ -141,7 +167,8 @@ const getParticipants = async (user, pagination, sortField,
 
   if (user.isSuperUser || user.isMoH) {
     return {
-      data: participants.map((item) => { // Only return relevant fields
+      data: participants.map((item) => {
+        // Only return relevant fields
         let returnStatus = 'Pending';
         const progressStats = {
           prospecting: 0,
@@ -160,7 +187,8 @@ const getParticipants = async (user, pagination, sortField,
         });
 
         const { total, hired } = progressStats;
-        if (total > 0) returnStatus = (total === 1) ? 'In Progress' : `In Progress (${progressStats.total})`;
+        if (total > 0)
+          returnStatus = total === 1 ? 'In Progress' : `In Progress (${progressStats.total})`;
         if (hired) returnStatus = 'Hired';
 
         return {
@@ -179,7 +207,7 @@ const getParticipants = async (user, pagination, sortField,
           progressStats,
         };
       }),
-      ...pagination && { pagination: paginationData },
+      ...(pagination && { pagination: paginationData }),
     };
   }
 
@@ -198,8 +226,9 @@ const getParticipants = async (user, pagination, sortField,
         distance: item.distance,
       };
 
-      const hiredBySomeoneElseStatus = item.statusInfos?.find((statusInfo) => statusInfo.status === 'hired'
-        && statusInfo.employerId !== user.id);
+      const hiredBySomeoneElseStatus = item.statusInfos?.find(
+        (statusInfo) => statusInfo.status === 'hired' && statusInfo.employerId !== user.id
+      );
 
       if (hiredBySomeoneElseStatus) {
         if (!participant.statusInfos) participant.statusInfos = [];
@@ -216,7 +245,9 @@ const getParticipants = async (user, pagination, sortField,
         if (!participant.statusInfos) participant.statusInfos = [];
 
         participant.statusInfos.unshift(statusInfos);
-        const showContactInfo = participant.statusInfos.find((statusInfo) => ['prospecting', 'interviewing', 'offer_made', 'hired'].includes(statusInfo.status));
+        const showContactInfo = participant.statusInfos.find((statusInfo) =>
+          ['prospecting', 'interviewing', 'offer_made', 'hired'].includes(statusInfo.status)
+        );
         if (showContactInfo && !hiredBySomeoneElseStatus) {
           participant = {
             ...participant,
@@ -228,7 +259,7 @@ const getParticipants = async (user, pagination, sortField,
 
       return participant;
     }),
-    ...pagination && { pagination: paginationData },
+    ...(pagination && { pagination: paginationData }),
   };
 };
 
@@ -256,11 +287,13 @@ const parseAndSaveParticipants = async (fileBuffer) => {
 
     const preferredLocation = [];
 
-    if (row.fraser === 1 || (isBooleanValue(row.fraser))) preferredLocation.push('Fraser');
-    if (row.interior === 1 || (isBooleanValue(row.interior))) preferredLocation.push('Interior');
-    if (row.northern === 1 || (isBooleanValue(row.northern))) preferredLocation.push('Northern');
-    if (row.vancouverCoastal === 1 || (isBooleanValue(row.vancouverCoastal))) preferredLocation.push('Vancouver Coastal');
-    if (row.vancouverIsland === 1 || (isBooleanValue(row.vancouverIsland))) preferredLocation.push('Vancouver Island');
+    if (row.fraser === 1 || isBooleanValue(row.fraser)) preferredLocation.push('Fraser');
+    if (row.interior === 1 || isBooleanValue(row.interior)) preferredLocation.push('Interior');
+    if (row.northern === 1 || isBooleanValue(row.northern)) preferredLocation.push('Northern');
+    if (row.vancouverCoastal === 1 || isBooleanValue(row.vancouverCoastal))
+      preferredLocation.push('Vancouver Coastal');
+    if (row.vancouverIsland === 1 || isBooleanValue(row.vancouverIsland))
+      preferredLocation.push('Vancouver Island');
 
     object.preferredLocation = preferredLocation.join(';');
     object.callbackStatus = false;

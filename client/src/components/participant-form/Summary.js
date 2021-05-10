@@ -5,16 +5,12 @@ import Link from '@material-ui/core/Link';
 const Summary = () => {
   return (
     <Fragment>
-      <Typography variant="h2" color="primary" gutterBottom>
+      <Typography variant='h2' color='primary' gutterBottom>
         Health Career Access Program - Expression of Interest
       </Typography>
-      <Typography variant="body1">
+      <Typography variant='body1'>
         Complete this expression of interest form if you want to join the&nbsp;
-        <Link
-          href="http://gov.bc.ca/careersinhealth"
-          target="__blank"
-          rel="noreferrer noopener"
-        >
+        <Link href='http://gov.bc.ca/careersinhealth' target='__blank' rel='noreferrer noopener'>
           Health Career Access Program
         </Link>
       </Typography>

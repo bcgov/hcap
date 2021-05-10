@@ -12,7 +12,7 @@ objects:
       name: ${NAME}-data
     spec:
       accessModes:
-      - ReadWriteOnce
+        - ReadWriteOnce
       resources:
         requests:
           storage: ${DATA_VOLUME_SIZE}
@@ -23,10 +23,10 @@ objects:
       name: ${NAME}-verification
     spec:
       accessModes:
-      - ReadWriteOnce
+        - ReadWriteOnce
       resources:
         requests:
-          storage: "${VERIFICATION_VOLUME_SIZE}"
+          storage: '${VERIFICATION_VOLUME_SIZE}'
   - kind: ConfigMap
     apiVersion: v1
     metadata:
@@ -40,7 +40,7 @@ objects:
     metadata:
       name: ${NAME}
     spec:
-      replicas: "${{REPLICAS}}"
+      replicas: '${{REPLICAS}}'
       revisionHistoryLimit: 10
       selector:
         deploymentconfig: ${NAME}
@@ -54,67 +54,67 @@ objects:
             deploymentconfig: ${NAME}
         spec:
           volumes:
-          - name: ${NAME}-data-vol
-            persistentVolumeClaim:
-              claimName: "${NAME}-data"
-          - name: ${NAME}-verification-vol
-            persistentVolumeClaim:
-              claimName: ${NAME}-verification
-          - name: ${NAME}-config-vol
-            configMap:
-              name: ${NAME}-config
-              items:
-              - key: backup.conf
-                path: backup.conf
+            - name: ${NAME}-data-vol
+              persistentVolumeClaim:
+                claimName: '${NAME}-data'
+            - name: ${NAME}-verification-vol
+              persistentVolumeClaim:
+                claimName: ${NAME}-verification
+            - name: ${NAME}-config-vol
+              configMap:
+                name: ${NAME}-config
+                items:
+                  - key: backup.conf
+                    path: backup.conf
           containers:
             - env:
-              - name: BACKUP_STRATEGY
-                value: rolling
-              - name: BACKUP_DIR
-                value: "/backups/"
-              - name: DAILY_BACKUPS
-                value: '5'
-              - name: WEEKLY_BACKUPS
-                value: '1'
-              - name: MONTHLY_BACKUPS
-                value: '1'
-              - name: POSTGRESQL_USER
-                valueFrom:
-                  secretKeyRef:
-                    name: ${DB_SECRET_NAME}
-                    key: ${DB_USERNAME_KEY}
-              - name: DATABASE_USER
-                valueFrom:
-                  secretKeyRef:
-                    name: ${DB_SECRET_NAME}
-                    key: ${DB_USERNAME_KEY}
-              - name: POSTGRESQL_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    key: ${DB_PASSWORD_KEY}
-                    name: ${DB_SECRET_NAME}
-              - name: DATABASE_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    key: ${DB_PASSWORD_KEY}
-                    name: ${DB_SECRET_NAME}
-              - name: POSTGRESQL_DATABASE
-                value: ${DB_NAME}
-              - name: DATABASE_NAME
-                value: ${DB_NAME}
-              - name: DATABASE_SERVER_TIMEOUT
-                value: '600'
-              - name: ENVIRONMENT_NAME
-                value: "${ENVIRONMENT_NAME}"
-              - name: ENVIRONMENT_FRIENDLY_NAME
-                value: "${ENVIRONMENT_FRIENDLY_NAME}"
-              - name: DATABASE_SERVICE_NAME
-                value: ${DB_SERVICE}
+                - name: BACKUP_STRATEGY
+                  value: rolling
+                - name: BACKUP_DIR
+                  value: '/backups/'
+                - name: DAILY_BACKUPS
+                  value: '5'
+                - name: WEEKLY_BACKUPS
+                  value: '1'
+                - name: MONTHLY_BACKUPS
+                  value: '1'
+                - name: POSTGRESQL_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${DB_SECRET_NAME}
+                      key: ${DB_USERNAME_KEY}
+                - name: DATABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${DB_SECRET_NAME}
+                      key: ${DB_USERNAME_KEY}
+                - name: POSTGRESQL_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: ${DB_PASSWORD_KEY}
+                      name: ${DB_SECRET_NAME}
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: ${DB_PASSWORD_KEY}
+                      name: ${DB_SECRET_NAME}
+                - name: POSTGRESQL_DATABASE
+                  value: ${DB_NAME}
+                - name: DATABASE_NAME
+                  value: ${DB_NAME}
+                - name: DATABASE_SERVER_TIMEOUT
+                  value: '600'
+                - name: ENVIRONMENT_NAME
+                  value: '${ENVIRONMENT_NAME}'
+                - name: ENVIRONMENT_FRIENDLY_NAME
+                  value: '${ENVIRONMENT_FRIENDLY_NAME}'
+                - name: DATABASE_SERVICE_NAME
+                  value: ${DB_SERVICE}
               image: ${IMAGE_REGISTRY}/${BUILD_NAMESPACE}/${IMAGE_STREAM_TAG}
               imagePullPolicy: Always
               name: ${NAME}
               ports:
-                - containerPort: "${{PORT}}"
+                - containerPort: '${{PORT}}'
               resources:
                 limits:
                   cpu: ${CPU_LIMIT}
@@ -123,13 +123,13 @@ objects:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
               volumeMounts:
-              - name: ${NAME}-data-vol
-                mountPath: "/backups/"
-              - name: ${NAME}-verification-vol
-                mountPath: "/var/lib/pgsql/data"
-              - name: ${NAME}-config-vol
-                mountPath: "/backup.conf"
-                subPath: backup.conf
+                - name: ${NAME}-data-vol
+                  mountPath: '/backups/'
+                - name: ${NAME}-verification-vol
+                  mountPath: '/var/lib/pgsql/data'
+                - name: ${NAME}-config-vol
+                  mountPath: '/backup.conf'
+                  subPath: backup.conf
 parameters:
   - name: NAME
     required: true
@@ -138,17 +138,17 @@ parameters:
   - name: SERVICE_NAME
     value: db-backup
   - name: CPU_LIMIT
-    value: "1"
+    value: '1'
   - name: MEMORY_LIMIT
-    value: "512M"
+    value: '512M'
   - name: CPU_REQUEST
-    value: "0.5"
+    value: '0.5'
   - name: MEMORY_REQUEST
-    value: "256M"
+    value: '256M'
   - name: REPLICAS
-    value: "1"
+    value: '1'
   - name: PORT
-    value: "3030"
+    value: '3030'
   - name: DB_SERVICE
     value: hcap-patroni
   - name: DB_SECRET_NAME

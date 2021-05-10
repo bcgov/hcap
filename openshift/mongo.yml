@@ -24,22 +24,22 @@ parameters:
     required: true
   - name: MONGODB_REPLICAS
     description: Number of MongoDB replica pods
-    value: "2"
+    value: '2'
     required: true
   - name: MONGODB_USER
     description: Username for MongoDB user that will be used for accessing the database
     generate: expression
-    from: "[a-zA-Z0-9]{5}"
+    from: '[a-zA-Z0-9]{5}'
     required: true
   - name: MONGODB_PASSWORD
     description: Password for the MongoDB connection user
     generate: expression
-    from: "[a-zA-Z0-9]{16}"
+    from: '[a-zA-Z0-9]{16}'
     required: true
   - name: MONGODB_ADMIN_PASSWORD
     description: Password for the database admin user
     generate: expression
-    from: "[a-zA-Z0-9]{16}"
+    from: '[a-zA-Z0-9]{16}'
     required: true
   - name: MONGODB_REPLICA_NAME
     description: The name of the replica set
@@ -48,7 +48,7 @@ parameters:
   - name: MONGODB_KEYFILE_VALUE
     description: The value of the MongoDB keyfile (https://docs.mongodb.com/manual/core/security-internal-authentication/#internal-auth-keyfile)
     generate: expression
-    from: "[a-zA-Z0-9]{255}"
+    from: '[a-zA-Z0-9]{255}'
     required: true
   - name: MONGODB_IMAGE
     description: A reference to a supported MongoDB Docker image
@@ -97,7 +97,7 @@ objects:
       labels:
         name: ${APP_NAME}-mongodb
       annotations:
-        service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+        service.alpha.kubernetes.io/tolerate-unready-endpoints: 'true'
     spec:
       clusterIP: None
       ports:
@@ -193,7 +193,7 @@ objects:
             labels:
               name: ${APP_NAME}-mongodb
           spec:
-            accessModes: [ ReadWriteOnce ]
+            accessModes: [ReadWriteOnce]
             storageClassName: ${SC_MONGO}
             resources:
               requests:

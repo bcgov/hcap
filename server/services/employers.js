@@ -3,10 +3,9 @@ const { validate, EmployerSiteBatchSchema } = require('../validation');
 const { userRegionQuery } = require('./user.js');
 
 const getEmployers = async (user) => {
-  const criteria = user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'healthAuthority');
-  return criteria
-    ? dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria)
-    : [];
+  const criteria =
+    user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'healthAuthority');
+  return criteria ? dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria) : [];
 };
 
 const getEmployerByID = async (id) => dbClient.db[collections.EMPLOYER_FORMS].findDoc({ id });
@@ -40,10 +39,13 @@ const saveSites = async (sitesArg) => {
 };
 
 const updateSite = async (id, site) => {
-  const changes = site.history[0].changes.reduce((acc, change) => {
-    const { field, to } = change;
-    return { ...acc, [field]: to };
-  }, { history: site.history, userUpdatedAt: new Date().toJSON() });
+  const changes = site.history[0].changes.reduce(
+    (acc, change) => {
+      const { field, to } = change;
+      return { ...acc, [field]: to };
+    },
+    { history: site.history, userUpdatedAt: new Date().toJSON() }
+  );
 
   return dbClient.db[collections.EMPLOYER_SITES].updateDoc({ id }, changes);
 };
@@ -54,8 +56,14 @@ const getSiteByID = async (id) => {
   if (site.length === 0) {
     return [{ error: `No site found with id ${id}` }];
   }
-  const hcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS].count({ 'data.site': site[0].siteId, 'data.nonHcapOpportunity': 'false' });
-  const nonHcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS].count({ 'data.site': site[0].siteId, 'data.nonHcapOpportunity': 'true' });
+  const hcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS].count({
+    'data.site': site[0].siteId,
+    'data.nonHcapOpportunity': 'false',
+  });
+  const nonHcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS].count({
+    'data.site': site[0].siteId,
+    'data.nonHcapOpportunity': 'true',
+  });
   site[0].hcapHires = hcapHires;
   site[0].nonHcapHires = nonHcapHires;
   return site;

@@ -35,7 +35,7 @@ export default ({ siteId }) => {
     const fetchParticipants = async () => {
       setLoadingData(true);
       const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
-        headers: { 'Authorization': `Bearer ${store.get('TOKEN')}` },
+        headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
         method: 'GET',
       });
 
@@ -49,12 +49,15 @@ export default ({ siteId }) => {
             hiredDate: row.data.hiredDate,
             startDate: row.data.startDate,
             nonHCAP: row.data.nonHcapOpportunity,
-          }
+          };
 
-          const mappedRow = columns.reduce((accumulator, column) => ({
-            ...accumulator,
-            [column.id]: values[column.id],
-          }), {});
+          const mappedRow = columns.reduce(
+            (accumulator, column) => ({
+              ...accumulator,
+              [column.id]: values[column.id],
+            }),
+            {}
+          );
           // Add additional props (user ID, button) to row
           return {
             ...mappedRow,
@@ -75,35 +78,43 @@ export default ({ siteId }) => {
   }, [siteId]);
 
   useEffect(() => {
-      setRows(fetchedRows);
-  },[fetchedRows]);
+    setRows(fetchedRows);
+  }, [fetchedRows]);
 
   return (
-    <Grid container alignContent="flex-start" justify="flex-start" alignItems="center" direction="column">
-      {isPendingRequests && <Box pt={2} pb={2} pl={2} pr={2} width="100%">
-        <Table
-          columns={columns}
-          order={order}
-          orderBy={orderBy}
-          onRequestSort={handleRequestSort}
-          rows={sort(rows)}
-          isLoading={isLoadingData}
-          renderCell={(columnId, row) => {
-            if (columnId === 'phoneNumber') {
-              const num = String(row['phoneNumber']);
-              return `(${num.substr(0,3)}) ${num.substr(3,3)}-${num.substr(6,4)}`
-            }
-            if (columnId === 'status') {
-              const status = String(row['status']);
-              return `${status.substring(0,1).toUpperCase()}${status.substring(1)}`
-            }
-            if (columnId === 'nonHCAP') {
-              return (row[columnId]) ? "Non-HCAP" : "HCAP";
-            }
-            return (row[columnId]);
-          }}
-        />
-      </Box>}
+    <Grid
+      container
+      alignContent='flex-start'
+      justify='flex-start'
+      alignItems='center'
+      direction='column'
+    >
+      {isPendingRequests && (
+        <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
+          <Table
+            columns={columns}
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={handleRequestSort}
+            rows={sort(rows)}
+            isLoading={isLoadingData}
+            renderCell={(columnId, row) => {
+              if (columnId === 'phoneNumber') {
+                const num = String(row['phoneNumber']);
+                return `(${num.substr(0, 3)}) ${num.substr(3, 3)}-${num.substr(6, 4)}`;
+              }
+              if (columnId === 'status') {
+                const status = String(row['status']);
+                return `${status.substring(0, 1).toUpperCase()}${status.substring(1)}`;
+              }
+              if (columnId === 'nonHCAP') {
+                return row[columnId] ? 'Non-HCAP' : 'HCAP';
+              }
+              return row[columnId];
+            }}
+          />
+        </Box>
+      )}
     </Grid>
   );
 };

@@ -1,4 +1,4 @@
-/* eslint-disable camelcase, no-restricted-syntax, no-await-in-loop */
+/* eslint-disable camelcase, no-restricted-syntax, no-await-in-loop, no-console */
 const fs = require('fs');
 const { join } = require('path');
 const readline = require('readline');

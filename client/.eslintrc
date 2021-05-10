@@ -1,6 +1,7 @@
 {
-  "extends": "react-app",
+  "extends": ["react-app"],
+  "plugins": ["react", "react-hooks"],
   "rules": {
-    "import/no-anonymous-default-export": [2, {"allowArrowFunction": true}]
+    "import/no-anonymous-default-export": [2, { "allowArrowFunction": true }]
   }
 }

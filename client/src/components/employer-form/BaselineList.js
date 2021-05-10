@@ -31,7 +31,7 @@ export const BaselineList = ({
   const { setFieldValue } = useFormikContext();
 
   const setValue = (option, result) => {
-    const mergedResult = { ...value, [option.value]: result }
+    const mergedResult = { ...value, [option.value]: result };
     setFieldValue(name, mergedResult);
   };
 
@@ -44,9 +44,8 @@ export const BaselineList = ({
   };
 
   const getIndividualValue = (optionValue, property) => {
-    const initialValue = Array.isArray(value) && value.find(item => item.role === optionValue)
-    const result = initialValue
-      || value[optionValue];
+    const initialValue = Array.isArray(value) && value.find((item) => item.role === optionValue);
+    const result = initialValue || value[optionValue];
     return sanitizeValue(result[property]);
   };
 
@@ -54,134 +53,141 @@ export const BaselineList = ({
     <Fragment>
       {options.map((option) => (
         <Fragment key={option.value}>
-          <Accordion
-            defaultExpanded={true}
-            disabled={disabled}
-            {...props}
-          >
+          <Accordion defaultExpanded={true} disabled={disabled} {...props}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Grid container justify="space-between">
+              <Grid container justify='space-between'>
                 <Grid item>
-                  <Typography variant="body1">
-                    <b>
-                      {option.label}
-                    </b>
+                  <Typography variant='body1'>
+                    <b>{option.label}</b>
                   </Typography>
                 </Grid>
               </Grid>
             </AccordionSummary>
             <AccordionDetails>
-              <Grid container direction="column">
-                <Typography variant="body1" color="primary">Current Staff (Headcount)</Typography>
+              <Grid container direction='column'>
+                <Typography variant='body1' color='primary'>
+                  Current Staff (Headcount)
+                </Typography>
                 <Divider className={classes.dividerSpacing} />
-                <Grid container justify="space-between">
+                <Grid container justify='space-between'>
                   <Grid item>
-                    <InputFieldLabel label="* Full Time" />
+                    <InputFieldLabel label='* Full Time' />
                     <TextField
-                      variant="filled"
+                      variant='filled'
                       fullWidth
-                      type="number"
+                      type='number'
                       value={getIndividualValue(option.value, 'currentFullTime')}
-                      onChange={(e) => setValue(option, {
-                        ...value[option.value],
-                        currentFullTime: sanitizeValue(e.target.value),
-                      })}
+                      onChange={(e) =>
+                        setValue(option, {
+                          ...value[option.value],
+                          currentFullTime: sanitizeValue(e.target.value),
+                        })
+                      }
                       disabled={disabled}
                       {...props}
                     />
-                    {error && <InputFieldError
-                      error={error[option.value]?.currentFullTime} />}
+                    {error && <InputFieldError error={error[option.value]?.currentFullTime} />}
                   </Grid>
                   <Grid item>
-                    <InputFieldLabel label="* Part Time" />
+                    <InputFieldLabel label='* Part Time' />
                     <TextField
-                      variant="filled"
+                      variant='filled'
                       fullWidth
-                      type="number"
+                      type='number'
                       value={getIndividualValue(option.value, 'currentPartTime')}
-                      onChange={(e) => setValue(option, {
-                        ...value[option.value],
-                        currentPartTime: sanitizeValue(e.target.value),
-                      })}
+                      onChange={(e) =>
+                        setValue(option, {
+                          ...value[option.value],
+                          currentPartTime: sanitizeValue(e.target.value),
+                        })
+                      }
                       disabled={disabled}
                       {...props}
                     />
-                    {error && <InputFieldError
-                      error={error[option.value]?.currentPartTime} />}
+                    {error && <InputFieldError error={error[option.value]?.currentPartTime} />}
                   </Grid>
                   <Grid item>
-                    <InputFieldLabel label="* Casual" />
+                    <InputFieldLabel label='* Casual' />
                     <TextField
-                      variant="filled"
+                      variant='filled'
                       fullWidth
-                      type="number"
+                      type='number'
                       value={getIndividualValue(option.value, 'currentCasual')}
-                      onChange={(e) => setValue(option, {
-                        ...value[option.value],
-                        currentCasual: sanitizeValue(e.target.value),
-                      })}
+                      onChange={(e) =>
+                        setValue(option, {
+                          ...value[option.value],
+                          currentCasual: sanitizeValue(e.target.value),
+                        })
+                      }
                       disabled={disabled}
                       {...props}
                     />
-                    {error && <InputFieldError
-                      error={error[option.value]?.currentCasual} />}
+                    {error && <InputFieldError error={error[option.value]?.currentCasual} />}
                   </Grid>
                 </Grid>
-                <Grid container direction="column">
-                  <Typography className={classes.dividerTextSpacing}
-                    variant="body1" color="primary">Current Vacancies (Headcount)</Typography>
+                <Grid container direction='column'>
+                  <Typography
+                    className={classes.dividerTextSpacing}
+                    variant='body1'
+                    color='primary'
+                  >
+                    Current Vacancies (Headcount)
+                  </Typography>
                   <Divider className={classes.dividerSpacing} />
-                  <Grid container justify="space-between">
+                  <Grid container justify='space-between'>
                     <Grid item>
-                      <InputFieldLabel label="* Full Time" />
+                      <InputFieldLabel label='* Full Time' />
                       <TextField
-                        variant="filled"
+                        variant='filled'
                         fullWidth
-                        type="number"
+                        type='number'
                         value={getIndividualValue(option.value, 'vacancyFullTime')}
-                        onChange={(e) => setValue(option, {
-                          ...value[option.value],
-                          vacancyFullTime: sanitizeValue(e.target.value),
-                        })}
+                        onChange={(e) =>
+                          setValue(option, {
+                            ...value[option.value],
+                            vacancyFullTime: sanitizeValue(e.target.value),
+                          })
+                        }
                         disabled={disabled}
                         {...props}
                       />
-                      {error && <InputFieldError
-                        error={error[option.value]?.vacancyFullTime} />}
+                      {error && <InputFieldError error={error[option.value]?.vacancyFullTime} />}
                     </Grid>
                     <Grid item>
-                      <InputFieldLabel label="* Part Time" />
+                      <InputFieldLabel label='* Part Time' />
                       <TextField
-                        variant="filled"
+                        variant='filled'
                         fullWidth
-                        type="number"
+                        type='number'
                         value={getIndividualValue(option.value, 'vacancyPartTime')}
-                        onChange={(e) => setValue(option, {
-                          ...value[option.value],
-                          vacancyPartTime: sanitizeValue(e.target.value),
-                        })}
+                        onChange={(e) =>
+                          setValue(option, {
+                            ...value[option.value],
+                            vacancyPartTime: sanitizeValue(e.target.value),
+                          })
+                        }
                         disabled={disabled}
                         {...props}
                       />
-                      {error && <InputFieldError
-                        error={error[option.value]?.vacancyPartTime} />}
+                      {error && <InputFieldError error={error[option.value]?.vacancyPartTime} />}
                     </Grid>
                     <Grid item>
-                      <InputFieldLabel label="* Casual" />
+                      <InputFieldLabel label='* Casual' />
                       <TextField
-                        variant="filled"
+                        variant='filled'
                         fullWidth
-                        type="number"
+                        type='number'
                         value={getIndividualValue(option.value, 'vacancyCasual')}
-                        onChange={(e) => setValue(option, {
-                          ...value[option.value],
-                          vacancyCasual: sanitizeValue(e.target.value),
-                        })}
+                        onChange={(e) =>
+                          setValue(option, {
+                            ...value[option.value],
+                            vacancyCasual: sanitizeValue(e.target.value),
+                          })
+                        }
                         disabled={disabled}
                         {...props}
                       />
-                      {error && <InputFieldError
-                        error={error[option.value]?.vacancyCasual} />}
+                      {error && <InputFieldError error={error[option.value]?.vacancyCasual} />}
                     </Grid>
                   </Grid>
                 </Grid>

@@ -29,22 +29,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const RenderSearchField = ({
-  ...props
-}) => {
+export const RenderSearchField = ({ ...props }) => {
   const classes = useStyles();
   return (
     <Fragment>
       <RenderTextField
         className={classes.root}
-        variant="outlined"
+        variant='outlined'
         InputProps={{
           endAdornment: (
             <IconButton
               centerRipple={false}
               className={classes.iconButton}
-              color="inherit"
-              type="submit"
+              color='inherit'
+              type='submit'
             >
               <SearchIcon className={classes.searchIcon} />
             </IconButton>

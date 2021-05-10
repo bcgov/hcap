@@ -71,7 +71,6 @@ const CustomTab = withStyles((theme) => ({
 
 const reducer = (state,action)=>{
   const {type,key,value} = action
-  console.log(type,key,value);
   let newstate = {...state};
   switch (type){
     // Add pagination to a key update
@@ -81,7 +80,6 @@ const reducer = (state,action)=>{
         currentPage: 0,
       })
       newstate[key] = value;
-      console.log(newstate);
       return newstate;
     // Update any key in state with the corresponding value
     case 'updateKey':
@@ -292,7 +290,6 @@ export default () => {
   const forceReload = async () => {
     if (!reducerState.tabValue) return;
     const currentPage = reducerState.pagination?.currentPage|| 0;
-    console.log(currentPage);
     setLoadingData(true);
     const { data, pagination } = await fetchParticipants(
       currentPage * pageSize,
@@ -305,7 +302,6 @@ export default () => {
       reducerState.siteSelector,
       tabs[reducerState.tabValue].statuses,
     );
-    console.log(pagination);
     dispatch({type:'updateKey', key:'pagination', value:{
       total: pagination.total,
       currentPage: currentPage || 0,
@@ -392,7 +388,6 @@ export default () => {
         reducerState.siteSelector,
         tabs[reducerState.tabValue].statuses,
       );
-      console.log(pagination);
       dispatch({type:'updateKey', key:'pagination', value:{
         total: pagination.total,
         currentPage: currentPage,

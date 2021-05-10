@@ -787,33 +787,6 @@ export default () => {
                 )}
               </Box>
             </Grid>
-            <Grid item style={{ marginLeft: 20 }}>
-              <Typography>Site for distance calculation: </Typography>
-              <Box>
-                <TextField
-                  select
-                  fullWidth
-                  variant='filled'
-                  inputProps={{ displayEmpty: true }}
-                  value={reducerState.siteSelector || ''}
-                  disabled={isLoadingData}
-                  onChange={({ target }) =>
-                    dispatch({ type: 'updateSiteSelector', value: target.value })
-                  }
-                  aria-label='site selector'
-                >
-                  {[{ siteName: 'Select Site', siteId: null }, ...sites].map((option, index) => (
-                    <MenuItem
-                      key={option.siteId}
-                      value={index === 0 ? '' : option.siteId}
-                      aria-label={option.siteName}
-                    >
-                      {option.siteName}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Box>
-            </Grid>
             {!roles.includes('ministry_of_health') && (
               <Grid item style={{ marginLeft: 20 }}>
                 <Typography>Site for distance calculation: </Typography>

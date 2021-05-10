@@ -49,9 +49,14 @@ export const Fields = ({ isDisabled }) => {
           <Typography className={classes.infoHeader} component='h3'>
             Need Help?
           </Typography>
-          <Typography variant='body2'>Contact a Health Career Access Program agent.</Typography>
           <Typography variant='body2'>
-            Service is available from 8:00 am - 4:30 pm Pacific Time
+            Contact a Health Career Access Program agent at{' '}
+            <a rel='noreferrer' target='_blank' href='mailto:HCAPInfoQuery@gov.bc.ca'>
+              HCAPInfoQuery@gov.bc.ca
+            </a>
+          </Typography>
+          <Typography variant='body2'>
+            Service is available from 8:00 am - 4:30 pm Pacific Time Monday through Friday
           </Typography>
         </Box>
       </Box>

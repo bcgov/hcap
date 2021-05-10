@@ -37,6 +37,59 @@ Cypress.Commands.add('kcLogout', function () {
   });
 });
 
+Cypress.Commands.add('kcLogin', (user) => {
+  Cypress.log({ name: 'Login' });
+  cy.fixture('users/' + user).then((userData) => {
+    let authBaseUrl = Cypress.env('auth_base_url');
+    let realm = Cypress.env('auth_realm');
+    let client_id = Cypress.env('auth_client_id');
+    let client_secret = Cypress.env('KEYCLOAK_LOCAL_SECRET');
+    cy.request({
+      url: authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/auth',
+      followRedirect: false,
+      qs: {
+        scope: 'openid',
+        response_type: 'code',
+        approval_prompt: 'auto',
+        redirect_uri: Cypress.config('baseUrl'),
+        client_id: client_id,
+      },
+    })
+      .then(function (response) {
+        let html = document.createElement('html');
+        html.innerHTML = response.body;
+        let form = html.getElementsByTagName('form')[0];
+        let url = form.action;
+        return cy.request({
+          method: 'POST',
+          url: url,
+          followRedirect: false,
+          form: true,
+          body: {
+            username: userData.username,
+            password: userData.password,
+          },
+        });
+      })
+      .then(function (response) {
+        let code = getAuthCodeFromLocation(response.headers['location']);
+        cy.request({
+          method: 'post',
+          url: authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/token',
+          body: {
+            client_id: client_id,
+            client_secret,
+            redirect_uri: Cypress.config('baseUrl'),
+            code: code,
+            grant_type: 'authorization_code',
+          },
+          form: true,
+          followRedirect: false,
+        }).its('body');
+      });
+  });
+});
+
 Cypress.Commands.add('kcNavAs', function (user, visitUrl) {
   visitUrl = visitUrl || '';
   Cypress.log({ name: 'Fake Login' });

@@ -1,3 +1,4 @@
+import ToastStatus from './toast';
 export const pageSize = 10;
 
 export const defaultColumns = [
@@ -55,7 +56,7 @@ export const tabs = { // Tabs, associated allowed roles, displayed statuses
 };
 
 
-export const makeToasts = (firstName,lastName, ToastStatus) =>{
+export const makeToasts = (firstName,lastName) =>{
     return{
     open: {
       status: ToastStatus.Info,
@@ -89,5 +90,11 @@ export const defaultTableState = {
     lastNameText:'',
     fsaFilter:'',
     emailFilter:'',
-    lastNameFilter:''
+    lastNameFilter:'',
+    pagniation : { currentPage: 0 },
+    order: { field: 'id', direction: 'asc' },
+    tabValue:'',
+    locationFilter:'',
+    siteSelector:'',
+
   }

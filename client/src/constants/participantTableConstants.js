@@ -91,7 +91,7 @@ export const defaultTableState = {
     fsaFilter:'',
     emailFilter:'',
     lastNameFilter:'',
-    pagniation : { currentPage: 0 },
+    pagination : { currentPage: 0 },
     order: { field: 'id', direction: 'asc' },
     tabValue:'',
     locationFilter:'',

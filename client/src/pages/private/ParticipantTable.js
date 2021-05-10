@@ -75,12 +75,13 @@ const reducer = (state,action)=>{
   let newstate = {...state};
   switch (type){
     // Add pagination to a key update
-    case 'updatekeyWithPagination':
+    case 'updateKeyWithPagination':
       newstate.pagination = prev => ({
         ...prev,
         currentPage: 0,
       })
       newstate[key] = value;
+      console.log(newstate);
       return newstate;
     // Update any key in state with the corresponding value
     case 'updateKey':
@@ -91,16 +92,19 @@ const reducer = (state,action)=>{
     case 'updateFilter': 
       if(newstate[key]?.trim() === value?.trim()) return state;
       newstate[key] = value? value.trim() : '';
-      newstate['pagination'] = prev => ({
-        ...prev,
+      newstate.pagination = {
+        ...newstate.pagination,
         currentPage: 0,
-      })
+      }
       return newstate;
     
     case 'updatePage':
       return {
         ...state, 
-        pagination: pagination => ({ ...pagination, currentPage: value })
+        pagination: { 
+          ...newstate.pagination,
+          currentPage: value 
+        }
       }
 
     // Updating site selector also updates the order, so this needed its own case
@@ -112,10 +116,10 @@ const reducer = (state,action)=>{
             direction: 'asc',
         },
         siteSelector:value,
-        pagination: prev => ({
-          ...prev,
-          currentPage: 0,
-        }),
+        pagination:{
+          ...newstate.pagination,
+          currentPage:0
+        }
       }
     default:
       return state;
@@ -286,8 +290,9 @@ export default () => {
   };
 
   const forceReload = async () => {
-    //if (!reducerState.tabValue) return;
-    const currentPage = reducerState.pagination?.currentPage;
+    if (!reducerState.tabValue) return;
+    const currentPage = reducerState.pagination?.currentPage|| 0;
+    console.log(currentPage);
     setLoadingData(true);
     const { data, pagination } = await fetchParticipants(
       currentPage * pageSize,
@@ -300,9 +305,10 @@ export default () => {
       reducerState.siteSelector,
       tabs[reducerState.tabValue].statuses,
     );
+    console.log(pagination);
     dispatch({type:'updateKey', key:'pagination', value:{
       total: pagination.total,
-      currentPage: currentPage,
+      currentPage: currentPage || 0,
     }})
 
     const newRows = filterData(data, columns);
@@ -312,8 +318,7 @@ export default () => {
 
   useEffect(() => {
     const resultColumns = [...defaultColumns];
-    const currentPage = reducerState.pagination?.currentPage;
-
+    const currentPage = reducerState.pagination?.currentPage || 0;
     const fetchUserInfo = async () => {
       setLoadingUser(true);
       const response = await fetch(`${API_URL}/api/v1/user`, {
@@ -322,9 +327,9 @@ export default () => {
         },
         method: 'GET',
       });
-
       if (response.ok) {
         const { roles, sites } = await response.json();
+
         setLoadingUser(false);
         setSites(sites);
         setRoles(roles);
@@ -387,6 +392,7 @@ export default () => {
         reducerState.siteSelector,
         tabs[reducerState.tabValue].statuses,
       );
+      console.log(pagination);
       dispatch({type:'updateKey', key:'pagination', value:{
         total: pagination.total,
         currentPage: currentPage,
@@ -428,7 +434,7 @@ export default () => {
       });
     };
     runAsync();
-  }, [reducerState.pagination, reducerState.siteSelector, reducerState.emailFilter, reducerState.locationFilter, reducerState.lastNameFilter,  reducerState.fsaFilter, reducerState.order, reducerState.tabValue]);
+  }, [reducerState.pagination?.currentPage, reducerState.siteSelector, reducerState.emailFilter, reducerState.locationFilter, reducerState.lastNameFilter,  reducerState.fsaFilter, reducerState.order, reducerState.tabValue]);
 
 
   const defaultOnClose = () => {
@@ -733,7 +739,7 @@ export default () => {
                   value={reducerState.emailText}
                   disabled={isLoadingData}
                   onDebounce={(text) => dispatch({type:'updateFilter',key:'emailFilter', value:text})}
-                  onChange={({ target }) => dispatch({type:'updateKey',key:'emailNameText',  value:target.value})}
+                  onChange={({ target }) => dispatch({type:'updateKey',key:'emailText',  value:target.value})}
                   placeholder='Email'
                 />}
               </Box>

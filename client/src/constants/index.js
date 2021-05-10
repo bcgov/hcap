@@ -4,4 +4,4 @@ export { default as ToastStatus } from './toast';
 export * from './validation';
 export * from './label';
 export * from './misc';
-export * from './participantTableConstants'
+export * from './participantTableConstants';

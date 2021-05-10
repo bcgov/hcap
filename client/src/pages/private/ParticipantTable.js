@@ -20,7 +20,7 @@ import {
   defaultColumns,
   tabs,
   makeToasts,
-  defaultTableState
+  defaultTableState,
 } from '../../constants';
 import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import {
@@ -35,7 +35,6 @@ import { useToast } from '../../hooks';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { getDialogTitle, prettifyStatus } from '../../utils';
 import moment from 'moment';
-
 
 const CustomTabs = withStyles((theme) => ({
   root: {
@@ -68,17 +67,16 @@ const CustomTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-
-const reducer = (state,action)=>{
-  const {type,key,value} = action
-  let newstate = {...state};
-  switch (type){
+const reducer = (state, action) => {
+  const { type, key, value } = action;
+  let newstate = { ...state };
+  switch (type) {
     // Add pagination to a key update
     case 'updateKeyWithPagination':
-      newstate.pagination = prev => ({
+      newstate.pagination = (prev) => ({
         ...prev,
         currentPage: 0,
-      })
+      });
       newstate[key] = value;
       return newstate;
     // Update any key in state with the corresponding value
@@ -87,42 +85,42 @@ const reducer = (state,action)=>{
       return newstate;
 
     // Update a search filter. Applies trimming to text
-    case 'updateFilter': 
-      if(newstate[key]?.trim() === value?.trim()) return state;
-      newstate[key] = value? value.trim() : '';
+    case 'updateFilter':
+      if (newstate[key]?.trim() === value?.trim()) return state;
+      newstate[key] = value ? value.trim() : '';
       newstate.pagination = {
         ...newstate.pagination,
         currentPage: 0,
-      }
+      };
       return newstate;
-    
+
     case 'updatePage':
       return {
-        ...state, 
-        pagination: { 
+        ...state,
+        pagination: {
           ...newstate.pagination,
-          currentPage: value 
-        }
-      }
+          currentPage: value,
+        },
+      };
 
     // Updating site selector also updates the order, so this needed its own case
     case 'updateSiteSelector':
       return {
         ...state,
-        order:{
-            field: 'distance',
-            direction: 'asc',
+        order: {
+          field: 'distance',
+          direction: 'asc',
         },
-        siteSelector:value,
-        pagination:{
+        siteSelector: value,
+        pagination: {
           ...newstate.pagination,
-          currentPage:0
-        }
-      }
+          currentPage: 0,
+        },
+      };
     default:
       return state;
   }
-}
+};
 
 export default () => {
   const { openToast } = useToast();
@@ -138,7 +136,7 @@ export default () => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations, setLocations] = useState([]);
 
-  const [reducerState, dispatch ] = useReducer(reducer,defaultTableState);
+  const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
   const filterData = (data, columns) => {
     const mapItemToColumns = (item, columns) => {
       const row = {};
@@ -250,7 +248,7 @@ export default () => {
       } else {
         const index = rows.findIndex((row) => row.id === participantId);
         const { firstName, lastName } = rows[index];
-        const toasts = makeToasts(firstName,lastName);
+        const toasts = makeToasts(firstName, lastName);
         openToast(toasts[statusData?.status === 'already_hired' ? statusData.status : status]);
         setActionMenuParticipant(null);
         setActiveModalForm(null);
@@ -289,7 +287,7 @@ export default () => {
 
   const forceReload = async () => {
     if (!reducerState.tabValue) return;
-    const currentPage = reducerState.pagination?.currentPage|| 0;
+    const currentPage = reducerState.pagination?.currentPage || 0;
     setLoadingData(true);
     const { data, pagination } = await fetchParticipants(
       currentPage * pageSize,
@@ -300,12 +298,16 @@ export default () => {
       reducerState.order.field,
       reducerState.order.direction,
       reducerState.siteSelector,
-      tabs[reducerState.tabValue].statuses,
+      tabs[reducerState.tabValue].statuses
     );
-    dispatch({type:'updateKey', key:'pagination', value:{
-      total: pagination.total,
-      currentPage: currentPage || 0,
-    }})
+    dispatch({
+      type: 'updateKey',
+      key: 'pagination',
+      value: {
+        total: pagination.total,
+        currentPage: currentPage || 0,
+      },
+    });
 
     const newRows = filterData(data, columns);
     setRows(newRows);
@@ -331,11 +333,11 @@ export default () => {
         setRoles(roles);
         if (!reducerState.tabValue) {
           dispatch({
-            type:'updateKeyWithPagination',
-            key:'tabValue',
-            value:Object.keys(tabs) // Set selected tab to first tab allowed for role
-            .find((key) => tabs[key].roles.some((role) => roles.includes(role)))
-          })
+            type: 'updateKeyWithPagination',
+            key: 'tabValue',
+            value: Object.keys(tabs) // Set selected tab to first tab allowed for role
+              .find((key) => tabs[key].roles.some((role) => roles.includes(role))),
+          });
         }
         const isMoH = roles.includes('ministry_of_health');
         const isSuperUser = roles.includes('superuser');
@@ -386,12 +388,16 @@ export default () => {
         reducerState.order.field,
         reducerState.order.direction,
         reducerState.siteSelector,
-        tabs[reducerState.tabValue].statuses,
+        tabs[reducerState.tabValue].statuses
       );
-      dispatch({type:'updateKey', key:'pagination', value:{
-        total: pagination.total,
-        currentPage: currentPage,
-      }})
+      dispatch({
+        type: 'updateKey',
+        key: 'pagination',
+        value: {
+          total: pagination.total,
+          currentPage: currentPage,
+        },
+      });
       const newRows = filterData(data, resultColumns);
       setRows(newRows);
       setLoadingData(false);
@@ -401,12 +407,18 @@ export default () => {
       await fetchUserInfo();
       await getParticipants();
 
-      setColumns(oldColumns => {
-        setHideLastNameAndEmailFilter(['Available Participants', 'Archived Candidates'].includes(reducerState.tabValue));
+      setColumns((oldColumns) => {
+        setHideLastNameAndEmailFilter(
+          ['Available Participants', 'Archived Candidates'].includes(reducerState.tabValue)
+        );
 
-        if (reducerState.tabValue !== 'Available Participants') oldColumns = oldColumns.filter(column => column.id !== 'callbackStatus');
+        if (reducerState.tabValue !== 'Available Participants')
+          oldColumns = oldColumns.filter((column) => column.id !== 'callbackStatus');
 
-        if (['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue) && !oldColumns.find(column => column.id === 'status'))
+        if (
+          ['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue) &&
+          !oldColumns.find((column) => column.id === 'status')
+        )
           return [
             ...oldColumns.slice(0, 3),
             { id: 'status', name: 'Status' },
@@ -414,7 +426,7 @@ export default () => {
           ];
 
         if (reducerState.tabValue === 'Hired Candidates') {
-          oldColumns = oldColumns.filter(column => column.id !== 'engage');
+          oldColumns = oldColumns.filter((column) => column.id !== 'engage');
           return [
             ...oldColumns.slice(0, 8),
             { id: 'siteName', name: 'Site Name' },
@@ -423,14 +435,22 @@ export default () => {
         }
 
         if (!['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue))
-          return oldColumns.filter(column => column.id !== 'status');
+          return oldColumns.filter((column) => column.id !== 'status');
 
         return oldColumns;
       });
     };
     runAsync();
-  }, [reducerState.pagination?.currentPage, reducerState.siteSelector, reducerState.emailFilter, reducerState.locationFilter, reducerState.lastNameFilter,  reducerState.fsaFilter, reducerState.order, reducerState.tabValue]);
-
+  }, [
+    reducerState.pagination?.currentPage,
+    reducerState.siteSelector,
+    reducerState.emailFilter,
+    reducerState.locationFilter,
+    reducerState.lastNameFilter,
+    reducerState.fsaFilter,
+    reducerState.order,
+    reducerState.tabValue,
+  ]);
 
   const defaultOnClose = () => {
     setActiveModalForm(null);
@@ -446,50 +466,56 @@ export default () => {
     }
     if (columnId === 'distance') {
       if (row[columnId] !== null && row[columnId] !== undefined) {
-        return `${math.round(row[columnId]/1000) || '<1'} Km`;
+        return `${math.round(row[columnId] / 1000) || '<1'} Km`;
       }
       return 'N/A';
     }
     if (columnId === 'engage') {
-      return !row.status.includes('already_hired') && <Button
-        onClick={(event) => {
-          setActionMenuParticipant(row[columnId]);
-          setAnchorElement(event.currentTarget);
-        }}
-        variant="outlined"
-        size="small"
-        text="Actions"
-      />
+      return (
+        !row.status.includes('already_hired') && (
+          <Button
+            onClick={(event) => {
+              setActionMenuParticipant(row[columnId]);
+              setAnchorElement(event.currentTarget);
+            }}
+            variant='outlined'
+            size='small'
+            text='Actions'
+          />
+        )
+      );
     }
     if (columnId === 'edit') {
-      return <Button
-        onClick={async () => {
-          // Get data from row.id
-          const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
-            headers: {
-              'Accept': 'application/json',
-              'Content-type': 'application/json',
-              'Authorization': `Bearer ${store.get('TOKEN')}`,
-            },
-            method: 'GET',
-          });
-  
-          const participant = await response.json();
-  
-          setActionMenuParticipant(participant[0]);
-          setActiveModalForm('edit-participant');
-          setAnchorElement(null);
-        }}
-        variant="outlined"
-        size="small"
-        text="Edit"
-      />
+      return (
+        <Button
+          onClick={async () => {
+            // Get data from row.id
+            const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
+              headers: {
+                Accept: 'application/json',
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${store.get('TOKEN')}`,
+              },
+              method: 'GET',
+            });
+
+            const participant = await response.json();
+
+            setActionMenuParticipant(participant[0]);
+            setActiveModalForm('edit-participant');
+            setAnchorElement(null);
+          }}
+          variant='outlined'
+          size='small'
+          text='Edit'
+        />
+      );
     }
     if (columnId === 'userUpdatedAt') {
       return moment(row.userUpdatedAt).fromNow();
     }
     return row[columnId];
-  }
+  };
 
   return (
     <>
@@ -508,7 +534,7 @@ export default () => {
             }}
             onSubmit={() => {
               defaultOnClose();
-              dispatch({type:'updateKey',key:'tabValue',value:'My Candidates'})
+              dispatch({ type: 'updateKey', key: 'tabValue', value: 'My Candidates' });
             }}
           />
         )}
@@ -682,8 +708,14 @@ export default () => {
                   inputProps={{ displayEmpty: true }}
                   value={reducerState.locationFilter || ''}
                   disabled={isLoadingData || locations.length === 1}
-                  onChange={({ target }) => dispatch({type:'updateKeyWithPagination',key:'locationFilter',value:target.value})}
-                  aria-label="location filter"
+                  onChange={({ target }) =>
+                    dispatch({
+                      type: 'updateKeyWithPagination',
+                      key: 'locationFilter',
+                      value: target.value,
+                    })
+                  }
+                  aria-label='location filter'
                 >
                   {locations.length === 1 ? (
                     <MenuItem value=''>{locations[0]}</MenuItem>
@@ -705,59 +737,80 @@ export default () => {
                   fullWidth
                   value={reducerState.fsaText}
                   disabled={isLoadingData}
-                  onDebounce={(text) => dispatch({type:'updateFilter',key:'fsaFilter', value:text})}
-                  onChange={({ target }) => dispatch({type:'updateKey',key:'fsaText',  value:target.value})}
+                  onDebounce={(text) =>
+                    dispatch({ type: 'updateFilter', key: 'fsaFilter', value: text })
+                  }
+                  onChange={({ target }) =>
+                    dispatch({ type: 'updateKey', key: 'fsaText', value: target.value })
+                  }
                   placeholder='Forward Sortation Area'
                 />
               </Box>
             </Grid>
             <Grid item>
               <Box pl={2}>
-                {!hideLastNameAndEmailFilter && <DebounceTextField
-                  time={1000}
-                  variant="filled"
-                  fullWidth
-                  value={reducerState.lastNameText}
-                  disabled={isLoadingData}
-                  onDebounce={(text) => dispatch({type:'updateFilter',key:'lastNameFilter', value:text})}
-                  onChange={({ target }) => dispatch({type:'updateKey',key:'lastNameText',  value:target.value})}
-                  placeholder='Last Name'
-                />}
+                {!hideLastNameAndEmailFilter && (
+                  <DebounceTextField
+                    time={1000}
+                    variant='filled'
+                    fullWidth
+                    value={reducerState.lastNameText}
+                    disabled={isLoadingData}
+                    onDebounce={(text) =>
+                      dispatch({ type: 'updateFilter', key: 'lastNameFilter', value: text })
+                    }
+                    onChange={({ target }) =>
+                      dispatch({ type: 'updateKey', key: 'lastNameText', value: target.value })
+                    }
+                    placeholder='Last Name'
+                  />
+                )}
               </Box>
             </Grid>
             <Grid item>
               <Box pl={2}>
-                {!hideLastNameAndEmailFilter && <DebounceTextField
-                  time={1000}
-                  variant="filled"
-                  fullWidth
-                  value={reducerState.emailText}
-                  disabled={isLoadingData}
-                  onDebounce={(text) => dispatch({type:'updateFilter',key:'emailFilter', value:text})}
-                  onChange={({ target }) => dispatch({type:'updateKey',key:'emailText',  value:target.value})}
-                  placeholder='Email'
-                />}
+                {!hideLastNameAndEmailFilter && (
+                  <DebounceTextField
+                    time={1000}
+                    variant='filled'
+                    fullWidth
+                    value={reducerState.emailText}
+                    disabled={isLoadingData}
+                    onDebounce={(text) =>
+                      dispatch({ type: 'updateFilter', key: 'emailFilter', value: text })
+                    }
+                    onChange={({ target }) =>
+                      dispatch({ type: 'updateKey', key: 'emailText', value: target.value })
+                    }
+                    placeholder='Email'
+                  />
+                )}
               </Box>
             </Grid>
-            <Grid item style={{ 'marginLeft': 20 }}>
+            <Grid item style={{ marginLeft: 20 }}>
               <Typography>Site for distance calculation: </Typography>
               <Box>
                 <TextField
                   select
                   fullWidth
-                  variant="filled"
+                  variant='filled'
                   inputProps={{ displayEmpty: true }}
                   value={reducerState.siteSelector || ''}
                   disabled={isLoadingData}
-                  onChange={({ target }) => 
-                  dispatch({type:'updateSiteSelector',value:target.value })}
-                  aria-label="site selector"
-                >
-                  {
-                      [{siteName:'Select Site', siteId: null}, ...sites].map((option, index) => (
-                        <MenuItem key={option.siteId} value={index === 0 ? '' : option.siteId} aria-label={option.siteName}>{option.siteName}</MenuItem>
-                      ))
+                  onChange={({ target }) =>
+                    dispatch({ type: 'updateSiteSelector', value: target.value })
                   }
+                  aria-label='site selector'
+                >
+                  {[{ siteName: 'Select Site', siteId: null }, ...sites].map((option, index) => (
+                    <MenuItem
+                      key={option.siteId}
+                      value={index === 0 ? '' : option.siteId}
+                      aria-label={option.siteName}
+                    >
+                      {option.siteName}
+                    </MenuItem>
+                  ))}
                 </TextField>
               </Box>
             </Grid>
@@ -772,7 +825,9 @@ export default () => {
                     inputProps={{ displayEmpty: true }}
                     value={reducerState.siteSelector || ''}
                     disabled={isLoadingData}
-                    onChange={({ target }) => dispatch({type:'updateSiteSelector',value:target.value})}
+                    onChange={({ target }) =>
+                      dispatch({ type: 'updateSiteSelector', value: target.value })
+                    }
                     aria-label='site selector'
                   >
                     {[{ siteName: 'Select Site', siteId: null }, ...sites].map((option, index) => (
@@ -788,19 +843,22 @@ export default () => {
                 </Box>
               </Grid>
             )}
-            {reducerState.tabValue === "Hired Candidates" && 
-            <Grid container item xs={2} style={{ 'marginLeft': 'auto', 'marginRight': 20 }}>
-              <Button
-                onClick={() => setActiveModalForm("new-participant")}
-                text="Add Non-Portal Hire"
-                size="medium"
-              />
-            </Grid>}
+            {reducerState.tabValue === 'Hired Candidates' && (
+              <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
+                <Button
+                  onClick={() => setActiveModalForm('new-participant')}
+                  text='Add Non-Portal Hire'
+                  size='medium'
+                />
+              </Grid>
+            )}
           </Grid>
-          <Box pt={2} pb={2} pl={2} pr={2} width="100%">
+          <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
             <CustomTabs
               value={reducerState.tabValue || false}
-              onChange={(event,property )=> dispatch({type:'updateKeyWithPagination',key:'tabValue',value:property})}
+              onChange={(event, property) =>
+                dispatch({ type: 'updateKeyWithPagination', key: 'tabValue', value: property })
+              }
             >
               {
                 Object.keys(tabs)
@@ -815,14 +873,20 @@ export default () => {
               order={reducerState.order.direction}
               orderBy={reducerState.order.field}
               rowsCount={reducerState.pagination?.total}
-              onChangePage={(oldPage,newPage)=>dispatch({type:'updatePage',value:newPage})}
+              onChangePage={(oldPage, newPage) => dispatch({ type: 'updatePage', value: newPage })}
               rowsPerPage={pageSize}
               currentPage={reducerState.pagination?.currentPage}
               renderCell={renderCell}
-              onRequestSort={(event,property ) => dispatch({type:'updateKeyWithPagination',key:'order',value:{
-                field: property,
-                direction: reducerState.order.direction === 'desc' ? 'asc' : 'desc',
-              }})}
+              onRequestSort={(event, property) =>
+                dispatch({
+                  type: 'updateKeyWithPagination',
+                  key: 'order',
+                  value: {
+                    field: property,
+                    direction: reducerState.order.direction === 'desc' ? 'asc' : 'desc',
+                  },
+                })
+              }
               rows={rows}
               isLoading={isLoadingData}
             />

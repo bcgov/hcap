@@ -32,7 +32,8 @@ export const sortOrder = [
   'edit',
 ];
 
-export const tabs = { // Tabs, associated allowed roles, displayed statuses
+export const tabs = {
+  // Tabs, associated allowed roles, displayed statuses
   'Available Participants': {
     roles: ['employer', 'health_authority'],
     statuses: ['open'],
@@ -55,9 +56,8 @@ export const tabs = { // Tabs, associated allowed roles, displayed statuses
   },
 };
 
-
-export const makeToasts = (firstName,lastName) =>{
-    return{
+export const makeToasts = (firstName, lastName) => {
+  return {
     open: {
       status: ToastStatus.Info,
       message: `${firstName} ${lastName} is has been disengaged`,
@@ -81,20 +81,20 @@ export const makeToasts = (firstName,lastName) =>{
     already_hired: {
       status: ToastStatus.Info,
       message: `${firstName} ${lastName} is already hired by someone else`,
-    }}
+    },
+  };
 };
 
 export const defaultTableState = {
-    fsaText:'',
-    emailText:'',
-    lastNameText:'',
-    fsaFilter:'',
-    emailFilter:'',
-    lastNameFilter:'',
-    pagination : { currentPage: 0 },
-    order: { field: 'id', direction: 'asc' },
-    tabValue:'',
-    locationFilter:'',
-    siteSelector:'',
-
-  }
+  fsaText: '',
+  emailText: '',
+  lastNameText: '',
+  fsaFilter: '',
+  emailFilter: '',
+  lastNameFilter: '',
+  pagination: { currentPage: 0 },
+  order: { field: 'id', direction: 'asc' },
+  tabValue: '',
+  locationFilter: '',
+  siteSelector: '',
+};

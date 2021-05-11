@@ -7,7 +7,8 @@ export APP_NAME:=hcap
 export OS_NAMESPACE_PREFIX:=f047a2
 export OS_NAMESPACE_SUFFIX?=dev
 export COMMIT_SHA:=$(shell git rev-parse --short=7 HEAD)
-export LAST_COMMIT:=$(shell git log -1 --oneline --decorate=short --no-color)
+# Without --decorate=short --no-color make file is not happy handling the colors and skips that part of data
+export LAST_COMMIT:=$(shell git log -1 --oneline --decorate=full --no-color --format="%h, %cn, %f, %D")
 export TARGET_NAMESPACE=$(OS_NAMESPACE_PREFIX)-$(OS_NAMESPACE_SUFFIX)
 export TOOLS_NAMESPACE=$(OS_NAMESPACE_PREFIX)-tools
 export DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}
@@ -119,7 +120,7 @@ server-create:
 
 server-build:
 	@oc cancel-build bc/$(APP_NAME)-server -n $(TOOLS_NAMESPACE)
-	@oc start-build $(APP_NAME)-server -n $(TOOLS_NAMESPACE) --wait --follow=true --build-arg VERSION=$(LAST_COMMIT)
+	@oc start-build $(APP_NAME)-server -n $(TOOLS_NAMESPACE) --wait --follow=true --build-arg VERSION="$(LAST_COMMIT)"
 	@oc tag $(APP_NAME)-server:latest $(APP_NAME)-server:$(COMMIT_SHA)
 
 server-deploy:

@@ -13,7 +13,7 @@ RUN INLINE_RUNTIME_CHUNK=false npm run build
 FROM registry.hub.docker.com/library/node:14-alpine AS server
 
 # Static env vars
-ARG VERSION_ABC
+ARG VERSION
 ENV VERSION $VERSION
 ENV NODE_ENV production
 

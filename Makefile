@@ -117,7 +117,7 @@ server-create:
 
 server-build:
 	@oc cancel-build bc/$(APP_NAME)-server -n $(TOOLS_NAMESPACE)
-	@oc start-build $(APP_NAME)-server -n $(TOOLS_NAMESPACE) --wait
+	@oc start-build $(APP_NAME)-server -n $(TOOLS_NAMESPACE) --wait --follow=true --build-arg VERSION=haha
 	@oc tag $(APP_NAME)-server:latest $(APP_NAME)-server:$(COMMIT_SHA)
 
 server-deploy:

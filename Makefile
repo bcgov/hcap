@@ -8,7 +8,7 @@ export OS_NAMESPACE_PREFIX:=f047a2
 export OS_NAMESPACE_SUFFIX?=dev
 export COMMIT_SHA:=$(shell git rev-parse --short=7 HEAD)
 # Without --decorate=short --no-color make file is not happy handling the colors and skips that part of data
-export LAST_COMMIT:=$(shell git log -1 --oneline --decorate=full --no-color --format="%h, %cn, %f, %D")
+export LAST_COMMIT:=$(shell git log -1 --oneline --decorate=full --no-color --format="%h, %cn, %f, %D" | sed 's/>//')
 export TARGET_NAMESPACE=$(OS_NAMESPACE_PREFIX)-$(OS_NAMESPACE_SUFFIX)
 export TOOLS_NAMESPACE=$(OS_NAMESPACE_PREFIX)-tools
 export DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}

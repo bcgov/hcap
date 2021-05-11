@@ -9,6 +9,7 @@
     "migrate": "node-pg-migrate",
     "feed-sites": "node scripts/feed-sites.js",
     "stats": "node scripts/stats.js",
+    "get-email-list":"node scripts/get-email-list.js",
     "participant-stats-hired": "node scripts/participant-stats-hired.js",
     "participant-stats-in-progress": "node scripts/participant-stats-in-progress.js",
     "participant-stats-rejected": "node scripts/participant-stats-rejected.js",

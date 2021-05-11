@@ -16,6 +16,7 @@ class DBClient {
       user: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
     };
+    console.log(this.settings);
     this.db = null;
   }
 
@@ -38,7 +39,7 @@ class DBClient {
   }
 
   async connect() {
-    if (this.db) return;
+    //if (this.db) return;
     logger.info('Connecting to database');
     this.db = await massive(this.settings);
   }
@@ -48,8 +49,9 @@ class DBClient {
   }
 
   async runRawQuery(query) {
-    if (!query) return;
-    await this.db.query(query);
+    console.log(query)
+    //if (!query) return;
+    return await this.db.query(query);
   }
 
   async createDocumentTableIfNotExists(table) {

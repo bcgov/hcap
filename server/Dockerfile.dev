@@ -1,9 +1,5 @@
 FROM node:14-alpine
 
-# Static env vars
-ARG VERSION
-ENV VERSION $VERSION
-
 # Allow node modules to be called directly
 ENV PATH $PATH:/usr/src/app/node_modules/.bin
 
@@ -12,5 +8,9 @@ RUN apk add --no-cache git
 WORKDIR /server
 COPY package*.json ./
 RUN npm set progress=false && npm ci --no-cache
+
+# Static env vars
+ARG VERSION
+ENV VERSION $VERSION
 
 CMD [ "npm", "run", "watch" ]

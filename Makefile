@@ -7,10 +7,11 @@ export APP_NAME:=hcap
 export OS_NAMESPACE_PREFIX:=f047a2
 export OS_NAMESPACE_SUFFIX?=dev
 export COMMIT_SHA:=$(shell git rev-parse --short=7 HEAD)
+# Without --decorate=short --no-color make file is not happy handling the colors and skips that part of data
+export LAST_COMMIT:=$(shell git log -1 --oneline --decorate=full --no-color --format="%h, %cn, %f, %D" | sed 's/->/:/')
 export TARGET_NAMESPACE=$(OS_NAMESPACE_PREFIX)-$(OS_NAMESPACE_SUFFIX)
 export TOOLS_NAMESPACE=$(OS_NAMESPACE_PREFIX)-tools
 export DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}
-
 # Status Output
 
 print-status:
@@ -18,6 +19,7 @@ print-status:
 	@echo "TARGET_NAMESPACE: $(TARGET_NAMESPACE)"
 	@echo "TOOLS_NAMESPACE: $(TOOLS_NAMESPACE)"
 	@echo "COMMIT_SHA: $(COMMIT_SHA)"
+	@echo "LAST_COMMIT: $(LAST_COMMIT)"
 
 # Keycloak
 
@@ -41,7 +43,7 @@ local-build:
 	@echo "Building local app image"
 	@docker-compose -f docker-compose.dev.yml build
 
-local-run:
+local-run: local-build
 	@echo "Running local app container"
 	@docker-compose -f docker-compose.dev.yml up
 
@@ -117,7 +119,7 @@ server-create:
 
 server-build:
 	@oc cancel-build bc/$(APP_NAME)-server -n $(TOOLS_NAMESPACE)
-	@oc start-build $(APP_NAME)-server -n $(TOOLS_NAMESPACE) --wait
+	@oc start-build $(APP_NAME)-server -n $(TOOLS_NAMESPACE) --wait --follow=true --build-arg VERSION="$(LAST_COMMIT)"
 	@oc tag $(APP_NAME)-server:latest $(APP_NAME)-server:$(COMMIT_SHA)
 
 server-deploy:

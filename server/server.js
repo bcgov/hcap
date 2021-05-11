@@ -719,7 +719,7 @@ app.get(
 
 // Version number
 app.get(`${apiBaseUrl}/version`, (req, res) =>
-  res.json({ version: process.env.VERSION, umm: "tagged from local" })
+  res.json({ version: process.env.VERSION })
 );
 
 // Client app

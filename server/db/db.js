@@ -49,8 +49,7 @@ class DBClient {
   }
 
   async runRawQuery(query) {
-    console.log(query)
-    //if (!query) return;
+    if (!query) return;
     return await this.db.query(query);
   }
 

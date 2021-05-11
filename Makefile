@@ -15,7 +15,6 @@ export DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:$
 # Status Output
 
 print-status:
-	@git fetch --all --tags --force
 	@echo "APP_NAME: $(APP_NAME)"
 	@echo "TARGET_NAMESPACE: $(TARGET_NAMESPACE)"
 	@echo "TOOLS_NAMESPACE: $(TOOLS_NAMESPACE)"

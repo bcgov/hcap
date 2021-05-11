@@ -31,6 +31,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: 'dev'
+          fetch-depth: 0
 
       - name: Cache OpenShift CLI
         id: cache-oc
@@ -55,6 +58,7 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
+          make print-status
           make server-build
           make server-deploy
 

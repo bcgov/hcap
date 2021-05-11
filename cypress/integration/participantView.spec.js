@@ -30,7 +30,6 @@ describe('Participant View', () => {
   it('Visits Participant View as a single-region employer', () => {
     cy.kcNavAs('employer_island', 'participant-view');
     cy.contains('Vancouver Island').should('have.class', 'Mui-disabled');
-    cy.contains('Vancouver Island').click();
     cy.get('ul.MuiMenu-list').should('not.be.visible');
 
     // Testing Tabs

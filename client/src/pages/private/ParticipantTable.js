@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
@@ -15,6 +15,12 @@ import {
   EditParticipantFormSchema,
   regionLabelsMap,
   API_URL,
+  sortOrder,
+  pageSize,
+  defaultColumns,
+  tabs,
+  makeToasts,
+  defaultTableState,
 } from '../../constants';
 import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import {
@@ -29,63 +35,6 @@ import { useToast } from '../../hooks';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { getDialogTitle, prettifyStatus } from '../../utils';
 import moment from 'moment';
-
-const pageSize = 10;
-
-const defaultColumns = [
-  { id: 'id', name: 'ID' },
-  { id: 'lastName', name: 'Last Name' },
-  { id: 'firstName', name: 'First Name' },
-  { id: 'postalCodeFsa', name: 'FSA' },
-  { id: 'preferredLocation', name: 'Preferred Region(s)' },
-  { id: 'nonHCAP', name: 'Non-HCAP' },
-  { id: 'userUpdatedAt', name: 'Last Updated' },
-  { id: 'callbackStatus', name: 'Callback Status' },
-];
-
-const sortOrder = [
-  'id',
-  'lastName',
-  'firstName',
-  'status',
-  'statusInfo',
-  'postalCodeFsa',
-  'phoneNumber',
-  'emailAddress',
-  'preferredLocation',
-  'distance',
-  'interested',
-  'nonHCAP',
-  'crcClear',
-  'callbackStatus',
-  'userUpdatedAt',
-  'engage',
-  'edit',
-];
-
-const tabs = {
-  // Tabs, associated allowed roles, displayed statuses
-  'Available Participants': {
-    roles: ['employer', 'health_authority'],
-    statuses: ['open'],
-  },
-  'My Candidates': {
-    roles: ['employer', 'health_authority'],
-    statuses: ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
-  },
-  'Archived Candidates': {
-    roles: ['employer', 'health_authority'],
-    statuses: ['rejected'],
-  },
-  'Hired Candidates': {
-    roles: ['employer', 'health_authority'],
-    statuses: ['hired'],
-  },
-  Participants: {
-    roles: ['ministry_of_health', 'superuser'],
-    statuses: ['open', 'prospecting', 'interviewing', 'offer_made', 'rejected', 'hired'],
-  },
-};
 
 const CustomTabs = withStyles((theme) => ({
   root: {
@@ -118,100 +67,76 @@ const CustomTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
+const reducer = (state, action) => {
+  const { type, key, value } = action;
+  let newstate = { ...state };
+  switch (type) {
+    // Add pagination to a key update
+    case 'updateKeyWithPagination':
+      newstate.pagination = (prev) => ({
+        ...prev,
+        currentPage: 0,
+      });
+      newstate[key] = value;
+      return newstate;
+    // Update any key in state with the corresponding value
+    case 'updateKey':
+      newstate[key] = value;
+      return newstate;
+
+    // Update a search filter. Applies trimming to text
+    case 'updateFilter':
+      if (newstate[key]?.trim() === value?.trim()) return state;
+      newstate[key] = value ? value.trim() : '';
+      newstate.pagination = {
+        ...newstate.pagination,
+        currentPage: 0,
+      };
+      return newstate;
+
+    case 'updatePage':
+      return {
+        ...state,
+        pagination: {
+          ...newstate.pagination,
+          currentPage: value,
+        },
+      };
+
+    // Updating site selector also updates the order, so this needed its own case
+    case 'updateSiteSelector':
+      return {
+        ...state,
+        order: {
+          field: 'distance',
+          direction: 'asc',
+        },
+        siteSelector: value,
+        pagination: {
+          ...newstate.pagination,
+          currentPage: 0,
+        },
+      };
+    default:
+      return state;
+  }
+};
+
 export default () => {
   const { openToast } = useToast();
   const [roles, setRoles] = useState([]);
   const [sites, setSites] = useState([]);
-  const [order, setOrder] = useState({ field: 'id', direction: 'asc' });
   const [isLoadingData, setLoadingData] = useState(false);
   const [isLoadingUser, setLoadingUser] = useState(false);
   const [rows, setRows] = useState([]);
-  const [pagination, setPagination] = useState({ currentPage: 0 });
   const [columns, setColumns] = useState(defaultColumns);
-  const [locationFilter, setLocationFilter] = useState(null);
-  const [siteSelector, setSiteSelector] = useState(null);
-  const [fsaFilter, setFsaFilter] = useState(null);
-  const [fsaText, setFsaText] = useState(null);
-  const [lastNameFilter, setLastNameFilter] = useState(null);
-  const [lastNameText, setLastNameText] = useState(null);
-  const [emailFilter, setEmailFilter] = useState(null);
-  const [emailText, setEmailText] = useState(null);
   const [hideLastNameAndEmailFilter, setHideLastNameAndEmailFilter] = useState(true);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
-  const [tabValue, setTabValue] = useState(null);
-
   const [locations, setLocations] = useState([]);
-  const handleRequestSort = (event, property) => {
-    setOrder({
-      field: property,
-      direction: order.direction === 'desc' ? 'asc' : 'desc',
-    });
-    setPagination((prev) => ({
-      ...prev,
-      currentPage: 0,
-    }));
-  };
 
-  const handleTabChange = (event, newValue) => {
-    setPagination((prev) => ({
-      ...prev,
-      currentPage: 0,
-    }));
-    setTabValue(newValue);
-  };
-
-  const handleLocationFilter = (value) => {
-    setLocationFilter(value);
-    setPagination((prev) => ({
-      ...prev,
-      currentPage: 0,
-    }));
-  };
-
-  const handleSiteSelector = (value) => {
-    setSiteSelector(value);
-    setOrder({
-      field: 'distance',
-      direction: 'asc',
-    });
-    setPagination((prev) => ({
-      ...prev,
-      currentPage: 0,
-    }));
-  };
-
-  const handleFsaFilter = (value) => {
-    if (fsaText?.trim() === value?.trim()) return;
-
-    setPagination((prev) => ({
-      ...prev,
-      currentPage: 0,
-    }));
-    setFsaFilter(value.trim());
-  };
-
-  const handleLastNameFilter = (value) => {
-    if (lastNameText?.trim() === value?.trim()) return;
-
-    setPagination((prev) => ({
-      ...prev,
-      currentPage: 0,
-    }));
-    setLastNameFilter(value.trim());
-  };
-
-  const handleEmailFilter = (value) => {
-    if (emailText?.trim() === value?.trim()) return;
-
-    setPagination((prev) => ({
-      ...prev,
-      currentPage: 0,
-    }));
-    setEmailFilter(value.trim());
-  };
-
+  const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
   const filterData = (data, columns) => {
     const mapItemToColumns = (item, columns) => {
       const row = {};
@@ -323,38 +248,11 @@ export default () => {
       } else {
         const index = rows.findIndex((row) => row.id === participantId);
         const { firstName, lastName } = rows[index];
-
-        const toasts = {
-          open: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} is has been disengaged`,
-          },
-          interviewing: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} is now being interviewed`,
-          },
-          offer_made: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} has been made a job offer`,
-          },
-          hired: {
-            status: ToastStatus.Success,
-            message: `${firstName} ${lastName} has been hired`,
-          },
-          rejected: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} has been archived`,
-          },
-          already_hired: {
-            status: ToastStatus.Info,
-            message: `${firstName} ${lastName} is already hired by someone else`,
-          },
-        };
-
+        const toasts = makeToasts(firstName, lastName);
         openToast(toasts[statusData?.status === 'already_hired' ? statusData.status : status]);
         setActionMenuParticipant(null);
         setActiveModalForm(null);
-        forceReload(pagination);
+        forceReload();
       }
     } else {
       openToast({
@@ -378,7 +276,7 @@ export default () => {
     if (response.ok) {
       setActionMenuParticipant(null);
       setActiveModalForm(null);
-      forceReload(pagination);
+      forceReload();
     } else {
       openToast({
         status: ToastStatus.Error,
@@ -387,25 +285,28 @@ export default () => {
     }
   };
 
-  const forceReload = async (currentPagination) => {
-    if (!tabValue) return;
-    const currentPage = currentPagination.currentPage;
+  const forceReload = async () => {
+    if (!reducerState.tabValue) return;
+    const currentPage = reducerState.pagination?.currentPage || 0;
     setLoadingData(true);
     const { data, pagination } = await fetchParticipants(
       currentPage * pageSize,
-      locationFilter,
-      fsaFilter,
-      lastNameFilter,
-      emailFilter,
-      order.field,
-      order.direction,
-      siteSelector,
-      tabs[tabValue].statuses
+      reducerState.locationFilter,
+      reducerState.fsaFilter,
+      reducerState.lastNameFilter,
+      reducerState.emailFilter,
+      reducerState.order.field,
+      reducerState.order.direction,
+      reducerState.siteSelector,
+      tabs[reducerState.tabValue].statuses
     );
-
-    setPagination({
-      total: pagination.total,
-      currentPage: currentPage,
+    dispatch({
+      type: 'updateKey',
+      key: 'pagination',
+      value: {
+        total: pagination.total,
+        currentPage: currentPage || 0,
+      },
     });
 
     const newRows = filterData(data, columns);
@@ -415,8 +316,7 @@ export default () => {
 
   useEffect(() => {
     const resultColumns = [...defaultColumns];
-    const currentPage = pagination.currentPage;
-
+    const currentPage = reducerState.pagination?.currentPage || 0;
     const fetchUserInfo = async () => {
       setLoadingUser(true);
       const response = await fetch(`${API_URL}/api/v1/user`, {
@@ -425,17 +325,19 @@ export default () => {
         },
         method: 'GET',
       });
-
       if (response.ok) {
         const { roles, sites } = await response.json();
+
         setLoadingUser(false);
         setSites(sites);
         setRoles(roles);
-        if (!tabValue) {
-          setTabValue(
-            Object.keys(tabs) // Set selected tab to first tab allowed for role
-              .find((key) => tabs[key].roles.some((role) => roles.includes(role)))
-          );
+        if (!reducerState.tabValue) {
+          dispatch({
+            type: 'updateKeyWithPagination',
+            key: 'tabValue',
+            value: Object.keys(tabs) // Set selected tab to first tab allowed for role
+              .find((key) => tabs[key].roles.some((role) => roles.includes(role))),
+          });
         }
         const isMoH = roles.includes('ministry_of_health');
         const isSuperUser = roles.includes('superuser');
@@ -475,23 +377,26 @@ export default () => {
     };
 
     const getParticipants = async () => {
-      if (!tabValue) return;
+      if (!reducerState.tabValue) return;
       setLoadingData(true);
       const { data, pagination } = await fetchParticipants(
         currentPage * pageSize,
-        locationFilter,
-        fsaFilter,
-        lastNameFilter,
-        emailFilter,
-        order.field,
-        order.direction,
-        siteSelector,
-        tabs[tabValue].statuses
+        reducerState.locationFilter,
+        reducerState.fsaFilter || '',
+        reducerState.lastNameFilter || '',
+        reducerState.emailFilter || '',
+        reducerState.order.field,
+        reducerState.order.direction,
+        reducerState.siteSelector,
+        tabs[reducerState.tabValue].statuses
       );
-
-      setPagination({
-        total: pagination.total,
-        currentPage: currentPage,
+      dispatch({
+        type: 'updateKey',
+        key: 'pagination',
+        value: {
+          total: pagination.total,
+          currentPage: currentPage,
+        },
       });
       const newRows = filterData(data, resultColumns);
       setRows(newRows);
@@ -504,14 +409,14 @@ export default () => {
 
       setColumns((oldColumns) => {
         setHideLastNameAndEmailFilter(
-          ['Available Participants', 'Archived Candidates'].includes(tabValue)
+          ['Available Participants', 'Archived Candidates'].includes(reducerState.tabValue)
         );
 
-        if (tabValue !== 'Available Participants')
+        if (reducerState.tabValue !== 'Available Participants')
           oldColumns = oldColumns.filter((column) => column.id !== 'callbackStatus');
 
         if (
-          ['My Candidates', 'Archived Candidates'].includes(tabValue) &&
+          ['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue) &&
           !oldColumns.find((column) => column.id === 'status')
         )
           return [
@@ -520,7 +425,7 @@ export default () => {
             ...oldColumns.slice(3),
           ];
 
-        if (tabValue === 'Hired Candidates') {
+        if (reducerState.tabValue === 'Hired Candidates') {
           oldColumns = oldColumns.filter((column) => column.id !== 'engage');
           return [
             ...oldColumns.slice(0, 8),
@@ -529,7 +434,7 @@ export default () => {
           ];
         }
 
-        if (!['My Candidates', 'Archived Candidates'].includes(tabValue))
+        if (!['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue))
           return oldColumns.filter((column) => column.id !== 'status');
 
         return oldColumns;
@@ -537,23 +442,79 @@ export default () => {
     };
     runAsync();
   }, [
-    pagination.currentPage,
-    locationFilter,
-    siteSelector,
-    fsaFilter,
-    lastNameFilter,
-    emailFilter,
-    order,
-    tabValue,
+    reducerState.pagination?.currentPage,
+    reducerState.siteSelector,
+    reducerState.emailFilter,
+    reducerState.locationFilter,
+    reducerState.lastNameFilter,
+    reducerState.fsaFilter,
+    reducerState.order,
+    reducerState.tabValue,
   ]);
-
-  const handlePageChange = (oldPage, newPage) => {
-    setPagination((pagination) => ({ ...pagination, currentPage: newPage }));
-  };
 
   const defaultOnClose = () => {
     setActiveModalForm(null);
     setActionMenuParticipant(null);
+  };
+
+  const renderCell = (columnId, row) => {
+    if (columnId === 'callbackStatus') {
+      return row[columnId] ? 'Primed' : 'Available';
+    }
+    if (columnId === 'status') {
+      return prettifyStatus(row[columnId], row.id, reducerState.tabValue, handleEngage);
+    }
+    if (columnId === 'distance') {
+      if (row[columnId] !== null && row[columnId] !== undefined) {
+        return `${math.round(row[columnId] / 1000) || '<1'} Km`;
+      }
+      return 'N/A';
+    }
+    if (columnId === 'engage') {
+      return (
+        !row.status.includes('already_hired') && (
+          <Button
+            onClick={(event) => {
+              setActionMenuParticipant(row[columnId]);
+              setAnchorElement(event.currentTarget);
+            }}
+            variant='outlined'
+            size='small'
+            text='Actions'
+          />
+        )
+      );
+    }
+    if (columnId === 'edit') {
+      return (
+        <Button
+          onClick={async () => {
+            // Get data from row.id
+            const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
+              headers: {
+                Accept: 'application/json',
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${store.get('TOKEN')}`,
+              },
+              method: 'GET',
+            });
+
+            const participant = await response.json();
+
+            setActionMenuParticipant(participant[0]);
+            setActiveModalForm('edit-participant');
+            setAnchorElement(null);
+          }}
+          variant='outlined'
+          size='small'
+          text='Edit'
+        />
+      );
+    }
+    if (columnId === 'userUpdatedAt') {
+      return moment(row.userUpdatedAt).fromNow();
+    }
+    return row[columnId];
   };
 
   return (
@@ -567,12 +528,13 @@ export default () => {
           <ProspectingForm
             name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
             onClose={() => {
-              forceReload(pagination);
+              forceReload();
+              defaultOnClose();
               defaultOnClose();
             }}
             onSubmit={() => {
               defaultOnClose();
-              handleTabChange(null, 'My Candidates');
+              dispatch({ type: 'updateKey', key: 'tabValue', value: 'My Candidates' });
             }}
           />
         )}
@@ -665,7 +627,7 @@ export default () => {
               });
 
               if (response.ok) {
-                forceReload(pagination);
+                forceReload();
                 defaultOnClose();
               }
             }}
@@ -744,9 +706,15 @@ export default () => {
                   fullWidth
                   variant='filled'
                   inputProps={{ displayEmpty: true }}
-                  value={locationFilter || ''}
+                  value={reducerState.locationFilter || ''}
                   disabled={isLoadingData || locations.length === 1}
-                  onChange={({ target }) => handleLocationFilter(target.value)}
+                  onChange={({ target }) =>
+                    dispatch({
+                      type: 'updateKeyWithPagination',
+                      key: 'locationFilter',
+                      value: target.value,
+                    })
+                  }
                   aria-label='location filter'
                 >
                   {locations.length === 1 ? (
@@ -767,10 +735,14 @@ export default () => {
                   time={1000}
                   variant='filled'
                   fullWidth
-                  value={fsaText || ''}
+                  value={reducerState.fsaText}
                   disabled={isLoadingData}
-                  onDebounce={(text) => handleFsaFilter(text)}
-                  onChange={({ target }) => setFsaText(target.value)}
+                  onDebounce={(text) =>
+                    dispatch({ type: 'updateFilter', key: 'fsaFilter', value: text })
+                  }
+                  onChange={({ target }) =>
+                    dispatch({ type: 'updateKey', key: 'fsaText', value: target.value })
+                  }
                   placeholder='Forward Sortation Area'
                 />
               </Box>
@@ -782,10 +754,14 @@ export default () => {
                     time={1000}
                     variant='filled'
                     fullWidth
-                    value={lastNameText || ''}
+                    value={reducerState.lastNameText}
                     disabled={isLoadingData}
-                    onDebounce={(text) => handleLastNameFilter(text)}
-                    onChange={({ target }) => setLastNameText(target.value)}
+                    onDebounce={(text) =>
+                      dispatch({ type: 'updateFilter', key: 'lastNameFilter', value: text })
+                    }
+                    onChange={({ target }) =>
+                      dispatch({ type: 'updateKey', key: 'lastNameText', value: target.value })
+                    }
                     placeholder='Last Name'
                   />
                 )}
@@ -798,10 +774,14 @@ export default () => {
                     time={1000}
                     variant='filled'
                     fullWidth
-                    value={emailText || ''}
+                    value={reducerState.emailText}
                     disabled={isLoadingData}
-                    onDebounce={(text) => handleEmailFilter(text)}
-                    onChange={({ target }) => setEmailText(target.value)}
+                    onDebounce={(text) =>
+                      dispatch({ type: 'updateFilter', key: 'emailFilter', value: text })
+                    }
+                    onChange={({ target }) =>
+                      dispatch({ type: 'updateKey', key: 'emailText', value: target.value })
+                    }
                     placeholder='Email'
                   />
                 )}
@@ -816,9 +796,11 @@ export default () => {
                     fullWidth
                     variant='filled'
                     inputProps={{ displayEmpty: true }}
-                    value={siteSelector || ''}
+                    value={reducerState.siteSelector || ''}
                     disabled={isLoadingData}
-                    onChange={({ target }) => handleSiteSelector(target.value)}
+                    onChange={({ target }) =>
+                      dispatch({ type: 'updateSiteSelector', value: target.value })
+                    }
                     aria-label='site selector'
                   >
                     {[{ siteName: 'Select Site', siteId: null }, ...sites].map((option, index) => (
@@ -834,7 +816,7 @@ export default () => {
                 </Box>
               </Grid>
             )}
-            {tabValue === 'Hired Candidates' && (
+            {reducerState.tabValue === 'Hired Candidates' && (
               <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
                 <Button
                   onClick={() => setActiveModalForm('new-participant')}
@@ -845,7 +827,12 @@ export default () => {
             )}
           </Grid>
           <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
-            <CustomTabs value={tabValue || false} onChange={handleTabChange}>
+            <CustomTabs
+              value={reducerState.tabValue || false}
+              onChange={(event, property) =>
+                dispatch({ type: 'updateKeyWithPagination', key: 'tabValue', value: property })
+              }
+            >
               {
                 Object.keys(tabs)
                   .filter((key) => roles.some((role) => tabs[key].roles.includes(role))) // Only display tabs for user role
@@ -856,72 +843,23 @@ export default () => {
             </CustomTabs>
             <Table
               columns={columns}
-              order={order.direction}
-              orderBy={order.field}
-              rowsCount={pagination.total}
-              onChangePage={handlePageChange}
+              order={reducerState.order.direction}
+              orderBy={reducerState.order.field}
+              rowsCount={reducerState.pagination?.total}
+              onChangePage={(oldPage, newPage) => dispatch({ type: 'updatePage', value: newPage })}
               rowsPerPage={pageSize}
-              currentPage={pagination.currentPage}
-              renderCell={(columnId, row) => {
-                if (columnId === 'callbackStatus') {
-                  return row[columnId] ? 'Primed' : 'Available';
-                }
-                if (columnId === 'status') {
-                  return prettifyStatus(row[columnId], row.id, tabValue, handleEngage);
-                }
-                if (columnId === 'distance') {
-                  if (row[columnId] !== null && row[columnId] !== undefined) {
-                    return `${math.round(row[columnId] / 1000) || '<1'} Km`;
-                  }
-                  return 'N/A';
-                }
-                if (columnId === 'engage') {
-                  return (
-                    !row.status.includes('already_hired') && (
-                      <Button
-                        onClick={(event) => {
-                          setActionMenuParticipant(row[columnId]);
-                          setAnchorElement(event.currentTarget);
-                        }}
-                        variant='outlined'
-                        size='small'
-                        text='Actions'
-                      />
-                    )
-                  );
-                }
-                if (columnId === 'edit') {
-                  return (
-                    <Button
-                      onClick={async () => {
-                        // Get data from row.id
-                        const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
-                          headers: {
-                            Accept: 'application/json',
-                            'Content-type': 'application/json',
-                            Authorization: `Bearer ${store.get('TOKEN')}`,
-                          },
-                          method: 'GET',
-                        });
-
-                        const participant = await response.json();
-
-                        setActionMenuParticipant(participant[0]);
-                        setActiveModalForm('edit-participant');
-                        setAnchorElement(null);
-                      }}
-                      variant='outlined'
-                      size='small'
-                      text='Edit'
-                    />
-                  );
-                }
-                if (columnId === 'userUpdatedAt') {
-                  return moment(row.userUpdatedAt).fromNow();
-                }
-                return row[columnId];
-              }}
-              onRequestSort={handleRequestSort}
+              currentPage={reducerState.pagination?.currentPage}
+              renderCell={renderCell}
+              onRequestSort={(event, property) =>
+                dispatch({
+                  type: 'updateKeyWithPagination',
+                  key: 'order',
+                  value: {
+                    field: property,
+                    direction: reducerState.order.direction === 'desc' ? 'asc' : 'desc',
+                  },
+                })
+              }
               rows={rows}
               isLoading={isLoadingData}
             />

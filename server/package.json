@@ -51,9 +51,7 @@
     "eslint-plugin-import": "2.22.0",
     "eslint-plugin-jest": "23.20.0",
     "eslint-plugin-prettier": "3.4.0",
-    "husky": "4.2.5",
     "jest": "25.3.0",
-    "lint-staged": "10.2.13",
     "nodemon": "2.0.4",
     "supertest": "4.0.2"
   },
@@ -66,13 +64,5 @@
     "setupFilesAfterEnv": [
       "./tests/util/extensions.js"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.js": "eslint --cache --fix"
   }
 }

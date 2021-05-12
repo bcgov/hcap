@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { dbClient } = require('../db');
 require('dotenv').config({ path: '../.env' });
 (async function exec(){
@@ -14,5 +15,4 @@ require('dotenv').config({ path: '../.env' });
     console.log(res);
     process.exit(0);
 })()
-
 

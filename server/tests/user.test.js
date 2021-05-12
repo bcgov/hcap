@@ -19,6 +19,7 @@ describe('Users Service', () => {
     const siteMocks = [
       {
         city: 'Osoyoos',
+        isRHO: false,
         siteId: 5,
         address: '2020 New Rd',
         siteName: 'Spreadsheet Care',

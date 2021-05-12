@@ -4,7 +4,7 @@ require('dotenv').config({ path: '../.env' });
 (async function exec() {
   await dbClient.connect();
   const res = await dbClient.db.query(`
-    SELECT p.body ->> 'emailAddress' AS email
+    SELECT DISTINCT p.body ->> 'emailAddress' AS email
     FROM participants p 
     WHERE 
         p.body ->> 'emailAddress' NOT IN (

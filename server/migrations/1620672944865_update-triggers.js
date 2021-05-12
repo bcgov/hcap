@@ -1,0 +1,113 @@
+/* eslint-disable camelcase */
+
+const { collections } = require('../db');
+
+exports.up = async (pgm) => {
+  await pgm.dropTrigger(collections.EMPLOYER_SITES, 'update_postal_code_s', { ifExists: true });
+  await pgm.createTrigger(
+    collections.EMPLOYER_SITES,
+    'update_postal_code_s',
+    {
+      when: 'BEFORE',
+      operation: ['INSERT', 'UPDATE OF body'],
+      language: 'plpgsql',
+      level: 'ROW',
+      replace: true,
+    },
+    `
+  DECLARE
+   loc record;
+   participant record;
+  BEGIN
+    IF NEW.body->>'postalCode' = OLD.body->>'postalCode' THEN
+      RETURN NEW;
+    END IF;
+
+    SELECT longitude::text,latitude::text INTO loc FROM geocodes WHERE REPLACE(postal_code, ' ', '')=REPLACE(NEW.body->>'postalCode', ' ', '');
+
+    IF NOT FOUND THEN
+      SELECT longitude::text,latitude::text INTO loc FROM geocodes WHERE SUBSTRING(REPLACE(postal_code, ' ', ''),1,5)=SUBSTRING(REPLACE(NEW.body->>'postalCode', ' ', ''),1,5);
+    END IF;
+
+    IF NOT FOUND THEN
+      IF NEW.body->>'location' IS NOT NULL THEN
+        NEW.body = NEW.body::jsonb - 'location';
+        DELETE FROM participants_distance where site_id = OLD.body->>'siteId';
+      END IF;
+      RETURN NEW;
+    END IF;
+
+    NEW.body = jsonb_set(NEW.body::jsonb, '{location}', ('{"type":"Point","coordinates":[' || loc.longitude || ',' || loc.latitude || ']}')::jsonb);
+    IF OLD IS NULL OR OLD.body->>'location' IS NULL THEN
+      FOR participant IN
+        SELECT * FROM participants WHERE body->>'location' IS NOT NULL
+      LOOP
+        INSERT INTO participants_distance (participant_id, site_id, distance) VALUES
+        (participant.id, (NEW.body->>'siteId')::int, ST_DistanceSphere(ST_GeomFromGeoJSON(NEW.body->>'location'), ST_GeomFromGeoJSON(participant.body->>'location')));
+      END LOOP;
+    ELSE
+      FOR participant IN
+        SELECT * FROM participants
+      LOOP
+        UPDATE participants_distance SET distance = ST_DistanceSphere(ST_GeomFromGeoJSON(NEW.body->>'location'), ST_GeomFromGeoJSON(participant.body->>'location')) WHERE participant_id=participant.id AND site_id=(NEW.body->>'siteId')::int;
+      END LOOP;
+    END IF;
+    RETURN NEW;
+  END;
+  `
+  );
+
+  await pgm.dropTrigger(collections.PARTICIPANTS, 'update_postal_code_p', { ifExists: true });
+  await pgm.createTrigger(
+    collections.PARTICIPANTS,
+    'update_postal_code_p',
+    {
+      when: 'BEFORE',
+      operation: ['INSERT', 'UPDATE OF body'],
+      language: 'plpgsql',
+      level: 'ROW',
+      replace: true,
+    },
+    `
+  DECLARE
+   loc record;
+   site record;
+  BEGIN
+    IF NEW.body->>'postalCode' = OLD.body->>'postalCode' THEN
+      RETURN NEW;
+    END IF;
+
+    SELECT longitude::text,latitude::text INTO loc FROM geocodes WHERE REPLACE(postal_code, ' ', '')=REPLACE(NEW.body->>'postalCode', ' ', '');
+
+    IF NOT FOUND THEN
+      SELECT longitude::text,latitude::text INTO loc FROM geocodes WHERE SUBSTRING(REPLACE(postal_code, ' ', ''),1,5)=SUBSTRING(REPLACE(NEW.body->>'postalCode', ' ', ''),1,5);
+    END IF;
+
+    IF NOT FOUND THEN
+      IF NEW.body->>'location' IS NOT NULL THEN
+        DELETE FROM participants_distance where participant_id = OLD.id;
+        NEW.body = NEW.body::jsonb - 'location';
+      END IF;
+      RETURN NEW;
+    END IF;
+
+    NEW.body = jsonb_set(NEW.body::jsonb, '{location}', ('{"type":"Point","coordinates":[' || loc.longitude || ',' || loc.latitude || ']}')::jsonb);
+    IF OLD IS NULL OR OLD.body->>'location' IS NULL THEN
+      FOR site IN
+        SELECT * FROM employer_sites WHERE body->>'location' IS NOT NULL
+      LOOP
+        INSERT INTO participants_distance (participant_id, site_id, distance) VALUES
+        (NEW.id, (site.body->>'siteId')::int, ST_DistanceSphere(ST_GeomFromGeoJSON(NEW.body->>'location'), ST_GeomFromGeoJSON(site.body->>'location')));
+      END LOOP;
+    ELSE
+      FOR site IN
+        SELECT * FROM employer_sites
+      LOOP
+        UPDATE participants_distance SET distance = ST_DistanceSphere(ST_GeomFromGeoJSON(NEW.body->>'location'), ST_GeomFromGeoJSON(site.body->>'location')) WHERE participant_id=NEW.id AND site_id=(site.body->>'siteId')::int;
+      END LOOP;
+    END IF;
+    RETURN NEW;
+  END;
+  `
+  );
+};

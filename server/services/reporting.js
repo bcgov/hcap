@@ -147,6 +147,7 @@ const getHiredParticipantsReport = async () => {
     employerRegion: entry.employerSiteJoin?.[0]?.body?.healthAuthority,
     employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,
     startDate: entry.data?.startDate,
+    isRHO: entry.employerSiteJoin?.[0]?.body?.isRHO,
   }));
 };
 

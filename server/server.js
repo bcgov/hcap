@@ -167,6 +167,7 @@ app.get(
         'Employer Site Region': result.employerRegion,
         'Employer Site': result.employerSite,
         'Start Date': result.startDate,
+        'Regional Health Office': result.isRHO,
       });
     });
 

@@ -32,7 +32,7 @@ exports.up = async (pgm) => {
     IF NOT FOUND THEN
       IF NEW.body->>'location' IS NOT NULL THEN
         NEW.body = NEW.body::jsonb - 'location';
-        DELETE FROM participants_distance where site_id = OLD.body->>'siteId';
+        DELETE FROM participants_distance where site_id = (OLD.body->>'siteId')::int;
       END IF;
       RETURN NEW;
     END IF;

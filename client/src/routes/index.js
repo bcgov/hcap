@@ -2,7 +2,6 @@ import React, { Suspense, lazy, useEffect, useState } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import { useKeycloak, KeycloakProvider } from '@react-keycloak/web';
-import { matchRuleShort } from '../utils';
 import store from 'store';
 import Keycloak from 'keycloak-js';
 
@@ -47,8 +46,10 @@ const PrivateRoute = ({ component: Component, path, ...rest }) => {
   );
 };
 
-const RootUrlSwitch = ({ rootUrl, children }) =>
-  matchRuleShort(window.location.hostname, rootUrl) && <Switch>{children}</Switch>;
+// This function will either return a Switch for its child components or
+// nothing, depending on whether the hostname matches the passed regex
+const RootUrlSwitch = ({ rootUrlRegExp, children }) =>
+  rootUrlRegExp.test(window.location.hostname) && <Switch>{children}</Switch>;
 
 export default () => {
   const [keycloakInfo, setKeycloakInfo] = useState();
@@ -96,7 +97,7 @@ export default () => {
     >
       <BrowserRouter>
         <Suspense fallback={<LinearProgress />}>
-          <RootUrlSwitch rootUrl={Routes.ParticipantHostname}>
+          <RootUrlSwitch rootUrlRegExp={Routes.ParticipantHostname}>
             <Route
               exact
               path={Routes.ParticipantConfirmation}
@@ -105,7 +106,7 @@ export default () => {
             <Route exact path={Routes.Base} component={ParticipantForm} />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>
-          <RootUrlSwitch rootUrl={Routes.EmployerHostname}>
+          <RootUrlSwitch rootUrlRegExp={Routes.EmployerHostname}>
             <Route exact path={Routes.Login} component={Login} />
             <Route exact path={Routes.Keycloak} component={KeycloakRedirect} />
             <PrivateRoute exact path={Routes.Admin} component={Admin} />

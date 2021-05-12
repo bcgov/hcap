@@ -1,7 +1,8 @@
+/* eslint-disable no-useless-escape */
 export default Object.freeze({
   // Hostname
-  ParticipantHostname: 'hcapparticipants.*',
-  EmployerHostname: 'hcapemployers.*',
+  ParticipantHostname: RegExp('^(www\.)?hcapparticipants\..*'),
+  EmployerHostname: RegExp('^(www\.)?hcapemployers\..*'),
 
   // Public routes
   Login: '/login',

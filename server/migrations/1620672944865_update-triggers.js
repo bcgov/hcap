@@ -4,14 +4,17 @@ const { collections } = require('../db');
 
 exports.up = async (pgm) => {
   await pgm.dropTrigger(collections.EMPLOYER_SITES, 'update_postal_code_s', { ifExists: true });
-  await pgm.createTrigger(collections.EMPLOYER_SITES, 'update_postal_code_s', {
-    when: 'BEFORE',
-    operation: ['INSERT', 'UPDATE OF body'],
-    language: 'plpgsql',
-    level: 'ROW',
-    replace: true,
-  },
-  `
+  await pgm.createTrigger(
+    collections.EMPLOYER_SITES,
+    'update_postal_code_s',
+    {
+      when: 'BEFORE',
+      operation: ['INSERT', 'UPDATE OF body'],
+      language: 'plpgsql',
+      level: 'ROW',
+      replace: true,
+    },
+    `
   DECLARE
    loc record;
    participant record;
@@ -29,7 +32,7 @@ exports.up = async (pgm) => {
     IF NOT FOUND THEN
       IF NEW.body->>'location' IS NOT NULL THEN
         NEW.body = NEW.body::jsonb - 'location';
-        DELETE FROM participants_distance where site_id = OLD.id;
+        DELETE FROM participants_distance where site_id = OLD.body->>'siteId';
       END IF;
       RETURN NEW;
     END IF;
@@ -51,17 +54,21 @@ exports.up = async (pgm) => {
     END IF;
     RETURN NEW;
   END;
-  `);
+  `
+  );
 
   await pgm.dropTrigger(collections.PARTICIPANTS, 'update_postal_code_p', { ifExists: true });
-  await pgm.createTrigger(collections.PARTICIPANTS, 'update_postal_code_p', {
-    when: 'BEFORE',
-    operation: ['INSERT', 'UPDATE OF body'],
-    language: 'plpgsql',
-    level: 'ROW',
-    replace: true,
-  },
-  `
+  await pgm.createTrigger(
+    collections.PARTICIPANTS,
+    'update_postal_code_p',
+    {
+      when: 'BEFORE',
+      operation: ['INSERT', 'UPDATE OF body'],
+      language: 'plpgsql',
+      level: 'ROW',
+      replace: true,
+    },
+    `
   DECLARE
    loc record;
    site record;
@@ -101,5 +108,6 @@ exports.up = async (pgm) => {
     END IF;
     RETURN NEW;
   END;
-  `);
+  `
+  );
 };

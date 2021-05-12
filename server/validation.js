@@ -91,6 +91,7 @@ const errorMessage = ({ path }) => {
 
     // Employer operator contact info
     registeredBusinessName: 'Business name is required',
+    isRHO: 'Regional Health Office status is required',
     operatorName: 'Operator name is required',
     operatorContactFirstName: 'Operator contact first name is required',
     operatorContactLastName: 'Operator contact last name is required',
@@ -298,6 +299,7 @@ const EmployerSiteBatchSchema = yup.array().of(
         allocation: yup.number().nullable(errorMessageIndex(index)),
         address: yup.string().nullable(errorMessageIndex(index)),
         city: yup.string().nullable(errorMessageIndex(index)),
+        isRHO: yup.boolean().required(errorMessageIndex(index)),
         healthAuthority: yup
           .string()
           .required(errorMessageIndex(index))
@@ -636,6 +638,7 @@ const CreateSiteSchema = yup
       ),
     address: yup.string().nullable(),
     city: yup.string().nullable(),
+    isRHO: yup.boolean().required(),
     healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
     postalCode: yup
       .string()

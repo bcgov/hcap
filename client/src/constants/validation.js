@@ -370,6 +370,7 @@ export const CreateSiteSchema = yup.object().shape({
     .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
   address: yup.string().nullable(),
   city: yup.string().nullable(),
+  isRHO: yup.boolean().nullable().required('This field is required'),
   healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
   postalCode: yup
     .string()

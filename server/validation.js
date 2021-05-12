@@ -683,6 +683,7 @@ const EditSiteSchema = yup
     registeredBusinessName: yup.string().required(errorMessage),
     address: yup.string().required(errorMessage),
     city: yup.string().required(errorMessage),
+    isRHO: yup.boolean().required(errorMessage),
     postalCode: yup
       .string()
       .required(errorMessage)

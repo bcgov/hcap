@@ -16,11 +16,8 @@ require('dotenv').config({ path: '../.env' });
         AND (CAST(p.body ->> 'interested' AS TEXT) = 'yes'  
             OR CAST(p.body->> 'interested' AS TEXT) IS NULL)
         AND (
-                (p.updated_at < CURRENT_TIMESTAMP - interval '6 weeks'
-                AND p.updated_at IS NOT NULL)
-                OR (p.updated_at IS NULL 
-                    AND p.created_at < CURRENT_TIMESTAMP - interval '6 weeks')
-	     )`);
+            to_timestamp(p.body->>'userUpdatedAt', 'YYYY-MM-DD') < CURRENT_TIMESTAMP - interval '6 weeks'
+	      );
   console.log(res);
   process.exit(0);
 })();

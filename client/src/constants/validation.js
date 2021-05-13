@@ -34,6 +34,7 @@ const errorMessage = ({ path }) => {
 
     // Employer operator contact info
     registeredBusinessName: 'Business name is required',
+    isRHO: 'Regional Health Office status is required',
     operatorName: 'Operator name is required',
     operatorContactFirstName: 'Operator contact first name is required',
     operatorContactLastName: 'Operator contact last name is required',

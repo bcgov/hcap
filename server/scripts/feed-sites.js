@@ -12,6 +12,7 @@ const { createRows, verifyHeaders } = require('../utils');
       const columnMap = {
         'HCAP Site ID': 'siteId',
         'Site Name': 'siteName',
+        RHO: 'isRHO',
         Allocation: 'allocation',
         'Street Address': 'address',
         'Health Authority': 'healthAuthority',
@@ -38,6 +39,7 @@ const { createRows, verifyHeaders } = require('../utils');
         ...row,
         operatorPhone: String(row.operatorPhone),
         siteContactPhoneNumber: String(row.siteContactPhoneNumber),
+        isRHO: Boolean(row.isRHO),
       });
 
       const rows = createRows(xlsx[0].data, columnMap);

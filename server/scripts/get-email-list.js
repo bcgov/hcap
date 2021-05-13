@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const { dbClient } = require('../db');
 require('dotenv').config({ path: '../.env' });
+
 (async function exec() {
   await dbClient.connect();
   const res = await dbClient.db.query(`
@@ -17,8 +18,7 @@ require('dotenv').config({ path: '../.env' });
             OR CAST(p.body->> 'interested' AS TEXT) IS NULL)
         AND (
             to_timestamp(p.body->>'userUpdatedAt', 'YYYY-MM-DD') < CURRENT_TIMESTAMP - interval '6 weeks'
-        )`
-  );
+        )`);
   console.log(res);
   process.exit(0);
 })();

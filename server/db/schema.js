@@ -9,6 +9,7 @@ const collections = {
   PARTICIPANTS_DISTANCE: 'participants_distance',
   EMPLOYER_FORMS: 'employer_forms',
   EMPLOYER_SITES: 'employer_sites',
+  OTPS: 'otps',
   USERS: 'users',
 };
 
@@ -53,6 +54,14 @@ const schema = {
         "province_code" integer not null, 
         "latitude" real not null,
         "longitude" real not null
+        )`,
+    },
+    {
+      definition: `CREATE TABLE IF NOT EXISTS ${collections.OTPS} (
+        id serial primary key, 
+        "emailAddress" varchar(100) unique not null, 
+        otp UUID NOT NULL DEFAULT gen_random_uuid(),
+        "timestamp" timestamp with time zone DEFAULT now()
         )`,
     },
   ],

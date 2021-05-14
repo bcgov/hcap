@@ -34,6 +34,7 @@ const errorMessage = ({ path }) => {
 
     // Employer operator contact info
     registeredBusinessName: 'Business name is required',
+    isRHO: 'Regional Health Office status is required',
     operatorName: 'Operator name is required',
     operatorContactFirstName: 'Operator contact first name is required',
     operatorContactLastName: 'Operator contact last name is required',
@@ -370,6 +371,7 @@ export const CreateSiteSchema = yup.object().shape({
     .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
   address: yup.string().nullable(),
   city: yup.string().nullable(),
+  isRHO: yup.boolean().nullable().required(errorMessage),
   healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
   postalCode: yup
     .string()

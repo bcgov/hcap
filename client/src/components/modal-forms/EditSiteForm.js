@@ -2,7 +2,7 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box } from '@material-ui/core';
-import { RenderTextField } from '../fields';
+import { RenderRadioGroup, RenderTextField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import Typography from '@material-ui/core/Typography';
 
@@ -34,6 +34,15 @@ export const EditSiteForm = ({ initialValues, validationSchema, onSubmit, onClos
             />
             <Field name='address' component={RenderTextField} label='* Street Address' />
             <Field name='city' component={RenderTextField} label='* City' />
+            <Field
+              name='isRHO'
+              component={RenderRadioGroup}
+              label='Is this site a Regional Health Office?'
+              options={[
+                { value: true, label: 'Yes' },
+                { value: false, label: 'No' },
+              ]}
+            />
             <Field name='postalCode' component={RenderTextField} label='* Postal Code' />
             <Field
               name='allocation'

@@ -67,6 +67,7 @@ describe('Employer Site Endpoints', () => {
     allocation: 1,
     address: '123 XYZ',
     city: 'Victoria',
+    isRHO: false,
     healthAuthority: 'Vancouver Island',
     postalCode: 'V8V 1M5',
     registeredBusinessName: 'AAA',
@@ -88,6 +89,7 @@ describe('Employer Site Endpoints', () => {
     allocation: 1,
     address: '123 XYZ',
     city: 'Victoria',
+    isRHO: true,
     healthAuthority: 'Vancouver Island',
     postalCode: 'V8V 1M5',
     registeredBusinessName: 'AAA',
@@ -186,6 +188,10 @@ describe('Employer Site Endpoints', () => {
   it('Create new site, receive validation error', async () => {
     expect(saveSites({ ...site, siteContactPhoneNumber: '1' })).rejects.toEqual(
       new ValidationError('Phone number must be provided as 10 digits (index 0)')
+    );
+
+    expect(saveSites({ ...site, isRHO: null })).rejects.toEqual(
+      new ValidationError('Regional Health Office status is required')
     );
   });
 

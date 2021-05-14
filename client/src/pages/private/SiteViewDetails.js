@@ -1,6 +1,6 @@
 import React, { lazy, useEffect, useState } from 'react';
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
-import { Box, Grid, Link, Typography } from '@material-ui/core';
+import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 import { scrollUp } from '../../utils';
 import store from 'store';
 import routes from '../../constants/routes';
@@ -128,6 +128,7 @@ export default ({ match }) => {
               registeredBusinessName: site.registeredBusinessName,
               address: site.address,
               city: site.city,
+              isRHO: site.isRHO,
               postalCode: site.postalCode,
               allocation: site.allocation,
               operatorContactFirstName: site.operatorContactFirstName,
@@ -159,6 +160,7 @@ export default ({ match }) => {
                 registeredBusinessName: values.registeredBusinessName,
                 address: values.address,
                 city: values.city,
+                isRHO: values.isRHO,
                 postalCode: values.postalCode,
                 allocation: values.allocation,
                 operatorContactFirstName: values.operatorContactFirstName,
@@ -205,6 +207,11 @@ export default ({ match }) => {
                     </Box>
                   </CheckPermissions>
                 </Grid>
+                {site.isRHO ? (
+                  <Box pt={1}>
+                    <Chip size='small' color='primary' label='Regional Health Authority' />
+                  </Box>
+                ) : null}
               </Box>
               <Grid container>
                 {Object.keys(fieldsLabelMap).map((title) => (

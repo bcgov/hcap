@@ -71,6 +71,7 @@ describe('Server V1 Form Endpoints', () => {
     city: 'Victoria',
     healthAuthority: 'Vancouver Island',
     postalCode: 'V0A 1M5',
+    isRHO: false,
     registeredBusinessName: 'AAA',
     operatorName: 'Test Operator',
     operatorContactFirstName: 'AABB',

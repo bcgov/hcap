@@ -860,6 +860,7 @@ describe('Participants Service', () => {
     await saveSites({
       siteId: 2,
       siteName: 'test',
+      isRHO: false,
       postalCode: 'A1A 1A1',
       healthAuthority: 'Fraser',
     });

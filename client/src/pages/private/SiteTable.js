@@ -16,6 +16,7 @@ const columns = [
   { id: 'siteId', name: 'Site ID' },
   { id: 'siteName', name: 'Site Name' },
   { id: 'operatorName', name: 'Operator Name' },
+  { id: 'isRHO', name: 'Regional Health Authority' },
   { id: 'healthAuthority', name: 'Health Authority' },
   { id: 'postalCode', name: 'Postal Code' },
   { id: 'allocation', name: 'Allocation' },
@@ -166,6 +167,7 @@ export default ({ sites }) => {
               registeredBusinessName: '',
               address: '',
               city: '',
+              isRHO: null,
               postalCode: '',
               healthAuthority: '',
               allocation: '',
@@ -187,6 +189,7 @@ export default ({ sites }) => {
                 registeredBusinessName: values.registeredBusinessName,
                 address: values.address,
                 city: values.city,
+                isRHO: values.isRHO,
                 postalCode: values.postalCode,
                 healthAuthority: values.healthAuthority,
                 allocation: parseInt(values.allocation),
@@ -259,6 +262,7 @@ export default ({ sites }) => {
               rows={sort(rows)}
               isLoading={isLoadingData}
               renderCell={(columnId, row) => {
+                if (columnId === 'isRHO') return row.isRHO ? 'Yes' : 'No';
                 if (columnId === 'details')
                   return (
                     <Button

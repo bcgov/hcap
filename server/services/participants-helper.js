@@ -148,8 +148,14 @@ class FieldsFilteredParticipantsFinder {
   }
 
   filterExternalFields({ statusFilters, siteIdDistance }) {
-    const { user, criteria, employerSpecificJoin, hiredGlobalJoin, siteJoin, siteDistanceJoin } =
-      this.context;
+    const {
+      user,
+      criteria,
+      employerSpecificJoin,
+      hiredGlobalJoin,
+      siteJoin,
+      siteDistanceJoin,
+    } = this.context;
     this.context.siteIdDistance = siteIdDistance;
 
     if (user.isEmployer || user.isHA) {

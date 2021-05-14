@@ -2,7 +2,7 @@
 const { dbClient, collections, schema } = require('../db');
 
 exports.up = async () => {
-  await dbClient.db.query(`CREATE EXTENSION pgcrypto`);
+  await dbClient.db.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto`);
 
   await Promise.all(schema.relationalTables.map((item) => dbClient.runRawQuery(item.definition)));
 

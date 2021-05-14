@@ -12,7 +12,7 @@ exports.up = async () => {
     `CREATE INDEX IF NOT EXISTS otp_index ON ${collections.CONFIRM_INTEREST}(otp);`
   );
 
-  const updates = await dbClient.db
+  await dbClient.db
     .query(`INSERT INTO ${collections.CONFIRM_INTEREST} (email_address)
   SELECT DISTINCT p.body ->> 'emailAddress' AS email
       FROM participants p 

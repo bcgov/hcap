@@ -9,7 +9,7 @@ const collections = {
   PARTICIPANTS_DISTANCE: 'participants_distance',
   EMPLOYER_FORMS: 'employer_forms',
   EMPLOYER_SITES: 'employer_sites',
-  OTPS: 'otps',
+  CONFIRM_INTEREST: 'confirm_interest',
   USERS: 'users',
 };
 
@@ -57,11 +57,11 @@ const schema = {
         )`,
     },
     {
-      definition: `CREATE TABLE IF NOT EXISTS ${collections.OTPS} (
+      definition: `CREATE TABLE IF NOT EXISTS ${collections.CONFIRM_INTEREST} (
         id serial primary key, 
-        "emailAddress" varchar(100) unique not null, 
+        email_address varchar(100) unique not null, 
         otp UUID NOT NULL DEFAULT gen_random_uuid(),
-        "timestamp" timestamp with time zone DEFAULT now()
+        created_at timestamp with time zone DEFAULT now()
         )`,
     },
   ],

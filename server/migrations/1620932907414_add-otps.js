@@ -4,7 +4,16 @@ const { dbClient, collections, schema } = require('../db');
 exports.up = async () => {
   await schema.relationalTables.map((item) => dbClient.runRawQuery(item.definition));
 
-  const updates = await dbClient.db.query(`INSERT INTO ${collections.OTPS} (emailAddress)
+  await dbClient.db.query(
+    `CREATE INDEX IF NOT EXISTS email_address_index ON ${collections.CONFIRM_INTEREST}(email_address);`
+  );
+
+  await dbClient.db.query(
+    `CREATE INDEX IF NOT EXISTS otp_index ON ${collections.CONFIRM_INTEREST}(otp);`
+  );
+
+  const updates = await dbClient.db
+    .query(`INSERT INTO ${collections.CONFIRM_INTEREST} (email_address)
   SELECT DISTINCT p.body ->> 'emailAddress' AS email
       FROM participants p 
       WHERE 
@@ -16,8 +25,7 @@ exports.up = async () => {
           )
           AND (p.body ->> 'interested')::TEXT = 'yes'  
               OR (p.body->> 'interested')::TEXT IS NULL
-    `);
-
-  console.log(updates);
-  throw 'Not done yet';
+    
+    ON CONFLICT DO NOTHING
+  `);
 };

@@ -13,7 +13,7 @@ parameters:
   - name: GIT_URI
     description: Source for Postgres repository with Dockerfile
     required: true
-    value: https://github.com/ashtonmeuser/platform-services.git
+    value: https://github.com/FreshworksStudio/platform-services.git
   - name: BRANCH
     description: Branch of the boilerplate repository that should be built
     value: master

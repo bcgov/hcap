@@ -14,6 +14,8 @@ const {
   parseAndSaveParticipants,
   setParticipantStatus,
   makeParticipant,
+  confirmParticipantInterest,
+  validateConfirmationId,
 } = require('./services/participants.js');
 const {
   getEmployers,
@@ -180,6 +182,32 @@ app.get(
     });
 
     csvStream.end();
+  })
+);
+
+app.get(
+  `${apiBaseUrl}/participants/confirm-interest`,
+  asyncMiddleware(async (req, res) => {
+    const isValid = await validateConfirmationId(req.query.id);
+
+    if (isValid) {
+      return res.status(isValid ? 200 : 400).send();
+    }
+
+    return res.status(400).send('Invalid Confirmation ID');
+  })
+);
+
+app.post(
+  `${apiBaseUrl}/participants/confirm-interest`,
+  asyncMiddleware(async (req, res) => {
+    const success = await confirmParticipantInterest(req.query.id);
+
+    if (success) {
+      return res.status(200).send();
+    }
+
+    return res.status(400).send('Invalid Confirmation ID');
   })
 );
 

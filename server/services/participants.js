@@ -125,6 +125,27 @@ const updateParticipant = async (participantInfo) => {
   return participant;
 };
 
+const validateConfirmationId = (id) =>
+  dbClient.db[collections.CONFIRM_INTEREST].findOne({ otp: id });
+
+const confirmParticipantInterest = async (id) => {
+  await dbClient.db.query(`
+    UPDATE
+      ${collections.PARTICIPANTS} p
+    SET
+      body = body || '{"userUpdatedAt": "${new Date().toJSON()}", "interested": "yes"}'
+    FROM
+      ${collections.CONFIRM_INTEREST} ci
+    WHERE
+      ci.emailAddress = p.body->>'emailAddress' AND
+      ci.otp = '${id}'
+  `);
+
+  const deleted = await dbClient.db[collections.CONFIRM_INTEREST].destroy({ otp: id });
+
+  return deleted.length > 0;
+};
+
 const getParticipants = async (
   user,
   pagination,
@@ -352,4 +373,6 @@ module.exports = {
   updateParticipant,
   setParticipantStatus,
   makeParticipant,
+  validateConfirmationId,
+  confirmParticipantInterest,
 };

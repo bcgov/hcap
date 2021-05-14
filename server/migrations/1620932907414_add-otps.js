@@ -2,7 +2,9 @@
 const { dbClient, collections, schema } = require('../db');
 
 exports.up = async () => {
-  await schema.relationalTables.map((item) => dbClient.runRawQuery(item.definition));
+  await dbClient.db.query(`CREATE EXTENSION pgcrypto`);
+
+  await Promise.all(schema.relationalTables.map((item) => dbClient.runRawQuery(item.definition)));
 
   await dbClient.db.query(
     `CREATE INDEX IF NOT EXISTS email_address_index ON ${collections.CONFIRM_INTEREST}(email_address);`
@@ -12,8 +14,7 @@ exports.up = async () => {
     `CREATE INDEX IF NOT EXISTS otp_index ON ${collections.CONFIRM_INTEREST}(otp);`
   );
 
-  await dbClient.db
-    .query(`INSERT INTO ${collections.CONFIRM_INTEREST} (email_address)
+  await dbClient.db.query(`INSERT INTO ${collections.CONFIRM_INTEREST} (email_address)
   SELECT DISTINCT p.body ->> 'emailAddress' AS email
       FROM participants p 
       WHERE 

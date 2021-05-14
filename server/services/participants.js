@@ -137,7 +137,7 @@ const confirmParticipantInterest = async (id) => {
     FROM
       ${collections.CONFIRM_INTEREST} ci
     WHERE
-      ci.emailAddress = p.body->>'emailAddress' AND
+      ci.email_address = p.body->>'emailAddress' AND
       ci.otp = '${id}'
   `);
 

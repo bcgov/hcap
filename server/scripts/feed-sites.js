@@ -48,6 +48,7 @@ const { createRows, verifyHeaders } = require('../utils');
       await dbClient.connect();
       const results = await saveSites(employerSites);
       console.table(results);
+      process.exit(0);
     } catch (error) {
       console.error(`Failed to feed employer sites entity, ${error}`);
     }

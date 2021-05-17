@@ -51,10 +51,19 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 - Environment Variables
   - Refer to [the example file](.config/.env.example) for the required environment variables.
 
+### How-To
+
 To set up and run database, backend (server), and frontend (client) applications:
 - Run `make local-build` within the root folder of the project to build the application
 - Run `make local-run` within the root folder of the project to run the application
 - You should see the application running at `localhost:4000`
+
+To seed the database with data in an Excel sheet:
+
+- `make seed-sites SHEET=my_spreadsheet.xlsx`
+- `make seed-participants SHEET=my_spreadsheet.xlsx`
+
+**Note:** The Excel file should be placed in `server/scripts/xlsx`.
 
 To tear down your environment:
 - Run `make local-close`
@@ -160,12 +169,15 @@ and then submits to the /form endpoint. Example of file names:
 - Health Career Access Program - Expression of Interest - 8353ec90e6ea8727.xml
 - Health Career Access Program - Expression of Interest - 91113c10e0xx872x (1).xml
 
-#### `npm run feed-sites my_spreadsheet.xlsx`
+#### `npm run feed-sites my_spreadsheet.xlsx` and  `npm run feed-participants my_spreadsheet.xlsx`
 
-Parses a given xlsx file inside the `server/scripts/xlsx/` folder and feeds the `employer_sites` table.
+Parses a given xlsx file inside the `server/scripts/xlsx/` folder and feeds either the `employer_sites` or `participants` table.
 
-If you've spun up the application using Docker Compose i.e. `make local-run`, you can run the site seeding script with `docker exec -it hcap-server npm run feed-sites my_spreadsheet.xlsx`.
+If you've spun up the application using Docker Compose i.e. `make local-run`, you can run the site seeding script with either of the following make commands: 
 
+- `make feed-participants my_spreadsheet.xlsx`
+- `make feed-sites my_spreadsheet.xlsx`
+ 
 #### `npm run stats`
 
 Shows the EEOI submission stats of a given period of days. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`)

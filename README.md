@@ -42,9 +42,14 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 
 ## Development
 
-Make sure you have Docker and Docker-compose installed in your local environment. For instructions on how to install it, follow the links below:
-- https://docs.docker.com/get-docker/
-- https://docs.docker.com/compose/install/
+### Pre-Requisites:
+
+- Make sure you have Docker and Docker-compose installed in your local environment. For instructions on how to install it, follow the links below:
+  - https://docs.docker.com/get-docker/
+  - https://docs.docker.com/compose/install/
+
+- Environment Variables
+  - Refer to [the example file](.config/.env.example) for the required environment variables.
 
 To set up and run database, backend (server), and frontend (client) applications:
 - Run `make local-build` within the root folder of the project to build the application
@@ -74,11 +79,14 @@ To run server tests:
 - Cypress tests may be run with
   - `make local-cypress-tests`
 
-This application depends on your hostname suffix to server the right routes. To access the
-employer content you need to specify http://`hcapemployers`.local.freshworks.club in your
-browser or http://`hcapparticipants`.local.freshworks.club for the participant's. In case you
-don't want an external DNS resolving to your localhost you can add an alias to your `hosts` file
-resolving to `*.your-prefix`.
+### Using the application
+
+The application's public routes can be accessed at http://hcapparticipants.local.freshworks.club:4000.
+
+The application's private routes are located at http://hcapparticipants.local.freshworks.club:4000,
+you'll need an account on the [BCeID test environment](https://www.test.bceid.ca/register/basic/account_details.aspx?type=regular&eServiceType=basic).
+When you first log in an access request will be created and it can be accepted by a teammate through `View Access Requests` or manually through keycloak.
+The access request will need to be approved separately on each environment.
 
 ### Formatting
 
@@ -139,6 +147,8 @@ Finally, a *Secret* defines values that can be used by pods within in the same n
 A service account must be created and assigned permissions to trigger a build. Run `make os-permissions` to create a service account with admin credentials. The access token for this service account (accessible via Cluster Console > Administration > Service Accounts > Secrets) can be used to login and trigger a build and thus, a new deployment. GitHub Actions has been configured to trigger a new build in a specific namespace (`rupaog-dev` at the time of writing) in OpenShift. Save the TOKEN secret associated with the service account as a GitHub secret with the name `AUTH_TOKEN`.
 
 ### Available Scripts
+
+**Note:** [jq](https://stedolan.github.io/jq/) is a dependencdy for many scripts used in this project.
 
 In the server directory, you can run:
 

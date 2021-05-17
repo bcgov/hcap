@@ -88,9 +88,6 @@ you'll need an account on the [BCeID test environment](https://www.test.bceid.ca
 When you first log in an access request will be created and it can be accepted by a teammate through `View Access Requests` or manually through keycloak.
 The access request will need to be approved separately on each environment.
 
-**Note:** To avoid an external DNS resolving to your localhost you can add an alias to your `hosts` file
-resolving to `*.your-prefix`.
-
 ### Formatting
 
 This project is formatted with prettier, make sure to install the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).

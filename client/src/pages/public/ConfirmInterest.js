@@ -1,7 +1,6 @@
 import { Page } from '../../components/generic';
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Link } from 'react-router-dom';
 
 import * as qs from 'querystring';
 
@@ -72,11 +71,7 @@ export default (props) => {
             {state.description}
           </Typography>
           <Box className={classes.button}>
-            {state.title === 'Confirm Interest' ? (
-              <Button text={state.buttonText} onClick={handleCheckToken} />
-            ) : (
-              <Button component={Link} text={state.buttonText} to='/' />
-            )}
+            {state.hasButton ? <Button text={state.buttonText} onClick={handleCheckToken} /> : null}
           </Box>
         </Box>
       </Card>

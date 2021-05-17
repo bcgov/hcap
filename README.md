@@ -79,17 +79,17 @@ To run server tests:
 - Cypress tests may be run with
   - `make local-cypress-tests`
 
-This application depends on your hostname suffix to server the right routes. To access the
-employer content you need to specify http://`hcapemployers`.local.freshworks.club in your
-browser or http://`hcapparticipants`.local.freshworks.club for the participant's. In case you
-don't want an external DNS resolving to your localhost you can add an alias to your `hosts` file
-resolving to `*.your-prefix`.
-
 ### Using the application
 
-The application's public routes can be used by loading the above URLs `http://hcapparticipants.local.freshworks.club:4000`.
-In order to use the applications private routes, you'll need an account on the [BCeID test environment](https://www.test.bceid.ca/register/basic/account_details.aspx?type=regular&eServiceType=basic).
+The application's public routes can be accessed at http://hcapparticipants.local.freshworks.club:4000.
+
+The application's private routes are located at http://hcapparticipants.local.freshworks.club:4000,
+you'll need an account on the [BCeID test environment](https://www.test.bceid.ca/register/basic/account_details.aspx?type=regular&eServiceType=basic).
 When you first log in an access request will be created and it can be accepted by a teammate through `View Access Requests` or manually through keycloak.
+The access request will need to be approved separately on each environment.
+
+**Note:** To avoid an external DNS resolving to your localhost you can add an alias to your `hosts` file
+resolving to `*.your-prefix`.
 
 ### Formatting
 

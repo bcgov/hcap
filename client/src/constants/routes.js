@@ -10,7 +10,11 @@ export default Object.freeze({
   ParticipantForm: '/participant-form',
   ParticipantConfirmation: '/participant-confirmation',
   EmployerConfirmation: '/employer-confirmation',
+<<<<<<< HEAD
   ConfirmInterest: '/confirm-interest',
+=======
+  ConfirmInterest: '/participant-otp',
+>>>>>>> Remaned OTP.js to ConfirmInterest.js, cleaned up some variable names and updated copy
 
   // Private routes
   Admin: '/admin',

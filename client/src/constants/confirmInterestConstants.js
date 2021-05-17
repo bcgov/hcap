@@ -7,6 +7,7 @@ export const confirmInterestDefault = {
   title: 'Confirm Interest',
   description: `Please click on the “Confirm Interest” button to confirm that you are still interested in participating in the Health Career Access Program.`,
   icon: ContactMailIcon,
+  hasButton: true,
   buttonText: 'Confirm Interest',
   iconClass: 'icon',
 };

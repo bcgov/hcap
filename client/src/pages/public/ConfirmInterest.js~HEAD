@@ -1,7 +1,6 @@
 import { Page } from '../../components/generic';
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Link } from 'react-router-dom';
 
 import * as qs from 'querystring';
 
@@ -63,7 +62,7 @@ export default (props) => {
   return (
     <Page hideEmployers={true}>
       <Card className={classes.root}>
-        <Box display='flex' flexDirection='column'>
+        <Box display='flex' flexDirection='column' height='100%' justifyContent='center'>
           <Icon component={state.icon} className={classes[state.iconClass]} fontSize={'large'} />
           <Typography className={classes.title} variant={'h3'} align={'center'}>
             {state.title}
@@ -71,13 +70,11 @@ export default (props) => {
           <Typography variant={'body1'} align={'center'}>
             {state.description}
           </Typography>
-          <Box className={classes.button}>
-            {state.title === 'Confirm Interest' ? (
+          {state.buttonText ? (
+            <Box className={classes.button}>
               <Button text={state.buttonText} onClick={handleCheckToken} />
-            ) : (
-              <Button component={Link} text={state.buttonText} to='/' />
-            )}
-          </Box>
+            </Box>
+          ) : null}
         </Box>
       </Card>
     </Page>

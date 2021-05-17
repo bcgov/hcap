@@ -95,7 +95,7 @@ export default (props) => {
   return (
     <Page hideEmployers={true}>
       <Card className={classes.root}>
-        <Box display='flex' flexDirection='column' height='100%' justifyContent='center'>
+        <Box display='flex' flexDirection='column'>
           <Icon component={state.icon} className={classes[state.iconClass]} fontSize={'large'} />
           <Typography className={classes.title} variant={'h3'} align={'center'}>
             {state.title}
@@ -103,11 +103,9 @@ export default (props) => {
           <Typography variant={'body1'} align={'center'}>
             {state.description}
           </Typography>
-          {state.buttonText ? (
-            <Box className={classes.button}>
-              <Button text={state.buttonText} onClick={handleCheckToken} />
-            </Box>
-          ) : null}
+          <Box className={classes.button}>
+            {state.hasButton ? <Button text={state.buttonText} onClick={handleCheckToken} /> : null}
+          </Box>
         </Box>
       </Card>
     </Page>

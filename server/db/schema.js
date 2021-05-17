@@ -9,6 +9,7 @@ const collections = {
   PARTICIPANTS_DISTANCE: 'participants_distance',
   EMPLOYER_FORMS: 'employer_forms',
   EMPLOYER_SITES: 'employer_sites',
+  CONFIRM_INTEREST: 'confirm_interest',
   USERS: 'users',
 };
 
@@ -53,6 +54,13 @@ const schema = {
         "province_code" integer not null, 
         "latitude" real not null,
         "longitude" real not null
+        )`,
+    },
+    {
+      definition: `CREATE TABLE IF NOT EXISTS ${collections.CONFIRM_INTEREST} (
+        email_address varchar(100) unique not null, 
+        otp UUID primary key DEFAULT gen_random_uuid(),
+        created_at timestamp with time zone DEFAULT now()
         )`,
     },
   ],

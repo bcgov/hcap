@@ -10,7 +10,7 @@ export default Object.freeze({
   ParticipantForm: '/participant-form',
   ParticipantConfirmation: '/participant-confirmation',
   EmployerConfirmation: '/employer-confirmation',
-  ConfirmInterest: '/participant-otp',
+  ConfirmInterest: '/confirm-interest',
 
   // Private routes
   Admin: '/admin',

@@ -70,9 +70,11 @@ export default (props) => {
           <Typography variant={'body1'} align={'center'}>
             {state.description}
           </Typography>
-          <Box className={classes.button}>
-            {state.hasButton ? <Button text={state.buttonText} onClick={handleCheckToken} /> : null}
-          </Box>
+          {state.buttonText ? (
+            <Box className={classes.button}>
+              <Button text={state.buttonText} onClick={handleCheckToken} />
+            </Box>
+          ) : null}
         </Box>
       </Card>
     </Page>

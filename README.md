@@ -151,6 +151,8 @@ A service account must be created and assigned permissions to trigger a build. R
 
 ### Available Scripts
 
+**Note:** [jq](https://stedolan.github.io/jq/) is a dependencdy for many scripts used in this project.
+
 In the server directory, you can run:
 
 #### `npm run parse-xml`

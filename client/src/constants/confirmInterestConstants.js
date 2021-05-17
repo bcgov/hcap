@@ -19,7 +19,7 @@ export const confirmInterestSuccess = {
   iconClass: 'check',
 };
 export const confirmInterestError = {
-  title: 'Expired Link',
+  title: 'Invalid Link',
   icon: InfoIcon,
   description: `This link is invalid or your interest has already been confirmed.`,
   hasButton: false,

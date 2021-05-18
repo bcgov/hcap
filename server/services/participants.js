@@ -160,8 +160,8 @@ const confirmParticipantInterest = async (id) => {
   }));
 
   await Promise.all(
-    updatedParticipantFields.map((fields) => {
-      const result = dbClient.db[collections.PARTICIPANTS].updateDoc({ id: fields.id }, fields);
+    updatedParticipantFields.map(({id, ...fields}) => {
+      const result = dbClient.db[collections.PARTICIPANTS].updateDoc({ id }, fields);
       return result;
     })
   );

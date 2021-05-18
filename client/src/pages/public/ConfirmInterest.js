@@ -14,6 +14,7 @@ import {
   confirmInterestDefault,
   confirmInterestError,
   confirmInterestSuccess,
+  confirmInterestLoading,
 } from '../../constants/confirmInterestConstants';
 
 const useStyles = makeStyles((theme) => {
@@ -47,7 +48,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default (props) => {
-  const [state, setState] = useState(null);
+  const [state, setState] = useState(confirmInterestLoading);
   const classes = useStyles();
   // Get the query string from the url
   // Remove the questionmark from the search
@@ -58,11 +59,13 @@ export default (props) => {
       const res = await fetch(`${API_URL}/api/v1/participants/confirm-interest?id=${query.id}`, {
         method: 'GET',
       });
-      if (res.ok) {
-        setState(confirmInterestDefault);
-      } else {
-        setState(confirmInterestError);
-      }
+      setTimeout(() => {
+        if (res.ok) {
+          setState(confirmInterestDefault);
+        } else {
+          setState(confirmInterestError);
+        }
+      }, 500);
     };
     if (!query.id) {
       props.history.push('/');
@@ -73,12 +76,17 @@ export default (props) => {
 
   const handleCheckToken = async () => {
     try {
+      setState(confirmInterestLoading);
       await fetch(`${API_URL}/api/v1/participants/confirm-interest?id=${query.id}`, {
         method: 'POST',
       });
-      setState(confirmInterestSuccess);
+      setTimeout(() => {
+        setState(confirmInterestSuccess);
+      }, 500);
     } catch (error) {
-      setState(confirmInterestError);
+      setTimeout(() => {
+        setState(confirmInterestError);
+      }, 500);
     }
   };
 

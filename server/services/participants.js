@@ -107,7 +107,6 @@ const getParticipantByID = async (participantInfo) => {
 const updateParticipant = async (participantInfo) => {
   // The below reduce function unpacks the most recent changes in the history
   // and builds them into an object to be used for the update request
-  console.log(JSON.stringify(participantInfo.history));
   const changes = participantInfo.history[0].changes.reduce(
     (acc, change) => {
       const { field, to } = change;
@@ -115,8 +114,6 @@ const updateParticipant = async (participantInfo) => {
     },
     { history: participantInfo.history, userUpdatedAt: new Date().toJSON() }
   );
-
-  console.log(JSON.stringify(changes));
 
   const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc(
     {

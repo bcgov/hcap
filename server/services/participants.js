@@ -149,9 +149,14 @@ const confirmParticipantInterest = async (id) => {
     interested: 'yes',
     history: [
       {
-        to: now,
-        from: participant.body.userUpdatedAt,
-        field: 'userUpdatedAt',
+        changes: [
+          {
+            to: now,
+            from: participant.body.userUpdatedAt,
+            field: 'userUpdatedAt',
+          },
+        ],
+        timestamp: now,
       },
       ...(participant.body.history ? participant.body.history : []),
     ],

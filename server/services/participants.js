@@ -107,6 +107,7 @@ const getParticipantByID = async (participantInfo) => {
 const updateParticipant = async (participantInfo) => {
   // The below reduce function unpacks the most recent changes in the history
   // and builds them into an object to be used for the update request
+  console.log(JSON.stringify(participantInfo.history));
   const changes = participantInfo.history[0].changes.reduce(
     (acc, change) => {
       const { field, to } = change;
@@ -114,6 +115,8 @@ const updateParticipant = async (participantInfo) => {
     },
     { history: participantInfo.history, userUpdatedAt: new Date().toJSON() }
   );
+
+  console.log(JSON.stringify(changes));
 
   const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc(
     {
@@ -129,17 +132,37 @@ const validateConfirmationId = (id) =>
   dbClient.db[collections.CONFIRM_INTEREST].findOne({ otp: id });
 
 const confirmParticipantInterest = async (id) => {
-  await dbClient.db.query(`
-    UPDATE
-      ${collections.PARTICIPANTS} p
-    SET
-      body = body || '{"userUpdatedAt": "${new Date().toJSON()}", "interested": "yes"}'
-    FROM
-      ${collections.CONFIRM_INTEREST} ci
-    WHERE
-      ci.email_address = p.body->>'emailAddress' AND
-      ci.otp = '${id}'
-  `);
+  const now = new Date().toJSON();
+
+  const relatedParticipants = await dbClient.db[collections.PARTICIPANTS]
+    .join({
+      [collections.CONFIRM_INTEREST]: {
+        type: 'INNER',
+        on: { email_address: 'body.emailAddress', otp: id },
+      },
+    })
+    .find();
+
+  const updatedParticipantFields = relatedParticipants.map((participant) => ({
+    id: participant.id,
+    userUpdatedAt: now,
+    interested: 'yes',
+    history: [
+      {
+        to: now,
+        from: participant.body.userUpdatedAt,
+        field: 'userUpdatedAt',
+      },
+      ...(participant.body.history ? participant.body.history : []),
+    ],
+  }));
+
+  await Promise.all(
+    updatedParticipantFields.map((fields) => {
+      const result = dbClient.db[collections.PARTICIPANTS].updateDoc({ id: fields.id }, fields);
+      return result;
+    })
+  );
 
   const deleted = await dbClient.db[collections.CONFIRM_INTEREST].destroy({ otp: id });
 

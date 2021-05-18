@@ -1,9 +1,10 @@
+/* eslint-disable no-console */
+require('dotenv').config({ path: '../.env' });
 const { dbClient } = require('../db/db')
 const axios = require('axios');
-const CHES_HOST = 'https://ches-dev.apps.silver.devops.gov.bc.ca';
-const AUTH_URL = 'https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token';
-require('dotenv').config({ path: '../.env' });
-
+const CHES_HOST = process.env.CHES_HOST||'https://ches-dev.apps.silver.devops.gov.bc.ca';
+const AUTH_URL =  process.env.AUTH_URL || 'https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token';
+const failedSends = []; 
 async function authenticateChes() {
     const params = new URLSearchParams();
     params.append('grant_type', 'client_credentials');
@@ -12,7 +13,7 @@ async function authenticateChes() {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      auth: { username: '', password: '' }, // service client ID and secret
+      auth: { username: process.env.CHES_CLIENT_ID, password: process.env.CHES_CLIENT_SECRET }, // service client ID and secret
     };
    try {
       const response = await axios.post(AUTH_URL, params, config);
@@ -22,22 +23,30 @@ async function authenticateChes() {
       return error;
     }
   }
-//   const sleep = (ms) => {
-//     return new Promise((resolve) => setTimeout(resolve, ms));
-//   };
-
-// Get creds -- Done
-// Authenticate -- lets see. 
-// Send email to me
-// 
-
-function createPayload(recipient){
+function createPayload(recipient, uuid){
     return {
         from:'noreply@hcapparticipants.gov.bc.ca',
-        to:recipient,
-        subject: 'CHES Test Email',
+        to:[recipient],
+        subject: 'Are you still interested in the Health Career Access Program?',
         bodyType: 'html',
-        body: `<html><h1>HELLO WORLD </h1></html>`,
+        body: 
+        `
+        <body>
+            If you would still like to participate in the program, <br/>
+            please confirm your interest by clicking on the link below. Clicking on the link will reconfirm your interest in the program to ensure you remain visible to eligible employers.
+            <br/><br/>
+            <button>
+                <a href="${process.env.BACKEND_URL+"/confirm-interest?token="+uuid}">Confirm Interest</a>
+            </button>
+            <br/><br/>
+            If you no longer wish to participate or be considered for the Health Career Access Program, please email us with the subject line WITHDRAW to <b>HCAPInfoQuery@gov.bc.ca</b>
+            <br/><br/>
+            <button>
+                <a href="mailto:HCAPInfoQuery@gov.bc.ca?subject=WITHDRAW&body=Hello,%0d%0aPlease%20withdraw%20the%20expression(s)%20of%20interest%20for%20the%20sender%20of%20this%20email.%0d%0aI%20am%20no%20longer%20interested%20in%20participating%20in%20the%20Health%20Career%20Access%20Program.">Withdraw from HCAP</a> 
+            </button>
+        </body>
+        
+        `,
     }
 }
 
@@ -49,7 +58,7 @@ const config = (token) => ({
   });
 
 async function getEmailBlock(index,block){
-    return await dbClient.db.query(`SELECT email_address FROM confirm_interest LIMIT ${block} OFFSET ${index}`)
+    return await dbClient.db.query(`SELECT email_address , otp FROM confirm_interest LIMIT ${block} OFFSET ${index}`)
 }
 async function countEmails(){
     await dbClient.connect();
@@ -60,65 +69,68 @@ const sleep = (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   };
 
-async function sendEmail(email,conf){
-    const  payload = createPayload(email)
-    console.log('Sending to Email:', email);
-    //console.log(payload);
-    // try{
-    //     await axios.post(`${CHES_HOST}/api/v1/email`,createPayload(email),conf);
-    // }catch(e){
-    //     //console.log(e);
-    //     console.log(e.response.data.errors);
-    // }
+async function sendEmail(email,otp,index,conf){
+    const  payload = createPayload(email,otp)
+    console.log('Sending email at index: ',index);
+    if(email !== 'dbayly@freshworks.io'){
+      return;
+    }
+    try{
+        await axios.post(`${CHES_HOST}/api/v1/email`,createPayload(email),conf);
+    }catch(e){
+        failedSends.push(index);
+        console.log(e.response.data.errors);
+    }
     return; 
 }
 
 async function blast(start,end,batch){
     const count = (await countEmails())[0].count;
     console.log(count);
-    await blastRecursive(start, end, count,batch)
+    const token = await authenticateChes();
+
+    await blastRecursive(start, end, count,batch,config(token))
 }
 
-async function blastRecursive(start,end,max,batch){
-    console.log(start,max,batch);
+async function blastRecursive(start,end,max,batch,config){
     if(start>=max || (start >= end && end!=-1)){
         return
     }else{
         const emails = await getEmailBlock(start,batch)
-        const promiseArr = emails.map((res)=>{
-              return sendEmail(res.email_address)
+        const promiseArr = emails.map((res,index)=>{
+              return sendEmail(res.email_address,res.otp,index+start,config)
         })
-        console.log(promiseArr)
         await Promise.all(promiseArr)
         await sleep(1000)
-        return await blastRecursive(start+batch,end,max,batch);
+        return await blastRecursive(start+batch,end,max,batch,config);
     }
 }
-async function count(){
-    await dbClient.connect();
-    return await dbClient.db.query('Select COUNT(*) from confirm_interest')
-}
-
 
 (async function emailBlast() {
-    //const token = await authenticateChes();
-    await blast(0,-1,3);
-
-
-    // switch(process.env.argv[2]){
-    //     case 'all':
-    //         break; 
-    //     case 'index': 
-    //         const start = process.env.argv[3];
-    //         const end = process.env.argv[4];
-    //         const batch = process.env.argv[5];
-            
-    //         break; 
-    //     case 'count':
-    //         const res = await count();
-    //         console.log(res[0].count);
-    //         break;
-    //     default:
-
-    // }
+    const arglength  =process.argv.length
+    let mode = arglength>2? process.argv[2]:'default'
+    switch(mode){
+        case 'all':
+            await blast(0,-1,100)
+            console.log(`There were ${failedSends.length} failed sends.`);
+            console.log(failedSends);
+            break; 
+        case 'index': 
+            const start = arglength>3? parseInt(process.argv[3]):0 ;
+            const end = arglength>4? parseInt(process.argv[4]):-1 ;
+            const batch = arglength>5? parseInt(process.argv[5]):100 ;
+            console.log(start,end,batch);
+            await blast(start,end,batch);
+            console.log(`There were ${failedSends.length} failed sends.`);
+            console.log(failedSends);
+            break; 
+        case 'count':
+            const res = await countEmails();
+            console.log(res[0].count);
+            break;
+        default:
+          console.log("No action specified");
+    }
+    console.log('Process complete');
+    process.exit(0);
 })()

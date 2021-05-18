@@ -154,6 +154,7 @@ const confirmParticipantInterest = async (id) => {
           },
         ],
         timestamp: now,
+        reason: 'Reconfirm Interest',
       },
       ...(participant.body.history ? participant.body.history : []),
     ],

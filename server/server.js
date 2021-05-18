@@ -193,7 +193,7 @@ app.get(
     const isValid = uuidValidate(confirmationId) && (await validateConfirmationId(confirmationId));
 
     if (isValid) {
-      return res.status(isValid ? 200 : 400).send();
+      return res.status(200).send();
     }
 
     return res.status(400).send('Invalid Confirmation ID');

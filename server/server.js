@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const csv = require('fast-csv');
 const dayjs = require('dayjs');
+const { validate: uuidValidate } = require('uuid');
 const multer = require('multer');
 const {
   getParticipants,
@@ -14,6 +15,8 @@ const {
   parseAndSaveParticipants,
   setParticipantStatus,
   makeParticipant,
+  confirmParticipantInterest,
+  validateConfirmationId,
 } = require('./services/participants.js');
 const {
   getEmployers,
@@ -180,6 +183,33 @@ app.get(
     });
 
     csvStream.end();
+  })
+);
+
+app.get(
+  `${apiBaseUrl}/participants/confirm-interest`,
+  asyncMiddleware(async (req, res) => {
+    const confirmationId = req.query.id;
+    const isValid = uuidValidate(confirmationId) && (await validateConfirmationId(confirmationId));
+
+    if (isValid) {
+      return res.status(200).send();
+    }
+
+    return res.status(400).send('Invalid Confirmation ID');
+  })
+);
+
+app.post(
+  `${apiBaseUrl}/participants/confirm-interest`,
+  asyncMiddleware(async (req, res) => {
+    const success = await confirmParticipantInterest(req.query.id);
+
+    if (success) {
+      return res.status(200).send();
+    }
+
+    return res.status(400).send('Invalid Confirmation ID');
   })
 );
 

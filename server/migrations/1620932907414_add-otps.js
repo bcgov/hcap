@@ -21,7 +21,8 @@ exports.up = async () => {
           (p.body ->> 'interested') :: TEXT = 'yes'
           OR (p.body ->> 'interested') :: TEXT IS NULL
       )
-    WHERE p.body ->> 'emailAddress'  IS NOT NULL
+    WHERE p.body ->> 'emailAddress'  IS NOT NULL AND to_timestamp(p.body->>'userUpdatedAt', 'YYYY-MM-DD') < NOW() - interval '6 weeks'
+
     ON CONFLICT DO NOTHING
   `);
 };

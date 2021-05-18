@@ -1,6 +1,7 @@
 import InfoIcon from '@material-ui/icons/Info';
 import ContactMailIcon from '@material-ui/icons/ContactMail';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 
 export const confirmInterestDefault = {
   title: 'Confirm Interest',
@@ -22,4 +23,11 @@ export const confirmInterestError = {
   description: `This link is invalid or your interest has already been confirmed.`,
   buttonText: null,
   iconClass: 'error',
+};
+export const confirmInterestLoading = {
+  title: 'Loading',
+  icon: HourglassEmptyIcon,
+  description: ``,
+  buttonText: null,
+  iconClass: 'icon',
 };

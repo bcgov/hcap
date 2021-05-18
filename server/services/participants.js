@@ -125,6 +125,53 @@ const updateParticipant = async (participantInfo) => {
   return participant;
 };
 
+const validateConfirmationId = (id) =>
+  dbClient.db[collections.CONFIRM_INTEREST].findOne({ otp: id });
+
+const confirmParticipantInterest = async (id) => {
+  const now = new Date().toJSON();
+
+  const relatedParticipants = await dbClient.db[collections.PARTICIPANTS]
+    .join({
+      [collections.CONFIRM_INTEREST]: {
+        type: 'INNER',
+        on: { email_address: 'body.emailAddress', otp: id },
+      },
+    })
+    .find();
+
+  const updatedParticipantFields = relatedParticipants.map((participant) => ({
+    id: participant.id,
+    userUpdatedAt: now,
+    interested: 'yes',
+    history: [
+      {
+        changes: [
+          {
+            to: now,
+            from: participant.body.userUpdatedAt,
+            field: 'userUpdatedAt',
+          },
+        ],
+        timestamp: now,
+        reason: 'Reconfirm Interest',
+      },
+      ...(participant.body.history ? participant.body.history : []),
+    ],
+  }));
+
+  await Promise.all(
+    updatedParticipantFields.map(({ id: participantId, ...fields }) => {
+      const result = dbClient.db[collections.PARTICIPANTS].updateDoc({ id: participantId }, fields);
+      return result;
+    })
+  );
+
+  const deleted = await dbClient.db[collections.CONFIRM_INTEREST].destroy({ otp: id });
+
+  return deleted.length > 0;
+};
+
 const getParticipants = async (
   user,
   pagination,
@@ -352,4 +399,6 @@ module.exports = {
   updateParticipant,
   setParticipantStatus,
   makeParticipant,
+  validateConfirmationId,
+  confirmParticipantInterest,
 };

@@ -1,6 +1,7 @@
 import { Page } from '../../components/generic';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { API_URL } from '../../constants';
 
 import * as qs from 'querystring';
 
@@ -13,6 +14,7 @@ import {
   confirmInterestDefault,
   confirmInterestError,
   confirmInterestSuccess,
+  confirmInterestLoading,
 } from '../../constants/confirmInterestConstants';
 
 const useStyles = makeStyles((theme) => {
@@ -46,19 +48,50 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default (props) => {
-  const [state, setState] = useState(confirmInterestDefault);
+  const [state, setState] = useState(confirmInterestLoading);
   const classes = useStyles();
   // Get the query string from the url
   // Remove the questionmark from the search
   const query = qs.parse(props.location.search.slice(1), '&', '=');
-  const handleCheckToken = () => {
-    //Send off request to back end to validate token
-    if (query?.otp === 'success') {
-      setState(confirmInterestSuccess);
+
+  useEffect(() => {
+    const checkId = async () => {
+      const res = await fetch(`${API_URL}/api/v1/participants/confirm-interest?id=${query.id}`, {
+        method: 'GET',
+      });
+      setTimeout(() => {
+        if (res.ok) {
+          setState(confirmInterestDefault);
+        } else {
+          setState(confirmInterestError);
+        }
+      }, 500);
+    };
+    if (!query.id) {
+      props.history.push('/');
     } else {
-      setState(confirmInterestError);
+      checkId();
+    }
+  }, [props.history, query.id]);
+
+  const handleCheckToken = async () => {
+    try {
+      setState(confirmInterestLoading);
+      await fetch(`${API_URL}/api/v1/participants/confirm-interest?id=${query.id}`, {
+        method: 'POST',
+      });
+      setTimeout(() => {
+        setState(confirmInterestSuccess);
+      }, 500);
+    } catch (error) {
+      setTimeout(() => {
+        setState(confirmInterestError);
+      }, 500);
     }
   };
+
+  if (!state) return null;
+
   return (
     <Page hideEmployers={true}>
       <Card className={classes.root}>

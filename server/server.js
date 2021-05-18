@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const csv = require('fast-csv');
 const dayjs = require('dayjs');
+const { validate: uuidValidate } = require('uuid');
 const multer = require('multer');
 const {
   getParticipants,
@@ -188,7 +189,8 @@ app.get(
 app.get(
   `${apiBaseUrl}/participants/confirm-interest`,
   asyncMiddleware(async (req, res) => {
-    const isValid = await validateConfirmationId(req.query.id);
+    const confirmationId = req.query.id;
+    const isValid = uuidValidate(confirmationId) && (await validateConfirmationId(confirmationId));
 
     if (isValid) {
       return res.status(isValid ? 200 : 400).send();

@@ -49,7 +49,7 @@ services:
       - CHES_CLIENT_SECRET=${CHES_CLIENT_SECRET}
       - CHES_HOST=${CHES_HOST}
       - AUTH_URL=${AUTH_URL}
-      - BACKEND_URL=${BACKEND_URL}
+      - CLIENT_URL=${CLIENT_URL}
     expose:
       - '8080'
     ports:

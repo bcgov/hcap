@@ -40,13 +40,13 @@ function createPayload(recipient, uuid) {
             please confirm your interest by clicking on the link below. Clicking on the link will reconfirm your interest in the program to ensure you remain visible to eligible employers.
             <br/><br/>
             <button>
-                <a href="${`${process.env.BACKEND_URL}/confirm-interest?token=${uuid}`}" rel=”noopener” target=”_blank”>Confirm Interest</a>
+                <a href="${`${process.env.CLIENT_URL}/confirm-interest?id=${uuid}`}" rel=”noopener” target=”_blank”>Confirm Interest</a>
             </button>
             <br/><br/>
             If you no longer wish to participate or be considered for the Health Career Access Program, please email us with the subject line WITHDRAW to <b>HCAPInfoQuery@gov.bc.ca</b>
             <br/><br/>
             <button>
-                <a href="mailto:HCAPInfoQuery@gov.bc.ca?subject=WITHDRAW&body=Hello,%0d%0aPlease%20withdraw%20the%20expression(s)%20of%20interest%20for%20the%20sender%20of%20this%20email.%0d%0aI%20am%20no%20longer%20interested%20in%20participating%20in%20the%20Health%20Career%20Access%20Program.">Withdraw from HCAP</a> 
+                <a href="mailto:HCAPInfoQuery@gov.bc.ca?subject=WITHDRAW&body=Hello,%20Please%20withdraw%20the%20expression(s)%20of%20interest%20for%20the%20sender%20of%20this%20email.%0d%0aI%20am%20no%20longer%20interested%20in%20participating%20in%20the%20Health%20Career%20Access%20Program.">Withdraw from HCAP</a> 
             </button>
         </body>
         

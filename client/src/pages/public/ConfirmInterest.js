@@ -95,7 +95,7 @@ export default (props) => {
   return (
     <Page hideEmployers={true}>
       <Card className={classes.root}>
-        <Box display='flex' flexDirection='column'>
+        <Box display='flex' flexDirection='column' height='100%' justifyContent='center'>
           <Icon component={state.icon} className={classes[state.iconClass]} fontSize={'large'} />
           <Typography className={classes.title} variant={'h3'} align={'center'}>
             {state.title}

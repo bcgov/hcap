@@ -30,10 +30,12 @@ function createPayload(recipient, uuid) {
   return {
     from: 'noreply@hcapparticipants.gov.bc.ca',
     to: [recipient],
-    subject: 'Are you still interested in the Health Career Access Program?',
+    subject: 'Health Career Access Program (HCAP) Participation',
     bodyType: 'html',
     body: `
         <body>
+            <h2>Are you still interested in the Health Career Access Program?</h2>
+            <br/><br/>
             If you would still like to participate in the program, <br/>
             please confirm your interest by clicking on the link below. Clicking on the link will reconfirm your interest in the program to ensure you remain visible to eligible employers.
             <br/><br/>
@@ -44,7 +46,7 @@ function createPayload(recipient, uuid) {
             If you no longer wish to participate or be considered for the Health Career Access Program, please email us with the subject line WITHDRAW to <b>HCAPInfoQuery@gov.bc.ca</b>
             <br/><br/>
             <button>
-                <a href="mailto:HCAPInfoQuery@gov.bc.ca?subject=WITHDRAW&body=Hello,%0d%0aPlease%20withdraw%20the%20expression(s)%20of%20interest%20for%20the%20sender%20of%20this%20email.%0d%0aI%20am%20no%20longer%20interested%20in%20participating%20in%20the%20Health%20Career%20Access%20Program.">Withdraw from HCAP</a> 
+                <a href="mailto:HCAPInfoQuery@gov.bc.ca?subject=WITHDRAW&body=Hello,%0d%0aPlease%20withdraw%20the%20expression(s)%20of%20interest%20for%20the%20sender%20of%20this%20email.%0d%0aI%20am%20no%20longer%20interested%20in%20participating%20in%20the%20Health%20Career%20Access%20Program." rel=”noopener” target=”_blank”>Withdraw from HCAP</a> 
             </button>
         </body>
         
@@ -72,7 +74,6 @@ async function countEmails() {
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function sendEmail(email, otp, index, conf) {
-  console.log('Sending email at index: ', index);
   try {
     await axios.post(`${CHES_HOST}/api/v1/email`, createPayload(email, otp), conf);
   } catch (e) {
@@ -85,6 +86,7 @@ async function blastRecursive(start, end, max, batch, chesConfirguration) {
   if (start >= max || (start >= end && end !== -1)) {
     return true;
   }
+  console.log('Sending emails from index ', start, ' to ', start + batch);
   const emails = await getEmailBlock(start, batch);
   const promiseArr = emails.map((res, index) =>
     sendEmail(res.email_address, res.otp, index + start, chesConfirguration)

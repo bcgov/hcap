@@ -22,7 +22,7 @@ async function authenticateChes() {
     const response = await axios.post(AUTH_URL, params, config);
     return response.data.access_token;
   } catch (error) {
-    console.log({ '@@@@': error });
+    console.error(error);
     return error;
   }
 }

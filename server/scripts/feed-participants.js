@@ -6,8 +6,15 @@ const { dbClient } = require('../db');
 
 const { parseAndSaveParticipants } = require('../services/participants');
 
+const errorStyle = '\x1b[31m\x1b[40m\x1b[4m\x1b[1m'; // https://stackoverflow.com/a/41407246
+
 (async () => {
   if (require.main === module) {
+    if (!process.argv[2]) {
+      console.error(`${errorStyle}Error: Input sheet filename required.`);
+      process.exit(0);
+    }
+
     await dbClient.connect();
     console.log('Successfully Connected to DB');
 

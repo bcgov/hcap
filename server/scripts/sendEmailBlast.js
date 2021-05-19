@@ -92,7 +92,7 @@ async function blastRecursive(start, end, max, batch, chesConfirguration) {
     sendEmail(res.email_address, res.otp, index + start, chesConfirguration)
   );
   await Promise.all(promiseArr);
-  await sleep(1000);
+  await sleep(4000);
   return blastRecursive(start + batch, end, max, batch, chesConfirguration);
 }
 async function blast(start, end, batch) {

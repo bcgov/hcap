@@ -3,6 +3,7 @@ require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
 const { dbClient } = require('../db/db');
 
+const MAIL_RATE = 25;
 const CHES_HOST = process.env.CHES_HOST || 'https://ches-dev.apps.silver.devops.gov.bc.ca';
 const AUTH_URL =
   process.env.AUTH_URL ||
@@ -83,16 +84,22 @@ async function sendEmail(email, otp, index, conf) {
 }
 
 async function blastRecursive(start, end, max, batch, chesConfirguration) {
+  const now = new Date();
   if (start >= max || (start >= end && end !== -1)) {
     return true;
   }
-  console.log('Sending emails from index ', start, ' to ', start + batch);
   const emails = await getEmailBlock(start, batch);
   const promiseArr = emails.map((res, index) =>
     sendEmail(res.email_address, res.otp, index + start, chesConfirguration)
   );
-  await Promise.all(promiseArr);
-  await sleep(4000);
+  Promise.all(promiseArr);
+  await sleep((batch / MAIL_RATE) * 1000);
+  const batchTime = (new Date() - now) / 1000;
+  console.log(
+    `Sent emails from index ${start} to ${start + batch}: ${batchTime.toFixed(2)}s, ${(
+      batch / batchTime
+    ).toFixed(1)}/s`
+  );
   return blastRecursive(start + batch, end, max, batch, chesConfirguration);
 }
 async function blast(start, end, batch) {

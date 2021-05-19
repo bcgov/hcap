@@ -78,7 +78,7 @@ async function sendEmail(email, otp, index, conf) {
     await axios.post(`${CHES_HOST}/api/v1/email`, createPayload(email, otp), conf);
   } catch (e) {
     failedSends.push(index);
-    console.log(e.response.data.errors);
+    console.log(e.response.data);
   }
 }
 

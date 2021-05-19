@@ -169,7 +169,7 @@ and then submits to the /form endpoint. Example of file names:
 - Health Career Access Program - Expression of Interest - 8353ec90e6ea8727.xml
 - Health Career Access Program - Expression of Interest - 91113c10e0xx872x (1).xml
 
-#### `npm run feed-sites my_spreadsheet.xlsx` and  `npm run feed-participants my_spreadsheet.xlsx`
+#### `npm run feed-sites my_spreadsheet.xlsx` and `npm run feed-participants my_spreadsheet.xlsx`
 
 Parses a given xlsx file inside the `server/scripts/xlsx/` folder and feeds either the `employer_sites` or `participants` table.
 

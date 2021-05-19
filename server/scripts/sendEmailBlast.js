@@ -3,7 +3,10 @@ require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
 const { dbClient } = require('../db/db');
 
-const MAIL_RATE = 25;
+const Reset = '\x1b[0m';
+const FgGreen = '\x1b[32m';
+
+const MAIL_RATE = 20;
 const CHES_HOST = process.env.CHES_HOST || 'https://ches-dev.apps.silver.devops.gov.bc.ca';
 const AUTH_URL =
   process.env.AUTH_URL ||
@@ -79,7 +82,7 @@ async function sendEmail(email, otp, index, conf) {
     await axios.post(`${CHES_HOST}/api/v1/email`, createPayload(email, otp), conf);
   } catch (e) {
     failedSends.push(index);
-    console.log(e.response.data);
+    console.log(e.response?.data || e.response || e);
   }
 }
 
@@ -96,18 +99,27 @@ async function blastRecursive(start, end, max, batch, chesConfirguration) {
   await sleep((batch / MAIL_RATE) * 1000);
   const batchTime = (new Date() - now) / 1000;
   console.log(
-    `Sent emails from index ${start} to ${start + batch}: ${batchTime.toFixed(2)}s, ${(
-      batch / batchTime
-    ).toFixed(1)}/s`
+    `Sent ${FgGreen}${start}${Reset} to ${FgGreen}${
+      start + batch
+    }${Reset}: ${FgGreen}${batchTime.toFixed(2)}${Reset}s, ${FgGreen}${(batch / batchTime).toFixed(
+      1
+    )}${Reset}/s`
   );
   return blastRecursive(start + batch, end, max, batch, chesConfirguration);
 }
 async function blast(start, end, batch) {
   const { count } = (await countEmails())[0];
-  console.log(count);
+  console.log(`Blasting ${FgGreen}${count}${Reset} emails...`);
   const token = await authenticateChes();
 
+  const now = new Date();
   await blastRecursive(start, end, count, batch, config(token));
+  const totalTime = (new Date() - now) / 1000;
+  console.log(
+    `Sent ${FgGreen}${count}${Reset} emails in ${totalTime.toFixed(2)}s at a rate of ${(
+      count / totalTime
+    ).toFixed(2)}`
+  );
 }
 
 (async function emailBlast() {

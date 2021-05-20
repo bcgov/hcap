@@ -80,7 +80,7 @@ parameters:
     required: true
   - name: SOURCE_REPOSITORY_URL
     required: true
-    value: https://github.com/bcgov/court-interpreter-scheduling.git
+    value: https://github.com/bcgov/hcap.git
   - name: SOURCE_REPOSITORY_REF
     required: true
   - name: TAG

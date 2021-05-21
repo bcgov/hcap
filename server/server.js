@@ -203,7 +203,6 @@ app.get(
 app.post(
   `${apiBaseUrl}/participants/confirm-interest`,
   asyncMiddleware(async (req, res) => {
-    const x;
     const success = await confirmParticipantInterest(req.query.id);
 
     if (success) {

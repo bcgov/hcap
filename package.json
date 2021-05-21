@@ -1,11 +1,13 @@
 {
   "scripts": {
+    "check-format": "run-p 'check:*'",
+    "check:prettier": "prettier --check .",
+    "check:lint-client": "eslint --ext js,jsx -c ./client/.eslintrc ./client",
+    "check:lint-server": "eslint --ext js,jsx -c ./server/.eslintrc ./server",
     "format": "run-s 'format:*'",
-    "format:write": "prettier --write .",
-    "format:check": "prettier --check .",
-    "format:lint": "run-s 'lint:*'",
-    "lint:client": "eslint --ext js,jsx -c ./client/.eslintrc ./client --fix",
-    "lint:server": "eslint --ext js,jsx -c ./server/.eslintrc ./server --fix",
+    "format:prettier": "prettier --write .",
+    "format:lint-client": "eslint --ext js,jsx -c ./client/.eslintrc ./client --fix",
+    "format:lint:server": "eslint --ext js,jsx -c ./server/.eslintrc ./server --fix",
     "update-all": "run-s 'update:*'",
     "update:root": "npm i",
     "update:client": "npm i --prefix client",

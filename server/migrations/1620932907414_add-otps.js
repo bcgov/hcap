@@ -12,17 +12,26 @@ exports.up = async () => {
     INSERT INTO
       ${CONFIRM_INTEREST} (email_address)
     SELECT
-      DISTINCT p.body ->> 'emailAddress' AS email
+      DISTINCT p.body->>'emailAddress' AS email
     FROM
-      ${PARTICIPANTS} as p FULL OUTER JOIN
-      ${PARTICIPANTS_STATUS} as ps ON p.id = ps.participant_id
-      AND ps.status != 'hired'
-      AND (
-          (p.body ->> 'interested') :: TEXT = 'yes'
-          OR (p.body ->> 'interested') :: TEXT IS NULL
+      ${PARTICIPANTS} p
+    WHERE
+      p.body->>'emailAddress' NOT IN (
+        SELECT
+          p2.body->>'emailAddress'
+        FROM
+          ${PARTICIPANTS} p2
+          JOIN ${PARTICIPANTS_STATUS} ps ON p2.id = ps.participant_id
+          AND ps.status = 'hired'
       )
-    WHERE p.body ->> 'emailAddress'  IS NOT NULL AND to_timestamp(p.body->>'userUpdatedAt', 'YYYY-MM-DD') < NOW() - interval '6 weeks'
+      AND (
+        CAST(p.body->>'interested' AS TEXT) = 'yes'
+        OR CAST(p.body->>'interested' AS TEXT) IS NULL
+      )
+      AND (
+        to_timestamp(p.body->>'userUpdatedAt', 'YYYY-MM-DD') < CURRENT_TIMESTAMP - interval '6 weeks'
+      )
 
-    ON CONFLICT DO NOTHING
+      ON CONFLICT DO NOTHING
   `);
 };

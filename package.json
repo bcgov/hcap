@@ -6,7 +6,6 @@
     "format:lint": "run-s 'lint:*'",
     "lint:client": "eslint --ext js,jsx -c ./client/.eslintrc ./client --fix",
     "lint:server": "eslint --ext js,jsx -c ./server/.eslintrc ./server --fix",
-    "pretty-quick": "pretty-quick",
     "update-all": "run-s 'update:*'",
     "update:root": "npm i",
     "update:client": "npm i --prefix client",

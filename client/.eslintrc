@@ -1,7 +1,12 @@
 {
-  "extends": ["react-app"],
-  "plugins": ["react", "react-hooks"],
+  "extends": ["react-app", "plugin:jsx-a11y/recommended"],
+  "plugins": ["react", "react-hooks", "jsx-a11y"],
   "rules": {
     "import/no-anonymous-default-export": [2, { "allowArrowFunction": true }]
+  },
+  "settings": {
+    "react": {
+      "version": "16.13.1"
+    }
   }
 }

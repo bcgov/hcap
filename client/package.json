@@ -32,6 +32,7 @@
     "yup": "0.29.3"
   },
   "devDependencies": {
+    "eslint-plugin-jsx-a11y": "6.4.1",
     "react-scripts": "4.0.0"
   }
 }

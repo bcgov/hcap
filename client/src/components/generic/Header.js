@@ -76,8 +76,6 @@ export const Header = ({ hideEmployers = false }) => {
   const classes = useStyles();
   const [keycloak] = useKeycloak();
 
-  const handleLogoClick = () => history.push(Routes.EmployerForm);
-
   const handleLoginClick = () => history.push(Routes.Login);
 
   const handleLogoutClick = async () => {
@@ -106,7 +104,6 @@ export const Header = ({ hideEmployers = false }) => {
                   className={classes.logo}
                   src={BcLogo}
                   alt='Government of British Columbia Home'
-                  onClick={handleLogoClick}
                 />
               </Hidden>
               <Hidden mdUp>
@@ -114,7 +111,6 @@ export const Header = ({ hideEmployers = false }) => {
                   className={classes.logo}
                   src={BcLogoMini}
                   alt='Government of British Columbia Home'
-                  onClick={handleLogoClick}
                 />
               </Hidden>
             </Link>

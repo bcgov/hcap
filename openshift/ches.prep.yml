@@ -15,5 +15,5 @@ objects:
       host: https://ches-dev.apps.silver.devops.gov.bc.ca
       auth-url: https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token
       client-url: https://hcapparticipants.dev.freshworks.club
-      client-id: ' '
-      client-secret: ' '
+      client-id: ''
+      client-secret: ''

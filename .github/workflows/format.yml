@@ -1,0 +1,16 @@
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  premerge:
+    name: format-check
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: install dev dependencies
+        run: npm i -D && npm i -D --prefix client && npm i -D --prefix server
+
+      - name: run format checking scripts
+        run: npm run check-format

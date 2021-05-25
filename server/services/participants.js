@@ -114,7 +114,6 @@ const updateParticipant = async (participantInfo) => {
     },
     { history: participantInfo.history, userUpdatedAt: new Date().toJSON() }
   );
-
   const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc(
     {
       id: participantInfo.id,

@@ -139,6 +139,21 @@ objects:
                       name: ${APP_NAME}-mongodb
                 - name: MONGO_REPLICA
                   value: rs0
+                - name: CHES_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      key: host
+                      name: ${APP_NAME}-ches
+                - name: CHES_AUTH_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: auth-url
+                      name: ${APP_NAME}-ches
+                - name: CLIENT_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: client-url
+                      name: ${APP_NAME}-ches
                 - name: CHES_CLIENT_ID
                   valueFrom:
                     secretKeyRef:

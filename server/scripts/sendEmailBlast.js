@@ -8,8 +8,8 @@ const FgGreen = '\x1b[32m';
 
 const MAIL_RATE = 20;
 const CHES_HOST = process.env.CHES_HOST || 'https://ches-dev.apps.silver.devops.gov.bc.ca';
-const AUTH_URL =
-  process.env.AUTH_URL ||
+const CHES_AUTH_URL =
+  process.env.CHES_AUTH_URL ||
   'https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token';
 const failedSends = [];
 async function authenticateChes() {
@@ -23,7 +23,7 @@ async function authenticateChes() {
     auth: { username: process.env.CHES_CLIENT_ID, password: process.env.CHES_CLIENT_SECRET }, // service client ID and secret
   };
   try {
-    const response = await axios.post(AUTH_URL, params, config);
+    const response = await axios.post(CHES_AUTH_URL, params, config);
     return response.data.access_token;
   } catch (error) {
     console.error(error);

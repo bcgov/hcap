@@ -1,0 +1,16 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+labels:
+  app: ${APP_NAME}
+parameters:
+  - name: APP_NAME
+    description: App name that OpenShift objects will be prefixed with
+    required: true
+objects:
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-ches
+    stringData:
+      client-id: ${CHES_CLIENT_ID}
+      client-secret: ${CHES_CLIENT_SECRET}

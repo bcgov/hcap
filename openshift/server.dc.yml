@@ -139,6 +139,16 @@ objects:
                       name: ${APP_NAME}-mongodb
                 - name: MONGO_REPLICA
                   value: rs0
+                - name: CHES_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: client-id
+                      name: ${APP_NAME}-ches
+                - name: CHES_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: client-secret
+                      name: ${APP_NAME}-ches
               name: ${APP_NAME}-server
               image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
               ports:

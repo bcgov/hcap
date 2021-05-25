@@ -618,8 +618,14 @@ const ParticipantEditSchema = yup
       .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
     emailAddress: yup.string().required('Email address is required').email('Invalid email address'),
     interested: yup.string().nullable(),
-    postalCode: yup.string().nullable().matches(/^[a-zA-Z]\d[a-zA-Z]\s?\d[a-zA-Z]\d$/),
-    postalCodeFsa: yup.string().nullable(),
+    postalCode: yup
+      .string()
+      .nullable()
+      .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/),
+    postalCodeFsa: yup
+      .string()
+      .nullable()
+      .matches(/^[A-Z]\d[A-Z]$/),
     history: yup.array().required('Edit history is required'),
     id: yup.number().required('User ID is required'),
   });

@@ -17,8 +17,7 @@
     "export": "node scripts/export.js",
     "watch": "NODE_ENV=local nodemon main.js",
     "start": "NODE_ENV=production node main.js",
-    "test": "NODE_ENV=test jest --silent --runInBand --forceExit",
-    "lint": "eslint --ext js,jsx ./ --fix"
+    "test": "NODE_ENV=test jest --silent --runInBand --forceExit"
   },
   "dependencies": {
     "axios": "0.21.1",
@@ -47,7 +46,6 @@
     "yup": "0.29.3"
   },
   "devDependencies": {
-    "eslint": "7.14.0",
     "eslint-config-airbnb-base": "14.2.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "2.22.0",

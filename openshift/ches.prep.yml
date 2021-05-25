@@ -12,5 +12,5 @@ objects:
     metadata:
       name: ${APP_NAME}-ches
     stringData:
-      client-id: ${CHES_CLIENT_ID}
-      client-secret: ${CHES_CLIENT_SECRET}
+      client-id: ' '
+      client-secret: ' '

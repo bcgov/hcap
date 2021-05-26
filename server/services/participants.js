@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 const readXlsxFile = require('node-xlsx').default;
 const { validate, ParticipantBatchSchema, isBooleanValue } = require('../validation.js');
 const { dbClient, collections } = require('../db');
@@ -128,6 +129,7 @@ const validateConfirmationId = (id) =>
   dbClient.db[collections.CONFIRM_INTEREST].findOne({ otp: id });
 
 const confirmParticipantInterest = async (id) => {
+  const sixWeeksAgo = dayjs().subtract(6, 'weeks').format('YYYY-MM-DD');
   const now = new Date().toJSON();
 
   const relatedParticipants = await dbClient.db[collections.PARTICIPANTS]
@@ -137,7 +139,10 @@ const confirmParticipantInterest = async (id) => {
         on: { email_address: 'body.emailAddress', otp: id },
       },
     })
-    .find();
+    .find({
+      'body.interested IS DISTINCT FROM': 'withdrawn', // "IS DISTINCT FROM" = "!=" but includes null
+      'body.userUpdatedAt::TIMESTAMP <': sixWeeksAgo,
+    });
 
   const updatedParticipantFields = relatedParticipants.map((participant) => ({
     id: participant.id,

@@ -6,8 +6,15 @@ const { dbClient } = require('../db');
 const { saveSites } = require('../services/employers.js');
 const { createRows, verifyHeaders } = require('../utils');
 
+const errorStyle = '\x1b[31m\x1b[40m\x1b[4m\x1b[1m'; // https://stackoverflow.com/a/41407246
+
 (async () => {
   if (require.main === module) {
+    if (!process.argv[2]) {
+      console.error(`${errorStyle}Error: Input sheet filename required.`);
+      process.exit(0);
+    }
+
     try {
       const columnMap = {
         'HCAP Site ID': 'siteId',
@@ -48,6 +55,7 @@ const { createRows, verifyHeaders } = require('../utils');
       await dbClient.connect();
       const results = await saveSites(employerSites);
       console.table(results);
+      process.exit(0);
     } catch (error) {
       console.error(`Failed to feed employer sites entity, ${error}`);
     }

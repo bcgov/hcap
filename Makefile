@@ -37,6 +37,14 @@ migrate-up:
 migrate-down:
 	@npm run migrate down --prefix server
 
+seed-participants:
+	@echo "Seeding participants from server/scripts/xlsx"
+	@docker-compose -f docker-compose.dev.yml exec server npm run feed-participants $$SHEET
+
+seed-sites:
+	@echo "Seeding sites from server/scripts/xlsx"
+	@docker-compose -f docker-compose.dev.yml exec server npm run feed-sites $$SHEET
+
 # Local Development
 
 local-build:

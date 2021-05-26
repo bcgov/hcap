@@ -1,0 +1,19 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+labels:
+  app: ${APP_NAME}
+parameters:
+  - name: APP_NAME
+    description: App name that OpenShift objects will be prefixed with
+    required: true
+objects:
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-ches
+    stringData:
+      host: https://ches-dev.apps.silver.devops.gov.bc.ca
+      auth-url: https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token
+      client-url: https://hcapparticipants.dev.freshworks.club
+      client-id: ''
+      client-secret: ''

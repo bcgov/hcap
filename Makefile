@@ -119,6 +119,7 @@ networking-prep:
 	@oc process -f openshift/networking.yml | oc apply -n $(TARGET_NAMESPACE) -f -
 
 server-prep:
+	@oc process -f openshift/ches.prep.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -
 	@oc process -f openshift/keycloak.prep.yml -p APP_NAME=$(APP_NAME) | oc create -n $(TARGET_NAMESPACE) -f -
 
 server-create:

@@ -292,6 +292,8 @@ const patchableFields = [
   'phoneNumber',
   'interest',
   'history',
+  'postalCode',
+  'postalCodeFsa',
   'id',
 ];
 
@@ -299,6 +301,7 @@ app.patch(
   `${apiBaseUrl}/participant`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   keycloak.getUserInfoMiddleware(),
+
   asyncMiddleware(async (req, res) => {
     req.body = Object.keys(req.body).reduce(
       (o, k) => (patchableFields.includes(k) ? { ...o, [k]: req.body[k] } : o),

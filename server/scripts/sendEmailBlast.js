@@ -66,12 +66,12 @@ function createPayload(recipient, uuid) {
   };
 }
 
-const config = (token) => ({
+const config = {
   headers: {
-    authorization: `Bearer ${token}`,
+    authorization: null,
     'Content-Type': 'application/json',
   },
-});
+};
 
 async function getEmailBlock(index, block) {
   return dbClient.db.query(
@@ -94,12 +94,29 @@ async function sendEmail(email, otp, index, conf) {
   }
 }
 
+async function updateToken() {
+  config.headers.authorization = `Bearer ${await authenticateChes()}`;
+}
+
 async function blastRecursive(start, end, max, batch, chesConfirguration) {
   const now = new Date();
   if (start >= max || (start >= end && end !== -1)) {
     return true;
   }
   const emails = await getEmailBlock(start, batch);
+  // test the token
+  try {
+    await axios.get(`${CHES_HOST}/api/v1/health`, chesConfirguration);
+  } catch (e) {
+    if (e?.response?.data === 'Access denied') {
+      console.log('Token Expired, Reauthorizing...');
+      await updateToken();
+      console.log(`Success, Token Reauthorized!`);
+    } else {
+      console.log(e.response?.data || e.response || e);
+    }
+  }
+
   const promiseArr = emails.map((res, index) =>
     sendEmail(res.email_address, res.otp, index + start, chesConfirguration)
   );
@@ -115,13 +132,14 @@ async function blastRecursive(start, end, max, batch, chesConfirguration) {
   );
   return blastRecursive(start + batch, end, max, batch, chesConfirguration);
 }
+
 async function blast(start, end, batch) {
   const { count } = (await countEmails())[0];
   console.log(`Blasting ${FgGreen}${count}${Reset} emails...`);
-  const token = await authenticateChes();
+  await updateToken();
 
   const now = new Date();
-  await blastRecursive(start, end, count, batch, config(token));
+  await blastRecursive(start, end, count, batch, config);
   const totalTime = (new Date() - now) / 1000;
   console.log(
     `Sent ${FgGreen}${count}${Reset} emails in ${totalTime.toFixed(2)}s at a rate of ${(

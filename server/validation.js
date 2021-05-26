@@ -621,6 +621,7 @@ const ParticipantEditSchema = yup
     postalCode: yup
       .string()
       .nullable()
+      .required()
       .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/),
     postalCodeFsa: yup
       .string()

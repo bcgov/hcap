@@ -75,19 +75,17 @@ export default (props) => {
   }, [props.history, query.id]);
 
   const handleCheckToken = async () => {
-    try {
-      setState(confirmInterestLoading);
-      await fetch(`${API_URL}/api/v1/participants/confirm-interest?id=${query.id}`, {
-        method: 'POST',
-      });
-      setTimeout(() => {
+    setState(confirmInterestLoading);
+    const res = await fetch(`${API_URL}/api/v1/participants/confirm-interest?id=${query.id}`, {
+      method: 'POST',
+    });
+    setTimeout(() => {
+      if (res.ok) {
         setState(confirmInterestSuccess);
-      }, 500);
-    } catch (error) {
-      setTimeout(() => {
+      } else {
         setState(confirmInterestError);
-      }, 500);
-    }
+      }
+    }, 500);
   };
 
   if (!state) return null;

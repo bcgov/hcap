@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
+const path = require('path');
+const { writeFileSync } = require('fs');
 const { dbClient } = require('../db/db');
 
 const Reset = '\x1b[0m';
@@ -156,13 +158,15 @@ async function blast(start, end, batch) {
     case 'all':
       await blast(0, -1, 100);
       console.log(`There were ${failedSends.length} failed sends.`);
-      console.log(failedSends);
+      console.log(JSON.stringify(failedSends));
+      writeFileSync(path.join(__dirname, 'failed_ches_sends.json'), JSON.stringify(failedSends));
       break;
     case 'index':
       console.log(start, end, batch);
       await blast(start, end, batch);
       console.log(`There were ${failedSends.length} failed sends.`);
-      console.log(failedSends);
+      console.log(JSON.stringify(failedSends));
+      writeFileSync(path.join(__dirname, 'failed_ches_sends.json'), JSON.stringify(failedSends));
       break;
     case 'count':
       console.log((await countEmails())[0].count);

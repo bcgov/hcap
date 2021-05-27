@@ -29,7 +29,6 @@ export default () => {
   useEffect(() => {
     fetchUserInfo();
   }, []);
-  console.log('HELLO WORLD')
   return (
     <Page>
       <CheckPermissions

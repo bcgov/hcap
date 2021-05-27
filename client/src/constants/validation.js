@@ -358,6 +358,14 @@ export const EditParticipantFormSchema = yup.object().shape({
     .string()
     .required(errorMessage)
     .matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
+<<<<<<< HEAD
+=======
+  postalCode: yup
+    .string()
+    .nullable()
+    .required('Postal code is required')
+    .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Invalid postal code'),
+>>>>>>> Fixed reloading issue
   emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
   interested: yup.string().nullable(),
 });

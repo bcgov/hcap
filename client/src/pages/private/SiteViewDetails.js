@@ -74,7 +74,6 @@ export default ({ match }) => {
   };
 
   useEffect(() => {
-    console.log('Triggering use effect')
     fetchDetails(id);
   }, [id]);
 

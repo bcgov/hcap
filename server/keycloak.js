@@ -89,7 +89,6 @@ class Keycloak {
   }
 
   async authenticateServiceAccount() {
-    console.log('Type 1')
     logger.info('Authenticating Keycloak service account');
     const data = querystring.stringify({
       grant_type: 'password',
@@ -105,7 +104,6 @@ class Keycloak {
   }
 
   async authenticateIfNeeded() {
-    console.log('Type 2')
 
     // Race condition if token expires between this call and the desired authenticated call
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };

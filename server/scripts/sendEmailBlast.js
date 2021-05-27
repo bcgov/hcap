@@ -85,11 +85,11 @@ async function countEmails() {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function sendEmail(email, otp, index, conf) {
+async function sendEmail(email, otp, conf) {
   try {
     await axios.post(`${CHES_HOST}/api/v1/email`, createPayload(email, otp), conf);
   } catch (e) {
-    failedSends.push(index);
+    failedSends.push(otp);
     console.log(e.response?.data || e.response || e);
   }
 }
@@ -117,9 +117,7 @@ async function blastRecursive(start, end, max, batch, chesConfiguration) {
     }
   }
 
-  const promiseArr = emails.map((res, index) =>
-    sendEmail(res.email_address, res.otp, index + start, chesConfiguration)
-  );
+  const promiseArr = emails.map((res) => sendEmail(res.email_address, res.otp, chesConfiguration));
   Promise.all(promiseArr);
   await sleep((batch / MAIL_RATE) * 1000);
   const batchTime = (new Date() - now) / 1000;

@@ -600,9 +600,6 @@ export default () => {
             onSubmit={async (values) => {
               if (values.phoneNumber && Number.isInteger(values.phoneNumber))
                 values.phoneNumber = values.phoneNumber.toString();
-              if (values.postalCode && values.postalCode.length > 3) {
-                values.postalCodeFsa = values.postalCode.slice(0, 3);
-              }
               const history = {
                 timestamp: new Date(),
                 changes: [],

@@ -25,7 +25,6 @@ export const EditParticipantForm = ({ initialValues, validationSchema, onSubmit,
               label='* Email Address'
               type='email'
             />
-            <Field name='postalCode' component={RenderTextField} label='Postal Code' type='text' />
             <Field
               name='interested'
               component={RenderSelectField}

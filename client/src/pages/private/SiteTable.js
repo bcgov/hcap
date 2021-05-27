@@ -22,7 +22,7 @@ const columns = [
   { id: 'details' },
 ];
 
-export default ({ sites }) => {
+export default () => {
   const { openToast } = useToast();
   const [roles, setRoles] = useState([]);
   const [order, setOrder] = useState('asc');
@@ -57,7 +57,6 @@ export default ({ sites }) => {
       headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
       method: 'GET',
     });
-
     if (response.ok) {
       const { data } = await response.json();
       const rowsData = data.map((row) => {
@@ -77,6 +76,13 @@ export default ({ sites }) => {
       });
       setFetchedRows(rowsData);
       setIsPendingRequests(rowsData.length > 0);
+      setRows(
+          rowsData.filter(
+            (row) =>
+              healthAuthorities.includes(row.healthAuthority)
+          )
+          )
+
     } else {
       setRows([]);
       setFetchedRows([]);
@@ -111,7 +117,6 @@ export default ({ sites }) => {
       }
     }
   };
-
   useEffect(() => {
     setHealthAuthorities(
       roles.includes('superuser') || roles.includes('ministry_of_health')
@@ -121,7 +126,7 @@ export default ({ sites }) => {
   }, [roles]);
 
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
-
+  
   useEffect(() => {
     const fetchUserInfo = async () => {
       const response = await fetch(`${API_URL}/api/v1/user`, {
@@ -138,23 +143,9 @@ export default ({ sites }) => {
     fetchUserInfo();
     fetchSites();
   }, [history, location]);
-
-  useEffect(() => {
-    sites?.length
-      ? setRows(
-          fetchedRows.filter(
-            (row) =>
-              healthAuthorities.includes(row.healthAuthority) &&
-              sites.map((i) => i.siteId).includes(row.id)
-          )
-        )
-      : setRows(fetchedRows.filter((row) => healthAuthorities.includes(row.healthAuthority)));
-  }, [healthAuthorities, fetchedRows, sites]);
-
   const defaultOnClose = () => {
     setActiveModalForm(null);
   };
-
   return (
     <>
       <Dialog title={`Create Site`} open={activeModalForm != null} onClose={defaultOnClose}>
@@ -231,7 +222,9 @@ export default ({ sites }) => {
           <Grid item>
             <Box minWidth={180}>
               <TableFilter
-                onFilter={(filteredRows) => setRows(filteredRows)}
+                onFilter={(filteredRows) =>{ 
+                  setRows(filteredRows)
+                }}
                 values={healthAuthorities}
                 rows={fetchedRows}
                 label='Health Authority'

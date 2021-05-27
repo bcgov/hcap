@@ -148,6 +148,15 @@ async function blast(start, end, batch) {
   );
 }
 
+const writeFailedSends = (failures) => {
+  console.log(`There were ${failures.length} failed sends.`);
+  if (failures.length === 0) return;
+  const timestamp = new Date().toJSON();
+  const failureJson = JSON.stringify(failures);
+  console.log(failures);
+  writeFileSync(path.join(__dirname, `failed_ches_sends-${timestamp}.json`), failureJson);
+};
+
 (async function emailBlast() {
   const arglength = process.argv.length;
   const mode = arglength > 2 ? process.argv[2] : 'default';
@@ -157,16 +166,12 @@ async function blast(start, end, batch) {
   switch (mode) {
     case 'all':
       await blast(0, -1, 100);
-      console.log(`There were ${failedSends.length} failed sends.`);
-      console.log(JSON.stringify(failedSends));
-      writeFileSync(path.join(__dirname, 'failed_ches_sends.json'), JSON.stringify(failedSends));
+      writeFailedSends(failedSends);
       break;
     case 'index':
       console.log(start, end, batch);
       await blast(start, end, batch);
-      console.log(`There were ${failedSends.length} failed sends.`);
-      console.log(JSON.stringify(failedSends));
-      writeFileSync(path.join(__dirname, 'failed_ches_sends.json'), JSON.stringify(failedSends));
+      writeFailedSends(failedSends);
       break;
     case 'count':
       console.log((await countEmails())[0].count);

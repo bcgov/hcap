@@ -13,7 +13,7 @@ const CHES_AUTH_URL =
   'https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token';
 const failedSends = [];
 
-const withdrawEmailSubect = encodeURI(`
+const withdrawEmailSubject = encodeURI(`
   WITHDRAW
 `);
 const withdrawEmailBody = encodeURI(`
@@ -58,7 +58,7 @@ function createPayload(recipient, uuid) {
         </a> <span>(${process.env.CLIENT_URL}/confirm-interest?id=${uuid})</span>
         <br />
         <p>If you no longer wish to participate or be considered for the Health Career Access Program, please email us with the subject line WITHDRAW to <b>HCAPInfoQuery@gov.bc.ca</b> or or click the link below.</p>
-        <a href="mailto:HCAPInfoQuery@gov.bc.ca?subject=${withdrawEmailSubect}&body=${withdrawEmailBody}">
+        <a href="mailto:HCAPInfoQuery@gov.bc.ca?subject=${withdrawEmailSubject}&body=${withdrawEmailBody}">
           Withdraw from HCAP
         </a> 
       </body>

@@ -144,7 +144,22 @@ const confirmParticipantInterest = async (id) => {
       'body.userUpdatedAt::TIMESTAMP <': sixWeeksAgo,
     });
 
-  const updatedParticipantFields = relatedParticipants.map((participant) => ({
+  const hiredParticipants = await dbClient.db[collections.PARTICIPANTS]
+    .join({
+      [collections.PARTICIPANTS_STATUS]: {
+        type: 'INNER',
+        on: { participant_id: 'id' },
+      },
+    })
+    .find({
+      status: 'hired',
+    });
+
+  const unhiredRelatedParticipants = relatedParticipants.filter(
+    (related) => !hiredParticipants.find((hired) => hired.id === related.id)
+  );
+
+  const updatedParticipantFields = unhiredRelatedParticipants.map((participant) => ({
     id: participant.id,
     userUpdatedAt: now,
     interested: 'yes',
@@ -188,7 +203,6 @@ const getParticipants = async (
   statusFilters
 ) => {
   const participantsFinder = new ParticipantsFinder(dbClient, user);
-
   // While an employer, if we add 'open' as one of the status filters we won't
   // be able to filter lastName and emailAddress. The ideal way would be
   // creating one more AND/OR clausule to handle edge cases when we need to filter

@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
+const path = require('path');
+const { writeFileSync } = require('fs');
 const { dbClient } = require('../db/db');
 
 const Reset = '\x1b[0m';
@@ -66,12 +68,12 @@ function createPayload(recipient, uuid) {
   };
 }
 
-const config = (token) => ({
+const config = {
   headers: {
-    authorization: `Bearer ${token}`,
+    authorization: null,
     'Content-Type': 'application/json',
   },
-});
+};
 
 async function getEmailBlock(index, block) {
   return dbClient.db.query(
@@ -85,24 +87,39 @@ async function countEmails() {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function sendEmail(email, otp, index, conf) {
+async function sendEmail(email, otp, conf) {
   try {
     await axios.post(`${CHES_HOST}/api/v1/email`, createPayload(email, otp), conf);
   } catch (e) {
-    failedSends.push(index);
+    failedSends.push(otp);
     console.log(e.response?.data || e.response || e);
   }
 }
 
-async function blastRecursive(start, end, max, batch, chesConfirguration) {
+async function updateToken() {
+  config.headers.authorization = `Bearer ${await authenticateChes()}`;
+}
+
+async function blastRecursive(start, end, max, batch, chesConfiguration) {
   const now = new Date();
   if (start >= max || (start >= end && end !== -1)) {
     return true;
   }
   const emails = await getEmailBlock(start, batch);
-  const promiseArr = emails.map((res, index) =>
-    sendEmail(res.email_address, res.otp, index + start, chesConfirguration)
-  );
+  // test the token
+  try {
+    await axios.get(`${CHES_HOST}/api/v1/health`, chesConfiguration);
+  } catch (e) {
+    if (e?.response?.data === 'Access denied') {
+      console.log('Token Expired, Reauthorizing...');
+      await updateToken();
+      console.log(`Success, Token Reauthorized!`);
+    } else {
+      console.log(e.response?.data || e.response || e);
+    }
+  }
+
+  const promiseArr = emails.map((res) => sendEmail(res.email_address, res.otp, chesConfiguration));
   Promise.all(promiseArr);
   await sleep((batch / MAIL_RATE) * 1000);
   const batchTime = (new Date() - now) / 1000;
@@ -113,15 +130,16 @@ async function blastRecursive(start, end, max, batch, chesConfirguration) {
       1
     )}${Reset}/s`
   );
-  return blastRecursive(start + batch, end, max, batch, chesConfirguration);
+  return blastRecursive(start + batch, end, max, batch, chesConfiguration);
 }
+
 async function blast(start, end, batch) {
   const { count } = (await countEmails())[0];
   console.log(`Blasting ${FgGreen}${count}${Reset} emails...`);
-  const token = await authenticateChes();
+  await updateToken();
 
   const now = new Date();
-  await blastRecursive(start, end, count, batch, config(token));
+  await blastRecursive(start, end, count, batch, config);
   const totalTime = (new Date() - now) / 1000;
   console.log(
     `Sent ${FgGreen}${count}${Reset} emails in ${totalTime.toFixed(2)}s at a rate of ${(
@@ -129,6 +147,15 @@ async function blast(start, end, batch) {
     ).toFixed(2)}`
   );
 }
+
+const writeFailedSends = (failures) => {
+  console.log(`There were ${failures.length} failed sends.`);
+  if (failures.length === 0) return;
+  const timestamp = new Date().toJSON();
+  const failureJson = JSON.stringify(failures);
+  console.log(failures);
+  writeFileSync(path.join(__dirname, `failed_ches_sends-${timestamp}.json`), failureJson);
+};
 
 (async function emailBlast() {
   const arglength = process.argv.length;
@@ -139,14 +166,12 @@ async function blast(start, end, batch) {
   switch (mode) {
     case 'all':
       await blast(0, -1, 100);
-      console.log(`There were ${failedSends.length} failed sends.`);
-      console.log(failedSends);
+      writeFailedSends(failedSends);
       break;
     case 'index':
       console.log(start, end, batch);
       await blast(start, end, batch);
-      console.log(`There were ${failedSends.length} failed sends.`);
-      console.log(failedSends);
+      writeFailedSends(failedSends);
       break;
     case 'count':
       console.log((await countEmails())[0].count);

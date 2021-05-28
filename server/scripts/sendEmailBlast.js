@@ -143,12 +143,12 @@ const serialSend = async (emails, retryDelay, retryLimit, mailRate) => {
           `ID: ${email.otp}`,
         ];
         printProgress(data.join('\t'));
-        // exit loop
         if (retryCounter > 0) {
           printProgress(
             `${colours.fg.green}Retry Success on ${colours.reset}${email.email_address}\n`
           );
         }
+        // exit loop
         sent = true;
       } catch (error) {
         // catch token expiration

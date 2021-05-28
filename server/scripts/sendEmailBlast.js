@@ -7,6 +7,15 @@ const readline = require('readline');
 const { dbClient } = require('../db/db');
 const logger = require('../logger.js');
 
+const colours = {
+  reset: '\x1b[0m',
+  fg: {
+    red: '\x1b[31m',
+    green: '\x1b[32m',
+    yellow: '\x1b[33m',
+  },
+};
+
 const CHES_HOST = process.env.CHES_HOST || 'https://ches-dev.apps.silver.devops.gov.bc.ca';
 const CHES_AUTH_URL =
   process.env.CHES_AUTH_URL ||
@@ -69,7 +78,7 @@ function createPayload(recipient, uuid) {
 async function getAllEmails() {
   await dbClient.connect();
   const data = await dbClient.db.query(`SELECT email_address, otp FROM confirm_interest`);
-  console.log(`${data.length} emails loaded.\n`);
+  console.log(`${colours.fg.green}${data.length} emails loaded.${colours.reset}`);
   return data;
 }
 
@@ -82,7 +91,7 @@ const config = {
 
 async function updateToken() {
   config.headers.authorization = `Bearer ${await authenticateChes()}`;
-  console.log(`Token retrieved successfully!`);
+  console.log(`${colours.fg.green}Token retrieved successfully.${colours.reset}`);
 }
 
 async function sendEmail(email, otp, delay) {
@@ -129,22 +138,27 @@ const serialSend = async (emails, retryDelay, retryLimit, mailRate) => {
           `Total Time: ${((later - start) / 1000).toFixed(0)}s`,
           `Delay Avg: ${delayAverage}`,
           `Rate Avg: ${delayAverage > 0 ? (1000 / delayAverage).toFixed(2) : 'NaN'}`,
-          `${i + 1} of ${emails.length}`,
+          `${i + 1}/${emails.length}`,
           `ID: ${email.otp}`,
         ];
-        printProgress(data.join('    '));
+        printProgress(data.join('\t'));
         // exit loop
+        if (retryCounter > 0) {
+          printProgress(
+            `${colours.fg.green}Retry Success on ${colours.reset}${email.email_address}\n`
+          );
+        }
         sent = true;
       } catch (error) {
         // catch token expiration
         if (error?.response?.data === 'Access denied') {
-          console.log('Token Expired, Reauthorizing...');
+          console.log(`\n${colours.fg.yellow}Token Expired, Reauthorizing...${colours.reset}`);
           await updateToken();
         } else {
           // unknown error, delay and retry `retryLimit` times
           retryCounter++;
           printProgress(
-            `Unexpected error, waiting ${retryDelay}ms before resuming. Attempt ${retryCounter}/${retryLimit}`
+            `${colours.fg.yellow}Unexpected error, waiting ${retryDelay}ms before resuming. Attempt ${retryCounter}/${retryLimit} on ${colours.reset}${email.email_address}\n`
           );
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
         }
@@ -164,7 +178,11 @@ const serialSend = async (emails, retryDelay, retryLimit, mailRate) => {
   }
   console.log('\n');
 
-  if (errors) console.log(`${errors} errors logged.`);
+  if (errors) {
+    console.log(`${colours.fg.red}${errors} error${errors > 0 ? 's' : ''} logged.${colours.reset}`);
+  } else {
+    console.log(`${colours.fg.green}No errors encountered.${colours.reset}`);
+  }
 };
 
 function askQuestion(query, defaultValue) {
@@ -182,7 +200,7 @@ function askQuestion(query, defaultValue) {
 }
 
 (async function emailBlast() {
-  const mailRate = await askQuestion('Rate Limit', 15);
+  const mailRate = await askQuestion('Max Rate', 15);
   const retryDelay = await askQuestion('Retry Delay (ms)', 10000);
   const retryLimit = await askQuestion('Retry Limit', 10);
 

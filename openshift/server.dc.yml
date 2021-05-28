@@ -119,24 +119,24 @@ objects:
                       key: sa-password
                       name: ${APP_NAME}-keycloak
                 - name: MONGO_HOST
-                  value: ${APP_NAME}-mongodb
+                  value: ${APP_NAME}-mongo
                 - name: MONGO_PORT
                   value: '27017'
                 - name: MONGO_DB
                   valueFrom:
                     secretKeyRef:
                       key: database
-                      name: ${APP_NAME}-mongodb
+                      name: ${APP_NAME}-mongo
                 - name: MONGO_USER
                   valueFrom:
                     secretKeyRef:
                       key: username
-                      name: ${APP_NAME}-mongodb
+                      name: ${APP_NAME}-mongo
                 - name: MONGO_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: password
-                      name: ${APP_NAME}-mongodb
+                      name: ${APP_NAME}-mongo
                 - name: MONGO_REPLICA
                   value: rs0
                 - name: CHES_HOST

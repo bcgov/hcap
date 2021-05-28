@@ -24,7 +24,7 @@ parameters:
     required: true
   - name: MONGODB_REPLICAS
     description: Number of MongoDB replica pods
-    value: '2'
+    value: '3'
     required: true
   - name: MONGODB_USER
     description: Username for MongoDB user that will be used for accessing the database
@@ -56,7 +56,7 @@ parameters:
     required: true
   - name: VOLUME_CAPACITY
     description: Volume space available for data, e.g. 512Mi, 2Gi
-    value: 10Gi
+    value: 4Gi
     required: true
   - name: SC_MONGO
     description: The Storage Class for the MongoDB
@@ -66,9 +66,9 @@ objects:
   - kind: Secret
     apiVersion: v1
     metadata:
-      name: ${APP_NAME}-mongodb
+      name: ${APP_NAME}-mongo
       labels:
-        name: ${APP_NAME}-mongodb
+        name: ${APP_NAME}-mongo
     stringData:
       username: ${MONGODB_USER}
       password: ${MONGODB_PASSWORD}
@@ -76,49 +76,49 @@ objects:
       admin-password: ${MONGODB_ADMIN_PASSWORD}
       database: ${APP_NAME}
       replica-name: ${MONGODB_REPLICA_NAME}
-      mongo-url: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${APP_NAME}-mongodb:27017/${APP_NAME}?replicaSet=${MONGODB_REPLICA_NAME}
-      mongo-oplog-url: mongodb://admin:${MONGODB_ADMIN_PASSWORD}@${APP_NAME}-mongodb:27017/local?authSource=admin&replicaSet=${MONGODB_REPLICA_NAME}
+      mongo-url: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${APP_NAME}-mongo:27017/${APP_NAME}?replicaSet=${MONGODB_REPLICA_NAME}
+      mongo-oplog-url: mongodb://admin:${MONGODB_ADMIN_PASSWORD}@${APP_NAME}-mongo:27017/local?authSource=admin&replicaSet=${MONGODB_REPLICA_NAME}
   - kind: Service
     apiVersion: v1
     metadata:
-      name: ${APP_NAME}-mongodb
+      name: ${APP_NAME}-mongo
       labels:
-        name: ${APP_NAME}-mongodb
+        name: ${APP_NAME}-mongo
     spec:
       ports:
-        - name: mongodb
+        - name: mongo
           port: 27017
       selector:
-        name: ${APP_NAME}-mongodb
+        name: ${APP_NAME}-mongo
   - kind: Service
     apiVersion: v1
     metadata:
-      name: ${APP_NAME}-mongodb-internal
+      name: ${APP_NAME}-mongo-internal
       labels:
-        name: ${APP_NAME}-mongodb
+        name: ${APP_NAME}-mongo
       annotations:
         service.alpha.kubernetes.io/tolerate-unready-endpoints: 'true'
     spec:
       clusterIP: None
       ports:
-        - name: mongodb
+        - name: mongo
           port: 27017
       selector:
-        name: ${APP_NAME}-mongodb
+        name: ${APP_NAME}-mongo
   - kind: StatefulSet
     apiVersion: apps/v1
     metadata:
-      name: ${APP_NAME}-mongodb
+      name: ${APP_NAME}-mongo
     spec:
-      serviceName: ${APP_NAME}-mongodb-internal
+      serviceName: ${APP_NAME}-mongo-internal
       replicas: ${{MONGODB_REPLICAS}}
       selector:
         matchLabels:
-          name: ${APP_NAME}-mongodb
+          name: ${APP_NAME}-mongo
       template:
         metadata:
           labels:
-            name: ${APP_NAME}-mongodb
+            name: ${APP_NAME}-mongo
         spec:
           affinity:
             podAntiAffinity:
@@ -128,7 +128,7 @@ objects:
                       - key: name
                         operator: In
                         values:
-                          - ${APP_NAME}-mongodb
+                          - ${APP_NAME}-mongo
                   topologyKey: kubernetes.io/hostname
           containers:
             - name: mongo-container
@@ -145,36 +145,36 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: username
-                      name: ${APP_NAME}-mongodb
+                      name: ${APP_NAME}-mongo
                 - name: MONGODB_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: password
-                      name: ${APP_NAME}-mongodb
+                      name: ${APP_NAME}-mongo
                 - name: MONGODB_DATABASE
                   valueFrom:
                     secretKeyRef:
                       key: database
-                      name: ${APP_NAME}-mongodb
+                      name: ${APP_NAME}-mongo
                 - name: MONGODB_ADMIN_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: admin-password
-                      name: ${APP_NAME}-mongodb
+                      name: ${APP_NAME}-mongo
                 - name: MONGO_OPLOG_URL
                   valueFrom:
                     secretKeyRef:
                       key: mongo-oplog-url
-                      name: ${APP_NAME}-mongodb
+                      name: ${APP_NAME}-mongo
                 - name: MONGODB_REPLICA_NAME
                   valueFrom:
                     secretKeyRef:
                       key: replica-name
-                      name: ${APP_NAME}-mongodb
+                      name: ${APP_NAME}-mongo
                 - name: MONGODB_KEYFILE_VALUE
                   value: ${MONGODB_KEYFILE_VALUE}
                 - name: MONGODB_SERVICE_NAME
-                  value: ${APP_NAME}-mongodb-internal
+                  value: ${APP_NAME}-mongo-internal
               resources:
                 limits:
                   memory: ${MEMORY_LIMIT}
@@ -191,7 +191,7 @@ objects:
         - metadata:
             name: mongo-data
             labels:
-              name: ${APP_NAME}-mongodb
+              name: ${APP_NAME}-mongo
           spec:
             accessModes: [ReadWriteOnce]
             storageClassName: ${SC_MONGO}

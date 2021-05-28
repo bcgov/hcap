@@ -7,6 +7,7 @@ const readline = require('readline');
 const { dbClient } = require('../db/db');
 const logger = require('../logger.js');
 
+// https://stackoverflow.com/a/40560590
 const colours = {
   reset: '\x1b[0m',
   fg: {

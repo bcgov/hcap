@@ -3,24 +3,14 @@
 /* eslint-disable no-console */
 require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
+const readline = require('readline');
 const { dbClient } = require('../db/db');
 const logger = require('../logger.js');
 
-const UNKNOWN_RETRY_DELAY = 1000;
-const RETRY_LIMIT = 10;
-const MAIL_RATE = 10;
 const CHES_HOST = process.env.CHES_HOST || 'https://ches-dev.apps.silver.devops.gov.bc.ca';
 const CHES_AUTH_URL =
   process.env.CHES_AUTH_URL ||
   'https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token';
-
-const withdrawEmailSubject = encodeURI(`
-  WITHDRAW
-`);
-const withdrawEmailBody = encodeURI(`
-  Hello, please withdraw the expression(s) of interest for the sender of this email.
-  I am no longer interested in participating in the Health Career Access Program.
-`);
 
 async function authenticateChes() {
   const params = new URLSearchParams();
@@ -42,6 +32,14 @@ async function authenticateChes() {
 }
 
 function createPayload(recipient, uuid) {
+  const withdrawEmailSubject = encodeURI(`
+    WITHDRAW
+  `);
+  const withdrawEmailBody = encodeURI(`
+    Hello, please withdraw the expression(s) of interest for the sender of this email.
+    I am no longer interested in participating in the Health Career Access Program.
+  `);
+
   return {
     from: 'noreply@hcapparticipants.gov.bc.ca',
     to: [recipient],
@@ -69,7 +67,10 @@ function createPayload(recipient, uuid) {
 }
 
 async function getAllEmails() {
-  return dbClient.db.query(`SELECT email_address, otp FROM confirm_interest`);
+  await dbClient.connect();
+  const data = await dbClient.db.query(`SELECT email_address, otp FROM confirm_interest`);
+  console.log(`${data.length} emails loaded.\n`);
+  return data;
 }
 
 const config = {
@@ -84,86 +85,111 @@ async function updateToken() {
   console.log(`Token retrieved successfully!`);
 }
 
-async function sendEmail(email, otp) {
-  if (email.includes('1564d6737f53')) throw new Error('test');
-  // if (email.includes('+4')) throw new Error('test');
-  const delayFromRate = 1000 / MAIL_RATE;
+async function sendEmail(email, otp, delay) {
   await Promise.all([
     axios.post(`${CHES_HOST}/api/v1/email`, createPayload(email, otp), config),
-    new Promise((resolve) => setTimeout(resolve, delayFromRate)),
+    new Promise((resolve) => setTimeout(resolve, delay)),
   ]);
 }
 
 function printProgress(progress) {
+  process.stdout.clearLine();
   process.stdout.cursorTo(0);
   process.stdout.write(progress);
-  // console.log(progress);
 }
 
 const average = (arr) => arr.reduce((prev, curr) => prev + curr) / arr.length;
 
-(async function emailBlast() {
-  await dbClient.connect();
-  await updateToken();
-
-  const emails = await getAllEmails();
+const serialSend = async (emails, retryDelay, retryLimit, mailRate) => {
   const start = new Date();
+  const sendDelay = 1000 / mailRate;
 
   const previousTTS = [];
   let errors = 0;
 
-  console.log(`${emails.length} emails loaded.\n`);
   for (let i = 0; i < emails.length; i += 1) {
     const email = emails[i];
     let sent = false;
-    let counter = 0;
-    while (!sent && counter < RETRY_LIMIT) {
+    let retryCounter = 0;
+    while (!sent && retryCounter < retryLimit) {
       try {
+        // Send single email and time it
         const earlier = new Date();
-        await sendEmail(email.email_address, email.otp);
+        await sendEmail(email.email_address, email.otp, sendDelay);
         const later = new Date();
         const timeToSend = later - earlier;
-        previousTTS.push(timeToSend);
+        // Add time to send to previous times to send array,
+        previousTTS.unshift(timeToSend);
         if (previousTTS.length > 100) previousTTS.length = 100;
-        const delayAverage = average(previousTTS).toFixed(0);
+        // calculate average of last 100 email sends
+        const delayAverage = average(previousTTS).toFixed(2);
+        // Cleaner way to build long template string
         const data = [
           `Delay: ${timeToSend}`,
           `Total Time: ${((later - start) / 1000).toFixed(0)}s`,
           `Delay Avg: ${delayAverage}`,
-          `Rate Avg: ${delayAverage > 0 ? (1000 / delayAverage).toFixed(0) : 'NaN'}`,
+          `Rate Avg: ${delayAverage > 0 ? (1000 / delayAverage).toFixed(2) : 'NaN'}`,
           `${i + 1} of ${emails.length}`,
           `ID: ${email.otp}`,
         ];
         printProgress(data.join('    '));
+        // exit loop
         sent = true;
       } catch (error) {
+        // catch token expiration
         if (error?.response?.data === 'Access denied') {
           console.log('Token Expired, Reauthorizing...');
           await updateToken();
         } else {
-          counter++;
+          // unknown error, delay and retry `retryLimit` times
+          retryCounter++;
           printProgress(
-            `Unexpected error, waiting ${UNKNOWN_RETRY_DELAY}ms before resuming. Attempt ${counter}/${RETRY_LIMIT}`
+            `Unexpected error, waiting ${retryDelay}ms before resuming. Attempt ${retryCounter}/${retryLimit}`
           );
-          await new Promise((resolve) => setTimeout(resolve, UNKNOWN_RETRY_DELAY));
+          await new Promise((resolve) => setTimeout(resolve, retryDelay));
         }
       }
     }
+    // this is run after we've retried a single email `retryLimit` times
     if (!sent) {
       errors++;
       process.stdout.cursorTo(0);
       logger.error({
         action: 'email_send_failure',
         email,
-        error: `Email not sent after ${RETRY_LIMIT} attempts`,
+        error: `Email not sent after ${retryLimit} attempts`,
       });
       console.log();
     }
   }
-
   console.log('\n');
 
   if (errors) console.log(`${errors} errors logged.`);
+};
+
+function askQuestion(query, defaultValue) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) =>
+    rl.question(`${query} [${defaultValue}]: `, (ans) => {
+      rl.close();
+      resolve(ans ? parseInt(ans, 10) : defaultValue);
+    })
+  );
+}
+
+(async function emailBlast() {
+  const mailRate = await askQuestion('Rate Limit', 15);
+  const retryDelay = await askQuestion('Retry Delay (ms)', 10000);
+  const retryLimit = await askQuestion('Retry Limit', 10);
+
+  const emails = await getAllEmails();
+  await updateToken();
+
+  await serialSend(emails, retryDelay, retryLimit, mailRate);
 
   console.log('Process complete');
   process.exit(0);

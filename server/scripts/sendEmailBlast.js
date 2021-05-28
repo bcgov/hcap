@@ -1,19 +1,18 @@
+/* eslint-disable no-plusplus */
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-console */
 require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
-const path = require('path');
-const { writeFileSync } = require('fs');
 const { dbClient } = require('../db/db');
+const logger = require('../logger.js');
 
-const Reset = '\x1b[0m';
-const FgGreen = '\x1b[32m';
-
-const MAIL_RATE = 20;
+const UNKNOWN_RETRY_DELAY = 1000;
+const RETRY_LIMIT = 10;
+const MAIL_RATE = 10;
 const CHES_HOST = process.env.CHES_HOST || 'https://ches-dev.apps.silver.devops.gov.bc.ca';
 const CHES_AUTH_URL =
   process.env.CHES_AUTH_URL ||
   'https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token';
-const failedSends = [];
 
 const withdrawEmailSubject = encodeURI(`
   WITHDRAW
@@ -41,6 +40,7 @@ async function authenticateChes() {
     return error;
   }
 }
+
 function createPayload(recipient, uuid) {
   return {
     from: 'noreply@hcapparticipants.gov.bc.ca',
@@ -68,6 +68,10 @@ function createPayload(recipient, uuid) {
   };
 }
 
+async function getAllEmails() {
+  return dbClient.db.query(`SELECT email_address, otp FROM confirm_interest`);
+}
+
 const config = {
   headers: {
     authorization: null,
@@ -75,110 +79,92 @@ const config = {
   },
 };
 
-async function getEmailBlock(index, block) {
-  return dbClient.db.query(
-    `SELECT email_address , otp FROM confirm_interest LIMIT ${block} OFFSET ${index}`
-  );
-}
-async function countEmails() {
-  await dbClient.connect();
-  return dbClient.db.query('SELECT Count(*) FROM confirm_interest');
-}
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-async function sendEmail(email, otp, conf) {
-  try {
-    await axios.post(`${CHES_HOST}/api/v1/email`, createPayload(email, otp), conf);
-  } catch (e) {
-    failedSends.push(otp);
-    console.log(e.response?.data || e.response || e);
-  }
-}
-
 async function updateToken() {
   config.headers.authorization = `Bearer ${await authenticateChes()}`;
+  console.log(`Token retrieved successfully!`);
 }
 
-async function blastRecursive(start, end, max, batch, chesConfiguration) {
-  const now = new Date();
-  if (start >= max || (start >= end && end !== -1)) {
-    return true;
-  }
-  const emails = await getEmailBlock(start, batch);
-  // test the token
-  try {
-    await axios.get(`${CHES_HOST}/api/v1/health`, chesConfiguration);
-  } catch (e) {
-    if (e?.response?.data === 'Access denied') {
-      console.log('Token Expired, Reauthorizing...');
-      await updateToken();
-      console.log(`Success, Token Reauthorized!`);
-    } else {
-      console.log(e.response?.data || e.response || e);
+async function sendEmail(email, otp) {
+  if (email.includes('1564d6737f53')) throw new Error('test');
+  // if (email.includes('+4')) throw new Error('test');
+  const delayFromRate = 1000 / MAIL_RATE;
+  await Promise.all([
+    axios.post(`${CHES_HOST}/api/v1/email`, createPayload(email, otp), config),
+    new Promise((resolve) => setTimeout(resolve, delayFromRate)),
+  ]);
+}
+
+function printProgress(progress) {
+  process.stdout.cursorTo(0);
+  process.stdout.write(progress);
+  // console.log(progress);
+}
+
+const average = (arr) => arr.reduce((prev, curr) => prev + curr) / arr.length;
+
+(async function emailBlast() {
+  await dbClient.connect();
+  await updateToken();
+
+  const emails = await getAllEmails();
+  const start = new Date();
+
+  const previousTTS = [];
+  let errors = 0;
+
+  console.log(`${emails.length} emails loaded.\n`);
+  for (let i = 0; i < emails.length; i += 1) {
+    const email = emails[i];
+    let sent = false;
+    let counter = 0;
+    while (!sent && counter < RETRY_LIMIT) {
+      try {
+        const earlier = new Date();
+        await sendEmail(email.email_address, email.otp);
+        const later = new Date();
+        const timeToSend = later - earlier;
+        previousTTS.push(timeToSend);
+        if (previousTTS.length > 100) previousTTS.length = 100;
+        const delayAverage = average(previousTTS).toFixed(0);
+        const data = [
+          `Delay: ${timeToSend}`,
+          `Total Time: ${((later - start) / 1000).toFixed(0)}s`,
+          `Delay Avg: ${delayAverage}`,
+          `Rate Avg: ${delayAverage > 0 ? (1000 / delayAverage).toFixed(0) : 'NaN'}`,
+          `${i + 1} of ${emails.length}`,
+          `ID: ${email.otp}`,
+        ];
+        printProgress(data.join('    '));
+        sent = true;
+      } catch (error) {
+        if (error?.response?.data === 'Access denied') {
+          console.log('Token Expired, Reauthorizing...');
+          await updateToken();
+        } else {
+          counter++;
+          printProgress(
+            `Unexpected error, waiting ${UNKNOWN_RETRY_DELAY}ms before resuming. Attempt ${counter}/${RETRY_LIMIT}`
+          );
+          await new Promise((resolve) => setTimeout(resolve, UNKNOWN_RETRY_DELAY));
+        }
+      }
+    }
+    if (!sent) {
+      errors++;
+      process.stdout.cursorTo(0);
+      logger.error({
+        action: 'email_send_failure',
+        email,
+        error: `Email not sent after ${RETRY_LIMIT} attempts`,
+      });
+      console.log();
     }
   }
 
-  const promiseArr = emails.map((res) => sendEmail(res.email_address, res.otp, chesConfiguration));
-  Promise.all(promiseArr);
-  await sleep((batch / MAIL_RATE) * 1000);
-  const batchTime = (new Date() - now) / 1000;
-  console.log(
-    `Sent ${FgGreen}${start}${Reset} to ${FgGreen}${
-      start + batch
-    }${Reset}: ${FgGreen}${batchTime.toFixed(2)}${Reset}s, ${FgGreen}${(batch / batchTime).toFixed(
-      1
-    )}${Reset}/s`
-  );
-  return blastRecursive(start + batch, end, max, batch, chesConfiguration);
-}
+  console.log('\n');
 
-async function blast(start, end, batch) {
-  const { count } = (await countEmails())[0];
-  console.log(`Blasting ${FgGreen}${count}${Reset} emails...`);
-  await updateToken();
+  if (errors) console.log(`${errors} errors logged.`);
 
-  const now = new Date();
-  await blastRecursive(start, end, count, batch, config);
-  const totalTime = (new Date() - now) / 1000;
-  console.log(
-    `Sent ${FgGreen}${count}${Reset} emails in ${totalTime.toFixed(2)}s at a rate of ${(
-      count / totalTime
-    ).toFixed(2)}`
-  );
-}
-
-const writeFailedSends = (failures) => {
-  console.log(`There were ${failures.length} failed sends.`);
-  if (failures.length === 0) return;
-  const timestamp = new Date().toJSON();
-  const failureJson = JSON.stringify(failures);
-  console.log(failures);
-  writeFileSync(path.join(__dirname, `failed_ches_sends-${timestamp}.json`), failureJson);
-};
-
-(async function emailBlast() {
-  const arglength = process.argv.length;
-  const mode = arglength > 2 ? process.argv[2] : 'default';
-  const start = arglength > 3 ? parseInt(process.argv[3], 10) : 0;
-  const end = arglength > 4 ? parseInt(process.argv[4], 10) : -1;
-  const batch = arglength > 5 ? parseInt(process.argv[5], 10) : 100;
-  switch (mode) {
-    case 'all':
-      await blast(0, -1, 100);
-      writeFailedSends(failedSends);
-      break;
-    case 'index':
-      console.log(start, end, batch);
-      await blast(start, end, batch);
-      writeFailedSends(failedSends);
-      break;
-    case 'count':
-      console.log((await countEmails())[0].count);
-      break;
-    default:
-      console.log('No action specified');
-  }
   console.log('Process complete');
   process.exit(0);
 })();

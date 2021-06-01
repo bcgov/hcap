@@ -18,6 +18,7 @@ const colours = {
   },
 };
 
+const DAILY_MAIL_LIMIT = 10000;
 const CHES_HOST = process.env.CHES_HOST || 'https://ches-dev.apps.silver.devops.gov.bc.ca';
 const CHES_AUTH_URL =
   process.env.CHES_AUTH_URL ||
@@ -216,14 +217,15 @@ function askQuestion(query, defaultValue) {
   const mailRate = await askQuestion('Max Rate', 15);
   const retryDelay = await askQuestion('Retry Delay (ms)', 10000);
   const retryLimit = await askQuestion('Retry Limit', 10);
-  const mailLimit = await askQuestion('Total Mail Limit', 10000);
+  let mailLimit = await askQuestion('Total Mail Limit', DAILY_MAIL_LIMIT);
 
   /**
    * CHES Daily Limit = 10,000
    * https://github.com/bcgov/common-hosted-email-service/wiki/Best-Practices#rate-limits
    */
-  if (mailLimit > 10000) {
+  if (mailLimit > DAILY_MAIL_LIMIT) {
     console.log(`${colours.fg.red}Defaulting to 10,000 emails.${colours.reset}`);
+    mailLimit = DAILY_MAIL_LIMIT;
   }
 
   const emails = await getEmails(mailLimit);

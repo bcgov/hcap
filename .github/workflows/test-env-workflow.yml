@@ -1,5 +1,6 @@
 name: Test Env specific changes
-on: 
+on:
+ workflow_dispatch: 
  push:
   branches:
     - hcap-584-pipeline-review

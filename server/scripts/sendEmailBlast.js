@@ -6,6 +6,7 @@ const axios = require('axios');
 const readline = require('readline');
 const { dbClient } = require('../db/db');
 const logger = require('../logger.js');
+const { collections } = require('../db/schema');
 
 // https://stackoverflow.com/a/40560590
 const colours = {
@@ -76,9 +77,16 @@ function createPayload(recipient, uuid) {
   };
 }
 
-async function getAllEmails() {
+async function getEmails(limit) {
   await dbClient.connect();
-  const data = await dbClient.db.query(`SELECT email_address, otp FROM confirm_interest`);
+  const data = await dbClient.db[collections.CONFIRM_INTEREST].find(
+    {
+      email_sent: false,
+    },
+    {
+      limit,
+    }
+  );
   console.log(`${colours.fg.green}${data.length} emails loaded.${colours.reset}`);
   return data;
 }
@@ -100,6 +108,10 @@ async function sendEmail(email, otp, delay) {
     axios.post(`${CHES_HOST}/api/v1/email`, createPayload(email, otp), config),
     new Promise((resolve) => setTimeout(resolve, delay)),
   ]);
+  await dbClient.db[collections.CONFIRM_INTEREST].save({
+    otp,
+    email_sent: true,
+  });
 }
 
 function printProgress(progress) {
@@ -204,8 +216,17 @@ function askQuestion(query, defaultValue) {
   const mailRate = await askQuestion('Max Rate', 15);
   const retryDelay = await askQuestion('Retry Delay (ms)', 10000);
   const retryLimit = await askQuestion('Retry Limit', 10);
+  const mailLimit = await askQuestion('Total Mail Limit', 10000);
 
-  const emails = await getAllEmails();
+  /**
+   * CHES Daily Limit = 10,000
+   * https://github.com/bcgov/common-hosted-email-service/wiki/Best-Practices#rate-limits
+   */
+  if (mailLimit > 10000) {
+    console.log(`${colours.fg.red}Defaulting to 10,000 emails.${colours.reset}`);
+  }
+
+  const emails = await getEmails(mailLimit);
   await updateToken();
 
   await serialSend(emails, retryDelay, retryLimit, mailRate);

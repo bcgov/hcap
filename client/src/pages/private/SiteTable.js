@@ -136,11 +136,10 @@ export default () => {
 
     fetchUserInfo();
 
-    // This fetch sites is a dependency of this function. This needs to be reworked, but it is outside of the scope of the ticket
-    /* eslint-disable */
     fetchSites();
+    // This fetch sites is a dependency of this function. This needs to be reworked, but it is outside of the scope of the ticket
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history, location]);
-  /* eslint-enable */
   const defaultOnClose = () => {
     setActiveModalForm(null);
   };
@@ -220,9 +219,7 @@ export default () => {
           <Grid item>
             <Box minWidth={180}>
               <TableFilter
-                onFilter={(filteredRows) => {
-                  setRows(filteredRows);
-                }}
+                onFilter={(filteredRows) => setRows(filteredRows)}
                 values={healthAuthorities}
                 rows={fetchedRows}
                 label='Health Authority'

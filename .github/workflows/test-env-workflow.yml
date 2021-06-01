@@ -1,12 +1,11 @@
 name: Test Env specific changes
 on:
- workflow_dispatch: 
- push:
-  branches:
-    - hcap-584-pipeline-review
-   
-   
-jobs: 
+  workflow_dispatch:
+  push:
+    branches:
+      - hcap-584-pipeline-review
+
+jobs:
   test:
     name: Test environment specific work flow
     runs-on: ubuntu-20.04

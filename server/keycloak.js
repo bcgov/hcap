@@ -104,7 +104,6 @@ class Keycloak {
   }
 
   async authenticateIfNeeded() {
-
     // Race condition if token expires between this call and the desired authenticated call
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
     try {

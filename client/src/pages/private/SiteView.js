@@ -42,7 +42,7 @@ export default () => {
             Sites
           </Typography>
         </Box>
-        <SiteTable/>
+        <SiteTable />
       </CheckPermissions>
     </Page>
   );

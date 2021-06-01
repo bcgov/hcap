@@ -76,13 +76,7 @@ export default () => {
       });
       setFetchedRows(rowsData);
       setIsPendingRequests(rowsData.length > 0);
-      setRows(
-          rowsData.filter(
-            (row) =>
-              healthAuthorities.includes(row.healthAuthority)
-          )
-          )
-
+      setRows(rowsData.filter((row) => healthAuthorities.includes(row.healthAuthority)));
     } else {
       setRows([]);
       setFetchedRows([]);
@@ -126,7 +120,7 @@ export default () => {
   }, [roles]);
 
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
-  
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       const response = await fetch(`${API_URL}/api/v1/user`, {
@@ -141,8 +135,12 @@ export default () => {
     };
 
     fetchUserInfo();
+
+    // This fetch sites is a dependency of this function. This needs to be reworked, but it is outside of the scope of the ticket
+    /* eslint-disable */
     fetchSites();
   }, [history, location]);
+  /* eslint-enable */
   const defaultOnClose = () => {
     setActiveModalForm(null);
   };
@@ -222,8 +220,8 @@ export default () => {
           <Grid item>
             <Box minWidth={180}>
               <TableFilter
-                onFilter={(filteredRows) =>{ 
-                  setRows(filteredRows)
+                onFilter={(filteredRows) => {
+                  setRows(filteredRows);
                 }}
                 values={healthAuthorities}
                 rows={fetchedRows}

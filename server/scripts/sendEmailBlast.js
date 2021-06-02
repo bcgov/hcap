@@ -240,5 +240,5 @@ function askQuestion(query, defaultValue) {
   await serialSend(emails, retryDelay, retryLimit, mailRate);
 
   console.log('Process complete');
-  process.exit(0);
+  setTimeout(() => process.exit(0), 1000); // allow logging to complete before closing connection
 })();

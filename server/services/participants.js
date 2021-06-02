@@ -130,7 +130,7 @@ const validateConfirmationId = (id) =>
 
 const confirmParticipantInterest = async (id) => {
   const now = new Date().toJSON();
-
+  // Check to see if there are any matching records that have not withdrawn.
   const relatedParticipants = await dbClient.db[collections.PARTICIPANTS]
     .join({
       [collections.CONFIRM_INTEREST]: {
@@ -161,29 +161,30 @@ const confirmParticipantInterest = async (id) => {
         to: now,
         from: participant.body.userUpdatedAt,
         field: 'userUpdatedAt',
-      }
-    ]
-    if(participant.interested !=='yes'){
+      },
+    ];
+    if (participant.interested !== 'yes') {
       changes.push({
-        to:'yes',
-        from:participant.interested,
-        field:'interested'
-      })
+        to: 'yes',
+        from: participant.interested,
+        field: 'interested',
+      });
     }
     return {
-    id: participant.id,
-    userUpdatedAt: now,
-    interested: 'yes',
-    history: [
-      {
-        changes,
-        timestamp: now,
-        reason: 'Reconfirm Interest',
-      },
-      ...(participant.body.history ? participant.body.history : []),
-    ],
-  }
-});
+      id: participant.id,
+      userUpdatedAt: now,
+      interested: 'yes',
+      history: [
+        {
+          changes,
+          timestamp: now,
+          reason: 'Reconfirm Interest',
+        },
+        ...(participant.body.history ? participant.body.history : []),
+      ],
+    };
+  });
+  console.log(updatedParticipantFields);
   await Promise.all(
     updatedParticipantFields.map(({ id: participantId, ...fields }) => {
       const result = dbClient.db[collections.PARTICIPANTS].updateDoc({ id: participantId }, fields);
@@ -191,7 +192,7 @@ const confirmParticipantInterest = async (id) => {
     })
   );
   const deleted = await dbClient.db[collections.CONFIRM_INTEREST].destroy({ otp: id });
-  // Fail if the OTP didn't exist or if the list of participants 
+  // Fail if the OTP didn't exist or if the list of participants
   return deleted.length > 0 && updatedParticipantFields.length > 0;
 };
 

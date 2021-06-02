@@ -1,7 +1,6 @@
 name: Test application (e2e)
 
 on:
-  workflow_dispatch:
   push:
     tags:
       - cypress

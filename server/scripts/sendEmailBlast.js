@@ -188,7 +188,7 @@ const serialSend = async (emails, retryDelay, retryLimit, mailRate) => {
     if (!sent) {
       errors++;
       process.stdout.cursorTo(0);
-      logger.error({
+      logger.info({
         action: 'email_send_failure',
         email,
         error: `Email not sent after ${retryLimit} attempts`,

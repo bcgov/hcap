@@ -150,11 +150,16 @@ const confirmParticipantInterest = async (id) => {
     .find({
       status: 'hired',
     });
-  const unhiredRelatedParticipants = relatedParticipants.filter(
-    (related) => !hiredParticipants.find((hired) => hired.id === related.id)
-  );
 
-  const updatedParticipantFields = unhiredRelatedParticipants.map((participant) => {
+  const hiredRelatedParticipants = relatedParticipants.filter((related) =>
+    hiredParticipants.find((hired) => hired.id === related.id)
+  );
+  // Return false if any of the related participants is hired
+  if (hiredRelatedParticipants.length > 0) {
+    return false;
+  }
+
+  const updatedParticipantFields = relatedParticipants.map((participant) => {
     const changes = [
       {
         to: now,

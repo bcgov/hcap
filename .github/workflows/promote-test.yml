@@ -1,12 +1,12 @@
-# Build and Deploy to dev env.
-# Trigger with tag dev
-# Connected with repo environment 'dev'
-name: OpenShift Build and Deploy to Dev
+# Promotion to test env.
+# Trigger with tag push
+# Connected with repo environment 'test'
+name: OpenShift Deploy/Promotion to Test
 
 on:
   push:
     tags:
-      - dev
+      - test
 
 env:
   CLUSTER: https://api.silver.devops.gov.bc.ca:6443
@@ -14,29 +14,16 @@ env:
   PROJECT: hcap
 
 jobs:
-  audit:
-    name: Run NPM Audit
+  promoteTest:
+    name: OpenShift Promotion
     runs-on: ubuntu-latest
+    environment:
+      name: test
+    env:
+      OS_NAMESPACE_SUFFIX: test
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: NPM Audit
-        run: |
-          cd "$GITHUB_WORKSPACE/client" && npm audit --production
-          cd "$GITHUB_WORKSPACE/server" && npm audit --production
-          cd "$GITHUB_WORKSPACE"
-
-  build:
-    name: OpenShift Build & Deploy
-    runs-on: ubuntu-latest
-    needs: audit
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          ref: 'dev'
-          fetch-depth: 0
 
       - name: Cache OpenShift CLI
         id: cache-oc
@@ -57,17 +44,9 @@ jobs:
           sudo mv "$FILE" /usr/local/bin/oc
           rm -rf oc.tar.gz openshift-origin-client-tools-v*
 
-      - name: Build & Deploy
+      - name: Promote
         run: |
           cd "$GITHUB_WORKSPACE"
           oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
-          make print-status
-          make server-build
+          export OS_NAMESPACE_SUFFIX=${{ env.OS_NAMESPACE_SUFFIX }}
           make server-deploy
-
-      # TODO make wait for server-deploy and run the ZAP Scan
-      # - name: ZAP Scan
-      #   uses: zaproxy/action-baseline@v0.4.0
-      #   with:
-      #     target: ${{ env.DEV_URL }}
-      #     cmd_options: '-I'

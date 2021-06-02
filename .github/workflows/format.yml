@@ -7,8 +7,6 @@ jobs:
   premerge:
     name: format-check
     runs-on: ubuntu-20.04
-    environment:
-      name: dev
     steps:
       - uses: actions/checkout@v2
 

@@ -188,7 +188,7 @@ const serialSend = async (emails, retryDelay, retryLimit, mailRate) => {
     if (!sent) {
       errors++;
       process.stdout.cursorTo(0);
-      logger.error({
+      logger.info({
         action: 'email_send_failure',
         email,
         error: `Email not sent after ${retryLimit} attempts`,
@@ -240,5 +240,5 @@ function askQuestion(query, defaultValue) {
   await serialSend(emails, retryDelay, retryLimit, mailRate);
 
   console.log('Process complete');
-  process.exit(0);
+  setTimeout(() => process.exit(0), 1000); // allow logging to complete before closing connection
 })();

@@ -1,4 +1,3 @@
-const dayjs = require('dayjs');
 const readXlsxFile = require('node-xlsx').default;
 const { validate, ParticipantBatchSchema, isBooleanValue } = require('../validation.js');
 const { dbClient, collections } = require('../db');

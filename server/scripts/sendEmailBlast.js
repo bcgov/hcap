@@ -67,13 +67,13 @@ function createPayload(recipient, uuid) {
         </p>
         <a href="${`${process.env.CLIENT_URL}/confirm-interest?id=${uuid}`}" rel="noopener" target="_blank">
           Confirm Interest
-        </a> <span>(${process.env.CLIENT_URL}/confirm-interest?id=${uuid})</span>
+        </a>
         <br />
         <p>
           There are still communities with high opportunities in HCAP, which are listed on the website
           <a href="https://www2.gov.bc.ca/gov/content/covid-19/economic-recovery/work-in-health-care" rel="noopener" target="_blank">
             here.
-          </a> <span>(https://www2.gov.bc.ca/gov/content/covid-19/economic-recovery/work-in-health-care)</span>
+          </a>
         </p>
         <p>If you no longer wish to participate or be considered for the Health Career Access Program, please email us with the subject line WITHDRAW to <b>HCAPInfoQuery@gov.bc.ca</b> or or click the link below.</p>
         <a href="mailto:HCAPInfoQuery@gov.bc.ca?subject=${withdrawEmailSubject}&body=${withdrawEmailBody}">

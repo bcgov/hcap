@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    name: Test environment specific work flow
+    name: Test environment specific work flow ABC
     runs-on: ubuntu-20.04
     environment:
       name: dev

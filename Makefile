@@ -154,7 +154,7 @@ db-create:
 
 db-mongo-tunnel:
 	@oc project $(TARGET_NAMESPACE)
-	@oc port-forward $(APP_NAME)-mongodb-0 27017
+	@oc port-forward service/$(APP_NAME)-mongo-headless 27017
 
 db-postgres-tunnel:
 	@oc project $(TARGET_NAMESPACE)

@@ -1,4 +1,3 @@
-const dayjs = require('dayjs');
 const readXlsxFile = require('node-xlsx').default;
 const { validate, ParticipantBatchSchema, isBooleanValue } = require('../validation.js');
 const { dbClient, collections } = require('../db');
@@ -129,9 +128,8 @@ const validateConfirmationId = (id) =>
   dbClient.db[collections.CONFIRM_INTEREST].findOne({ otp: id });
 
 const confirmParticipantInterest = async (id) => {
-  const sixWeeksAgo = dayjs().subtract(6, 'weeks').format('YYYY-MM-DD');
   const now = new Date().toJSON();
-
+  // Check to see if there are any matching records that have not withdrawn.
   const relatedParticipants = await dbClient.db[collections.PARTICIPANTS]
     .join({
       [collections.CONFIRM_INTEREST]: {
@@ -141,9 +139,7 @@ const confirmParticipantInterest = async (id) => {
     })
     .find({
       'body.interested IS DISTINCT FROM': 'withdrawn', // "IS DISTINCT FROM" = "!=" but includes null
-      'body.userUpdatedAt::TIMESTAMP <': sixWeeksAgo,
     });
-
   const hiredParticipants = await dbClient.db[collections.PARTICIPANTS]
     .join({
       [collections.PARTICIPANTS_STATUS]: {
@@ -155,40 +151,52 @@ const confirmParticipantInterest = async (id) => {
       status: 'hired',
     });
 
-  const unhiredRelatedParticipants = relatedParticipants.filter(
-    (related) => !hiredParticipants.find((hired) => hired.id === related.id)
+  const hiredRelatedParticipants = relatedParticipants.filter((related) =>
+    hiredParticipants.find((hired) => hired.id === related.id)
   );
+  // Return false if any of the related participants is hired
+  if (hiredRelatedParticipants.length > 0) {
+    return false;
+  }
 
-  const updatedParticipantFields = unhiredRelatedParticipants.map((participant) => ({
-    id: participant.id,
-    userUpdatedAt: now,
-    interested: 'yes',
-    history: [
+  const updatedParticipantFields = relatedParticipants.map((participant) => {
+    const changes = [
       {
-        changes: [
-          {
-            to: now,
-            from: participant.body.userUpdatedAt,
-            field: 'userUpdatedAt',
-          },
-        ],
-        timestamp: now,
-        reason: 'Reconfirm Interest',
+        to: now,
+        from: participant.body.userUpdatedAt,
+        field: 'userUpdatedAt',
       },
-      ...(participant.body.history ? participant.body.history : []),
-    ],
-  }));
-
+    ];
+    if (participant.interested !== 'yes') {
+      changes.push({
+        to: 'yes',
+        from: participant.interested,
+        field: 'interested',
+      });
+    }
+    return {
+      id: participant.id,
+      userUpdatedAt: now,
+      interested: 'yes',
+      history: [
+        {
+          changes,
+          timestamp: now,
+          reason: 'Reconfirm Interest',
+        },
+        ...(participant.body.history ? participant.body.history : []),
+      ],
+    };
+  });
   await Promise.all(
     updatedParticipantFields.map(({ id: participantId, ...fields }) => {
       const result = dbClient.db[collections.PARTICIPANTS].updateDoc({ id: participantId }, fields);
       return result;
     })
   );
-
   const deleted = await dbClient.db[collections.CONFIRM_INTEREST].destroy({ otp: id });
-
-  return deleted.length > 0;
+  // Fail if the OTP didn't exist or if the list of participants
+  return deleted.length > 0 && updatedParticipantFields.length > 0;
 };
 
 const getParticipants = async (

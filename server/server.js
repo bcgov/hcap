@@ -191,7 +191,6 @@ app.get(
   asyncMiddleware(async (req, res) => {
     const confirmationId = req.query.id;
     const isValid = uuidValidate(confirmationId) && (await validateConfirmationId(confirmationId));
-
     if (isValid) {
       return res.status(200).send();
     }

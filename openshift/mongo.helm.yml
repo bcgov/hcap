@@ -14,8 +14,8 @@ arbiter:
 
 architecture: replicaset
 image:
-  registry: "public.ecr.aws"
+  registry: 'public.ecr.aws'
 
 auth:
-  username: hcap
-  database: hcap
+  username: default
+  database: default

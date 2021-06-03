@@ -4,13 +4,9 @@ persistence:
 
 podSecurityContext:
   enabled: false
-  fsGroup: 1008111001
-  runAsUser: 1008111001
 
 containerSecurityContext:
   enabled: false
-  fsGroup: 1008111001
-  runAsUser: 1008111001
 
 arbiter:
   podSecurityContext:

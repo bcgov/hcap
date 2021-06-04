@@ -6,6 +6,7 @@ import store from 'store';
 import Keycloak from 'keycloak-js';
 
 import { API_URL, Routes } from '../constants';
+import { useAuth } from '../providers';
 
 const Admin = lazy(() => import('../pages/private/Admin'));
 const UserView = lazy(() => import('../pages/private/UserView'));
@@ -54,7 +55,24 @@ const RootUrlSwitch = ({ rootUrlRegExp, children }) =>
 
 export default () => {
   const [keycloakInfo, setKeycloakInfo] = useState();
+  const { setUser } = useAuth();
 
+  const getUserInfo = async (token) => {
+    setUser(null);
+    const response = await fetch(`${API_URL}/api/v1/user`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      method: 'GET',
+    });
+    if (response.ok) {
+      setUser(await response.json());
+    } else {
+      // logout, remove token if it's invalid
+      store.remove('TOKEN');
+      await keycloakInfo.logout({ redirectUri: window.location.origin });
+    }
+  };
   const getKeycloakInfo = async () => {
     const response = await fetch(`${API_URL}/api/v1/keycloak-realm-client-info`, {
       headers: {
@@ -93,6 +111,7 @@ export default () => {
       }}
       onTokens={() => {
         store.set('TOKEN', keycloakInfo.token);
+        getUserInfo(keycloakInfo.token);
       }}
       LoadingComponent={<LinearProgress />}
     >

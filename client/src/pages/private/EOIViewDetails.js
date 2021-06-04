@@ -1,16 +1,13 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Page, CheckPermissions } from '../../components/generic';
 import { Form } from '../../components/employer-form';
 import { scrollUp } from '../../utils';
 import store from 'store';
 import { API_URL } from '../../constants';
-import { AuthContext } from '../../providers';
 
 export default ({ match }) => {
   const [user, setUser] = useState(undefined);
-  const { auth } = AuthContext.useAuth();
-  const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const expressionID = match.params.id;
 
   useEffect(() => {
@@ -33,7 +30,6 @@ export default ({ match }) => {
   return (
     <Page>
       <CheckPermissions
-        roles={roles}
         permittedRoles={['health_authority', 'ministry_of_health']}
         renderErrorMessage={true}
       >

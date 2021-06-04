@@ -124,7 +124,6 @@ export default () => {
   return (
     <Page>
       <CheckPermissions
-        roles={roles}
         permittedRoles={['health_authority', 'ministry_of_health']}
         renderErrorMessage={true}
       >

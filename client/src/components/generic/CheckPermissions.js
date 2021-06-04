@@ -8,7 +8,7 @@ import { AuthContext } from '../../providers';
 export const CheckPermissions = ({ permittedRoles, children, renderErrorMessage = false }) => {
   const { auth } = AuthContext.useAuth();
   const roles = auth.user?.roles || [];
-  const isLoading = auth?.isLoading || true;
+  const isLoading = auth?.isLoading;
   const isPending = checkPending(roles);
 
   // If page is currently loading, don't render anything

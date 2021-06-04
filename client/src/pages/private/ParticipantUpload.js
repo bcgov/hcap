@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
@@ -26,33 +26,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default () => {
-  const [roles, setRoles] = useState([]);
   const [file, setFile] = useState();
   const [isLoadingData, setLoadingData] = useState(false);
-  const [isLoadingUser, setLoadingUser] = useState(false);
   const [errors, setErrors] = useState([]);
   const classes = useStyles();
   const history = useHistory();
-
-  const fetchUserInfo = async () => {
-    setLoadingUser(true);
-    const response = await fetch(`${API_URL}/api/v1/user`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      const { roles } = await response.json();
-      setLoadingUser(false);
-      setRoles(roles);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserInfo();
-  }, []);
 
   const handleSubmit = async () => {
     setLoadingData(true);
@@ -88,12 +66,7 @@ export default () => {
 
   return (
     <Page>
-      <CheckPermissions
-        isLoading={isLoadingUser}
-        roles={roles}
-        permittedRoles={['maximus']}
-        renderErrorMessage={true}
-      >
+      <CheckPermissions permittedRoles={['maximus']} renderErrorMessage={true}>
         <Grid
           container
           alignContent='center'

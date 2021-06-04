@@ -12,27 +12,9 @@ const SiteParticipantsTable = lazy(() => import('./SiteParticipantsTable'));
 
 export default ({ match }) => {
   const { openToast } = useToast();
-  const [roles, setRoles] = useState([]);
   const [site, setSite] = useState([]);
-  const [isLoadingUser, setLoadingUser] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const id = match.params.id;
-
-  const fetchUserInfo = async () => {
-    setLoadingUser(true);
-    const response = await fetch(`${API_URL}/api/v1/user`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      const { roles } = await response.json();
-      setLoadingUser(false);
-      setRoles(roles);
-    }
-  };
 
   const handleSiteEdit = async (site) => {
     const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
@@ -55,10 +37,6 @@ export default ({ match }) => {
       });
     }
   };
-
-  useEffect(() => {
-    fetchUserInfo();
-  }, []);
 
   const fetchDetails = async (id) => {
     const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
@@ -176,8 +154,6 @@ export default ({ match }) => {
       </Dialog>
       <Page>
         <CheckPermissions
-          isLoading={isLoadingUser}
-          roles={roles}
           permittedRoles={['health_authority', 'ministry_of_health']}
           renderErrorMessage={true}
         >
@@ -193,7 +169,7 @@ export default ({ match }) => {
                   <Typography variant='h2'>
                     <b>{site.siteName}</b>
                   </Typography>
-                  <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+                  <CheckPermissions permittedRoles={['ministry_of_health']}>
                     <Box pl={2} pt={0.5}>
                       <Button
                         onClick={async () => {

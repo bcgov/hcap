@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
@@ -11,6 +11,7 @@ import { Routes, regionLabelsMap, API_URL } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import { ToastStatus, CreateSiteSchema } from '../../constants';
+import { AuthContext } from '../../providers';
 
 const columns = [
   { id: 'siteId', name: 'Site ID' },
@@ -24,7 +25,6 @@ const columns = [
 
 export default ({ sites }) => {
   const { openToast } = useToast();
-  const [roles, setRoles] = useState([]);
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
@@ -41,6 +41,8 @@ export default ({ sites }) => {
     'Northern',
     'None',
   ]);
+  const { auth } = AuthContext.useAuth();
+  const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
 
   const history = useHistory();
   const location = useLocation();
@@ -123,19 +125,6 @@ export default ({ sites }) => {
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      const response = await fetch(`${API_URL}/api/v1/user`, {
-        headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-        method: 'GET',
-      });
-
-      if (response.ok) {
-        const { roles } = await response.json();
-        setRoles(roles);
-      }
-    };
-
-    fetchUserInfo();
     fetchSites();
   }, [history, location]);
 

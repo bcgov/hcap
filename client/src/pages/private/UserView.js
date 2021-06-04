@@ -27,12 +27,10 @@ const columns = [
 ];
 
 export default () => {
-  const [roles, setRoles] = useState([]);
   const [sites, setSites] = useState([]);
   const [order, setOrder] = useState('asc');
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoadingData, setLoadingData] = useState(false);
-  const [isLoadingUser, setLoadingUser] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedUserDetails, setSelectedUserDetails] = useState(null);
@@ -152,21 +150,6 @@ export default () => {
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      setLoadingUser(true);
-      const response = await fetch(`${API_URL}/api/v1/user`, {
-        headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-        method: 'GET',
-      });
-
-      if (response.ok) {
-        const { roles } = await response.json();
-        setRoles(roles);
-      }
-      setLoadingUser(false);
-    };
-
-    fetchUserInfo();
     fetchUsers({ pending: location.pathname === Routes.UserPending });
     fetchSites();
   }, [history, location]);
@@ -305,12 +288,7 @@ export default () => {
           )}
         </Formik>
       </Dialog>
-      <CheckPermissions
-        isLoading={isLoadingUser}
-        roles={roles}
-        permittedRoles={['ministry_of_health']}
-        renderErrorMessage={true}
-      >
+      <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
         <Grid
           container
           alignContent='center'

@@ -76,7 +76,7 @@ export default () => {
   }, []);
 
   return (
-    <Page>
+    <Page centered>
       <CheckPermissions
         isLoading={isLoadingUser}
         roles={roles}

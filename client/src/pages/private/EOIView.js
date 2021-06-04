@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
@@ -7,12 +7,11 @@ import store from 'store';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
 import { Routes, regionLabelsMap, API_URL } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
+import { AuthContext } from '../../providers';
 
 export default () => {
-  const [roles, setRoles] = useState([]);
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
-  const [isLoadingUser, setLoadingUser] = useState(false);
   const [fetchedRows, setFetchedRows] = useState([]);
   const [rows, setRows] = useState([]);
   const [columns] = useState([
@@ -33,26 +32,12 @@ export default () => {
     'Northern',
     'None',
   ]);
+  const { auth } = AuthContext.useAuth();
+  const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
 
   const [orderBy, setOrderBy] = useState(columns[0].id);
 
   const history = useHistory();
-
-  const fetchUserInfo = async () => {
-    setLoadingUser(true);
-    const response = await fetch(`${API_URL}/api/v1/user`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      const { roles } = await response.json();
-      setLoadingUser(false);
-      setRoles(roles);
-    }
-  };
 
   useEffect(() => {
     setHealthAuthorities(
@@ -94,8 +79,6 @@ export default () => {
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 
   useEffect(() => {
-    fetchUserInfo();
-
     const filterData = (data) => {
       const rows = [];
       data.forEach((item) => {
@@ -141,7 +124,6 @@ export default () => {
   return (
     <Page>
       <CheckPermissions
-        isLoading={isLoadingUser}
         roles={roles}
         permittedRoles={['health_authority', 'ministry_of_health']}
         renderErrorMessage={true}

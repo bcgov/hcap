@@ -7,8 +7,6 @@ import { Page, CheckPermissions, Button } from '../../components/generic';
 import { API_URL } from '../../constants';
 
 export default () => {
-  const [roles, setRoles] = useState([]);
-  const [isLoadingUser, setLoadingUser] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [report, setReport] = useState({
     total: 0,
@@ -17,22 +15,6 @@ export default () => {
     hired: 0,
     hiredPerRegion: {},
   });
-
-  const fetchUserInfo = async () => {
-    setLoadingUser(true);
-    const response = await fetch(`${API_URL}/api/v1/user`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      const { roles } = await response.json();
-      setLoadingUser(false);
-      setRoles(roles);
-    }
-  };
 
   const handleDownloadHiringClick = async () => {
     setLoading(true);
@@ -71,18 +53,12 @@ export default () => {
   };
 
   useEffect(() => {
-    fetchUserInfo();
     fetchReport();
   }, []);
 
   return (
     <Page>
-      <CheckPermissions
-        isLoading={isLoadingUser}
-        roles={roles}
-        permittedRoles={['ministry_of_health']}
-        renderErrorMessage={true}
-      >
+      <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
         <Grid
           container
           alignContent='center'

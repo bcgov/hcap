@@ -660,7 +660,6 @@ export default () => {
         )}
       </Dialog>
       <CheckPermissions
-        roles={roles}
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
         renderErrorMessage={true}
       >

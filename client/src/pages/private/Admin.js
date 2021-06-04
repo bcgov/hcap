@@ -40,7 +40,6 @@ export default () => {
   return (
     <Page>
       <CheckPermissions
-        roles={roles}
         permittedRoles={['maximus', 'employer', 'health_authority', 'ministry_of_health']}
         renderErrorMessage={true}
       >
@@ -56,34 +55,27 @@ export default () => {
               <Typography variant='subtitle1' gutterBottom>
                 Welcome, {name}
               </Typography>
-              <CheckPermissions roles={roles} permittedRoles={['maximus']}>
+              <CheckPermissions permittedRoles={['maximus']}>
                 {renderAdminButton(Routes.ParticipantUpload, 'Upload Participants')}
               </CheckPermissions>
               <CheckPermissions
-                roles={roles}
                 permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
               >
                 {renderAdminButton(Routes.ParticipantView, 'View Participants')}
               </CheckPermissions>
-              <CheckPermissions
-                roles={roles}
-                permittedRoles={['health_authority', 'ministry_of_health']}
-              >
+              <CheckPermissions permittedRoles={['health_authority', 'ministry_of_health']}>
                 {renderAdminButton(Routes.EOIView, 'View Employer EOIs')}
               </CheckPermissions>
-              <CheckPermissions
-                roles={roles}
-                permittedRoles={['health_authority', 'ministry_of_health']}
-              >
+              <CheckPermissions permittedRoles={['health_authority', 'ministry_of_health']}>
                 {renderAdminButton(Routes.SiteView, 'View Sites')}
               </CheckPermissions>
-              <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+              <CheckPermissions permittedRoles={['ministry_of_health']}>
                 {renderAdminButton(Routes.UserPending, 'View Access Requests')}
               </CheckPermissions>
-              <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+              <CheckPermissions permittedRoles={['ministry_of_health']}>
                 {renderAdminButton(Routes.UserEdit, 'Manage Users')}
               </CheckPermissions>
-              <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+              <CheckPermissions permittedRoles={['ministry_of_health']}>
                 {renderAdminButton(Routes.ReportingView, 'View Milestone Reports')}
               </CheckPermissions>
             </Grid>

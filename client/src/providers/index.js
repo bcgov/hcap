@@ -1,2 +1,2 @@
 export * from './ToastProvider';
-export * from './AuthProvider';
+export * as AuthContext from './AuthContext';

@@ -9,17 +9,17 @@ import 'react-app-polyfill/ie11';
 import { Theme } from './constants';
 import Routes from './routes';
 import { Toast } from './components/generic';
-import { ToastProvider, AuthProvider } from './providers';
+import { ToastProvider, AuthContext } from './providers';
 
 const App = () => (
   <ThemeProvider theme={Theme}>
     <MuiPickersUtilsProvider utils={MomentUtils}>
       <CssBaseline />
       <ToastProvider>
-        <AuthProvider>
+        <AuthContext.AuthProvider>
           <Toast />
           <Routes />
-        </AuthProvider>
+        </AuthContext.AuthProvider>
       </ToastProvider>
     </MuiPickersUtilsProvider>
   </ThemeProvider>

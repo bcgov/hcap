@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import { Page, Button, CheckPermissions } from '../../components/generic';
-import { API_URL, Routes } from '../../constants';
-import store from 'store';
+import { Routes } from '../../constants';
+import { AuthContext } from '../../providers';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -14,32 +14,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default () => {
-  const [roles, setRoles] = useState([]);
-  const [name, setName] = useState([]);
-  const [isLoadingUser, setLoadingUser] = useState(false);
   const history = useHistory();
   const classes = useStyles();
-
-  const fetchUserInfo = async () => {
-    setLoadingUser(true);
-    const response = await fetch(`${API_URL}/api/v1/user`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      const { roles, name } = await response.json();
-      setLoadingUser(false);
-      setRoles(roles);
-      setName(name);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserInfo();
-  }, []);
+  const { auth } = AuthContext.useAuth();
+  const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
+  const name = auth.user?.name || '';
 
   useEffect(() => {
     if (roles.includes('employer')) history.push(Routes.ParticipantView);
@@ -61,7 +40,6 @@ export default () => {
   return (
     <Page>
       <CheckPermissions
-        isLoading={isLoadingUser}
         roles={roles}
         permittedRoles={['maximus', 'employer', 'health_authority', 'ministry_of_health']}
         renderErrorMessage={true}

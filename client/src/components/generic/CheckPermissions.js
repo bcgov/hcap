@@ -3,14 +3,12 @@ import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import { Card } from '.';
 import { checkPermissions, checkPending } from '../../utils';
+import { AuthContext } from '../../providers';
 
-export const CheckPermissions = ({
-  isLoading,
-  roles,
-  permittedRoles,
-  children,
-  renderErrorMessage = false,
-}) => {
+export const CheckPermissions = ({ permittedRoles, children, renderErrorMessage = false }) => {
+  const { auth } = AuthContext.useAuth();
+  const roles = auth.user?.roles || [];
+  const isLoading = auth?.isLoading || true;
   const isPending = checkPending(roles);
 
   // If page is currently loading, don't render anything

@@ -357,50 +357,81 @@ export default () => {
   useEffectDebugger(() => {
     const resultColumns = [...defaultColumns];
     const currentPage = reducerState.pagination?.currentPage || 0;
-    const fetchUserInfo = async () => {
-      if (!reducerState.tabValue) {
-        dispatch({
-          type: 'updateKeyWithPagination',
-          key: 'tabValue',
-          value: Object.keys(tabs) // Set selected tab to first tab allowed for role
-            .find((key) => tabs[key].roles.some((role) => roles.includes(role))),
-        });
-      }
-      const isMoH = roles.includes('ministry_of_health');
-      const isSuperUser = roles.includes('superuser');
-      if (isMoH || isSuperUser) {
-        resultColumns.push(
-          { id: 'interested', name: 'Interest' },
-          { id: 'crcClear', name: 'CRC Clear' },
-          { id: 'statusInfo', name: 'Status' },
-          { id: 'edit' }
-        );
-      }
+    if (!reducerState.tabValue) {
+      dispatch({
+        type: 'updateKeyWithPagination',
+        key: 'tabValue',
+        value: Object.keys(tabs) // Set selected tab to first tab allowed for role
+          .find((key) => tabs[key].roles.some((role) => roles.includes(role))),
+      });
+    }
+    const isMoH = roles.includes('ministry_of_health');
+    const isSuperUser = roles.includes('superuser');
+    if (isMoH || isSuperUser) {
+      resultColumns.push(
+        { id: 'interested', name: 'Interest' },
+        { id: 'crcClear', name: 'CRC Clear' },
+        { id: 'statusInfo', name: 'Status' },
+        { id: 'edit' }
+      );
+    }
 
-      // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
-      const regions = Object.values(regionLabelsMap).filter((value) => value !== 'None');
-      setLocations(
-        isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
+    // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
+    const regions = Object.values(regionLabelsMap).filter((value) => value !== 'None');
+    setLocations(
+      isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
+    );
+
+    if (!isMoH) {
+      resultColumns.push(
+        { id: 'phoneNumber', name: 'Phone Number' },
+        { id: 'emailAddress', name: 'Email Address' },
+        { id: 'distance', name: 'Site Distance' }
+      );
+    }
+
+    if (!isMoH && !isSuperUser) {
+      resultColumns.push({ id: 'engage' });
+    }
+
+    resultColumns.sort(
+      (colum1, column2) => sortOrder.indexOf(colum1.id) - sortOrder.indexOf(column2.id)
+    );
+
+    setColumns(resultColumns);
+
+    setColumns((oldColumns) => {
+      setHideLastNameAndEmailFilter(
+        ['Available Participants', 'Archived Candidates'].includes(reducerState.tabValue)
       );
 
-      if (!isMoH) {
-        resultColumns.push(
-          { id: 'phoneNumber', name: 'Phone Number' },
-          { id: 'emailAddress', name: 'Email Address' },
-          { id: 'distance', name: 'Site Distance' }
-        );
+      if (reducerState.tabValue !== 'Available Participants')
+        oldColumns = oldColumns.filter((column) => column.id !== 'callbackStatus');
+
+      if (
+        ['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue) &&
+        !oldColumns.find((column) => column.id === 'status')
+      )
+        return [
+          ...oldColumns.slice(0, 3),
+          { id: 'status', name: 'Status' },
+          ...oldColumns.slice(3),
+        ];
+
+      if (reducerState.tabValue === 'Hired Candidates') {
+        oldColumns = oldColumns.filter((column) => column.id !== 'engage');
+        return [
+          ...oldColumns.slice(0, 8),
+          { id: 'siteName', name: 'Site Name' },
+          ...oldColumns.slice(8),
+        ];
       }
 
-      if (!isMoH && !isSuperUser) {
-        resultColumns.push({ id: 'engage' });
-      }
+      if (!['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue))
+        return oldColumns.filter((column) => column.id !== 'status');
 
-      resultColumns.sort(
-        (colum1, column2) => sortOrder.indexOf(colum1.id) - sortOrder.indexOf(column2.id)
-      );
-
-      setColumns(resultColumns);
-    };
+      return oldColumns;
+    });
 
     const getParticipants = async () => {
       if (!reducerState.tabValue) return;
@@ -430,49 +461,9 @@ export default () => {
     };
 
     const runAsync = async () => {
-      await fetchUserInfo();
       await getParticipants();
-
-      setColumns((oldColumns) => {
-        setHideLastNameAndEmailFilter(
-          ['Available Participants', 'Archived Candidates'].includes(reducerState.tabValue)
-        );
-
-        if (reducerState.tabValue !== 'Available Participants')
-          oldColumns = oldColumns.filter((column) => column.id !== 'callbackStatus');
-
-        if (
-          ['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue) &&
-          !oldColumns.find((column) => column.id === 'status')
-        ) {
-          // Remove statusInfo colum
-          oldColumns = oldColumns.filter((column) => column.id !== 'statusInfo');
-          return [
-            ...oldColumns.slice(0, 3),
-            { id: 'status', name: 'Status' },
-            ...oldColumns.slice(3),
-          ];
-        }
-
-        if (reducerState.tabValue === 'Hired Candidates') {
-          // Remove existing engage, siteName and status and statusInfo column and force putting back siteName + status
-          oldColumns = oldColumns.filter(
-            (column) => !['engage', 'siteName', 'status', 'statusInfo'].includes(column.id)
-          );
-          return [
-            ...oldColumns.slice(0, 8),
-            { id: 'siteName', name: 'Site Name' },
-            ...(hasWithdrawnParticipant ? [{ id: 'status', name: 'Status' }] : []),
-            ...oldColumns.slice(8),
-          ];
-        }
-
-        if (!['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue))
-          return oldColumns.filter((column) => column.id !== 'status');
-
-        return oldColumns;
-      });
     };
+
     runAsync();
   }, [
     reducerState.pagination?.currentPage,

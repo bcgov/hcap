@@ -107,6 +107,7 @@ Cypress.Commands.add('kcNavAs', function (user, visitUrl) {
       phoneNumber: 1112223333,
       createdAt: '2020-11-12 18:33',
       userUpdatedAt: yesterday.toDateString(),
+      postalCode: 'V1V1V1',
     },
     {
       id: 2,
@@ -117,6 +118,7 @@ Cypress.Commands.add('kcNavAs', function (user, visitUrl) {
       phoneNumber: 1112223333,
       createdAt: '2020-11-12 18:33',
       userUpdatedAt: twoWeeksAgo.toDateString(),
+      postalCode: 'V1V1V1',
     },
   ];
 

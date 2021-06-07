@@ -29,7 +29,6 @@ export default () => {
   useEffect(() => {
     fetchUserInfo();
   }, []);
-
   return (
     <Page>
       <CheckPermissions
@@ -43,7 +42,7 @@ export default () => {
             Sites
           </Typography>
         </Box>
-        <SiteTable sites={[]} />
+        <SiteTable />
       </CheckPermissions>
     </Page>
   );

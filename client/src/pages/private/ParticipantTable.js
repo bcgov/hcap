@@ -74,10 +74,10 @@ const reducer = (state, action) => {
   switch (type) {
     // Add pagination to a key update
     case 'updateKeyWithPagination':
-      newstate.pagination = (prev) => ({
-        ...prev,
+      newstate.pagination = {
+        ...newstate,
         currentPage: 0,
-      });
+      };
       newstate[key] = value;
       return newstate;
     // Update any key in state with the corresponding value

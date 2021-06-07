@@ -359,10 +359,18 @@ export default () => {
   };
 
   useEffectDebugger(() => {
-    const resultColumns = [...defaultColumns];
     const currentPage = reducerState.pagination?.currentPage || 0;
     const isMoH = roles.includes('ministry_of_health');
     const isSuperUser = roles.includes('superuser');
+
+    // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
+    const regions = Object.values(regionLabelsMap).filter((value) => value !== 'None');
+    setLocations(
+      isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
+    );
+
+    const resultColumns = [...defaultColumns];
+
     if (isMoH || isSuperUser) {
       resultColumns.push(
         { id: 'interested', name: 'Interest' },
@@ -371,12 +379,6 @@ export default () => {
         { id: 'edit' }
       );
     }
-
-    // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
-    const regions = Object.values(regionLabelsMap).filter((value) => value !== 'None');
-    setLocations(
-      isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
-    );
 
     if (!isMoH) {
       resultColumns.push(

@@ -75,7 +75,7 @@ function createPayload(recipient, uuid) {
             here.
           </a>
         </p>
-        <p>If you no longer wish to participate or be considered for employment opportunities, please email us with the subject line WITHDRAW to <b>HCAPInfoQuery@gov.bc.ca</b> or or click the link below.</p>
+        <p>If you no longer wish to participate or be considered for employment opportunities, please email us with the subject line WITHDRAW to <b>HCAPInfoQuery@gov.bc.ca</b> or click the link below.</p>
         <a href="mailto:HCAPInfoQuery@gov.bc.ca?subject=${withdrawEmailSubject}&body=${withdrawEmailBody}">
           Withdraw from HCAP
         </a> 

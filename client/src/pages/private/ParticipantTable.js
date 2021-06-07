@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useReducer, useState } from 'react';
+import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
@@ -36,6 +36,40 @@ import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { getDialogTitle, prettifyStatus } from '../../utils';
 import moment from 'moment';
 import { AuthContext } from '../../providers';
+let renderCount = 0;
+
+const usePrevious = (value, initialValue) => {
+  const ref = useRef(initialValue);
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+};
+
+const useEffectDebugger = (effectHook, dependencies, dependencyNames = []) => {
+  const previousDeps = usePrevious(dependencies, []);
+
+  const changedDeps = dependencies.reduce((accum, dependency, index) => {
+    if (dependency !== previousDeps[index]) {
+      const keyName = dependencyNames[index] || index;
+      return {
+        ...accum,
+        [keyName]: {
+          before: previousDeps[index],
+          after: dependency,
+        },
+      };
+    }
+
+    return accum;
+  }, {});
+
+  if (Object.keys(changedDeps).length) {
+    console.log('[use-effect-debugger] ', changedDeps);
+  }
+
+  useEffect(effectHook, dependencies);
+};
 
 const CustomTabs = withStyles((theme) => ({
   root: {
@@ -320,7 +354,7 @@ export default () => {
     setLoadingData(false);
   };
 
-  useEffect(() => {
+  useEffectDebugger(() => {
     const resultColumns = [...defaultColumns];
     const currentPage = reducerState.pagination?.currentPage || 0;
     const fetchUserInfo = async () => {
@@ -521,6 +555,8 @@ export default () => {
     return row[columnId];
   };
 
+  renderCount += 1;
+  console.log(`ParticipantTable. renderCount: `, renderCount);
   return (
     <>
       <Dialog

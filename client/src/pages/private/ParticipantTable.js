@@ -172,7 +172,11 @@ export default () => {
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   let hasWithdrawnParticipant = false;
 
-  const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
+  const [reducerState, dispatch] = useReducer(reducer, {
+    ...defaultTableState,
+    tabValue: Object.keys(tabs) // Set selected tab to first tab allowed for role
+      .find((key) => tabs[key].roles.some((role) => roles.includes(role))),
+  });
   const filterData = (data, columns) => {
     hasWithdrawnParticipant = false;
     const mapItemToColumns = (item, columns) => {
@@ -357,14 +361,6 @@ export default () => {
   useEffectDebugger(() => {
     const resultColumns = [...defaultColumns];
     const currentPage = reducerState.pagination?.currentPage || 0;
-    if (!reducerState.tabValue) {
-      dispatch({
-        type: 'updateKeyWithPagination',
-        key: 'tabValue',
-        value: Object.keys(tabs) // Set selected tab to first tab allowed for role
-          .find((key) => tabs[key].roles.some((role) => roles.includes(role))),
-      });
-    }
     const isMoH = roles.includes('ministry_of_health');
     const isSuperUser = roles.includes('superuser');
     if (isMoH || isSuperUser) {

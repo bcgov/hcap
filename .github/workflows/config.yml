@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
       - name: Changes
         run: |
           echo "CODE_CHANGES=$(git diff --name-only HEAD~1 HEAD | grep -E '^openshift/|^/openshift/' || echo -n '')" >> $GITHUB_ENV

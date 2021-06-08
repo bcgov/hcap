@@ -6,14 +6,29 @@ parameters:
   - name: APP_NAME
     description: App name that OpenShift objects will be prefixed with
     required: true
+  - name: CHES_CLIENT_ID
+    description: Chess client id
+    required: true
+  - name: CHES_CLIENT_SECRET
+    description: Chess client id
+    required: true
+  - name: CHES_HOST_URL
+    required: true
+    value: https://ches-dev.apps.silver.devops.gov.bc.ca
+  - name: CHES_AUTH_URL
+    required: true
+    value: https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token
+  - name: CLIENT_URL
+    required: true
+    value: https://hcapparticipants.dev.freshworks.club
 objects:
   - kind: Secret
     apiVersion: v1
     metadata:
       name: ${APP_NAME}-ches
     stringData:
-      host: https://ches-dev.apps.silver.devops.gov.bc.ca
-      auth-url: https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token
-      client-url: https://hcapparticipants.dev.freshworks.club
-      client-id: ''
-      client-secret: ''
+      host: ${CHES_HOST_URL}
+      auth-url: ${CHES_AUTH_URL}
+      client-url: ${CLIENT_URL}
+      client-id: ${CHES_CLIENT_ID}
+      client-secret: ${CHES_CLIENT_SECRET}

@@ -17,6 +17,9 @@ parameters:
     description: Port the server will be exposed on
     value: '8080'
     required: true
+  - name: CONFIG_VERSION
+    description: The github repository version of Config
+    value: default
 objects:
   - apiVersion: v1
     kind: Route
@@ -158,6 +161,8 @@ objects:
                     secretKeyRef:
                       key: client-secret
                       name: ${APP_NAME}-ches
+                - name: CONFIG_VERSION
+                  value: ${CONFIG_VERSION}
               name: ${APP_NAME}-server
               image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
               ports:

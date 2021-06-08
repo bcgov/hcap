@@ -123,3 +123,6 @@ Congratulations!
 Now all that's left is to remove the old mongo deployment and PVCs, scale up
 our new mongo service to 3 pods with our newfound space, and delete the old
 dump directories so we can move onto the next namespace!
+
+# Notes
+when logging into mongo, admin credentials (--u root -p <secret>) do not require specifying "--authenticationDatabase hcap", but user credentials do require it.

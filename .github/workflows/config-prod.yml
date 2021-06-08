@@ -22,18 +22,18 @@ jobs:
       AUTH_TOKEN: ${{ secrets.SA_TOKEN }}
     steps:
       - name: Print Status
-        if: ${{ secrets.SA_TOKEN }}
+        if: ${{ env.AUTH_TOKEN }}
         run: |
           echo OC CLI Version: $(oc version)
           echo Service Account token configured
       - name: checkout
         uses: actions/checkout@v2
       - name: Login
-        if: ${{ secrets.SA_TOKEN }}
+        if: ${{ env.AUTH_TOKEN }}
         run: |
           oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
       - name: Test and Deploy
-        if: ${{ secrets.SA_TOKEN }}
+        if: ${{ env.AUTH_TOKEN }}
         run: |
           cd "$GITHUB_WORKSPACE"
           make server-config-test

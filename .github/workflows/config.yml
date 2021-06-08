@@ -20,12 +20,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          fetch-depth: 2
+          fetch-depth: 3
       - name: Changes
         run: |
           echo "CODE_CHANGES=$(git diff --name-only HEAD~1 HEAD | grep -E '^openshift/|^/openshift/' || echo -n '')" >> $GITHUB_ENV
       - name: Print changes
-        run: echo "Changes => $CODE_CHANGES"
+        run: |
+          echo "Changes => $CODE_CHANGES"
+          git diff --name-only HEAD~1 HEAD
       - name: Dry run - Dev
         if: ${{ env.CODE_CHANGES != ''}}
         env:

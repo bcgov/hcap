@@ -35,7 +35,7 @@ jobs:
           make server-config-test
 
   configDev:
-    name: Update Deployment Config on Dev
+    name: Dev - Update Deployment Config
     runs-on: ubuntu-latest
     environment:
       name: dev
@@ -51,7 +51,7 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           make server-config
   configTest:
-    name: Update Deployment Config on Dev
+    name: Test - Update Deployment Config
     runs-on: ubuntu-latest
     environment:
       name: test

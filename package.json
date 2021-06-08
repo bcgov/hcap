@@ -29,6 +29,6 @@
   },
   "name": "hcap",
   "lint-staged": {
-    "*.js": "eslint --cache --fix"
+    "!(*spec).js": "eslint --cache --fix"
   }
 }

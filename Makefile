@@ -111,6 +111,11 @@ tag-prod:
 	@git tag -fa prod -m "Deploying $(APP_NAME):$(COMMIT_SHA) to prod env" $(COMMIT_SHA)
 	@git push --force origin refs/tags/prod:refs/tags/prod
 
+tag-config:
+	@echo "Updating config to $(APP_NAME):$(COMMIT_SHA) to all env"
+	@git tag -fa config -m "Updating config $(APP_NAME):$(COMMIT_SHA) to all env" $(COMMIT_SHA)
+	@git push --force origin refs/tags/config:refs/tags/config
+
 # OpenShift Aliases
 
 add-role:

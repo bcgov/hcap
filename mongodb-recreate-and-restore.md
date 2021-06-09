@@ -114,8 +114,8 @@ $ oc port-forward service/hcap-mongo-headless 27017
 With the above command running, we can run the mongorestore command to load our
 backups onto the new deployment.
 
-$ mongorestore --authenticationDatabase hcap -d hcap -u hcap -p LlHeh2drDp ocp3-mongo-dump/hcap
-$ mongorestore --authenticationDatabase hcap -d hcap -u hcap -p LlHeh2drDp ocp4-mongo-dump/hcap
+$ mongorestore --authenticationDatabase hcap -d <desired db name> -u <desired username> -p <generated user password> ocp3-mongo-dump/hcap
+$ mongorestore --authenticationDatabase hcap -d <desired db name> -u <desired username> -p <generated user password> ocp4-mongo-dump/hcap
 
 Once these commands have completed, the restoration is complete.
 Congratulations!

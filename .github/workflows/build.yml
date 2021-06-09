@@ -31,6 +31,8 @@ jobs:
     name: OpenShift Build & Deploy
     runs-on: ubuntu-latest
     needs: audit
+    environment:
+      name: dev
     steps:
       - name: Checkout
         uses: actions/checkout@v2

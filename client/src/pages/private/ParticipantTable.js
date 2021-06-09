@@ -791,7 +791,7 @@ export default () => {
               </Box>
             </Grid>
             {!roles.includes('ministry_of_health') && (
-              <Grid item style={{ marginLeft: 20 }}>
+              <Grid item style={{ marginLeft: 20, paddingBottom: 18 }}>
                 <Typography>Site for distance calculation: </Typography>
                 <Box>
                   <TextField

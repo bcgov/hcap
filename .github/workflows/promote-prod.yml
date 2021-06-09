@@ -1,9 +1,12 @@
-name: OpenShift Deploy/Promotion
+# Promotion to test env.
+# Trigger with tag push
+# Connected with repo environment 'prod'
+# TODO: Create more automated and user friendly workflow
+name: OpenShift Deploy/Promotion to Production
 
 on:
   push:
     tags:
-      - test
       - prod
 
 env:
@@ -12,15 +15,16 @@ env:
   PROJECT: hcap
 
 jobs:
-  build:
+  promoteProd:
     name: OpenShift Promotion
     runs-on: ubuntu-latest
+    environment:
+      name: prod
+    env:
+      OS_NAMESPACE_SUFFIX: prod
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Extract Tag, Set OpenShift Namespace Suffix
-        run: echo "OS_NAMESPACE_SUFFIX=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Cache OpenShift CLI
         id: cache-oc

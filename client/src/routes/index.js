@@ -6,6 +6,7 @@ import store from 'store';
 import Keycloak from 'keycloak-js';
 
 import { API_URL, Routes } from '../constants';
+import { AuthContext } from '../providers';
 
 const Admin = lazy(() => import('../pages/private/Admin'));
 const UserView = lazy(() => import('../pages/private/UserView'));
@@ -54,7 +55,25 @@ const RootUrlSwitch = ({ rootUrlRegExp, children }) =>
 
 export default () => {
   const [keycloakInfo, setKeycloakInfo] = useState();
+  const { dispatch } = AuthContext.useAuth();
 
+  const getUserInfo = async (token) => {
+    dispatch({ action: AuthContext.USER_LOADING });
+    const response = await fetch(`${API_URL}/api/v1/user`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      method: 'GET',
+    });
+    if (response.ok) {
+      dispatch({ type: AuthContext.USER_LOADED, payload: await response.json() });
+    } else {
+      // logout, remove token if it's invalid
+      dispatch({ type: AuthContext.USER_LOADED, payload: null });
+      store.remove('TOKEN');
+      await keycloakInfo.logout({ redirectUri: window.location.origin });
+    }
+  };
   const getKeycloakInfo = async () => {
     const response = await fetch(`${API_URL}/api/v1/keycloak-realm-client-info`, {
       headers: {
@@ -83,6 +102,11 @@ export default () => {
     return 'Server unavailable';
   }
 
+  const handleTokens = (tokens) => {
+    store.set('TOKEN', tokens.token);
+    getUserInfo(tokens.token);
+  };
+
   return (
     <KeycloakProvider
       keycloak={keycloakInfo}
@@ -91,9 +115,7 @@ export default () => {
         pkceMethod: 'S256',
         checkLoginIframe: false,
       }}
-      onTokens={() => {
-        store.set('TOKEN', keycloakInfo.token);
-      }}
+      onTokens={handleTokens}
       LoadingComponent={<LinearProgress />}
     >
       <BrowserRouter>

@@ -1,11 +1,10 @@
-import React, { lazy, useState, useEffect } from 'react';
+import React, { lazy, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { withStyles } from '@material-ui/core/styles';
 import { Page, CheckPermissions } from '../../components/generic';
-import store from 'store';
-import { API_URL } from '../../constants';
+import { AuthContext } from '../../providers';
 
 const ParticipantTable = lazy(() => import('./ParticipantTable'));
 const SiteTable = lazy(() => import('./SiteTable'));
@@ -42,31 +41,10 @@ const CustomTab = withStyles((theme) => ({
 }))((props) => <Tab disableRipple {...props} />);
 
 export default () => {
-  const [roles, setRoles] = useState([]);
-  const [sites, setSites] = useState([]);
-  const [isLoadingUser, setLoadingUser] = useState(false);
   const [tabValue, setTabValue] = useState(0);
-
-  const fetchUserInfo = async () => {
-    setLoadingUser(true);
-    const response = await fetch(`${API_URL}/api/v1/user`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      const { roles, sites } = await response.json();
-      if (sites) setSites(sites);
-      setRoles(roles);
-      setLoadingUser(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserInfo();
-  }, []);
+  const { auth } = AuthContext.useAuth();
+  const sites = auth.user?.sites || [];
+  const roles = auth.user?.roles || [];
 
   const handleTabChange = (event, newTabValue) => {
     setTabValue(newTabValue);
@@ -75,8 +53,6 @@ export default () => {
   return (
     <Page>
       <CheckPermissions
-        isLoading={isLoadingUser}
-        roles={roles}
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
         renderErrorMessage={true}
       >

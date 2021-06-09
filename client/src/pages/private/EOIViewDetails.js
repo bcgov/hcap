@@ -7,24 +7,8 @@ import store from 'store';
 import { API_URL } from '../../constants';
 
 export default ({ match }) => {
-  const [roles, setRoles] = useState([]);
   const [user, setUser] = useState(undefined);
-  const [isLoadingUser, setLoadingUser] = useState(true);
   const expressionID = match.params.id;
-
-  const fetchUserInfo = async () => {
-    const response = await fetch(`${API_URL}/api/v1/user`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      const { roles } = await response.json();
-      setRoles(roles);
-    }
-  };
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -37,12 +21,8 @@ export default ({ match }) => {
 
       if (response.ok) {
         setUser(await response.json());
-        setLoadingUser(false);
       }
     };
-
-    setLoadingUser(true);
-    fetchUserInfo();
     fetchDetails();
   }, [expressionID]);
 
@@ -50,8 +30,6 @@ export default ({ match }) => {
   return (
     <Page>
       <CheckPermissions
-        isLoading={isLoadingUser}
-        roles={roles}
         permittedRoles={['health_authority', 'ministry_of_health']}
         renderErrorMessage={true}
       >

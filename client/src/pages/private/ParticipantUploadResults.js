@@ -5,13 +5,10 @@ import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
-import { API_URL, Routes } from '../../constants';
-import store from 'store';
+import { Routes } from '../../constants';
 
 export default () => {
-  const [roles, setRoles] = useState([]);
   const [order, setOrder] = useState('asc');
-  const [isLoadingUser, setLoadingUser] = useState(false);
   const [rows, setRows] = useState([]);
   const [summary, setSummary] = useState({ duplicates: 0, errors: 0 });
   const [columns] = useState([
@@ -37,24 +34,7 @@ export default () => {
 
   const sort = (array) => _orderBy(array, sortConfig(), [order]);
 
-  const fetchUserInfo = async () => {
-    setLoadingUser(true);
-    const response = await fetch(`${API_URL}/api/v1/user`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      const { roles } = await response.json();
-      setLoadingUser(false);
-      setRoles(roles);
-    }
-  };
-
   useEffect(() => {
-    fetchUserInfo();
     const insertMissingMessage = (row) => (row.message ? row : { ...row, message: '' });
     setSummary({
       duplicates: location.state?.results?.filter((x) => x.status === 'Duplicate').length || 0,
@@ -65,12 +45,7 @@ export default () => {
 
   return (
     <Page>
-      <CheckPermissions
-        isLoading={isLoadingUser}
-        roles={roles}
-        permittedRoles={['maximus']}
-        renderErrorMessage={true}
-      >
+      <CheckPermissions permittedRoles={['maximus']} renderErrorMessage={true}>
         <Grid
           container
           alignContent='center'

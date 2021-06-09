@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useMemo, useReducer, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
@@ -35,6 +35,7 @@ import { useToast } from '../../hooks';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { getDialogTitle, prettifyStatus } from '../../utils';
 import moment from 'moment';
+import { AuthContext } from '../../providers';
 
 const CustomTabs = withStyles((theme) => ({
   root: {
@@ -124,10 +125,7 @@ const reducer = (state, action) => {
 
 export default () => {
   const { openToast } = useToast();
-  const [roles, setRoles] = useState([]);
-  const [sites, setSites] = useState([]);
   const [isLoadingData, setLoadingData] = useState(false);
-  const [isLoadingUser, setLoadingUser] = useState(false);
   const [rows, setRows] = useState([]);
   const [columns, setColumns] = useState(defaultColumns);
   const [hideLastNameAndEmailFilter, setHideLastNameAndEmailFilter] = useState(true);
@@ -135,6 +133,9 @@ export default () => {
   const [anchorElement, setAnchorElement] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations, setLocations] = useState([]);
+  const { auth } = AuthContext.useAuth();
+  const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
+  const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
 
   const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
   const filterData = (data, columns) => {
@@ -308,7 +309,6 @@ export default () => {
         currentPage: currentPage || 0,
       },
     });
-
     const newRows = filterData(data, columns);
     setRows(newRows);
     setLoadingData(false);
@@ -318,62 +318,48 @@ export default () => {
     const resultColumns = [...defaultColumns];
     const currentPage = reducerState.pagination?.currentPage || 0;
     const fetchUserInfo = async () => {
-      setLoadingUser(true);
-      const response = await fetch(`${API_URL}/api/v1/user`, {
-        headers: {
-          Authorization: `Bearer ${store.get('TOKEN')}`,
-        },
-        method: 'GET',
-      });
-      if (response.ok) {
-        const { roles, sites } = await response.json();
-
-        setLoadingUser(false);
-        setSites(sites);
-        setRoles(roles);
-        if (!reducerState.tabValue) {
-          dispatch({
-            type: 'updateKeyWithPagination',
-            key: 'tabValue',
-            value: Object.keys(tabs) // Set selected tab to first tab allowed for role
-              .find((key) => tabs[key].roles.some((role) => roles.includes(role))),
-          });
-        }
-        const isMoH = roles.includes('ministry_of_health');
-        const isSuperUser = roles.includes('superuser');
-        if (isMoH || isSuperUser) {
-          resultColumns.push(
-            { id: 'interested', name: 'Interest' },
-            { id: 'crcClear', name: 'CRC Clear' },
-            { id: 'statusInfo', name: 'Status' },
-            { id: 'edit' }
-          );
-        }
-
-        // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
-        const regions = Object.values(regionLabelsMap).filter((value) => value !== 'None');
-        setLocations(
-          isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
-        );
-
-        if (!isMoH) {
-          resultColumns.push(
-            { id: 'phoneNumber', name: 'Phone Number' },
-            { id: 'emailAddress', name: 'Email Address' },
-            { id: 'distance', name: 'Site Distance' }
-          );
-        }
-
-        if (!isMoH && !isSuperUser) {
-          resultColumns.push({ id: 'engage' });
-        }
-
-        resultColumns.sort(
-          (colum1, column2) => sortOrder.indexOf(colum1.id) - sortOrder.indexOf(column2.id)
-        );
-
-        setColumns(resultColumns);
+      if (!reducerState.tabValue) {
+        dispatch({
+          type: 'updateKeyWithPagination',
+          key: 'tabValue',
+          value: Object.keys(tabs) // Set selected tab to first tab allowed for role
+            .find((key) => tabs[key].roles.some((role) => roles.includes(role))),
+        });
       }
+      const isMoH = roles.includes('ministry_of_health');
+      const isSuperUser = roles.includes('superuser');
+      if (isMoH || isSuperUser) {
+        resultColumns.push(
+          { id: 'interested', name: 'Interest' },
+          { id: 'crcClear', name: 'CRC Clear' },
+          { id: 'statusInfo', name: 'Status' },
+          { id: 'edit' }
+        );
+      }
+
+      // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
+      const regions = Object.values(regionLabelsMap).filter((value) => value !== 'None');
+      setLocations(
+        isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
+      );
+
+      if (!isMoH) {
+        resultColumns.push(
+          { id: 'phoneNumber', name: 'Phone Number' },
+          { id: 'emailAddress', name: 'Email Address' },
+          { id: 'distance', name: 'Site Distance' }
+        );
+      }
+
+      if (!isMoH && !isSuperUser) {
+        resultColumns.push({ id: 'engage' });
+      }
+
+      resultColumns.sort(
+        (colum1, column2) => sortOrder.indexOf(colum1.id) - sortOrder.indexOf(column2.id)
+      );
+
+      setColumns(resultColumns);
     };
 
     const getParticipants = async () => {
@@ -450,6 +436,7 @@ export default () => {
     reducerState.fsaFilter,
     reducerState.order,
     reducerState.tabValue,
+    roles,
   ]);
 
   const defaultOnClose = () => {
@@ -676,8 +663,6 @@ export default () => {
         )}
       </Dialog>
       <CheckPermissions
-        isLoading={isLoadingUser}
-        roles={roles}
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
         renderErrorMessage={true}
       >

@@ -38,7 +38,7 @@ export default () => {
   );
 
   return (
-    <Page>
+    <Page centered>
       <CheckPermissions
         permittedRoles={['maximus', 'employer', 'health_authority', 'ministry_of_health']}
         renderErrorMessage={true}

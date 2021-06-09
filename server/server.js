@@ -291,6 +291,8 @@ const patchableFields = [
   'phoneNumber',
   'interest',
   'history',
+  'postalCode',
+  'postalCodeFsa',
   'id',
 ];
 

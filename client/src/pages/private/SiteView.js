@@ -16,7 +16,7 @@ export default () => {
             Sites
           </Typography>
         </Box>
-        <SiteTable sites={[]} />
+        <SiteTable />
       </CheckPermissions>
     </Page>
   );

@@ -1,0 +1,21 @@
+fullnameOverride: hcap-mongo
+persistence:
+  size: 4Gi
+
+podSecurityContext:
+  enabled: false
+
+containerSecurityContext:
+  enabled: false
+
+arbiter:
+  podSecurityContext:
+    enabled: false
+
+architecture: replicaset
+image:
+  registry: 'public.ecr.aws'
+
+auth:
+  username: default
+  database: default

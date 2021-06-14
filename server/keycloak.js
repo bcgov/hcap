@@ -143,7 +143,6 @@ class Keycloak {
   async authenticateIfNeeded() {
     // Race condition if token expires between this call and the desired authenticated call
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-
     try {
       await axios.get(
         `${this.authUrl}/realms/${this.realm}/protocol/openid-connect/userinfo`,
@@ -188,9 +187,13 @@ class Keycloak {
   }
 
   async getUsers(ignorePendings) {
-    try {
-      await this.authenticateIfNeeded();
-      const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    await this.authenticateIfNeeded();
+    const config = {
+      headers: {
+        Authorization: `Bearer ${this.access_token}`,
+        'Access-Control-Allow-Origin': '*',
+      },
+    };
 
       const getData = async (url) => {
         const response = await axios.get(url, config);

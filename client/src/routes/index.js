@@ -80,6 +80,7 @@ export default () => {
       headers: {
         Accept: 'application/json',
         'Content-type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
       },
       method: 'GET',
     });

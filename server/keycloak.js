@@ -69,6 +69,7 @@ class Keycloak {
         const { content } = req.kauth.grant.access_token;
         const roles = content?.resource_access[this.clientNameFrontend]?.roles || [];
         const user = await getUser(content.sub);
+        console.log(user);
         req.hcapUserInfo = {
           name: content.name,
           username: content.preferred_username,

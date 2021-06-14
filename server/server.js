@@ -679,6 +679,8 @@ app.patch(
   asyncMiddleware(async (req, res) => {
     await validate(AccessRequestApproval, req.body);
     await keycloak.setUserRoles(req.body.userId, req.body.role, req.body.regions);
+    console.log(req.body.userId)
+    console.log(req.body)
     await dbClient.db[collections.USERS].updateDoc(
       {
         keycloakId: req.body.userId,
@@ -741,6 +743,7 @@ app.get(
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     let sites = await getSites();
+    console.log(req.hcapUserInfo)
     sites = sites.filter((i) => req.hcapUserInfo.sites.includes(i.siteId));
     return res.json({
       roles: req.hcapUserInfo.roles,

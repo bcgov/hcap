@@ -361,8 +361,8 @@ export const EditParticipantFormSchema = yup.object().shape({
   postalCode: yup
     .string()
     .required('Postal code is required')
-    .test('isnot-null', 'Postal code is required!', (v) =>{ 
-      return v!==undefined && v!=='' && v!==null 
+    .test('isnot-null', 'Postal code is required!', (v) => {
+      return v !== undefined && v !== '' && v !== null;
     })
     .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Invalid postal code'),
   emailAddress: yup.string().required(errorMessage).email('Invalid email address'),

@@ -487,8 +487,8 @@ export default () => {
             });
 
             const participant = await response.json();
-            if(participant[0].postalCode===undefined){
-              participant[0].postalCode='';
+            if (participant[0].postalCode === undefined) {
+              participant[0].postalCode = '';
             }
             setActionMenuParticipant(participant[0]);
             setActiveModalForm('edit-participant');

@@ -167,8 +167,11 @@ export default () => {
         row.siteName = item?.statusInfos?.[0].data?.siteName;
 
         if (item.statusInfos && item.statusInfos.length > 0) {
-          if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
-            const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
+          // Handling already_hired and withdrawn status
+          const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
+          if (item.statusInfos.find((statusInfo) => statusInfo.status === 'withdrawn')) {
+            row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'withdrawn'];
+          } else if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
             row.status = [
               previousStatus?.data.previous || item.statusInfos[0].status,
               'already_hired',
@@ -458,8 +461,9 @@ export default () => {
       return 'N/A';
     }
     if (columnId === 'engage') {
+      const engage = !row.status.includes('already_hired') || !row.status.includes('withdrawn');
       return (
-        !row.status.includes('already_hired') && (
+        engage && (
           <Button
             onClick={(event) => {
               setActionMenuParticipant(row[columnId]);

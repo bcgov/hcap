@@ -136,9 +136,11 @@ export default () => {
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
+  let hasWithdrawnParticipant = false;
 
   const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
   const filterData = (data, columns) => {
+    hasWithdrawnParticipant = false;
     const mapItemToColumns = (item, columns) => {
       const row = {};
 
@@ -171,6 +173,7 @@ export default () => {
           const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
           if (item.statusInfos.find((statusInfo) => statusInfo.status === 'withdrawn')) {
             row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'withdrawn'];
+            hasWithdrawnParticipant = true;
           } else if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
             row.status = [
               previousStatus?.data.previous || item.statusInfos[0].status,
@@ -415,10 +418,13 @@ export default () => {
           ];
 
         if (reducerState.tabValue === 'Hired Candidates') {
-          oldColumns = oldColumns.filter((column) => column.id !== 'engage');
+          oldColumns = oldColumns.filter(
+            (column) => column.id !== 'engage' && column.id !== 'siteName' && column.id !== 'status'
+          );
           return [
             ...oldColumns.slice(0, 8),
             { id: 'siteName', name: 'Site Name' },
+            ...(hasWithdrawnParticipant && [{ id: 'status', name: 'Status' }]),
             ...oldColumns.slice(8),
           ];
         }
@@ -461,7 +467,7 @@ export default () => {
       return 'N/A';
     }
     if (columnId === 'engage') {
-      const engage = !row.status.includes('already_hired') || !row.status.includes('withdrawn');
+      const engage = !row.status.includes('already_hired') && !row.status.includes('withdrawn');
       return (
         engage && (
           <Button

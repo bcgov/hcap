@@ -55,7 +55,7 @@ export const prettifyStatus = (status, id, tabValue, handleEngage) => {
                   <Button
                     onClick={() => {
                       handleEngage(id, 'rejected', {
-                        final_status: isWithdrawn ? 'withdrawn interest' : 'hired by other',
+                        final_status: isWithdrawn ? 'withdrawn' : 'hired by other',
                         previous: status[0],
                       });
                     }}

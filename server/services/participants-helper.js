@@ -311,7 +311,7 @@ class ParticipantsFinder {
                 //  and statuses (unless when the status is 'unavailable', in this case
                 //  we handle in the upper OR array)
                 { or: [{ and: [userRegionQuery(this.user.regions, 'body.preferredLocation')] }] }),
-            'body.interested': 'yes',
+            // Removed existing interest filter => 'body.interested': 'yes',
           };
     return new RegionsFilteredParticipantsFinder(this);
   }

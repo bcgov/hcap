@@ -1,5 +1,6 @@
 import * as yup from 'yup';
 import mapValues from 'lodash/mapValues';
+import { archiveReasonOptopns, archiveStatusOptions } from './archiveParticipantsConstants';
 
 const healthRegions = ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'];
 
@@ -367,6 +368,13 @@ export const EditParticipantFormSchema = yup.object().shape({
     .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Invalid postal code'),
   emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
   interested: yup.string().nullable(),
+});
+export const ArchiveHiredParticipantSchema = yup.object().shape({
+  type: yup.string().oneOf(['duplicate','employment_ended']).required(),
+  reason: yup.string().oneOf(archiveReasonOptopns).nullable(),
+  status: yup.string().oneOf(archiveStatusOptions).nullable(),
+  endDate: yup.date().required(), 
+  confirmed: yup.boolean().oneOf([true])
 });
 
 export const CreateSiteSchema = yup.object().shape({

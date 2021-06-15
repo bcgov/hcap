@@ -21,6 +21,7 @@ import {
   tabs,
   makeToasts,
   defaultTableState,
+  ArchiveHiredParticipantSchema,
 } from '../../constants';
 import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import {
@@ -30,6 +31,7 @@ import {
   HireForm,
   NewParticipantForm,
   EditParticipantForm,
+  ArchiveHiredParticipantForm,
 } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
@@ -152,6 +154,7 @@ export default () => {
     };
 
     const filteredRows = [];
+    console.log(data);
     data &&
       data.forEach((dataItem) => {
         const item = { ...dataItem };
@@ -167,7 +170,7 @@ export default () => {
 
         row.engage = item;
         row.siteName = item?.statusInfos?.[0].data?.siteName;
-
+        console.log(row.sitename)
         if (item.statusInfos && item.statusInfos.length > 0) {
           // Handling already_hired and withdrawn status
           const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
@@ -190,6 +193,7 @@ export default () => {
 
         filteredRows.push(row);
       });
+    console.log(filteredRows)
     return filteredRows;
   };
 
@@ -319,6 +323,9 @@ export default () => {
     setRows(newRows);
     setLoadingData(false);
   };
+  const submitArchiveRequest = (values)=>{
+    console.log(values);
+  }
 
   useEffect(() => {
     const resultColumns = [...defaultColumns];
@@ -430,7 +437,10 @@ export default () => {
             { id: 'siteName', name: 'Site Name' },
             ...(hasWithdrawnParticipant ? [{ id: 'status', name: 'Status' }] : []),
             ...oldColumns.slice(8),
+            {id: 'archive', name: ''}
           ];
+          console.log(result)
+          return result;
         }
 
         if (!['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue))
@@ -517,6 +527,28 @@ export default () => {
     }
     if (columnId === 'userUpdatedAt') {
       return moment(row.userUpdatedAt).fromNow();
+    }
+    if(columnId ==='archive'){
+      return (        <Button
+        onClick={async () => {
+          // Get data from row.id
+          const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
+            headers: {
+              Accept: 'application/json',
+              'Content-type': 'application/json',
+              Authorization: `Bearer ${store.get('TOKEN')}`,
+            },
+            method: 'GET',
+          });
+          const participant = await response.json();
+          setActionMenuParticipant(participant[0]);
+          setActiveModalForm('archive');
+          setAnchorElement(null);
+        }}
+        variant='outlined'
+        size='small'
+        text='Archive'
+      />)
     }
     return row[columnId];
   };
@@ -678,6 +710,20 @@ export default () => {
             onClose={defaultOnClose}
           />
         )}
+        {activeModalForm==='archive' && (
+          <ArchiveHiredParticipantForm
+          initialValues ={{
+            type:null,
+            reaseon: '',
+            status:'',
+            endDate:moment().format('YYYY/MM/DD'),
+            confirmed:false
+          }}
+          validationSchema = {ArchiveHiredParticipantSchema}
+          onSubmit = {submitArchiveRequest}
+          onClose={defaultOnClose}
+          />
+        )}
       </Dialog>
       <CheckPermissions
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
@@ -812,9 +858,9 @@ export default () => {
                       <MenuItem
                         key={option.siteId}
                         value={index === 0 ? '' : option.siteId}
-                        aria-label={option.siteName}
+                        aria-label={option?.siteName}
                       >
-                        {option.siteName}
+                        {option?.siteName}
                       </MenuItem>
                     ))}
                   </TextField>

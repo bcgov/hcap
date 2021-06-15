@@ -446,6 +446,7 @@ export default () => {
     reducerState.order,
     reducerState.tabValue,
     roles,
+    hasWithdrawnParticipant,
   ]);
 
   const defaultOnClose = () => {

@@ -1,4 +1,5 @@
 import React, { Fragment, useState } from 'react';
+import { FixedSizeList } from 'react-window';
 import MuiTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -96,6 +97,10 @@ const TablePaginationActions = (props) => {
     setAnchorEl(null);
   };
 
+  const menuMaxHeight = 400;
+  const menuItemCount = Math.ceil(count / rowsPerPage);
+  const menuItemSize = 45;
+
   return (
     <div className={classes.root}>
       <IconButton
@@ -140,16 +145,23 @@ const TablePaginationActions = (props) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {/* This expression creates an array of integers 0..n */}
-        {[...Array(Math.ceil(count / rowsPerPage)).keys()].map((option) => (
-          <MenuItem
-            key={`page ${option}`}
-            selected={option === page}
-            onClick={(event) => handleMenuItemClick(event, option)}
-          >
-            Page {option + 1}
-          </MenuItem>
-        ))}
+        <FixedSizeList
+          height={Math.min(menuItemCount * menuItemSize, menuMaxHeight)}
+          width={120}
+          itemSize={menuItemSize}
+          itemCount={menuItemCount}
+        >
+          {({ index, style }) => (
+            <MenuItem
+              key={index}
+              style={style}
+              selected={index === page}
+              onClick={(event) => handleMenuItemClick(event, index)}
+            >
+              Page {index + 1}
+            </MenuItem>
+          )}
+        </FixedSizeList>
       </Menu>
     </div>
   );

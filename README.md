@@ -173,13 +173,13 @@ and then submits to the /form endpoint. Example of file names:
 
 Parses a given xlsx file inside the `server/scripts/xlsx/` folder and feeds either the `employer_sites` or `participants` table.
 
-If you've spun up the application using Docker Compose i.e. `make local-run`, you can run the site seeding script with either of the following make commands: 
+If you've spun up the application using Docker Compose i.e. `make local-run`, you can run the site seeding script with either of the following make commands:  
 
 - `make seed-participants my_spreadsheet.xlsx`
 - `make seed-sites my_spreadsheet.xlsx`
 
-N.B. - The sample seed files are available [here](https://drive.google.com/drive/folders/17sXAQObfjK3KSF70j6etoI--1UYXyqlx?usp=sharing)
- 
+N.B. - The sample seed files are available in Slack channel pinned item.  
+
 #### `npm run stats`
 
 Shows the EEOI submission stats of a given period of days. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`)

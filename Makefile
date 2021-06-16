@@ -55,10 +55,6 @@ local-run: local-build
 	@echo "Running local app container"
 	@docker-compose -f docker-compose.dev.yml up
 
-local-build-run:
-	@echo "++\n Building and running local app image  \n++"
-	@docker-compose -f docker-compose.dev.yml up --build
-
 
 local-kc-build:
 	@echo "Building test local app container"

@@ -439,7 +439,6 @@ export default () => {
             ...oldColumns.slice(8),
             {id: 'archive', name: ''}
           ];
-          console.log(result)
           return result;
         }
 
@@ -528,7 +527,7 @@ export default () => {
     if (columnId === 'userUpdatedAt') {
       return moment(row.userUpdatedAt).fromNow();
     }
-    if(columnId ==='archive'){
+    if(columnId === 'archive'){
       return (        <Button
         onClick={async () => {
           // Get data from row.id
@@ -710,17 +709,20 @@ export default () => {
             onClose={defaultOnClose}
           />
         )}
-        {activeModalForm==='archive' && (
+        {activeModalForm === 'archive' && (
           <ArchiveHiredParticipantForm
           initialValues ={{
             type:null,
-            reaseon: '',
+            reason: '',
             status:'',
             endDate:moment().format('YYYY/MM/DD'),
             confirmed:false
           }}
           validationSchema = {ArchiveHiredParticipantSchema}
-          onSubmit = {submitArchiveRequest}
+          onSubmit = {(values)=>{
+            console.log(values);
+            // handleEngage(actionMenuParticipant.id, 'rejected', values)
+          }}
           onClose={defaultOnClose}
           />
         )}

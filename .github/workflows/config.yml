@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'openshift/*.yml'
+      - '.github/**'
     tags:
       - dev
       - test

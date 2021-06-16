@@ -1,0 +1,153 @@
+{
+  "roles": [
+    {
+      "name": "ministry_of_health",
+      "tabsWithActions": ["Participants"],
+      "allTabs": ["Participants", "Participants"],
+      "tableTabs": {
+        "Participants": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "FSA",
+          "Preferred Region(s)",
+          "Interest",
+          "Non-HCAP",
+          "CRC Clear",
+          "Last Updated"
+        ]
+      }
+    },
+    {
+      "name": "health_authority",
+      "tabsWithActions": ["Available Participants", "My Candidates", "Archived Candidates"],
+      "allTabs": [
+        "Participants",
+        "Available Participants",
+        "My Candidates",
+        "Archived Candidates",
+        "Hired Candidates"
+      ],
+      "tableTabs": {
+        "Available Participants": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "FSA",
+          "Phone Number",
+          "Email Address",
+          "Preferred Region(s)",
+          "Site Distance",
+          "Non-HCAP",
+          "Callback Status",
+          "Last Updated"
+        ],
+        "My Candidates": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "FSA",
+          "Phone Number",
+          "Email Address",
+          "Preferred Region(s)",
+          "Site Distance",
+          "Non-HCAP",
+          "Last Updated"
+        ],
+        "Archived Candidates": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "FSA",
+          "Phone Number",
+          "Email Address",
+          "Preferred Region(s)",
+          "Site Distance",
+          "Non-HCAP",
+          "Last Updated"
+        ],
+        "Hired Candidates": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "FSA",
+          "Phone Number",
+          "Email Address",
+          "Preferred Region(s)",
+          "Site Distance",
+          "Site Name",
+          "Non-HCAP",
+          "Last Updated"
+        ]
+      }
+    },
+    {
+      "name": "employer",
+      "tabsWithActions": ["Available Participants", "My Candidates", "Archived Candidates"],
+      "allTabs": [
+        "Participants",
+        "Available Participants",
+        "My Candidates",
+        "Archived Candidates",
+        "Hired Candidates"
+      ],
+      "tableTabs": {
+        "Available Participants": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "FSA",
+          "Phone Number",
+          "Email Address",
+          "Preferred Region(s)",
+          "Site Distance",
+          "Non-HCAP",
+          "Callback Status",
+          "Last Updated"
+        ],
+        "My Candidates": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "FSA",
+          "Phone Number",
+          "Email Address",
+          "Preferred Region(s)",
+          "Site Distance",
+          "Non-HCAP",
+          "Last Updated"
+        ],
+        "Archived Candidates": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "FSA",
+          "Phone Number",
+          "Email Address",
+          "Preferred Region(s)",
+          "Site Distance",
+          "Non-HCAP",
+          "Last Updated"
+        ],
+        "Hired Candidates": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "FSA",
+          "Phone Number",
+          "Email Address",
+          "Preferred Region(s)",
+          "Site Distance",
+          "Site Name",
+          "Non-HCAP",
+          "Last Updated"
+        ]
+      }
+    }
+  ]
+}

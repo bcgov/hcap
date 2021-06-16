@@ -423,11 +423,7 @@ export default () => {
         if (reducerState.tabValue === 'Hired Candidates') {
           // Remove existing engage, siteName and status and statusInfo column and force putting back siteName + status
           oldColumns = oldColumns.filter(
-            (column) =>
-              column.id !== 'engage' &&
-              column.id !== 'siteName' &&
-              column.id !== 'status' &&
-              column.id !== 'statusInfo'
+            (column) => !['engage', 'siteName', 'status', 'statusInfo'].includes(column.id)
           );
           return [
             ...oldColumns.slice(0, 8),

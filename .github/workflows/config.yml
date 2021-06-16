@@ -12,7 +12,7 @@ on:
 
 env:
   CLUSTER: https://api.silver.devops.gov.bc.ca:6443
-  AUTH_TOKEN: ${{ secrets.AUTH_TOKEN_OCP4 }}
+  AUTH_TOKEN: ${{ secrets.SA_TOKEN_CONFIG }}
   PROJECT: hcap
 
 jobs:

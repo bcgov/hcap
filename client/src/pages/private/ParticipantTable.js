@@ -154,7 +154,6 @@ export default () => {
     };
 
     const filteredRows = [];
-    console.log(data);
     data &&
       data.forEach((dataItem) => {
         const item = { ...dataItem };
@@ -170,7 +169,6 @@ export default () => {
 
         row.engage = item;
         row.siteName = item?.statusInfos?.[0].data?.siteName;
-        console.log(row.sitename);
         if (item.statusInfos && item.statusInfos.length > 0) {
           // Handling already_hired and withdrawn status
           const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
@@ -193,7 +191,6 @@ export default () => {
 
         filteredRows.push(row);
       });
-    console.log(filteredRows);
     return filteredRows;
   };
 

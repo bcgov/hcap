@@ -8,7 +8,6 @@ const userRegionQuery = (regions, target) => {
 };
 
 const getUser = async (id) => {
-  console.log(id);
   const query = { keycloakId: id };
   const options = { single: true };
   return dbClient.db[collections.USERS].findDoc(query, options);

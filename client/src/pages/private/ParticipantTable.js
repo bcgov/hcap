@@ -410,17 +410,20 @@ export default () => {
         if (
           ['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue) &&
           !oldColumns.find((column) => column.id === 'status')
-        )
+        ) {
+          // Remove statusInfo colum
+          oldColumns = oldColumns.filter((colum) => colum.id !== 'statusInfo');
           return [
             ...oldColumns.slice(0, 3),
             { id: 'status', name: 'Status' },
             ...oldColumns.slice(3),
           ];
+        }
 
         if (reducerState.tabValue === 'Hired Candidates') {
-          // Remove existing engage, siteName and status column and force putting back siteName + status
+          // Remove existing engage, siteName and status and statusInfo column and force putting back siteName + status
           oldColumns = oldColumns.filter(
-            (column) => column.id !== 'engage' && column.id !== 'siteName' && column.id !== 'status'
+            (column) => column.id !== 'engage' && column.id !== 'siteName' && column.id !== 'status' && column.id === 'statusInfo'
           );
           return [
             ...oldColumns.slice(0, 8),

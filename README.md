@@ -169,14 +169,14 @@ and then submits to the /form endpoint. Example of file names:
 - Health Career Access Program - Expression of Interest - 8353ec90e6ea8727.xml
 - Health Career Access Program - Expression of Interest - 91113c10e0xx872x (1).xml
 
-#### `npm run seed-sites my_spreadsheet.xlsx` and `npm run seed-participants my_spreadsheet.xlsx`
+#### `npm run feed-sites my_spreadsheet.xlsx` and `npm run feed-participants my_spreadsheet.xlsx`
 
 Parses a given xlsx file inside the `server/scripts/xlsx/` folder and feeds either the `employer_sites` or `participants` table.
 
 If you've spun up the application using Docker Compose i.e. `make local-run`, you can run the site seeding script with either of the following make commands: 
 
-- `make feed-participants my_spreadsheet.xlsx`
-- `make feed-sites my_spreadsheet.xlsx`
+- `make seed-participants my_spreadsheet.xlsx`
+- `make seed-sites my_spreadsheet.xlsx`
 
 N.B. - The sample seed files are available [here](https://drive.google.com/drive/folders/17sXAQObfjK3KSF70j6etoI--1UYXyqlx?usp=sharing)
  

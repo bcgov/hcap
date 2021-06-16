@@ -5,4 +5,4 @@ export * from './validation';
 export * from './label';
 export * from './misc';
 export * from './participantTableConstants';
-export * from './archiveParticipantsConstants'
+export * from './archiveParticipantsConstants';

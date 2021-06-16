@@ -11,7 +11,7 @@ const setParticipantStatus = async (
   data // JSONB on the status row
 ) =>
   dbClient.db.withTransaction(async (tx) => {
-    if (status !== 'rejected') {
+    if (status !== 'rejected' && status !== 'archived') {
       const items = await tx[collections.PARTICIPANTS_STATUS].find({
         participant_id: participantId,
         status: 'hired',

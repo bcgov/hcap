@@ -170,7 +170,7 @@ export default () => {
 
         row.engage = item;
         row.siteName = item?.statusInfos?.[0].data?.siteName;
-        console.log(row.sitename)
+        console.log(row.sitename);
         if (item.statusInfos && item.statusInfos.length > 0) {
           // Handling already_hired and withdrawn status
           const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
@@ -193,7 +193,7 @@ export default () => {
 
         filteredRows.push(row);
       });
-    console.log(filteredRows)
+    console.log(filteredRows);
     return filteredRows;
   };
 
@@ -323,9 +323,6 @@ export default () => {
     setRows(newRows);
     setLoadingData(false);
   };
-  const submitArchiveRequest = (values)=>{
-    console.log(values);
-  }
 
   useEffect(() => {
     const resultColumns = [...defaultColumns];
@@ -437,7 +434,7 @@ export default () => {
             { id: 'siteName', name: 'Site Name' },
             ...(hasWithdrawnParticipant ? [{ id: 'status', name: 'Status' }] : []),
             ...oldColumns.slice(8),
-            {id: 'archive', name: ''}
+            { id: 'archive', name: '' },
           ];
           return result;
         }
@@ -527,27 +524,29 @@ export default () => {
     if (columnId === 'userUpdatedAt') {
       return moment(row.userUpdatedAt).fromNow();
     }
-    if(columnId === 'archive'){
-      return (        <Button
-        onClick={async () => {
-          // Get data from row.id
-          const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
-            headers: {
-              Accept: 'application/json',
-              'Content-type': 'application/json',
-              Authorization: `Bearer ${store.get('TOKEN')}`,
-            },
-            method: 'GET',
-          });
-          const participant = await response.json();
-          setActionMenuParticipant(participant[0]);
-          setActiveModalForm('archive');
-          setAnchorElement(null);
-        }}
-        variant='outlined'
-        size='small'
-        text='Archive'
-      />)
+    if (columnId === 'archive') {
+      return (
+        <Button
+          onClick={async () => {
+            // Get data from row.id
+            const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
+              headers: {
+                Accept: 'application/json',
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${store.get('TOKEN')}`,
+              },
+              method: 'GET',
+            });
+            const participant = await response.json();
+            setActionMenuParticipant(participant[0]);
+            setActiveModalForm('archive');
+            setAnchorElement(null);
+          }}
+          variant='outlined'
+          size='small'
+          text='Archive'
+        />
+      );
     }
     return row[columnId];
   };
@@ -711,19 +710,18 @@ export default () => {
         )}
         {activeModalForm === 'archive' && (
           <ArchiveHiredParticipantForm
-          initialValues ={{
-            type:null,
-            reason: '',
-            status:'',
-            endDate:moment().format('YYYY/MM/DD'),
-            confirmed:false
-          }}
-          validationSchema = {ArchiveHiredParticipantSchema}
-          onSubmit = {(values)=>{
-            console.log(values);
-            // handleEngage(actionMenuParticipant.id, 'rejected', values)
-          }}
-          onClose={defaultOnClose}
+            initialValues={{
+              type: '',
+              reason: '',
+              status: '',
+              endDate: moment().format('YYYY/MM/DD'),
+              confirmed: false,
+            }}
+            validationSchema={ArchiveHiredParticipantSchema}
+            onSubmit={(values) => {
+              handleEngage(actionMenuParticipant.id, 'archived', values);
+            }}
+            onClose={defaultOnClose}
           />
         )}
       </Dialog>

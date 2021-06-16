@@ -370,16 +370,19 @@ export const EditParticipantFormSchema = yup.object().shape({
   interested: yup.string().nullable(),
 });
 export const ArchiveHiredParticipantSchema = yup.object().shape({
-  type: yup.string().oneOf(['duplicate','employmentEnded']).required('Please select a type'),
-  reason: yup.string().when("type",{
+  type: yup
+    .string()
+    .oneOf(['duplicate', 'employmentEnded'], 'Please select a type')
+    .required('Please select a type'),
+  reason: yup.string().when('type', {
     is: 'employmentEnded',
-    then: yup.string().required('Please include a reason').oneOf(archiveReasonOptopns)
+    then: yup.string().required('Please include a reason').oneOf(archiveReasonOptopns),
   }),
-  status:  yup.string().when("type",{
+  status: yup.string().when('type', {
     is: 'employmentEnded',
-    then: yup.string().required('Please include a status').oneOf(archiveStatusOptions)
+    then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
   }),
-  endDate: yup.date().required('Please enter the date this participant was removed.'), 
+  endDate: yup.date().required('Please enter the date this participant was removed.'),
   confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
 });
 

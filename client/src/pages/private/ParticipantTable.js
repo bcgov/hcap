@@ -412,7 +412,7 @@ export default () => {
           !oldColumns.find((column) => column.id === 'status')
         ) {
           // Remove statusInfo colum
-          oldColumns = oldColumns.filter((colum) => colum.id !== 'statusInfo');
+          oldColumns = oldColumns.filter((column) => column.id !== 'statusInfo');
           return [
             ...oldColumns.slice(0, 3),
             { id: 'status', name: 'Status' },

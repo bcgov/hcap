@@ -432,7 +432,7 @@ export default () => {
           return [
             ...oldColumns.slice(0, 8),
             { id: 'siteName', name: 'Site Name' },
-            ...(hasWithdrawnParticipant && [{ id: 'status', name: 'Status' }]),
+            ...(hasWithdrawnParticipant ? [{ id: 'status', name: 'Status' }] : []),
             ...oldColumns.slice(8),
           ];
         }

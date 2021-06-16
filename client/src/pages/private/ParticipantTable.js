@@ -136,9 +136,11 @@ export default () => {
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
+  let hasWithdrawnParticipant = false;
 
   const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
   const filterData = (data, columns) => {
+    hasWithdrawnParticipant = false;
     const mapItemToColumns = (item, columns) => {
       const row = {};
 
@@ -167,8 +169,12 @@ export default () => {
         row.siteName = item?.statusInfos?.[0].data?.siteName;
 
         if (item.statusInfos && item.statusInfos.length > 0) {
-          if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
-            const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
+          // Handling already_hired and withdrawn status
+          const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
+          if (item.statusInfos.find((statusInfo) => statusInfo.status === 'withdrawn')) {
+            row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'withdrawn'];
+            hasWithdrawnParticipant = true;
+          } else if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
             row.status = [
               previousStatus?.data.previous || item.statusInfos[0].status,
               'already_hired',
@@ -404,18 +410,25 @@ export default () => {
         if (
           ['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue) &&
           !oldColumns.find((column) => column.id === 'status')
-        )
+        ) {
+          // Remove statusInfo colum
+          oldColumns = oldColumns.filter((column) => column.id !== 'statusInfo');
           return [
             ...oldColumns.slice(0, 3),
             { id: 'status', name: 'Status' },
             ...oldColumns.slice(3),
           ];
+        }
 
         if (reducerState.tabValue === 'Hired Candidates') {
-          oldColumns = oldColumns.filter((column) => column.id !== 'engage');
+          // Remove existing engage, siteName and status and statusInfo column and force putting back siteName + status
+          oldColumns = oldColumns.filter(
+            (column) => !['engage', 'siteName', 'status', 'statusInfo'].includes(column.id)
+          );
           return [
             ...oldColumns.slice(0, 8),
             { id: 'siteName', name: 'Site Name' },
+            ...(hasWithdrawnParticipant ? [{ id: 'status', name: 'Status' }] : []),
             ...oldColumns.slice(8),
           ];
         }
@@ -437,6 +450,7 @@ export default () => {
     reducerState.order,
     reducerState.tabValue,
     roles,
+    hasWithdrawnParticipant,
   ]);
 
   const defaultOnClose = () => {
@@ -458,8 +472,9 @@ export default () => {
       return 'N/A';
     }
     if (columnId === 'engage') {
+      const engage = !row.status.includes('already_hired') && !row.status.includes('withdrawn');
       return (
-        !row.status.includes('already_hired') && (
+        engage && (
           <Button
             onClick={(event) => {
               setActionMenuParticipant(row[columnId]);

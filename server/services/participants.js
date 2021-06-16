@@ -303,9 +303,15 @@ const getParticipants = async (
         (statusInfo) => statusInfo.status === 'hired' && statusInfo.employerId !== user.id
       );
 
-      if (hiredBySomeoneElseStatus) {
+      // Handling withdrawn and already hired, putting withdrawn as higher priority
+      if (item.interested === 'withdrawn' || item.interested === 'no') {
         if (!participant.statusInfos) participant.statusInfos = [];
-
+        participant.statusInfos.push({
+          createdAt: new Date(),
+          status: 'withdrawn',
+        });
+      } else if (hiredBySomeoneElseStatus) {
+        if (!participant.statusInfos) participant.statusInfos = [];
         participant.statusInfos.push({
           createdAt: hiredBySomeoneElseStatus.createdAt,
           status: 'already_hired',

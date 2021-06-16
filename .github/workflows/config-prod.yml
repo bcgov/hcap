@@ -2,8 +2,10 @@ name: Test and Deploy Config on Prod
 
 on:
   push:
+    paths:
+      - 'openshift/*.yml'
     tags:
-      - config
+      - prod
 
 env:
   CLUSTER: https://api.silver.devops.gov.bc.ca:6443

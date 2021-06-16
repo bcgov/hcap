@@ -18,7 +18,7 @@ parameters:
     value: '8080'
     required: true
   - name: CONFIG_VERSION
-    description: The github repository version of Config
+    description: The github repository version of Config (Commit SHA)
     value: default
 objects:
   - apiVersion: v1

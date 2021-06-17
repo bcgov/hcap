@@ -68,6 +68,26 @@ export const defaultTableState = {
   siteSelector: '',
 };
 
+export const tabStatuses = {
+  'Available Participants': ['open'],
+  'My Candidates': ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
+  'Archived Candidates': ['rejected'],
+  'Hired Candidates': ['hired'],
+  Participants: ['open', 'prospecting', 'interviewing', 'offer_made', 'rejected', 'hired'],
+};
+
+export const tabsByRole = {
+  superuser: ['Participants'],
+  ministry_of_health: ['Participants'],
+  health_authority: [
+    'Available Participants',
+    'My Candidates',
+    'Archived Candidates',
+    'Hired Candidates',
+  ],
+  employer: ['Available Participants', 'My Candidates', 'Archived Candidates', 'Hired Candidates'],
+};
+
 const columns = {
   id: { id: 'id', name: 'ID', sortOrder: 1 },
   lastName: { id: 'lastName', name: 'Last Name', sortOrder: 2 },

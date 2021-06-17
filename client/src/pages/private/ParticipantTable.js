@@ -16,7 +16,6 @@ import {
   regionLabelsMap,
   API_URL,
   pageSize,
-  tabs,
   makeToasts,
   defaultTableState,
 } from '../../constants';
@@ -183,19 +182,14 @@ export default () => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations, setLocations] = useState([]);
   const {
-    state: { columns },
+    state: { columns, tabs, selectedTab, selectedTabStatuses },
     dispatch: participantsDispatch,
   } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
-  const permissionRole = auth.permissionRole;
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
 
-  const [reducerState, dispatch] = useReducer(reducer, {
-    ...defaultTableState,
-    tabValue: Object.keys(tabs) // Set selected tab to first tab allowed for role
-      .find((key) => tabs[key].roles.some((role) => roles.includes(role))),
-  });
+  const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
 
   const fetchParticipants = async (
     offset,
@@ -295,7 +289,7 @@ export default () => {
 
   const forceReload = async () => {
     if (!columns) return;
-    if (!reducerState.tabValue) return;
+    if (!selectedTab) return;
     const currentPage = reducerState.pagination?.currentPage || 0;
     setLoadingData(true);
     const { data, pagination } = await fetchParticipants(
@@ -307,7 +301,7 @@ export default () => {
       reducerState.order.field,
       reducerState.order.direction,
       reducerState.siteSelector,
-      tabs[reducerState.tabValue].statuses
+      selectedTabStatuses
     );
     dispatch({
       type: 'updateKey',
@@ -324,9 +318,9 @@ export default () => {
 
   useEffect(() => {
     setHideLastNameAndEmailFilter(
-      ['Available Participants', 'Archived Candidates'].includes(reducerState.tabValue)
+      ['Available Participants', 'Archived Candidates'].includes(selectedTab)
     );
-  }, [reducerState.tabValue]);
+  }, [selectedTab]);
 
   useEffect(() => {
     const currentPage = reducerState.pagination?.currentPage || 0;
@@ -339,14 +333,9 @@ export default () => {
       isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
     );
 
-    participantsDispatch({
-      type: ParticipantsContext.types.CHANGE_COLUMNS,
-      payload: { role: permissionRole, tab: reducerState.tabValue },
-    });
-
     const getParticipants = async () => {
       if (!columns) return;
-      if (!reducerState.tabValue) return;
+      if (!selectedTab) return;
       setLoadingData(true);
       const { data, pagination } = await fetchParticipants(
         currentPage * pageSize,
@@ -357,7 +346,7 @@ export default () => {
         reducerState.order.field,
         reducerState.order.direction,
         reducerState.siteSelector,
-        tabs[reducerState.tabValue].statuses
+        selectedTabStatuses
       );
       dispatch({
         type: 'updateKey',
@@ -381,11 +370,10 @@ export default () => {
     reducerState.lastNameFilter,
     reducerState.fsaFilter,
     reducerState.order,
-    reducerState.tabValue,
     roles,
     columns,
-    participantsDispatch,
-    permissionRole,
+    selectedTab,
+    selectedTabStatuses,
   ]);
 
   const defaultOnClose = () => {
@@ -398,7 +386,7 @@ export default () => {
       return row[columnId] ? 'Primed' : 'Available';
     }
     if (columnId === 'status') {
-      return prettifyStatus(row[columnId], row.id, reducerState.tabValue, handleEngage);
+      return prettifyStatus(row[columnId], row.id, selectedTab, handleEngage);
     }
     if (columnId === 'distance') {
       if (row[columnId] !== null && row[columnId] !== undefined) {
@@ -757,7 +745,7 @@ export default () => {
                 </Box>
               </Grid>
             )}
-            {reducerState.tabValue === 'Hired Candidates' && (
+            {selectedTab === 'Hired Candidates' && (
               <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
                 <Button
                   onClick={() => setActiveModalForm('new-participant')}
@@ -769,17 +757,18 @@ export default () => {
           </Grid>
           <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
             <CustomTabs
-              value={reducerState.tabValue || false}
-              onChange={(event, property) =>
-                dispatch({ type: 'updateKeyWithPagination', key: 'tabValue', value: property })
+              value={selectedTab || false}
+              onChange={(_, property) =>
+                participantsDispatch({
+                  type: ParticipantsContext.types.SELECT_TAB,
+                  payload: property,
+                })
               }
             >
               {
-                Object.keys(tabs)
-                  .filter((key) => roles.some((role) => tabs[key].roles.includes(role))) // Only display tabs for user role
-                  .map((key) => (
-                    <CustomTab key={key} label={key} value={key} disabled={isLoadingData} />
-                  )) // Tab component with tab name as value
+                tabs.map((key) => (
+                  <CustomTab key={key} label={key} value={key} disabled={isLoadingData} />
+                )) // Tab component with tab name as value
               }
             </CustomTabs>
             <Table

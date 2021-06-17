@@ -7,6 +7,8 @@ on:
       - '.github/**'
     tags:
       - prod
+    branches:
+      - hcap-585-deploy-config-change
 
 env:
   CLUSTER: https://api.silver.devops.gov.bc.ca:6443
@@ -38,4 +40,3 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           make server-config-test
-          make server-config

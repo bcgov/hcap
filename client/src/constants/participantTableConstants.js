@@ -77,6 +77,7 @@ export const tabStatuses = {
 };
 
 export const tabsByRole = {
+  superuser: ['Participants'],
   ministry_of_health: ['Participants'],
   health_authority: [
     'Available Participants',

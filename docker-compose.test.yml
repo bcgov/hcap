@@ -5,7 +5,7 @@ services:
     image: ${APP_NAME}-client
     container_name: ${APP_NAME}-client
     environment:
-      - REACT_APP_API_URL=http://localhost:8081
+      - REACT_APP_API_URL=http://hcapemployers.local.freshworks.club:8081
     build:
       context: ./client
       dockerfile: Dockerfile.dev
@@ -37,6 +37,7 @@ services:
       - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
       - KEYCLOAK_API_CLIENTID=${KEYCLOAK_API_CLIENTID}
       - KEYCLOAK_API_SECRET=${KEYCLOAK_API_SECRET}
+      - KEYCLOAK_LOCAL_SECRET=${KEYCLOAK_LOCAL_SECRET}
       - KEYCLOAK_FE_CLIENTID=${KEYCLOAK_FE_CLIENTID}
       - KEYCLOAK_SA_USERNAME=${KEYCLOAK_SA_USERNAME}
       - KEYCLOAK_SA_PASSWORD=${KEYCLOAK_SA_PASSWORD}
@@ -98,7 +99,7 @@ services:
         aliases:
           - keycloak.local.freshworks.club
     healthcheck:
-      test: ['CMD-SHELL', 'curl -f http://localhost:8080/auth']
+      test: ['CMD-SHELL', 'curl -f http://keycloak.local.freshworks.club:8080/auth']
       interval: 10s
       timeout: 10s
       retries: 20

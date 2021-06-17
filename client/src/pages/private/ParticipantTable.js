@@ -323,7 +323,6 @@ export default () => {
   }, [selectedTab]);
 
   useEffect(() => {
-    const currentPage = reducerState.pagination?.currentPage || 0;
     const isMoH = roles.includes('ministry_of_health');
     const isSuperUser = roles.includes('superuser');
 
@@ -332,8 +331,11 @@ export default () => {
     setLocations(
       isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
     );
+  }, [roles]);
 
+  useEffect(() => {
     const getParticipants = async () => {
+      const currentPage = reducerState.pagination?.currentPage || 0;
       if (!columns) return;
       if (!selectedTab) return;
       setLoadingData(true);

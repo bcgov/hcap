@@ -366,7 +366,6 @@ export default () => {
       resultColumns.sort(
         (colum1, column2) => sortOrder.indexOf(colum1.id) - sortOrder.indexOf(column2.id)
       );
-
       setColumns(resultColumns);
     };
 
@@ -416,8 +415,8 @@ export default () => {
             setHideLastNameAndEmailFilter(false);
             return HiredCandidateColumns;
           default:
-            setHideLastNameAndEmailFilter(true);
-            return ArchivedParticipantColumns;
+            setHideLastNameAndEmailFilter(false);
+            return oldColumns.filter((col)=>col.id!=='callbackStatus');
         }
       });
     };

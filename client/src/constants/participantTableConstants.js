@@ -1,37 +1,6 @@
 import ToastStatus from './toast';
 export const pageSize = 10;
 
-export const defaultColumns = [
-  { id: 'id', name: 'ID' },
-  { id: 'lastName', name: 'Last Name' },
-  { id: 'firstName', name: 'First Name' },
-  { id: 'postalCodeFsa', name: 'FSA' },
-  { id: 'preferredLocation', name: 'Preferred Region(s)' },
-  { id: 'nonHCAP', name: 'Non-HCAP' },
-  { id: 'userUpdatedAt', name: 'Last Updated' },
-  { id: 'callbackStatus', name: 'Callback Status' },
-];
-
-export const sortOrder = [
-  'id',
-  'lastName',
-  'firstName',
-  'status',
-  'statusInfo',
-  'postalCodeFsa',
-  'phoneNumber',
-  'emailAddress',
-  'preferredLocation',
-  'distance',
-  'interested',
-  'nonHCAP',
-  'crcClear',
-  'callbackStatus',
-  'userUpdatedAt',
-  'engage',
-  'edit',
-];
-
 export const tabs = {
   // Tabs, associated allowed roles, displayed statuses
   'Available Participants': {

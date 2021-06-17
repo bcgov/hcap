@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useReducer, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
@@ -34,41 +34,6 @@ import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { getDialogTitle, prettifyStatus } from '../../utils';
 import moment from 'moment';
 import { AuthContext, ParticipantsContext } from '../../providers';
-let renderCount = 0;
-
-const usePrevious = (value, initialValue) => {
-  const ref = useRef(initialValue);
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-};
-
-const useEffectDebugger = (effectHook, dependencies, dependencyNames = []) => {
-  const previousDeps = usePrevious(dependencies, []);
-
-  const changedDeps = dependencies.reduce((accum, dependency, index) => {
-    if (dependency !== previousDeps[index]) {
-      const keyName = dependencyNames[index] || index;
-      return {
-        ...accum,
-        [keyName]: {
-          before: previousDeps[index],
-          after: dependency,
-        },
-      };
-    }
-
-    return accum;
-  }, {});
-
-  if (Object.keys(changedDeps).length) {
-    console.log('[use-effect-debugger] ', changedDeps);
-  }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(effectHook, dependencies);
-};
 
 const CustomTabs = withStyles((theme) => ({
   root: {
@@ -156,6 +121,58 @@ const reducer = (state, action) => {
   }
 };
 
+const filterData = (data, columns) => {
+  const emailAddressMask = '***@***.***';
+  const phoneNumberMask = '(***) ***-****';
+
+  const mapItemToColumns = (item, columns) => {
+    const row = {};
+
+    columns.forEach((column) => {
+      row[column.id] = item[column.id];
+    });
+
+    return row;
+  };
+
+  const filteredRows = [];
+
+  data?.forEach((dataItem) => {
+    const item = { ...dataItem };
+    if (!item.emailAddress) {
+      item.emailAddress = emailAddressMask;
+    }
+
+    if (!item.phoneNumber) {
+      item.phoneNumber = phoneNumberMask;
+    }
+
+    const row = mapItemToColumns(item, columns);
+
+    row.engage = item;
+    row.siteName = item?.statusInfos?.[0].data?.siteName;
+
+    if (item.statusInfos && item.statusInfos.length > 0) {
+      // Handling already_hired and withdrawn status
+      const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
+      if (item.statusInfos.find((statusInfo) => statusInfo.status === 'withdrawn')) {
+        row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'withdrawn'];
+      } else if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
+        row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'already_hired'];
+      } else {
+        row.status = [item.statusInfos[0].status];
+      }
+    } else {
+      row.status = ['open'];
+    }
+
+    row.engage.status = row.status[0];
+
+    filteredRows.push(row);
+  });
+  return filteredRows;
+};
+
 export default () => {
   const { openToast } = useToast();
   const [isLoadingData, setLoadingData] = useState(false);
@@ -173,66 +190,12 @@ export default () => {
   const permissionRole = auth.permissionRole;
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
-  let hasWithdrawnParticipant = false;
 
   const [reducerState, dispatch] = useReducer(reducer, {
     ...defaultTableState,
     tabValue: Object.keys(tabs) // Set selected tab to first tab allowed for role
       .find((key) => tabs[key].roles.some((role) => roles.includes(role))),
   });
-  const filterData = (data, columns) => {
-    hasWithdrawnParticipant = false;
-    const mapItemToColumns = (item, columns) => {
-      const row = {};
-
-      columns.forEach((column) => {
-        row[column.id] = item[column.id];
-      });
-
-      return row;
-    };
-
-    const filteredRows = [];
-    data &&
-      data.forEach((dataItem) => {
-        const item = { ...dataItem };
-        if (!item.emailAddress) {
-          item.emailAddress = emailAddressMask;
-        }
-
-        if (!item.phoneNumber) {
-          item.phoneNumber = phoneNumberMask;
-        }
-
-        const row = mapItemToColumns(item, columns);
-
-        row.engage = item;
-        row.siteName = item?.statusInfos?.[0].data?.siteName;
-
-        if (item.statusInfos && item.statusInfos.length > 0) {
-          // Handling already_hired and withdrawn status
-          const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
-          if (item.statusInfos.find((statusInfo) => statusInfo.status === 'withdrawn')) {
-            row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'withdrawn'];
-            hasWithdrawnParticipant = true;
-          } else if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
-            row.status = [
-              previousStatus?.data.previous || item.statusInfos[0].status,
-              'already_hired',
-            ];
-          } else {
-            row.status = [item.statusInfos[0].status];
-          }
-        } else {
-          row.status = ['open'];
-        }
-
-        row.engage.status = row.status[0];
-
-        filteredRows.push(row);
-      });
-    return filteredRows;
-  };
 
   const fetchParticipants = async (
     offset,
@@ -272,9 +235,6 @@ export default () => {
       return response.json();
     }
   };
-
-  const emailAddressMask = '***@***.***';
-  const phoneNumberMask = '(***) ***-****';
 
   const handleEngage = async (participantId, status, additional = {}) => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
@@ -368,7 +328,7 @@ export default () => {
     );
   }, [reducerState.tabValue]);
 
-  useEffectDebugger(() => {
+  useEffect(() => {
     const currentPage = reducerState.pagination?.currentPage || 0;
     const isMoH = roles.includes('ministry_of_health');
     const isSuperUser = roles.includes('superuser');
@@ -424,6 +384,8 @@ export default () => {
     reducerState.tabValue,
     roles,
     columns,
+    participantsDispatch,
+    permissionRole,
   ]);
 
   const defaultOnClose = () => {
@@ -494,8 +456,6 @@ export default () => {
     return row[columnId];
   };
 
-  renderCount += 1;
-  console.log(`ParticipantTable. renderCount: `, renderCount);
   if (!columns) return null;
   return (
     <>

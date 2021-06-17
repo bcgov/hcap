@@ -4,7 +4,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { withStyles } from '@material-ui/core/styles';
 import { Page, CheckPermissions } from '../../components/generic';
-import { AuthContext } from '../../providers';
+import { AuthContext, ParticipantsContext } from '../../providers';
 
 const ParticipantTable = lazy(() => import('./ParticipantTable'));
 const SiteTable = lazy(() => import('./SiteTable'));
@@ -65,7 +65,12 @@ export default () => {
           </CustomTabs>
         </Grid>
         <Grid container alignItems='center' justify='flex-start' direction='column'>
-          {tabValue === 0 && <ParticipantTable />}
+          {tabValue === 0 && (
+            <ParticipantsContext.ParticipantsProvider role={auth.permissionRole}>
+              <ParticipantTable />
+            </ParticipantsContext.ParticipantsProvider>
+          )}
+
           {tabValue === 1 && <SiteTable sites={sites} />}
         </Grid>
       </CheckPermissions>

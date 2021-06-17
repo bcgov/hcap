@@ -26,7 +26,9 @@ class Keycloak {
     this.authUrl = process.env.KEYCLOAK_AUTH_URL;
     this.clientNameFrontend = process.env.KEYCLOAK_FE_CLIENTID;
     this.clientNameBackend = process.env.KEYCLOAK_API_CLIENTID;
-    this.clientSecretBackend = process.env.KEYCLOAK_API_SECRET;
+    this.clientSecretBackend = this.authUrl.includes('local')
+      ? process.env.KEYCLOAK_LOCAL_SECRET
+      : process.env.KEYCLOAK_API_SECRET;
     this.serviceAccountUsername = process.env.KEYCLOAK_SA_USERNAME;
     this.serviceAccountPassword = process.env.KEYCLOAK_SA_PASSWORD;
     const config = {
@@ -127,6 +129,7 @@ class Keycloak {
   }
 
   async buildInternalIdMap() {
+    await this.authenticateIfNeeded();
     // Creates maps of Keycloak role and client names to IDs
     // See Keycloak docs https://www.keycloak.org/docs-api/5.0/rest-api/index.html#_clients_resource
     logger.info('Building internal keycloak id map');

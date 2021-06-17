@@ -15,10 +15,7 @@ import {
   EditParticipantFormSchema,
   regionLabelsMap,
   API_URL,
-  sortOrder,
   pageSize,
-  defaultColumns,
-  tabs,
   makeToasts,
   defaultTableState,
 } from '../../constants';
@@ -35,7 +32,7 @@ import { useToast } from '../../hooks';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { getDialogTitle, prettifyStatus } from '../../utils';
 import moment from 'moment';
-import { AuthContext } from '../../providers';
+import { AuthContext, ParticipantsContext } from '../../providers';
 
 const CustomTabs = withStyles((theme) => ({
   root: {
@@ -74,10 +71,10 @@ const reducer = (state, action) => {
   switch (type) {
     // Add pagination to a key update
     case 'updateKeyWithPagination':
-      newstate.pagination = (prev) => ({
-        ...prev,
+      newstate.pagination = {
+        ...newstate,
         currentPage: 0,
-      });
+      };
       newstate[key] = value;
       return newstate;
     // Update any key in state with the corresponding value
@@ -123,75 +120,76 @@ const reducer = (state, action) => {
   }
 };
 
+const filterData = (data, columns) => {
+  const emailAddressMask = '***@***.***';
+  const phoneNumberMask = '(***) ***-****';
+
+  const mapItemToColumns = (item, columns) => {
+    const row = {};
+
+    columns.forEach((column) => {
+      row[column.id] = item[column.id];
+    });
+
+    return row;
+  };
+
+  const filteredRows = [];
+
+  data?.forEach((dataItem) => {
+    const item = { ...dataItem };
+    if (!item.emailAddress) {
+      item.emailAddress = emailAddressMask;
+    }
+
+    if (!item.phoneNumber) {
+      item.phoneNumber = phoneNumberMask;
+    }
+
+    const row = mapItemToColumns(item, columns);
+
+    row.engage = item;
+    row.siteName = item?.statusInfos?.[0].data?.siteName;
+
+    if (item.statusInfos && item.statusInfos.length > 0) {
+      // Handling already_hired and withdrawn status
+      const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
+      if (item.statusInfos.find((statusInfo) => statusInfo.status === 'withdrawn')) {
+        row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'withdrawn'];
+      } else if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
+        row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'already_hired'];
+      } else {
+        row.status = [item.statusInfos[0].status];
+      }
+    } else {
+      row.status = ['open'];
+    }
+
+    row.engage.status = row.status[0];
+
+    filteredRows.push(row);
+  });
+  return filteredRows;
+};
+
 export default () => {
   const { openToast } = useToast();
   const [isLoadingData, setLoadingData] = useState(false);
   const [rows, setRows] = useState([]);
-  const [columns, setColumns] = useState(defaultColumns);
   const [hideLastNameAndEmailFilter, setHideLastNameAndEmailFilter] = useState(true);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations, setLocations] = useState([]);
+  const {
+    state: { columns, tabs, selectedTab, selectedTabStatuses },
+    dispatch: participantsDispatch,
+  } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
-  let hasWithdrawnParticipant = false;
 
   const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
-  const filterData = (data, columns) => {
-    hasWithdrawnParticipant = false;
-    const mapItemToColumns = (item, columns) => {
-      const row = {};
-
-      columns.forEach((column) => {
-        row[column.id] = item[column.id];
-      });
-
-      return row;
-    };
-
-    const filteredRows = [];
-    data &&
-      data.forEach((dataItem) => {
-        const item = { ...dataItem };
-        if (!item.emailAddress) {
-          item.emailAddress = emailAddressMask;
-        }
-
-        if (!item.phoneNumber) {
-          item.phoneNumber = phoneNumberMask;
-        }
-
-        const row = mapItemToColumns(item, columns);
-
-        row.engage = item;
-        row.siteName = item?.statusInfos?.[0].data?.siteName;
-
-        if (item.statusInfos && item.statusInfos.length > 0) {
-          // Handling already_hired and withdrawn status
-          const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
-          if (item.statusInfos.find((statusInfo) => statusInfo.status === 'withdrawn')) {
-            row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'withdrawn'];
-            hasWithdrawnParticipant = true;
-          } else if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
-            row.status = [
-              previousStatus?.data.previous || item.statusInfos[0].status,
-              'already_hired',
-            ];
-          } else {
-            row.status = [item.statusInfos[0].status];
-          }
-        } else {
-          row.status = ['open'];
-        }
-
-        row.engage.status = row.status[0];
-
-        filteredRows.push(row);
-      });
-    return filteredRows;
-  };
 
   const fetchParticipants = async (
     offset,
@@ -231,9 +229,6 @@ export default () => {
       return response.json();
     }
   };
-
-  const emailAddressMask = '***@***.***';
-  const phoneNumberMask = '(***) ***-****';
 
   const handleEngage = async (participantId, status, additional = {}) => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
@@ -293,7 +288,8 @@ export default () => {
   };
 
   const forceReload = async () => {
-    if (!reducerState.tabValue) return;
+    if (!columns) return;
+    if (!selectedTab) return;
     const currentPage = reducerState.pagination?.currentPage || 0;
     setLoadingData(true);
     const { data, pagination } = await fetchParticipants(
@@ -305,7 +301,7 @@ export default () => {
       reducerState.order.field,
       reducerState.order.direction,
       reducerState.siteSelector,
-      tabs[reducerState.tabValue].statuses
+      selectedTabStatuses
     );
     dispatch({
       type: 'updateKey',
@@ -321,55 +317,27 @@ export default () => {
   };
 
   useEffect(() => {
-    const resultColumns = [...defaultColumns];
-    const currentPage = reducerState.pagination?.currentPage || 0;
-    const fetchUserInfo = async () => {
-      if (!reducerState.tabValue) {
-        dispatch({
-          type: 'updateKeyWithPagination',
-          key: 'tabValue',
-          value: Object.keys(tabs) // Set selected tab to first tab allowed for role
-            .find((key) => tabs[key].roles.some((role) => roles.includes(role))),
-        });
-      }
-      const isMoH = roles.includes('ministry_of_health');
-      const isSuperUser = roles.includes('superuser');
-      if (isMoH || isSuperUser) {
-        resultColumns.push(
-          { id: 'interested', name: 'Interest' },
-          { id: 'crcClear', name: 'CRC Clear' },
-          { id: 'statusInfo', name: 'Status' },
-          { id: 'edit' }
-        );
-      }
+    setHideLastNameAndEmailFilter(
+      ['Available Participants', 'Archived Candidates'].includes(selectedTab)
+    );
+  }, [selectedTab]);
 
-      // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
-      const regions = Object.values(regionLabelsMap).filter((value) => value !== 'None');
-      setLocations(
-        isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
-      );
+  useEffect(() => {
+    const isMoH = roles.includes('ministry_of_health');
+    const isSuperUser = roles.includes('superuser');
 
-      if (!isMoH) {
-        resultColumns.push(
-          { id: 'phoneNumber', name: 'Phone Number' },
-          { id: 'emailAddress', name: 'Email Address' },
-          { id: 'distance', name: 'Site Distance' }
-        );
-      }
+    // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
+    const regions = Object.values(regionLabelsMap).filter((value) => value !== 'None');
+    setLocations(
+      isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
+    );
+  }, [roles]);
 
-      if (!isMoH && !isSuperUser) {
-        resultColumns.push({ id: 'engage' });
-      }
-
-      resultColumns.sort(
-        (colum1, column2) => sortOrder.indexOf(colum1.id) - sortOrder.indexOf(column2.id)
-      );
-
-      setColumns(resultColumns);
-    };
-
+  useEffect(() => {
     const getParticipants = async () => {
-      if (!reducerState.tabValue) return;
+      const currentPage = reducerState.pagination?.currentPage || 0;
+      if (!columns) return;
+      if (!selectedTab) return;
       setLoadingData(true);
       const { data, pagination } = await fetchParticipants(
         currentPage * pageSize,
@@ -380,7 +348,7 @@ export default () => {
         reducerState.order.field,
         reducerState.order.direction,
         reducerState.siteSelector,
-        tabs[reducerState.tabValue].statuses
+        selectedTabStatuses
       );
       dispatch({
         type: 'updateKey',
@@ -390,56 +358,12 @@ export default () => {
           currentPage: currentPage,
         },
       });
-      const newRows = filterData(data, resultColumns);
+      const newRows = filterData(data, columns);
       setRows(newRows);
       setLoadingData(false);
     };
 
-    const runAsync = async () => {
-      await fetchUserInfo();
-      await getParticipants();
-
-      setColumns((oldColumns) => {
-        setHideLastNameAndEmailFilter(
-          ['Available Participants', 'Archived Candidates'].includes(reducerState.tabValue)
-        );
-
-        if (reducerState.tabValue !== 'Available Participants')
-          oldColumns = oldColumns.filter((column) => column.id !== 'callbackStatus');
-
-        if (
-          ['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue) &&
-          !oldColumns.find((column) => column.id === 'status')
-        ) {
-          // Remove statusInfo colum
-          oldColumns = oldColumns.filter((column) => column.id !== 'statusInfo');
-          return [
-            ...oldColumns.slice(0, 3),
-            { id: 'status', name: 'Status' },
-            ...oldColumns.slice(3),
-          ];
-        }
-
-        if (reducerState.tabValue === 'Hired Candidates') {
-          // Remove existing engage, siteName and status and statusInfo column and force putting back siteName + status
-          oldColumns = oldColumns.filter(
-            (column) => !['engage', 'siteName', 'status', 'statusInfo'].includes(column.id)
-          );
-          return [
-            ...oldColumns.slice(0, 8),
-            { id: 'siteName', name: 'Site Name' },
-            ...(hasWithdrawnParticipant ? [{ id: 'status', name: 'Status' }] : []),
-            ...oldColumns.slice(8),
-          ];
-        }
-
-        if (!['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue))
-          return oldColumns.filter((column) => column.id !== 'status');
-
-        return oldColumns;
-      });
-    };
-    runAsync();
+    getParticipants();
   }, [
     reducerState.pagination?.currentPage,
     reducerState.siteSelector,
@@ -448,9 +372,10 @@ export default () => {
     reducerState.lastNameFilter,
     reducerState.fsaFilter,
     reducerState.order,
-    reducerState.tabValue,
     roles,
-    hasWithdrawnParticipant,
+    columns,
+    selectedTab,
+    selectedTabStatuses,
   ]);
 
   const defaultOnClose = () => {
@@ -463,7 +388,7 @@ export default () => {
       return row[columnId] ? 'Primed' : 'Available';
     }
     if (columnId === 'status') {
-      return prettifyStatus(row[columnId], row.id, reducerState.tabValue, handleEngage);
+      return prettifyStatus(row[columnId], row.id, selectedTab, handleEngage);
     }
     if (columnId === 'distance') {
       if (row[columnId] !== null && row[columnId] !== undefined) {
@@ -521,6 +446,7 @@ export default () => {
     return row[columnId];
   };
 
+  if (!columns) return null;
   return (
     <>
       <Dialog
@@ -821,7 +747,7 @@ export default () => {
                 </Box>
               </Grid>
             )}
-            {reducerState.tabValue === 'Hired Candidates' && (
+            {selectedTab === 'Hired Candidates' && (
               <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
                 <Button
                   onClick={() => setActiveModalForm('new-participant')}
@@ -833,17 +759,18 @@ export default () => {
           </Grid>
           <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
             <CustomTabs
-              value={reducerState.tabValue || false}
-              onChange={(event, property) =>
-                dispatch({ type: 'updateKeyWithPagination', key: 'tabValue', value: property })
+              value={selectedTab || false}
+              onChange={(_, property) =>
+                participantsDispatch({
+                  type: ParticipantsContext.types.SELECT_TAB,
+                  payload: property,
+                })
               }
             >
               {
-                Object.keys(tabs)
-                  .filter((key) => roles.some((role) => tabs[key].roles.includes(role))) // Only display tabs for user role
-                  .map((key) => (
-                    <CustomTab key={key} label={key} value={key} disabled={isLoadingData} />
-                  )) // Tab component with tab name as value
+                tabs.map((key) => (
+                  <CustomTab key={key} label={key} value={key} disabled={isLoadingData} />
+                )) // Tab component with tab name as value
               }
             </CustomTabs>
             <Table

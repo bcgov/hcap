@@ -1,25 +1,43 @@
-import React, { useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 
-import { columnsByRole } from '../constants/participantTableConstants';
+import { columnsByRole, tabStatuses, tabsByRole } from '../constants/participantTableConstants';
 
 const ParticipantsContext = React.createContext();
 
 const types = {
-  CHANGE_COLUMNS: 'CHANGE_COLUMNS',
+  UPDATE_ROLE: 'UPDATE_ROLE',
+  SELECT_TAB: 'SELECT_TAB',
 };
 
 const participantsReducer = (state, action) => {
   const { type, payload } = action;
-  const { CHANGE_COLUMNS } = types;
+  const { UPDATE_ROLE, SELECT_TAB } = types;
 
   switch (type) {
-    case CHANGE_COLUMNS:
-      const columns = columnsByRole?.[payload.role]?.[payload.tab];
+    case UPDATE_ROLE: {
+      const tabs = tabsByRole[payload];
+      const defaultTab = tabs[0];
+      const columns = columnsByRole[payload][defaultTab];
       columns?.sort((a, b) => a.sortOrder - b.sortOrder);
       return {
-        user: payload,
+        ...state,
+        role: payload,
         columns,
+        tabs,
+        selectedTab: defaultTab,
+        selectedTabStatuses: tabStatuses[defaultTab],
       };
+    }
+    case SELECT_TAB: {
+      const columns = columnsByRole[state.role][payload];
+      columns?.sort((a, b) => a.sortOrder - b.sortOrder);
+      return {
+        ...state,
+        columns,
+        selectedTab: payload,
+        selectedTabStatuses: tabStatuses[payload],
+      };
+    }
     default:
       return state;
   }
@@ -29,10 +47,21 @@ const participantsReducer = (state, action) => {
  * For more: https://kentcdodds.com/blog/how-to-use-react-context-effectively
  */
 
-const ParticipantsProvider = ({ children }) => {
+const ParticipantsProvider = ({ role, children }) => {
   const [state, dispatch] = useReducer(participantsReducer, {
+    role,
     columns: null,
+    tabs: null,
+    selectedTab: null,
+    selectedTabStatuses: null,
   });
+
+  useEffect(() => {
+    dispatch({
+      type: types.UPDATE_ROLE,
+      payload: role,
+    });
+  }, [role]);
 
   const value = { state, dispatch };
 

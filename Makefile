@@ -62,11 +62,11 @@ local-kc-build:
 
 local-kc-run:
 	@echo "Starting test local app container"
-	@docker-compose -f docker-compose.test.yml up -d
+	@docker-compose -f docker-compose.test.yml up
 
 local-kc-down:
 	@echo "Stopping local app container"
-	@docker-compose -f docker-compose.test.yml down
+	@docker-compose -f docker-compose.test.yml down --remove-orphans
 
 local-run-db:
 	@echo "Running local DB container"

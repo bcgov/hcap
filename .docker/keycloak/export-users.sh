@@ -9,19 +9,29 @@ accessToken=$(
         | jq -r '.access_token'
 )
 
+# This variable is the UUID of the local fe client, needed for exporting role
+# mappings
+localID=$(curl --silent \
+    -H "Authorization: bearer ${accessToken}" \
+    -H "Content-Type: application/json" \
+    "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/clients" | jq -c '.[] | select(.clientId | contains("hcap-fe-local"))' | jq -r '.id')
+
 function exportUsers() {
-    curl --fail --silent \
+    curl  --silent \
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \
         "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users"
 }
 
 function exportUserRoleMappings() {
-    curl --fail --silent \
+
+    curl --silent \
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \
-        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/${KEYCLOAK_FE_ID}"
+        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/$localID"
 }
+
+
 
 exportUsers > .docker/keycloak/users.json
 

@@ -1,8 +1,38 @@
 [
   {
     "user": {
-      "id": "2e334364-4fb7-4b68-86c4-6a757e710ea7",
-      "createdTimestamp": 1617239192807,
+      "id": "40deb38e-3731-4342-b9ca-3587be469f61",
+      "createdTimestamp": 1623888397527,
+      "username": "service-account",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": false,
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "notBefore": 0,
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": true,
+        "manage": true
+      }
+    },
+    "roles": [
+      {
+        "id": "8ff4b3d8-8854-46ab-9ff2-0f13a577763f",
+        "name": "superuser",
+        "description": "Users able to perform all functions in the application",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      }
+    ]
+  },
+  {
+    "user": {
+      "id": "c056f629-62f2-4bea-8034-4edb1ce055ba",
+      "createdTimestamp": 1623362837350,
       "username": "test-admin",
       "enabled": true,
       "totp": false,
@@ -20,9 +50,17 @@
     },
     "roles": [
       {
-        "id": "1fb5d3b3-ef4f-422d-8901-1b3e40451534",
-        "name": "pending",
-        "description": "Default role added to new users",
+        "id": "8ff4b3d8-8854-46ab-9ff2-0f13a577763f",
+        "name": "superuser",
+        "description": "Users able to perform all functions in the application",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      },
+      {
+        "id": "ae9aae39-bd5b-4c8a-8543-e836b9fe4c62",
+        "name": "region_fraser",
+        "description": "Users with access to Fraser Health region data",
         "composite": false,
         "clientRole": true,
         "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
@@ -31,8 +69,8 @@
   },
   {
     "user": {
-      "id": "6c93ccf8-ae1d-418a-9f5b-a4c124635367",
-      "createdTimestamp": 1617650782649,
+      "id": "86dc9086-fd17-468a-ac81-a4910be2ed7a",
+      "createdTimestamp": 1623364292159,
       "username": "test-employer",
       "enabled": true,
       "totp": false,
@@ -53,6 +91,22 @@
     },
     "roles": [
       {
+        "id": "ae9aae39-bd5b-4c8a-8543-e836b9fe4c62",
+        "name": "region_fraser",
+        "description": "Users with access to Fraser Health region data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      },
+      {
+        "id": "5b0ef26a-86d1-42a7-a028-acfa2d1c3ac8",
+        "name": "region_interior",
+        "description": "Users with access to Interior Health region data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      },
+      {
         "id": "b1b6a9d7-ad35-423f-873b-96c2e146196b",
         "name": "employer",
         "description": "Employer users who interact with site and participant data",
@@ -64,8 +118,8 @@
   },
   {
     "user": {
-      "id": "d4520276-9168-4968-9e9c-e03cd5461c9f",
-      "createdTimestamp": 1617650782713,
+      "id": "8e6307d7-6393-4542-a65c-ab231c52aabf",
+      "createdTimestamp": 1623364292266,
       "username": "test-superuser",
       "enabled": true,
       "totp": false,
@@ -86,9 +140,9 @@
     },
     "roles": [
       {
-        "id": "8ff4b3d8-8854-46ab-9ff2-0f13a577763f",
-        "name": "superuser",
-        "description": "Users able to perform all functions in the application",
+        "id": "1fb5d3b3-ef4f-422d-8901-1b3e40451534",
+        "name": "pending",
+        "description": "Default role added to new users",
         "composite": false,
         "clientRole": true,
         "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"

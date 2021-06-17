@@ -14,24 +14,30 @@ const participantsReducer = (state, action) => {
   const { UPDATE_ROLE, SELECT_TAB } = types;
 
   switch (type) {
-    case UPDATE_ROLE:
+    case UPDATE_ROLE: {
       const tabs = tabsByRole[payload];
       const defaultTab = tabs[0];
       const columns = columnsByRole[payload][defaultTab];
       columns?.sort((a, b) => a.sortOrder - b.sortOrder);
       return {
         ...state,
+        role: payload,
         columns,
         tabs,
         selectedTab: defaultTab,
         selectedTabStatuses: tabStatuses[defaultTab],
       };
-    case SELECT_TAB:
+    }
+    case SELECT_TAB: {
+      const columns = columnsByRole[state.role][payload];
+      columns?.sort((a, b) => a.sortOrder - b.sortOrder);
       return {
         ...state,
+        columns,
         selectedTab: payload,
         selectedTabStatuses: tabStatuses[payload],
       };
+    }
     default:
       return state;
   }
@@ -43,7 +49,7 @@ const participantsReducer = (state, action) => {
 
 const ParticipantsProvider = ({ role, children }) => {
   const [state, dispatch] = useReducer(participantsReducer, {
-    role: null,
+    role,
     columns: null,
     tabs: null,
     selectedTab: null,

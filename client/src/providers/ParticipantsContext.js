@@ -1,24 +1,18 @@
 import React, { useReducer } from 'react';
 
-import { tabsByRole, columnsByRole } from '../constants/participantTableConstants';
+import { columnsByRole } from '../constants/participantTableConstants';
 
 const ParticipantsContext = React.createContext();
 
 const types = {
-  CHANGE_TABS: 'CHANGE_TABS',
   CHANGE_COLUMNS: 'CHANGE_COLUMNS',
 };
 
 const participantsReducer = (state, action) => {
   const { type, payload } = action;
-  const { CHANGE_TABS, CHANGE_COLUMNS } = types;
+  const { CHANGE_COLUMNS } = types;
 
   switch (type) {
-    case CHANGE_TABS:
-      return {
-        ...state,
-        tabs: tabsByRole[payload.role],
-      };
     case CHANGE_COLUMNS:
       const columns = columnsByRole?.[payload.role]?.[payload.tab];
       columns?.sort((a, b) => a.sortOrder - b.sortOrder);
@@ -35,10 +29,9 @@ const participantsReducer = (state, action) => {
  * For more: https://kentcdodds.com/blog/how-to-use-react-context-effectively
  */
 
-const ParticipantsProvider = ({ role, children }) => {
+const ParticipantsProvider = ({ children }) => {
   const [state, dispatch] = useReducer(participantsReducer, {
     columns: null,
-    tabs: tabsByRole[role],
   });
 
   const value = { state, dispatch };

@@ -1,0 +1,60 @@
+export const AvailableParticipantColumns =[
+    {id: "id", name: "ID"},
+    {id: "lastName", name: "Last Name"},
+    {id: "firstName", name: "First Name"},
+    {id: "postalCodeFsa", name: "FSA"},
+    {id: "phoneNumber", name: "Phone Number"},
+    {id: "emailAddress", name: "Email Address"},
+    {id: "preferredLocation", name: "Preferred Region(s)"},
+    {id: "distance", name: "Site Distance"},
+    {id: "nonHCAP", name: "Non-HCAP"},
+    {id: "callbackStatus", name: "Callback Status"},
+    {id: "userUpdatedAt", name: "Last Updated"},
+    {id: "engage"}
+]
+
+export const MyCandidatesColumns = [
+    {id: "id", name: "ID"},
+    {id: "lastName", name: "Last Name"},
+    {id: "firstName", name: "First Name"},
+    {id: "status", name: "Status"},
+    {id: "postalCodeFsa", name: "FSA"},
+    {id: "phoneNumber", name: "Phone Number"},
+    {id: "emailAddress", name: "Email Address"},
+    {id: "preferredLocation", name: "Preferred Region(s)"},
+    {id: "distance", name: "Site Distance"},
+    {id: "nonHCAP", name: "Non-HCAP"},
+    {id: "userUpdatedAt", name: "Last Updated"},
+    {id: "engage"}
+]
+
+export const ArchivedParticipantColumns = [
+    {id: "id", name: "ID"},
+    {id: "lastName", name: "Last Name"},
+    {id: "firstName", name: "First Name"},
+    {id: "status", name: "Status"},
+    {id: "postalCodeFsa", name: "FSA"},
+    {id: "phoneNumber", name: "Phone Number"},
+    {id: "emailAddress", name: "Email Address"},
+    {id: "preferredLocation", name: "Preferred Region(s)"},
+    {id: "distance", name: "Site Distance"},
+    {id: "nonHCAP", name: "Non-HCAP"},
+    {id: "userUpdatedAt", name: "Last Updated"},
+    {id: "engage"}
+]
+
+export const HiredCandidateColumns = [
+    {id: "id", name: "ID"},
+    {id: "lastName", name: "Last Name"},
+    {id: "firstName", name: "First Name"},
+    {id: "postalCodeFsa", name: "FSA"},
+    {id: "phoneNumber", name: "Phone Number"},
+    {id: "emailAddress", name: "Email Address"},
+    {id: "preferredLocation", name: "Preferred Region(s)"},
+    {id: "distance", name: "Site Distance"},
+    {id: "siteName", name: "Site Name"},
+    {id: "status", name: "Status"},
+    {id: "nonHCAP", name: "Non-HCAP"},
+    {id: "userUpdatedAt", name: "Last Updated"},
+    {id: "archive", name: ""},
+]

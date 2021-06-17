@@ -1,8 +1,8 @@
 import React, { useReducer } from 'react';
 
-const AuthContext = React.createContext();
+import { rolePriority } from '../constants';
 
-const rolePriority = ['superuser', 'ministry_of_health', 'health_authority', 'employer'];
+const AuthContext = React.createContext();
 
 const USER_LOADING = 'USER_LOADING';
 const USER_LOADED = 'USER_LOADED';

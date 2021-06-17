@@ -21,7 +21,12 @@
     },
     {
       "name": "health_authority",
-      "tabsWithActions": ["Available Participants", "My Candidates", "Archived Candidates","Hired Candidates"],
+      "tabsWithActions": [
+        "Available Participants",
+        "My Candidates",
+        "Archived Candidates",
+        "Hired Candidates"
+      ],
       "allTabs": [
         "Participants",
         "Available Participants",
@@ -86,7 +91,12 @@
     },
     {
       "name": "employer",
-      "tabsWithActions": ["Available Participants", "My Candidates", "Archived Candidates","Hired Candidates"],
+      "tabsWithActions": [
+        "Available Participants",
+        "My Candidates",
+        "Archived Candidates",
+        "Hired Candidates"
+      ],
       "allTabs": [
         "Participants",
         "Available Participants",

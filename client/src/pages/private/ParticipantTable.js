@@ -416,7 +416,7 @@ export default () => {
             return HiredCandidateColumns;
           default:
             setHideLastNameAndEmailFilter(false);
-            return oldColumns.filter((col)=>col.id!=='callbackStatus');
+            return oldColumns.filter((col) => col.id !== 'callbackStatus');
         }
       });
     };

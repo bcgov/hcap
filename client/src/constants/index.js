@@ -6,4 +6,4 @@ export * from './label';
 export * from './misc';
 export * from './participantTableConstants';
 export * from './archiveParticipantsConstants';
-export * from './participantTableColumnConstants'
+export * from './participantTableColumnConstants';

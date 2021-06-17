@@ -402,14 +402,14 @@ export default () => {
       await getParticipants();
 
       setColumns((oldColumns) => {
-        switch(reducerState.tabValue){
+        switch (reducerState.tabValue) {
           case 'Available Participants':
             setHideLastNameAndEmailFilter(true);
             return AvailableParticipantColumns;
           case 'My Candidates':
             setHideLastNameAndEmailFilter(false);
             return MyCandidatesColumns;
-          case 'Archived Candidates': 
+          case 'Archived Candidates':
             setHideLastNameAndEmailFilter(true);
             return ArchivedParticipantColumns;
           case 'Hired Candidates':

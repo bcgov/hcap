@@ -15,9 +15,7 @@ import {
   EditParticipantFormSchema,
   regionLabelsMap,
   API_URL,
-  sortOrder,
   pageSize,
-  defaultColumns,
   tabs,
   makeToasts,
   defaultTableState,
@@ -35,7 +33,7 @@ import { useToast } from '../../hooks';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { getDialogTitle, prettifyStatus } from '../../utils';
 import moment from 'moment';
-import { AuthContext } from '../../providers';
+import { AuthContext, ParticipantsContext } from '../../providers';
 let renderCount = 0;
 
 const usePrevious = (value, initialValue) => {
@@ -68,6 +66,7 @@ const useEffectDebugger = (effectHook, dependencies, dependencyNames = []) => {
     console.log('[use-effect-debugger] ', changedDeps);
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(effectHook, dependencies);
 };
 
@@ -161,13 +160,17 @@ export default () => {
   const { openToast } = useToast();
   const [isLoadingData, setLoadingData] = useState(false);
   const [rows, setRows] = useState([]);
-  const [columns, setColumns] = useState(defaultColumns);
   const [hideLastNameAndEmailFilter, setHideLastNameAndEmailFilter] = useState(true);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations, setLocations] = useState([]);
+  const {
+    state: { columns },
+    dispatch: participantsDispatch,
+  } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
+  const permissionRole = auth.permissionRole;
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   let hasWithdrawnParticipant = false;
@@ -331,6 +334,7 @@ export default () => {
   };
 
   const forceReload = async () => {
+    if (!columns) return;
     if (!reducerState.tabValue) return;
     const currentPage = reducerState.pagination?.currentPage || 0;
     setLoadingData(true);
@@ -358,6 +362,12 @@ export default () => {
     setLoadingData(false);
   };
 
+  useEffect(() => {
+    setHideLastNameAndEmailFilter(
+      ['Available Participants', 'Archived Candidates'].includes(reducerState.tabValue)
+    );
+  }, [reducerState.tabValue]);
+
   useEffectDebugger(() => {
     const currentPage = reducerState.pagination?.currentPage || 0;
     const isMoH = roles.includes('ministry_of_health');
@@ -369,69 +379,13 @@ export default () => {
       isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
     );
 
-    const resultColumns = [...defaultColumns];
-
-    if (isMoH || isSuperUser) {
-      resultColumns.push(
-        { id: 'interested', name: 'Interest' },
-        { id: 'crcClear', name: 'CRC Clear' },
-        { id: 'statusInfo', name: 'Status' },
-        { id: 'edit' }
-      );
-    }
-
-    if (!isMoH) {
-      resultColumns.push(
-        { id: 'phoneNumber', name: 'Phone Number' },
-        { id: 'emailAddress', name: 'Email Address' },
-        { id: 'distance', name: 'Site Distance' }
-      );
-    }
-
-    if (!isMoH && !isSuperUser) {
-      resultColumns.push({ id: 'engage' });
-    }
-
-    resultColumns.sort(
-      (colum1, column2) => sortOrder.indexOf(colum1.id) - sortOrder.indexOf(column2.id)
-    );
-
-    setColumns(resultColumns);
-
-    setColumns((oldColumns) => {
-      setHideLastNameAndEmailFilter(
-        ['Available Participants', 'Archived Candidates'].includes(reducerState.tabValue)
-      );
-
-      if (reducerState.tabValue !== 'Available Participants')
-        oldColumns = oldColumns.filter((column) => column.id !== 'callbackStatus');
-
-      if (
-        ['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue) &&
-        !oldColumns.find((column) => column.id === 'status')
-      )
-        return [
-          ...oldColumns.slice(0, 3),
-          { id: 'status', name: 'Status' },
-          ...oldColumns.slice(3),
-        ];
-
-      if (reducerState.tabValue === 'Hired Candidates') {
-        oldColumns = oldColumns.filter((column) => column.id !== 'engage');
-        return [
-          ...oldColumns.slice(0, 8),
-          { id: 'siteName', name: 'Site Name' },
-          ...oldColumns.slice(8),
-        ];
-      }
-
-      if (!['My Candidates', 'Archived Candidates'].includes(reducerState.tabValue))
-        return oldColumns.filter((column) => column.id !== 'status');
-
-      return oldColumns;
+    participantsDispatch({
+      type: ParticipantsContext.types.CHANGE_COLUMNS,
+      payload: { role: permissionRole, tab: reducerState.tabValue },
     });
 
     const getParticipants = async () => {
+      if (!columns) return;
       if (!reducerState.tabValue) return;
       setLoadingData(true);
       const { data, pagination } = await fetchParticipants(
@@ -453,16 +407,12 @@ export default () => {
           currentPage: currentPage,
         },
       });
-      const newRows = filterData(data, resultColumns);
+      const newRows = filterData(data, columns);
       setRows(newRows);
       setLoadingData(false);
     };
 
-    const runAsync = async () => {
-      await getParticipants();
-    };
-
-    runAsync();
+    getParticipants();
   }, [
     reducerState.pagination?.currentPage,
     reducerState.siteSelector,
@@ -473,7 +423,7 @@ export default () => {
     reducerState.order,
     reducerState.tabValue,
     roles,
-    hasWithdrawnParticipant,
+    columns,
   ]);
 
   const defaultOnClose = () => {
@@ -546,6 +496,7 @@ export default () => {
 
   renderCount += 1;
   console.log(`ParticipantTable. renderCount: `, renderCount);
+  if (!columns) return null;
   return (
     <>
       <Dialog

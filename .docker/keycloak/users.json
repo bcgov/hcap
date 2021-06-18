@@ -1,38 +1,8 @@
 [
   {
     "user": {
-      "id": "40deb38e-3731-4342-b9ca-3587be469f61",
-      "createdTimestamp": 1623888397527,
-      "username": "service-account",
-      "enabled": true,
-      "totp": false,
-      "emailVerified": false,
-      "disableableCredentialTypes": [],
-      "requiredActions": [],
-      "notBefore": 0,
-      "access": {
-        "manageGroupMembership": true,
-        "view": true,
-        "mapRoles": true,
-        "impersonate": true,
-        "manage": true
-      }
-    },
-    "roles": [
-      {
-        "id": "8ff4b3d8-8854-46ab-9ff2-0f13a577763f",
-        "name": "superuser",
-        "description": "Users able to perform all functions in the application",
-        "composite": false,
-        "clientRole": true,
-        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
-      }
-    ]
-  },
-  {
-    "user": {
-      "id": "c056f629-62f2-4bea-8034-4edb1ce055ba",
-      "createdTimestamp": 1623362837350,
+      "id": "9445e4a1-aed1-4a8e-8fd6-61b1407235e9",
+      "createdTimestamp": 1624050008521,
       "username": "test-admin",
       "enabled": true,
       "totp": false,
@@ -50,17 +20,9 @@
     },
     "roles": [
       {
-        "id": "8ff4b3d8-8854-46ab-9ff2-0f13a577763f",
-        "name": "superuser",
-        "description": "Users able to perform all functions in the application",
-        "composite": false,
-        "clientRole": true,
-        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
-      },
-      {
-        "id": "ae9aae39-bd5b-4c8a-8543-e836b9fe4c62",
-        "name": "region_fraser",
-        "description": "Users with access to Fraser Health region data",
+        "id": "1fb5d3b3-ef4f-422d-8901-1b3e40451534",
+        "name": "pending",
+        "description": "Default role added to new users",
         "composite": false,
         "clientRole": true,
         "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
@@ -69,15 +31,15 @@
   },
   {
     "user": {
-      "id": "86dc9086-fd17-468a-ac81-a4910be2ed7a",
-      "createdTimestamp": 1623364292159,
+      "id": "45dfbc1b-3d85-4870-8437-f8511b379095",
+      "createdTimestamp": 1624053213643,
       "username": "test-employer",
       "enabled": true,
       "totp": false,
-      "emailVerified": true,
-      "firstName": "John",
-      "lastName": "Doe",
-      "email": "john.doe@test.com",
+      "emailVerified": false,
+      "firstName": "Em",
+      "lastName": "Ployer",
+      "email": "employer@freshworks.club",
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "notBefore": 0,
@@ -90,6 +52,145 @@
       }
     },
     "roles": [
+      {
+        "id": "ae9aae39-bd5b-4c8a-8543-e836b9fe4c62",
+        "name": "region_fraser",
+        "description": "Users with access to Fraser Health region data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      },
+      {
+        "id": "b1b6a9d7-ad35-423f-873b-96c2e146196b",
+        "name": "employer",
+        "description": "Employer users who interact with site and participant data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      }
+    ]
+  },
+  {
+    "user": {
+      "id": "ba029e55-59ae-484b-8857-19ca519bf96e",
+      "createdTimestamp": 1624053283865,
+      "username": "test-employer-multi",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": false,
+      "firstName": "Megan",
+      "lastName": "Multi",
+      "email": "multi@freshworks.club",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "notBefore": 0,
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": true,
+        "manage": true
+      }
+    },
+    "roles": [
+      {
+        "id": "2dc51d67-1193-48db-a7cc-262b6c5e0504",
+        "name": "region_vancouver_island",
+        "description": "Users with access to Vancouver Island Health region data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      },
+      {
+        "id": "9aa3c027-0d87-4293-8a49-7cf5b43e48bc",
+        "name": "region_vancouver_coastal",
+        "description": "Users with access to Vancouver Coastal Health region data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      }
+    ]
+  },
+  {
+    "user": {
+      "id": "54ab8a13-6046-430f-bf27-b5af0f5c8be8",
+      "createdTimestamp": 1624052551805,
+      "username": "test-ha",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": false,
+      "firstName": "Mr",
+      "lastName": "Clean",
+      "email": "auth@freshworks.club",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "notBefore": 0,
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": true,
+        "manage": true
+      }
+    },
+    "roles": [
+      {
+        "id": "ae9aae39-bd5b-4c8a-8543-e836b9fe4c62",
+        "name": "region_fraser",
+        "description": "Users with access to Fraser Health region data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      },
+      {
+        "id": "7b2b0cb4-f778-438b-8e10-05eeb4edfcad",
+        "name": "health_authority",
+        "description": "Health Authority users dealing with participants and employer sites in their region",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      }
+    ]
+  },
+  {
+    "user": {
+      "id": "0f109490-c7b9-4d96-8275-5c46a384d536",
+      "createdTimestamp": 1624052141528,
+      "username": "test-moh",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": false,
+      "firstName": "Miss",
+      "lastName": "Ministry",
+      "email": "moh@freshworks.club",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "notBefore": 0,
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": true,
+        "manage": true
+      }
+    },
+    "roles": [
+      {
+        "id": "c6ea6ef6-6847-438a-8102-d1b3e82b55b4",
+        "name": "region_northern",
+        "description": "Users with access to Northern Health region data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      },
+      {
+        "id": "2dc51d67-1193-48db-a7cc-262b6c5e0504",
+        "name": "region_vancouver_island",
+        "description": "Users with access to Vancouver Island Health region data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      },
       {
         "id": "ae9aae39-bd5b-4c8a-8543-e836b9fe4c62",
         "name": "region_fraser",
@@ -107,9 +208,17 @@
         "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
       },
       {
-        "id": "b1b6a9d7-ad35-423f-873b-96c2e146196b",
-        "name": "employer",
-        "description": "Employer users who interact with site and participant data",
+        "id": "9aa3c027-0d87-4293-8a49-7cf5b43e48bc",
+        "name": "region_vancouver_coastal",
+        "description": "Users with access to Vancouver Coastal Health region data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      },
+      {
+        "id": "ce9e5681-9cd5-47fe-bd9b-97d313fae6f0",
+        "name": "ministry_of_health",
+        "description": "MOH users who can access all application data",
         "composite": false,
         "clientRole": true,
         "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
@@ -118,15 +227,15 @@
   },
   {
     "user": {
-      "id": "8e6307d7-6393-4542-a65c-ab231c52aabf",
-      "createdTimestamp": 1623364292266,
+      "id": "7ebf9ecf-713b-44f7-9546-814baf1090d3",
+      "createdTimestamp": 1624050300417,
       "username": "test-superuser",
       "enabled": true,
       "totp": false,
-      "emailVerified": true,
-      "firstName": "Carl",
-      "lastName": "Smith",
-      "email": "carl.smith@test.com",
+      "emailVerified": false,
+      "firstName": "Clark",
+      "lastName": "Kent",
+      "email": "superuser@freshworks.club",
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "notBefore": 0,
@@ -140,9 +249,9 @@
     },
     "roles": [
       {
-        "id": "1fb5d3b3-ef4f-422d-8901-1b3e40451534",
-        "name": "pending",
-        "description": "Default role added to new users",
+        "id": "8ff4b3d8-8854-46ab-9ff2-0f13a577763f",
+        "name": "superuser",
+        "description": "Users able to perform all functions in the application",
         "composite": false,
         "clientRole": true,
         "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"

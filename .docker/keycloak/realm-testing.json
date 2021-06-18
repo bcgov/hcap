@@ -592,7 +592,7 @@
       "frontchannelLogout": false,
       "protocol": "openid-connect",
       "attributes": {
-        "pkce.code.challenge.method": "S256"
+        "pkce.code.challenge.method": "plain"
       },
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": false,
@@ -678,7 +678,7 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "bf49b5d9-dd6b-46a1-b011-9ac75337cadb",
-      "redirectUris": ["/*"],
+      "redirectUris": ["*"],
       "webOrigins": ["*"],
       "notBefore": 0,
       "bearerOnly": false,
@@ -816,7 +816,7 @@
       "defaultRoles": ["pending"],
       "redirectUris": [
         "http://hcapemployers.local.freshworks.club:4000/*",
-        "/*",
+        "*",
         "http://hcapparticipants.local.freshworks.club:4000/*"
       ],
       "webOrigins": ["*"],

@@ -9,6 +9,15 @@ accessToken=$(
         | jq -r '.access_token'
 )
 
+localID=$(curl --silent \
+    -H "Authorization: bearer ${accessToken}" \
+    -H "Content-Type: application/json" \
+    "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/clients" \
+    | jq -c '.[] | select(.clientId | contains("hcap-fe-local"))' \
+    | jq -r '.id'
+)
+
+
 function importUser() {
     curl --fail \
         -H "Authorization: bearer ${accessToken}" \
@@ -31,7 +40,7 @@ function importRoleMappings() {
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \
         -d "${2}" \
-        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/${KEYCLOAK_FE_ID}"
+        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/$localID"
 }
 
 function deleteRoleMappings() {
@@ -39,7 +48,7 @@ function deleteRoleMappings() {
         -X DELETE \
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \
-        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/${KEYCLOAK_FE_ID}"
+        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/$localID"
 }
 
 function exportUsers() {

@@ -4,15 +4,10 @@ import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderSelectField, RenderDateField, RenderCheckbox } from '../fields';
-import { archiveReasonOptopns, archiveStatusOptions } from '../../constants';
+import { archiveReasonOptopns, archiveStatusOptions, archiveTypeOptions } from '../../constants';
 
 const statusOptions = archiveStatusOptions.map((option) => ({ value: option, label: option }));
 const reasonOptions = archiveReasonOptopns.map((option) => ({ value: option, label: option }));
-const typeOptions = [
-  { value: '', label: '' },
-  { value: 'employmentEnded', label: 'Employment ended' },
-  { value: 'duplicate', label: 'Duplicate' },
-];
 export const ArchiveHiredParticipantForm = ({
   initialValues,
   validationSchema,
@@ -23,7 +18,12 @@ export const ArchiveHiredParticipantForm = ({
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
       {(props) => (
         <FormikForm>
-          <Field name='type' component={RenderSelectField} options={typeOptions} label='Type' />
+          <Field
+            name='type'
+            component={RenderSelectField}
+            options={archiveTypeOptions}
+            label='Type'
+          />
           {props.values.type === 'employmentEnded' && (
             <>
               <Field name='endDate' component={RenderDateField} label='End Date' />

@@ -14,3 +14,9 @@ export const archiveStatusOptions = [
   'Post secondary education underway',
   'Completed post secondary education',
 ];
+
+export const archiveTypeOptions = [
+  { value: '', label: '' },
+  { value: 'employmentEnded', label: 'Employment ended' },
+  { value: 'duplicate', label: 'Duplicate' },
+];

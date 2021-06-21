@@ -18,8 +18,6 @@ describe('Participant Table', () => {
 
         const hasActions = role.tabsWithActions.includes(tabText);
         const columnCount = hasActions ? tabHeaders.length + 1 : tabHeaders.length;
-        console.log(tabHeaders);
-        console.log(columnCount);
         if (hasActions) cy.get('th.MuiTableCell-head').last().should('have.text', ''); // action column has no header
 
         cy.get('button.MuiTab-root').contains(tabText).click();

@@ -58,15 +58,3 @@ export const HiredCandidateColumns = [
   { id: 'userUpdatedAt', name: 'Last Updated' },
   { id: 'archive', name: '' },
 ];
-
-// export const ParticipantColumns=[
-// { id: 'id', name: 'ID' },
-// { id: 'lastName', name: 'Last Name' },
-// { id: 'firstName', name: 'First Name' },
-// { id: 'status', name: 'Status' },
-// { id: 'postalCodeFsa', name: 'FSA' },
-// { id: 'preferredLocation', name: 'Preferred Region(s)' },
-// { id:'interest', name:'Interest'}
-// { id: 'nonHCAP', name: 'Non-HCAP' },
-// {}
-// ]

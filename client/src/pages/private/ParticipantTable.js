@@ -19,10 +19,6 @@ import {
   makeToasts,
   defaultTableState,
   ArchiveHiredParticipantSchema,
-  AvailableParticipantColumns,
-  ArchivedParticipantColumns,
-  MyCandidatesColumns,
-  HiredCandidateColumns,
 } from '../../constants';
 import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import {

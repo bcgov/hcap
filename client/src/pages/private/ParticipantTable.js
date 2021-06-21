@@ -452,7 +452,8 @@ export default () => {
       return 'N/A';
     }
     if (columnId === 'engage') {
-      const engage = !row.status.includes('already_hired') && !row.status.includes('withdrawn');
+      const engage = !row.status.includes('already_hired') && !row.status.includes('withdrawn') && !row.status.includes('archived');
+
       return (
         engage && (
           <Button

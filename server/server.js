@@ -327,9 +327,6 @@ app.post(
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantStatusChange, req.body);
-    if (req.body.status === 'archived') {
-      req.body.status = 'rejected';
-    }
     const user = req.hcapUserInfo;
     const result = await setParticipantStatus(
       user.id,

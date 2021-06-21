@@ -44,7 +44,7 @@ export const tabs = {
   },
   'Archived Candidates': {
     roles: ['employer', 'health_authority'],
-    statuses: ['rejected'],
+    statuses: ['rejected', 'archived'],
   },
   'Hired Candidates': {
     roles: ['employer', 'health_authority'],

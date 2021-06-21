@@ -46,6 +46,24 @@ const participantStatuses = [
   'hired',
   'rejected',
   'unavailable',
+  'archived',
+];
+
+const archiveReasonOptopns = [
+  'No longer interested in HCA/HCSW role',
+  'No longer interested in a career in health care',
+  'Terminated by employer',
+  'Personal health concerns',
+  'Moving out of province',
+  'Moved to different profession',
+  'Other',
+];
+
+const archiveStatusOptions = [
+  'Not begun orientation or training',
+  'Orientation phase',
+  'Post secondary education underway',
+  'Completed post secondary education',
 ];
 
 const validateDateString = (s) => {
@@ -546,6 +564,27 @@ const ParticipantStatusChange = yup
               .oneOf(['prospecting', 'interviewing', 'offer_made'], 'Invalid previous status'),
             otherwise: yup.string().nullable(),
           }),
+        });
+      }
+      if (status === 'archived') {
+        return schema.noUnknown('').shape({
+          type: yup
+            .string()
+            .oneOf(['duplicate', 'employmentEnded'], 'Please select a type')
+            .required('Please select a type'),
+          reason: yup.string().when('type', {
+            is: 'employmentEnded',
+            then: yup.string().required('Please include a reason').oneOf(archiveReasonOptopns),
+          }),
+          status: yup.string().when('type', {
+            is: 'employmentEnded',
+            then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
+          }),
+          endDate: yup
+            .string()
+            .test('is-date', 'Not a valid date', validateDateString)
+            .required('Please enter the date this participant was removed.'),
+          confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
         });
       }
 

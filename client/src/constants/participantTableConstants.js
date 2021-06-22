@@ -107,6 +107,7 @@ const columns = {
   engage: { id: 'engage', name: null, sortOrder: 16 },
   edit: { id: 'edit', name: null, sortOrder: 17 },
   siteName: { id: 'siteName', name: 'Site Name', sortOrder: 18 },
+  archive :{ id:'archive',name:'Archive', soryOrder:19 }
 };
 
 const {
@@ -127,6 +128,7 @@ const {
   engage,
   edit,
   siteName,
+  archive
 } = columns;
 
 export const columnsByRole = {
@@ -220,7 +222,7 @@ export const columnsByRole = {
       siteName,
       nonHCAP,
       userUpdatedAt,
-      engage
+      archive
     ],
   },
 
@@ -279,7 +281,7 @@ export const columnsByRole = {
       siteName,
       nonHCAP,
       userUpdatedAt,
-      engage
+      archive
     ],
   },
 };

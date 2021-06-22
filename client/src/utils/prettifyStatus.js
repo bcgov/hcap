@@ -19,6 +19,10 @@ export const prettifyStatus = (status, id, tabValue, handleEngage) => {
   const toolTip = isWithdrawn
     ? 'Participant is no longer available.'
     : 'This candidate was hired by another employer.';
+
+  const hideArchiveButton = ['Hired Candidates', 'Archived Candidates'].includes(tabValue)
+    ? true
+    : false;
   return (
     <div
       style={{
@@ -44,7 +48,7 @@ export const prettifyStatus = (status, id, tabValue, handleEngage) => {
                 <InfoIcon color='secondary' style={{ marginRight: 10 }} fontSize='small' />
                 {toolTip}
               </div>
-              {tabValue !== 'Archived Candidates' && (
+              {!hideArchiveButton && (
                 <div
                   style={{
                     display: 'flex',

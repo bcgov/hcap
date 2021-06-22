@@ -171,6 +171,8 @@ app.get(
         'Employer Site': result.employerSite,
         'Start Date': result.startDate,
         'Regional Health Office': result.isRHO,
+        'Withdraw Reason': result.withdrawReason,
+        'Withdraw Date': result.withdrawDate,
       });
     });
 

@@ -217,7 +217,6 @@ export default () => {
     ]
       .filter((item) => item)
       .join('&');
-
     const response = await fetch(`${API_URL}/api/v1/participants?${queries}`, {
       headers: {
         Accept: 'application/json',

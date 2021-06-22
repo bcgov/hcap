@@ -220,13 +220,14 @@ const getParticipants = async (
     user.isSuperUser ||
     user.isMoH ||
     ((user.isHA || user.isEmployer) && !statusFilters?.includes('open'));
-
+  const interestFilter = (user.isHA || user.isEmployer) && statusFilters?.includes('open');
   const participants = await participantsFinder
     .filterRegion(regionFilter)
     .filterParticipantFields({
       postalCodeFsa: fsaFilter,
       lastName: filterLastNameAndEmail && lastNameFilter,
       emailAddress: filterLastNameAndEmail && emailFilter,
+      interestFilter: interestFilter && ['no', 'withdrawn'],
     })
     .filterExternalFields({ statusFilters, siteIdDistance: siteSelector })
     .paginate(pagination, sortField)

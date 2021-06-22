@@ -219,7 +219,6 @@ app.get(
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantQuerySchema, req.query);
-
     const user = req.hcapUserInfo;
     const {
       offset,

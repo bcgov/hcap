@@ -220,6 +220,7 @@ export const columnsByRole = {
       siteName,
       nonHCAP,
       userUpdatedAt,
+      engage
     ],
   },
 
@@ -278,6 +279,7 @@ export const columnsByRole = {
       siteName,
       nonHCAP,
       userUpdatedAt,
+      engage
     ],
   },
 };

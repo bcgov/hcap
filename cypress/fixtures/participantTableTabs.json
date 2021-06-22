@@ -1,6 +1,28 @@
 {
   "roles": [
     {
+      "name": "superuser",
+      "tabsWithActions": ["Participants"],
+      "allTabs": ["Participants", "My Sites", "Participants"],
+      "tableTabs": {
+        "Participants": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "FSA",
+          "Phone Number",
+          "Email Address",
+          "Preferred Region(s)",
+          "Site Distance",
+          "Interest",
+          "Non-HCAP",
+          "CRC Clear",
+          "Last Updated"
+        ]
+      }
+    },
+    {
       "name": "ministry_of_health",
       "tabsWithActions": ["Participants"],
       "allTabs": ["Participants", "Participants"],

@@ -1,5 +1,7 @@
 import React, { useReducer } from 'react';
 
+import { rolePriority } from '../constants';
+
 const AuthContext = React.createContext();
 
 const USER_LOADING = 'USER_LOADING';
@@ -9,13 +11,17 @@ const authReducer = (state, action) => {
   switch (action.type) {
     case USER_LOADING:
       return {
+        ...state,
         user: null,
         isLoading: true,
       };
     case USER_LOADED:
       return {
+        ...state,
         user: action.payload,
         isLoading: false,
+        // find first role in above array that is included in the user object (highest permission role)
+        permissionRole: rolePriority.find((role) => action.payload?.roles.includes(role)),
       };
     default:
       return state;
@@ -27,7 +33,11 @@ const authReducer = (state, action) => {
  */
 
 const AuthProvider = ({ children }) => {
-  const [auth, dispatch] = useReducer(authReducer, { user: null, isLoading: true });
+  const [auth, dispatch] = useReducer(authReducer, {
+    user: null,
+    isLoading: true,
+    permissionRole: null,
+  });
 
   const value = { auth, dispatch };
 

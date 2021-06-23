@@ -31,10 +31,21 @@ const getReport = async () => {
         decomposeTo: 'object',
         on: { 'body.siteId': 'data.site' },
       },
+      archivedJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'participant_id',
+          status: 'archived',
+          current: true,
+          'data.type': 'duplicate',
+        },
+      },
     })
     .find({
-      current: true,
-      status: 'hired',
+      status: ['hired'],
+      'archivedJoin.status': null,
+      'siteJoin.id <>': null,
     });
   hiredPerRegion = hiredPerRegion.reduce((a, v) => {
     const region = v.siteJoin?.body?.healthAuthority || 'Unknown';
@@ -44,9 +55,23 @@ const getReport = async () => {
 
   const inProgress = [...new Set(inProgressEntries.map((i) => i.participant_id))].length;
 
-  const hired = await dbClient.db[collections.PARTICIPANTS_STATUS].count({
-    status: ['hired'],
-  });
+  const hired = await dbClient.db[collections.PARTICIPANTS_STATUS]
+    .join({
+      archivedJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'participant_id',
+          status: 'archived',
+          current: true,
+          'data.type': 'duplicate',
+        },
+      },
+    })
+    .count({
+      status: ['hired'],
+      'archivedJoin.status': null,
+    });
 
   return {
     total,
@@ -129,10 +154,30 @@ const getHiredParticipantsReport = async () => {
           'body.siteId': 'data.site',
         },
       },
+      duplicateArchivedJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'participant_id',
+          status: 'archived',
+          current: true,
+          'data.type': 'duplicate',
+        },
+      },
+      archivedJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'participant_id',
+          status: 'archived',
+          current: true,
+          'data.type <>': 'duplicate',
+        },
+      },
     })
     .find({
-      current: true,
-      status: 'hired',
+      status: ['hired'],
+      'duplicateArchivedJoin.status': null,
       // 'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
     });
 
@@ -148,6 +193,8 @@ const getHiredParticipantsReport = async () => {
     employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,
     startDate: entry.data?.startDate,
     isRHO: entry.employerSiteJoin?.[0]?.body?.isRHO,
+    withdrawReason: entry.archivedJoin?.[0]?.data?.reason,
+    withdrawDate: entry.archivedJoin?.[0]?.data?.endDate,
   }));
 };
 

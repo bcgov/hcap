@@ -56,10 +56,24 @@ const getSiteByID = async (id) => {
   if (site.length === 0) {
     return [{ error: `No site found with id ${id}` }];
   }
-  const hcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS].count({
-    'data.site': site[0].siteId,
-    'data.nonHcapOpportunity': 'false',
-  });
+  const hcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS]
+    .join({
+      duplicateArchivedJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'participant_id',
+          status: 'archived',
+          current: true,
+          'data.type': 'duplicate',
+        },
+      },
+    })
+    .count({
+      'data.site': site[0].siteId,
+      'data.nonHcapOpportunity': 'false',
+      'duplicateArchivedJoin.status': null,
+    });
   const nonHcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS].count({
     'data.site': site[0].siteId,
     'data.nonHcapOpportunity': 'true',

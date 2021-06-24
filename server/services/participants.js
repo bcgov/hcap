@@ -82,6 +82,7 @@ const setParticipantStatus = async (
       participant.history = participant.history
         ? [newHistory, ...participant.history]
         : [newHistory];
+      // eslint-disable-next-line no-use-before-define
       await updateParticipant(participant);
     }
 

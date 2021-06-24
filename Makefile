@@ -111,6 +111,11 @@ tag-prod:
 	@git tag -fa prod -m "Deploying $(APP_NAME):$(COMMIT_SHA) to prod env" $(COMMIT_SHA)
 	@git push --force origin refs/tags/prod:refs/tags/prod
 
+tag-config:
+	@echo "Updating config to $(APP_NAME):$(COMMIT_SHA) to all env"
+	@git tag -fa config -m "Updating config $(APP_NAME):$(COMMIT_SHA) to all env" $(COMMIT_SHA)
+	@git push --force origin refs/tags/config:refs/tags/config
+
 # OpenShift Aliases
 
 add-role:
@@ -126,6 +131,12 @@ server-prep:
 server-create:
 	@oc process -f openshift/server.bc.yml -p APP_NAME=$(APP_NAME) | oc apply -n $(TOOLS_NAMESPACE) -f -
 	@oc process -f openshift/server.dc.yml -p APP_NAME=$(APP_NAME) IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) IMAGE_TAG=$(OS_NAMESPACE_SUFFIX) | oc apply -n $(TARGET_NAMESPACE) -f -
+
+server-config-test:
+	@oc -n $(TARGET_NAMESPACE)  process -f openshift/server.dc.yml -p APP_NAME=$(APP_NAME) IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) IMAGE_TAG=$(OS_NAMESPACE_SUFFIX) CONFIG_VERSION=$(COMMIT_SHA)  | oc apply -n $(TARGET_NAMESPACE) -f - --dry-run
+
+server-config:
+	@oc -n $(TARGET_NAMESPACE) process -f openshift/server.dc.yml -p APP_NAME=$(APP_NAME) IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) IMAGE_TAG=$(OS_NAMESPACE_SUFFIX) CONFIG_VERSION=$(COMMIT_SHA) | oc apply -n $(TARGET_NAMESPACE) -f -
 
 server-build:
 	@oc cancel-build bc/$(APP_NAME)-server -n $(TOOLS_NAMESPACE)

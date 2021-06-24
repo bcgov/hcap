@@ -1,0 +1,41 @@
+name: Test and Deploy Config on Prod
+
+on:
+  push:
+    paths:
+      - 'openshift/*.yml'
+      - '.github/**'
+    tags:
+      - prod
+
+env:
+  CLUSTER: https://api.silver.devops.gov.bc.ca:6443
+  PROJECT: hcap
+
+jobs:
+  config:
+    name: Test and deploy latest DC in Prod
+    runs-on: 'ubuntu-latest'
+    environment:
+      name: prod
+    env:
+      OS_NAMESPACE_SUFFIX: prod
+      AUTH_TOKEN: ${{ secrets.SA_TOKEN }}
+    steps:
+      - name: Print Status
+        if: ${{ env.AUTH_TOKEN }}
+        run: |
+          echo OC CLI Version: $(oc version)
+          echo Service Account token configured
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Login
+        if: ${{ env.AUTH_TOKEN }}
+        run: |
+          oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
+      - name: Test and Deploy
+        if: ${{ env.AUTH_TOKEN }}
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          make server-config-test
+          make server-config

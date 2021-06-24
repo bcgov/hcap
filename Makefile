@@ -78,7 +78,7 @@ local-close:
 
 local-clean:
 	@echo "Cleaning local app"
-	@docker-compose -f docker-compose.dev.yml down -v
+	@docker-compose -f docker-compose.dev.yml down -v --remove-orphans
 
 local-server-tests:
 	@/bin/bash .docker/keycloak/import-users.sh

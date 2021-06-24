@@ -7,12 +7,12 @@ const getReport = async () => {
 
   const inProgressEntries = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
-      hiredJoin: {
+      hiredOrArchivedJoin: {
         type: 'LEFT OUTER',
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'participant_id',
-          status: 'hired',
+          status: ['hired', 'archived'],
           current: true,
         },
       },
@@ -20,7 +20,7 @@ const getReport = async () => {
     .find({
       current: true,
       status: ['prospecting', 'interviewing', 'offer_made'],
-      'hiredJoin.status': null,
+      'hiredOrArchivedJoin.status': null,
     });
 
   let hiredPerRegion = await dbClient.db[collections.PARTICIPANTS_STATUS]
@@ -92,12 +92,12 @@ const getParticipantsReport = async () => {
           id: 'participant_id',
         },
       },
-      hiredJoin: {
+      hiredOrArchivedJoin: {
         type: 'LEFT OUTER',
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'participant_id',
-          status: 'hired',
+          status: ['hired', 'archived'],
           current: true,
         },
       },
@@ -112,7 +112,7 @@ const getParticipantsReport = async () => {
     .find({
       current: true,
       status: ['prospecting', 'interviewing', 'offer_made'],
-      'hiredJoin.status': null,
+      'hiredOrArchivedJoin.status': null,
     });
 
   const healthAuthorities = [];

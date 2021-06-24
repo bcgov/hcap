@@ -67,8 +67,8 @@ const setParticipantStatus = async (
       id: participantId,
     });
 
-    // Now check if current status is archived/duplicate then set interested flag
-    if (status === 'archived' && data?.type === 'duplicate') {
+    // Now check if current status is archived then set interested flag
+    if (status === 'archived') {
       const newHistory = {
         timestamp: new Date(),
         changes: [],

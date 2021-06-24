@@ -5,7 +5,7 @@ accessToken=$(
         -d "password=${KEYCLOAK_SA_PASSWORD}" \
         -d "client_id=admin-cli" \
         -d "grant_type=password" \
-        "${KEYCLOAK_AUTH_URL}/realms/master/protocol/openid-connect/token" \
+        "${KEYCLOAK_LOCAL_AUTH_URL}/realms/master/protocol/openid-connect/token" \
         | jq -r '.access_token'
 )
 
@@ -16,7 +16,6 @@ localID=$(curl --silent \
     | jq -c '.[] | select(.clientId | contains("hcap-fe-local"))' \
     | jq -r '.id'
 )
-
 
 function importUser() {
     curl --fail \

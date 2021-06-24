@@ -56,28 +56,37 @@ const getSiteByID = async (id) => {
   if (site.length === 0) {
     return [{ error: `No site found with id ${id}` }];
   }
+
+  // Counting hire
+  // Join Criteria for duplicate participant
+  const duplicateArchivedJoin = {
+    type: 'LEFT OUTER',
+    relation: collections.PARTICIPANTS_STATUS,
+    on: {
+      participant_id: 'participant_id',
+      status: 'archived',
+      current: true,
+      'data.type': 'duplicate',
+    },
+  };
   const hcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
-      duplicateArchivedJoin: {
-        type: 'LEFT OUTER',
-        relation: collections.PARTICIPANTS_STATUS,
-        on: {
-          participant_id: 'participant_id',
-          status: 'archived',
-          current: true,
-          'data.type': 'duplicate',
-        },
-      },
+      duplicateArchivedJoin,
     })
     .count({
       'data.site': site[0].siteId,
       'data.nonHcapOpportunity': 'false',
       'duplicateArchivedJoin.status': null,
     });
-  const nonHcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS].count({
-    'data.site': site[0].siteId,
-    'data.nonHcapOpportunity': 'true',
-  });
+  const nonHcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS]
+    .join({
+      duplicateArchivedJoin,
+    })
+    .count({
+      'data.site': site[0].siteId,
+      'data.nonHcapOpportunity': 'true',
+      'duplicateArchivedJoin.status': null,
+    });
   site[0].hcapHires = hcapHires;
   site[0].nonHcapHires = nonHcapHires;
   return site;

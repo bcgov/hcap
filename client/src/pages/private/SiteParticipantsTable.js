@@ -4,18 +4,12 @@ import Grid from '@material-ui/core/Grid';
 import { Box } from '@material-ui/core';
 import store from 'store';
 import { Table, Button, Dialog } from '../../components/generic';
-import { checkPermissions , getDialogTitle} from '../../utils';
+import { checkPermissions, getDialogTitle } from '../../utils';
 import { AuthContext } from '../../providers';
-import {
-  ToastStatus,
-  API_URL,
-  makeToasts,
-  ArchiveHiredParticipantSchema,
-} from '../../constants';
-import {ArchiveHiredParticipantForm} from '../../components/modal-forms'
+import { ToastStatus, API_URL, makeToasts, ArchiveHiredParticipantSchema } from '../../constants';
+import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import moment from 'moment';
-
 
 let columns = [
   { id: 'participantId', name: 'ID' },
@@ -23,7 +17,7 @@ let columns = [
   { id: 'hiredDate', name: 'Hire Date' },
   { id: 'startDate', name: 'Start Date' },
   { id: 'nonHCAP', name: 'Position' },
-  { id:'archive',name:'Archive' }
+  { id: 'archive', name: 'Archive' },
 ];
 
 export default ({ siteId }) => {
@@ -37,9 +31,9 @@ export default ({ siteId }) => {
   const { auth } = AuthContext.useAuth();
   const { openToast } = useToast();
   const roles = auth.user?.roles || [];
-  const isHA = checkPermissions(roles,['health_authority'])
-  if(!isHA){
-    columns = columns.filter((col)=> col.id!=='archived')
+  const isHA = checkPermissions(roles, ['health_authority']);
+  if (!isHA) {
+    columns = columns.filter((col) => col.id !== 'archived');
   }
   const defaultOnClose = () => {
     setActiveModalForm(null);
@@ -141,7 +135,7 @@ export default ({ siteId }) => {
     };
 
     fetchParticipants();
-  }, [siteId ]);
+  }, [siteId]);
 
   const handleEngage = async (participantId, status, additional = {}) => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
@@ -157,7 +151,7 @@ export default ({ siteId }) => {
     if (response.ok) {
       const index = rows.findIndex((row) => row.participantId === participantId);
       const { participantName } = rows[index];
-      const toasts = makeToasts(participantName,'');
+      const toasts = makeToasts(participantName, '');
       openToast(toasts['archived']);
       setActionMenuParticipant(null);
       setActiveModalForm(null);
@@ -202,19 +196,22 @@ export default ({ siteId }) => {
               if (columnId === 'nonHCAP') {
                 return row[columnId] ? 'Non-HCAP' : 'HCAP';
               }
-              if (columnId === 'archive'){
+              if (columnId === 'archive') {
                 return (
                   <Button
                     onClick={async () => {
                       // Get data from row.participantId
-                      const response = await fetch(`${API_URL}/api/v1/participant?id=${row.participantId}`, {
-                        headers: {
-                          Accept: 'application/json',
-                          'Content-type': 'application/json',
-                          Authorization: `Bearer ${store.get('TOKEN')}`,
-                        },
-                        method: 'GET',
-                      });
+                      const response = await fetch(
+                        `${API_URL}/api/v1/participant?id=${row.participantId}`,
+                        {
+                          headers: {
+                            Accept: 'application/json',
+                            'Content-type': 'application/json',
+                            Authorization: `Bearer ${store.get('TOKEN')}`,
+                          },
+                          method: 'GET',
+                        }
+                      );
                       const participant = await response.json();
                       setActionMenuParticipant(participant[0]);
                       setActiveModalForm('archive');
@@ -247,7 +244,7 @@ export default ({ siteId }) => {
             validationSchema={ArchiveHiredParticipantSchema}
             onSubmit={(values) => {
               handleEngage(actionMenuParticipant.id, 'archived', values);
-              forceReload()
+              forceReload();
             }}
             onClose={defaultOnClose}
           />

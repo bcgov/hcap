@@ -7,7 +7,6 @@ on:
       - '.github/**'
     tags:
       - dev
-      - test
 
 env:
   CLUSTER: https://api.silver.devops.gov.bc.ca:6443
@@ -28,13 +27,6 @@ jobs:
           oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
           cd "$GITHUB_WORKSPACE"
           make server-config-test
-      - name: Dry run - Test
-        env:
-          OS_NAMESPACE_SUFFIX: test
-        run: |
-          oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
-          cd "$GITHUB_WORKSPACE"
-          make server-config-test
 
   configDev:
     name: Dev - Update Deployment Config
@@ -43,22 +35,6 @@ jobs:
       name: dev
     env:
       OS_NAMESPACE_SUFFIX: dev
-    needs: test
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Apply changes
-        run: |
-          oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
-          cd "$GITHUB_WORKSPACE"
-          make server-config
-  configTest:
-    name: Test - Update Deployment Config
-    runs-on: ubuntu-latest
-    environment:
-      name: test
-    env:
-      OS_NAMESPACE_SUFFIX: test
     needs: test
     steps:
       - name: Checkout

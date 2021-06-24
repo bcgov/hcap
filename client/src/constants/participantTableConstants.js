@@ -47,6 +47,10 @@ export const makeToasts = (firstName, lastName) => {
       status: ToastStatus.Info,
       message: `${firstName} ${lastName} has been archived`,
     },
+    archived: {
+      status: ToastStatus.Info,
+      message: `${firstName} ${lastName} has been archived`,
+    },
     already_hired: {
       status: ToastStatus.Info,
       message: `${firstName} ${lastName} is already hired by someone else`,

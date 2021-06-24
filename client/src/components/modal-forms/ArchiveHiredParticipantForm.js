@@ -5,6 +5,7 @@ import { Button } from '../generic';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderSelectField, RenderDateField, RenderCheckbox } from '../fields';
 import { archiveReasonOptopns, archiveStatusOptions, archiveTypeOptions } from '../../constants';
+import { getTodayDate } from '../../utils';
 
 const statusOptions = archiveStatusOptions.map((option) => ({ value: option, label: option }));
 const reasonOptions = archiveReasonOptopns.map((option) => ({ value: option, label: option }));
@@ -26,7 +27,12 @@ export const ArchiveHiredParticipantForm = ({
           />
           {props.values.type === 'employmentEnded' && (
             <>
-              <Field name='endDate' component={RenderDateField} label='End Date' />
+              <Field
+                name='endDate'
+                component={RenderDateField}
+                maxDate={getTodayDate()}
+                label='End Date'
+              />
               <Field
                 name='reason'
                 component={RenderSelectField}
@@ -44,7 +50,7 @@ export const ArchiveHiredParticipantForm = ({
           <Field
             name='confirmed'
             component={RenderCheckbox}
-            label='I awknowledge that the information above is correct and that archiving this participant is irreversible.'
+            label='I acknowledge that the information above is correct and that archiving this participant is irreversible.'
           />
           <Box mt={3}>
             <Grid container spacing={2} justify='flex-end'>

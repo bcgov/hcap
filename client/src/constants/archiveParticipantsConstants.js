@@ -10,7 +10,7 @@ export const archiveReasonOptopns = [
 
 export const archiveStatusOptions = [
   'Not begun orientation or training',
-  'Orientation phase',
+  'Provincial orientation curriculum complete',
   'Post secondary education underway',
   'Completed post secondary education',
 ];

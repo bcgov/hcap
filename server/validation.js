@@ -49,7 +49,7 @@ const participantStatuses = [
   'archived',
 ];
 
-const archiveReasonOptopns = [
+const archiveReasonOptions = [
   'No longer interested in HCA/HCSW role',
   'No longer interested in a career in health care',
   'Terminated by employer',
@@ -574,7 +574,7 @@ const ParticipantStatusChange = yup
             .required('Please select a type'),
           reason: yup.string().when('type', {
             is: 'employmentEnded',
-            then: yup.string().required('Please include a reason').oneOf(archiveReasonOptopns),
+            then: yup.string().required('Please include a reason').oneOf(archiveReasonOptions),
           }),
           status: yup.string().when('type', {
             is: 'employmentEnded',

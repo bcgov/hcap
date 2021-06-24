@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import mapValues from 'lodash/mapValues';
-import { archiveReasonOptopns as archiveReasonOptions, archiveStatusOptions } from './archiveParticipantsConstants';
+import { archiveReasonOptions, archiveStatusOptions } from './archiveParticipantsConstants';
 
 const healthRegions = ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'];
 

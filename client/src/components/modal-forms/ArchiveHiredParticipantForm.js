@@ -4,11 +4,11 @@ import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderSelectField, RenderDateField, RenderCheckbox } from '../fields';
-import { archiveReasonOptopns, archiveStatusOptions, archiveTypeOptions } from '../../constants';
+import { archiveReasonOptions, archiveStatusOptions, archiveTypeOptions } from '../../constants';
 import { getTodayDate } from '../../utils';
 
 const statusOptions = archiveStatusOptions.map((option) => ({ value: option, label: option }));
-const reasonOptions = archiveReasonOptopns.map((option) => ({ value: option, label: option }));
+const reasonOptions = archiveReasonOptions.map((option) => ({ value: option, label: option }));
 export const ArchiveHiredParticipantForm = ({
   initialValues,
   validationSchema,

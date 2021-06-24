@@ -16,6 +16,9 @@ export const prettifyStatus = (status, id, tabValue, handleEngage) => {
     firstStatus = 'Withdrawn';
     isWithdrawn = true;
   }
+  if (status.includes('archived')) {
+    firstStatus = 'Archived';
+  }
   const toolTip = isWithdrawn
     ? 'Participant is no longer available.'
     : 'This candidate was hired by another employer.';

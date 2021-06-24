@@ -61,7 +61,7 @@ const archiveReasonOptopns = [
 
 const archiveStatusOptions = [
   'Not begun orientation or training',
-  'Orientation phase',
+  'Provincial orientation curriculum complete',
   'Post secondary education underway',
   'Completed post secondary education',
 ];
@@ -583,6 +583,7 @@ const ParticipantStatusChange = yup
           endDate: yup
             .string()
             .test('is-date', 'Not a valid date', validateDateString)
+            .test('is-present', 'Not a valid date in the past', validatePastDateString)
             .required('Please enter the date this participant was removed.'),
           confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
         });

@@ -67,6 +67,24 @@ const setParticipantStatus = async (
       id: participantId,
     });
 
+    // Now check if current status is archived/duplicate then set interested flag
+    if (status === 'archived' && data?.type === 'duplicate') {
+      const newHistory = {
+        timestamp: new Date(),
+        changes: [],
+      };
+
+      newHistory.changes.push({
+        field: 'interested',
+        from: participant.interested || 'yes',
+        to: 'withdrawn',
+      });
+      participant.history = participant.history
+        ? [newHistory, ...participant.history]
+        : [newHistory];
+      await updateParticipant(participant);
+    }
+
     if (['prospecting', 'interviewing', 'offer_made', 'hired'].includes(status)) {
       return {
         emailAddress: participant[0].emailAddress,

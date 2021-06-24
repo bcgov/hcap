@@ -56,9 +56,9 @@ Cypress.Commands.add('kcLogout', function () {
 Cypress.Commands.add('kcLogin', (user) => {
   Cypress.log({ name: 'Login' });
   cy.fixture('users/' + user).then((userData) => {
-    let authBaseUrl = Cypress.env('auth_base_url');
-    let realm = Cypress.env('auth_realm');
-    let client_id = Cypress.env('auth_client_id');
+    let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
+    let realm = Cypress.env('KEYCLOAK_REALM');
+    let client_id = Cypress.env('KEYCLOAK_API_CLIENTID');
     let client_secret = Cypress.env('KEYCLOAK_LOCAL_SECRET');
 
     const base64URLEncode = (str) => {
@@ -67,7 +67,6 @@ Cypress.Commands.add('kcLogin', (user) => {
 
     const code_challenge = base64URLEncode(crypto.randomBytes(32));
 
->>>>>>> 587ce39 (login test working)
     cy.request({
       url: authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/auth',
       followRedirect: false,

@@ -327,26 +327,24 @@ app.post(
   keycloak.allowRolesMiddleware('health_authority', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    console.log(req.body)
-    return res.status(201).json({data:'stuff'})
-  //   await validate(ParticipantStatusChange, req.body);
-  //   const user = req.hcapUserInfo;
-  //   const result = await setParticipantStatus(
-  //     user.id,
-  //     req.body.participantId,
-  //     req.body.status,
-  //     req.body.data
-  //   );
-  //   logger.info({
-  //     action: 'employer-actions_post',
-  //     performed_by: {
-  //       username: user.username,
-  //       id: user.id,
-  //     },
-  //     participant_id: req.body.participantId,
-  //     status: req.body.status,
-  //   });
-  //   return res.status(201).json({ data: result });
+    await validate(ParticipantStatusChange, req.body);
+    const user = req.hcapUserInfo;
+    const result = await setParticipantStatus(
+      user.id,
+      req.body.participantId,
+      req.body.status,
+      req.body.data
+    );
+    logger.info({
+      action: 'employer-actions_post',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      participant_id: req.body.participantId,
+      status: req.body.status,
+    });
+    return res.status(201).json({ data: result });
   })
 );
 

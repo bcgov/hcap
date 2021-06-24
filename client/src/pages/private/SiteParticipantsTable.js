@@ -55,6 +55,48 @@ export default ({ siteId }) => {
 
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
 
+  const forceReload = async () => {
+    setLoadingData(true);
+    const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
+      headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const participants = await response.json();
+      const rowsData = participants.map((row) => {
+        // Pull all relevant props from row based on columns constant
+        const values = {
+          participantId: row.participant_id,
+          participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
+          hiredDate: row.data.hiredDate,
+          startDate: row.data.startDate,
+          nonHCAP: row.data.nonHcapOpportunity,
+        };
+
+        const mappedRow = columns.reduce(
+          (accumulator, column) => ({
+            ...accumulator,
+            [column.id]: values[column.id],
+          }),
+          {}
+        );
+        // Add additional props (user ID, button) to row
+        return {
+          ...mappedRow,
+          id: row.id,
+        };
+      });
+      setFetchedRows(rowsData);
+      setIsPendingRequests(rowsData.length > 0);
+    } else {
+      setRows([]);
+      setFetchedRows([]);
+      setIsPendingRequests(false);
+    }
+    setLoadingData(false);
+  };
+
   useEffect(() => {
     const fetchParticipants = async () => {
       setLoadingData(true);
@@ -99,7 +141,7 @@ export default ({ siteId }) => {
     };
 
     fetchParticipants();
-  }, [siteId]);
+  }, [siteId ]);
 
   const handleEngage = async (participantId, status, additional = {}) => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
@@ -114,8 +156,8 @@ export default ({ siteId }) => {
 
     if (response.ok) {
       const index = rows.findIndex((row) => row.participantId === participantId);
-      const { firstName, lastName } = rows[index];
-      const toasts = makeToasts(firstName, lastName);
+      const { participantName } = rows[index];
+      const toasts = makeToasts(participantName,'');
       openToast(toasts['archived']);
       setActionMenuParticipant(null);
       setActiveModalForm(null);
@@ -205,6 +247,7 @@ export default ({ siteId }) => {
             validationSchema={ArchiveHiredParticipantSchema}
             onSubmit={(values) => {
               handleEngage(actionMenuParticipant.id, 'archived', values);
+              forceReload()
             }}
             onClose={defaultOnClose}
           />

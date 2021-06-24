@@ -382,8 +382,10 @@ export const ArchiveHiredParticipantSchema = yup.object().shape({
     is: 'employmentEnded',
     then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
   }),
-  endDate: yup.date().required('Please enter the date this participant was removed.')
-  .test('is-present', 'Not a valid date in the past', validatePastDateString),
+  endDate: yup
+    .date()
+    .required('Please enter the date this participant was removed.')
+    .test('is-present', 'Not a valid date in the past', validatePastDateString),
   confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
 });
 

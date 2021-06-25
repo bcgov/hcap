@@ -275,7 +275,7 @@ export const InterviewingFormSchema = yup
     contactedDate: yup
       .string()
       .required('Date of contact is required')
-      .test('is-date', 'Not a valid date. Date is in the past', validatePastDateString),
+      .test('is-date', 'Invalid entry. Date must be in the past.', validatePastDateString),
   });
 
 export const HireFormSchema = yup

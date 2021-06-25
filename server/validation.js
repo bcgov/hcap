@@ -580,11 +580,17 @@ const ParticipantStatusChange = yup
             is: 'employmentEnded',
             then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
           }),
-          endDate: yup
-            .string()
-            .test('is-date', 'Not a valid date', validateDateString)
-            .test('is-present', 'Invalid entry. Date must be in the past.', validatePastDateString)
-            .required('Please enter the date this participant was removed.'),
+          endDate: yup.string().when('type', {
+            is: 'employmentEnded',
+            then: yup
+              .string()
+              .test(
+                'is-present',
+                'Invalid entry. Date must be in the past.',
+                validatePastDateString
+              )
+              .required('Please enter the date this participant was removed.'),
+          }),
           confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
         });
       }

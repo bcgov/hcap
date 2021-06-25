@@ -163,6 +163,8 @@ const filterData = (data, columns) => {
       } else {
         row.status = [item.statusInfos[0].status];
       }
+    } else if (item.progressStats) {
+      row.status = ['open', ...Object.keys(item.progressStats).filter((key) => key === 'archived')];
     } else {
       row.status = ['open'];
     }

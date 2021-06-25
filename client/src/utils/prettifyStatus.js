@@ -23,7 +23,9 @@ export const prettifyStatus = (status, id, tabValue, handleEngage) => {
     ? 'Participant is no longer available.'
     : 'This candidate was hired by another employer.';
 
-  const hideArchiveButton = ['Hired Candidates', 'Archived Candidates'].includes(tabValue);
+  const hideArchiveButton = ['Hired Candidates', 'Archived Candidates', 'Participants'].includes(
+    tabValue
+  );
   return (
     <div
       style={{
@@ -33,7 +35,7 @@ export const prettifyStatus = (status, id, tabValue, handleEngage) => {
       }}
     >
       {firstStatus}{' '}
-      {status[1] && (
+      {status[1] && firstStatus !== 'Archived' && (
         <ComponentTooltip
           arrow
           title={

@@ -19,8 +19,8 @@ const validatePastDateString = (s) => {
   return Date.parse(s) <= new Date();
 };
 const validateDateIsInThePast = (d) => {
-  return Date.parse(d) <= new Date()
-}
+  return Date.parse(d) <= new Date();
+};
 const validateUniqueArray = (a) => Array.isArray(a) && new Set(a).size === a.length;
 
 const validateBlankOrPositiveInteger = (n) =>
@@ -384,14 +384,13 @@ export const ArchiveHiredParticipantSchema = yup.object().shape({
     is: 'employmentEnded',
     then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
   }),
-  endDate: yup
-    .date()
-    .when('type', {
-      is:'employmentEnded',
-      then: yup.date()
-        .required('Please enter the date this participant was removed.')
-        .test('is-present', 'Invalid entry. Date must be in the past.', validateDateIsInThePast)
-    }),
+  endDate: yup.date().when('type', {
+    is: 'employmentEnded',
+    then: yup
+      .date()
+      .required('Please enter the date this participant was removed.')
+      .test('is-present', 'Invalid entry. Date must be in the past.', validateDateIsInThePast),
+  }),
   confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
 });
 

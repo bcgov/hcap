@@ -73,7 +73,6 @@ const validateDateString = (s) => {
 };
 
 const validatePastDateString = (s) => {
-  console.log(s)
   if (!validateDateString(s)) return false;
   return Date.parse(s) <= new Date();
 };
@@ -581,14 +580,17 @@ const ParticipantStatusChange = yup
             is: 'employmentEnded',
             then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
           }),
-          endDate: yup
-            .string()
-            .when('type',{
-              is:'employmentEnded',
-              then: yup.string()
-              .test('is-present', 'Invalid entry. Date must be in the past.', validatePastDateString)
+          endDate: yup.string().when('type', {
+            is: 'employmentEnded',
+            then: yup
+              .string()
+              .test(
+                'is-present',
+                'Invalid entry. Date must be in the past.',
+                validatePastDateString
+              )
               .required('Please enter the date this participant was removed.'),
-            }),
+          }),
           confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
         });
       }

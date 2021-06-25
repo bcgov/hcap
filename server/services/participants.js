@@ -76,14 +76,15 @@ const setParticipantStatus = async (
 
       newHistory.changes.push({
         field: 'interested',
-        from: participant.interested || 'yes',
+        from: participant[0].interested || 'yes',
         to: 'withdrawn',
       });
-      participant.history = participant.history
-        ? [newHistory, ...participant.history]
+      participant[0].history = participant[0].history
+        ? [newHistory, ...participant[0].history]
         : [newHistory];
+
       // eslint-disable-next-line no-use-before-define
-      await updateParticipant(participant);
+      await updateParticipant(participant[0]);
     }
 
     if (['prospecting', 'interviewing', 'offer_made', 'hired'].includes(status)) {

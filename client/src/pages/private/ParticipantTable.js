@@ -807,11 +807,20 @@ export default () => {
           <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
             <CustomTabs
               value={selectedTab || false}
-              onChange={(_, property) =>
-                participantsDispatch({
-                  type: ParticipantsContext.types.SELECT_TAB,
-                  payload: property,
-                })
+              onChange={(_, property) =>{
+                  dispatch(
+                    {type:'updateKey',
+                    key:'pagination',value:{
+                      currentPage:0,
+                      offset:0,
+                      total:0
+                  }})
+                  participantsDispatch({
+                    type: ParticipantsContext.types.SELECT_TAB,
+                    payload: property,
+                  })
+
+                }
               }
             >
               {

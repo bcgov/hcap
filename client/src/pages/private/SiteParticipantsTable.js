@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { Box } from '@material-ui/core';
 import store from 'store';
 import { Table, Button, Dialog } from '../../components/generic';
-import { checkPermissions, getDialogTitle } from '../../utils';
+import {  getDialogTitle } from '../../utils';
 import { AuthContext } from '../../providers';
 import { ToastStatus, API_URL, makeToasts, ArchiveHiredParticipantSchema } from '../../constants';
 import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
@@ -31,9 +31,9 @@ export default ({ siteId, onArchiveParticipantAction }) => {
   const { auth } = AuthContext.useAuth();
   const { openToast } = useToast();
   const roles = auth.user?.roles || [];
-  const isHA = checkPermissions(roles, ['health_authority']);
+  const isHA = roles.includes('health_authority');
   if (!isHA) {
-    columns = columns.filter((col) => col.id !== 'archived');
+    columns = columns.filter((col) => col.id !== 'archive');
   }
   const defaultOnClose = () => {
     setActiveModalForm(null);

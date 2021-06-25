@@ -1,4 +1,4 @@
-export const archiveReasonOptopns = [
+export const archiveReasonOptions = [
   'No longer interested in HCA/HCSW role',
   'No longer interested in a career in health care',
   'Terminated by employer',

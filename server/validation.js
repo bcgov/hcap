@@ -49,7 +49,7 @@ const participantStatuses = [
   'archived',
 ];
 
-const archiveReasonOptopns = [
+const archiveReasonOptions = [
   'No longer interested in HCA/HCSW role',
   'No longer interested in a career in health care',
   'Terminated by employer',
@@ -61,7 +61,7 @@ const archiveReasonOptopns = [
 
 const archiveStatusOptions = [
   'Not begun orientation or training',
-  'Orientation phase',
+  'Provincial orientation curriculum complete',
   'Post secondary education underway',
   'Completed post secondary education',
 ];
@@ -574,7 +574,7 @@ const ParticipantStatusChange = yup
             .required('Please select a type'),
           reason: yup.string().when('type', {
             is: 'employmentEnded',
-            then: yup.string().required('Please include a reason').oneOf(archiveReasonOptopns),
+            then: yup.string().required('Please include a reason').oneOf(archiveReasonOptions),
           }),
           status: yup.string().when('type', {
             is: 'employmentEnded',
@@ -583,6 +583,7 @@ const ParticipantStatusChange = yup
           endDate: yup
             .string()
             .test('is-date', 'Not a valid date', validateDateString)
+            .test('is-present', 'Invalid entry. Date must be in the past.', validatePastDateString)
             .required('Please enter the date this participant was removed.'),
           confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
         });

@@ -75,7 +75,7 @@ export const defaultTableState = {
 export const tabStatuses = {
   'Available Participants': ['open'],
   'My Candidates': ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
-  'Archived Candidates': ['rejected'],
+  'Archived Candidates': ['rejected', 'archived'],
   'Hired Candidates': ['hired'],
   Participants: ['open', 'prospecting', 'interviewing', 'offer_made', 'rejected', 'hired'],
 };

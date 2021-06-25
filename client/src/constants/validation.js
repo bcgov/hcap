@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import mapValues from 'lodash/mapValues';
-import { archiveReasonOptopns, archiveStatusOptions } from './archiveParticipantsConstants';
+import { archiveReasonOptions, archiveStatusOptions } from './archiveParticipantsConstants';
 
 const healthRegions = ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'];
 
@@ -275,7 +275,7 @@ export const InterviewingFormSchema = yup
     contactedDate: yup
       .string()
       .required('Date of contact is required')
-      .test('is-date', 'Not a valid date in the past', validatePastDateString),
+      .test('is-date', 'Invalid entry. Date must be in the past.', validatePastDateString),
   });
 
 export const HireFormSchema = yup
@@ -376,13 +376,16 @@ export const ArchiveHiredParticipantSchema = yup.object().shape({
     .required('Please select a type'),
   reason: yup.string().when('type', {
     is: 'employmentEnded',
-    then: yup.string().required('Please include a reason').oneOf(archiveReasonOptopns),
+    then: yup.string().required('Please include a reason').oneOf(archiveReasonOptions),
   }),
   status: yup.string().when('type', {
     is: 'employmentEnded',
     then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
   }),
-  endDate: yup.date().required('Please enter the date this participant was removed.'),
+  endDate: yup
+    .date()
+    .required('Please enter the date this participant was removed.')
+    .test('is-present', 'Invalid entry. Date must be in the past.', validatePastDateString),
   confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
 });
 

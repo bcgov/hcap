@@ -77,7 +77,15 @@ export const tabStatuses = {
   'My Candidates': ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
   'Archived Candidates': ['rejected', 'archived'],
   'Hired Candidates': ['hired'],
-  Participants: ['open', 'prospecting', 'interviewing', 'offer_made', 'rejected', 'hired'],
+  Participants: [
+    'open',
+    'prospecting',
+    'interviewing',
+    'offer_made',
+    'rejected',
+    'hired',
+    'archived',
+  ],
 };
 
 export const tabsByRole = {

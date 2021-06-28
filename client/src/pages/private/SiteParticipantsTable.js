@@ -249,7 +249,6 @@ export default ({ siteId, onArchiveParticipantAction }) => {
               } else {
                 forceReload();
               }
-              // forceReload();
             }}
             onClose={defaultOnClose}
           />

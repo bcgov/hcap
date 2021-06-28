@@ -224,7 +224,7 @@ export default ({ match }) => {
             </Box>
             <SiteParticipantsTable
               siteId={site.siteId}
-              archiveParticipantAction={() => {
+              onArchiveParticipantAction={() => {
                 setSite({});
                 fetchDetails(id);
               }}

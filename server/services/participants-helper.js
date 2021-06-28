@@ -56,6 +56,31 @@ const addDistanceToParticipantFields = (raw, siteDistanceJoin) =>
     }),
   }));
 
+// Find the previous status for each org, create a copy of it 
+const  revertToOldStatus = async ( participantStatuses,setParticipantStatus)=>{
+  await participantStatuses.forEach(async (status)=>{
+    if(status.final_status && status.final_status === 'Withdrawn by MoH'){
+      await setParticipantStatus(status.employer_id,status.participant_id, 'archived',{
+        ...status.data?.previousData|| {}
+      } )
+    }
+  })
+  
+}
+// Withdraw the participant 
+const insertWithdrawalParticipantStatus = async (participantStatuses,setParticipantStatus) =>{ 
+  console.log(participantStatuses)
+  participantStatuses.forEach( async (status)=>{
+    status
+    await setParticipantStatus(status.employer_id,status.participant_id, 'archived',{
+      final_status: 'Withdrawn by MoH',
+      previousStatus: status.status,
+      previousData: status.data
+    } )
+  })
+}
+
+
 const run = async (context) => {
   const {
     table,
@@ -317,4 +342,8 @@ class ParticipantsFinder {
   }
 }
 
-module.exports = { ParticipantsFinder };
+module.exports = { 
+  ParticipantsFinder,
+  revertToOldStatus,
+  insertWithdrawalParticipantStatus
+};

@@ -60,7 +60,7 @@ const addDistanceToParticipantFields = (raw, siteDistanceJoin) =>
 const revertToOldStatus = async (participantStatuses, setParticipantStatus) => {
   await participantStatuses.forEach(async (status) => {
     if (status?.data?.previousStatus && status.data.previousStatus !== 'archived') {
-      const res = await setParticipantStatus(
+      await setParticipantStatus(
         status.employer_id,
         status.participant_id,
         status.data.previousStatus,
@@ -75,9 +75,7 @@ const revertToOldStatus = async (participantStatuses, setParticipantStatus) => {
 const insertWithdrawalParticipantStatus = async (participantStatuses, setParticipantStatus) => {
   participantStatuses.forEach(async (status) => {
     // Prevent locking the user into a loop of archived statuses
-    if (status.status && status.status === 'archived') {
-      return;
-    } else {
+    if (!(status.status && status.status === 'archived'))  {
       await setParticipantStatus(status.employer_id, status.participant_id, 'archived', {
         final_status: 'Withdrawn by MoH',
         previousStatus: status.status,

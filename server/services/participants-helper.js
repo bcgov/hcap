@@ -75,7 +75,7 @@ const revertToOldStatus = async (participantStatuses, setParticipantStatus) => {
 const insertWithdrawalParticipantStatus = async (participantStatuses, setParticipantStatus) => {
   participantStatuses.forEach(async (status) => {
     // Prevent locking the user into a loop of archived statuses
-    if (!(status.status && status.status === 'archived'))  {
+    if (!(status.status && status.status === 'archived')) {
       await setParticipantStatus(status.employer_id, status.participant_id, 'archived', {
         final_status: 'Withdrawn by MoH',
         previousStatus: status.status,

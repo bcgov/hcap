@@ -34,15 +34,16 @@ const setParticipantStatus = async (
     // -- If interviewing, participant must be coming from prospecting status
     // -- If offer made, must be coming from interviewing
     // -- If hiring, must be coming from offer made
+    // -- If restoring a user from being archived, any status should be valid
     if (
-      status === 'open' ||
+      (status === 'open' ||
       (status === 'prospecting' &&
         item !== null &&
         item.status !== 'open' &&
         item.status !== 'rejected') ||
       (status === 'interviewing' && item?.status !== 'prospecting') ||
       (status === 'offer_made' && item?.status !== 'interviewing') ||
-      (status === 'hired' && item?.status !== 'offer_made')
+      (status === 'hired' && item?.status !== 'offer_made')) && (item?.status !== 'archived')
     )
       return { status: 'invalid_status_transition' };
 

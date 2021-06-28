@@ -20,7 +20,7 @@ let columns = [
   { id: 'archive', name: 'Archive' },
 ];
 
-export default ({ siteId }) => {
+export default ({ siteId, onArchiveParticipantAction }) => {
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
@@ -242,9 +242,13 @@ export default ({ siteId }) => {
               confirmed: false,
             }}
             validationSchema={ArchiveHiredParticipantSchema}
-            onSubmit={(values) => {
-              handleEngage(actionMenuParticipant.id, 'archived', values);
-              forceReload();
+            onSubmit={async (values) => {
+              await handleEngage(actionMenuParticipant.id, 'archived', values);
+              if (onArchiveParticipantAction) {
+                onArchiveParticipantAction();
+              } else {
+                forceReload();
+              }
             }}
             onClose={defaultOnClose}
           />

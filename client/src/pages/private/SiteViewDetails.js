@@ -12,7 +12,7 @@ const SiteParticipantsTable = lazy(() => import('./SiteParticipantsTable'));
 
 export default ({ match }) => {
   const { openToast } = useToast();
-  const [site, setSite] = useState([]);
+  const [site, setSite] = useState({});
   const [activeModalForm, setActiveModalForm] = useState(null);
   const id = match.params.id;
 
@@ -222,7 +222,13 @@ export default ({ match }) => {
                 <b>Hired Participants</b>
               </Typography>
             </Box>
-            <SiteParticipantsTable siteId={site.siteId} />
+            <SiteParticipantsTable
+              siteId={site.siteId}
+              onArchiveParticipantAction={() => {
+                setSite({});
+                fetchDetails(id);
+              }}
+            />
           </Card>
         </CheckPermissions>
       </Page>

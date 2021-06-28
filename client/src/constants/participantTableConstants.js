@@ -21,7 +21,15 @@ export const tabs = {
   },
   Participants: {
     roles: ['ministry_of_health', 'superuser'],
-    statuses: ['open', 'prospecting', 'interviewing', 'offer_made','archived', 'rejected', 'hired'],
+    statuses: [
+      'open',
+      'prospecting',
+      'interviewing',
+      'offer_made',
+      'archived',
+      'rejected',
+      'hired',
+    ],
   },
 };
 

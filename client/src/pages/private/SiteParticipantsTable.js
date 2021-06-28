@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { Box } from '@material-ui/core';
 import store from 'store';
 import { Table, Button, Dialog } from '../../components/generic';
-import {  getDialogTitle } from '../../utils';
+import { getDialogTitle } from '../../utils';
 import { AuthContext } from '../../providers';
 import { ToastStatus, API_URL, makeToasts, ArchiveHiredParticipantSchema } from '../../constants';
 import { ArchiveHiredParticipantForm } from '../../components/modal-forms';

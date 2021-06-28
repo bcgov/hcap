@@ -56,33 +56,36 @@ const addDistanceToParticipantFields = (raw, siteDistanceJoin) =>
     }),
   }));
 
-// Find the previous status for each org, create a copy of it 
-const  revertToOldStatus = async ( participantStatuses,setParticipantStatus)=>{
-  await participantStatuses.forEach(async (status)=>{
-    if(status?.data?.previousStatus && status.data.previousStatus !=='archived' ){
-      const res = await setParticipantStatus(status.employer_id,status.participant_id, status.data.previousStatus,{
-        ...status.data?.previousData|| {}
-      } )
+// Find the previous status for each org, create a copy of it
+const revertToOldStatus = async (participantStatuses, setParticipantStatus) => {
+  await participantStatuses.forEach(async (status) => {
+    if (status?.data?.previousStatus && status.data.previousStatus !== 'archived') {
+      const res = await setParticipantStatus(
+        status.employer_id,
+        status.participant_id,
+        status.data.previousStatus,
+        {
+          ...(status.data?.previousData || {}),
+        }
+      );
     }
-  })
-  
-}
-// Withdraw the participant 
-const insertWithdrawalParticipantStatus = async (participantStatuses,setParticipantStatus) =>{ 
-  participantStatuses.forEach( async (status)=>{
+  });
+};
+// Withdraw the participant
+const insertWithdrawalParticipantStatus = async (participantStatuses, setParticipantStatus) => {
+  participantStatuses.forEach(async (status) => {
     // Prevent locking the user into a loop of archived statuses
-    if(status.status && status.status ==='archived'){
+    if (status.status && status.status === 'archived') {
       return;
-    }else{
-      await setParticipantStatus(status.employer_id,status.participant_id, 'archived',{
+    } else {
+      await setParticipantStatus(status.employer_id, status.participant_id, 'archived', {
         final_status: 'Withdrawn by MoH',
         previousStatus: status.status,
-        previousData: status.data
-      } )
+        previousData: status.data,
+      });
     }
-  })
-}
-
+  });
+};
 
 const run = async (context) => {
   const {
@@ -345,8 +348,8 @@ class ParticipantsFinder {
   }
 }
 
-module.exports = { 
+module.exports = {
   ParticipantsFinder,
   revertToOldStatus,
-  insertWithdrawalParticipantStatus
+  insertWithdrawalParticipantStatus,
 };

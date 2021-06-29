@@ -108,7 +108,6 @@ class Keycloak {
     const config = {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Access-Control-Allow-Origin': '*',
       },
     };
     const response = await axios.post(url, data, config);
@@ -117,7 +116,11 @@ class Keycloak {
 
   async authenticateIfNeeded() {
     // Race condition if token expires between this call and the desired authenticated call
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    const config = {
+      headers: {
+        Authorization: `Bearer ${this.access_token}`,
+      },
+    };
     try {
       await axios.get(
         `${this.authUrl}/realms/${this.realm}/protocol/openid-connect/userinfo`,
@@ -136,7 +139,6 @@ class Keycloak {
     const config = {
       headers: {
         Authorization: `Bearer ${this.access_token}`,
-        'Access-Control-Allow-Origin': '*',
       },
     };
     {
@@ -163,7 +165,6 @@ class Keycloak {
     const config = {
       headers: {
         Authorization: `Bearer ${this.access_token}`,
-        'Access-Control-Allow-Origin': '*',
       },
     };
 
@@ -201,7 +202,6 @@ class Keycloak {
     const config = {
       headers: {
         Authorization: `Bearer ${this.access_token}`,
-        'Access-Control-Allow-Origin': '*',
       },
     };
     const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings/clients/${
@@ -228,7 +228,6 @@ class Keycloak {
     const config = {
       headers: {
         Authorization: `Bearer ${this.access_token}`,
-        'Access-Control-Allow-Origin': '*',
       },
     };
     const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings`;
@@ -241,7 +240,6 @@ class Keycloak {
     const config = {
       headers: {
         Authorization: `Bearer ${this.access_token}`,
-        'Access-Control-Allow-Origin': '*',
       },
     };
     const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${

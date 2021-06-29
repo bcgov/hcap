@@ -1,6 +1,16 @@
 import ToastStatus from './toast';
 export const pageSize = 10;
 
+export const participantStatus = {
+  OPEN: 'open',
+  PROSPECTING: 'prospecting',
+  interviewing: 'interviewing',
+  OFFER_MAKDE: 'offer_made',
+  ARCHIVED: 'archived',
+  REJECTED: 'rejected',
+  HIRED: 'hired',
+};
+
 export const tabs = {
   // Tabs, associated allowed roles, displayed statuses
   'Available Participants': {

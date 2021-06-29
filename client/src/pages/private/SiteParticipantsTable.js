@@ -6,7 +6,13 @@ import store from 'store';
 import { Table, Button, Dialog } from '../../components/generic';
 import { getDialogTitle } from '../../utils';
 import { AuthContext } from '../../providers';
-import { ToastStatus, API_URL, makeToasts, ArchiveHiredParticipantSchema } from '../../constants';
+import {
+  ToastStatus,
+  API_URL,
+  makeToasts,
+  ArchiveHiredParticipantSchema,
+  participantStatus,
+} from '../../constants';
 import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import moment from 'moment';
@@ -152,7 +158,7 @@ export default ({ siteId, onArchiveParticipantAction }) => {
       const index = rows.findIndex((row) => row.participantId === participantId);
       const { participantName } = rows[index];
       const toasts = makeToasts(participantName, '');
-      openToast(toasts['archived']);
+      openToast(toasts[participantStatus.ARCHIVED]);
       setActionMenuParticipant(null);
       setActiveModalForm(null);
     } else {
@@ -243,7 +249,7 @@ export default ({ siteId, onArchiveParticipantAction }) => {
             }}
             validationSchema={ArchiveHiredParticipantSchema}
             onSubmit={async (values) => {
-              await handleEngage(actionMenuParticipant.id, 'archived', values);
+              await handleEngage(actionMenuParticipant.id, participantStatus.ARCHIVED, values);
               if (onArchiveParticipantAction) {
                 onArchiveParticipantAction();
               } else {

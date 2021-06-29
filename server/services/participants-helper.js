@@ -2,6 +2,16 @@
 const { collections, views } = require('../db');
 const { userRegionQuery } = require('./user.js');
 
+const participantStatus = {
+  OPEN: 'open',
+  PROSPECTING: 'prospecting',
+  INTERVIEWING: 'interviewing',
+  OFFER_MADE: 'offer_made',
+  ARCHIVED: 'archived',
+  REJECTED: 'rejected',
+  HIRED: 'hired',
+};
+
 const scrubParticipantData = (raw, joinNames) =>
   raw.map((participant) => {
     const statusInfos = [];
@@ -59,7 +69,7 @@ const addDistanceToParticipantFields = (raw, siteDistanceJoin) =>
 // Find the previous status for each org, create a copy of it
 const revertToOldStatus = async (participantStatuses, setParticipantStatus) => {
   await participantStatuses.forEach(async (status) => {
-    if (status?.data?.previousStatus && status.data.previousStatus !== 'archived') {
+    if (status?.data?.previousStatus !== participantStatus.ARCHIVED) {
       await setParticipantStatus(
         status.employer_id,
         status.participant_id,
@@ -75,12 +85,17 @@ const revertToOldStatus = async (participantStatuses, setParticipantStatus) => {
 const insertWithdrawalParticipantStatus = async (participantStatuses, setParticipantStatus) => {
   participantStatuses.forEach(async (status) => {
     // Prevent locking the user into a loop of archived statuses
-    if (!(status.status && status.status === 'archived')) {
-      await setParticipantStatus(status.employer_id, status.participant_id, 'archived', {
-        final_status: 'Withdrawn by MoH',
-        previousStatus: status.status,
-        previousData: status.data,
-      });
+    if (!(status.status && status.status === participantStatus.ARCHIVED)) {
+      await setParticipantStatus(
+        status.employer_id,
+        status.participant_id,
+        participantStatus.ARCHIVED,
+        {
+          final_status: 'Withdrawn from HCAP',
+          previousStatus: status.status,
+          previousData: status.data,
+        }
+      );
     }
   });
 };
@@ -198,7 +213,7 @@ class FieldsFilteredParticipantsFinder {
           on: {
             participant_id: 'id',
             current: true,
-            status: 'hired',
+            status: participantStatus.HIRED,
           },
         },
         ...(siteIdDistance && {
@@ -243,7 +258,12 @@ class FieldsFilteredParticipantsFinder {
         // we don't want hired participants listed with such statuses:
         if (
           statusFilters.some((item) =>
-            ['open', 'prospecting', 'interviewing', 'offer_made'].includes(item)
+            [
+              participantStatus.OPEN,
+              participantStatus.PROSPECTING,
+              participantStatus.INTERVIEWING,
+              participantStatus.OFFER_MADE,
+            ].includes(item)
           )
         ) {
           criteria.or[0].and.push({ [`${hiredGlobalJoin}.status`]: null });

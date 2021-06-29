@@ -146,7 +146,7 @@ const updateParticipant = async (participantInfo) => {
       participant_id: participantInfo.id,
       current: true,
     });
-    //If no old statuses exist, no need to create a new one.
+    // If no old statuses exist, no need to create a new one.
     // setParticipantStatus was creating a circular dependancy and not getting loaded in, so I pass it in as a prop.
     if (participantStatuses.length) {
       if (changes.interested === 'yes') {

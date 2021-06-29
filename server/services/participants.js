@@ -2,7 +2,11 @@ const readXlsxFile = require('node-xlsx').default;
 const { validate, ParticipantBatchSchema, isBooleanValue } = require('../validation.js');
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
-const { ParticipantsFinder } = require('./participants-helper');
+const {
+  ParticipantsFinder,
+  revertToOldStatus,
+  insertWithdrawalParticipantStatus,
+} = require('./participants-helper');
 
 const setParticipantStatus = async (
   employerId,
@@ -34,15 +38,17 @@ const setParticipantStatus = async (
     // -- If interviewing, participant must be coming from prospecting status
     // -- If offer made, must be coming from interviewing
     // -- If hiring, must be coming from offer made
+    // -- If restoring a user from being archived, any status should be valid
     if (
-      status === 'open' ||
-      (status === 'prospecting' &&
-        item !== null &&
-        item.status !== 'open' &&
-        item.status !== 'rejected') ||
-      (status === 'interviewing' && item?.status !== 'prospecting') ||
-      (status === 'offer_made' && item?.status !== 'interviewing') ||
-      (status === 'hired' && item?.status !== 'offer_made')
+      (status === 'open' ||
+        (status === 'prospecting' &&
+          item !== null &&
+          item.status !== 'open' &&
+          item.status !== 'rejected') ||
+        (status === 'interviewing' && item?.status !== 'prospecting') ||
+        (status === 'offer_made' && item?.status !== 'interviewing') ||
+        (status === 'hired' && item?.status !== 'offer_made')) &&
+      item?.status !== 'archived'
     )
       return { status: 'invalid_status_transition' };
 
@@ -134,6 +140,23 @@ const updateParticipant = async (participantInfo) => {
     },
     { history: participantInfo.history, userUpdatedAt: new Date().toJSON() }
   );
+  if (changes.interested !== undefined) {
+    // Get the old statuses
+    const participantStatuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
+      participant_id: participantInfo.id,
+      current: true,
+    });
+    // If no old statuses exist, no need to create a new one.
+    // setParticipantStatus was creating a circular dependancy and not getting loaded in, so I pass it in as a prop.
+    if (participantStatuses.length) {
+      if (changes.interested === 'yes') {
+        // The UI does not support a workflow for a Moh Member
+        await revertToOldStatus(participantStatuses, setParticipantStatus);
+      } else {
+        await insertWithdrawalParticipantStatus(participantStatuses, setParticipantStatus);
+      }
+    }
+  }
   const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc(
     {
       id: participantInfo.id,
@@ -252,7 +275,6 @@ const getParticipants = async (
     .filterExternalFields({ statusFilters, siteIdDistance: siteSelector })
     .paginate(pagination, sortField)
     .run();
-
   const { table, criteria } = participantsFinder;
   const paginationData = pagination && {
     offset: (pagination.offset ? Number(pagination.offset) : 0) + participants.length,

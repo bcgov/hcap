@@ -4,9 +4,15 @@ import Grid from '@material-ui/core/Grid';
 import { Box } from '@material-ui/core';
 import store from 'store';
 import { Table, Button, Dialog } from '../../components/generic';
-import { checkPermissions, getDialogTitle } from '../../utils';
+import { getDialogTitle } from '../../utils';
 import { AuthContext } from '../../providers';
-import { ToastStatus, API_URL, makeToasts, ArchiveHiredParticipantSchema } from '../../constants';
+import {
+  ToastStatus,
+  API_URL,
+  makeToasts,
+  ArchiveHiredParticipantSchema,
+  participantStatus,
+} from '../../constants';
 import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import moment from 'moment';
@@ -31,9 +37,9 @@ export default ({ siteId, onArchiveParticipantAction }) => {
   const { auth } = AuthContext.useAuth();
   const { openToast } = useToast();
   const roles = auth.user?.roles || [];
-  const isHA = checkPermissions(roles, ['health_authority']);
+  const isHA = roles.includes('health_authority');
   if (!isHA) {
-    columns = columns.filter((col) => col.id !== 'archived');
+    columns = columns.filter((col) => col.id !== 'archive');
   }
   const defaultOnClose = () => {
     setActiveModalForm(null);
@@ -152,7 +158,7 @@ export default ({ siteId, onArchiveParticipantAction }) => {
       const index = rows.findIndex((row) => row.participantId === participantId);
       const { participantName } = rows[index];
       const toasts = makeToasts(participantName, '');
-      openToast(toasts['archived']);
+      openToast(toasts[participantStatus.ARCHIVED]);
       setActionMenuParticipant(null);
       setActiveModalForm(null);
     } else {
@@ -243,7 +249,7 @@ export default ({ siteId, onArchiveParticipantAction }) => {
             }}
             validationSchema={ArchiveHiredParticipantSchema}
             onSubmit={async (values) => {
-              await handleEngage(actionMenuParticipant.id, 'archived', values);
+              await handleEngage(actionMenuParticipant.id, participantStatus.ARCHIVED, values);
               if (onArchiveParticipantAction) {
                 onArchiveParticipantAction();
               } else {

@@ -128,7 +128,7 @@ objects:
                 - name: MONGO_DB
                   value: ${APP_NAME}
                 - name: MONGO_USER
-                  value: user
+                  value: hcap
                 - name: MONGO_PASSWORD
                   valueFrom:
                     secretKeyRef:

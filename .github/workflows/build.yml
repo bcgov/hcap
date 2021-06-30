@@ -12,6 +12,7 @@ env:
   CLUSTER: https://api.silver.devops.gov.bc.ca:6443
   AUTH_TOKEN: ${{ secrets.AUTH_TOKEN_OCP4 }}
   PROJECT: hcap
+  DEV_URL: https://hcapemployers.dev.freshworks.club
 
 jobs:
   audit:
@@ -66,10 +67,21 @@ jobs:
           make print-status
           make server-build
           make server-deploy
-
-      # TODO make wait for server-deploy and run the ZAP Scan
-      # - name: ZAP Scan
-      #   uses: zaproxy/action-baseline@v0.4.0
-      #   with:
-      #     target: ${{ env.DEV_URL }}
-      #     cmd_options: '-I'
+      - name: Health Check app
+        uses: jtalk/url-health-check-action@v1.5
+        with:
+          # Check the following URLs one by one sequentially
+          url: '${{ env.DEV_URL }}/api/v1/version'
+          # Follow redirects, or just report success on 3xx status codes
+          follow-redirect: no # Optional, defaults to "no"
+          # Fail this action after this many failed attempts
+          max-attempts: 3 # Optional, defaults to 1
+          # Delay between retries
+          retry-delay: 30s # Optional, only applicable to max-attempts > 1
+          # Retry all errors, including 404
+          retry-all: no # Optional, defaults to "no"
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.2.0
+        with:
+          target: ${{ env.DEV_URL }}
+          cmd_options: '-I'

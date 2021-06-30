@@ -8,7 +8,11 @@ on:
   pull_request:
     branches:
       - master
-
+env:
+  KEYCLOAK_LOCAL_USERNAME: 'test-admin'
+  KEYCLOAK_LOCAL_PASSWORD: ${{ secrets.KEYCLOAK_LOCAL_PASSWORD}}
+  KEYCLOAK_LOCAL_AUTH_URL: 'http://keycloak.local.freshworks.club:8080/auth'
+  KEYCLOAK_LOCAL_SECRET: ${{ secrets.KEYCLOAK_LOCAL_SECRET }}
 jobs:
   tests:
     name: Cypress / Jest

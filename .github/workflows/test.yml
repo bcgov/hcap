@@ -23,14 +23,14 @@ jobs:
           ${{ secrets.ENVFILE }}
           EOF
       - name: Build Locally
-        run: make local-kc-build
+        run: make local-kc-build && make local-kc-run
+
+      - name: Import Users
+        run: make kc-import-users
 
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: |
-            make local-kc-run
-            make kc-import-users
           wait-on-timeout: 120
           wait-on: 'http://localhost:4000'
 

@@ -28,16 +28,15 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: make local-kc-run
+          start: |
+            make local-kc-run
+            make kc-import-users
           wait-on-timeout: 120
           wait-on: 'http://localhost:4000'
 
-      - name: Run
-        run: make local-kc-run
       - name: Sleep for 30 seconds
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '30s'
+        run: sleep 30s
+        shell: bash
 
       - name: Jest run
         run: make local-server-tests

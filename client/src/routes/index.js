@@ -7,7 +7,7 @@ import Keycloak from 'keycloak-js';
 
 import { API_URL, Routes } from '../constants';
 import { AuthContext } from '../providers';
-
+const ParticipantLogin = lazy(()=> import('../pages/public/ParticipantLogin'))
 const Admin = lazy(() => import('../pages/private/Admin'));
 const UserView = lazy(() => import('../pages/private/UserView'));
 const ParticipantView = lazy(() => import('../pages/private/ParticipantView'));
@@ -126,6 +126,7 @@ export default () => {
               path={Routes.ParticipantConfirmation}
               component={ParticipantConfirmation}
             />
+            <Route exact path={Routes.ParticipantLogin}  component = {ParticipantLogin}/>
             <Route exact path={Routes.Base} component={ParticipantForm} />
             <Route exact path={Routes.ConfirmInterest} component={ConfirmInterest} />
             <Redirect to={Routes.Base} />

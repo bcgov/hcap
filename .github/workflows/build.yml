@@ -12,6 +12,7 @@ env:
   CLUSTER: https://api.silver.devops.gov.bc.ca:6443
   AUTH_TOKEN: ${{ secrets.AUTH_TOKEN_OCP4 }}
   PROJECT: hcap
+  HEALTH_CHECK_URL: https://hcap-server-f047a2-dev.apps.silver.devops.gov.bc.ca/api/v1/version
   DEV_URL: https://hcapemployers.dev.freshworks.club
 
 jobs:
@@ -40,38 +41,11 @@ jobs:
         with:
           ref: 'dev'
           fetch-depth: 0
-
-      - name: Cache OpenShift CLI
-        id: cache-oc
-        uses: actions/cache@v2
-        with:
-          path: /usr/local/bin/oc
-          key: ${{ runner.os }}-oc
-
-      - name: Install OpenShift CLI
-        if: steps.cache-oc.outputs.cache-hit != 'true'
-        run: |
-          OC_VERSION=3.11.0
-          sudo apt-get update
-          sudo apt-get -y install wget
-          wget --quiet -O oc.tar.gz "https://github.com/openshift/origin/releases/download/v${OC_VERSION}/openshift-origin-client-tools-v${OC_VERSION}-0cbc58b-linux-64bit.tar.gz"
-          FILE=$(tar -tf oc.tar.gz | grep '/oc$')
-          tar -zxf oc.tar.gz "$FILE"
-          sudo mv "$FILE" /usr/local/bin/oc
-          rm -rf oc.tar.gz openshift-origin-client-tools-v*
-
-      - name: Build & Deploy
-        run: |
-          cd "$GITHUB_WORKSPACE"
-          oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
-          make print-status
-          make server-build
-          make server-deploy
       - name: Health Check app
         uses: jtalk/url-health-check-action@v1.5
         with:
           # Check the following URLs one by one sequentially
-          url: '${{ env.DEV_URL }}/api/v1/version'
+          url: '${{ env.HEALTH_CHECK_URL }}'
           # Follow redirects, or just report success on 3xx status codes
           follow-redirect: no # Optional, defaults to "no"
           # Fail this action after this many failed attempts

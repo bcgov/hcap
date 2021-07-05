@@ -83,8 +83,9 @@ Cypress.Commands.add('kcLogin', (user) => {
       .then(function (response) {
         let html = document.createElement('html');
         html.innerHTML = response.body;
-        Cypress.log({ name: 'Debug', message: response.body });
+        console.log({ name: 'Debug', message: response.body });
         let form = html.getElementsByTagName('form')[0];
+        if (undefined === undefined) throw response;
         let url = form.action;
         return cy.request({
           method: 'POST',

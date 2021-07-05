@@ -143,9 +143,7 @@ Cypress.Commands.add('kcQuickLogin', (user) => {
         username: userData.username,
         password: userData.password,
       },
-    }).then(function (response) {
-      console.log(response.body);
-    });
+    }).its('body');
   });
 });
 

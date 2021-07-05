@@ -16,7 +16,10 @@ describe('Login', () => {
   });
 
   it('logs in as a MoH user and tests the admin page', () => {
-    cy.kcQuickLogin('test-moh');
+    cy.kcQuickLogin('test-moh').as('token');
+    cy.get('@token').then((response) =>
+      window.localStorage.setItem('TOKEN', response.access_token)
+    );
     cy.visit('/admin');
     cy.contains('Upload Participants').should('not.exist');
     cy.contains('View Participants').should('exist');

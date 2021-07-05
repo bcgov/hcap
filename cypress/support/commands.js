@@ -116,6 +116,39 @@ Cypress.Commands.add('kcLogin', (user) => {
   });
 });
 
+Cypress.Commands.add('kcQuickLogin', (user) => {
+  Cypress.log({ name: 'Login' });
+  cy.fixture('users/' + user).then((userData) => {
+    let authBaseUrl = Cypress.env('KEYCLOAK_LOCAL_AUTH_URL');
+    let realm = Cypress.env('KEYCLOAK_REALM');
+    let client_id = Cypress.env('KEYCLOAK_API_CLIENTID');
+    let client_secret = Cypress.env('KEYCLOAK_LOCAL_SECRET');
+
+    cy.request({
+      url: authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/token',
+      followRedirect: false,
+      method: 'POST',
+      form: true,
+      headers: {
+        key: 'Content-Type',
+        name: 'Content-Type',
+        value: 'application/x-www-form-urlencoded',
+        type: 'text',
+      },
+
+      body: {
+        client_id: client_id,
+        client_secret: client_secret,
+        grant_type: 'password',
+        username: userData.username,
+        password: userData.password,
+      },
+    }).then(function (response) {
+      console.log(response.body);
+    });
+  });
+});
+
 Cypress.Commands.add('kcLogout', function () {
   Cypress.log({ name: 'Logout' });
   let authBaseUrl = Cypress.env('KEYCLOAK_LOCAL_AUTH_URL');

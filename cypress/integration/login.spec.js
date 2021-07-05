@@ -16,7 +16,7 @@ describe('Login', () => {
   });
 
   it('logs in as a MoH user and tests the admin page', () => {
-    cy.kcLogin('test-moh');
+    cy.kcQuickLogin('test-moh');
     cy.visit('/admin');
     cy.contains('Upload Participants').should('not.exist');
     cy.contains('View Participants').should('exist');

@@ -103,6 +103,7 @@ export default () => {
   }
 
   const handleTokens = (tokens) => {
+    console.log('HI I AM A THING THAT HANDLES THE TOKENS. CHECK ME OUT.');
     store.set('TOKEN', tokens.token);
     getUserInfo(tokens.token);
   };

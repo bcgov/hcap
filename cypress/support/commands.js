@@ -83,7 +83,7 @@ Cypress.Commands.add('kcLogin', (user) => {
       .then(function (response) {
         let html = document.createElement('html');
         html.innerHTML = response.body;
-        cy.log(response.body);
+        Cypress.log({ name: 'Debug', message: response.body });
         let form = html.getElementsByTagName('form')[0];
         let url = form.action;
         return cy.request({
@@ -112,7 +112,9 @@ Cypress.Commands.add('kcLogin', (user) => {
           },
           form: true,
           followRedirect: false,
-        }).its('body');
+        })
+          .its('body')
+          .then((response) => console.log(response));
       });
   });
 });
@@ -138,13 +140,16 @@ Cypress.Commands.add('kcQuickLogin', (user) => {
       },
 
       body: {
+        scope: 'openid',
         client_id: client_id,
         client_secret: client_secret,
         grant_type: 'password',
         username: userData.username,
         password: userData.password,
       },
-    }).its('body');
+    })
+      .its('body')
+      .then((response) => console.log(response));
   });
 });
 

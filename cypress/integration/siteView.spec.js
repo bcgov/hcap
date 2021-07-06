@@ -1,17 +1,21 @@
 describe('Tests the Site View', () => {
   beforeEach(() => {
+    cy.kcLogout();
     cy.visit('/');
   });
 
   it('visits siteView as employer / maximus', () => {
-    cy.kcNavAs('employer', 'site-view');
+    cy.kcLogin('test-employer');
+    cy.visit('/site-view');
     cy.contains("You don't have permission to view this content.").should('exist');
-    cy.kcNavAs('maximus', 'site-view');
+    cy.kcLogin('maximus');
+    cy.visit('/site-view');
     cy.contains("You don't have permission to view this content.").should('exist');
   });
 
   it('visits siteView as MoH', () => {
-    cy.kcNavAs('ministry_of_health', 'site-view');
+    cy.kcLogin('test-moh');
+    cy.visit('/site-view');
     cy.contains('td', 1).should('exist');
     cy.get('div.MuiSelect-selectMenu').should('not.have.class', 'Mui-disabled');
     cy.get('div.MuiSelect-selectMenu').click();
@@ -31,7 +35,8 @@ describe('Tests the Site View', () => {
   });
 
   it('visits siteView as Health Authority', () => {
-    cy.kcNavAs('health_authority_northern', 'site-view');
+    cy.kcLogin('test-ha');
+    cy.visit('/site-view');
     cy.contains('td', 1).should('exist');
     cy.get('div.MuiSelect-selectMenu').should('have.class', 'Mui-disabled');
     cy.get('div.MuiSelect-selectMenu').click();

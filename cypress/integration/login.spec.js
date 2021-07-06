@@ -1,6 +1,7 @@
 describe('Login', () => {
   beforeEach(() => {
     cy.kcLogout();
+    cy.visit('/');
   });
 
   it('logs in as superuser and tests the admin page', () => {
@@ -16,7 +17,7 @@ describe('Login', () => {
   });
 
   it('logs in as a MoH user and tests the admin page', () => {
-    cy.kcQuickLogin('test-moh');
+    cy.kcLogin('test-moh');
     cy.visit('/admin');
     cy.contains('Upload Participants').should('not.exist');
     cy.contains('View Participants').should('exist');

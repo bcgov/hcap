@@ -1,10 +1,12 @@
 describe('Participant View', () => {
   beforeEach(() => {
+    cy.kcLogout();
     cy.visit('/');
   });
 
   it('Visits Participant View as a multi-region employer', () => {
-    cy.kcNavAs('employer_island_fraser', 'participant-view');
+    cy.kcLogin('test-employer-multi');
+    cy.visit('/participant-view');
     cy.contains('Preferred Location').should('not.have.class', 'Mui-disabled');
     cy.contains('Preferred Location').should('not.have.class', 'Mui-disabled');
     cy.contains('Preferred Location').click();
@@ -28,7 +30,8 @@ describe('Participant View', () => {
   });
 
   it('Visits Participant View as a single-region employer', () => {
-    cy.kcNavAs('employer_island', 'participant-view');
+    cy.kcLogin('test-employer');
+    cy.visit('/participant-view');
     cy.contains('Vancouver Island').should('have.class', 'Mui-disabled');
     cy.get('ul.MuiMenu-list').should('not.be.visible');
 
@@ -37,7 +40,8 @@ describe('Participant View', () => {
   });
 
   it('Visits Participant View as a superuser', () => {
-    cy.kcNavAs('superuser', 'participant-view');
+    cy.kcLogin('test-superuser');
+    cy.visit('/participant-view');
     cy.contains('Preferred Location').should('not.have.class', 'Mui-disabled');
     cy.contains('Preferred Location').click();
     cy.get('ul.MuiMenu-list[role=listbox]').should('be.visible');
@@ -50,7 +54,8 @@ describe('Participant View', () => {
   });
 
   it('Visits Participant View as a MoH user', () => {
-    cy.kcNavAs('ministry_of_health', 'participant-view');
+    cy.kcLogin('test-moh');
+    cy.visit('/participant-view');
     cy.contains('Preferred Location').should('not.have.class', 'Mui-disabled');
     cy.contains('Preferred Location').click();
     cy.get('ul.MuiMenu-list[role=listbox]').should('be.visible');
@@ -71,7 +76,8 @@ describe('Participant View', () => {
       });
       req.reply({ ok: true });
     }).as('patchAnswer');
-    cy.kcNavAs('ministry_of_health', 'participant-view');
+    cy.kcLogin('test-moh');
+    cy.visit('/participant-view');
     cy.contains('Edit').click();
     cy.get('div.MuiDialog-scrollPaper').should('exist');
     cy.get('input[name=firstName').should('have.value', 'Graham').clear().type('Animal');

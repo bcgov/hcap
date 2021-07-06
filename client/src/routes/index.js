@@ -7,7 +7,7 @@ import Keycloak from 'keycloak-js';
 
 import { API_URL, Routes } from '../constants';
 import { AuthContext } from '../providers';
-const ParticipantLogin = lazy(()=> import('../pages/public/ParticipantLogin'))
+const ParticipantLogin = lazy(() => import('../pages/public/ParticipantLogin'));
 const Admin = lazy(() => import('../pages/private/Admin'));
 const UserView = lazy(() => import('../pages/private/UserView'));
 const ParticipantView = lazy(() => import('../pages/private/ParticipantView'));
@@ -65,6 +65,7 @@ export default () => {
       },
       method: 'GET',
     });
+    console.log(response);
     if (response.ok) {
       dispatch({ type: AuthContext.USER_LOADED, payload: await response.json() });
     } else {
@@ -84,7 +85,7 @@ export default () => {
     });
 
     const result = await response.json();
-
+    console.log(result);
     setKeycloakInfo(
       new Keycloak({
         realm: result.realm,
@@ -126,8 +127,9 @@ export default () => {
               path={Routes.ParticipantConfirmation}
               component={ParticipantConfirmation}
             />
-            <Route exact path={Routes.ParticipantLogin}  component = {ParticipantLogin}/>
-            <Route exact path={Routes.Base} component={ParticipantForm} />
+            <Route exact path={Routes.ParticipantLogin} component={ParticipantLogin} />
+            <Route exact path={Routes.Base} component={ParticipantLogin} />
+            <Route exact path={Routes.ParticipantForm} component={ParticipantForm} />
             <Route exact path={Routes.ConfirmInterest} component={ConfirmInterest} />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>

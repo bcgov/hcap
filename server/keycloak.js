@@ -69,6 +69,7 @@ class Keycloak {
         const { content } = req.kauth.grant.access_token;
         const roles = content?.resource_access[this.clientNameFrontend]?.roles || [];
         const user = await getUser(content.sub);
+        console.log(user);
         req.hcapUserInfo = {
           name: content.name,
           username: content.preferred_username,
@@ -106,6 +107,7 @@ class Keycloak {
   async authenticateIfNeeded() {
     // Race condition if token expires between this call and the desired authenticated call
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+
     try {
       await axios.get(
         `${this.authUrl}/realms/${this.realm}/protocol/openid-connect/userinfo`,

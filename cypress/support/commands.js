@@ -66,6 +66,8 @@ Cypress.Commands.add('kcLogin', (user) => {
     };
 
     const code_challenge = base64URLEncode(crypto.randomBytes(32));
+    
+    if (authBaseUrl.includes('4000')) throw `authBaseUrl is ${authBaseUrl}, whats up with that?`
 
     cy.request({
       url: authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/auth',

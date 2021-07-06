@@ -67,8 +67,6 @@ Cypress.Commands.add('kcLogin', (user) => {
 
     const code_challenge = base64URLEncode(crypto.randomBytes(32));
 
-    if (true) throw Cypress.env();
-
     cy.request({
       url: authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/auth',
 
@@ -88,7 +86,6 @@ Cypress.Commands.add('kcLogin', (user) => {
         html.innerHTML = response.body;
         console.log({ name: 'Debug', message: response.body });
         let form = html.getElementsByTagName('form')[0];
-        if (undefined === undefined) throw response;
         let url = form.action;
         return cy.request({
           method: 'POST',

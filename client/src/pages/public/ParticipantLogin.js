@@ -42,7 +42,7 @@ export default () => {
   };
 
   return (
-    <Page>
+    <Page hideEmployers={true}>
       <Grid container>
         <Grid item sm={6} xs={12}>
           <Box pl={20} pr={4} pt={10}>

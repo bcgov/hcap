@@ -5,7 +5,7 @@ import { Form } from '../../components/participant-form';
 
 export default () => {
   return (
-    <Page hideEmployers={true}>
+    <Page>
       <Form />
     </Page>
   );

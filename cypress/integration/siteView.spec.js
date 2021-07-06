@@ -26,11 +26,11 @@ describe('Tests the Site View', () => {
     cy.get('ul.MuiMenu-list[role=listbox] > li').should('have.length', 7);
     cy.get('ul.MuiMenu-list[role=listbox] > li').contains('Northern').click();
 
-    cy.contains('th', 'Site ID').click();
-    cy.contains('th', 'Site Name').click();
-    cy.contains('th', 'Operator Name').click();
-    cy.contains('th', 'Health Authority').click();
-    cy.contains('th', 'Postal Code').click();
+    // cy.contains('th', 'Site ID').click();
+    // cy.contains('th', 'Site Name').click();
+    // cy.contains('th', 'Operator Name').click();
+    // cy.contains('th', 'Health Authority').click();
+    // cy.contains('th', 'Postal Code').click();
 
     cy.get('div.MuiSelect-selectMenu').click();
     cy.get('ul.MuiMenu-list[role=listbox] > li').contains('None').click();
@@ -44,10 +44,10 @@ describe('Tests the Site View', () => {
     cy.get('div.MuiSelect-selectMenu').should('have.class', 'Mui-disabled');
     cy.get('div.MuiSelect-selectMenu').click();
 
-    cy.contains('th', 'Site ID').click();
-    cy.contains('th', 'Site Name').click();
-    cy.contains('th', 'Operator Name').click();
-    cy.contains('th', 'Health Authority').click();
-    cy.contains('th', 'Postal Code').click();
+    // cy.contains('th', 'Site ID').click();
+    // cy.contains('th', 'Site Name').click();
+    // cy.contains('th', 'Operator Name').click();
+    // cy.contains('th', 'Health Authority').click();
+    // cy.contains('th', 'Postal Code').click();
   });
 });

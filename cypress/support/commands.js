@@ -67,7 +67,7 @@ Cypress.Commands.add('kcLogin', (user) => {
 
     const code_challenge = base64URLEncode(crypto.randomBytes(32));
 
-    if (true) throw `dumping env: ${Cypress.env()}`;
+    if (true) throw Cypress.env();
 
     cy.request({
       url: authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/auth',

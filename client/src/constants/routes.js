@@ -13,7 +13,10 @@ export default Object.freeze({
   ConfirmInterest: '/confirm-interest',
   ParticipantLogin: '/participant-login',
 
-  // Private routes
+  // Participant Private routes
+  Success: '/success',
+
+  // Employer Private routes
   Admin: '/admin',
   UserPending: '/user-pending',
   UserEdit: '/user-edit',

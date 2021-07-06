@@ -7,7 +7,6 @@ import { useKeycloak } from '@react-keycloak/web';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import { Routes } from '../../constants';
-import store from 'store';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -36,9 +35,7 @@ export default () => {
   const [keycloak] = useKeycloak();
   const history = useHistory();
   const redirectToLogin = () => {
-    store.set('REDIRECT', true);
-    console.log(`${window.location.origin}${Routes.Keycloak}`);
-    keycloak.login({ idpHint: 'BCSC', redirectUri: `${window.location.origin}${Routes.Keycloak}` });
+    keycloak.login({ idpHint: 'BCSC', redirectUri: `${window.location.origin}${Routes.Success}` });
   };
   const redirectToForm = () => {
     history.push(Routes.ParticipantForm);

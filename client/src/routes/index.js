@@ -65,7 +65,6 @@ export default () => {
       },
       method: 'GET',
     });
-    console.log(response);
     if (response.ok) {
       dispatch({ type: AuthContext.USER_LOADED, payload: await response.json() });
     } else {
@@ -85,7 +84,6 @@ export default () => {
     });
 
     const result = await response.json();
-    console.log(result);
     setKeycloakInfo(
       new Keycloak({
         realm: result.realm,

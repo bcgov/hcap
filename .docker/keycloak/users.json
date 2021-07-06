@@ -1,8 +1,8 @@
 [
   {
     "user": {
-      "id": "9445e4a1-aed1-4a8e-8fd6-61b1407235e9",
-      "createdTimestamp": 1624050008521,
+      "id": "4e9d7805-8284-4790-a2d6-39acd72e6f77",
+      "createdTimestamp": 1625597671479,
       "username": "test-admin",
       "enabled": true,
       "totp": false,
@@ -31,8 +31,8 @@
   },
   {
     "user": {
-      "id": "45dfbc1b-3d85-4870-8437-f8511b379095",
-      "createdTimestamp": 1624053213643,
+      "id": "a16221b1-c6f3-4bc7-83bb-0875ac41beac",
+      "createdTimestamp": 1625597738219,
       "username": "test-employer",
       "enabled": true,
       "totp": false,
@@ -72,8 +72,8 @@
   },
   {
     "user": {
-      "id": "ba029e55-59ae-484b-8857-19ca519bf96e",
-      "createdTimestamp": 1624053283865,
+      "id": "44852cab-1c53-4460-af0d-0bd97d7010af",
+      "createdTimestamp": 1625597738468,
       "username": "test-employer-multi",
       "enabled": true,
       "totp": false,
@@ -108,13 +108,21 @@
         "composite": false,
         "clientRole": true,
         "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      },
+      {
+        "id": "b1b6a9d7-ad35-423f-873b-96c2e146196b",
+        "name": "employer",
+        "description": "Employer users who interact with site and participant data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
       }
     ]
   },
   {
     "user": {
-      "id": "54ab8a13-6046-430f-bf27-b5af0f5c8be8",
-      "createdTimestamp": 1624052551805,
+      "id": "f663f6e6-8cba-4d16-a2af-0b52132e00e3",
+      "createdTimestamp": 1625597738619,
       "username": "test-ha",
       "enabled": true,
       "totp": false,
@@ -154,8 +162,40 @@
   },
   {
     "user": {
-      "id": "0f109490-c7b9-4d96-8275-5c46a384d536",
-      "createdTimestamp": 1624052141528,
+      "id": "c7f0b367-2213-4786-9f8e-d40265ac382d",
+      "createdTimestamp": 1625599942412,
+      "username": "test-maximus",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": false,
+      "firstName": "Maximillion",
+      "lastName": "Pegasus",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "notBefore": 0,
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": true,
+        "manage": true
+      }
+    },
+    "roles": [
+      {
+        "id": "a30fa9aa-8bc5-4c2a-8d27-c90ce7a0e4a0",
+        "name": "maximus",
+        "description": "Users who handle participant data upload",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      }
+    ]
+  },
+  {
+    "user": {
+      "id": "2a1958f1-ba6a-49d2-8fe5-cd66e411c738",
+      "createdTimestamp": 1625597738773,
       "username": "test-moh",
       "enabled": true,
       "totp": false,
@@ -227,8 +267,8 @@
   },
   {
     "user": {
-      "id": "7ebf9ecf-713b-44f7-9546-814baf1090d3",
-      "createdTimestamp": 1624050300417,
+      "id": "2d9de443-1dd5-44a3-bf5a-cb16bb117d57",
+      "createdTimestamp": 1625597738925,
       "username": "test-superuser",
       "enabled": true,
       "totp": false,

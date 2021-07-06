@@ -77,6 +77,7 @@ Cypress.Commands.add('kcLogin', (user) => {
         approval_prompt: 'auto',
         redirect_uri: Cypress.config('baseUrl'),
         client_id: client_id,
+        client_secret: client_secret,
         code_challenge_method: 'plain',
         code_challenge,
       },
@@ -84,7 +85,6 @@ Cypress.Commands.add('kcLogin', (user) => {
       .then(function (response) {
         let html = document.createElement('html');
         html.innerHTML = response.body;
-        console.log({ name: 'Debug', message: response.body });
         let form = html.getElementsByTagName('form')[0];
         let url = form.action;
         return cy.request({

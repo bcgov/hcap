@@ -75,8 +75,8 @@ export default () => {
             <Typography variant={'body2'}>
               For more information on the BC Services Card, including how to set up your mobile BC
               Services Card visit:&nbsp;
-              <a href='https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card/log-in-with-card/mobile-card'>
-                https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card/log-in-with-card/mobile-card
+              <a href='https://www.gov.bc.ca/mobilebcservicescard'>
+                https://www.gov.bc.ca/mobilebcservicescard
               </a>
             </Typography>
           </Box>

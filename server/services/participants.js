@@ -486,7 +486,7 @@ const createParticipantUserMap = async (userId, email) => {
   // Return if no participant with email
   if (participants.length === 0) return [];
   // Create Map for existing users
-  return dbClient.withTransaction(async (tnx) =>
+  await dbClient.db.withTransaction(async (tnx) =>
     Promise.all(
       participants.map((participant) =>
         tnx[collections.USER_PARTICIPANT_MAP].save({
@@ -496,6 +496,37 @@ const createParticipantUserMap = async (userId, email) => {
       )
     )
   );
+  return participants;
+};
+
+const getParticipantsForUser = async (userId, email) => {
+  const participants = await dbClient.db[collections.PARTICIPANTS]
+    .join({
+      mapped: {
+        type: 'LEFT OUTER',
+        relation: collections.USER_PARTICIPANT_MAP,
+        on: {
+          participant_id: 'id',
+          user_id: userId,
+        },
+      },
+    })
+    .find({
+      'mapped.user_id': userId,
+    });
+
+  const finalResults = participants.length > 0 ? participants : await createParticipantUserMap();
+  return finalResults.map((mappedParticipants) => ({
+    ...mappedParticipants.body,
+    id: mappedParticipants.id,
+  }));
+};
+
+const mapUserWithParticipant = async (userId, participantId) => {
+  return dbClient.db[collections.USER_PARTICIPANT_MAP].save({
+    user_id: userId,
+    participant_id: participantId,
+  });
 };
 
 module.exports = {
@@ -509,4 +540,6 @@ module.exports = {
   validateConfirmationId,
   confirmParticipantInterest,
   createParticipantUserMap,
+  getParticipantsForUser,
+  mapUserWithParticipant,
 };

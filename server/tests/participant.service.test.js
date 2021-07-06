@@ -11,6 +11,9 @@ const {
   makeParticipant,
   getParticipantByID,
   updateParticipant,
+  createParticipantUserMap,
+  getParticipantsForUser,
+  mapUserWithParticipant,
 } = require('../services/participants.js');
 const { getReport } = require('../services/reporting.js');
 const { evaluateBooleanAnswer } = require('../validation');
@@ -891,5 +894,48 @@ describe('Participants Service', () => {
       ['hired']
     );
     expect(participants.data[0].statusInfos[0].data.siteName).toEqual('test');
+  });
+
+  it('test participant user mapper methods', async () => {
+    const participant1 = {
+      lastName: 'Extra',
+      firstName: 'Eddy',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy1@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Fraser',
+      contactedDate: '09/09/2020',
+    };
+
+    await makeParticipant(participant1);
+    const userId = v4();
+
+    const result = await createParticipantUserMap(userId, 'eddy1@example.com');
+    expect(result.length).toEqual(1);
+    const result2 = await getParticipantsForUser(userId, 'eddy1@example.com');
+    expect(result2[0].emailAddress).toEqual('eddy1@example.com');
+  });
+
+  it('should map participant with user', async () => {
+    const participant1 = {
+      lastName: 'Extra',
+      firstName: 'Eddy',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy2990@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Fraser',
+      contactedDate: '09/09/2020',
+    };
+
+    const resp = await makeParticipant(participant1);
+    const userId = v4();
+
+    await mapUserWithParticipant(userId, resp.id);
+    const result = await getParticipantsForUser(userId, '');
+    expect(result[0].emailAddress).toEqual('eddy2990@example.com');
   });
 });

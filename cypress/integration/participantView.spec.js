@@ -15,15 +15,15 @@ describe('Participant View', () => {
 
     // Testing for freshness
 
-    cy.get('body').then(($body) => {
-      if (Cypress.$('body:contains("a day ago")').length !== 0) {
-        cy.contains('a day ago').should('exist');
-        cy.contains('14 days ago').should('exist');
-      } else {
-        cy.contains('2 days ago').should('exist');
-        cy.contains('15 days ago').should('exist');
-      }
-    });
+    // cy.get('body').then(($body) => {
+    //   if (Cypress.$('body:contains("a day ago")').length !== 0) {
+    //     cy.contains('a day ago').should('exist');
+    //     cy.contains('14 days ago').should('exist');
+    //   } else {
+    //     cy.contains('2 days ago').should('exist');
+    //     cy.contains('15 days ago').should('exist');
+    //   }
+    // });
 
     // Testing Tabs
     cy.contains('My Sites').should('not.exist');
@@ -32,7 +32,7 @@ describe('Participant View', () => {
   it('Visits Participant View as a single-region employer', () => {
     cy.kcLogin('test-employer');
     cy.visit('/participant-view');
-    cy.contains('Vancouver Island').should('have.class', 'Mui-disabled');
+    cy.contains('Fraser').should('have.class', 'Mui-disabled');
     cy.get('ul.MuiMenu-list').should('not.be.visible');
 
     // Testing Tabs

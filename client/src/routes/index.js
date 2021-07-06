@@ -126,7 +126,7 @@ export default () => {
               path={Routes.ParticipantConfirmation}
               component={ParticipantConfirmation}
             />
-            <Route exact path={Routes.ParticipantLogin} component={ParticipantLogin} />
+            <Route exact path={Routes.Login} component={ParticipantLogin} />
             <Route exact path={Routes.Base} component={ParticipantForm} />
             <Route exact path={Routes.ParticipantForm} component={ParticipantForm} />
             <Route exact path={Routes.ConfirmInterest} component={ConfirmInterest} />

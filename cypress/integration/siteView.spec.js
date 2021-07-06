@@ -8,7 +8,7 @@ describe('Tests the Site View', () => {
     cy.kcLogin('test-employer');
     cy.visit('/site-view');
     cy.contains("You don't have permission to view this content.").should('exist');
-    cy.kcLogin('maximus');
+    cy.kcLogin('test-maximus');
     cy.visit('/site-view');
     cy.contains("You don't have permission to view this content.").should('exist');
   });

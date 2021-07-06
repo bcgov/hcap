@@ -17,36 +17,11 @@ const getAuthCodeFromLocation = (location) => {
   }
 };
 
-// also no longer useful
-Cypress.Commands.add('kcGetToken', function (user) {
-  Cypress.log({ name: 'Login' });
-  cy.fixture('users/' + user).then(function (userData) {
-    userData.password ? null : (userData.password = Cypress.env('KEYCLOAK_SA_PASSWORD'));
-    let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
-    let realm = Cypress.env('KEYCLOAK_REALM');
-    let client_id = Cypress.env('KEYCLOAK_FE_CLIENTID');
-    cy.request({
-      method: 'POST',
-      url: authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/token',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      followRedirect: false,
-      body: {
-        grant_type: 'password',
-        client_id: client_id,
-        client_secret: Cypress.env('KEYCLOAK_API_CLIENTID'),
-        username: userData.username,
-        password: userData.password,
-      },
-    }).then(function (response) {
-      window.localStorage.setItem('TOKEN', response.body.access_token);
-      return response.body.access_token;
-    });
-  });
-});
+const authBaseUrl = Cypress.env('KEYCLOAK_LOCAL_AUTH_URL') || Cypress.env('KEYCLOAK_AUTH_URL');
 
 Cypress.Commands.add('kcLogout', function () {
   Cypress.log({ name: 'Logout' });
-  let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
+  // let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
   let realm = Cypress.env('KEYCLOAK_REALM');
   return cy.request({
     url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/logout`,
@@ -56,7 +31,7 @@ Cypress.Commands.add('kcLogout', function () {
 Cypress.Commands.add('kcLogin', (user) => {
   Cypress.log({ name: 'Login' });
   cy.fixture('users/' + user).then((userData) => {
-    let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
+    // let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
     let realm = Cypress.env('KEYCLOAK_REALM');
     let client_id = Cypress.env('KEYCLOAK_API_CLIENTID');
     let client_secret = Cypress.env('KEYCLOAK_LOCAL_SECRET');
@@ -113,50 +88,14 @@ Cypress.Commands.add('kcLogin', (user) => {
           },
           form: true,
           followRedirect: false,
-        })
-          .its('body')
-          .then((response) => console.log(response));
+        }).its('body');
       });
-  });
-});
-
-Cypress.Commands.add('kcQuickLogin', (user) => {
-  Cypress.log({ name: 'Login' });
-  cy.fixture('users/' + user).then((userData) => {
-    let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
-    let realm = Cypress.env('KEYCLOAK_REALM');
-    let client_id = Cypress.env('KEYCLOAK_API_CLIENTID');
-    let client_secret = Cypress.env('KEYCLOAK_LOCAL_SECRET');
-
-    cy.request({
-      url: authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/token',
-      followRedirect: false,
-      method: 'POST',
-      form: true,
-      headers: {
-        key: 'Content-Type',
-        name: 'Content-Type',
-        value: 'application/x-www-form-urlencoded',
-        type: 'text',
-      },
-
-      body: {
-        scope: 'openid',
-        client_id: client_id,
-        client_secret: client_secret,
-        grant_type: 'password',
-        username: userData.username,
-        password: userData.password,
-      },
-    })
-      .its('body')
-      .then((response) => console.log(response));
   });
 });
 
 Cypress.Commands.add('kcLogout', function () {
   Cypress.log({ name: 'Logout' });
-  let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
+  // let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
   let realm = Cypress.env('KEYCLOAK_REALM');
   return cy.request({
     url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/logout`,
@@ -167,7 +106,7 @@ Cypress.Commands.add('kcLogout', function () {
 Cypress.Commands.add('kcNavAs', function (user, visitUrl) {
   visitUrl = visitUrl || '';
   Cypress.log({ name: 'Fake Login' });
-  let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
+  // let authBaseUrl = Cypress.env('KEYCLOAK_AUTH_URL');
   let realm = Cypress.env('KEYCLOAK_REALM');
   let access_token = Cypress.env('ACCESS_TOKEN');
   let refresh_token = Cypress.env('REFRESH_TOKEN');

@@ -23,27 +23,27 @@ const useStyles = makeStyles((theme) => ({
   },
   rightContainer: {
     paddingTop: '80px',
-    [theme.breakpoints.down('md')]:{
+    [theme.breakpoints.down('md')]: {
       paddingLeft: '32px',
-      paddingRight: '32px'
+      paddingRight: '32px',
     },
-    [theme.breakpoints.up('md')]:{
+    [theme.breakpoints.up('md')]: {
       paddingRight: '160px',
-      paddingLeft: '32px'
+      paddingLeft: '32px',
     },
     backgroundColor: '#FFFFFF',
     height: 'calc(100vh - 68px)',
   },
   leftContainer: {
     paddingTop: '80px',
-    [theme.breakpoints.down('md')]:{
+    [theme.breakpoints.down('md')]: {
       paddingLeft: '32px',
-      paddingRight: '32px'
+      paddingRight: '32px',
     },
-    [theme.breakpoints.up('md')]:{
+    [theme.breakpoints.up('md')]: {
       paddingLeft: '160px',
       paddingRight: '32px',
-      alignContent:true
+      alignContent: true,
     },
     height: 'calc(100vh - 68px)',
   },

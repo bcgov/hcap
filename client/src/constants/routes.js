@@ -14,7 +14,7 @@ export default Object.freeze({
   ParticipantLogin: '/participant-login',
 
   // Participant Private routes
-  Success: '/success',
+  ParticipantLanding: '/participant-landing',
 
   // Employer Private routes
   Admin: '/admin',

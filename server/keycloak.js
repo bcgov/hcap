@@ -88,6 +88,19 @@ class Keycloak {
     };
   }
 
+  setupUserMiddleware() {
+    return (req, resp, next) => {
+      try {
+        const { content } = req.kauth?.grant?.access_token;
+        const roles = content?.resource_access[this.clientNameFrontend]?.roles || [];
+        if (content) req.user = { ...content, roles };
+        next();
+      } catch (error) {
+        next();
+      }
+    };
+  }
+
   async authenticateServiceAccount() {
     logger.info('Authenticating Keycloak service account');
     const data = querystring.stringify({

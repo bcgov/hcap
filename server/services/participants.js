@@ -515,19 +515,20 @@ const getParticipantsForUser = async (userId, email) => {
       'mapped.user_id': userId,
     });
 
-  const finalResults = participants.length > 0 ? participants : await createParticipantUserMap();
+  const finalResults =
+    participants.length > 0 ? participants : await createParticipantUserMap(userId, email);
   return finalResults.map((mappedParticipants) => ({
     ...mappedParticipants.body,
     id: mappedParticipants.id,
+    submittedAt: mappedParticipants.created_at,
   }));
 };
 
-const mapUserWithParticipant = async (userId, participantId) => {
-  return dbClient.db[collections.USER_PARTICIPANT_MAP].save({
+const mapUserWithParticipant = async (userId, participantId) =>
+  dbClient.db[collections.USER_PARTICIPANT_MAP].save({
     user_id: userId,
     participant_id: participantId,
   });
-};
 
 module.exports = {
   parseAndSaveParticipants,

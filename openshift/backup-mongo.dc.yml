@@ -138,13 +138,13 @@ parameters:
   - name: PORT
     value: '3030'
   - name: DB_SERVICE
-    value: hcap-mongodb
+    value: hcap-mongo-headless
   - name: DB_SECRET_NAME
-    value: hcap-mongodb
+    value: hcap-mongo
   - name: DB_USERNAME_KEY
     value: username
   - name: DB_PASSWORD_KEY
-    value: password
+    value: mongodb-password
   - name: IMAGE_STREAM_TAG
     required: true
   - name: BUILD_NAMESPACE

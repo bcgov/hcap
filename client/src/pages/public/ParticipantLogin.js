@@ -18,14 +18,33 @@ const useStyles = makeStyles((theme) => ({
   },
   blueBox: {
     backgroundColor: '#EDF6FF',
-    width: 554,
+    maxWidth: 554,
     height: 205,
   },
   rightContainer: {
+    paddingTop: '80px',
+    [theme.breakpoints.down('md')]:{
+      paddingLeft: '32px',
+      paddingRight: '32px'
+    },
+    [theme.breakpoints.up('md')]:{
+      paddingRight: '160px',
+      paddingLeft: '32px'
+    },
     backgroundColor: '#FFFFFF',
     height: 'calc(100vh - 68px)',
   },
   leftContainer: {
+    paddingTop: '80px',
+    [theme.breakpoints.down('md')]:{
+      paddingLeft: '32px',
+      paddingRight: '32px'
+    },
+    [theme.breakpoints.up('md')]:{
+      paddingLeft: '160px',
+      paddingRight: '32px',
+      alignContent:true
+    },
     height: 'calc(100vh - 68px)',
   },
 }));
@@ -44,8 +63,8 @@ export default () => {
   return (
     <Page hideEmployers={true}>
       <Grid container>
-        <Grid item sm={6} xs={12}>
-          <Box pl={20} pr={4} pt={10}>
+        <Grid item md={6} sm={12}>
+          <Box className={classes.leftContainer}>
             <Box mb={3}>
               <Typography variant='h2'>
                 <b>Sign In</b>
@@ -68,7 +87,7 @@ export default () => {
                 <b>Sign in with BC Services Card</b>
               </Typography>
               <Typography variant={'body1'}>
-                You can use your BC Services Card to log in to government services. It's a sercure
+                You can use your BC Services Card to log in to government services. It's a secure
                 way to prove who you are online.
               </Typography>
             </Box>
@@ -81,8 +100,8 @@ export default () => {
             </Typography>
           </Box>
         </Grid>
-        <Grid item sm={6} xs={12}>
-          <Box pt={10} pl={4} pr={20} className={classes.rightContainer}>
+        <Grid item md={6} sm={12}>
+          <Box className={classes.rightContainer}>
             <Typography variant='subtitle1' className={classes.blueText}>
               Work in the health care sector
             </Typography>
@@ -92,7 +111,7 @@ export default () => {
             <Typography mb={2}>
               COVID-19 has increased the need for health care assistants in long-term care and
               assisted living settings across the province. The Health Career Access Program
-              provides a path for applicants with no health care experience to het hired receive
+              provides a path for applicants with no health care experience to get hired and receive
               paid employer sponsored health care assistant training as part of their employment.
             </Typography>
             <Box p={4} mt={2} className={classes.blueBox}>

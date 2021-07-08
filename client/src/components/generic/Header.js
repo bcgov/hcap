@@ -84,7 +84,9 @@ export const Header = ({ hideEmployers = false }) => {
   };
 
   const title = () => {
-    if (hideEmployers) return 'Participant Expression of Interest';
+    if (window.location.host.match(Routes.ParticipantHostname)) {
+      return 'Participant Expression of Interest';
+    }
     if (
       location.pathname === Routes.EmployerForm ||
       location.pathname === Routes.EmployerConfirmation

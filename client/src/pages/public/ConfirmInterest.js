@@ -91,7 +91,7 @@ export default (props) => {
   if (!state) return null;
 
   return (
-    <Page hideEmployers={true}>
+    <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
       <Card className={classes.root}>
         <Box display='flex' flexDirection='column' height='100%' justifyContent='center'>
           <Icon component={state.icon} className={classes[state.iconClass]} fontSize={'large'} />

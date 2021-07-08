@@ -11,7 +11,6 @@ const {
   makeParticipant,
   getParticipantByID,
   updateParticipant,
-  createParticipantUserMap,
   getParticipantsForUser,
   mapUserWithParticipant,
 } = require('../services/participants.js');

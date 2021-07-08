@@ -28,7 +28,26 @@ jobs:
           cd "$GITHUB_WORKSPACE/client" && npm audit --production
           cd "$GITHUB_WORKSPACE/server" && npm audit --production
           cd "$GITHUB_WORKSPACE"
-
+  test:
+    name: Test Config
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'openshift/**'
+          ref: 'refs/tags/test'
+      - name: Dry run - Dev
+        env:
+          OS_NAMESPACE_SUFFIX: dev
+        run: |
+          oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
+          cd "$GITHUB_WORKSPACE"
+          make server-config-test
   build:
     name: OpenShift Build & Deploy
     runs-on: ubuntu-latest

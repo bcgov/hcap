@@ -6,7 +6,7 @@ on:
       - 'openshift/*.yml'
       - '.github/**'
     tags:
-      - dev
+      - dev-xyz
 
 env:
   CLUSTER: https://api.silver.devops.gov.bc.ca:6443

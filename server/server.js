@@ -17,6 +17,7 @@ const {
   makeParticipant,
   confirmParticipantInterest,
   validateConfirmationId,
+  getParticipantsForUser,
 } = require('./services/participants.js');
 const {
   getEmployers,
@@ -434,6 +435,26 @@ app.post(
       return res.status(201).json(response);
     } catch (excp) {
       return res.status(400).send(`${excp}`);
+    }
+  })
+);
+
+// Get linked participants for users
+app.get(
+  `${apiBaseUrl}/user/participants`,
+  keycloak.setupUserMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const { email, user_id: userId } = req.user;
+    if (email && userId) {
+      const response = await getParticipantsForUser(userId, email);
+      logger.info({
+        action: 'user_participant_get',
+        performed_by: userId,
+        id: response.length > 0 ? response[0].id : '',
+      });
+      res.status(200).json(response);
+    } else {
+      res.status(401).send('Unauthorized user');
     }
   })
 );

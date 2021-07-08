@@ -35,7 +35,10 @@ export default () => {
   const [keycloak] = useKeycloak();
   const history = useHistory();
   const redirectToLogin = () => {
-    keycloak.login({ idpHint: 'BCSC', redirectUri: `${window.location.origin}${Routes.Success}` });
+    keycloak.login({
+      idpHint: 'BCSC',
+      redirectUri: `${window.location.origin}${Routes.ParticipantLanding}`,
+    });
   };
   const redirectToForm = () => {
     history.push(Routes.ParticipantForm);

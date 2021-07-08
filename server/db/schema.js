@@ -11,6 +11,7 @@ const collections = {
   EMPLOYER_SITES: 'employer_sites',
   CONFIRM_INTEREST: 'confirm_interest',
   USERS: 'users',
+  USER_PARTICIPANT_MAP: 'user_participant_map',
 };
 
 const views = {
@@ -62,6 +63,14 @@ const schema = {
         otp UUID primary key DEFAULT gen_random_uuid(),
         created_at timestamp with time zone DEFAULT now()
         )`,
+    },
+    {
+      definition: `CREATE TABLE IF NOT EXISTS ${collections.USER_PARTICIPANT_MAP} (
+        id serial primary key,
+        user_id varchar(200) not null,
+        participant_id integer not null,
+        created_at timestamp with time zone DEFAULT now()
+      )`,
     },
   ],
   documentTables: [

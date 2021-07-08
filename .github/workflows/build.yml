@@ -51,9 +51,11 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           make server-config-test
   confirm:
-    name: Get Confirmation
+    name: Get Confirmation Dev Deployment
     runs-on: ubuntu-latest
-    needs: audit
+    needs:
+      - audit
+      - test
     environment:
       name: dev
     steps:

@@ -40,10 +40,11 @@ jobs:
           filters: |
             src:
               - 'openshift/**'
-          ref: 'refs/tags/test'
+          base: 'refs/tags/dev'
       - name: Dry run - Dev
         env:
           OS_NAMESPACE_SUFFIX: dev
+        if: steps.changes.outputs.src == 'true'
         run: |
           oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
           cd "$GITHUB_WORKSPACE"

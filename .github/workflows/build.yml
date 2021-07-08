@@ -11,6 +11,7 @@ on:
 env:
   CLUSTER: https://api.silver.devops.gov.bc.ca:6443
   AUTH_TOKEN: ${{ secrets.AUTH_TOKEN_OCP4 }}
+  SA_TOKEN: ${{ secrets.SA_TOKEN_CONFIG }}
   PROJECT: hcap
   HEALTH_CHECK_URL: https://hcap-server-f047a2-dev.apps.silver.devops.gov.bc.ca/api/v1/version
   DEV_URL: https://hcapemployers.dev.freshworks.club
@@ -46,15 +47,41 @@ jobs:
           OS_NAMESPACE_SUFFIX: dev
         if: steps.changes.outputs.src == 'true'
         run: |
-          oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
+          oc login --token="$SA_TOKEN" --server="$CLUSTER"
           cd "$GITHUB_WORKSPACE"
           make server-config-test
-  build:
-    name: OpenShift Build & Deploy
+  confirm:
+    name: Get Confirmation
     runs-on: ubuntu-latest
     needs: audit
     environment:
       name: dev
+  config:
+    name: Deploy Config
+    runs-on: ubuntu-latest
+    needs: confirm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'openshift/**'
+          base: 'refs/tags/dev'
+      - name: Apply Changes
+        env:
+          OS_NAMESPACE_SUFFIX: dev
+        if: steps.changes.outputs.src == 'true'
+        run: |
+          oc login --token="$SA_TOKEN" --server="$CLUSTER"
+          cd "$GITHUB_WORKSPACE"
+          make server-config
+  build:
+    name: OpenShift Build & Deploy
+    runs-on: ubuntu-latest
+    needs: confirm
     steps:
       - name: Checkout
         uses: actions/checkout@v2

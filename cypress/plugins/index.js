@@ -13,6 +13,8 @@
  * @type {Cypress.PluginConfig}
  */
 const dotenvPlugin = require('cypress-dotenv');
+// Important to note that this plugin reads directly from the local .env file,
+// overwriting any values passed to the docker-compose file
 
 /**
  * This function is called when a project is opened or re-opened (e.g. due to

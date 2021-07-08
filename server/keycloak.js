@@ -22,13 +22,20 @@ const defaults = {
 class Keycloak {
   // Wrapper class around keycloak-connect
   constructor() {
+    const isLocal = process.env.KEYCLOAK_AUTH_URL.includes('local');
     this.realm = process.env.KEYCLOAK_REALM;
     this.authUrl = process.env.KEYCLOAK_AUTH_URL;
     this.clientNameFrontend = process.env.KEYCLOAK_FE_CLIENTID;
     this.clientNameBackend = process.env.KEYCLOAK_API_CLIENTID;
-    this.clientSecretBackend = process.env.KEYCLOAK_API_SECRET;
-    this.serviceAccountUsername = process.env.KEYCLOAK_SA_USERNAME;
-    this.serviceAccountPassword = process.env.KEYCLOAK_SA_PASSWORD;
+    this.clientSecretBackend = isLocal
+      ? process.env.KEYCLOAK_LOCAL_SECRET
+      : process.env.KEYCLOAK_API_SECRET;
+    this.serviceAccountUsername = isLocal
+      ? process.env.KEYCLOAK_LOCAL_USERNAME
+      : process.env.KEYCLOAK_SA_USERNAME;
+    this.serviceAccountPassword = isLocal
+      ? process.env.KEYCLOAK_LOCAL_PASSWORD
+      : process.env.KEYCLOAK_SA_PASSWORD;
     const config = {
       ...defaults,
       realm: this.realm,
@@ -111,15 +118,22 @@ class Keycloak {
       password: this.serviceAccountPassword,
     });
     const url = `${this.authUrl}/realms/${this.realm}/protocol/openid-connect/token`;
-    const config = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } };
+    const config = {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    };
     const response = await axios.post(url, data, config);
     this.access_token = response.data.access_token;
   }
 
   async authenticateIfNeeded() {
     // Race condition if token expires between this call and the desired authenticated call
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-
+    const config = {
+      headers: {
+        Authorization: `Bearer ${this.access_token}`,
+      },
+    };
     try {
       await axios.get(
         `${this.authUrl}/realms/${this.realm}/protocol/openid-connect/userinfo`,
@@ -131,11 +145,15 @@ class Keycloak {
   }
 
   async buildInternalIdMap() {
+    await this.authenticateIfNeeded();
     // Creates maps of Keycloak role and client names to IDs
     // See Keycloak docs https://www.keycloak.org/docs-api/5.0/rest-api/index.html#_clients_resource
     logger.info('Building internal keycloak id map');
-    await this.authenticateIfNeeded();
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    const config = {
+      headers: {
+        Authorization: `Bearer ${this.access_token}`,
+      },
+    };
     {
       // Map of clients to their internal Keycloak ID
       const clientNames = [this.clientNameBackend, this.clientNameFrontend];
@@ -157,7 +175,11 @@ class Keycloak {
 
   async getUsers(ignorePendings) {
     await this.authenticateIfNeeded();
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    const config = {
+      headers: {
+        Authorization: `Bearer ${this.access_token}`,
+      },
+    };
 
     const getData = async (url) => {
       const response = await axios.get(url, config);
@@ -190,7 +212,11 @@ class Keycloak {
       return { name: roleName, id: this.roleIdMap[roleName] };
     };
     await this.authenticateIfNeeded();
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    const config = {
+      headers: {
+        Authorization: `Bearer ${this.access_token}`,
+      },
+    };
     const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings/clients/${
       this.clientIdMap[this.clientNameFrontend]
     }`;
@@ -212,7 +238,11 @@ class Keycloak {
 
   async getUserRoles(userId) {
     await this.authenticateIfNeeded();
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    const config = {
+      headers: {
+        Authorization: `Bearer ${this.access_token}`,
+      },
+    };
     const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings`;
     const response = await axios.get(url, config);
     return response.data.clientMappings[this.clientNameFrontend].mappings.map((item) => item.name);
@@ -220,7 +250,11 @@ class Keycloak {
 
   async getPendingUsers() {
     await this.authenticateIfNeeded();
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    const config = {
+      headers: {
+        Authorization: `Bearer ${this.access_token}`,
+      },
+    };
     const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${
       this.clientIdMap[this.clientNameFrontend]
     }/roles/pending/users`;

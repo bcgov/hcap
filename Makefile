@@ -66,7 +66,7 @@ local-kc-run:
 
 local-kc-down:
 	@echo "Stopping local app container"
-	@docker-compose -f docker-compose.test.yml down
+	@docker-compose -f docker-compose.test.yml down --remove-orphans
 
 local-run-db:
 	@echo "Running local DB container"
@@ -78,7 +78,7 @@ local-close:
 
 local-clean:
 	@echo "Cleaning local app"
-	@docker-compose -f docker-compose.dev.yml down -v
+	@docker-compose -f docker-compose.dev.yml down -v --remove-orphans
 
 local-server-tests:
 	@/bin/bash .docker/keycloak/import-users.sh

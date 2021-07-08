@@ -64,12 +64,12 @@ Storage -> Persistent Volume Claims.
 With the new space freed up, we can begin to spin up the new Mongo deployment
 with helm. Run the following command from the root directory:
 
-$ helm install hcap-mongo bitnami/mongodb -f openshift/mongo.helm.yml --set auth.username=<desired username> --set auth.database=<desired db name>
+$ helm install hcap-mongo bitnami/mongodb -f openshift/mongo.helm.yml
 
 Once it completes, we will have 2 new mongo pods to work with and we can shift
 logging duties over there with the server-new-mongo deployment config.
 
-$ make server-create
+$OS_NAMESPACE_SUFFIX=<dev,test, or prod> make server-create
 
 After applying this update and re-deploying hcap-server, it will begin
 directing logging towards the new mongo deployment. Now we can direct our focus

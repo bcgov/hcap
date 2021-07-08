@@ -56,6 +56,9 @@ jobs:
     needs: audit
     environment:
       name: dev
+    steps:
+      - name: Log Confirm
+        run: echo Workflow approved
   config:
     name: Deploy Config
     runs-on: ubuntu-latest

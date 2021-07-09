@@ -22,9 +22,29 @@ jobs:
       name: prod
     env:
       OS_NAMESPACE_SUFFIX: prod
+      SA_TOKEN: ${{ secrets.SA_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Checking Deployment Config changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'openshift/**'
+          base: 'refs/tags/prod'
+      - name: Login to prod namespace
+        if: ${{ env.SA_TOKEN }}
+        run: |
+          oc login --token="$SA_TOKEN" --server="$CLUSTER"
+      - name: Test and Deploy
+        if: steps.changes.outputs.src == 'true'
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          make server-config-test
+          make server-config
 
       - name: Cache OpenShift CLI
         id: cache-oc

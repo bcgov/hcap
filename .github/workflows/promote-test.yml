@@ -11,14 +11,67 @@ on:
 env:
   CLUSTER: https://api.silver.devops.gov.bc.ca:6443
   AUTH_TOKEN: ${{ secrets.AUTH_TOKEN_OCP4 }}
+  SA_TOKEN: ${{ secrets.SA_TOKEN_CONFIG }}
   PROJECT: hcap
 
 jobs:
+  test:
+    name: Test Config
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'openshift/**'
+          base: 'refs/tags/test'
+      - name: Dry run - Test
+        env:
+          OS_NAMESPACE_SUFFIX: test
+        if: steps.changes.outputs.src == 'true'
+        run: |
+          oc login --token="$SA_TOKEN" --server="$CLUSTER"
+          cd "$GITHUB_WORKSPACE"
+          make server-config-test
+  confirm:
+    name: Get Confirmation For Test Deployment
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    environment:
+      name: test
+    steps:
+      - name: Log Confirm
+        run: echo Workflow approved
+  config:
+    name: Deploy Config (Test)
+    runs-on: ubuntu-latest
+    needs: confirm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'openshift/**'
+          base: 'refs/tags/test'
+      - name: Apply Changes
+        env:
+          OS_NAMESPACE_SUFFIX: test
+        if: steps.changes.outputs.src == 'true'
+        run: |
+          oc login --token="$SA_TOKEN" --server="$CLUSTER"
+          cd "$GITHUB_WORKSPACE"
+          make server-config
   promoteTest:
     name: OpenShift Promotion
     runs-on: ubuntu-latest
-    environment:
-      name: test
+    needs: confirm
     env:
       OS_NAMESPACE_SUFFIX: test
     steps:

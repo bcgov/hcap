@@ -12,6 +12,9 @@ import { Page } from '../../components/generic';
 import { API_URL, Routes } from '../../constants';
 
 const useStyles = makeStyles({
+  rootContainer: {
+    flexGrow: 1,
+  },
   root: {
     minWidth: 275,
   },
@@ -53,38 +56,42 @@ export default () => {
   }, [setInterests]);
   return (
     <Page>
-      <Grid container spacing={1}>
-        {interests.map((item, index) => (
-          <Grid key={index} xs={3} spacing={3}>
-            <Card className={classes.root}>
-              <CardContent>
-                <Typography variant='h5' component='h2'>
-                  {item.firstName} {item.lastName}
-                </Typography>
-                <Typography className={classes.title} color='textSecondary' gutterBottom>
-                  {item.emailAddress}
-                </Typography>
-                <Typography className={classes.pos} color='textSecondary'>
-                  Region: {item.preferredLocation}
-                </Typography>
-                <Typography variant='body2' component='p'>
-                  Submitted at: {item.submittedAt}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button
-                  variant='outlined'
-                  onClick={() => {
-                    const path = Routes.ParticipantEOI.replace(':id', item.id);
-                    history.push(path);
-                  }}
-                >
-                  View PEOI
-                </Button>
-              </CardActions>
-            </Card>
+      <Grid className={classes.rootContainer} container spacing={1}>
+        <Grid item xs={12}>
+          <Grid container justifyContent='center' spacing={3}>
+            {interests.map((item, index) => (
+              <Grid key={index} item>
+                <Card className={classes.root}>
+                  <CardContent>
+                    <Typography variant='h5' component='h2'>
+                      {item.firstName} {item.lastName}
+                    </Typography>
+                    <Typography className={classes.title} color='textSecondary' gutterBottom>
+                      {item.emailAddress}
+                    </Typography>
+                    <Typography className={classes.pos} color='textSecondary'>
+                      Region: {item.preferredLocation}
+                    </Typography>
+                    <Typography variant='body2' component='p'>
+                      Submitted at: {item.submittedAt}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      variant='outlined'
+                      onClick={() => {
+                        const path = Routes.ParticipantEOI.replace(':id', item.id);
+                        history.push(path);
+                      }}
+                    >
+                      View PEOI
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
-        ))}
+        </Grid>
       </Grid>
     </Page>
   );

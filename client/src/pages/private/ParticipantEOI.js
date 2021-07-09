@@ -43,9 +43,11 @@ export default () => {
     <div id='participant-view'>
       <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
         {participant && (
-          <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
-            {/** Form */}
-            <Form initialValues={participant} isDisabled />
+          <Grid container>
+            <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
+              {/** Form */}
+              <Form initialValues={participant} isDisabled />
+            </Grid>
           </Grid>
         )}
         {!participant && !loading && <Alert severity='error'>Unable to load participant</Alert>}

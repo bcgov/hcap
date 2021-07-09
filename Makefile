@@ -174,4 +174,8 @@ db-mongo-tunnel:
 
 db-postgres-tunnel:
 	@oc project $(TARGET_NAMESPACE)
+	@oc port-forward $(APP_NAME)-patroni-0 5432
+
+db-postgres-rw-tunnel:
+	@oc project $(TARGET_NAMESPACE)
 	@oc port-forward svc/$(APP_NAME)-patroni 5432

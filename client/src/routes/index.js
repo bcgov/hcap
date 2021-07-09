@@ -26,7 +26,7 @@ const EmployerConfirmation = lazy(() => import('../pages/public/EmployerConfirma
 const KeycloakRedirect = lazy(() => import('../pages/public/Keycloak'));
 const ConfirmInterest = lazy(() => import('../pages/public/ConfirmInterest'));
 const ParticipantLanding = lazy(() => import('../pages/private/ParticipantLanding'));
-
+const PeoiDetail = lazy(()=>import('../pages/private/PEOIDetails'))
 const PrivateRoute = ({ component: Component, path, ...rest }) => {
   const [keycloak] = useKeycloak();
   return (
@@ -131,6 +131,7 @@ export default () => {
             <Route exact path={Routes.ParticipantForm} component={ParticipantForm} />
             <Route exact path={Routes.ConfirmInterest} component={ConfirmInterest} />
             <PrivateRoute exact path={Routes.ParticipantLanding} component={ParticipantLanding} />
+            <PrivateRoute exact path={Routes.PeoiDetail} component={PeoiDetail} />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>
           <RootUrlSwitch rootUrlRegExp={Routes.EmployerHostname}>

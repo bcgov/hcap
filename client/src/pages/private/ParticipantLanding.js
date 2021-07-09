@@ -3,12 +3,15 @@ import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
+import {Button} from '../../components/generic/Button'
+import { useHistory } from 'react-router-dom';
+
+
 import { makeStyles } from '@material-ui/core/styles';
 import store from 'store';
 import Typography from '@material-ui/core/Typography';
 import { Page } from '../../components/generic';
-import { API_URL } from '../../constants';
+import { API_URL,Routes } from '../../constants';
 
 const useStyles = makeStyles({
   root: {
@@ -45,15 +48,29 @@ const getParticipants = async () => {
 
 export default () => {
   const [interests, setInterests] = useState([]);
+  const history = useHistory();
   const classes = useStyles();
   useEffect(() => {
-    getParticipants().then((items) => setInterests(items));
+    const ue = async ()=>{
+      const participants = await  getParticipants()
+      console.log(participants);
+      setInterests(participants)
+
+    }
+    ue()
   }, [setInterests]);
+
+
   return (
     <Page>
-      <Grid container spacing={1}>
+      <Grid justify = {'center'}container spacing={1}>
+        {!interests.length && 
+          <Grid item xs= {12} >
+            <Typography>It seems you have not submitted an expression of interest. Please submit one!</Typography>
+          </Grid>
+        }
         {interests.map((item, index) => (
-          <Grid key={index} xs={3}>
+          <Grid item key={index} xs={3}>
             <Card className={classes.root}>
               <CardContent>
                 <Typography variant='h5' component='h2'>
@@ -70,7 +87,11 @@ export default () => {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size='small'>Learn More</Button>
+                <Button 
+                color={'primary'} 
+                text= {'View PEOI'}
+                onClick= {()=>history.push(`${Routes.PeoiDetail}?id=${item.id}`)}
+                />
               </CardActions>
             </Card>
           </Grid>

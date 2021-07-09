@@ -772,6 +772,15 @@ app.get(
   })
 );
 
+app.get(`${apiBaseUrl}/user/peoi`,
+  keycloak.allowRolesMiddleware('pending'),
+  keycloak.getUserInfoMiddleware(), 
+  asyncMiddleware(async (req,res)=>{
+    console.log(req.query)
+    return res.json({hello:"world"})
+  })
+)
+
 // Version number
 app.get(`${apiBaseUrl}/version`, (req, res) => res.json({ version: process.env.VERSION }));
 

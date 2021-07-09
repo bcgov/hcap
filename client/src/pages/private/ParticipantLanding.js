@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -8,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import store from 'store';
 import Typography from '@material-ui/core/Typography';
 import { Page } from '../../components/generic';
-import { API_URL } from '../../constants';
+import { API_URL, Routes } from '../../constants';
 
 const useStyles = makeStyles({
   root: {
@@ -46,6 +47,7 @@ const getParticipants = async () => {
 export default () => {
   const [interests, setInterests] = useState([]);
   const classes = useStyles();
+  const history = useHistory();
   useEffect(() => {
     getParticipants().then((items) => setInterests(items));
   }, [setInterests]);
@@ -53,7 +55,7 @@ export default () => {
     <Page>
       <Grid container spacing={1}>
         {interests.map((item, index) => (
-          <Grid key={index} xs={3}>
+          <Grid key={index} xs={3} spacing={3}>
             <Card className={classes.root}>
               <CardContent>
                 <Typography variant='h5' component='h2'>
@@ -70,7 +72,15 @@ export default () => {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size='small'>Learn More</Button>
+                <Button
+                  variant='outlined'
+                  onClick={() => {
+                    const path = Routes.ParticipantEOI.replace(':id', item.id);
+                    history.push(path);
+                  }}
+                >
+                  View PEOI
+                </Button>
               </CardActions>
             </Card>
           </Grid>

@@ -277,7 +277,12 @@ app.get(
 
 app.get(
   `${apiBaseUrl}/participant`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+  keycloak.allowRolesMiddleware(
+    'health_authority',
+    'ministry_of_health',
+    'employer',
+    'participant'
+  ),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantQuerySchema, req.query);

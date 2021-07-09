@@ -11,7 +11,6 @@ const {
   makeParticipant,
   getParticipantByID,
   updateParticipant,
-  createParticipantUserMap,
   getParticipantsForUser,
   mapUserWithParticipant,
 } = require('../services/participants.js');
@@ -909,13 +908,42 @@ describe('Participants Service', () => {
       contactedDate: '09/09/2020',
     };
 
+    const participant2 = {
+      lastName: 'Extra',
+      firstName: 'Eddy-ss',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy1@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Interior',
+      contactedDate: '08/09/2020',
+    };
+
     await makeParticipant(participant1);
+    await makeParticipant(participant2);
     const userId = v4();
 
-    const result = await createParticipantUserMap(userId, 'eddy1@example.com');
-    expect(result.length).toEqual(1);
     const result2 = await getParticipantsForUser(userId, 'eddy1@example.com');
+    expect(result2.length).toEqual(2);
     expect(result2[0].emailAddress).toEqual('eddy1@example.com');
+
+    const participant3 = {
+      lastName: 'Extra',
+      firstName: 'Eddy-New',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy1@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Interior',
+      contactedDate: '07/09/2020',
+    };
+
+    await makeParticipant(participant3);
+
+    const result3 = await getParticipantsForUser(userId, 'eddy1@example.com');
+    expect(result3.length).toEqual(3);
   });
 
   it('should map participant with user', async () => {

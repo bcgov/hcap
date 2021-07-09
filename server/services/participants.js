@@ -466,8 +466,8 @@ const makeParticipant = async (participantJson) => {
   return res;
 };
 
-const createParticipantUserMap = async (userId, email) => {
-  const participants = await dbClient.db[collections.PARTICIPANTS]
+const createParticipantUserMap = async (userId, email, tnx) => {
+  const participants = await tnx[collections.PARTICIPANTS]
     .join({
       mapped: {
         type: 'LEFT OUTER',
@@ -485,38 +485,39 @@ const createParticipantUserMap = async (userId, email) => {
 
   // Return if no participant with email
   if (participants.length === 0) return [];
-  // Create Map for existing users
-  await dbClient.db.withTransaction(async (tnx) =>
-    Promise.all(
-      participants.map((participant) =>
-        tnx[collections.USER_PARTICIPANT_MAP].save({
-          user_id: userId,
-          participant_id: participant.id,
-        })
-      )
+  await Promise.all(
+    participants.map((participant) =>
+      tnx[collections.USER_PARTICIPANT_MAP].save({
+        user_id: userId,
+        participant_id: participant.id,
+      })
     )
   );
   return participants;
 };
 
 const getParticipantsForUser = async (userId, email) => {
-  const participants = await dbClient.db[collections.PARTICIPANTS]
-    .join({
-      mapped: {
-        type: 'LEFT OUTER',
-        relation: collections.USER_PARTICIPANT_MAP,
-        on: {
-          participant_id: 'id',
-          user_id: userId,
+  const finalResults = await dbClient.db.withTransaction(async (tnx) => {
+    // Get all mapped participant
+    const participants = await tnx[collections.PARTICIPANTS]
+      .join({
+        mapped: {
+          type: 'LEFT OUTER',
+          relation: collections.USER_PARTICIPANT_MAP,
+          on: {
+            participant_id: 'id',
+            user_id: userId,
+          },
         },
-      },
-    })
-    .find({
-      'mapped.user_id': userId,
-    });
+      })
+      .find({
+        'mapped.user_id': userId,
+      });
 
-  const finalResults =
-    participants.length > 0 ? participants : await createParticipantUserMap(userId, email);
+    // Get all unmapped participant
+    const newlyMappedParticipants = await createParticipantUserMap(userId, email, tnx);
+    return [...participants, ...newlyMappedParticipants];
+  });
   return finalResults.map((mappedParticipants) => ({
     ...mappedParticipants.body,
     id: mappedParticipants.id,

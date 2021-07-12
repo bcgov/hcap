@@ -75,22 +75,8 @@ const setParticipantStatus = async (
 
     // Now check if current status is archived then set interested flag
     if (status === 'archived') {
-      const newHistory = {
-        timestamp: new Date(),
-        changes: [],
-      };
-
-      newHistory.changes.push({
-        field: 'interested',
-        from: participant[0].interested || 'yes',
-        to: 'withdrawn',
-      });
-      participant[0].history = participant[0].history
-        ? [newHistory, ...participant[0].history]
-        : [newHistory];
-
       // eslint-disable-next-line no-use-before-define
-      await updateParticipant(participant[0]);
+      await withdrawParticipant(participant[0]);
     }
 
     if (['prospecting', 'interviewing', 'offer_made', 'hired'].includes(status)) {
@@ -128,6 +114,24 @@ const getParticipantByID = async (participantInfo) => {
     id: participantInfo.id,
   });
   return participant;
+};
+
+const withdrawParticipant = async (participantInfo) => {
+  const participant = { ...participantInfo };
+  const newHistory = {
+    timestamp: new Date(),
+    changes: [],
+  };
+
+  newHistory.changes.push({
+    field: 'interested',
+    from: participant.interested || 'yes',
+    to: 'withdrawn',
+  });
+  participant.history = participant.history ? [newHistory, ...participant.history] : [newHistory];
+
+  // eslint-disable-next-line no-use-before-define
+  return updateParticipant(participant);
 };
 
 const updateParticipant = async (participantInfo) => {
@@ -568,4 +572,5 @@ module.exports = {
   getParticipantsForUser,
   mapUserWithParticipant,
   getParticipantByIdWithStatus,
+  withdrawParticipant,
 };

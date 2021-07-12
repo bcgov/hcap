@@ -48,6 +48,9 @@ const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 const keycloak = require('./keycloak.js');
 const { healthCheck } = require('./services/health-check');
 
+// Routes
+const participantUserRoute = require('./routes/participant-user');
+
 const apiBaseUrl = '/api/v1';
 const app = express();
 
@@ -97,6 +100,9 @@ app.use(
 app.use(keycloak.expressMiddleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
+
+// Applying router handlers
+app.use(`${apiBaseUrl}/participant-user`, participantUserRoute);
 
 // Return client info for Keycloak realm for the current environment
 app.get(`${apiBaseUrl}/keycloak-realm-client-info`, (req, res) =>

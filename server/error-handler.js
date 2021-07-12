@@ -22,4 +22,6 @@ const errorHandler = (error, req, res, next) => {
 const asyncMiddleware = (f) => (req, res, next) =>
   Promise.resolve(f(req, res, next)).catch((error) => next(error));
 
-module.exports = { errorHandler, asyncMiddleware };
+const applyMiddleware = (f) => (req, res, next) => f(req, res, next);
+
+module.exports = { errorHandler, asyncMiddleware, applyMiddleware };

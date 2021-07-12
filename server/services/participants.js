@@ -479,7 +479,7 @@ const createParticipantUserMap = async (userId, email, tnx) => {
       },
     })
     .find({
-      'body.emailAddress': email,
+      'body.emailAddress ILIKE': email,
       'mapped.user_id': null,
     });
 
@@ -531,6 +531,29 @@ const mapUserWithParticipant = async (userId, participantId) =>
     participant_id: participantId,
   });
 
+const getParticipantByIdWithStatus = async ({ id, userId }) =>
+  dbClient.db[collections.PARTICIPANTS]
+    .join({
+      currentStatuses: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'id',
+          current: true,
+        },
+      },
+      user: {
+        type: 'INNER',
+        relation: collections.USER_PARTICIPANT_MAP,
+        decomposeTo: 'object',
+        on: {
+          participant_id: 'id',
+          user_id: userId,
+        },
+      },
+    })
+    .find({ id, 'user.user_id': userId });
+
 module.exports = {
   parseAndSaveParticipants,
   getParticipants,
@@ -544,4 +567,5 @@ module.exports = {
   createParticipantUserMap,
   getParticipantsForUser,
   mapUserWithParticipant,
+  getParticipantByIdWithStatus,
 };

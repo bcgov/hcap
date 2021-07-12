@@ -33,7 +33,7 @@ const useStyles = makeStyles({
 
 const getParticipants = async () => {
   try {
-    const response = await fetch(`${API_URL}/api/v1/user/participants`, {
+    const response = await fetch(`${API_URL}/api/v1/participant-user/participants`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${store.get('TOKEN')}`,
@@ -58,7 +58,7 @@ export default () => {
     <Page>
       <Grid className={classes.rootContainer} container spacing={1}>
         <Grid item xs={12}>
-          <Grid container justifyContent='center' spacing={3}>
+          <Grid container spacing={3}>
             {interests.map((item, index) => (
               <Grid key={index} item>
                 <Card className={classes.root}>

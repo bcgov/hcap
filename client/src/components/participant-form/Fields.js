@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Fields = ({ isDisabled }) => {
+export const Fields = ({ isDisabled, hideHelp }) => {
   const classes = useStyles();
   const [isCollectionNoticeExpanded, setCollectionNoticeExpanded] = useState(
     window.innerWidth > 750
@@ -43,23 +43,25 @@ export const Fields = ({ isDisabled }) => {
 
   return (
     <>
-      <Box mb={2} py={1} px={2} display='flex' alignItems='center' className={classes.info}>
-        <SpeakerNotesOutlined className={classes.infoIcon} />
-        <Box py={1}>
-          <Typography className={classes.infoHeader} component='h3'>
-            Need Help?
-          </Typography>
-          <Typography variant='body2'>
-            Contact a Health Career Access Program agent at{' '}
-            <a rel='noreferrer' target='_blank' href='mailto:HCAPInfoQuery@gov.bc.ca'>
-              HCAPInfoQuery@gov.bc.ca
-            </a>
-          </Typography>
-          <Typography variant='body2'>
-            Service is available from 8:00 am - 4:30 pm Pacific Time Monday through Friday
-          </Typography>
+      {!hideHelp && (
+        <Box mb={2} py={1} px={2} display='flex' alignItems='center' className={classes.info}>
+          <SpeakerNotesOutlined className={classes.infoIcon} />
+          <Box py={1}>
+            <Typography className={classes.infoHeader} component='h3'>
+              Need Help?
+            </Typography>
+            <Typography variant='body2'>
+              Contact a Health Career Access Program agent at{' '}
+              <a rel='noreferrer' target='_blank' href='mailto:HCAPInfoQuery@gov.bc.ca'>
+                HCAPInfoQuery@gov.bc.ca
+              </a>
+            </Typography>
+            <Typography variant='body2'>
+              Service is available from 8:00 am - 4:30 pm Pacific Time Monday through Friday
+            </Typography>
+          </Box>
         </Box>
-      </Box>
+      )}
       <Card noShadow={isDisabled}>
         <Grid container spacing={2}>
           {/** Eligibility */}

@@ -68,7 +68,7 @@ router.post(
         (statusObj) => statusObj.status === 'hired'
       );
       // eslint-disable-next-line  no-unused-vars
-      const r = isHired
+      const _ = isHired
         ? await withdrawParticipant(participant)
         : res.status(422).send('Already Hired');
       res.status(200).send('Success');

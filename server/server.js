@@ -10,6 +10,7 @@ const multer = require('multer');
 const {
   getParticipants,
   getHiredParticipantsBySite,
+  getWithdrawnParticipantsBySite,
   getParticipantByID,
   updateParticipant,
   parseAndSaveParticipants,
@@ -652,7 +653,9 @@ app.get(
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
     const { id } = req.params;
-    const result = await getHiredParticipantsBySite(id);
+    const hired = await getHiredParticipantsBySite(id);
+    const withdrawn = await getWithdrawnParticipantsBySite(id);
+
     logger.info({
       action: 'site-participants_get',
       performed_by: {
@@ -663,10 +666,11 @@ app.get(
         site: id,
       },
       for: {
-        participants: result.map((ppt) => ppt.participantJoin.id),
+        hiredParticipants: hired.map((ppt) => ppt.participantJoin.id),
+        withdrawnParticipants: withdrawn.map((ppt) => ppt.participantJoin.id),
       },
     });
-    return res.json(result);
+    return res.json({ hired, withdrawn });
   })
 );
 

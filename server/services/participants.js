@@ -75,22 +75,8 @@ const setParticipantStatus = async (
 
     // Now check if current status is archived then set interested flag
     if (status === 'archived') {
-      const newHistory = {
-        timestamp: new Date(),
-        changes: [],
-      };
-
-      newHistory.changes.push({
-        field: 'interested',
-        from: participant[0].interested || 'yes',
-        to: 'withdrawn',
-      });
-      participant[0].history = participant[0].history
-        ? [newHistory, ...participant[0].history]
-        : [newHistory];
-
       // eslint-disable-next-line no-use-before-define
-      await updateParticipant(participant[0]);
+      await withdrawParticipant(participant[0]);
     }
 
     if (['prospecting', 'interviewing', 'offer_made', 'hired'].includes(status)) {
@@ -128,6 +114,24 @@ const getParticipantByID = async (participantInfo) => {
     id: participantInfo.id,
   });
   return participant;
+};
+
+const withdrawParticipant = async (participantInfo) => {
+  const participant = { ...participantInfo };
+  const newHistory = {
+    timestamp: new Date(),
+    changes: [],
+  };
+
+  newHistory.changes.push({
+    field: 'interested',
+    from: participant.interested || 'yes',
+    to: 'withdrawn',
+  });
+  participant.history = participant.history ? [newHistory, ...participant.history] : [newHistory];
+
+  // eslint-disable-next-line no-use-before-define
+  return updateParticipant(participant);
 };
 
 const updateParticipant = async (participantInfo) => {
@@ -479,7 +483,7 @@ const createParticipantUserMap = async (userId, email, tnx) => {
       },
     })
     .find({
-      'body.emailAddress': email,
+      'body.emailAddress ILIKE': email,
       'mapped.user_id': null,
     });
 
@@ -531,6 +535,29 @@ const mapUserWithParticipant = async (userId, participantId) =>
     participant_id: participantId,
   });
 
+const getParticipantByIdWithStatus = async ({ id, userId }) =>
+  dbClient.db[collections.PARTICIPANTS]
+    .join({
+      currentStatuses: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'id',
+          current: true,
+        },
+      },
+      user: {
+        type: 'INNER',
+        relation: collections.USER_PARTICIPANT_MAP,
+        decomposeTo: 'object',
+        on: {
+          participant_id: 'id',
+          user_id: userId,
+        },
+      },
+    })
+    .find({ id, 'user.user_id': userId });
+
 module.exports = {
   parseAndSaveParticipants,
   getParticipants,
@@ -544,4 +571,6 @@ module.exports = {
   createParticipantUserMap,
   getParticipantsForUser,
   mapUserWithParticipant,
+  getParticipantByIdWithStatus,
+  withdrawParticipant,
 };

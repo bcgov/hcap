@@ -46,6 +46,9 @@ const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 const keycloak = require('./keycloak.js');
 
+// Routes
+const participantUserRoute = require('./routes/participant-user');
+
 const apiBaseUrl = '/api/v1';
 const app = express();
 
@@ -84,6 +87,9 @@ app.use(
 app.use(keycloak.expressMiddleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
+
+// Applying router handlers
+app.use(`${apiBaseUrl}/participant-user`, participantUserRoute);
 
 // Return client info for Keycloak realm for the current environment
 app.get(`${apiBaseUrl}/keycloak-realm-client-info`, (req, res) =>
@@ -264,7 +270,12 @@ app.get(
 
 app.get(
   `${apiBaseUrl}/participant`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+  keycloak.allowRolesMiddleware(
+    'health_authority',
+    'ministry_of_health',
+    'employer',
+    'participant'
+  ),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantQuerySchema, req.query);

@@ -5,6 +5,7 @@ const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
 const {
   getParticipantsForUser,
   getParticipantByIdWithStatus,
+  withdrawParticipant,
 } = require('../services/participants');
 
 // Router
@@ -36,7 +37,7 @@ router.get(
   })
 );
 
-// Participants
+// Participants with id
 router.get(
   '/participant/:id',
   asyncMiddleware(async (req, resp) => {
@@ -51,6 +52,29 @@ router.get(
     });
 
     resp.status(200).json(participants);
+  })
+);
+
+// Update withdraw
+router.post(
+  '/participant/:id/withdraw',
+  asyncMiddleware(async (req, res) => {
+    const { user_id: userId } = req.user;
+    const { id } = req.params;
+    const participants = await getParticipantByIdWithStatus({ id, userId });
+    if (participants.length > 0) {
+      const participant = participants[0];
+      const isHired = participant.currentStatuses?.some(
+        (statusObj) => statusObj.status === 'hired'
+      );
+      // eslint-disable-next-line  no-unused-vars
+      const r = isHired
+        ? await withdrawParticipant(participant)
+        : res.status(422).send('Already Hired');
+      res.status(200).send('Success');
+    } else {
+      res.status(422).send(`No expression of interest with id: ${id}`);
+    }
   })
 );
 

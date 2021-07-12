@@ -524,13 +524,49 @@ const getParticipantsForUser = async (userId, email) => {
   }));
 };
 
+const getParticipantStatusesForUser = async (userId) => {
+  const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]
+    .join({
+      mapped: {
+        type: 'LEFT OUTER',
+        relation: collections.USER_PARTICIPANT_MAP,
+        on: {
+          participant_id: 'id',
+          user_id: userId,
+        },
+      },
+    })
+    .find({
+      'mapped.user_id': userId,
+    });
+  console.log(participants);
+  return participants;
+};
+
 const mapUserWithParticipant = async (userId, participantId) =>
   dbClient.db[collections.USER_PARTICIPANT_MAP].save({
     user_id: userId,
     participant_id: participantId,
   });
 
+const getParticipantsStatusById = async (participant_id, peoiId) => {
+  console.log(participant_id, peoiId);
+  return await dbClient.db[collections.PARTICIPANTS_STATUS].find({
+    participant_id,
+    id: peoiId,
+  });
+};
+
+const getParticipantUserMapByUserId = async (user_id) => {
+  return dbClient.db[collections.USER_PARTICIPANT_MAP].find({
+    user_id,
+  });
+};
+
 module.exports = {
+  getParticipantStatusesForUser,
+  getParticipantUserMapByUserId,
+  getParticipantsStatusById,
   parseAndSaveParticipants,
   getParticipants,
   getHiredParticipantsBySite,

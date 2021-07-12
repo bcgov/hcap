@@ -80,6 +80,8 @@ class Keycloak {
           isHA: roles.includes('health_authority'),
           isSuperUser: roles.includes('superuser'),
           isMoH: roles.includes('ministry_of_health'),
+          isParticipant: roles.includes('participant'),
+          userId: content.user_id || undefined,
         };
         next();
       } catch (error) {

@@ -18,6 +18,9 @@ const {
   confirmParticipantInterest,
   validateConfirmationId,
   getParticipantsForUser,
+  getParticipantUserMapByUserId,
+  getParticipantsStatusById,
+  getParticipantStatusesForUser,
 } = require('./services/participants.js');
 const {
   getEmployers,
@@ -755,6 +758,32 @@ app.post(
     return res.status(201).json({});
   })
 );
+app.get(
+  `${apiBaseUrl}/user/peois`,
+  keycloak.allowRolesMiddleware('participant'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const userParticipantMapRecord = await getParticipantUserMapByUserId(req.hcapUserInfo.userId);
+    console.log(userParticipantMapRecord);
+    console.log(req.query.id);
+    const result = await getParticipantsStatusById(
+      userParticipantMapRecord[0].participant_id,
+      req.query.id
+    );
+    console.log(result);
+    return res.json({ hello: 'world' });
+  })
+);
+
+app.get(
+  `${apiBaseUrl}/user/peois`,
+  keycloak.allowRolesMiddleware('participant'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const result = await getParticipantStatusesForUser(req.hcapUserInfo.user_id);
+    return res.json(result);
+  })
+);
 
 // Get user info from token
 app.get(
@@ -772,14 +801,22 @@ app.get(
   })
 );
 
-app.get(`${apiBaseUrl}/user/peoi`,
-  keycloak.allowRolesMiddleware('pending'),
-  keycloak.getUserInfoMiddleware(), 
-  asyncMiddleware(async (req,res)=>{
-    console.log(req.query)
-    return res.json({hello:"world"})
+app.get(
+  `${apiBaseUrl}/user/peoi`,
+  keycloak.allowRolesMiddleware('participant'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const userParticipantMapRecord = await getParticipantUserMapByUserId(req.hcapUserInfo.userId);
+    console.log(userParticipantMapRecord);
+    console.log(req.query.id);
+    const result = await getParticipantsStatusById(
+      userParticipantMapRecord[0].participant_id,
+      req.query.id
+    );
+    console.log(result);
+    return res.json({ hello: 'world' });
   })
-)
+);
 
 // Version number
 app.get(`${apiBaseUrl}/version`, (req, res) => res.json({ version: process.env.VERSION }));

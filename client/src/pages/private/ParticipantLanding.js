@@ -3,15 +3,14 @@ import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import {Button} from '../../components/generic/Button'
+import { Button } from '../../components/generic/Button';
 import { useHistory } from 'react-router-dom';
-
 
 import { makeStyles } from '@material-ui/core/styles';
 import store from 'store';
 import Typography from '@material-ui/core/Typography';
 import { Page } from '../../components/generic';
-import { API_URL,Routes } from '../../constants';
+import { API_URL, Routes } from '../../constants';
 
 const useStyles = makeStyles({
   root: {
@@ -46,29 +45,47 @@ const getParticipants = async () => {
   }
 };
 
+const getParticipantPeois = async () => {
+  try {
+    const response = await fetch(`${API_URL}/api/v1/user/peois`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+    });
+    const resjson = response.json();
+    return resjson;
+  } catch {
+    return [];
+  }
+};
+
 export default () => {
   const [interests, setInterests] = useState([]);
   const history = useHistory();
   const classes = useStyles();
   useEffect(() => {
-    const ue = async ()=>{
-      const participants = await  getParticipants()
-      console.log(participants);
-      setInterests(participants)
-
-    }
-    ue()
+    const ue = async () => {
+      const participants = await getParticipants();
+      const peois = await getParticipantPeois();
+      console.log(peois);
+      setInterests(participants);
+    };
+    ue();
   }, [setInterests]);
-
 
   return (
     <Page>
-      <Grid justify = {'center'}container spacing={1}>
-        {!interests.length && 
-          <Grid item xs= {12} >
-            <Typography>It seems you have not submitted an expression of interest. Please submit one!</Typography>
+      <Grid justify={'center'} container spacing={1}>
+        {!interests.length && (
+          <Grid item xs={12}>
+            <Typography>
+              It seems you have not submitted an expression of interest. Please submit one!
+            </Typography>
           </Grid>
-        }
+        )}
         {interests.map((item, index) => (
           <Grid item key={index} xs={3}>
             <Card className={classes.root}>
@@ -87,10 +104,10 @@ export default () => {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button 
-                color={'primary'} 
-                text= {'View PEOI'}
-                onClick= {()=>history.push(`${Routes.PeoiDetail}?id=${item.id}`)}
+                <Button
+                  color={'primary'}
+                  text={'View PEOI'}
+                  onClick={() => history.push(`${Routes.PeoiDetail}?id=${item.id}`)}
                 />
               </CardActions>
             </Card>

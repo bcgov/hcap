@@ -26,7 +26,7 @@ const EmployerConfirmation = lazy(() => import('../pages/public/EmployerConfirma
 const KeycloakRedirect = lazy(() => import('../pages/public/Keycloak'));
 const ConfirmInterest = lazy(() => import('../pages/public/ConfirmInterest'));
 const ParticipantLanding = lazy(() => import('../pages/private/ParticipantLanding'));
-const PeoiDetail = lazy(()=>import('../pages/private/PEOIDetails'))
+const PeoiDetail = lazy(() => import('../pages/private/PEOIDetails'));
 const PrivateRoute = ({ component: Component, path, ...rest }) => {
   const [keycloak] = useKeycloak();
   return (

@@ -1,11 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
-<<<<<<< HEAD
 import { Box, Typography } from '@material-ui/core';
-=======
-import { Box } from '@material-ui/core';
->>>>>>> 7e892fc (withdrawal tab is available on site details view)
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -37,6 +33,7 @@ let columnIDs = [
 ];
 
 const tabs = SiteDetailTabContext.tabs;
+
 const CustomTabs = withStyles((theme) => ({
   root: {
     borderBottom: `1px solid ${theme.palette.gray.secondary}`,
@@ -127,7 +124,6 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
   }, [dispatch, roles]);
 
   const [orderBy, setOrderBy] = useState(columns[4]?.id || 'participantName');
-
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');

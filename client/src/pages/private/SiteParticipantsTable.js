@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
 import { Box } from '@material-ui/core';
@@ -8,7 +8,7 @@ import Tab from '@material-ui/core/Tab';
 import store from 'store';
 import { Table, Button, Dialog } from '../../components/generic';
 import { getDialogTitle } from '../../utils';
-import { AuthContext } from '../../providers';
+import { AuthContext, TabContext } from '../../providers';
 import {
   ToastStatus,
   API_URL,
@@ -36,7 +36,7 @@ let withdrawnColumns = [
   { id: 'reason', name: 'Reason' },
 ];
 
-let columns = hiredColumns;
+const tabs = ['Hired Participants', 'Withdrawn Participants'];
 
 const CustomTabs = withStyles((theme) => ({
   root: {
@@ -80,7 +80,7 @@ export default ({ siteId, onArchiveParticipantAction }) => {
   const [fetchedWithdrawnRows, setFetchedWithdrawnRows] = useState([]);
   const { auth } = AuthContext.useAuth();
   const { openToast } = useToast();
-  const roles = auth.user?.roles || [];
+  const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
   const isHA = roles.includes('health_authority');
   if (!isHA) {
     hiredColumns = hiredColumns.filter((col) => col.id !== 'archive');
@@ -90,18 +90,27 @@ export default ({ siteId, onArchiveParticipantAction }) => {
     setActionMenuParticipant(null);
   };
 
-  const tabs = ['Hired Participants', 'Withdrawn Participants'];
-  const [selectedTab, setSelectedTab] = useState(tabs[0]);
+  const {
+    state: { columns, selectedTab },
+    dispatch,
+  } = TabContext.useTabContext();
+
+  useEffect(() => {
+    dispatch({
+      type: TabContext.types.SELECT_TAB,
+      payload: { tab: tabs[0], roles },
+    });
+  }, [dispatch, roles]);
 
   const [orderBy, setOrderBy] = useState(columns[4]?.id || 'participantName');
 
-  useEffect(() => {
-    if (selectedTab === 'Hired Participants') {
-      columns = hiredColumns;
-    } else {
-      columns = withdrawnColumns;
-    }
-  }, [selectedTab]);
+  // useEffect(() => {
+  //   if (selectedTab === 'Hired Participants') {
+  //     columns = hiredColumns;
+  //   } else {
+  //     columns = withdrawnColumns;
+  //   }
+  // }, [selectedTab]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -258,7 +267,12 @@ export default ({ siteId, onArchiveParticipantAction }) => {
         <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
           <CustomTabs
             value={selectedTab || false}
-            onChange={(_, property) => setSelectedTab(property)}
+            onChange={(_, property) =>
+              dispatch({
+                type: TabContext.types.SELECT_TAB,
+                payload: { tab: property, roles },
+              })
+            }
           >
             {
               tabs.map((key) => (

@@ -101,9 +101,6 @@ app.use(keycloak.expressMiddleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-// Applying router handlers
-app.use(`${apiBaseUrl}/participant-user`, participantUserRoute);
-
 // Return client info for Keycloak realm for the current environment
 app.get(`${apiBaseUrl}/keycloak-realm-client-info`, (req, res) =>
   res.json(keycloak.RealmInfoFrontend())
@@ -807,6 +804,8 @@ app.get(
     res.status(200).json(health);
   })
 );
+// Applying router handlers
+app.use(`${apiBaseUrl}/participant-user`, participantUserRoute);
 
 // Client app
 if (process.env.NODE_ENV === 'production') {

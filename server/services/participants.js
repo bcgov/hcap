@@ -1,3 +1,4 @@
+const assert = require('assert');
 const readXlsxFile = require('node-xlsx').default;
 const { validate, ParticipantBatchSchema, isBooleanValue } = require('../validation.js');
 const { dbClient, collections } = require('../db');
@@ -132,6 +133,26 @@ const withdrawParticipant = async (participantInfo) => {
 
   // eslint-disable-next-line no-use-before-define
   return updateParticipant(participant);
+};
+
+const createChangeHistory = (participantBody, changes) => {
+  const newBody = { ...participantBody };
+  const changeDetails = Object.keys(changes).reduce((target, key) => {
+    target.push({
+      field: key,
+      from: participantBody[key] || 'none',
+      to: changes[key],
+    });
+    return [...target];
+  }, []);
+  const newHistory = {
+    timestamp: new Date(),
+    changes: [...changeDetails],
+  };
+  newBody.history = participantBody.history
+    ? [newHistory, ...participantBody.history]
+    : [newHistory];
+  return newBody;
 };
 
 const updateParticipant = async (participantInfo) => {
@@ -470,8 +491,9 @@ const makeParticipant = async (participantJson) => {
   return res;
 };
 
-const createParticipantUserMap = async (userId, email, tnx) => {
-  const participants = await tnx[collections.PARTICIPANTS]
+const createParticipantUserMap = async (userId, email, transaction) => {
+  assert(email, 'Email must be a non empty string');
+  const participants = await transaction[collections.PARTICIPANTS]
     .join({
       mapped: {
         type: 'LEFT OUTER',
@@ -491,7 +513,7 @@ const createParticipantUserMap = async (userId, email, tnx) => {
   if (participants.length === 0) return [];
   await Promise.all(
     participants.map((participant) =>
-      tnx[collections.USER_PARTICIPANT_MAP].save({
+      transaction[collections.USER_PARTICIPANT_MAP].save({
         user_id: userId,
         participant_id: participant.id,
       })
@@ -573,4 +595,5 @@ module.exports = {
   mapUserWithParticipant,
   getParticipantByIdWithStatus,
   withdrawParticipant,
+  createChangeHistory,
 };

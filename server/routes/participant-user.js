@@ -6,7 +6,13 @@ const {
   getParticipantsForUser,
   getParticipantByIdWithStatus,
   withdrawParticipant,
+  updateParticipant,
+  createChangeHistory,
 } = require('../services/participants');
+
+const { patchObject } = require('../utils');
+
+const { UserParticipantEditSchema, validate } = require('../validation');
 
 // Router
 const router = express.Router();
@@ -19,6 +25,7 @@ router.use(applyMiddleware(keycloak.allowRolesMiddleware('participant')));
 // Controller
 
 // Participants
+
 router.get(
   '/participants',
   asyncMiddleware(async (req, res) => {
@@ -47,11 +54,41 @@ router.get(
 
     logger.info({
       action: 'user_participant_get',
-      performed_by: userId,
+      performed_by: {
+        userId,
+      },
       id: participants.length > 0 ? participants[0].id : '',
     });
 
     resp.status(200).json(participants);
+  })
+);
+
+// Update user info
+const patchableFields = ['phoneNumber', 'postalCode', 'postalCodeFsa'];
+router.patch(
+  '/participant/:id',
+  asyncMiddleware(async (req, res) => {
+    const { user_id: userId } = req.user;
+    const { id } = req.params;
+    const changes = { ...patchObject(req.body, patchableFields), id };
+    await validate(UserParticipantEditSchema, changes);
+    const participants = await getParticipantByIdWithStatus({ id, userId });
+    if (participants.length > 0) {
+      const participant = participants[0];
+      const participantBody = createChangeHistory(participant.body, changes);
+      const result = await updateParticipant({ ...participantBody, id });
+      logger.info({
+        action: 'user_participant_patch',
+        performed_by: {
+          userId,
+        },
+        id,
+      });
+      res.status(200).json(result);
+    } else {
+      res.status(422).send(`No expression of interest with id: ${id}`);
+    }
   })
 );
 
@@ -68,10 +105,19 @@ router.post(
         (statusObj) => statusObj.status === 'hired'
       );
       // eslint-disable-next-line  no-unused-vars
-      const _ = isHired
-        ? await withdrawParticipant(participant)
-        : res.status(422).send('Already Hired');
-      res.status(200).send('Success');
+      if (isHired) {
+        await withdrawParticipant({ ...participant.body, id });
+        logger.info({
+          action: 'user_participant_withdraw',
+          performed_by: {
+            userId,
+          },
+          id: participant.id,
+        });
+        res.status(200).send('Success');
+      } else {
+        res.status(422).send('Already Hired');
+      }
     } else {
       res.status(422).send(`No expression of interest with id: ${id}`);
     }

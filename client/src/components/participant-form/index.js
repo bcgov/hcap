@@ -4,7 +4,13 @@ import Grid from '@material-ui/core/Grid';
 import { Formik, Form as FormikForm } from 'formik';
 import { useHistory } from 'react-router-dom';
 
-import { API_URL, ParticipantFormSchema, Routes, ToastStatus } from '../../constants';
+import {
+  API_URL,
+  ParticipantFormSchema,
+  ParticipantEditFormSchema,
+  Routes,
+  ToastStatus,
+} from '../../constants';
 import { useToast } from '../../hooks';
 import { scrollUp } from '../../utils';
 
@@ -12,7 +18,14 @@ import { Button } from '../generic';
 import { Summary } from './Summary';
 import { Fields } from './Fields';
 
-export const Form = ({ initialValues, isDisabled, hideSummery }) => {
+export const Form = ({
+  initialValues,
+  isDisabled,
+  hideSummery,
+  onSubmit,
+  enableFields,
+  editMode,
+}) => {
   const history = useHistory();
   const { openToast } = useToast();
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -31,8 +44,11 @@ export const Form = ({ initialValues, isDisabled, hideSummery }) => {
       };
 
   const handleSubmit = async (values) => {
+    if (onSubmit) {
+      onSubmit(values);
+      return;
+    }
     setSubmitLoading(true);
-
     const response = await fetch(`${API_URL}/api/v1/participants`, {
       method: 'POST',
       headers: { Accept: 'application/json', 'Content-type': 'application/json' },
@@ -68,7 +84,7 @@ export const Form = ({ initialValues, isDisabled, hideSummery }) => {
     >
       <Formik
         initialValues={formValues}
-        validationSchema={ParticipantFormSchema}
+        validationSchema={editMode ? ParticipantEditFormSchema : ParticipantFormSchema}
         onSubmit={handleSubmit}
       >
         {({ errors, submitForm, setTouched, values }) => (
@@ -78,7 +94,7 @@ export const Form = ({ initialValues, isDisabled, hideSummery }) => {
             </Box>
 
             <Box pt={2} pb={4} pl={2} pr={2}>
-              <Fields isDisabled={isDisabled} hideHelp={hideSummery} />
+              <Fields isDisabled={isDisabled} hideHelp={hideSummery} enableFields={enableFields} />
             </Box>
 
             {!isDisabled && (

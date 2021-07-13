@@ -23,4 +23,10 @@ const createRows = (dataRows, columnMap) => {
   return rows;
 };
 
-module.exports = { createRows, verifyHeaders };
+const patchObject = (source, patchableFields) =>
+  Object.keys(source).reduce(
+    (target, key) => (patchableFields.includes(key) ? { ...target, [key]: source[key] } : target),
+    {}
+  );
+
+module.exports = { createRows, verifyHeaders, patchObject };

@@ -16,6 +16,7 @@ export default Object.freeze({
   // Participant Private routes
   ParticipantLanding: '/participant-landing',
   ParticipantEOI: '/participant-eoi/:id',
+  ParticipantEOIEdit: '/participant-eoi/:id/edit',
 
   // Employer Private routes
   Admin: '/admin',

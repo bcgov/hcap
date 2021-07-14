@@ -40,7 +40,6 @@ export const Fields = ({ isDisabled, hideHelp, enableFields }) => {
   const [isCollectionNoticeExpanded, setCollectionNoticeExpanded] = useState(
     window.innerWidth > 750
   );
-  console.log(`${isDisabled}`);
   const checkFieldDisability = (key) =>
     isDisabled || (enableFields ? !enableFields.includes(key) : false);
   return (

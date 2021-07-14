@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid, Button } from '@material-ui/core';
-import { Redirect, useParams, useLocation } from 'react-router-dom';
+import { Redirect, useParams, useLocation, useHistory } from 'react-router-dom';
 import { red } from '@material-ui/core/colors';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
 import store from 'store';
 import { Routes, ToastStatus } from '../../constants';
 
 import { Page, Alert } from '../../components/generic';
 import { Form } from '../../components/participant-form';
 import { API_URL } from '../../constants';
-import { useQuery, useToast } from '../../hooks';
+import { useToast } from '../../hooks';
+import { Dialog } from '../../components/generic';
 
 const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
 
@@ -33,17 +36,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-
-const getForm = ({ isDisabled, data, onFormSubmit }) => (
-  <Form
-    initialValues={data}
-    isDisabled={isDisabled}
-    hideSummery={true}
-    enableFields={['phoneNumber', 'postalCode', 'consent']}
-    onSubmit={onFormSubmit}
-    editMode={true}
-  />
-);
 
 // Helper methods
 const fetchParticipant = async (id) => {
@@ -87,30 +79,45 @@ const updateParticipant = async (values, id) => {
   return resp.ok;
 };
 
+const withdrawParticipant = async (id) => {
+  const resp = await fetch(`${rootUrl}/${id}/withdraw`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({}),
+  });
+  return resp.ok;
+};
+
 const isHiredParticipant = (participant) =>
   participant.currentStatuses?.some((statusObject) => statusObject.status === 'hired');
 
 const isWithdrawn = (participant) => participant.body?.interested === 'withdrawn';
 
+//TODO: Updating disability status of Form is not working using same component, need more investigation on Formik FastField, For now using different route with same component
 export default () => {
   const { id } = useParams();
-  const query = useQuery();
   const location = useLocation();
-  const edit = query.get('edit');
+  const pathName = location.pathname;
   const { openToast } = useToast();
   const classes = useStyles();
+  const history = useHistory();
   // States
   const [participant, setParticipant] = useState(null);
   const [loading, setLoading] = useState(false);
   const [disableWithdraw, setDisableWithdraw] = useState(false);
-  const enableEdit = edit === 'true';
+  const [openWithdraw, setOpenWithdraw] = useState(false);
+  const enableEdit = pathName.includes('edit');
 
   // Hooks
   useEffect(() => {
     setLoading(true);
     fetchParticipant(id).then((participant) => {
       setLoading(false);
-      setDisableWithdraw(isHiredParticipant(participant) && !isWithdrawn(participant));
+      setDisableWithdraw(isHiredParticipant(participant) || isWithdrawn(participant));
       setParticipant(participant);
     });
   }, [id, setLoading, setParticipant, setDisableWithdraw]);
@@ -133,11 +140,54 @@ export default () => {
     }
   };
 
+  const onEdit = () => {
+    const pathToPush = enableEdit ? pathName.split('/edit')[0] : `${pathName}/edit`;
+    history.push(pathToPush);
+  };
+
+  const onClose = () => {
+    setOpenWithdraw(false);
+  };
+
+  const onConfirm = async () => {
+    setOpenWithdraw(false);
+    setLoading(true);
+    const success = await withdrawParticipant(id);
+    setLoading(false);
+    if (success) {
+      openToast({
+        status: ToastStatus.Success,
+        message: 'Withdraw success',
+      });
+      setDisableWithdraw(true);
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: 'Unable to withdraw',
+      });
+    }
+  };
+
   // View
   if (!id) return <Redirect to={Routes.ParticipantLanding} />;
   return (
     <div id='participant-view'>
       <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
+        <Dialog title='Confirm Withdraw' open={openWithdraw} onClose={onClose}>
+          <DialogContent>
+            <Typography variant='subtitle2'>
+              Are you want to withdraw expression of interest from HCAP? Please Confirm.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onClose} color='primary'>
+              Cancel
+            </Button>
+            <Button onClick={onConfirm} color='primary'>
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
         {loading && (
           <div className={classes.root}>
             <LinearProgress />
@@ -149,29 +199,36 @@ export default () => {
               <Grid item xs={6}>
                 <Typography variant='h4'>Participant Express of Interest</Typography>
               </Grid>
-              <Grid item xs={2}>
-                <Button
-                  variant='contained'
-                  onClick={() => {
-                    // TODO: History push is not working possibly want some more investigation
-                    if (enableEdit) window.location.href = `${location.pathname}`;
-                    else window.location.href = `${location.pathname}?edit=true`;
-                  }}
-                >
-                  {!enableEdit ? 'Edit Info' : 'Done Edit'}
-                </Button>
-              </Grid>
-              <Grid item xs={4}>
-                <DeleteButton disabled={disableWithdraw} variant='contained' color='primary'>
-                  Withdraw From the Program
-                </DeleteButton>
+              <Grid item xs={6}>
+                <Grid container spacing={2} justify='flex-end'>
+                  <Grid item>
+                    <Button variant='contained' onClick={onEdit}>
+                      {!enableEdit ? 'Edit Info' : 'Done Edit'}
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <DeleteButton
+                      disabled={disableWithdraw}
+                      variant='contained'
+                      color='primary'
+                      onClick={() => setOpenWithdraw(true)}
+                    >
+                      Withdraw From the Program
+                    </DeleteButton>
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
             <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
               {/** Form */}
-              {enableEdit
-                ? getForm({ data: participant.body, isDisabled: false, onFormSubmit })
-                : getForm({ data: participant.body, isDisabled: true, onFormSubmit })}
+              <Form
+                initialValues={participant.body}
+                isDisabled={!enableEdit}
+                hideSummery={true}
+                enableFields={['phoneNumber', 'postalCode', 'consent']}
+                onSubmit={onFormSubmit}
+                editMode={true}
+              />
             </Grid>
           </Grid>
         )}

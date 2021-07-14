@@ -104,8 +104,7 @@ router.post(
       const isHired = participant.currentStatuses?.some(
         (statusObj) => statusObj.status === 'hired'
       );
-      // eslint-disable-next-line  no-unused-vars
-      if (isHired) {
+      if (!isHired && !['no', 'withdrawn'].includes(participant.body?.interested)) {
         await withdrawParticipant({ ...participant.body, id });
         logger.info({
           action: 'user_participant_withdraw',
@@ -114,9 +113,9 @@ router.post(
           },
           id: participant.id,
         });
-        res.status(200).send('Success');
+        res.status(200).send('OK');
       } else {
-        res.status(422).send('Already Hired');
+        res.status(422).send('Already Hired or Withdrawn');
       }
     } else {
       res.status(422).send(`No expression of interest with id: ${id}`);

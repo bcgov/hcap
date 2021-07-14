@@ -56,34 +56,6 @@ export default ({ match }) => {
     fetchDetails(id);
   }, [id]);
 
-  const fieldsLabelMap = {
-    'Site Contact': {
-      'First Name': 'siteContactFirstName',
-      'Last Name': 'siteContactLastName',
-      'Phone Number': 'siteContactPhone',
-      'Email Address': 'siteContactEmail',
-    },
-    'Operator Contact': {
-      'First Name': 'operatorContactFirstName',
-      'Last Name': 'operatorContactLastName',
-      'Phone Number': 'operatorPhone',
-      'Email Address': 'operatorEmail',
-    },
-    'Site Info': {
-      'Site Name': 'siteName',
-      'Business Name': 'registeredBusinessName',
-      'Street Address': 'address',
-      City: 'city',
-      'Postal Code': 'postalCode',
-      Region: 'healthAuthority',
-    },
-    'Positions Overview': {
-      Allocation: 'allocation',
-      'HCAP Hires': 'hcapHires',
-      'Non-HCAP Hires': 'nonHcapHires',
-    },
-  };
-
   const defaultOnClose = () => {
     setActiveModalForm(null);
   };
@@ -191,40 +163,9 @@ export default ({ match }) => {
                     </Box>
                   ) : null}
                 </Box>
-                <Grid container>
-                  {Object.keys(fieldsLabelMap).map((title) => (
-                    <Grid key={title} item xs={12} sm={6} xl={3} style={{ marginBottom: 40 }}>
-                      <Box pr={2} pl={2}>
-                        <Box pb={2}>
-                          <Typography variant='subtitle1'>
-                            <b>{title}</b>
-                          </Typography>
-                        </Box>
-                        {Object.keys(fieldsLabelMap[title]).map((subTitle) => (
-                          <Grid key={subTitle} container style={{ marginBottom: 5 }}>
-                            <Grid item xs={12}>
-                              <Box pr={4} pb={1}>
-                                <Typography variant='body1'>
-                                  <b>{subTitle}</b>
-                                </Typography>
-                                <Typography variant='body1'>
-                                  {site[fieldsLabelMap[title][subTitle]]}
-                                </Typography>
-                              </Box>
-                            </Grid>
-                          </Grid>
-                        ))}
-                      </Box>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
-              <Box pl={4}>
-                <Typography variant='subtitle1'>
-                  <b>Hired Participants</b>
-                </Typography>
               </Box>
               <SiteParticipantsTable
+                id={id}
                 siteId={site.siteId}
                 onArchiveParticipantAction={() => {
                   setSite({});

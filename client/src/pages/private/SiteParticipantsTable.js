@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -9,6 +9,7 @@ import store from 'store';
 import { Table, Button, Dialog } from '../../components/generic';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, TabContext } from '../../providers';
+import { fieldsLabelMap } from '../../constants';
 import {
   ToastStatus,
   API_URL,
@@ -20,23 +21,18 @@ import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import moment from 'moment';
 
-let hiredColumns = [
+let columnIDs = [
   { id: 'participantId', name: 'ID' },
   { id: 'participantName', name: 'Name' },
   { id: 'hiredDate', name: 'Hire Date' },
   { id: 'startDate', name: 'Start Date' },
   { id: 'nonHCAP', name: 'Position' },
   { id: 'archive', name: 'Archive' },
-];
-
-let withdrawnColumns = [
-  { id: 'participantId', name: 'ID' },
-  { id: 'participantName', name: 'Name' },
   { id: 'withdrawnDate', name: 'Withdrawn Date' },
   { id: 'reason', name: 'Reason' },
 ];
 
-const tabs = ['Hired Participants', 'Withdrawn Participants'];
+const tabs = TabContext.tabs;
 
 const CustomTabs = withStyles((theme) => ({
   root: {
@@ -69,7 +65,23 @@ const CustomTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-export default ({ siteId, onArchiveParticipantAction }) => {
+const fetchDetails = async (id) => {
+  const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+    },
+    method: 'GET',
+  });
+
+  if (response.ok) {
+    const site = await response.json();
+    return site;
+  } else {
+    return {};
+  }
+};
+
+export default ({ id, siteId, onArchiveParticipantAction }) => {
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
@@ -81,19 +93,28 @@ export default ({ siteId, onArchiveParticipantAction }) => {
   const { auth } = AuthContext.useAuth();
   const { openToast } = useToast();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
-  const isHA = roles.includes('health_authority');
-  if (!isHA) {
-    hiredColumns = hiredColumns.filter((col) => col.id !== 'archive');
-  }
   const defaultOnClose = () => {
     setActiveModalForm(null);
     setActionMenuParticipant(null);
   };
 
   const {
-    state: { columns, selectedTab },
+    state: { columns, selectedTab, site },
     dispatch,
   } = TabContext.useTabContext();
+
+  useEffect(() => {
+    dispatch({
+      type: TabContext.types.LOAD_SITE,
+      payload: {},
+    });
+    fetchDetails(id).then((response) => {
+      dispatch({
+        type: TabContext.types.UPDATE_SITE,
+        payload: { site: response },
+      });
+    });
+  }, [dispatch, id]);
 
   useEffect(() => {
     dispatch({
@@ -102,15 +123,12 @@ export default ({ siteId, onArchiveParticipantAction }) => {
     });
   }, [dispatch, roles]);
 
-  const [orderBy, setOrderBy] = useState(columns[4]?.id || 'participantName');
-
   // useEffect(() => {
-  //   if (selectedTab === 'Hired Participants') {
-  //     columns = hiredColumns;
-  //   } else {
-  //     columns = withdrawnColumns;
-  //   }
-  // }, [selectedTab]);
+  //   console.log('this is the site');
+  //   console.log(site);
+  // }, [site]);
+
+  const [orderBy, setOrderBy] = useState(columns[4]?.id || 'participantName');
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -142,7 +160,7 @@ export default ({ siteId, onArchiveParticipantAction }) => {
             nonHCAP: row.data.nonHcapOpportunity,
           };
 
-          const mappedRow = hiredColumns.concat(withdrawnColumns).reduce(
+          const mappedRow = columnIDs.reduce(
             (accumulator, column) => ({
               ...accumulator,
               [column.id]: values[column.id],
@@ -194,7 +212,7 @@ export default ({ siteId, onArchiveParticipantAction }) => {
               nonHCAP: row.data.nonHcapOpportunity,
             };
 
-            const mappedRow = hiredColumns.concat(withdrawnColumns).reduce(
+            const mappedRow = columnIDs.reduce(
               (accumulator, column) => ({
                 ...accumulator,
                 [column.id]: values[column.id],
@@ -280,54 +298,84 @@ export default ({ siteId, onArchiveParticipantAction }) => {
               )) // Tab component with tab name as value
             }
           </CustomTabs>
-          <Table
-            columns={columns}
-            order={order}
-            orderBy={orderBy}
-            onRequestSort={handleRequestSort}
-            rows={sort(rows)}
-            isLoading={isLoadingData}
-            renderCell={(columnId, row) => {
-              if (columnId === 'phoneNumber') {
-                const num = String(row['phoneNumber']);
-                return `(${num.substr(0, 3)}) ${num.substr(3, 3)}-${num.substr(6, 4)}`;
-              }
-              if (columnId === 'status') {
-                const status = String(row['status']);
-                return `${status.substring(0, 1).toUpperCase()}${status.substring(1)}`;
-              }
-              if (columnId === 'nonHCAP') {
-                return row[columnId] ? 'Non-HCAP' : 'HCAP';
-              }
-              if (columnId === 'archive') {
-                return (
-                  <Button
-                    onClick={async () => {
-                      // Get data from row.participantId
-                      const response = await fetch(
-                        `${API_URL}/api/v1/participant?id=${row.participantId}`,
-                        {
-                          headers: {
-                            Accept: 'application/json',
-                            'Content-type': 'application/json',
-                            Authorization: `Bearer ${store.get('TOKEN')}`,
-                          },
-                          method: 'GET',
-                        }
-                      );
-                      const participant = await response.json();
-                      setActionMenuParticipant(participant[0]);
-                      setActiveModalForm('archive');
-                    }}
-                    variant='outlined'
-                    size='small'
-                    text='Archive'
-                  />
-                );
-              }
-              return row[columnId];
-            }}
-          />
+          {selectedTab === 'Site Details' ? (
+            <Grid container>
+              {Object.keys(fieldsLabelMap).map((title) => (
+                <Grid key={title} item xs={12} sm={6} xl={3} style={{ marginBottom: 40 }}>
+                  <Box pr={2} pl={2}>
+                    <Box pb={2}>
+                      <Typography variant='subtitle1'>
+                        <b>{title}</b>
+                      </Typography>
+                    </Box>
+                    {Object.keys(fieldsLabelMap[title]).map((subTitle) => (
+                      <Grid key={subTitle} container style={{ marginBottom: 5 }}>
+                        <Grid item xs={12}>
+                          <Box pr={4} pb={1}>
+                            <Typography variant='body1'>
+                              <b>{subTitle}</b>
+                            </Typography>
+                            <Typography variant='body1'>
+                              {site[fieldsLabelMap[title][subTitle]]}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      </Grid>
+                    ))}
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Table
+              columns={columns}
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={handleRequestSort}
+              rows={sort(rows)}
+              isLoading={isLoadingData}
+              renderCell={(columnId, row) => {
+                if (columnId === 'phoneNumber') {
+                  const num = String(row['phoneNumber']);
+                  return `(${num.substr(0, 3)}) ${num.substr(3, 3)}-${num.substr(6, 4)}`;
+                }
+                if (columnId === 'status') {
+                  const status = String(row['status']);
+                  return `${status.substring(0, 1).toUpperCase()}${status.substring(1)}`;
+                }
+                if (columnId === 'nonHCAP') {
+                  return row[columnId] ? 'Non-HCAP' : 'HCAP';
+                }
+                if (columnId === 'archive') {
+                  return (
+                    <Button
+                      onClick={async () => {
+                        // Get data from row.participantId
+                        const response = await fetch(
+                          `${API_URL}/api/v1/participant?id=${row.participantId}`,
+                          {
+                            headers: {
+                              Accept: 'application/json',
+                              'Content-type': 'application/json',
+                              Authorization: `Bearer ${store.get('TOKEN')}`,
+                            },
+                            method: 'GET',
+                          }
+                        );
+                        const participant = await response.json();
+                        setActionMenuParticipant(participant[0]);
+                        setActiveModalForm('archive');
+                      }}
+                      variant='outlined'
+                      size='small'
+                      text='Archive'
+                    />
+                  );
+                }
+                return row[columnId];
+              }}
+            />
+          )}
         </Box>
       )}
       <Dialog

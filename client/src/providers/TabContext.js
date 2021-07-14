@@ -1,19 +1,22 @@
 import React, { useEffect, useReducer } from 'react';
-
-import { tabColumns } from '../constants/siteDetailsConstants';
+import { tabColumns } from '../constants';
 
 const TabContext = React.createContext();
 
 const types = {
   SELECT_TAB: 'SELECT_TAB',
+  LOAD_SITE: 'LOAD_SITE',
+  UPDATE_SITE: 'UPDATE_SITE',
 };
+
+const tabs = ['Site Details', 'Hired Participants', 'Withdrawn Participants'];
 
 const participantsReducer = (state, action) => {
   const {
     type,
-    payload: { tab, roles },
+    payload: { tab, roles, site },
   } = action;
-  const { SELECT_TAB } = types;
+  const { SELECT_TAB, LOAD_SITE, UPDATE_SITE } = types;
 
   switch (type) {
     case SELECT_TAB: {
@@ -30,6 +33,20 @@ const participantsReducer = (state, action) => {
       };
     }
 
+    case LOAD_SITE: {
+      return {
+        ...state,
+        site: {},
+      };
+    }
+
+    case UPDATE_SITE: {
+      return {
+        ...state,
+        site,
+      };
+    }
+
     default:
       return state;
   }
@@ -39,10 +56,11 @@ const participantsReducer = (state, action) => {
  * For more: https://kentcdodds.com/blog/how-to-use-react-context-effectively
  */
 
-const TabProvider = ({ selectedTab, children }) => {
+const TabProvider = ({ selectedTab, siteId, children }) => {
   const [state, dispatch] = useReducer(participantsReducer, {
     columns: [],
     selectedTab: null,
+    site: {},
   });
 
   useEffect(() => {
@@ -65,4 +83,4 @@ function useTabContext() {
   return context;
 }
 
-export { TabProvider, useTabContext, types };
+export { TabProvider, useTabContext, types, tabs };

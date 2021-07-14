@@ -22,3 +22,31 @@ export const tabColumns = {
     ],
   },
 };
+
+export const fieldsLabelMap = {
+  'Site Contact': {
+    'First Name': 'siteContactFirstName',
+    'Last Name': 'siteContactLastName',
+    'Phone Number': 'siteContactPhone',
+    'Email Address': 'siteContactEmail',
+  },
+  'Operator Contact': {
+    'First Name': 'operatorContactFirstName',
+    'Last Name': 'operatorContactLastName',
+    'Phone Number': 'operatorPhone',
+    'Email Address': 'operatorEmail',
+  },
+  'Site Info': {
+    'Site Name': 'siteName',
+    'Business Name': 'registeredBusinessName',
+    'Street Address': 'address',
+    City: 'city',
+    'Postal Code': 'postalCode',
+    Region: 'healthAuthority',
+  },
+  'Positions Overview': {
+    Allocation: 'allocation',
+    'HCAP Hires': 'hcapHires',
+    'Non-HCAP Hires': 'nonHcapHires',
+  },
+};

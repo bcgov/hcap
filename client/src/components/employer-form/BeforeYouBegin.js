@@ -77,10 +77,9 @@ const BeforeYouBegin = () => {
           </Typography>
           <Typography variant='body1' paragraph>
             <b>
-              Thank you for your interest in the Health Career Access Program. This current round of
-              submissions will be open until March 2, 2021. Your submission will be assessed and an
-              HCAP team member will be in contact with the results within two weeks of the close
-              date.
+              The Employer Expression of Interest (EOI) remains open for submissions, however intake
+              is not currently active. Any EOIs received may be considered for potential future
+              phases of the program.
             </b>
           </Typography>
           <Typography variant='body1' paragraph>

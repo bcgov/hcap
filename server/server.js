@@ -1,5 +1,6 @@
 const cors = require('cors');
 const express = require('express');
+const morgan = require('morgan');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -44,6 +45,7 @@ const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 const keycloak = require('./keycloak.js');
+const { healthCheck } = require('./services/health-check');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
@@ -80,6 +82,11 @@ app.use(
   })
 );
 
+app.use(
+  morgan(
+    ':date[iso] | :remote-addr | :remote-user | ":method :url HTTP/:http-version" | :status | :res[content-length]'
+  )
+);
 app.use(keycloak.expressMiddleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
@@ -753,6 +760,15 @@ app.get(
 
 // Version number
 app.get(`${apiBaseUrl}/version`, (req, res) => res.json({ version: process.env.VERSION }));
+
+// Health check
+app.get(
+  `${apiBaseUrl}/healthcheck`,
+  asyncMiddleware(async (req, res) => {
+    const health = await healthCheck();
+    res.status(200).json(health);
+  })
+);
 
 // Client app
 if (process.env.NODE_ENV === 'production') {

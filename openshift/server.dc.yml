@@ -175,14 +175,14 @@ objects:
               readinessProbe:
                 failureThreshold: 5
                 httpGet:
-                  path: /
+                  path: /api/v1/healthcheck
                   port: ${{SERVER_PORT}}
                 initialDelaySeconds: 15
                 periodSeconds: 15
               livenessProbe:
                 failureThreshold: 5
                 httpGet:
-                  path: /
+                  path: /api/v1/healthcheck
                   port: ${{SERVER_PORT}}
                 initialDelaySeconds: 15
                 periodSeconds: 15

@@ -1,8 +1,14 @@
 const winston = require('winston');
+const { format } = require('winston');
+const { object } = require('yup');
 require('winston-mongodb');
 
-const nodeEnv = process.env.NODE_ENV || 'development';
-winston.add(new winston.transports.Console(nodeEnv === 'test' && { silent: true }));
+const { timestamp, combine, label, printf } = format;
+
+const myFormat = printf(({ level, message, label, timestamp }) => {
+  let newMessage = typeof message === 'string' ? message : JSON.stringify(message, null, 2);
+  return `${timestamp} | [${label || 'console'}] ${level}: ${newMessage}`;
+});
 
 const dbServer = process.env.MONGO_HOST;
 const dbPort = process.env.MONGO_PORT || '27017';
@@ -20,5 +26,11 @@ if (dbServer) {
     })
   );
 }
+
+winston.add(
+  new winston.transports.Console({
+    format: combine(label({ label: 'console' }), timestamp(), myFormat),
+  })
+);
 
 module.exports = winston;

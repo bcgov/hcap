@@ -118,6 +118,19 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
 
   useEffect(() => {
     dispatch({
+      type: SiteDetailTabContext.types.LOAD_SITE,
+      payload: {},
+    });
+    fetchDetails(id).then((response) => {
+      dispatch({
+        type: SiteDetailTabContext.types.UPDATE_SITE,
+        payload: { site: response },
+      });
+    });
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    dispatch({
       type: SiteDetailTabContext.types.SELECT_TAB,
       payload: { tab: tabs[0], roles },
     });

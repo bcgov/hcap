@@ -45,23 +45,6 @@ const getParticipants = async () => {
   }
 };
 
-const getParticipantPeois = async () => {
-  try {
-    const response = await fetch(`${API_URL}/api/v1/user/peois`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const resjson = response.json();
-    return resjson;
-  } catch {
-    return [];
-  }
-};
-
 export default () => {
   const [interests, setInterests] = useState([]);
   const history = useHistory();
@@ -69,13 +52,11 @@ export default () => {
   useEffect(() => {
     const ue = async () => {
       const participants = await getParticipants();
-      const peois = await getParticipantPeois();
-      console.log(peois);
       setInterests(participants);
     };
     ue();
   }, [setInterests]);
-
+  console.log(interests)
   return (
     <Page>
       <Grid justify={'center'} container spacing={1}>
@@ -90,24 +71,30 @@ export default () => {
           <Grid item key={index} xs={3}>
             <Card className={classes.root}>
               <CardContent>
-                <Typography variant='h5' component='h2'>
+                <Typography variant='h5'>
                   {item.firstName} {item.lastName}
                 </Typography>
                 <Typography className={classes.title} color='textSecondary' gutterBottom>
-                  {item.emailAddress}
-                </Typography>
-                <Typography className={classes.pos} color='textSecondary'>
-                  Region: {item.preferredLocation}
+                  Contact Info: {item.emailAddress}
+                  <br/>
+                   {item.phoneNumber} 
                 </Typography>
                 <Typography variant='body2' component='p'>
-                  Submitted at: {item.submittedAt}
+                  Submitted at: {item.dateSubmitted}
                 </Typography>
               </CardContent>
               <CardActions>
                 <Button
                   color={'primary'}
                   text={'View PEOI'}
-                  onClick={() => history.push(`${Routes.PeoiDetail}?id=${item.id}`)}
+                  onClick={() => {
+                    // Handle case where there is no participant status associated with the PEOI
+                    if(item.latestStatus!=='No Status'){
+                      history.push(`${Routes.PeoiDetail}?participant_id=${item.participant_id}`)
+                    }else{
+                      history.push(`${Routes.PeoiDetail}?id=${item.id}`)
+                    }
+                  }}
                 />
               </CardActions>
             </Card>

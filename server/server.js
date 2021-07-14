@@ -461,7 +461,6 @@ app.get(
     }
   })
 );
-
 app.post(
   `${apiBaseUrl}/participants`,
   asyncMiddleware(async (req, res) => {
@@ -759,13 +758,13 @@ app.post(
   })
 );
 app.get(
-  `${apiBaseUrl}/user/peois`,
+  `${apiBaseUrl}/user/peoi`,
   keycloak.allowRolesMiddleware('participant'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    const userParticipantMapRecord = await getParticipantUserMapByUserId(req.hcapUserInfo.userId);
-    console.log(userParticipantMapRecord);
-    console.log(req.query.id);
+    // const userParticipantMapRecord = await getParticipantUserMapByUserId(req.hcapUserInfo.userId);
+    // console.log(userParticipantMapRecord);
+    // console.log(req.query.id);
     const result = await getParticipantsStatusById(
       userParticipantMapRecord[0].participant_id,
       req.query.id
@@ -780,8 +779,7 @@ app.get(
   keycloak.allowRolesMiddleware('participant'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    const result = await getParticipantStatusesForUser(req.hcapUserInfo.user_id);
-    return res.json(result);
+    return res.json({ hello: 'world' });
   })
 );
 

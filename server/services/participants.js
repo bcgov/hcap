@@ -500,31 +500,61 @@ const createParticipantUserMap = async (userId, email) => {
 };
 
 const getParticipantsForUser = async (userId, email) => {
-  const participants = await dbClient.db[collections.PARTICIPANTS]
-    .join({
-      mapped: {
-        type: 'LEFT OUTER',
-        relation: collections.USER_PARTICIPANT_MAP,
-        on: {
-          participant_id: 'id',
-          user_id: userId,
-        },
-      },
-    })
-    .find({
-      'mapped.user_id': userId,
-    });
+  const ids = await dbClient.db[collections.USER_PARTICIPANT_MAP].find({user_id:userId})
+  console.log(ids); 
+  const result = await dbClient.db[collections.PARTICIPANTS].join({
+    statuses :{
+      type:'FULL OUTER',
+      relation: collections.PARTICIPANTS_STATUS, 
+      on: {
+        participant_id:'id',
+        current:'true'
+      }
+    }
+  }).find({
+    id: ids.map(id=>id.participant_id),
 
-  const finalResults =
-    participants.length > 0 ? participants : await createParticipantUserMap(userId, email);
-  return finalResults.map((mappedParticipants) => ({
-    ...mappedParticipants.body,
-    id: mappedParticipants.id,
-    submittedAt: mappedParticipants.created_at,
-  }));
+  })
+  return formatParticipantStatusResults(result)
 };
+const formatParticipantStatusResults = (results)=>{
+  let formattedResults = [];
+  console.log(results)
+  results.map(result=>{
+    if(result.statuses.length>0){
+      result.statuses.forEach((status)=>{
+        formattedResults.push({
+          participant_id: result.id,
+          id:status.id,
+          firstName:result.body.firstName, 
+          lastName:result.body.lastName,
+          dateSubmitted:result.created_at, 
+          latestStatus:status.status,
+          emailAddress:result.body.emailAddress,
+          phoneNumber:result.body.phoneNumber,
+        })
+      }); 
+    }else{
+      formattedResults.push({
+        participant_id: result.id,
+        id:null,
+        firstName:result.body.firstName, 
+        lastName:result.body.lastName, 
+        latestStatus:'No Status',
+        dateSubmitted:result.created_at, 
+        emailAddress:result.body.emailAddress,
+        phoneNumber:result.body.phoneNumber,
+      })
+    }
+  })
+  console.log(formattedResults)
+  return formattedResults;
+}
 
 const getParticipantStatusesForUser = async (userId) => {
+  const userIds = await dbClient.db[collections.USER_PARTICIPANT_MAP].find({
+    userId
+  })
   const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
       mapped: {
@@ -539,7 +569,6 @@ const getParticipantStatusesForUser = async (userId) => {
     .find({
       'mapped.user_id': userId,
     });
-  console.log(participants);
   return participants;
 };
 

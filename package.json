@@ -16,7 +16,7 @@
   "devDependencies": {
     "cypress": "6.1.0",
     "cypress-dotenv": "1.2.2",
-    "cypress-keycloak": "^1.7.0",
+    "cypress-keycloak": "1.7.0",
     "dotenv": "8.2.0",
     "eslint": "7.14.0",
     "husky": "6.0.0",

@@ -7,7 +7,7 @@ import routes from '../../constants/routes';
 import { EditSiteForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { ToastStatus, EditSiteSchema, API_URL } from '../../constants';
-import { TabContext } from '../../providers';
+import { SiteDetailTabContext } from '../../providers';
 
 const SiteParticipantsTable = lazy(() => import('./SiteParticipantsTable'));
 
@@ -130,7 +130,7 @@ export default ({ match }) => {
           permittedRoles={['health_authority', 'ministry_of_health']}
           renderErrorMessage={true}
         >
-          <TabContext.TabProvider>
+          <SiteDetailTabContext.TabProvider>
             <Card>
               <Box pt={4} pb={2} pl={4} pr={4}>
                 <Box pb={4} pl={2}>
@@ -173,7 +173,7 @@ export default ({ match }) => {
                 }}
               />
             </Card>
-          </TabContext.TabProvider>
+          </SiteDetailTabContext.TabProvider>
         </CheckPermissions>
       </Page>
     </>

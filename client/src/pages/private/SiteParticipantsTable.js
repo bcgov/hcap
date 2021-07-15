@@ -8,7 +8,7 @@ import Tab from '@material-ui/core/Tab';
 import store from 'store';
 import { Table, Button, Dialog } from '../../components/generic';
 import { getDialogTitle } from '../../utils';
-import { AuthContext, TabContext } from '../../providers';
+import { AuthContext, SiteDetailTabContext } from '../../providers';
 import { fieldsLabelMap } from '../../constants';
 import {
   ToastStatus,
@@ -32,7 +32,7 @@ let columnIDs = [
   { id: 'reason', name: 'Reason' },
 ];
 
-const tabs = TabContext.tabs;
+const tabs = SiteDetailTabContext.tabs;
 
 const CustomTabs = withStyles((theme) => ({
   root: {
@@ -101,16 +101,16 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
   const {
     state: { columns, selectedTab, site },
     dispatch,
-  } = TabContext.useTabContext();
+  } = SiteDetailTabContext.useTabContext();
 
   useEffect(() => {
     dispatch({
-      type: TabContext.types.LOAD_SITE,
+      type: SiteDetailTabContext.types.LOAD_SITE,
       payload: {},
     });
     fetchDetails(id).then((response) => {
       dispatch({
-        type: TabContext.types.UPDATE_SITE,
+        type: SiteDetailTabContext.types.UPDATE_SITE,
         payload: { site: response },
       });
     });
@@ -118,7 +118,7 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
 
   useEffect(() => {
     dispatch({
-      type: TabContext.types.SELECT_TAB,
+      type: SiteDetailTabContext.types.SELECT_TAB,
       payload: { tab: tabs[0], roles },
     });
   }, [dispatch, roles]);
@@ -287,7 +287,7 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
             value={selectedTab || false}
             onChange={(_, property) =>
               dispatch({
-                type: TabContext.types.SELECT_TAB,
+                type: SiteDetailTabContext.types.SELECT_TAB,
                 payload: { tab: property, roles },
               })
             }

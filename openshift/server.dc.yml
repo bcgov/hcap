@@ -20,6 +20,10 @@ parameters:
   - name: CONFIG_VERSION
     description: The github repository version of Config (Commit SHA)
     value: default
+  - name: REPLICAS
+    description: The number of replicas of deployments
+    value: '2'
+
 objects:
   - apiVersion: v1
     kind: Route
@@ -58,7 +62,7 @@ objects:
               namespace: ${IMAGE_NAMESPACE}
           type: ImageChange
         - type: ConfigChange
-      replicas: 1
+      replicas: '${{REPLICAS}}'
       selector:
         name: ${APP_NAME}-server
       template:
@@ -169,11 +173,19 @@ objects:
                 - containerPort: '${{SERVER_PORT}}'
                   protocol: TCP
               readinessProbe:
+                failureThreshold: 5
                 httpGet:
-                  path: /
+                  path: /api/v1/healthcheck
                   port: ${{SERVER_PORT}}
                 initialDelaySeconds: 15
-                periodSeconds: 3
+                periodSeconds: 15
+              livenessProbe:
+                failureThreshold: 5
+                httpGet:
+                  path: /api/v1/healthcheck
+                  port: ${{SERVER_PORT}}
+                initialDelaySeconds: 15
+                periodSeconds: 15
               resources:
                 limits:
                   cpu: '1'

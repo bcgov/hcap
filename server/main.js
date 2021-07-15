@@ -47,6 +47,7 @@ process.on('SIGTERM', () => {
     });
   } catch (err) {
     logger.error(err.message || err);
+    logger.info('shutting down server');
     shutdown();
   }
 })();

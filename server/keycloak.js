@@ -4,6 +4,8 @@ const axios = require('axios');
 const logger = require('./logger.js');
 const { getUser } = require('./services/user');
 
+const MAX_RETRY = 5;
+
 const regionMap = {
   region_fraser: 'Fraser',
   region_interior: 'Interior',
@@ -36,6 +38,7 @@ class Keycloak {
       resource: this.clientNameFrontend,
     };
     this.keycloakConnect = new KeyCloakConnect({}, config);
+    this.retryCount = 0;
   }
 
   RealmInfoFrontend() {
@@ -83,6 +86,10 @@ class Keycloak {
         };
         next();
       } catch (error) {
+        logger.error({
+          context: 'kc-getUserInfoMiddleware',
+          error,
+        });
         next(error);
       }
     };
@@ -112,8 +119,25 @@ class Keycloak {
     });
     const url = `${this.authUrl}/realms/${this.realm}/protocol/openid-connect/token`;
     const config = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } };
-    const response = await axios.post(url, data, config);
-    this.access_token = response.data.access_token;
+    try {
+      const response = await axios.post(url, data, config);
+      this.access_token = response.data.access_token;
+    } catch (excp) {
+      logger.error({
+        context: 'kc-auth',
+        retry: this.retryCount,
+        error: excp,
+      });
+
+      if (MAX_RETRY > this.retryCount) {
+        logger.info(`kc-auth: Will try connection ${MAX_RETRY - this.retryCount}`);
+        this.retryCount += 1;
+        await this.authenticateServiceAccount();
+      } else {
+        logger.error('kc-auth: Unable to restore service account connection');
+        throw new Error('Unable to authenticate service account');
+      }
+    }
   }
 
   async authenticateIfNeeded() {
@@ -133,99 +157,141 @@ class Keycloak {
   async buildInternalIdMap() {
     // Creates maps of Keycloak role and client names to IDs
     // See Keycloak docs https://www.keycloak.org/docs-api/5.0/rest-api/index.html#_clients_resource
-    logger.info('Building internal keycloak id map');
-    await this.authenticateIfNeeded();
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-    {
-      // Map of clients to their internal Keycloak ID
-      const clientNames = [this.clientNameBackend, this.clientNameFrontend];
-      const url = `${this.authUrl}/admin/realms/${this.realm}/clients`;
-      const response = await axios.get(url, config);
-      this.clientIdMap = response.data
-        .filter((client) => clientNames.includes(client.clientId))
-        .reduce((a, client) => ({ ...a, [client.clientId]: client.id }), {});
-    }
-    {
-      // Map containing all roles a user can assume and their associated Keycloak IDs
-      const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${
-        this.clientIdMap[this.clientNameFrontend]
-      }/roles`;
-      const response = await axios.get(url, config);
-      this.roleIdMap = response.data.reduce((a, role) => ({ ...a, [role.name]: role.id }), {});
+    try {
+      logger.info('Building internal keycloak id map');
+      await this.authenticateIfNeeded();
+      const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+      {
+        // Map of clients to their internal Keycloak ID
+        const clientNames = [this.clientNameBackend, this.clientNameFrontend];
+        const url = `${this.authUrl}/admin/realms/${this.realm}/clients`;
+        const response = await axios.get(url, config);
+        this.clientIdMap = response.data
+          .filter((client) => clientNames.includes(client.clientId))
+          .reduce((a, client) => ({ ...a, [client.clientId]: client.id }), {});
+      }
+      {
+        // Map containing all roles a user can assume and their associated Keycloak IDs
+        const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${
+          this.clientIdMap[this.clientNameFrontend]
+        }/roles`;
+        const response = await axios.get(url, config);
+        this.roleIdMap = response.data.reduce((a, role) => ({ ...a, [role.name]: role.id }), {});
+      }
+    } catch (excp) {
+      logger.error({
+        context: 'kc-buildInternalIdMap',
+        error: excp,
+      });
+      throw excp;
     }
   }
 
   async getUsers(ignorePendings) {
-    await this.authenticateIfNeeded();
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    try {
+      await this.authenticateIfNeeded();
+      const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
 
-    const getData = async (url) => {
-      const response = await axios.get(url, config);
-      return response.data.filter((user) => user.username !== 'service-account');
-    };
+      const getData = async (url) => {
+        const response = await axios.get(url, config);
+        return response.data.filter((user) => user.username !== 'service-account');
+      };
 
-    if (!ignorePendings) {
-      return getData(
-        `${this.authUrl}/admin/realms/${this.realm}/users?briefRepresentation=true&max=1000000`
-      );
-    }
+      if (!ignorePendings) {
+        return getData(
+          `${this.authUrl}/admin/realms/${this.realm}/users?briefRepresentation=true&max=1000000`
+        );
+      }
 
-    const results = await Promise.all(
-      ['ministry_of_health', 'employer', 'health_authority'].map(async (role) =>
-        getData(
-          `${this.authUrl}/admin/realms/${this.realm}/clients/${
-            this.clientIdMap[this.clientNameFrontend]
-          }/roles/${role}/users?briefRepresentation=true&max=1000000`
+      const results = await Promise.all(
+        ['ministry_of_health', 'employer', 'health_authority'].map(async (role) =>
+          getData(
+            `${this.authUrl}/admin/realms/${this.realm}/clients/${
+              this.clientIdMap[this.clientNameFrontend]
+            }/roles/${role}/users?briefRepresentation=true&max=1000000`
+          )
         )
-      )
-    );
-    return results.flat();
+      );
+      return results.flat();
+    } catch (error) {
+      logger.error({
+        context: 'kc-getUsers',
+        error,
+      });
+      throw error;
+    }
   }
 
   async setUserRoles(userId, role, regions) {
-    if (!Object.keys(this.roleIdMap).includes(role)) throw Error(`Invalid role: ${role}`);
-    const regionToRole = (region) => {
-      const roleName = Object.keys(regionMap).find((k) => regionMap[k] === region);
-      if (!roleName || !this.roleIdMap[roleName]) return null;
-      return { name: roleName, id: this.roleIdMap[roleName] };
-    };
-    await this.authenticateIfNeeded();
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-    const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings/clients/${
-      this.clientIdMap[this.clientNameFrontend]
-    }`;
-    {
-      const data = (await this.getUserRoles(userId)).map((item) => ({
-        name: item,
-        id: this.roleIdMap[item],
-      }));
-      await axios.delete(url, { ...config, data });
-    }
-    {
-      const data = [
-        ...regions.map(regionToRole).filter((x) => x),
-        { name: role, id: this.roleIdMap[role] },
-      ];
-      await axios.post(url, data, config);
+    try {
+      if (!Object.keys(this.roleIdMap).includes(role)) throw Error(`Invalid role: ${role}`);
+      const regionToRole = (region) => {
+        const roleName = Object.keys(regionMap).find((k) => regionMap[k] === region);
+        if (!roleName || !this.roleIdMap[roleName]) return null;
+        return { name: roleName, id: this.roleIdMap[roleName] };
+      };
+      await this.authenticateIfNeeded();
+      const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+      const url = `${this.authUrl}/admin/realms/${
+        this.realm
+      }/users/${userId}/role-mappings/clients/${this.clientIdMap[this.clientNameFrontend]}`;
+      {
+        const data = (await this.getUserRoles(userId)).map((item) => ({
+          name: item,
+          id: this.roleIdMap[item],
+        }));
+        await axios.delete(url, { ...config, data });
+      }
+      {
+        const data = [
+          ...regions.map(regionToRole).filter((x) => x),
+          { name: role, id: this.roleIdMap[role] },
+        ];
+        await axios.post(url, data, config);
+      }
+    } catch (error) {
+      logger.error({
+        context: 'kc-setUserRoles',
+        error,
+      });
+      throw error;
     }
   }
 
   async getUserRoles(userId) {
-    await this.authenticateIfNeeded();
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-    const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings`;
-    const response = await axios.get(url, config);
-    return response.data.clientMappings[this.clientNameFrontend].mappings.map((item) => item.name);
+    try {
+      await this.authenticateIfNeeded();
+      const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+      const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings`;
+      const response = await axios.get(url, config);
+      return response.data.clientMappings[this.clientNameFrontend].mappings.map(
+        (item) => item.name
+      );
+    } catch (error) {
+      logger.error({
+        context: 'kc-getUserRoles',
+        error,
+      });
+      throw error;
+    }
   }
 
   async getPendingUsers() {
-    await this.authenticateIfNeeded();
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-    const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${
-      this.clientIdMap[this.clientNameFrontend]
-    }/roles/pending/users`;
-    const response = await axios.get(url, config);
-    return response.data;
+    try {
+      await this.authenticateIfNeeded();
+      const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+      const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${
+        this.clientIdMap[this.clientNameFrontend]
+      }/roles/pending/users`;
+      const response = await axios.get(url, config);
+      return response.data;
+    } catch (error) {
+      logger.error({
+        context: 'kc-getUserRoles',
+        error,
+      });
+      throw error;
+    }
   }
 }
 Keycloak.instance = new Keycloak();

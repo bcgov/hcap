@@ -86,9 +86,9 @@ app.use(
   morgan(
     ':date[iso] | :remote-addr | :remote-user | ":method :url HTTP/:http-version" | :status | :res[content-length]',
     {
-      skip: (req, res) => {
-        const path = req.path;
-        return path.includes('/static/') || path.includes('/api/v1/healthcheck');
+      skip: (req) => {
+        const { path: pathName } = req;
+        return pathName.includes('/static/') || pathName.includes('/api/v1/healthcheck');
       },
     }
   )

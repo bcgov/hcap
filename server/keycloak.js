@@ -119,7 +119,7 @@ class Keycloak {
       if (MAX_RETRY > this.retryCount) {
         logger.info(`kc-auth: Will try connection ${MAX_RETRY - this.retryCount}`);
         this.retryCount += 1;
-        return this.authenticateServiceAccount();
+        await this.authenticateServiceAccount();
       } else {
         logger.error('kc-auth: Unable to restore service account connection');
         throw new Error('Unable to authenticate service account');

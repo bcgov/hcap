@@ -199,12 +199,13 @@ class Keycloak {
   }
 
   async getUsers(ignorePendings) {
-    await this.authenticateIfNeeded();
-    const config = {
-      headers: {
-        Authorization: `Bearer ${this.access_token}`,
-      },
-    };
+    try {
+      await this.authenticateIfNeeded();
+      const config = {
+        headers: {
+          Authorization: `Bearer ${this.access_token}`,
+        },
+      };
 
       const getData = async (url) => {
         const response = await axios.get(url, config);

@@ -1,7 +1,6 @@
 describe('Tests the Site View', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.visit('/');
   });
 
   it('visits siteView as employer', () => {

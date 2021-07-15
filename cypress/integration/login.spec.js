@@ -1,7 +1,6 @@
 describe('Login', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.visit('/');
   });
 
   it('logs in as superuser and tests the admin page', () => {

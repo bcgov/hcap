@@ -117,24 +117,6 @@ const getParticipantByID = async (participantInfo) => {
   return participant;
 };
 
-const withdrawParticipant = async (participantInfo) => {
-  const participant = { ...participantInfo };
-  const newHistory = {
-    timestamp: new Date(),
-    changes: [],
-  };
-
-  newHistory.changes.push({
-    field: 'interested',
-    from: participant.interested || 'yes',
-    to: 'withdrawn',
-  });
-  participant.history = participant.history ? [newHistory, ...participant.history] : [newHistory];
-
-  // eslint-disable-next-line no-use-before-define
-  return updateParticipant(participant);
-};
-
 const createChangeHistory = (participantBody, changes) => {
   const newBody = { ...participantBody };
   const changeDetails = Object.keys(changes).reduce((target, key) => {
@@ -190,6 +172,24 @@ const updateParticipant = async (participantInfo) => {
   );
 
   return participant;
+};
+
+const withdrawParticipant = async (participantInfo) => {
+  const participant = { ...participantInfo };
+  const newHistory = {
+    timestamp: new Date(),
+    changes: [],
+  };
+
+  newHistory.changes.push({
+    field: 'interested',
+    from: participant.interested || 'yes',
+    to: 'withdrawn',
+  });
+  participant.history = participant.history ? [newHistory, ...participant.history] : [newHistory];
+
+  // eslint-disable-next-line no-use-before-define
+  return updateParticipant(participant);
 };
 
 const validateConfirmationId = (id) =>

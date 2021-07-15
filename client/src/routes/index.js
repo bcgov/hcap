@@ -28,6 +28,10 @@ const ConfirmInterest = lazy(() => import('../pages/public/ConfirmInterest'));
 const ParticipantLanding = lazy(() => import('../pages/private/ParticipantLanding'));
 const ParticipantEOI = lazy(() => import('../pages/private/ParticipantEOI'));
 const ParticipantEOIEdit = lazy(() => import('../pages/private/ParticipantEOI'));
+const ParticipantWithdrawConfirm = lazy(() =>
+  import('../pages/private/ParticipantWithdrawConfirm')
+);
+
 const PrivateRoute = ({ component: Component, path, ...rest }) => {
   const [keycloak] = useKeycloak();
   return (
@@ -134,6 +138,11 @@ export default () => {
             <PrivateRoute exact path={Routes.ParticipantLanding} component={ParticipantLanding} />
             <PrivateRoute exact path={Routes.ParticipantEOI} component={ParticipantEOI} />
             <PrivateRoute exact path={Routes.ParticipantEOIEdit} component={ParticipantEOIEdit} />
+            <PrivateRoute
+              exact
+              path={Routes.ParticipantWithdrawConfirm}
+              component={ParticipantWithdrawConfirm}
+            />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>
           <RootUrlSwitch rootUrlRegExp={Routes.EmployerHostname}>

@@ -21,7 +21,7 @@ import { Fields } from './Fields';
 export const Form = ({
   initialValues,
   isDisabled,
-  hideSummery,
+  hideSummary,
   onSubmit,
   enableFields,
   editMode,
@@ -89,12 +89,12 @@ export const Form = ({
       >
         {({ errors, submitForm, setTouched, values }) => (
           <FormikForm>
-            <Box hidden={hideSummery} pt={4} pb={4} pl={2} pr={2}>
+            <Box hidden={hideSummary} pt={4} pb={4} pl={2} pr={2}>
               <Summary />
             </Box>
 
             <Box pt={2} pb={4} pl={2} pr={2}>
-              <Fields isDisabled={isDisabled} hideHelp={hideSummery} enableFields={enableFields} />
+              <Fields isDisabled={isDisabled} hideHelp={hideSummary} enableFields={enableFields} />
             </Box>
 
             {!isDisabled && (

@@ -48,8 +48,8 @@ const fetchParticipant = async (id) => {
         'Content-type': 'application/json',
       },
     });
-    const participants = await response.json();
-    return participants[0] || null;
+    const [participant] = await response.json();
+    return participant || null;
   } catch {
     return null;
   }
@@ -160,6 +160,7 @@ export default () => {
         message: 'Withdraw success',
       });
       setDisableWithdraw(true);
+      history.push(Routes.ParticipantWithdrawConfirm);
     } else {
       openToast({
         status: ToastStatus.Error,
@@ -224,7 +225,7 @@ export default () => {
               <Form
                 initialValues={participant.body}
                 isDisabled={!enableEdit}
-                hideSummery={true}
+                hideSummary={true}
                 enableFields={['phoneNumber', 'postalCode', 'consent']}
                 onSubmit={onFormSubmit}
                 editMode={true}

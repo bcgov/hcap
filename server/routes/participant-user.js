@@ -63,7 +63,7 @@ router.get(
       id: participants.length > 0 ? participants[0].id : '',
     });
 
-    res.status(200).json(participants);
+    return res.status(200).json(participants);
   })
 );
 
@@ -132,6 +132,9 @@ router.post(
     const { user_id: userId } = req.user;
     const { id } = req.params;
     const participants = await getParticipantByIdWithStatus({ id, userId });
+    if (!participants.length) {
+      return res.status(401).send({ message: 'You do not have permission to view this record' });
+    }
     await setParticipantLastUpdated(id);
     return res.status(201).send({ message: 'Reconfirm interest successful.' });
   })

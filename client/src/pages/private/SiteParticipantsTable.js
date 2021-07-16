@@ -123,11 +123,6 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
     });
   }, [dispatch, roles]);
 
-  // useEffect(() => {
-  //   console.log('this is the site');
-  //   console.log(site);
-  // }, [site]);
-
   const [orderBy, setOrderBy] = useState(columns[4]?.id || 'participantName');
 
   const handleRequestSort = (event, property) => {

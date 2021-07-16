@@ -1,5 +1,6 @@
 const cors = require('cors');
 const express = require('express');
+const morgan = require('morgan');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -46,6 +47,10 @@ const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 const keycloak = require('./keycloak.js');
+const { healthCheck } = require('./services/health-check');
+
+// Routes
+const participantUserRoute = require('./routes/participant-user');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
@@ -82,6 +87,17 @@ app.use(
   })
 );
 
+app.use(
+  morgan(
+    ':date[iso] | :remote-addr | :remote-user | ":method :url HTTP/:http-version" | :status | :res[content-length]',
+    {
+      skip: (req) => {
+        const { path: pathName } = req;
+        return pathName.includes('/static/') || pathName.includes('/api/v1/healthcheck');
+      },
+    }
+  )
+);
 app.use(keycloak.expressMiddleware());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
@@ -265,7 +281,12 @@ app.get(
 
 app.get(
   `${apiBaseUrl}/participant`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+  keycloak.allowRolesMiddleware(
+    'health_authority',
+    'ministry_of_health',
+    'employer',
+    'participant'
+  ),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantQuerySchema, req.query);
@@ -778,6 +799,17 @@ app.get(
 
 // Version number
 app.get(`${apiBaseUrl}/version`, (req, res) => res.json({ version: process.env.VERSION }));
+
+// Health check
+app.get(
+  `${apiBaseUrl}/healthcheck`,
+  asyncMiddleware(async (req, res) => {
+    const health = await healthCheck();
+    res.status(200).json(health);
+  })
+);
+// Applying router handlers
+app.use(`${apiBaseUrl}/participant-user`, participantUserRoute);
 
 // Client app
 if (process.env.NODE_ENV === 'production') {

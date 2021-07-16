@@ -17,5 +17,5 @@ image:
   registry: 'public.ecr.aws'
 
 auth:
-  username: default
-  database: default
+  username: hcap
+  database: hcap

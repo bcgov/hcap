@@ -2,6 +2,7 @@
   "roles": [
     {
       "name": "superuser",
+      "fixture": "test-superuser",
       "tabsWithActions": ["Participants"],
       "allTabs": ["Participants", "My Sites", "Participants"],
       "tableTabs": {
@@ -24,6 +25,7 @@
     },
     {
       "name": "ministry_of_health",
+      "fixture": "test-moh",
       "tabsWithActions": ["Participants"],
       "allTabs": ["Participants", "Participants"],
       "tableTabs": {
@@ -43,6 +45,7 @@
     },
     {
       "name": "health_authority",
+      "fixture": "test-ha",
       "tabsWithActions": [
         "Available Participants",
         "My Candidates",
@@ -113,6 +116,7 @@
     },
     {
       "name": "employer",
+      "fixture": "test-employer",
       "tabsWithActions": [
         "Available Participants",
         "My Candidates",

@@ -35,31 +35,34 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Fields = ({ isDisabled }) => {
+export const Fields = ({ isDisabled, hideHelp, enableFields }) => {
   const classes = useStyles();
   const [isCollectionNoticeExpanded, setCollectionNoticeExpanded] = useState(
     window.innerWidth > 750
   );
-
+  const checkFieldDisability = (key) =>
+    isDisabled || (enableFields ? !enableFields.includes(key) : false);
   return (
     <>
-      <Box mb={2} py={1} px={2} display='flex' alignItems='center' className={classes.info}>
-        <SpeakerNotesOutlined className={classes.infoIcon} />
-        <Box py={1}>
-          <Typography className={classes.infoHeader} component='h3'>
-            Need Help?
-          </Typography>
-          <Typography variant='body2'>
-            Contact a Health Career Access Program agent at{' '}
-            <a rel='noreferrer' target='_blank' href='mailto:HCAPInfoQuery@gov.bc.ca'>
-              HCAPInfoQuery@gov.bc.ca
-            </a>
-          </Typography>
-          <Typography variant='body2'>
-            Service is available from 8:00 am - 4:30 pm Pacific Time Monday through Friday
-          </Typography>
+      {!hideHelp && (
+        <Box mb={2} py={1} px={2} display='flex' alignItems='center' className={classes.info}>
+          <SpeakerNotesOutlined className={classes.infoIcon} />
+          <Box py={1}>
+            <Typography className={classes.infoHeader} component='h3'>
+              Need Help?
+            </Typography>
+            <Typography variant='body2'>
+              Contact a Health Career Access Program agent at{' '}
+              <a rel='noreferrer' target='_blank' href='mailto:HCAPInfoQuery@gov.bc.ca'>
+                HCAPInfoQuery@gov.bc.ca
+              </a>
+            </Typography>
+            <Typography variant='body2'>
+              Service is available from 8:00 am - 4:30 pm Pacific Time Monday through Friday
+            </Typography>
+          </Box>
         </Box>
-      </Box>
+      )}
       <Card noShadow={isDisabled}>
         <Grid container spacing={2}>
           {/** Eligibility */}
@@ -82,7 +85,7 @@ export const Fields = ({ isDisabled }) => {
             <FastField
               name='eligibility'
               component={RenderRadioGroup}
-              disabled={isDisabled}
+              disabled={checkFieldDisability('eligibility')}
               setTouched
               row
               options={[
@@ -102,7 +105,7 @@ export const Fields = ({ isDisabled }) => {
               name='firstName'
               component={RenderTextField}
               label='* First Name'
-              disabled={isDisabled}
+              disabled={checkFieldDisability('firstName')}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -110,7 +113,7 @@ export const Fields = ({ isDisabled }) => {
               name='lastName'
               component={RenderTextField}
               label='* Last Name'
-              disabled={isDisabled}
+              disabled={checkFieldDisability('lastName')}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -119,7 +122,7 @@ export const Fields = ({ isDisabled }) => {
               type='tel'
               component={RenderTextField}
               label='* Phone Number'
-              disabled={isDisabled}
+              disabled={checkFieldDisability('phoneNumber')}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -128,7 +131,7 @@ export const Fields = ({ isDisabled }) => {
               type='email'
               component={RenderTextField}
               label='* Email Address'
-              disabled={isDisabled}
+              disabled={checkFieldDisability('emailAddress')}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -136,7 +139,7 @@ export const Fields = ({ isDisabled }) => {
               name='postalCode'
               component={RenderTextField}
               label='* Postal Code'
-              disabled={isDisabled}
+              disabled={checkFieldDisability('postalCode')}
             />
           </Grid>
 
@@ -150,7 +153,7 @@ export const Fields = ({ isDisabled }) => {
               name='preferredLocation'
               component={RenderCheckboxGroup}
               label='* Please select your preferred health region(s)'
-              disabled={isDisabled}
+              disabled={checkFieldDisability('preferredLocation')}
               options={[
                 {
                   value: 'Interior',
@@ -245,7 +248,7 @@ export const Fields = ({ isDisabled }) => {
               <Grid item xs={12}>
                 <FastField
                   name='consent'
-                  disabled={isDisabled}
+                  disabled={checkFieldDisability('consent')}
                   component={RenderCheckbox}
                   label='I consent to have my personal information shared with the Health Career Access Program.'
                 />

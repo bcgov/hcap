@@ -3,7 +3,8 @@ const fixture = require('../fixtures/participantTableTabs.json');
 describe('Participant Table', () => {
   fixture.roles.map((role) => {
     it(`Correctly renders tabs for ${role.name}`, () => {
-      cy.kcNavAs(role.name, 'participant-view');
+      cy.kcLogin(role.fixture);
+      cy.visit('/participant-view');
       cy.wait(1500);
       cy.get('div.MuiTabs-root')
         .find('button.MuiTab-root')
@@ -12,7 +13,8 @@ describe('Participant Table', () => {
     });
 
     it(`Correctly renders columns for ${role.name}`, () => {
-      cy.kcNavAs(role.name, 'participant-view');
+      cy.kcLogin(role.fixture);
+      cy.visit('/participant-view');
       Object.entries(role.tableTabs).forEach((tab) => {
         const [tabText, tabHeaders] = [...tab];
 

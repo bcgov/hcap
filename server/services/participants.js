@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+const assert = require('assert');
 const readXlsxFile = require('node-xlsx').default;
 const { validate, ParticipantBatchSchema, isBooleanValue } = require('../validation.js');
 const { dbClient, collections } = require('../db');
@@ -76,22 +77,8 @@ const setParticipantStatus = async (
 
     // Now check if current status is archived then set interested flag
     if (status === 'archived') {
-      const newHistory = {
-        timestamp: new Date(),
-        changes: [],
-      };
-
-      newHistory.changes.push({
-        field: 'interested',
-        from: participant[0].interested || 'yes',
-        to: 'withdrawn',
-      });
-      participant[0].history = participant[0].history
-        ? [newHistory, ...participant[0].history]
-        : [newHistory];
-
       // eslint-disable-next-line no-use-before-define
-      await updateParticipant(participant[0]);
+      await withdrawParticipant(participant[0]);
     }
 
     if (['prospecting', 'interviewing', 'offer_made', 'hired'].includes(status)) {
@@ -162,6 +149,26 @@ const getParticipantByID = async (participantInfo) => {
   return participant;
 };
 
+const createChangeHistory = (participantBody, changes) => {
+  const newBody = { ...participantBody };
+  const changeDetails = Object.keys(changes).reduce((target, key) => {
+    target.push({
+      field: key,
+      from: participantBody[key] || 'none',
+      to: changes[key],
+    });
+    return [...target];
+  }, []);
+  const newHistory = {
+    timestamp: new Date(),
+    changes: [...changeDetails],
+  };
+  newBody.history = participantBody.history
+    ? [newHistory, ...participantBody.history]
+    : [newHistory];
+  return newBody;
+};
+
 const updateParticipant = async (participantInfo) => {
   // The below reduce function unpacks the most recent changes in the history
   // and builds them into an object to be used for the update request
@@ -197,6 +204,24 @@ const updateParticipant = async (participantInfo) => {
   );
 
   return participant;
+};
+
+const withdrawParticipant = async (participantInfo) => {
+  const participant = { ...participantInfo };
+  const newHistory = {
+    timestamp: new Date(),
+    changes: [],
+  };
+
+  newHistory.changes.push({
+    field: 'interested',
+    from: participant.interested || 'yes',
+    to: 'withdrawn',
+  });
+  participant.history = participant.history ? [newHistory, ...participant.history] : [newHistory];
+
+  // eslint-disable-next-line no-use-before-define
+  return updateParticipant(participant);
 };
 
 const validateConfirmationId = (id) =>
@@ -498,8 +523,9 @@ const makeParticipant = async (participantJson) => {
   return res;
 };
 
-const createParticipantUserMap = async (userId, email, tnx) => {
-  const participants = await tnx[collections.PARTICIPANTS]
+const createParticipantUserMap = async (userId, email, transaction) => {
+  assert(email, 'Email must be a non empty string');
+  const participants = await transaction[collections.PARTICIPANTS]
     .join({
       mapped: {
         type: 'LEFT OUTER',
@@ -511,7 +537,7 @@ const createParticipantUserMap = async (userId, email, tnx) => {
       },
     })
     .find({
-      'body.emailAddress': email,
+      'body.emailAddress ILIKE': email,
       'mapped.user_id': null,
     });
 
@@ -519,7 +545,7 @@ const createParticipantUserMap = async (userId, email, tnx) => {
   if (participants.length === 0) return [];
   await Promise.all(
     participants.map((participant) =>
-      tnx[collections.USER_PARTICIPANT_MAP].save({
+      transaction[collections.USER_PARTICIPANT_MAP].save({
         user_id: userId,
         participant_id: participant.id,
       })
@@ -563,6 +589,29 @@ const mapUserWithParticipant = async (userId, participantId) =>
     participant_id: participantId,
   });
 
+const getParticipantByIdWithStatus = async ({ id, userId }) =>
+  dbClient.db[collections.PARTICIPANTS]
+    .join({
+      currentStatuses: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'id',
+          current: true,
+        },
+      },
+      user: {
+        type: 'INNER',
+        relation: collections.USER_PARTICIPANT_MAP,
+        decomposeTo: 'object',
+        on: {
+          participant_id: 'id',
+          user_id: userId,
+        },
+      },
+    })
+    .find({ id, 'user.user_id': userId });
+
 module.exports = {
   parseAndSaveParticipants,
   getParticipants,
@@ -577,4 +626,7 @@ module.exports = {
   createParticipantUserMap,
   getParticipantsForUser,
   mapUserWithParticipant,
+  getParticipantByIdWithStatus,
+  withdrawParticipant,
+  createChangeHistory,
 };

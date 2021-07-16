@@ -3,7 +3,11 @@ const logger = require('./logger.js');
 // Middleware to log and sanitize errors
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (error, req, res, next) => {
-  logger.error(error.message);
+  logger.error({
+    context: 'global-server-error',
+    message: error.message,
+    error,
+  });
   switch (error.name) {
     case 'ValidationError':
       res.status(400).send(`Validation error(s): ${error.errors}`);
@@ -18,4 +22,6 @@ const errorHandler = (error, req, res, next) => {
 const asyncMiddleware = (f) => (req, res, next) =>
   Promise.resolve(f(req, res, next)).catch((error) => next(error));
 
-module.exports = { errorHandler, asyncMiddleware };
+const applyMiddleware = (f) => (req, res, next) => f(req, res, next);
+
+module.exports = { errorHandler, asyncMiddleware, applyMiddleware };

@@ -963,7 +963,7 @@ describe('Participants Service', () => {
     const userId = v4();
 
     await mapUserWithParticipant(userId, resp.id);
-    const result = await getParticipantsForUser(userId, '');
+    const result = await getParticipantsForUser(userId, 'eddy2990@example.com');
     expect(result[0].emailAddress).toEqual('eddy2990@example.com');
   });
 });

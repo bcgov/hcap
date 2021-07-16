@@ -7,6 +7,7 @@ import routes from '../../constants/routes';
 import { EditSiteForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { ToastStatus, EditSiteSchema, API_URL } from '../../constants';
+import { SiteDetailTabContext } from '../../providers';
 
 const SiteParticipantsTable = lazy(() => import('./SiteParticipantsTable'));
 
@@ -54,34 +55,6 @@ export default ({ match }) => {
   useEffect(() => {
     fetchDetails(id);
   }, [id]);
-
-  const fieldsLabelMap = {
-    'Site Contact': {
-      'First Name': 'siteContactFirstName',
-      'Last Name': 'siteContactLastName',
-      'Phone Number': 'siteContactPhone',
-      'Email Address': 'siteContactEmail',
-    },
-    'Operator Contact': {
-      'First Name': 'operatorContactFirstName',
-      'Last Name': 'operatorContactLastName',
-      'Phone Number': 'operatorPhone',
-      'Email Address': 'operatorEmail',
-    },
-    'Site Info': {
-      'Site Name': 'siteName',
-      'Business Name': 'registeredBusinessName',
-      'Street Address': 'address',
-      City: 'city',
-      'Postal Code': 'postalCode',
-      Region: 'healthAuthority',
-    },
-    'Positions Overview': {
-      Allocation: 'allocation',
-      'HCAP Hires': 'hcapHires',
-      'Non-HCAP Hires': 'nonHcapHires',
-    },
-  };
 
   const defaultOnClose = () => {
     setActiveModalForm(null);
@@ -157,79 +130,50 @@ export default ({ match }) => {
           permittedRoles={['health_authority', 'ministry_of_health']}
           renderErrorMessage={true}
         >
-          <Card>
-            <Box pt={4} pb={2} pl={4} pr={4}>
-              <Box pb={4} pl={2}>
-                <Box pb={2}>
-                  <Typography variant='body1'>
-                    <Link href={routes.SiteView}>Sites</Link> / {site.siteName}
-                  </Typography>
-                </Box>
-                <Grid container>
-                  <Typography variant='h2'>
-                    <b>{site.siteName}</b>
-                  </Typography>
-                  <CheckPermissions permittedRoles={['ministry_of_health']}>
-                    <Box pl={2} pt={0.5}>
-                      <Button
-                        onClick={async () => {
-                          setActiveModalForm('edit-site');
-                        }}
-                        variant='outlined'
-                        fullWidth={false}
-                        size='small'
-                        text='Edit'
-                      />
-                    </Box>
-                  </CheckPermissions>
-                </Grid>
-                {site.isRHO ? (
-                  <Box pt={1}>
-                    <Chip size='small' color='primary' label='Regional Health Authority' />
+          <SiteDetailTabContext.TabProvider>
+            <Card>
+              <Box pt={4} pb={2} pl={4} pr={4}>
+                <Box pb={4} pl={2}>
+                  <Box pb={2}>
+                    <Typography variant='body1'>
+                      <Link href={routes.SiteView}>Sites</Link> / {site.siteName}
+                    </Typography>
                   </Box>
-                ) : null}
-              </Box>
-              <Grid container>
-                {Object.keys(fieldsLabelMap).map((title) => (
-                  <Grid key={title} item xs={12} sm={6} xl={3} style={{ marginBottom: 40 }}>
-                    <Box pr={2} pl={2}>
-                      <Box pb={2}>
-                        <Typography variant='subtitle1'>
-                          <b>{title}</b>
-                        </Typography>
+                  <Grid container>
+                    <Typography variant='h2'>
+                      <b>{site.siteName}</b>
+                    </Typography>
+                    <CheckPermissions permittedRoles={['ministry_of_health']}>
+                      <Box pl={2} pt={0.5}>
+                        <Button
+                          onClick={async () => {
+                            setActiveModalForm('edit-site');
+                          }}
+                          variant='outlined'
+                          fullWidth={false}
+                          size='small'
+                          text='Edit'
+                        />
                       </Box>
-                      {Object.keys(fieldsLabelMap[title]).map((subTitle) => (
-                        <Grid key={subTitle} container style={{ marginBottom: 5 }}>
-                          <Grid item xs={12}>
-                            <Box pr={4} pb={1}>
-                              <Typography variant='body1'>
-                                <b>{subTitle}</b>
-                              </Typography>
-                              <Typography variant='body1'>
-                                {site[fieldsLabelMap[title][subTitle]]}
-                              </Typography>
-                            </Box>
-                          </Grid>
-                        </Grid>
-                      ))}
-                    </Box>
+                    </CheckPermissions>
                   </Grid>
-                ))}
-              </Grid>
-            </Box>
-            <Box pl={4}>
-              <Typography variant='subtitle1'>
-                <b>Hired Participants</b>
-              </Typography>
-            </Box>
-            <SiteParticipantsTable
-              siteId={site.siteId}
-              onArchiveParticipantAction={() => {
-                setSite({});
-                fetchDetails(id);
-              }}
-            />
-          </Card>
+                  {site.isRHO ? (
+                    <Box pt={1}>
+                      <Chip size='small' color='primary' label='Regional Health Authority' />
+                    </Box>
+                  ) : null}
+                </Box>
+              </Box>
+              <SiteParticipantsTable
+                id={id}
+                siteId={site.siteId}
+                onArchiveParticipantAction={() => {
+                  setSite({});
+                  fetchDetails(id);
+                }}
+              />
+            </Card>
+          </SiteDetailTabContext.TabProvider>
         </CheckPermissions>
       </Page>
     </>

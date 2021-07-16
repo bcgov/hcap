@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const assert = require('assert');
 const readXlsxFile = require('node-xlsx').default;
 const { validate, ParticipantBatchSchema, isBooleanValue } = require('../validation.js');
@@ -108,6 +109,37 @@ const getHiredParticipantsBySite = async (siteID) => {
     });
 
   return participants;
+};
+
+const getWithdrawnParticipantsBySite = async (siteID) => {
+  const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]
+    .join({
+      participantJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS,
+        decomposeTo: 'object',
+        on: { id: 'participant_id' },
+      },
+    })
+    .find(
+      {
+        current: true,
+        status: 'archived',
+        'data.previousData.site': String(siteID),
+      },
+      {
+        distinct: true,
+      }
+    );
+
+  // Sometimes, this query returns multiple results which are identical except
+  // for the id of the entry
+
+  return participants.reduce((acc, obj) => {
+    const inArray = acc.find(({ participant_id }) => obj.participant_id === participant_id);
+    if (!inArray) acc.push(obj);
+    return acc;
+  }, []);
 };
 
 const getParticipantByID = async (participantInfo) => {
@@ -584,6 +616,7 @@ module.exports = {
   parseAndSaveParticipants,
   getParticipants,
   getHiredParticipantsBySite,
+  getWithdrawnParticipantsBySite,
   getParticipantByID,
   updateParticipant,
   setParticipantStatus,

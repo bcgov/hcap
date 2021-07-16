@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import store from 'store';
 import { Table, Button, Dialog } from '../../components/generic';
 import { getDialogTitle } from '../../utils';
-import { AuthContext } from '../../providers';
+import { AuthContext, SiteDetailTabContext } from '../../providers';
+import { fieldsLabelMap } from '../../constants';
 import {
   ToastStatus,
   API_URL,
@@ -17,16 +21,67 @@ import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import moment from 'moment';
 
-let columns = [
+let columnIDs = [
   { id: 'participantId', name: 'ID' },
   { id: 'participantName', name: 'Name' },
   { id: 'hiredDate', name: 'Hire Date' },
   { id: 'startDate', name: 'Start Date' },
   { id: 'nonHCAP', name: 'Position' },
   { id: 'archive', name: 'Archive' },
+  { id: 'withdrawnDate', name: 'Withdrawn Date' },
+  { id: 'reason', name: 'Reason' },
 ];
 
-export default ({ siteId, onArchiveParticipantAction }) => {
+const tabs = SiteDetailTabContext.tabs;
+
+const CustomTabs = withStyles((theme) => ({
+  root: {
+    borderBottom: `1px solid ${theme.palette.gray.secondary}`,
+    marginBottom: theme.spacing(2),
+  },
+  indicator: {
+    backgroundColor: theme.palette.highlight.primary,
+  },
+}))(Tabs);
+
+const CustomTab = withStyles((theme) => ({
+  root: {
+    textTransform: 'none',
+    minWidth: 72,
+    fontWeight: theme.typography.fontWeightRegular,
+    marginRight: theme.spacing(4),
+    '&:hover': {
+      color: theme.palette.highlight.primary,
+      opacity: 1,
+    },
+    '&$selected': {
+      color: theme.palette.highlight.secondary,
+      fontWeight: theme.typography.fontWeightMedium,
+    },
+    '&:focus': {
+      color: theme.palette.highlight.primary,
+    },
+  },
+  selected: {},
+}))((props) => <Tab disableRipple {...props} />);
+
+const fetchDetails = async (id) => {
+  const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+    },
+    method: 'GET',
+  });
+
+  if (response.ok) {
+    const site = await response.json();
+    return site;
+  } else {
+    return {};
+  }
+};
+
+export default ({ id, siteId, onArchiveParticipantAction }) => {
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
@@ -34,18 +89,41 @@ export default ({ siteId, onArchiveParticipantAction }) => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
+  const [fetchedWithdrawnRows, setFetchedWithdrawnRows] = useState([]);
   const { auth } = AuthContext.useAuth();
   const { openToast } = useToast();
-  const roles = auth.user?.roles || [];
-  const isHA = roles.includes('health_authority');
-  if (!isHA) {
-    columns = columns.filter((col) => col.id !== 'archive');
-  }
+  const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
   const defaultOnClose = () => {
     setActiveModalForm(null);
     setActionMenuParticipant(null);
   };
-  const [orderBy, setOrderBy] = useState(columns[4].id);
+
+  const {
+    state: { columns, selectedTab, site },
+    dispatch,
+  } = SiteDetailTabContext.useTabContext();
+
+  useEffect(() => {
+    dispatch({
+      type: SiteDetailTabContext.types.LOAD_SITE,
+      payload: {},
+    });
+    fetchDetails(id).then((response) => {
+      dispatch({
+        type: SiteDetailTabContext.types.UPDATE_SITE,
+        payload: { site: response },
+      });
+    });
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    dispatch({
+      type: SiteDetailTabContext.types.SELECT_TAB,
+      payload: { tab: tabs[0], roles },
+    });
+  }, [dispatch, roles]);
+
+  const [orderBy, setOrderBy] = useState(columns[4]?.id || 'participantName');
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -63,35 +141,43 @@ export default ({ siteId, onArchiveParticipantAction }) => {
     });
 
     if (response.ok) {
-      const participants = await response.json();
-      const rowsData = participants.map((row) => {
-        // Pull all relevant props from row based on columns constant
-        const values = {
-          participantId: row.participant_id,
-          participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
-          hiredDate: row.data.hiredDate,
-          startDate: row.data.startDate,
-          nonHCAP: row.data.nonHcapOpportunity,
-        };
+      const { hired, withdrawn } = await response.json();
+      const mapToData = (response) => {
+        return response.map((row) => {
+          // Pull all relevant props from row based on columns constant
+          const values = {
+            participantId: row.participant_id,
+            participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
+            hiredDate: row.data.hiredDate,
+            startDate: row.data.startDate,
+            withdrawnDate: row.created_at,
+            reason: row.data.final_status,
+            nonHCAP: row.data.nonHcapOpportunity,
+          };
 
-        const mappedRow = columns.reduce(
-          (accumulator, column) => ({
-            ...accumulator,
-            [column.id]: values[column.id],
-          }),
-          {}
-        );
-        // Add additional props (user ID, button) to row
-        return {
-          ...mappedRow,
-          id: row.id,
-        };
-      });
+          const mappedRow = columnIDs.reduce(
+            (accumulator, column) => ({
+              ...accumulator,
+              [column.id]: values[column.id],
+            }),
+            {}
+          );
+          // Add additional props (user ID, button) to row
+          return {
+            ...mappedRow,
+            id: row.id,
+          };
+        });
+      };
+      const rowsData = mapToData(hired);
+      const withdrawnRowsData = mapToData(withdrawn);
       setFetchedRows(rowsData);
-      setIsPendingRequests(rowsData.length > 0);
+      setFetchedWithdrawnRows(withdrawnRowsData);
+      setIsPendingRequests(rowsData.length > 0 || withdrawnRowsData > 0);
     } else {
       setRows([]);
       setFetchedRows([]);
+      setFetchedWithdrawnRows([]);
       setIsPendingRequests(false);
     }
     setLoadingData(false);
@@ -106,35 +192,44 @@ export default ({ siteId, onArchiveParticipantAction }) => {
       });
 
       if (response.ok) {
-        const participants = await response.json();
-        const rowsData = participants.map((row) => {
-          // Pull all relevant props from row based on columns constant
-          const values = {
-            participantId: row.participant_id,
-            participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
-            hiredDate: row.data.hiredDate,
-            startDate: row.data.startDate,
-            nonHCAP: row.data.nonHcapOpportunity,
-          };
+        const { hired, withdrawn } = await response.json();
 
-          const mappedRow = columns.reduce(
-            (accumulator, column) => ({
-              ...accumulator,
-              [column.id]: values[column.id],
-            }),
-            {}
-          );
-          // Add additional props (user ID, button) to row
-          return {
-            ...mappedRow,
-            id: row.id,
-          };
-        });
+        const mapToData = (response) => {
+          return response.map((row) => {
+            // Pull all relevant props from row based on columns constant
+            const values = {
+              participantId: row.participant_id,
+              participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
+              hiredDate: row.data.hiredDate,
+              startDate: row.data.startDate,
+              withdrawnDate: row.created_at.split('T')[0],
+              reason: row.data.final_status,
+              nonHCAP: row.data.nonHcapOpportunity,
+            };
+
+            const mappedRow = columnIDs.reduce(
+              (accumulator, column) => ({
+                ...accumulator,
+                [column.id]: values[column.id],
+              }),
+              {}
+            );
+            // Add additional props (user ID, button) to row
+            return {
+              ...mappedRow,
+              id: row.id,
+            };
+          });
+        };
+        const rowsData = mapToData(hired);
+        const withdrawnRowsData = mapToData(withdrawn);
         setFetchedRows(rowsData);
-        setIsPendingRequests(rowsData.length > 0);
+        setFetchedWithdrawnRows(withdrawnRowsData);
+        setIsPendingRequests(rowsData.length > 0 && withdrawnRowsData.length > 0);
       } else {
         setRows([]);
         setFetchedRows([]);
+        setFetchedWithdrawnRows([]);
         setIsPendingRequests(false);
       }
       setLoadingData(false);
@@ -170,8 +265,8 @@ export default ({ siteId, onArchiveParticipantAction }) => {
   };
 
   useEffect(() => {
-    setRows(fetchedRows);
-  }, [fetchedRows]);
+    setRows(selectedTab === 'Hired Participants' ? fetchedRows : fetchedWithdrawnRows);
+  }, [fetchedRows, fetchedWithdrawnRows, selectedTab]);
 
   return (
     <Grid
@@ -183,54 +278,99 @@ export default ({ siteId, onArchiveParticipantAction }) => {
     >
       {isPendingRequests && (
         <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
-          <Table
-            columns={columns}
-            order={order}
-            orderBy={orderBy}
-            onRequestSort={handleRequestSort}
-            rows={sort(rows)}
-            isLoading={isLoadingData}
-            renderCell={(columnId, row) => {
-              if (columnId === 'phoneNumber') {
-                const num = String(row['phoneNumber']);
-                return `(${num.substr(0, 3)}) ${num.substr(3, 3)}-${num.substr(6, 4)}`;
-              }
-              if (columnId === 'status') {
-                const status = String(row['status']);
-                return `${status.substring(0, 1).toUpperCase()}${status.substring(1)}`;
-              }
-              if (columnId === 'nonHCAP') {
-                return row[columnId] ? 'Non-HCAP' : 'HCAP';
-              }
-              if (columnId === 'archive') {
-                return (
-                  <Button
-                    onClick={async () => {
-                      // Get data from row.participantId
-                      const response = await fetch(
-                        `${API_URL}/api/v1/participant?id=${row.participantId}`,
-                        {
-                          headers: {
-                            Accept: 'application/json',
-                            'Content-type': 'application/json',
-                            Authorization: `Bearer ${store.get('TOKEN')}`,
-                          },
-                          method: 'GET',
-                        }
-                      );
-                      const participant = await response.json();
-                      setActionMenuParticipant(participant[0]);
-                      setActiveModalForm('archive');
-                    }}
-                    variant='outlined'
-                    size='small'
-                    text='Archive'
-                  />
-                );
-              }
-              return row[columnId];
-            }}
-          />
+          <CustomTabs
+            value={selectedTab || false}
+            onChange={(_, property) =>
+              dispatch({
+                type: SiteDetailTabContext.types.SELECT_TAB,
+                payload: { tab: property, roles },
+              })
+            }
+          >
+            {
+              tabs.map((key) => (
+                <CustomTab key={key} label={key} value={key} disabled={isLoadingData} />
+              )) // Tab component with tab name as value
+            }
+          </CustomTabs>
+          {selectedTab === 'Site Details' ? (
+            <Grid container>
+              {Object.keys(fieldsLabelMap).map((title) => (
+                <Grid key={title} item xs={12} sm={6} xl={3} style={{ marginBottom: 40 }}>
+                  <Box pr={2} pl={2}>
+                    <Box pb={2}>
+                      <Typography variant='subtitle1'>
+                        <b>{title}</b>
+                      </Typography>
+                    </Box>
+                    {Object.keys(fieldsLabelMap[title]).map((subTitle) => (
+                      <Grid key={subTitle} container style={{ marginBottom: 5 }}>
+                        <Grid item xs={12}>
+                          <Box pr={4} pb={1}>
+                            <Typography variant='body1'>
+                              <b>{subTitle}</b>
+                            </Typography>
+                            <Typography variant='body1'>
+                              {site[fieldsLabelMap[title][subTitle]]}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      </Grid>
+                    ))}
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Table
+              columns={columns}
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={handleRequestSort}
+              rows={sort(rows)}
+              isLoading={isLoadingData}
+              renderCell={(columnId, row) => {
+                if (columnId === 'phoneNumber') {
+                  const num = String(row['phoneNumber']);
+                  return `(${num.substr(0, 3)}) ${num.substr(3, 3)}-${num.substr(6, 4)}`;
+                }
+                if (columnId === 'status') {
+                  const status = String(row['status']);
+                  return `${status.substring(0, 1).toUpperCase()}${status.substring(1)}`;
+                }
+                if (columnId === 'nonHCAP') {
+                  return row[columnId] ? 'Non-HCAP' : 'HCAP';
+                }
+                if (columnId === 'archive') {
+                  return (
+                    <Button
+                      onClick={async () => {
+                        // Get data from row.participantId
+                        const response = await fetch(
+                          `${API_URL}/api/v1/participant?id=${row.participantId}`,
+                          {
+                            headers: {
+                              Accept: 'application/json',
+                              'Content-type': 'application/json',
+                              Authorization: `Bearer ${store.get('TOKEN')}`,
+                            },
+                            method: 'GET',
+                          }
+                        );
+                        const participant = await response.json();
+                        setActionMenuParticipant(participant[0]);
+                        setActiveModalForm('archive');
+                      }}
+                      variant='outlined'
+                      size='small'
+                      text='Archive'
+                    />
+                  );
+                }
+                return row[columnId];
+              }}
+            />
+          )}
         </Box>
       )}
       <Dialog

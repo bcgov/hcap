@@ -8,6 +8,7 @@ const {
   withdrawParticipant,
   updateParticipant,
   createChangeHistory,
+  setParticipantLastUpdated,
 } = require('../services/participants');
 
 const { patchObject } = require('../utils');
@@ -47,11 +48,13 @@ router.get(
 // Participants with id
 router.get(
   '/participant/:id',
-  asyncMiddleware(async (req, resp) => {
+  asyncMiddleware(async (req, res) => {
     const { user_id: userId } = req.user;
     const { id } = req.params;
     const participants = await getParticipantByIdWithStatus({ id, userId });
-
+    if (!participants.length) {
+      return res.status(401).send({ message: 'You do not have permission to view this record' });
+    }
     logger.info({
       action: 'user_participant_get',
       performed_by: {
@@ -60,7 +63,7 @@ router.get(
       id: participants.length > 0 ? participants[0].id : '',
     });
 
-    resp.status(200).json(participants);
+    res.status(200).json(participants);
   })
 );
 
@@ -120,6 +123,17 @@ router.post(
     } else {
       res.status(422).send(`No expression of interest with id: ${id}`);
     }
+  })
+);
+
+router.post(
+  '/participant/:id/reconfirm_interest',
+  asyncMiddleware(async (req, res) => {
+    const { user_id: userId } = req.user;
+    const { id } = req.params;
+    const participants = await getParticipantByIdWithStatus({ id, userId });
+    await setParticipantLastUpdated(id);
+    return res.status(201).send({ message: 'Reconfirm interest successful.' });
   })
 );
 

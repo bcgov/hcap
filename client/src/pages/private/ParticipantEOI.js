@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { Typography, Grid, Button } from '@material-ui/core';
+import { Typography, Grid, Button, Box } from '@material-ui/core';
 import { Redirect, useParams, useLocation, useHistory } from 'react-router-dom';
 import { red } from '@material-ui/core/colors';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -92,6 +92,19 @@ const withdrawParticipant = async (id) => {
   return resp.ok;
 };
 
+const submitConfirmInterestRequest = async (id) => {
+  const resp = await fetch(`${rootUrl}/${id}/reconfirm_interest`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({}),
+  });
+  return resp.ok;
+};
+
 const isHiredParticipant = (participant) =>
   participant.currentStatuses?.some((statusObject) => statusObject.status === 'hired');
 
@@ -109,7 +122,10 @@ export default () => {
   const [participant, setParticipant] = useState(null);
   const [loading, setLoading] = useState(false);
   const [disableWithdraw, setDisableWithdraw] = useState(false);
+  const [disableConfirmInterest, setDisableConfirmInterest] = useState(false);
+  const [loadingError, setLoadingError] = useState(false);
   const [openWithdraw, setOpenWithdraw] = useState(false);
+  const [openConfirmInterest, setOpenConfirmInterest] = useState(false);
   const enableEdit = pathName.includes('edit');
 
   // Hooks
@@ -117,6 +133,10 @@ export default () => {
     setLoading(true);
     fetchParticipant(id).then((participant) => {
       setLoading(false);
+      if (!participant) {
+        setLoadingError(true);
+        return;
+      }
       setDisableWithdraw(isHiredParticipant(participant) || isWithdrawn(participant));
       setParticipant(participant);
     });
@@ -145,8 +165,28 @@ export default () => {
     history.push(pathToPush);
   };
 
+  const onConfirmInterest = async () => {
+    setOpenConfirmInterest(false);
+    setLoading(true);
+    const success = await submitConfirmInterestRequest(id);
+    if (success) {
+      openToast({
+        status: ToastStatus.Success,
+        message: 'Confirm interest success',
+      });
+      setDisableConfirmInterest(true);
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: 'Confirm interest failure',
+      });
+    }
+    setLoading(false);
+  };
+
   const onClose = () => {
     setOpenWithdraw(false);
+    setOpenConfirmInterest(false);
   };
 
   const onConfirm = async () => {
@@ -171,6 +211,27 @@ export default () => {
 
   // View
   if (!id) return <Redirect to={Routes.ParticipantLanding} />;
+  if (loadingError)
+    return (
+      <>
+        <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
+          <Box mt={20} alignSelf='center'>
+            <Typography variant={'h2'}>Unable to access participant</Typography>
+          </Box>
+          <Box mt={20} alignSelf='center'>
+            <Button
+              variant={'contained'}
+              color={'primary'}
+              onClick={() => {
+                history.push(Routes.ParticipantLanding);
+              }}
+            >
+              Return to landing page
+            </Button>
+          </Box>
+        </Page>
+      </>
+    );
   return (
     <div id='participant-view'>
       <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
@@ -185,6 +246,21 @@ export default () => {
               Cancel
             </Button>
             <Button onClick={onConfirm} color='primary'>
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog title='Confirm Interest' open={openConfirmInterest} onClose={onClose}>
+          <DialogContent>
+            <Typography variant='subtitle2'>
+              By clicking Confirm, you agree to proceed with this form to apply for HCAP.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onClose} color='primary'>
+              Cancel
+            </Button>
+            <Button onClick={onConfirmInterest} color='primary'>
               Confirm
             </Button>
           </DialogActions>
@@ -207,6 +283,18 @@ export default () => {
                       {!enableEdit ? 'Edit Info' : 'Done Edit'}
                     </Button>
                   </Grid>
+                  {!disableConfirmInterest && (
+                    <Grid item>
+                      <Button
+                        variant='contained'
+                        onClick={() => {
+                          setOpenConfirmInterest(true);
+                        }}
+                      >
+                        Reconfirm interest
+                      </Button>
+                    </Grid>
+                  )}
                   <Grid item>
                     <DeleteButton
                       disabled={disableWithdraw}

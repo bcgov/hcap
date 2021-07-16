@@ -56,7 +56,6 @@ export default () => {
     };
     ue();
   }, [setInterests]);
-  console.log(interests)
   return (
     <Page>
       <Grid justify={'center'} container spacing={1}>
@@ -76,8 +75,8 @@ export default () => {
                 </Typography>
                 <Typography className={classes.title} color='textSecondary' gutterBottom>
                   Contact Info: {item.emailAddress}
-                  <br/>
-                   {item.phoneNumber} 
+                  <br />
+                  {item.phoneNumber}
                 </Typography>
                 <Typography variant='body2' component='p'>
                   Submitted at: {item.dateSubmitted}
@@ -89,11 +88,9 @@ export default () => {
                   text={'View PEOI'}
                   onClick={() => {
                     // Handle case where there is no participant status associated with the PEOI
-                    if(item.latestStatus!=='No Status'){
-                      history.push(`${Routes.PeoiDetail}?participant_id=${item.participant_id}`)
-                    }else{
-                      history.push(`${Routes.PeoiDetail}?id=${item.id}`)
-                    }
+                    history.push(
+                      `${Routes.PeoiDetail}?participant_id=${item.participant_id}&id=${item.id}`
+                    );
                   }}
                 />
               </CardActions>

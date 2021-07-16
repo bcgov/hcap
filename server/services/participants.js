@@ -499,77 +499,93 @@ const createParticipantUserMap = async (userId, email) => {
   return participants;
 };
 
-const getParticipantsForUser = async (userId, email) => {
-  const ids = await dbClient.db[collections.USER_PARTICIPANT_MAP].find({user_id:userId})
-  console.log(ids); 
-  const result = await dbClient.db[collections.PARTICIPANTS].join({
-    statuses :{
-      type:'FULL OUTER',
-      relation: collections.PARTICIPANTS_STATUS, 
-      on: {
-        participant_id:'id',
-        current:'true'
+const getParticipantStatus = async (id) => {
+  return await dbClient.db[collections.PARTICIPANTS_STATUS].find({ id });
+};
+
+const setParticipantLastUpdated = async (id) => {
+  let participant = (await getParticipantByID({ id }))[0];
+  if (participant.interested !== 'withdrawn') {
+    if (participant.intereted !== 'yes') {
+      if (participant.history) {
+        participant.history.push({
+          to: 'yes',
+          from: participant.interested,
+          field: 'interested',
+          timestamp: new Date(),
+        });
+      } else {
+        participant.history = [
+          {
+            to: 'yes',
+            from: participant.interested,
+            field: 'interested',
+            timestamp: new Date(),
+          },
+        ];
       }
     }
-  }).find({
-    id: ids.map(id=>id.participant_id),
-
-  })
-  return formatParticipantStatusResults(result)
+    participant = await dbClient.db[collections.PARTICIPANTS].updateDoc(
+      {
+        id,
+      },
+      {
+        interested: 'yes',
+        history: participant.history,
+        userUpdatedAt: new Date().toJSON(),
+      }
+    );
+  }
 };
-const formatParticipantStatusResults = (results)=>{
-  let formattedResults = [];
-  console.log(results)
-  results.map(result=>{
-    if(result.statuses.length>0){
-      result.statuses.forEach((status)=>{
-        formattedResults.push({
-          participant_id: result.id,
-          id:status.id,
-          firstName:result.body.firstName, 
-          lastName:result.body.lastName,
-          dateSubmitted:result.created_at, 
-          latestStatus:status.status,
-          emailAddress:result.body.emailAddress,
-          phoneNumber:result.body.phoneNumber,
-        })
-      }); 
-    }else{
-      formattedResults.push({
-        participant_id: result.id,
-        id:null,
-        firstName:result.body.firstName, 
-        lastName:result.body.lastName, 
-        latestStatus:'No Status',
-        dateSubmitted:result.created_at, 
-        emailAddress:result.body.emailAddress,
-        phoneNumber:result.body.phoneNumber,
-      })
-    }
-  })
-  console.log(formattedResults)
-  return formattedResults;
-}
 
-const getParticipantStatusesForUser = async (userId) => {
-  const userIds = await dbClient.db[collections.USER_PARTICIPANT_MAP].find({
-    userId
-  })
-  const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]
+const getParticipantsForUser = async (userId, email) => {
+  const ids = await dbClient.db[collections.USER_PARTICIPANT_MAP].find({ user_id: userId });
+  const result = await dbClient.db[collections.PARTICIPANTS]
     .join({
-      mapped: {
-        type: 'LEFT OUTER',
-        relation: collections.USER_PARTICIPANT_MAP,
+      statuses: {
+        type: 'FULL OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'id',
-          user_id: userId,
+          current: 'true',
         },
       },
     })
     .find({
-      'mapped.user_id': userId,
+      id: ids.map((id) => id.participant_id),
     });
-  return participants;
+  return formatParticipantStatusResults(result);
+};
+const formatParticipantStatusResults = (results) => {
+  let formattedResults = [];
+  results.map((result) => {
+    if (result.statuses.length > 0) {
+      result.statuses.forEach((status) => {
+        formattedResults.push({
+          participant_id: result.id,
+          id: status.id,
+          firstName: result.body.firstName,
+          lastName: result.body.lastName,
+          dateSubmitted: result.created_at,
+          latestStatus: status.status,
+          emailAddress: result.body.emailAddress,
+          phoneNumber: result.body.phoneNumber,
+        });
+      });
+    } else {
+      formattedResults.push({
+        participant_id: result.id,
+        id: null,
+        firstName: result.body.firstName,
+        lastName: result.body.lastName,
+        latestStatus: 'No Status',
+        dateSubmitted: result.created_at,
+        emailAddress: result.body.emailAddress,
+        phoneNumber: result.body.phoneNumber,
+      });
+    }
+  });
+  return formattedResults;
 };
 
 const mapUserWithParticipant = async (userId, participantId) =>
@@ -579,7 +595,6 @@ const mapUserWithParticipant = async (userId, participantId) =>
   });
 
 const getParticipantsStatusById = async (participant_id, peoiId) => {
-  console.log(participant_id, peoiId);
   return await dbClient.db[collections.PARTICIPANTS_STATUS].find({
     participant_id,
     id: peoiId,
@@ -593,7 +608,8 @@ const getParticipantUserMapByUserId = async (user_id) => {
 };
 
 module.exports = {
-  getParticipantStatusesForUser,
+  setParticipantLastUpdated,
+  getParticipantStatus,
   getParticipantUserMapByUserId,
   getParticipantsStatusById,
   parseAndSaveParticipants,

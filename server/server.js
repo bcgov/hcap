@@ -18,9 +18,9 @@ const {
   confirmParticipantInterest,
   validateConfirmationId,
   getParticipantsForUser,
+  setParticipantLastUpdated,
+  getParticipantStatus,
   getParticipantUserMapByUserId,
-  getParticipantsStatusById,
-  getParticipantStatusesForUser,
 } = require('./services/participants.js');
 const {
   getEmployers,
@@ -757,31 +757,6 @@ app.post(
     return res.status(201).json({});
   })
 );
-app.get(
-  `${apiBaseUrl}/user/peoi`,
-  keycloak.allowRolesMiddleware('participant'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    // const userParticipantMapRecord = await getParticipantUserMapByUserId(req.hcapUserInfo.userId);
-    // console.log(userParticipantMapRecord);
-    // console.log(req.query.id);
-    const result = await getParticipantsStatusById(
-      userParticipantMapRecord[0].participant_id,
-      req.query.id
-    );
-    console.log(result);
-    return res.json({ hello: 'world' });
-  })
-);
-
-app.get(
-  `${apiBaseUrl}/user/peois`,
-  keycloak.allowRolesMiddleware('participant'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    return res.json({ hello: 'world' });
-  })
-);
 
 // Get user info from token
 app.get(
@@ -804,15 +779,50 @@ app.get(
   keycloak.allowRolesMiddleware('participant'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    const userParticipantMapRecord = await getParticipantUserMapByUserId(req.hcapUserInfo.userId);
-    console.log(userParticipantMapRecord);
-    console.log(req.query.id);
-    const result = await getParticipantsStatusById(
-      userParticipantMapRecord[0].participant_id,
-      req.query.id
-    );
-    console.log(result);
-    return res.json({ hello: 'world' });
+    // Get all the participant ids for users to prevent unauthorized users from accessing this data.
+    let ids = await getParticipantUserMapByUserId(req.hcapUserInfo.userId);
+    ids = ids.map((id) => id.participant_id);
+    let participant_status;
+    if (req.query.id && req.query.id !== 'null') {
+      participant_status = await getParticipantStatus(parseInt(req.query.id));
+      if (!ids.includes(participant_status[0].participant_id)) {
+        return res
+          .status(401)
+          .json({ message: 'You do not have permission to read this participant status' });
+      }
+    }
+    if (req.query.participant_id) {
+      // getParticipantById takes an object with an id property so I did some casting here.
+      const participant = await getParticipantByID({ id: parseInt(req.query.participant_id) });
+      if (!ids.includes(participant[0].id)) {
+        return res
+          .status(401)
+          .json({ message: 'You do not have permission to read this participant status' });
+      }
+      // Combine participant and participant status into one object and return it.
+      return res
+        .status(200)
+        .send({ ...participant[0], ...(participant_status?.length ? participant_status[0] : {}) });
+    } else {
+      return res.status(400).json({ message: 'Invalid query string' });
+    }
+  })
+);
+app.post(
+  `${apiBaseUrl}/user/peoi/confirm_interest`,
+  keycloak.allowRolesMiddleware('participant'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    let ids = await getParticipantUserMapByUserId(req.hcapUserInfo.userId);
+    ids = ids.map((id) => id.participant_id);
+    if (req.body.id && ids.includes(parseInt(req.body.id))) {
+      console.log('Made it');
+      await setParticipantLastUpdated(parseInt(req.body.id));
+      //await confirmParticipantInterest(parseInt(req.body.id));
+      return res.status(201).send({ message: 'Participant updated.' });
+    } else {
+      return res.status(400).send({ message: 'Could not update participant status' });
+    }
   })
 );
 

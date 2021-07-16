@@ -5,8 +5,16 @@ accessToken=$(
         -d "password=${KEYCLOAK_SA_PASSWORD}" \
         -d "client_id=admin-cli" \
         -d "grant_type=password" \
-        "${KEYCLOAK_AUTH_URL}/realms/master/protocol/openid-connect/token" \
+        "${KEYCLOAK_LOCAL_AUTH_URL}/realms/master/protocol/openid-connect/token" \
         | jq -r '.access_token'
+)
+
+localID=$(curl --silent \
+    -H "Authorization: bearer ${accessToken}" \
+    -H "Content-Type: application/json" \
+    "${KEYCLOAK_LOCAL_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/clients" \
+    | jq -c '.[] | select(.clientId | contains("hcap-fe-local"))' \
+    | jq -r '.id'
 )
 
 function importUser() {
@@ -14,7 +22,7 @@ function importUser() {
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \
         -d "${1}" \
-        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users"
+        "${KEYCLOAK_LOCAL_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users"
 }
 
 function setPassword() {
@@ -23,7 +31,7 @@ function setPassword() {
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \
         -d '{"type":"password","value":"password","temporary":false}' \
-        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/reset-password"
+        "${KEYCLOAK_LOCAL_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/reset-password"
 }
 
 function importRoleMappings() {
@@ -31,7 +39,7 @@ function importRoleMappings() {
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \
         -d "${2}" \
-        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/${KEYCLOAK_FE_ID}"
+        "${KEYCLOAK_LOCAL_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/$localID"
 }
 
 function deleteRoleMappings() {
@@ -39,14 +47,14 @@ function deleteRoleMappings() {
         -X DELETE \
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \
-        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/${KEYCLOAK_FE_ID}"
+        "${KEYCLOAK_LOCAL_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users/${1}/role-mappings/clients/$localID"
 }
 
 function exportUsers() {
     curl --fail --silent \
         -H "Authorization: bearer ${accessToken}" \
         -H "Content-Type: application/json" \
-        "${KEYCLOAK_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users"
+        "${KEYCLOAK_LOCAL_AUTH_URL}/admin/realms/${KEYCLOAK_REALM}/users"
 }
 
 jq -c '.[]' .docker/keycloak/users.json | while read i; do

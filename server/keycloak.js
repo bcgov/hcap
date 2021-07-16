@@ -24,13 +24,20 @@ const defaults = {
 class Keycloak {
   // Wrapper class around keycloak-connect
   constructor() {
+    const isLocal = process.env.KEYCLOAK_AUTH_URL.includes('local');
     this.realm = process.env.KEYCLOAK_REALM;
     this.authUrl = process.env.KEYCLOAK_AUTH_URL;
     this.clientNameFrontend = process.env.KEYCLOAK_FE_CLIENTID;
     this.clientNameBackend = process.env.KEYCLOAK_API_CLIENTID;
-    this.clientSecretBackend = process.env.KEYCLOAK_API_SECRET;
-    this.serviceAccountUsername = process.env.KEYCLOAK_SA_USERNAME;
-    this.serviceAccountPassword = process.env.KEYCLOAK_SA_PASSWORD;
+    this.clientSecretBackend = isLocal
+      ? process.env.KEYCLOAK_LOCAL_SECRET
+      : process.env.KEYCLOAK_API_SECRET;
+    this.serviceAccountUsername = isLocal
+      ? process.env.KEYCLOAK_LOCAL_USERNAME
+      : process.env.KEYCLOAK_SA_USERNAME;
+    this.serviceAccountPassword = isLocal
+      ? process.env.KEYCLOAK_LOCAL_PASSWORD
+      : process.env.KEYCLOAK_SA_PASSWORD;
     const config = {
       ...defaults,
       realm: this.realm,
@@ -142,8 +149,11 @@ class Keycloak {
 
   async authenticateIfNeeded() {
     // Race condition if token expires between this call and the desired authenticated call
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-
+    const config = {
+      headers: {
+        Authorization: `Bearer ${this.access_token}`,
+      },
+    };
     try {
       await axios.get(
         `${this.authUrl}/realms/${this.realm}/protocol/openid-connect/userinfo`,
@@ -155,6 +165,7 @@ class Keycloak {
   }
 
   async buildInternalIdMap() {
+    await this.authenticateIfNeeded();
     // Creates maps of Keycloak role and client names to IDs
     // See Keycloak docs https://www.keycloak.org/docs-api/5.0/rest-api/index.html#_clients_resource
     try {
@@ -190,7 +201,11 @@ class Keycloak {
   async getUsers(ignorePendings) {
     try {
       await this.authenticateIfNeeded();
-      const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+      const config = {
+        headers: {
+          Authorization: `Bearer ${this.access_token}`,
+        },
+      };
 
       const getData = async (url) => {
         const response = await axios.get(url, config);

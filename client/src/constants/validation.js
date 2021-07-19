@@ -18,8 +18,15 @@ const validatePastDateString = (s) => {
   if (!validateDateString(s)) return false;
   return Date.parse(s) <= new Date();
 };
-const validateDateIsInThePast = (d) => {
-  return Date.parse(d) <= new Date();
+const validateDateIsInThePast = (s) => {
+  return Date.parse(s) <= new Date();
+};
+const validateDateIsReasonable = (d) => {
+  try {
+    return Date.parse(d) >= Date.parse('1899/12/31');
+  } catch (e) {
+    return false;
+  }
 };
 const validateUniqueArray = (a) => Array.isArray(a) && new Set(a).size === a.length;
 
@@ -388,8 +395,13 @@ export const ArchiveHiredParticipantSchema = yup.object().shape({
     is: 'employmentEnded',
     then: yup
       .date()
-      .required('Please enter the date this participant was removed.')
-      .test('is-present', 'Invalid entry. Date must be in the past.', validateDateIsInThePast),
+      .test('is-present', 'Invalid entry. Date must be in the past.', validateDateIsInThePast)
+      .test(
+        'is-reasonable',
+        'Invalid entry. Date must be after December 31st 1899.',
+        validateDateIsReasonable
+      )
+      .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
   }),
   confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
 });

@@ -614,7 +614,7 @@ const getParticipantByIdWithStatus = async ({ id, userId }) =>
 
 const setParticipantLastUpdated = async (id) => {
   // Find participants
-  let participant = (await getParticipantByID({ id }))[0];
+  let [participant] = await getParticipantByID({ id });
   // Don't change status if participant is withdrawn
   if (participant.interested !== 'withdrawn') {
     // Only change history if the interested column isn't yes

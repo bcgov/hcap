@@ -27,7 +27,7 @@ services:
       context: ./server
       dockerfile: Dockerfile.dev
       args:
-        VERSION: '1'
+        VERSION: ${LAST_COMMIT}
     environment:
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_DB=${POSTGRES_DB}
@@ -37,7 +37,7 @@ services:
       - MONGO_DB=${MONGO_DB}
       - MONGO_USER=${MONGO_USER}
       - MONGO_PASSWORD=${MONGO_PASSWORD}
-      - VERSION='1'
+      - VERSION=${LAST_COMMIT}
       - KEYCLOAK_REALM=${KEYCLOAK_REALM}
       - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
       - KEYCLOAK_API_CLIENTID=${KEYCLOAK_API_CLIENTID}

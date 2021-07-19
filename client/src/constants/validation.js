@@ -1,6 +1,10 @@
 import * as yup from 'yup';
 import mapValues from 'lodash/mapValues';
-import { archiveReasonOptions, archiveStatusOptions } from './archiveParticipantsConstants';
+import {
+  archiveReasonOptions,
+  archiveStatusOptions,
+  maxDateString,
+} from './archiveParticipantsConstants';
 
 const healthRegions = ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'];
 
@@ -23,7 +27,7 @@ const validateDateIsInThePast = (s) => {
 };
 const validateDateIsReasonable = (d) => {
   try {
-    return Date.parse(d) >= Date.parse('1899/12/31');
+    return Date.parse(d) >= Date.parse(maxDateString);
   } catch (e) {
     return false;
   }

@@ -3,14 +3,6 @@ describe('Tests the Site Details View', () => {
     cy.kcLogout();
   });
 
-  it('visits the Site Details View as health authority', () => {
-    cy.kcLogin('test-ha');
-    cy.visit('/site-view');
-    cy.get('span.MuiButton-label', { timeout: 10000 }).should('include.text', 'details');
-    cy.get('span.MuiButton-label').contains('details').click();
-    cy.get('button.Mui-selected').should('have.text', 'Site Details');
-  });
-
   it('creates a new site as MoH, asserts that it has default functionality', () => {
     cy.kcLogin('test-moh');
     cy.visit('/site-view');
@@ -29,6 +21,14 @@ describe('Tests the Site Details View', () => {
       .within(() => {
         cy.get('button').click();
       });
+    cy.get('button.Mui-selected').should('have.text', 'Site Details');
+  });
+
+  it('visits the Site Details View as health authority', () => {
+    cy.kcLogin('test-ha');
+    cy.visit('/site-view');
+    cy.get('span.MuiButton-label', { timeout: 10000 }).should('include.text', 'details');
+    cy.get('span.MuiButton-label').contains('details').click();
     cy.get('button.Mui-selected').should('have.text', 'Site Details');
   });
 });

@@ -84,7 +84,6 @@ const fetchDetails = async (id) => {
 export default ({ id, siteId, onArchiveParticipantAction }) => {
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
-  const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [rows, setRows] = useState([]);
@@ -185,12 +184,10 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
       const withdrawnRowsData = mapToData(withdrawn);
       setFetchedRows(rowsData);
       setFetchedWithdrawnRows(withdrawnRowsData);
-      setIsPendingRequests(rowsData.length > 0 || withdrawnRowsData > 0);
     } else {
       setRows([]);
       setFetchedRows([]);
       setFetchedWithdrawnRows([]);
-      setIsPendingRequests(false);
     }
     setLoadingData(false);
   };
@@ -237,12 +234,10 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
         const withdrawnRowsData = mapToData(withdrawn);
         setFetchedRows(rowsData);
         setFetchedWithdrawnRows(withdrawnRowsData);
-        setIsPendingRequests(rowsData.length > 0 && withdrawnRowsData.length > 0);
       } else {
         setRows([]);
         setFetchedRows([]);
         setFetchedWithdrawnRows([]);
-        setIsPendingRequests(false);
       }
       setLoadingData(false);
     };
@@ -288,7 +283,7 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
       alignItems='center'
       direction='column'
     >
-      {isPendingRequests && (
+      {
         <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
           <CustomTabs
             value={selectedTab || false}
@@ -384,7 +379,7 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
             />
           )}
         </Box>
-      )}
+      }
       <Dialog
         title={getDialogTitle(activeModalForm)}
         open={activeModalForm != null}

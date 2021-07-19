@@ -618,7 +618,7 @@ const setParticipantLastUpdated = async (id) => {
   // Don't change status if participant is withdrawn
   if (participant.interested !== 'withdrawn') {
     // Only change history if the interested column isn't yes
-    if (participant.intereted !== 'yes') {
+    if (participant.interested !== 'yes') {
       if (participant.history) {
         participant.history.push({
           to: 'yes',

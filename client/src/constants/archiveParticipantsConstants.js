@@ -20,3 +20,5 @@ export const archiveTypeOptions = [
   { value: 'employmentEnded', label: 'Employment ended' },
   { value: 'duplicate', label: 'Duplicate' },
 ];
+
+export const maxDateString = '1899/12/31';

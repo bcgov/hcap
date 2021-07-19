@@ -8,8 +8,8 @@ describe('Tests the Site Details View', () => {
     cy.visit('/site-view');
 
     // We're ready once the loading bars appear and then disappear
-    cy.get('span.MuiSkeleton-root').should('exist');
-    cy.get('span.MuiSkeleton-root').should('not.exist');
+    // cy.get('span.MuiSkeleton-root').should('exist');
+    // cy.get('span.MuiSkeleton-root').should('not.exist');
 
     cy.get('span.MuiButton-label').should('include.text', 'details');
     cy.get('span.MuiButton-label').contains('details').click();
@@ -21,8 +21,8 @@ describe('Tests the Site Details View', () => {
     cy.visit('/site-view');
 
     // Complete loading
-    cy.get('span.MuiSkeleton-root').should('exist');
-    cy.get('span.MuiSkeleton-root').should('not.exist');
+    // cy.get('span.MuiSkeleton-root').should('exist');
+    // cy.get('span.MuiSkeleton-root').should('not.exist');
 
     cy.get('span.MuiButton-label').should('include.text', 'Create Site');
     cy.get('span.MuiButton-label').contains('Create Site').click();

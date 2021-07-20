@@ -122,7 +122,6 @@ export default () => {
   const [participant, setParticipant] = useState(null);
   const [loading, setLoading] = useState(false);
   const [disableWithdraw, setDisableWithdraw] = useState(false);
-  const [disableConfirmInterest, setDisableConfirmInterest] = useState(false);
   const [loadingError, setLoadingError] = useState(false);
   const [openWithdraw, setOpenWithdraw] = useState(false);
   const [openConfirmInterest, setOpenConfirmInterest] = useState(false);
@@ -159,7 +158,6 @@ export default () => {
       });
     }
   };
-
   const onEdit = () => {
     const pathToPush = enableEdit ? pathName.split('/edit')[0] : `${pathName}/edit`;
     history.push(pathToPush);
@@ -170,11 +168,8 @@ export default () => {
     setLoading(true);
     const success = await submitConfirmInterestRequest(id);
     if (success) {
-      openToast({
-        status: ToastStatus.Success,
-        message: 'Confirm interest success',
-      });
-      setDisableConfirmInterest(true);
+      history.push(Routes.ParticipantActionSuccess.replace(':id', id));
+      return;
     } else {
       openToast({
         status: ToastStatus.Error,
@@ -285,7 +280,7 @@ export default () => {
                   </Grid>
                   <Grid item>
                     <Button
-                      disable={disableConfirmInterest || disableWithdraw}
+                      disabled={disableWithdraw}
                       variant='contained'
                       onClick={() => {
                         setOpenConfirmInterest(true);

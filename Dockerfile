@@ -1,5 +1,5 @@
 # Client
-FROM public.ecr.aws/bitnami/node:14.17.3 AS client
+FROM registry.access.redhat.com/ubi8/nodejs-14:1 AS client
 
 # Build client
 WORKDIR /client
@@ -9,7 +9,7 @@ COPY client/. .
 RUN INLINE_RUNTIME_CHUNK=false npm run build
 
 # Server
-FROM public.ecr.aws/bitnami/node:14.17.3 AS server
+FROM registry.access.redhat.com/ubi8/nodejs-12:1 AS server
 
 # Static env vars
 ARG VERSION

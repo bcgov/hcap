@@ -161,8 +161,8 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
             participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
             hiredDate: row.data.hiredDate,
             startDate: row.data.startDate,
-            withdrawnDate: row.data.endDate,
-            reason: row.data.reason,
+            withdrawnDate: row.data?.endDate,
+            reason: row.data?.reason,
             nonHCAP: row.data.nonHcapOpportunity,
           };
 

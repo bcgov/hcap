@@ -132,14 +132,14 @@ const getWithdrawnParticipantsBySite = async (siteID) => {
   // simultaneously. One holds the siteID, the other holds the end date and
   // reason for withdrawal. We match them based on employerID.
   const employerIDs = participants
-    .filter((ppt) => ppt.data?.previousData?.site === parseInt(siteID, 10))
-    .map((ppt) => ppt.employer_id);
+    .filter((participant) => participant.data?.previousData?.site === parseInt(siteID, 10))
+    .map((participant) => participant.employer_id);
 
   return participants.filter(
-    (ppt) =>
-      employerIDs.includes(ppt.employer_id) &&
-      ppt.data.endDate !== undefined &&
-      ppt.data.type !== 'duplicate'
+    (participant) =>
+      employerIDs.includes(participant.employer_id) &&
+      participant.data.endDate !== undefined &&
+      participant.data.type !== 'duplicate'
   );
 };
 

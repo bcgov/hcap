@@ -283,9 +283,9 @@ export default () => {
                       {!enableEdit ? 'Edit Info' : 'Done Edit'}
                     </Button>
                   </Grid>
-                  {!disableConfirmInterest && (
                     <Grid item>
                       <Button
+                        disable={disableConfirmInterest || disableWithdraw}
                         variant='contained'
                         onClick={() => {
                           setOpenConfirmInterest(true);
@@ -294,7 +294,6 @@ export default () => {
                         Reconfirm interest
                       </Button>
                     </Grid>
-                  )}
                   <Grid item>
                     <DeleteButton
                       disabled={disableWithdraw}

@@ -77,6 +77,7 @@ export const Header = ({ hideEmployers = false }) => {
   const [keycloak] = useKeycloak();
 
   const handleLoginClick = () => history.push(Routes.Login);
+  const isParticipantPortal = window.location.host.match(Routes.ParticipantHostname)
 
   const handleLogoutClick = async () => {
     store.remove('TOKEN');
@@ -84,7 +85,7 @@ export const Header = ({ hideEmployers = false }) => {
   };
 
   const title = () => {
-    if (window.location.host.match(Routes.ParticipantHostname)) {
+    if (isParticipantPortal) {
       return 'Participant Expression of Interest';
     }
     if (
@@ -135,7 +136,13 @@ export const Header = ({ hideEmployers = false }) => {
                   fullWidth={false}
                   variant='outlined'
                   color='inherit'
-                  onClick={() => history.push(Routes.Admin)}
+                  onClick={() => {
+                    if(isParticipantPortal){
+                      return history.push(Routes.ParticipantLanding)
+                    }else{
+                      return history.push(Routes.Admin)
+                    }
+                  }}
                 />
               )}
               {keycloak.authenticated && !keycloak.loginRequired ? (

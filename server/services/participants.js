@@ -136,7 +136,10 @@ const getWithdrawnParticipantsBySite = async (siteID) => {
     .map((ppt) => ppt.employer_id);
 
   return participants.filter(
-    (ppt) => employerIDs.includes(ppt.employer_id) && ppt.data.endDate !== undefined
+    (ppt) =>
+      employerIDs.includes(ppt.employer_id) &&
+      ppt.data.endDate !== undefined &&
+      ppt.data.type !== 'duplicate'
   );
 };
 

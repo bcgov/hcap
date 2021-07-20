@@ -33,8 +33,8 @@ objects:
       name: ${NAME}-config
     data:
       backup.conf: |
-        mongo=${DB_SERVICE}:27017/${DB_NAME}
-        0 2 * * * default (./backup.sh -s; (mongodump -h hcap-mongo-headless -d $DATABASE_NAME -u $DATABASE_USER -p $DATABASE_PASSWORD --authenticationDatabase $DATABASE_NAME --out /backups/daily/$(date +"%Y-%m-%d") --forceTableScan))
+        mongo=${DATABASE_SERVICE_NAME}:27017/${DB_NAME}
+        0 2 * * * default (./backup.sh -s; (mongodump -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -u $DATABASE_USER -p $DATABASE_PASSWORD --authenticationDatabase $DATABASE_NAME --out /backups/daily/$(date +"%Y-%m-%d") --forceTableScan))
   - apiVersion: apps.openshift.io/v1
     kind: DeploymentConfig
     metadata:

@@ -97,26 +97,6 @@ jobs:
         with:
           ref: 'dev'
           fetch-depth: 0
-
-      - name: Cache OpenShift CLI
-        id: cache-oc
-        uses: actions/cache@v2
-        with:
-          path: /usr/local/bin/oc
-          key: ${{ runner.os }}-oc
-
-      - name: Install OpenShift CLI
-        if: steps.cache-oc.outputs.cache-hit != 'true'
-        run: |
-          OC_VERSION=3.11.0
-          sudo apt-get update
-          sudo apt-get -y install wget
-          wget --quiet -O oc.tar.gz "https://github.com/openshift/origin/releases/download/v${OC_VERSION}/openshift-origin-client-tools-v${OC_VERSION}-0cbc58b-linux-64bit.tar.gz"
-          FILE=$(tar -tf oc.tar.gz | grep '/oc$')
-          tar -zxf oc.tar.gz "$FILE"
-          sudo mv "$FILE" /usr/local/bin/oc
-          rm -rf oc.tar.gz openshift-origin-client-tools-v*
-
       - name: Build & Deploy
         run: |
           cd "$GITHUB_WORKSPACE"

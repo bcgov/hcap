@@ -2,6 +2,7 @@
 FROM registry.access.redhat.com/ubi8/nodejs-14:1 AS client
 
 # Build client
+# RUN apk add --no-cache git python g++ make
 WORKDIR /client
 COPY client/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
@@ -17,6 +18,7 @@ ENV VERSION $VERSION
 ENV NODE_ENV production
 
 # Configure server
+# RUN apk add --no-cache git
 COPY --from=client /client/build /client/build/.
 WORKDIR /server
 COPY server/package*.json ./

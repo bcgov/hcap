@@ -486,8 +486,14 @@ export const RejectedFormSchema = yup
   });
 
 export const ParticipantEditFormSchema = yup.object().shape({
-  phoneNumber: yup.string().matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
-  postalCode: yup.string().matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
+  phoneNumber: yup
+    .string()
+    .required(errorMessage)
+    .matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
+  postalCode: yup
+    .string()
+    .required(errorMessage)
+    .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
 });
 
 export const ParticipantFormSchema = yup

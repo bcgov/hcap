@@ -77,7 +77,7 @@ export const Header = ({ hideEmployers = false }) => {
   const [keycloak] = useKeycloak();
 
   const handleLoginClick = () => history.push(Routes.Login);
-  const isParticipantPortal = window.location.host.match(Routes.ParticipantHostname)
+  const isParticipantPortal = window.location.host.match(Routes.ParticipantHostname);
 
   const handleLogoutClick = async () => {
     store.remove('TOKEN');
@@ -137,10 +137,10 @@ export const Header = ({ hideEmployers = false }) => {
                   variant='outlined'
                   color='inherit'
                   onClick={() => {
-                    if(isParticipantPortal){
-                      return history.push(Routes.ParticipantLanding)
-                    }else{
-                      return history.push(Routes.Admin)
+                    if (isParticipantPortal) {
+                      return history.push(Routes.ParticipantLanding);
+                    } else {
+                      return history.push(Routes.Admin);
                     }
                   }}
                 />

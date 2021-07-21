@@ -150,7 +150,13 @@ export const Header = ({ hideEmployers = false }) => {
                       fullWidth={false}
                       variant='outlined'
                       color='inherit'
-                      onClick={() => history.push(Routes.Admin)}
+                      onClick={() => {
+                        if (isParticipantPortal) {
+                          return history.push(Routes.ParticipantLanding);
+                        } else {
+                          return history.push(Routes.Admin);
+                        }
+                      }}
                     />
                   )}
                   {keycloak.authenticated && !keycloak.loginRequired ? (
@@ -184,7 +190,16 @@ export const Header = ({ hideEmployers = false }) => {
                   onClose={handleMenuClose}
                 >
                   {keycloak.authenticated && location.pathname !== Routes.Admin && (
-                    <MenuItem key='Home' onClick={() => history.push(Routes.Admin)}>
+                    <MenuItem
+                      key='Home'
+                      onClick={() => {
+                        if (isParticipantPortal) {
+                          return history.push(Routes.ParticipantLanding);
+                        } else {
+                          return history.push(Routes.Admin);
+                        }
+                      }}
+                    >
                       Home
                     </MenuItem>
                   )}

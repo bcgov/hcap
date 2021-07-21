@@ -2,6 +2,10 @@
   "name": "health-career-access-program-client",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=14.0",
+    "npm": ">=7.0.0"
+  },
   "scripts": {
     "start": "CI=true PORT=4000 react-scripts start",
     "build": "react-scripts build",

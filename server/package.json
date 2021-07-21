@@ -4,6 +4,10 @@
   "description": "",
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=14.0",
+    "npm": ">=7.0.0"
+  },
   "scripts": {
     "parse-xml": "cd scripts && node parse-xml.js xml",
     "migrate": "node-pg-migrate",

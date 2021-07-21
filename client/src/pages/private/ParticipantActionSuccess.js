@@ -25,7 +25,7 @@ export default () => {
   const classes = useStyles();
   const { id } = useParams();
   const history = useHistory();
-  const handleBackCLick = () => {
+  const handleBackClick = () => {
     if (id) {
       return history.push(Routes.ParticipantEOI.replace(':id', id));
     } else {

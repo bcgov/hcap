@@ -33,6 +33,12 @@ jobs:
       - name: Import Users
         run: make kc-import-users
 
+      - name: Add Sites
+        run: cd server && npm run feed-sites sites.xlsx
+
+      - name: Add Participants
+        run: npm run feed-participants participants.xlsx && cd ..
+
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:

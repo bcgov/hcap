@@ -38,7 +38,7 @@ export default () => {
       <Grid container spacing={4} justify='center' alignContent='center' direction='column'>
         <Grid className={classes.textBoxes} item>
           <Typography variant={'h2'}>Successfully Confirmed Interest</Typography>
-          <Typography>You have successfully confirm your interest and status with HCAP</Typography>
+          <Typography>You have successfully confirmed your interest and status with HCAP</Typography>
         </Grid>
         <Grid className={classes.buttonBoxes} item>
           <Button className={classes.button} variant={'contained'} onClick={handleBackCLick}>

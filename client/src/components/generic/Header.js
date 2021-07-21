@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -8,10 +8,13 @@ import { useKeycloak } from '@react-keycloak/web';
 import store from 'store';
 import BcLogo from '../../assets/images/bc-logo.svg';
 import BcLogoMini from '../../assets/images/bc-logo-mini.svg';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import Hidden from '@material-ui/core/Hidden';
 import { Routes } from '../../constants';
 import { Button } from './Button';
 import Link from '@material-ui/core/Link';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.headerText.primary,
     fontWeight: 'bold',
     marginTop: -3,
-    fontSize: '2.2em',
+    fontSize: 'min(2.2em, 3.8vw)',
   },
   titleSmall: {
     color: theme.palette.headerText.primary,
@@ -75,6 +78,7 @@ export const Header = ({ hideEmployers = false }) => {
   const location = useLocation();
   const classes = useStyles();
   const [keycloak] = useKeycloak();
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleLoginClick = () => history.push(Routes.Login);
   const isParticipantPortal = window.location.host.match(Routes.ParticipantHostname);
@@ -82,6 +86,14 @@ export const Header = ({ hideEmployers = false }) => {
   const handleLogoutClick = async () => {
     store.remove('TOKEN');
     await keycloak.logout({ redirectUri: window.location.origin });
+  };
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = (event) => {
+    setAnchorEl(null);
   };
 
   const title = () => {
@@ -128,43 +140,81 @@ export const Header = ({ hideEmployers = false }) => {
             </div>
           </div>
           {!hideEmployers && (
-            <div className={classes.buttonWrapper}>
-              {keycloak.authenticated && location.pathname !== Routes.Admin && (
-                <Button
-                  className={classes.button}
-                  text='Home'
-                  fullWidth={false}
-                  variant='outlined'
-                  color='inherit'
-                  onClick={() => {
-                    if (isParticipantPortal) {
-                      return history.push(Routes.ParticipantLanding);
-                    } else {
-                      return history.push(Routes.Admin);
-                    }
-                  }}
-                />
-              )}
-              {keycloak.authenticated && !keycloak.loginRequired ? (
-                <Button
-                  className={classes.button}
-                  text='Logout'
-                  fullWidth={false}
-                  variant='outlined'
-                  color='inherit'
-                  onClick={handleLogoutClick}
-                />
-              ) : (
-                <Button
-                  className={classes.button}
-                  text='Login'
-                  fullWidth={false}
-                  variant='outlined'
-                  color='inherit'
-                  onClick={handleLoginClick}
-                />
-              )}
-            </div>
+            <>
+              <Hidden xsDown>
+                <div className={classes.buttonWrapper}>
+                  {keycloak.authenticated && location.pathname !== Routes.Admin && (
+                    <Button
+                      className={classes.button}
+                      text='Home'
+                      fullWidth={false}
+                      variant='outlined'
+                      color='inherit'
+                      onClick={() => {
+                        if (isParticipantPortal) {
+                          return history.push(Routes.ParticipantLanding);
+                        } else {
+                          return history.push(Routes.Admin);
+                        }
+                      }}
+                    />
+                  )}
+                  {keycloak.authenticated && !keycloak.loginRequired ? (
+                    <Button
+                      className={classes.button}
+                      text='Logout'
+                      fullWidth={false}
+                      variant='outlined'
+                      color='inherit'
+                      onClick={handleLogoutClick}
+                    />
+                  ) : (
+                    <Button
+                      className={classes.button}
+                      text='Login'
+                      fullWidth={false}
+                      variant='outlined'
+                      color='inherit'
+                      onClick={handleLoginClick}
+                    />
+                  )}
+                </div>
+              </Hidden>
+              <Hidden smUp>
+                <KeyboardArrowDownIcon onClick={handleMenuClick} />
+                <Menu
+                  id='login-menu'
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                >
+                  {keycloak.authenticated && location.pathname !== Routes.Admin && (
+                    <MenuItem
+                      key='Home'
+                      onClick={() => {
+                        if (isParticipantPortal) {
+                          return history.push(Routes.ParticipantLanding);
+                        } else {
+                          return history.push(Routes.Admin);
+                        }
+                      }}
+                    >
+                      Home
+                    </MenuItem>
+                  )}
+                  {keycloak.authenticated && !keycloak.loginRequired ? (
+                    <MenuItem key='Login' onClick={handleLogoutClick}>
+                      Logout
+                    </MenuItem>
+                  ) : (
+                    <MenuItem key='Login' onClick={handleLoginClick}>
+                      Login
+                    </MenuItem>
+                  )}
+                </Menu>
+              </Hidden>
+            </>
           )}
         </Toolbar>
       </AppBar>

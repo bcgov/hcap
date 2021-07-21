@@ -72,10 +72,7 @@ Cypress.Commands.add('kcLogin', (user) => {
         });
       })
       .then(function (response) {
-        console.log('response');
-        console.log(response);
         let code = getAuthCodeFromLocation(response.headers['location']);
-        console.log(`code is ${code}`);
         cy.request({
           method: 'post',
           url: authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/token',

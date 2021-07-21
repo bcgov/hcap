@@ -121,25 +121,26 @@ const getWithdrawnParticipantsBySite = async (siteID) => {
         on: { id: 'participant_id' },
       },
     })
-    .find(
-      {
-        current: true,
-        status: 'archived',
-        'data.previousData.site': String(siteID),
-      },
-      {
-        distinct: true,
-      }
-    );
+    .find({
+      current: true,
+      status: 'archived',
+    });
 
-  // Sometimes, this query returns multiple results which are identical except
-  // for the id of the entry
+  // In order to make sure we're returning only the statuses relevant to
+  // a given site, we need to match the statuses created by a specific
+  // employer, as the withdrawl action creates two current statuses
+  // simultaneously. One holds the siteID, the other holds the end date and
+  // reason for withdrawal. We match them based on employerID.
+  const employerIDs = participants
+    .filter((participant) => participant.data?.previousData?.site === parseInt(siteID, 10))
+    .map((participant) => participant.employer_id);
 
-  return participants.reduce((acc, obj) => {
-    const inArray = acc.find(({ participant_id }) => obj.participant_id === participant_id);
-    if (!inArray) acc.push(obj);
-    return acc;
-  }, []);
+  return participants.filter(
+    (participant) =>
+      employerIDs.includes(participant.employer_id) &&
+      participant.data.endDate !== undefined &&
+      participant.data.type !== 'duplicate'
+  );
 };
 
 const getParticipantByID = async (participantInfo) => {

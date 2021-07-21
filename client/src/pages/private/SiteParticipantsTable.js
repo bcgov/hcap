@@ -84,7 +84,6 @@ const fetchDetails = async (id) => {
 export default ({ id, siteId, onArchiveParticipantAction }) => {
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
-  const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [rows, setRows] = useState([]);
@@ -118,13 +117,25 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
 
   useEffect(() => {
     dispatch({
+      type: SiteDetailTabContext.types.LOAD_SITE,
+      payload: {},
+    });
+    fetchDetails(id).then((response) => {
+      dispatch({
+        type: SiteDetailTabContext.types.UPDATE_SITE,
+        payload: { site: response },
+      });
+    });
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    dispatch({
       type: SiteDetailTabContext.types.SELECT_TAB,
       payload: { tab: tabs[0], roles },
     });
   }, [dispatch, roles]);
 
   const [orderBy, setOrderBy] = useState(columns[4]?.id || 'participantName');
-
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -150,8 +161,8 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
             participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
             hiredDate: row.data.hiredDate,
             startDate: row.data.startDate,
-            withdrawnDate: row.created_at,
-            reason: row.data.final_status,
+            withdrawnDate: row.data?.endDate,
+            reason: row.data?.reason,
             nonHCAP: row.data.nonHcapOpportunity,
           };
 
@@ -173,12 +184,10 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
       const withdrawnRowsData = mapToData(withdrawn);
       setFetchedRows(rowsData);
       setFetchedWithdrawnRows(withdrawnRowsData);
-      setIsPendingRequests(rowsData.length > 0 || withdrawnRowsData > 0);
     } else {
       setRows([]);
       setFetchedRows([]);
       setFetchedWithdrawnRows([]);
-      setIsPendingRequests(false);
     }
     setLoadingData(false);
   };
@@ -202,8 +211,8 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
               participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
               hiredDate: row.data.hiredDate,
               startDate: row.data.startDate,
-              withdrawnDate: row.created_at.split('T')[0],
-              reason: row.data.final_status,
+              withdrawnDate: row.data.endDate,
+              reason: row.data.reason,
               nonHCAP: row.data.nonHcapOpportunity,
             };
 
@@ -225,12 +234,10 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
         const withdrawnRowsData = mapToData(withdrawn);
         setFetchedRows(rowsData);
         setFetchedWithdrawnRows(withdrawnRowsData);
-        setIsPendingRequests(rowsData.length > 0 && withdrawnRowsData.length > 0);
       } else {
         setRows([]);
         setFetchedRows([]);
         setFetchedWithdrawnRows([]);
-        setIsPendingRequests(false);
       }
       setLoadingData(false);
     };
@@ -276,7 +283,7 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
       alignItems='center'
       direction='column'
     >
-      {isPendingRequests && (
+      {
         <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
           <CustomTabs
             value={selectedTab || false}
@@ -372,7 +379,7 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
             />
           )}
         </Box>
-      )}
+      }
       <Dialog
         title={getDialogTitle(activeModalForm)}
         open={activeModalForm != null}

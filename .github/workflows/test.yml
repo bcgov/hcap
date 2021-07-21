@@ -33,8 +33,11 @@ jobs:
       - name: Import Users
         run: make kc-import-users
 
+      - name: Install dotenv
+        run: cd server && npm install --no-cache dotenv
+
       - name: Add Sites
-        run: cd server && npm run feed-sites sites.xlsx
+        run: npm run feed-sites sites.xlsx
 
       - name: Add Participants
         run: npm run feed-participants participants.xlsx && cd ..

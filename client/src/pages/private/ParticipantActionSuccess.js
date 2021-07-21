@@ -42,7 +42,7 @@ export default () => {
         </Grid>
         <Grid className={classes.buttonBoxes} item>
           <Button className={classes.button} variant={'contained'} onClick={handleBackCLick}>
-            View Expression of of Interest
+            View Expression of Interest
           </Button>
         </Grid>
       </Grid>

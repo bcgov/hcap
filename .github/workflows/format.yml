@@ -10,8 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Upgrade npm
-        run: npm install -g npm@latest
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '15'
 
       - name: install dev dependencies
         run: npm i -D && npm i -D --prefix client && npm i -D --prefix server

@@ -18,6 +18,7 @@ export default Object.freeze({
   ParticipantEOI: '/participant-eoi/:id',
   ParticipantEOIEdit: '/participant-eoi/:id/edit',
   ParticipantWithdrawConfirm: '/participant-withdraw-confirm',
+  ParticipantActionSuccess: '/participant-eoi/:id/success',
 
   // Employer Private routes
   Admin: '/admin',

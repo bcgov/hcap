@@ -31,6 +31,7 @@ const ParticipantEOIEdit = lazy(() => import('../pages/private/ParticipantEOI'))
 const ParticipantWithdrawConfirm = lazy(() =>
   import('../pages/private/ParticipantWithdrawConfirm')
 );
+const ParticipantActionSuccess = lazy(() => import('../pages/private/ParticipantActionSuccess'));
 
 const PrivateRoute = ({ component: Component, path, ...rest }) => {
   const [keycloak] = useKeycloak();
@@ -102,11 +103,9 @@ export default () => {
   useEffect(() => {
     getKeycloakInfo();
   }, []);
-
   if (!keycloakInfo) {
     return 'Server unavailable';
   }
-
   const handleTokens = (tokens) => {
     store.set('TOKEN', tokens.token);
     getUserInfo(tokens.token);
@@ -135,6 +134,11 @@ export default () => {
             <Route exact path={Routes.Base} component={ParticipantForm} />
             <Route exact path={Routes.ParticipantForm} component={ParticipantForm} />
             <Route exact path={Routes.ConfirmInterest} component={ConfirmInterest} />
+            <PrivateRoute
+              exact
+              path={Routes.ParticipantActionSuccess}
+              component={ParticipantActionSuccess}
+            />
             <PrivateRoute exact path={Routes.ParticipantLanding} component={ParticipantLanding} />
             <PrivateRoute exact path={Routes.ParticipantEOI} component={ParticipantEOI} />
             <PrivateRoute exact path={Routes.ParticipantEOIEdit} component={ParticipantEOIEdit} />

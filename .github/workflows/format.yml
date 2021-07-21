@@ -10,6 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
       - name: install dev dependencies
         run: npm i -D && npm i -D --prefix client && npm i -D --prefix server
 

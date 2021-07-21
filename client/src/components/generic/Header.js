@@ -81,6 +81,7 @@ export const Header = ({ hideEmployers = false }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleLoginClick = () => history.push(Routes.Login);
+  const isParticipantPortal = window.location.host.match(Routes.ParticipantHostname);
 
   const handleLogoutClick = async () => {
     store.remove('TOKEN');
@@ -96,7 +97,7 @@ export const Header = ({ hideEmployers = false }) => {
   };
 
   const title = () => {
-    if (window.location.host.match(Routes.ParticipantHostname)) {
+    if (isParticipantPortal) {
       return 'Participant Expression of Interest';
     }
     if (
@@ -138,8 +139,7 @@ export const Header = ({ hideEmployers = false }) => {
               </Typography>
             </div>
           </div>
-          {/* {!hideEmployers && ( */}
-          {!false && (
+          {!hideEmployers && (
             <>
               <Hidden xsDown>
                 <div className={classes.buttonWrapper}>

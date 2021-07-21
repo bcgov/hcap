@@ -34,6 +34,9 @@ jobs:
         run: make kc-import-users
 
       - name: Install dotenv
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
         run: cd server && npm install --no-cache dotenv
 
       - name: Add Sites

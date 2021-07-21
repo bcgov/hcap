@@ -1,10 +1,9 @@
-FROM node:14-alpine
+FROM public.ecr.aws/bitnami/node:14.17.3
 
 # Allow node modules to be called directly
 ENV PATH $PATH:/client/node_modules/.bin
 
 # Build client
-RUN apk add --no-cache git python g++ make
 WORKDIR /client
 COPY package*.json ./
 RUN npm set progress=false && npm ci --no-cache

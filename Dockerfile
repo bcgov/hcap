@@ -1,8 +1,7 @@
 # Client
-FROM registry.hub.docker.com/library/node:14-alpine AS client
+FROM public.ecr.aws/bitnami/node:14.17.3 AS client
 
 # Build client
-RUN apk add --no-cache git python g++ make
 WORKDIR /client
 COPY client/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
@@ -10,7 +9,7 @@ COPY client/. .
 RUN INLINE_RUNTIME_CHUNK=false npm run build
 
 # Server
-FROM registry.hub.docker.com/library/node:14-alpine AS server
+FROM public.ecr.aws/bitnami/node:14.17.3 AS server
 
 # Static env vars
 ARG VERSION
@@ -18,7 +17,6 @@ ENV VERSION $VERSION
 ENV NODE_ENV production
 
 # Configure server
-RUN apk add --no-cache git
 COPY --from=client /client/build /client/build/.
 WORKDIR /server
 COPY server/package*.json ./

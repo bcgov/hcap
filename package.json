@@ -11,7 +11,8 @@
     "update-all": "run-s 'update:*'",
     "update:root": "npm i",
     "update:client": "npm i --prefix client",
-    "update:server": "npm i --prefix server"
+    "update:server": "npm i --prefix server",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "cypress": "6.1.0",

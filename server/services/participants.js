@@ -619,24 +619,22 @@ const setParticipantLastUpdated = async (id) => {
   // Don't change status if participant is withdrawn
   if (participant.interested !== 'withdrawn') {
     // Only change history if the interested column isn't yes
-    if (participant.interested !== 'yes') {
-      if (participant.history) {
-        participant.history.push({
+    if (participant.history) {
+      participant.history.push({
+        to: 'yes',
+        from: participant.interested,
+        field: 'interested',
+        timestamp: new Date(),
+      });
+    } else {
+      participant.history = [
+        {
           to: 'yes',
           from: participant.interested,
           field: 'interested',
           timestamp: new Date(),
-        });
-      } else {
-        participant.history = [
-          {
-            to: 'yes',
-            from: participant.interested,
-            field: 'interested',
-            timestamp: new Date(),
-          },
-        ];
-      }
+        },
+      ];
     }
     participant = await dbClient.db[collections.PARTICIPANTS].updateDoc(
       {

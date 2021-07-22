@@ -75,6 +75,8 @@ const schema = {
         created_at timestamp with time zone DEFAULT now()
       )`,
     },
+  ],
+  psiRelationalTables: [
     {
       definition: `CREATE TABLE IF NOT EXISTS ${collections.POST_SECONDARY_INSTITUTIONS} (
         id serial primary key,
@@ -91,9 +93,7 @@ const schema = {
         start_date date not null,
         end_date date not null,
         cohort_size integer not null,
-        psi_id integer references ${collections.POST_SECONDARY_INSTITUTIONS},
-        participant_id integer not null,
-        created_at timestamp with time zone DEFAULT now()
+        psi_id integer references ${collections.POST_SECONDARY_INSTITUTIONS}
       )`,
     },
     {

@@ -20,20 +20,20 @@ FROM registry.access.redhat.com/ubi8/nodejs-14:1 AS server
 ARG VERSION
 ENV VERSION $VERSION
 ENV NODE_ENV production
-ENV HOME_SEVER /opt/app-root/src/app/server
+ENV HOME_SERVER /opt/app-root/src/app/server
 ENV HOME_CLIENT /opt/app-root/src/app/client
 
 # Configure server
 # Using root to transfer ownership of work dir
 USER root
-RUN mkdir -p ${HOME_SEVER}
+RUN mkdir -p ${HOME_SERVER}
 RUN mkdir -p ${HOME_CLIENT}
 RUN chown -R 1001 ${HOME_CLIENT}
-RUN chown -R 1001 ${HOME_SEVER}
+RUN chown -R 1001 ${HOME_SERVER}
 COPY --from=client /opt/app-root/src/app/client/build /opt/app-root/src/app/client/build/.
 
 USER 1001
-WORKDIR ${HOME_SEVER}
+WORKDIR ${HOME_SERVER}
 COPY server/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 COPY server/. .

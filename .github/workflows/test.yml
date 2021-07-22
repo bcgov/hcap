@@ -43,10 +43,10 @@ jobs:
         run: cd server && sudo npm install --no-cache dotenv
 
       - name: Add Sites
-        run: npm run feed-sites sites.xlsx --prefix server
+        run: cd server && POSTGRES_HOST=localhost npm run feed-sites sites.xlsx
 
       - name: Add Participants
-        run: npm run feed-participants participants.xlsx --prefix server
+        run: cd server && POSTGRES_HOST=localhost npm run feed-participants participants.xlsx
 
       - name: Cypress run
         uses: cypress-io/github-action@v2

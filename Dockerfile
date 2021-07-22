@@ -21,6 +21,7 @@ ARG VERSION
 ENV VERSION $VERSION
 ENV NODE_ENV production
 ENV HOME_SEVER /opt/app-root/src/app/server
+ENV HOME_CLIENT /opt/app-root/src/app/client
 
 # Configure server
 # Using root to transfer ownership of work dir

@@ -8,7 +8,7 @@ USER root
 RUN mkdir -p ${HOME_CLIENT}
 RUN chown -R 1001 ${HOME_CLIENT}
 USER 1001
-WORKDIR ${HOME_CLIENT}}
+WORKDIR ${HOME_CLIENT}
 COPY client/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 COPY client/. .
@@ -30,7 +30,7 @@ RUN mkdir -p ${HOME_SEVER}
 RUN chown -R 1001 ${HOME_CLIENT}
 RUN chown -R 1001 ${HOME_SEVER}
 USER 1001
-WORKDIR ${HOME_SEVER}}
+WORKDIR ${HOME_SEVER}
 COPY server/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 COPY server/. .

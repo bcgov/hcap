@@ -41,7 +41,7 @@ jobs:
           node-version: '14'
 
       - name: Install Dotenv
-        run: cd server && npm install --no-cache dotenv
+        run: cd server && sudo npm install --no-cache dotenv
 
       - name: Add Sites
         run: npm run feed-sites sites.xlsx

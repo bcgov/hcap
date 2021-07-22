@@ -141,7 +141,7 @@ router.post(
       performed_by: {
         userId,
       },
-      id: participants.map(participant=>participant.id)
+      id: participants.map((participant) => participant.id),
     });
     return res.status(201).send({ message: 'Reconfirm interest successful.' });
   })

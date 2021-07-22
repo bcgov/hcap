@@ -2,14 +2,16 @@
 FROM registry.access.redhat.com/ubi8/nodejs-14:1 AS client
 
 # Build client
-# RUN apk add --no-cache git python g++ make
+ENV HOME_CLIENT /opt/app-root/src/app/client
+# Using root to transfer ownership of work dir
 USER root
-WORKDIR /opt/app-root/src/app/client
+RUN chown -R 1001 ${HOME_CLIENT}
+USER 1001
+WORKDIR ${HOME_CLIENT}}
 COPY client/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 COPY client/. .
 RUN INLINE_RUNTIME_CHUNK=false npm run build
-USER 1001
 # Server
 FROM registry.access.redhat.com/ubi8/nodejs-14:1 AS server
 
@@ -17,16 +19,18 @@ FROM registry.access.redhat.com/ubi8/nodejs-14:1 AS server
 ARG VERSION
 ENV VERSION $VERSION
 ENV NODE_ENV production
+ENV HOME_SEVER /opt/app-root/src/app/server
 
 # Configure server
-# RUN apk add --no-cache git
+# Using root to transfer ownership of work dir
 USER root
-COPY --from=client /opt/app-root/src/app/client/build /opt/app-root/src/app/client/build/.
-WORKDIR /opt/app-root/src/app/server
+COPY --from=client ${HOME_CLIENT}/build ${HOME_CLIENT}/build/.
+RUN chown -R 1001 ${HOME_SEVER}
+USER 1001
+WORKDIR ${HOME_SEVER}}
 COPY server/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 COPY server/. .
-USER 1001
 # Run app
 EXPOSE 8080
 CMD [ "npm", "run", "start" ]

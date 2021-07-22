@@ -14,6 +14,7 @@ const collections = {
   USER_PARTICIPANT_MAP: 'user_participant_map',
   POST_SECONDARY_INSTITUTIONS: 'post_secondary_institutions',
   COHORTS: 'cohorts',
+  PSI_COHORTS: 'psi_cohorts',
   COHORT_PARTICIPANTS: 'cohort_participants',
 };
 
@@ -75,8 +76,15 @@ const schema = {
         created_at timestamp with time zone DEFAULT now()
       )`,
     },
-  ],
-  moreRelationalTables: [
+    {
+      definition: `CREATE TABLE IF NOT EXISTS ${collections.POST_SECONDARY_INSTITUTIONS} (
+        id serial primary key,
+        institute_name varchar(200) not null,
+        health_authority varchar(50) not null,
+        available_seats integer not null,
+        postal_code varchar(10) not null
+      )`,
+    },
     {
       definition: `CREATE TABLE IF NOT EXISTS ${collections.COHORTS} (
         id serial primary key,
@@ -96,6 +104,13 @@ const schema = {
         participant_id integer references ${collections.PARTICIPANTS}
       )`,
     },
+    {
+      definition: `CREATE TABLE IF NOT EXISTS ${collections.PSI_COHORTS} (
+        id serial primary key,
+        psi_id integer references ${collections.POST_SECONDARY_INSTITUTIONS},
+        cohort_id integer references ${collections.COHORTS}
+      )`,
+    },
   ],
   documentTables: [
     {
@@ -109,10 +124,6 @@ const schema = {
     {
       collection: collections.USERS,
       indexes: ['keycloakId'],
-    },
-    {
-      collection: collections.POST_SECONDARY_INSTITUTIONS,
-      indexes: [],
     },
   ],
 };

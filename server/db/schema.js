@@ -14,7 +14,6 @@ const collections = {
   USER_PARTICIPANT_MAP: 'user_participant_map',
   POST_SECONDARY_INSTITUTIONS: 'post_secondary_institutions',
   COHORTS: 'cohorts',
-  PSI_COHORTS: 'psi_cohorts',
   COHORT_PARTICIPANTS: 'cohort_participants',
 };
 
@@ -102,13 +101,6 @@ const schema = {
         id serial primary key,
         cohort_id integer references ${collections.COHORTS},
         participant_id integer references ${collections.PARTICIPANTS}
-      )`,
-    },
-    {
-      definition: `CREATE TABLE IF NOT EXISTS ${collections.PSI_COHORTS} (
-        id serial primary key,
-        psi_id integer references ${collections.POST_SECONDARY_INSTITUTIONS},
-        cohort_id integer references ${collections.COHORTS}
       )`,
     },
   ],

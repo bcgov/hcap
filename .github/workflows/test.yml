@@ -33,11 +33,13 @@ jobs:
       - name: Import Users
         run: make kc-import-users
 
-      - name: Install dotenv
+      - name: Setup Node
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - run: cd server && npm install --no-cache dotenv
+
+      - name: Install Dotenv
+        run: cd server && npm install --no-cache dotenv
 
       - name: Add Sites
         run: npm run feed-sites sites.xlsx

@@ -136,6 +136,13 @@ router.post(
       return res.status(401).send({ message: 'You do not have permission to view this record' });
     }
     await setParticipantLastUpdated(id);
+    logger.info({
+      action: 'user_participant_reconfirm',
+      performed_by: {
+        userId,
+      },
+      id: participants.map((participant) => participant.id),
+    });
     return res.status(201).send({ message: 'Reconfirm interest successful.' });
   })
 );

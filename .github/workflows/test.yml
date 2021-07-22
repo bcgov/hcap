@@ -47,7 +47,7 @@ jobs:
         run: cd server && POSTGRES_HOST=localhost npm run feed-sites sites.xlsx
 
       - name: Add Participants
-        run: cd server && POSTGRES_HOST=localhost npm run feed-participants participants.xlsx
+        run: cd server && POSTGRES_HOST=localhost npm run feed-participants /home/runner/work/hcap/server/scripts/xlsx/participants.xlsx
 
       - name: Cypress run
         uses: cypress-io/github-action@v2

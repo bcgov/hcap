@@ -5,6 +5,7 @@ FROM registry.access.redhat.com/ubi8/nodejs-14:1 AS client
 ENV HOME_CLIENT /opt/app-root/src/app/client
 # Using root to transfer ownership of work dir
 USER root
+RUN mkdir -p ${HOME_CLIENT}
 RUN chown -R 1001 ${HOME_CLIENT}
 USER 1001
 WORKDIR ${HOME_CLIENT}}
@@ -25,6 +26,8 @@ ENV HOME_SEVER /opt/app-root/src/app/server
 # Using root to transfer ownership of work dir
 USER root
 COPY --from=client ${HOME_CLIENT}/build ${HOME_CLIENT}/build/.
+RUN mkdir -p ${HOME_SEVER}
+RUN chown -R 1001 ${HOME_CLIENT}
 RUN chown -R 1001 ${HOME_SEVER}
 USER 1001
 WORKDIR ${HOME_SEVER}}

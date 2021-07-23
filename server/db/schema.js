@@ -80,7 +80,7 @@ const schema = {
     {
       definition: `CREATE TABLE IF NOT EXISTS ${collections.POST_SECONDARY_INSTITUTIONS} (
         id serial primary key,
-        institute_name varchar(200) not null,
+        institute_name varchar(200) unique not null,
         health_authority varchar(50) not null,
         available_seats integer not null,
         postal_code varchar(10) not null

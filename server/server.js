@@ -52,6 +52,7 @@ const { healthCheck } = require('./services/health-check');
 
 // Routes
 const participantUserRoute = require('./routes/participant-user');
+const psiRoute = require('./routes/post-secondary-institutes');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
@@ -816,6 +817,7 @@ app.get(
 
 // Applying router handlers
 app.use(`${apiBaseUrl}/participant-user`, participantUserRoute);
+app.use(`${apiBaseUrl}/psi`, psiRoute);
 
 // Client app
 if (process.env.NODE_ENV === 'production') {

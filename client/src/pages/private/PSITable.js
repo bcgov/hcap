@@ -12,14 +12,15 @@ import { useLocation } from 'react-router-dom';
 import { Routes, regionLabelsMap, API_URL } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
-import { CreatePSISchema } from '../../constants';
+import { ToastStatus, CreatePSISchema } from '../../constants';
 import { AuthContext } from '../../providers';
 
 const columns = [
-  { id: 'name', name: 'Institutes' },
-  { id: 'seats', name: 'Available Seats' },
+  { id: 'institute_name', name: 'Institutes' },
+  { id: 'health_authority', name: 'Health Authority' },
+  { id: 'available_seats', name: 'Available Seats' },
   { id: 'cohorts', name: 'Cohorts' },
-  { id: 'postalCode', name: 'Postal Code' },
+  { id: 'postal_code', name: 'Postal Code' },
   { id: 'addCohort' },
 ];
 
@@ -27,12 +28,11 @@ export default () => {
   const { openToast } = useToast();
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
-  const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
   const [activeModalForm, setActiveModalForm] = useState(null);
 
-  const [orderBy, setOrderBy] = useState(columns[4].id);
+  const [orderBy, setOrderBy] = useState('institute_name');
   const [healthAuthorities, setHealthAuthorities] = useState([
     'Interior',
     'Fraser',
@@ -53,14 +53,14 @@ export default () => {
     setOrderBy(property);
   };
 
-  const fetchSites = async () => {
+  const fetchPSIs = async () => {
     setLoadingData(true);
-    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
+    const response = await fetch(`${API_URL}/api/v1/psi`, {
       headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
       method: 'GET',
     });
     if (response.ok) {
-      const { data } = await response.json();
+      const data = await response.json();
       const rowsData = data.map((row) => {
         // Pull all relevant props from row based on columns constant
         const mappedRow = columns.reduce(
@@ -70,6 +70,7 @@ export default () => {
           }),
           {}
         );
+
         // Add additional props (user ID, button) to row
         return {
           ...mappedRow,
@@ -77,43 +78,37 @@ export default () => {
         };
       });
       setFetchedRows(rowsData);
-      setIsPendingRequests(rowsData.length > 0);
-      setRows(rowsData.filter((row) => healthAuthorities.includes(row.healthAuthority)));
+      setRows(rowsData.filter((row) => healthAuthorities.includes(row.health_authority)));
     } else {
       setRows([]);
       setFetchedRows([]);
-      setIsPendingRequests(false);
     }
     setLoadingData(false);
   };
 
   const handlePSICreate = async (psi) => {
-    console.log('Gonna create a site with this: ');
-    console.log(psi);
-    // const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
-    //   method: 'POST',
-    //   headers: {
-    //     Authorization: `Bearer ${store.get('TOKEN')}`,
-    //     Accept: 'application/json',
-    //     'Content-type': 'application/json',
-    //   },
-    //   body: JSON.stringify(site),
-    // });
+    const response = await fetch(`${API_URL}/api/v1/psi`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(psi),
+    });
 
-    // if (response.ok) {
-    //   setActiveModalForm(null);
-    //   fetchSites();
-    // } else {
-    //   const error = await response.json();
-    //   if (error.status && error.status === 'Duplicate') {
-    //     openToast({ status: ToastStatus.Error, message: 'Duplicate site ID' });
-    //   } else {
-    //     openToast({
-    //       status: ToastStatus.Error,
-    //       message: response.error || response.statusText || 'Server error',
-    //     });
-    //   }
-    // }
+    if (response.ok) {
+      setActiveModalForm(null);
+      fetchPSIs();
+    } else {
+      const error = await response.json();
+      if (error.status) {
+        openToast({
+          status: ToastStatus.Error,
+          message: response.error || response.statusText || 'Server error',
+        });
+      }
+    }
   };
   useEffect(() => {
     setHealthAuthorities(
@@ -126,10 +121,11 @@ export default () => {
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
 
   useEffect(() => {
-    fetchSites();
-    // This fetch sites is a dependency of this function. This needs to be reworked, but it is outside of the scope of the ticket
+    fetchPSIs();
+    // This fetch PSIs is a dependency of this function. This needs to be reworked, but it is outside of the scope of the ticket
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history, location]);
+
   const defaultOnClose = () => {
     setActiveModalForm(null);
   };
@@ -189,7 +185,7 @@ export default () => {
                 values={healthAuthorities}
                 rows={fetchedRows}
                 label='Health Authority'
-                filterField='healthAuthority'
+                filterField='health_authority'
               />
             </Box>
           </Grid>
@@ -200,38 +196,36 @@ export default () => {
                   setActiveModalForm('new-psi');
                 }}
                 size='medium'
-                text='Add Post Secondary Institute'
+                text='+ Add PSI'
               />
             </Grid>
           </CheckPermissions>
         </Grid>
-        {isPendingRequests && (
-          <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
-            <Table
-              columns={columns}
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={handleRequestSort}
-              rows={sort(rows)}
-              isLoading={isLoadingData}
-              renderCell={(columnId, row) => {
-                // TODO: Make instituteName clickable
-                if (columnId === 'instituteName') return <a href='/'>{row.instituteName}</a>;
-                if (columnId === 'addCohort')
-                  return (
-                    <Button
-                      // onClick={() => history.push(Routes.SiteView + `/${row.id}`)}
-                      onClick={() => console.log('TODO: Implement Add Cohort')}
-                      variant='outlined'
-                      size='small'
-                      text='+ Add Cohort'
-                    />
-                  );
-                return row[columnId];
-              }}
-            />
-          </Box>
-        )}
+        <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
+          <Table
+            columns={columns}
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={handleRequestSort}
+            rows={sort(rows)}
+            isLoading={isLoadingData}
+            renderCell={(columnId, row) => {
+              // TODO: Make instituteName clickable
+              if (columnId === 'instituteName') return <a href='/'>{row.instituteName}</a>;
+              if (columnId === 'addCohort')
+                return (
+                  <Button
+                    // onClick={() => history.push(Routes.SiteView + `/${row.id}`)}
+                    onClick={() => console.log('TODO: Implement Add Cohort')}
+                    variant='outlined'
+                    size='small'
+                    text='+ Add Cohort'
+                  />
+                );
+              return row[columnId];
+            }}
+          />
+        </Box>
       </Grid>
     </>
   );

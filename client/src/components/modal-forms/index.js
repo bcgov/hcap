@@ -5,5 +5,6 @@ export * from './HireForm';
 export * from './NewParticipantForm';
 export * from './EditParticipantForm';
 export * from './NewSiteForm';
+export * from './NewPSIForm';
 export * from './EditSiteForm';
 export * from './ArchiveHiredParticipantForm';

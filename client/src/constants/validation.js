@@ -59,6 +59,7 @@ const errorMessage = ({ path }) => {
 
     // Employer site contact info
     siteName: 'Site name is required',
+    instituteName: 'Post Secondary Institute name is required',
     address: 'Address is required',
     healthAuthority: 'Health authority is required',
     siteContactFirstName: 'First name is required',
@@ -448,6 +449,19 @@ export const CreateSiteSchema = yup.object().shape({
     .nullable()
     .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
   siteContactEmail: yup.string().nullable().email('Invalid email address'),
+});
+
+export const CreatePSISchema = yup.object().shape({
+  instituteName: yup.string().required(errorMessage),
+  postalCode: yup
+    .string()
+    .required(errorMessage)
+    .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
+  healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
+  availableSeats: yup
+    .number()
+    .nullable()
+    .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
 });
 
 export const EditSiteSchema = yup.object().shape({

@@ -27,6 +27,7 @@ export default Object.freeze({
   EOIView: '/eoi-view',
   EOIViewDetails: '/eoi-view/details/:id',
   SiteView: '/site-view',
+  PSIView: '/psi-view',
   SiteViewDetails: '/site-view/:id',
   ParticipantView: '/participant-view',
   ParticipantUpload: '/participant-upload',

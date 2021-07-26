@@ -3,8 +3,8 @@ kind: SysdigTeam
 metadata:
   name: f047a2-sysdigteam
 spec:
-  team: 
+  team:
     description: The Sysdig Team for the HCAP Namespaces
     users:
-    - name: vyas@freshworks.io
-      role: ROLE_TEAM_EDIT
+      - name: vyas@freshworks.io
+        role: ROLE_TEAM_EDIT

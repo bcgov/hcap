@@ -1,28 +1,11 @@
 const csv = require('fast-csv');
 const dayjs = require('dayjs');
 const express = require('express');
-const {
-  getHiredParticipantsBySite,
-  getWithdrawnParticipantsBySite,
-  getParticipantsForUser,
-} = require('../services/participants.js');
-const {
-  getEmployers,
-  getEmployerByID,
-  saveSingleSite,
-  getSites,
-  getSiteByID,
-  updateSite,
-} = require('../services/employers.js');
+const { getParticipantsForUser } = require('../services/participants.js');
+const { getEmployers, getEmployerByID, getSites } = require('../services/employers.js');
 const { getReport, getHiredParticipantsReport } = require('../services/reporting.js');
 const { getUserSites } = require('../services/user.js');
-const {
-  validate,
-  EmployerFormSchema,
-  AccessRequestApproval,
-  CreateSiteSchema,
-  EditSiteSchema,
-} = require('../validation.js');
+const { validate, EmployerFormSchema, AccessRequestApproval } = require('../validation.js');
 const logger = require('../logger.js');
 const { dbClient, collections } = require('../db');
 const { asyncMiddleware } = require('../error-handler.js');
@@ -36,6 +19,8 @@ const {
   employerActionsRouter,
 } = require('./participant');
 
+const employerSitesRoute = require('./employer-sites');
+
 const apiRouter = express.Router();
 apiRouter.use(keycloak.expressMiddleware());
 
@@ -47,6 +32,10 @@ apiRouter.use(`/participant`, participantRouter);
 apiRouter.use(`/participants`, participantsRouter);
 apiRouter.use(`/new-hired-participant`, newHiredParticipantRouter);
 apiRouter.use(`/employer-actions`, employerActionsRouter);
+
+// Employer-sites
+apiRouter.use('/employer-sites', employerSitesRoute);
+apiRouter.use('/employer-sites-detail', employerSitesRoute);
 
 // Return client info for Keycloak realm for the current environment
 apiRouter.get(`/keycloak-realm-client-info`, (req, res) => res.json(keycloak.RealmInfoFrontend()));
@@ -219,159 +208,6 @@ apiRouter.get(
       roles,
       sites,
     });
-  })
-);
-
-// Create single employer site
-apiRouter.post(
-  `/employer-sites`,
-  keycloak.allowRolesMiddleware('ministry_of_health'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    await validate(CreateSiteSchema, req.body);
-    try {
-      const user = req.hcapUserInfo;
-      const response = await saveSingleSite(req.body);
-
-      logger.info({
-        action: 'employer-sites_post',
-        performed_by: {
-          username: user.username,
-          id: user.id,
-        },
-        site_id: response.siteId,
-      });
-
-      return res.status(201).json(response);
-    } catch (excp) {
-      if (excp.code === '23505') {
-        return res.status(400).send({ siteId: req.body.siteId, status: 'Duplicate' });
-      }
-      return res.status(400).send(`${excp}`);
-    }
-  })
-);
-
-apiRouter.patch(
-  `/employer-sites/:id`,
-  keycloak.allowRolesMiddleware('ministry_of_health'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    await validate(EditSiteSchema, req.body);
-    const user = req.hcapUserInfo;
-    try {
-      const response = await updateSite(req.params.id, req.body);
-      logger.info({
-        action: 'employer-sites_patch',
-        performed_by: {
-          username: user.username,
-          id: user.id,
-        },
-        siteID: req.params.id,
-      });
-      return res.json(response);
-    } catch (excp) {
-      return res.status(400).send(`${excp}`);
-    }
-  })
-);
-
-apiRouter.get(
-  `/employer-sites`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    let result = await getSites();
-    const user = req.hcapUserInfo;
-
-    if (user.isHA) {
-      result = result.filter((site) => user.regions.includes(site.healthAuthority));
-    }
-
-    logger.info({
-      action: 'employer-sites_get',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-      sites_accessed: result.map((site) => site.siteId),
-    });
-    return res.json({ data: result });
-  })
-);
-
-apiRouter.get(
-  `/employer-sites/:id`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    const user = req.hcapUserInfo;
-    const [result] = await getSiteByID(req.params.id);
-    logger.info({
-      action: 'employer-sites-detail_get',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-      site_internal_id: result.id,
-      site_id: result.siteId,
-    });
-    if (user.isHA && !user.regions.includes(result.healthAuthority)) {
-      return res.status(403).json({ error: 'you do not have permissions to view this site' });
-    }
-    return res.json(result);
-  })
-);
-
-apiRouter.get(
-  `/employer-sites/:id/participants`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    const user = req.hcapUserInfo;
-    const { id } = req.params;
-    const hired = await getHiredParticipantsBySite(id);
-    const withdrawn = await getWithdrawnParticipantsBySite(id);
-
-    logger.info({
-      action: 'site-participants_get',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-      on: {
-        site: id,
-      },
-      for: {
-        hiredParticipants: hired.map((ppt) => ppt.participantJoin.id),
-        withdrawnParticipants: withdrawn.map((ppt) => ppt.participantJoin.id),
-      },
-    });
-    return res.json({ hired, withdrawn });
-  })
-);
-
-/**
- * @deprecated since Feb 2021
- * This endpoint was a misnomer, it was named sites but actually retrieved a single EEOI:
- *   /employer-form/:id - EEOI details, direct replacement for this function
- *   /employer-sites/:id - new site details endpoint
- */
-apiRouter.get(
-  `/employer-sites-detail`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    const user = req.hcapUserInfo;
-    logger.info({
-      action: 'employer-sites-detail_get',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-      eeoi_id: req.query.id,
-    });
-    return res.json({ data: '' });
   })
 );
 

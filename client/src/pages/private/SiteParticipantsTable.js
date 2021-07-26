@@ -392,7 +392,7 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
               reason: '',
               status: '',
               endDate: moment().format('YYYY/MM/DD'),
-              rehire:'',
+              rehire: '',
               confirmed: false,
             }}
             validationSchema={ArchiveHiredParticipantSchema}

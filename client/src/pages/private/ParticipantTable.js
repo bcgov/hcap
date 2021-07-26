@@ -641,7 +641,7 @@ export default () => {
               type: '',
               reason: '',
               status: '',
-              rehire:'',
+              rehire: '',
               endDate: moment().format('YYYY/MM/DD'),
               confirmed: false,
             }}

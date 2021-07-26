@@ -580,11 +580,12 @@ const ParticipantStatusChange = yup
             is: 'employmentEnded',
             then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
           }),
-          rehire: yup.string().when('type',{
-            is:'employmentEnded',
-            then:yup.string()
+          rehire: yup.string().when('type', {
+            is: 'employmentEnded',
+            then: yup
+              .string()
               .required('Intent to rehire must not be empty')
-              .oneOf(['Yes','No'],'Must be either Yes or No.')
+              .oneOf(['Yes', 'No'], 'Must be either Yes or No.'),
           }),
           endDate: yup.string().when('type', {
             is: 'employmentEnded',

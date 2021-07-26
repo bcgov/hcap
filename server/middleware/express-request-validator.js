@@ -9,7 +9,6 @@ module.exports = function (schema) {
         next();
       })
       .catch((error) => {
-        console.dir(error);
         logger.error({
           context: req.path,
           message: 'data validation fail',

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Bash sets the BASH environment variable, so if it is not set, then we
+# are running in a different shell, so manually run ourselves in BASH.
+if [ -z "${BASH:-}" ]; then
+  exec bash "$0" "$@"
+fi
+
 npm_version=$(npm -v)
 
 IFS='.'

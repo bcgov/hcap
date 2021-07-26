@@ -2,12 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, Link } from '@material-ui/core';
 import store from 'store';
 import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
 import { NewPSIForm } from '../../components/modal-forms';
 import { useLocation } from 'react-router-dom';
-import { regionLabelsMap, API_URL } from '../../constants';
+import { Routes, regionLabelsMap, API_URL } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import { ToastStatus } from '../../constants';
@@ -206,8 +206,12 @@ export default () => {
             rows={sort(rows)}
             isLoading={isLoadingData}
             renderCell={(columnId, row) => {
-              // TODO: Make instituteName clickable
-              if (columnId === 'instituteName') return <a href='/'>{row.instituteName}</a>;
+              if (columnId === 'institute_name')
+                return (
+                  <Link onClick={() => history.push(Routes.PSIView + `/${row.id}`)}>
+                    {row.institute_name}
+                  </Link>
+                );
               if (columnId === 'addCohort')
                 return (
                   <Button

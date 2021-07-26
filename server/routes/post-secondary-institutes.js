@@ -47,8 +47,8 @@ router.get(
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;
-    const { id } = req.params;
-    const [psi] = await getPSI({ id });
+    const id = parseInt(req.params.id, 10);
+    const [psi] = await getPSI(id);
     if (psi === undefined) {
       return res.status(401).send({ message: 'You do not have permission to view this record' });
     }

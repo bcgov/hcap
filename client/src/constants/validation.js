@@ -487,10 +487,6 @@ export const CreatePSISchema = yup.object().shape({
     .required(errorMessage)
     .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
   healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
-  availableSeats: yup
-    .number()
-    .nullable()
-    .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
 });
 
 export const RejectedFormSchema = yup

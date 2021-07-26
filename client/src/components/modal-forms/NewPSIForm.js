@@ -25,12 +25,6 @@ export const NewPSIForm = ({ initialValues, validationSchema, onSubmit, onClose 
                 { value: 'Northern', label: 'Northern Health' },
               ]}
             />
-            <Field
-              name='availableSeats'
-              type='number'
-              component={RenderTextField}
-              label='Available Seats'
-            />
           </Box>
           <Box mt={3}>
             <Grid container spacing={2} justify='flex-end'>

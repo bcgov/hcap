@@ -11,11 +11,18 @@ const makePSI = async (psi) => {
   const data = {
     institute_name: psi.instituteName,
     health_authority: psi.healthAuthority,
-    available_seats: psi.availableSeats,
     postal_code: psi.postalCode,
   };
 
-  await dbClient.db[collections.POST_SECONDARY_INSTITUTIONS].insert(data);
+  try {
+    const newPSI = await dbClient.db[collections.POST_SECONDARY_INSTITUTIONS].insert(data);
+    return newPSI;
+  } catch (error) {
+    if (error.code === '23505') {
+      return { error: 'Duplicate Name for PSI', status: '23505' };
+    }
+    throw error;
+  }
 };
 
 module.exports = {

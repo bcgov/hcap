@@ -82,7 +82,6 @@ const schema = {
         id serial primary key,
         institute_name varchar(200) unique not null,
         health_authority varchar(50) not null,
-        available_seats integer not null,
         postal_code varchar(10) not null
       )`,
     },

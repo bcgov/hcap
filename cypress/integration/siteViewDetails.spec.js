@@ -14,7 +14,6 @@ describe('Tests the Site Details View', () => {
     cy.get('label.MuiFormControlLabel-root').contains('No').click();
     cy.get('div#mui-component-select-healthAuthority').click();
     cy.get('li').contains('Fraser Health').click();
-    // This should be Submit, not Cancel
     cy.get('span.MuiButton-label').contains('Submit').click();
     cy.contains('1111')
       .parent('tr')

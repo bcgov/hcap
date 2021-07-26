@@ -75,6 +75,8 @@ export default () => {
         return {
           ...mappedRow,
           id: row.id,
+          cohorts: row.cohorts === undefined ? 0 : row.cohorts.length,
+          available_seats: row.cohorts === undefined ? 0 : row.cohorts.length,
         };
       });
       setFetchedRows(rowsData);
@@ -103,9 +105,12 @@ export default () => {
     } else {
       const error = await response.json();
       if (error.status) {
+        if (error.status === '23505') {
+          setActiveModalForm(null);
+        }
         openToast({
           status: ToastStatus.Error,
-          message: response.error || response.statusText || 'Server error',
+          message: error.error || response.error || response.statusText || 'Server error',
         });
       }
     }
@@ -141,7 +146,6 @@ export default () => {
             initialValues={{
               instituteName: '',
               healthAuthority: '',
-              availableSeats: '',
               postalCode: '',
             }}
             validationSchema={CreatePSISchema}
@@ -149,7 +153,6 @@ export default () => {
               handlePSICreate({
                 instituteName: values.instituteName,
                 healthAuthority: values.healthAuthority,
-                availableSeats: values.availableSeats,
                 postalCode: values.postalCode,
               });
             }}

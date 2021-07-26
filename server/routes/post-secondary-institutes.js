@@ -71,6 +71,9 @@ router.post(
     const user = userId || localUserId;
     if (email && user) {
       const response = await makePSI(req.body);
+      if (response.error) {
+        res.status(400).send(response);
+      }
       logger.info({
         action: 'post-secondary-institutes_post',
         performed_by: user,

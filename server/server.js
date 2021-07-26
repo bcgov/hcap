@@ -8,6 +8,7 @@ const csv = require('fast-csv');
 const dayjs = require('dayjs');
 const { validate: uuidValidate } = require('uuid');
 const multer = require('multer');
+const _ = require('lodash');
 const {
   getParticipants,
   getHiredParticipantsBySite,
@@ -804,6 +805,15 @@ app.get(
     res.status(200).json(health);
   })
 );
+
+app.get(
+  `${apiBaseUrl}/error`,
+  asyncMiddleware(async (req, res) => {
+    const errorStatusCode = _.random(500, 511);
+    res.status(errorStatusCode).json({});
+  })
+);
+
 // Applying router handlers
 app.use(`${apiBaseUrl}/participant-user`, participantUserRoute);
 

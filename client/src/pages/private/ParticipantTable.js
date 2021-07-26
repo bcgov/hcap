@@ -454,7 +454,7 @@ export default () => {
       return (
         <Button
           onClick={async (event) => {
-            setAnchorElement(event.currentTarget)
+            setAnchorElement(event.currentTarget);
             // Get data from row.id
             const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
               headers: {

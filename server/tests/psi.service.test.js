@@ -78,7 +78,7 @@ describe('Participants Service', () => {
   // Depends on above test
   it('Adds a duplicate site, checks for error', async () => {
     const dupe = await makePSI(allPSIs[0]);
-    expect(dupe.status).toEqual('23505');
+    expect(dupe.code).toEqual('23505');
   });
 
   it('Adds a PSI with a bad postal code, checks for error', async () => {

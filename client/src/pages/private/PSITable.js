@@ -22,7 +22,7 @@ const columns = [
   { id: 'addCohort' },
 ];
 
-export const PSITable = () => {
+export default () => {
   const { openToast } = useToast();
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);

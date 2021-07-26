@@ -180,7 +180,6 @@ const getHiredParticipantsReport = async () => {
       'duplicateArchivedJoin.status': null,
       // 'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
     });
-
   return hiredEntries.map((entry) => ({
     participantId: entry.participant_id,
     participantFsa: entry.participantJoin?.[0]?.body?.postalCodeFsa,
@@ -195,6 +194,7 @@ const getHiredParticipantsReport = async () => {
     isRHO: entry.employerSiteJoin?.[0]?.body?.isRHO,
     withdrawReason: entry.archivedJoin?.[0]?.data?.reason,
     withdrawDate: entry.archivedJoin?.[0]?.data?.endDate,
+    rehire: entry.archivedJoin?.[0]?.data?.rehire,
   }));
 };
 

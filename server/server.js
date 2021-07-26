@@ -191,6 +191,7 @@ app.get(
         'Regional Health Office': result.isRHO,
         'Withdraw Reason': result.withdrawReason,
         'Withdraw Date': result.withdrawDate,
+        'Intent To Rehire': result?.rehire,
       });
     });
 

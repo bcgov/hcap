@@ -3,7 +3,7 @@ import { Box } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { RenderSelectField, RenderDateField, RenderCheckbox } from '../fields';
+import { RenderSelectField, RenderDateField, RenderCheckbox, RenderRadioGroup } from '../fields';
 import { archiveReasonOptions, archiveStatusOptions, archiveTypeOptions } from '../../constants';
 import { getTodayDate } from '../../utils';
 
@@ -44,6 +44,15 @@ export const ArchiveHiredParticipantForm = ({
                 component={RenderSelectField}
                 options={statusOptions}
                 label='Status'
+              />
+              <Field
+                name='rehire'
+                component={RenderRadioGroup}
+                options={[
+                  { value: 'Yes', label: 'Yes' },
+                  { value: 'No', label: 'No' },
+                ]}
+                label='I intend to rehire this position'
               />
             </>
           )}

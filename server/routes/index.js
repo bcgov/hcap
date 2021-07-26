@@ -50,6 +50,10 @@ apiRouter.use(`/participants`, participantsRouter);
 apiRouter.use(`/new-hired-participant`, newHiredParticipantRouter);
 apiRouter.use(`/employer-actions`, employerActionsRouter);
 
+// Employer-sites
+apiRouter.use('/employer-sites', employerSitesRoute);
+apiRouter.use('/employer-sites-detail', employerSitesRoute);
+
 // Return client info for Keycloak realm for the current environment
 apiRouter.get(`/keycloak-realm-client-info`, (req, res) => res.json(keycloak.RealmInfoFrontend()));
 
@@ -313,7 +317,5 @@ apiRouter.get(
     res.status(200).json(health);
   })
 );
-
-apiRouter.use('/employer-sites', employerSitesRoute);
 
 module.exports = apiRouter;

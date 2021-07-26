@@ -21,7 +21,7 @@ const {
 
 const employerSitesRoute = require('./employer-sites');
 
-const employerFormRoute = require('./employer-form')
+const employerFormRoute = require('./employer-form');
 
 const apiRouter = express.Router();
 apiRouter.use(keycloak.expressMiddleware());
@@ -39,8 +39,8 @@ apiRouter.use(`/employer-actions`, employerActionsRouter);
 apiRouter.use('/employer-sites', employerSitesRoute);
 apiRouter.use('/employer-sites-detail', employerSitesRoute);
 
-// Employer-form 
-apiRouter.use('/employer-form',employerFormRoute);
+// Employer-form
+apiRouter.use('/employer-form', employerFormRoute);
 
 // Return client info for Keycloak realm for the current environment
 apiRouter.get(`/keycloak-realm-client-info`, (req, res) => res.json(keycloak.RealmInfoFrontend()));

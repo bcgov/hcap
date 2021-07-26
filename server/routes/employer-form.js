@@ -4,11 +4,10 @@ const logger = require('../logger.js');
 const { asyncMiddleware } = require('../error-handler.js');
 const { EmployerFormSchema } = require('../validation');
 const { getEmployers, getEmployerByID } = require('../services/employers');
-const { validate } = require('../validation')
+const { validate } = require('../validation');
 const { dbClient, collections } = require('../db');
 // Main router
 const router = express.Router();
-
 
 // Create new employer form
 router.post(
@@ -55,6 +54,5 @@ router.get(
     return res.json(result);
   })
 );
-
 
 module.exports = router;

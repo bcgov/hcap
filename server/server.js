@@ -56,9 +56,10 @@ app.use(
 );
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
-app.use(errorHandler);
 
 app.use(`${apiBaseUrl}`, apiRouter);
+
+app.use(errorHandler);
 
 // Client app
 if (process.env.NODE_ENV === 'production') {

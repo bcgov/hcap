@@ -36,7 +36,6 @@ describe('Tests the PSI View', () => {
     cy.get('input#postalCode').type('hey whats up hello');
     cy.get('span.MuiButton-label').contains('Submit').click();
     cy.get('p#postalCodeError').contains('Format').should('be.visible');
-    cy.pause();
 
     cy.get('input#postalCode').clear().type('V6V 7V9');
     cy.get('div#mui-component-select-healthAuthority').click();
@@ -48,7 +47,7 @@ describe('Tests the PSI View', () => {
       .within(() => {
         cy.contains('Vancouver Coastal').should('exist');
         cy.contains('0').should('exist');
-        cy.contains('V1V 2V9').should('exist');
+        cy.contains('V6V 7V9').should('exist');
         cy.get('button').click(); // This will bring up the add cohort menu, eventually
       });
   });

@@ -29,6 +29,7 @@ const participantsRouter = express.Router();
 const newHiredParticipantRouter = express.Router();
 const employerActionsRouter = express.Router();
 
+// GET participant/
 participantRouter.get(
   `/`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
@@ -65,6 +66,7 @@ const patchableFields = [
   'id',
 ];
 
+// PATCH participant/
 participantRouter.patch(
   `/`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
@@ -89,6 +91,7 @@ participantRouter.patch(
   })
 );
 
+// GET participants/confirm-interest
 participantsRouter.get(
   `/confirm-interest`,
   asyncMiddleware(async (req, res) => {
@@ -102,6 +105,7 @@ participantsRouter.get(
   })
 );
 
+// POST participants/confirm-interest
 participantsRouter.post(
   `/confirm-interest`,
   asyncMiddleware(async (req, res) => {
@@ -115,6 +119,7 @@ participantsRouter.post(
   })
 );
 
+// GET participants/
 // Get participant records
 participantsRouter.get(
   `/`,
@@ -162,6 +167,7 @@ participantsRouter.get(
   })
 );
 
+// POST participants/batch
 // Create participant records from uploaded XLSX file
 participantsRouter.post(
   `/batch`,
@@ -205,6 +211,7 @@ participantsRouter.post(
   })
 );
 
+// POST participants/
 participantsRouter.post(
   `/`,
   asyncMiddleware(async (req, res) => {
@@ -238,6 +245,7 @@ participantsRouter.post(
   })
 );
 
+// POST new-hired-participant/
 // Add Hired Participant to Database
 newHiredParticipantRouter.post(
   `/`,
@@ -285,6 +293,7 @@ newHiredParticipantRouter.post(
   })
 );
 
+// POST employer-actions/
 // Engage participant
 employerActionsRouter.post(
   `/`,

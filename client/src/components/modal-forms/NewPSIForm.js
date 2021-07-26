@@ -4,10 +4,11 @@ import { Button } from '../generic';
 import { Box } from '@material-ui/core';
 import { RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
+import { CreatePSISchema } from '../../constants';
 
-export const NewPSIForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
+export const NewPSIForm = ({ initialValues, onSubmit, onClose }) => {
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+    <Formik initialValues={initialValues} validationSchema={CreatePSISchema} onSubmit={onSubmit}>
       {({ submitForm, values }) => (
         <FormikForm>
           <Box>

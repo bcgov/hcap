@@ -1,5 +1,3 @@
-// This will only be disabled for development
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useMemo, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
@@ -9,10 +7,10 @@ import store from 'store';
 import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
 import { NewPSIForm } from '../../components/modal-forms';
 import { useLocation } from 'react-router-dom';
-import { Routes, regionLabelsMap, API_URL } from '../../constants';
+import { regionLabelsMap, API_URL } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
-import { ToastStatus, CreatePSISchema } from '../../constants';
+import { ToastStatus } from '../../constants';
 import { AuthContext } from '../../providers';
 
 const columns = [
@@ -24,7 +22,7 @@ const columns = [
   { id: 'addCohort' },
 ];
 
-export default () => {
+export const PSITable = () => {
   const { openToast } = useToast();
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
@@ -62,18 +60,8 @@ export default () => {
     if (response.ok) {
       const data = await response.json();
       const rowsData = data.map((row) => {
-        // Pull all relevant props from row based on columns constant
-        const mappedRow = columns.reduce(
-          (accumulator, column) => ({
-            ...accumulator,
-            [column.id]: row[column.id],
-          }),
-          {}
-        );
-
-        // Add additional props (user ID, button) to row
         return {
-          ...mappedRow,
+          ...row,
           id: row.id,
           cohorts: row.cohorts === undefined ? 0 : row.cohorts.length,
           available_seats: row.cohorts === undefined ? 0 : row.cohorts.length,
@@ -104,8 +92,9 @@ export default () => {
       fetchPSIs();
     } else {
       const error = await response.json();
-      if (error.status) {
-        if (error.status === '23505') {
+      if (error.status || error.code) {
+        // Closes the menu on duplicate submission
+        if (error.code === '23505') {
           setActiveModalForm(null);
         }
         openToast({
@@ -115,6 +104,7 @@ export default () => {
       }
     }
   };
+
   useEffect(() => {
     setHealthAuthorities(
       roles.includes('superuser') || roles.includes('ministry_of_health')
@@ -148,7 +138,6 @@ export default () => {
               healthAuthority: '',
               postalCode: '',
             }}
-            validationSchema={CreatePSISchema}
             onSubmit={(values) => {
               handlePSICreate({
                 instituteName: values.instituteName,

@@ -21,7 +21,7 @@ const makePSI = async (psi) => {
     return newPSI;
   } catch (error) {
     if (error.code === '23505') {
-      return { error: 'Duplicate Name for PSI', status: '23505' };
+      return { error: 'Duplicate Name for PSI', status: '400', code: '23505' };
     }
     throw error;
   }

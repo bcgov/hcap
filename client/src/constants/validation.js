@@ -407,6 +407,13 @@ export const ArchiveHiredParticipantSchema = yup.object().shape({
       )
       .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
   }),
+  rehire:yup.string().when('type',{
+    is:'employmentEnded',
+    then:yup 
+    .string()
+    .oneOf(['Yes','No'],'Must be either Yes or No.')
+    .required('Please declare your intent.')
+  }),
   confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
 });
 

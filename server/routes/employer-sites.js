@@ -38,9 +38,9 @@ router.post(
       return resp.status(201).json(response);
     } catch (excp) {
       if (excp.code === '23505') {
-        return res.status(400).send({ siteId: req.body.siteId, status: 'Duplicate' });
+        return resp.status(400).send({ siteId: req.body.siteId, status: 'Duplicate' });
       }
-      return res.status(400).send(`${excp}`);
+      return resp.status(400).send(`${excp}`);
     }
   })
 );
@@ -112,7 +112,6 @@ router.get(
     keycloak.getUserInfoMiddleware(),
   ],
   (req, res) => {
-    console.log(`***********1`);
     const { hcapUserInfo: user } = req;
     logger.info({
       action: 'employer-sites-detail_get',

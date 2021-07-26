@@ -1,4 +1,5 @@
 const { dbClient, collections } = require('../db');
+const { validate, CreatePSISchema } = require('../validation');
 
 const getPSIs = async () => dbClient.db[collections.POST_SECONDARY_INSTITUTIONS].find();
 
@@ -8,6 +9,7 @@ const getPSI = async (id) =>
   });
 
 const makePSI = async (psi) => {
+  await validate(CreatePSISchema, psi);
   const data = {
     institute_name: psi.instituteName,
     health_authority: psi.healthAuthority,

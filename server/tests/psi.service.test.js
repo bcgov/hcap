@@ -41,23 +41,65 @@ describe('Participants Service', () => {
     },
   ];
 
-  it('Seeds the database', async () => {
-    allPSIs.forEach((psi) => makePSI(psi));
-  });
+  const badPostalCode = {
+    instituteName: 'Golden',
+    postalCode: '1.618',
+    healthAuthority: 'Interior',
+  };
 
-  it('Confirms that all details are equal to submitted data', async () => {
+  const badHA = {
+    instituteName: 'London',
+    postalCode: 'V1V 1V1',
+    healthAuthority: 'Ontario',
+  };
+
+  const maliciousPSIEntry = {
+    instituteName: "xkcd'); DROP TABLE post-secondary-institutions;--",
+    postalCode: 'V1V 1V1',
+    healthAuthority: 'Fraser',
+  };
+
+  it('Seeds the database, confirms that all details are equal to submitted data', async () => {
+    await Promise.all(allPSIs.map((psi) => makePSI(psi)));
     const psiList = await getPSIs();
-    console.log(psiList);
     expect(psiList.length).toEqual(5);
-    psiList.forEach((psi) => {
+    psiList.forEach(async (psi) => {
       const { id } = psi;
       const index = allPSIs.findIndex(
-        (localEntry) => localEntry.healthAuthority === psi.healthAuthority
+        (localEntry) => localEntry.healthAuthority === psi.health_authority
       );
-      const query = getPSI(id);
-      expect(allPSIs[index].instituteName).toEqual(query.instituteName);
-      expect(allPSIs[index].postalCode).toEqual(query.postalCode);
-      expect(allPSIs[index].healthAuthority).toEqual(query.healthAuthority);
+      const [query] = await getPSI(id);
+      expect(allPSIs[index].instituteName).toEqual(query.institute_name);
+      expect(allPSIs[index].postalCode).toEqual(query.postal_code);
+      expect(allPSIs[index].healthAuthority).toEqual(query.health_authority);
     });
+  });
+
+  // Depends on above test
+  it('Adds a duplicate site, checks for error', async () => {
+    const dupe = await makePSI(allPSIs[0]);
+    expect(dupe.status).toEqual('23505');
+  });
+
+  it('Adds a PSI with a bad postal code, checks for error', async () => {
+    try {
+      await makePSI(badPostalCode);
+    } catch (error) {
+      expect(error.name).toEqual('ValidationError');
+    }
+  });
+
+  it('Adds a PSI with a bad health authority, checks for error', async () => {
+    try {
+      await makePSI(badHA);
+    } catch (error) {
+      expect(error.name).toEqual('ValidationError');
+    }
+  });
+
+  it('Adds a malicious PSI to check sanitation', async () => {
+    await makePSI(maliciousPSIEntry);
+    const table = await getPSIs();
+    expect(table.length).not.toEqual(0);
   });
 });

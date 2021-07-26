@@ -149,6 +149,9 @@ const errorMessage = ({ path }) => {
       "We're sorry, but current eligibility to work in Canada is a requirement to submit this form.",
     preferredLocation: "Please select at least one location you'd like to work in.",
     consent: "We're sorry, but we cannot process your request without permission.",
+
+    // PSI specific value
+    instituteName: 'Institute name is required',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
@@ -745,6 +748,18 @@ const CreateSiteSchema = yup
     siteContactEmail: yup.string().nullable().email('Invalid email address'),
   });
 
+const CreatePSISchema = yup
+  .object()
+  .noUnknown('Unknown field in entry')
+  .shape({
+    instituteName: yup.string().required(errorMessage),
+    healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
+    postalCode: yup
+      .string()
+      .required(errorMessage)
+      .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
+  });
+
 const EditSiteSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
@@ -799,6 +814,7 @@ module.exports = {
   ParticipantEditSchema,
   EmployerSiteBatchSchema,
   CreateSiteSchema,
+  CreatePSISchema,
   EditSiteSchema,
   UserParticipantEditSchema,
 };

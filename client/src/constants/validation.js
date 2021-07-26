@@ -412,7 +412,7 @@ export const ArchiveHiredParticipantSchema = yup.object().shape({
     then:yup 
     .string()
     .oneOf(['Yes','No'],'Must be either Yes or No.')
-    .required('Please declare your intent.')
+    .required('Must be either \'Yes\' or \'No\'.')
   }),
   confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
 });

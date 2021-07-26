@@ -584,6 +584,7 @@ const ParticipantStatusChange = yup
             is:'employmentEnded',
             then:yup.string()
               .required('Intent to rehire must not be empty')
+              .oneOf(['Yes','No'],'Must be either Yes or No.')
           }),
           endDate: yup.string().when('type', {
             is: 'employmentEnded',

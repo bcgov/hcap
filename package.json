@@ -7,7 +7,7 @@
     "format": "run-s 'format:*'",
     "format:prettier": "prettier --write .",
     "format:lint-client": "eslint --ext js,jsx -c ./client/.eslintrc ./client --fix",
-    "format:lint:server": "eslint --ext js,jsx -c ./server/.eslintrc ./server --fix",
+    "format:lint-server": "eslint --ext js,jsx -c ./server/.eslintrc ./server --fix",
     "update-all": "run-s 'update:*'",
     "update:root": "npm i",
     "update:client": "npm i --prefix client",

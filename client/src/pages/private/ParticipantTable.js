@@ -182,7 +182,7 @@ export default () => {
   const [rows, setRows] = useState([]);
   const [hideLastNameAndEmailFilter, setHideLastNameAndEmailFilter] = useState(true);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
-  const [anchorElement, setAnchorElement] = useState(false);
+  const [anchorElement, setAnchorElement] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations, setLocations] = useState([]);
   const {
@@ -422,7 +422,7 @@ export default () => {
     if (columnId === 'edit') {
       return (
         <Button
-          onClick={async () => {
+          onClick={async (event) => {
             // Get data from row.id
             const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
               headers: {
@@ -439,7 +439,7 @@ export default () => {
             }
             setActionMenuParticipant(participant[0]);
             setActiveModalForm('edit-participant');
-            setAnchorElement(null);
+            setAnchorElement(event.currentTarget);
           }}
           variant='outlined'
           size='small'
@@ -453,7 +453,8 @@ export default () => {
     if (columnId === 'archive') {
       return (
         <Button
-          onClick={async () => {
+          onClick={async (event) => {
+            setAnchorElement(event.currentTarget);
             // Get data from row.id
             const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
               headers: {
@@ -466,7 +467,6 @@ export default () => {
             const participant = await response.json();
             setActionMenuParticipant(participant[0]);
             setActiveModalForm('archive');
-            setAnchorElement(null);
           }}
           variant='outlined'
           size='small'
@@ -491,11 +491,13 @@ export default () => {
             onClose={() => {
               forceReload();
               defaultOnClose();
-              defaultOnClose();
             }}
             onSubmit={() => {
               defaultOnClose();
-              dispatch({ type: 'updateKey', key: 'tabValue', value: 'My Candidates' });
+              participantsDispatch({
+                type: ParticipantsContext.types.SELECT_TAB,
+                payload: 'My Candidates',
+              });
             }}
           />
         )}
@@ -641,6 +643,7 @@ export default () => {
               type: '',
               reason: '',
               status: '',
+              rehire: '',
               endDate: moment().format('YYYY/MM/DD'),
               confirmed: false,
             }}

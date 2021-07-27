@@ -2,10 +2,10 @@ const csv = require('fast-csv');
 const dayjs = require('dayjs');
 const express = require('express');
 const { getParticipantsForUser } = require('../services/participants.js');
-const { getEmployers, getEmployerByID, getSites } = require('../services/employers.js');
+const { getSites } = require('../services/employers.js');
 const { getReport, getHiredParticipantsReport } = require('../services/reporting.js');
 const { getUserSites } = require('../services/user.js');
-const { validate, EmployerFormSchema, AccessRequestApproval } = require('../validation.js');
+const { validate, AccessRequestApproval } = require('../validation.js');
 const logger = require('../logger.js');
 const { dbClient, collections } = require('../db');
 const { asyncMiddleware } = require('../error-handler.js');
@@ -20,6 +20,8 @@ const {
 } = require('./participant');
 
 const employerSitesRoute = require('./employer-sites');
+
+const employerFormRoute = require('./employer-form');
 
 const apiRouter = express.Router();
 apiRouter.use(keycloak.expressMiddleware());
@@ -37,54 +39,11 @@ apiRouter.use(`/employer-actions`, employerActionsRouter);
 apiRouter.use('/employer-sites', employerSitesRoute);
 apiRouter.use('/employer-sites-detail', employerSitesRoute);
 
+// Employer-form
+apiRouter.use('/employer-form', employerFormRoute);
+
 // Return client info for Keycloak realm for the current environment
 apiRouter.get(`/keycloak-realm-client-info`, (req, res) => res.json(keycloak.RealmInfoFrontend()));
-
-// Create new employer form
-apiRouter.post(
-  `/employer-form`,
-  asyncMiddleware(async (req, res) => {
-    await validate(EmployerFormSchema, req.body);
-    const result = await dbClient.db.saveDoc(collections.EMPLOYER_FORMS, req.body);
-    logger.info(`Form ${result.id} successfully created.`);
-    return res.status(201).json({ id: result.id });
-  })
-);
-
-// Get employer forms
-apiRouter.get(
-  `/employer-form`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    const user = req.hcapUserInfo;
-    const result = await getEmployers(user);
-    return res.json({ data: result });
-  })
-);
-
-apiRouter.get(
-  `/employer-form/:id`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    const user = req.hcapUserInfo;
-    const [result] = await getEmployerByID(req.params.id);
-    logger.info({
-      action: 'employer-form_get_details',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-        regions: user.regions,
-      },
-      form_viewed: req.params.id,
-    });
-    if (user.isHA && !user.regions.includes(result.healthAuthority)) {
-      return res.status(403).json({ error: 'you do not have permissions to view this form' });
-    }
-    return res.json(result);
-  })
-);
 
 // Get Report
 apiRouter.get(

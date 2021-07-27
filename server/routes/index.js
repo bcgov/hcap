@@ -1,10 +1,8 @@
 const csv = require('fast-csv');
 const dayjs = require('dayjs');
 const express = require('express');
-const { getParticipantsForUser } = require('../services/participants.js');
 const { getSites } = require('../services/employers.js');
 const { getReport, getHiredParticipantsReport } = require('../services/reporting.js');
-const { getUserSites } = require('../services/user.js');
 const { validate, AccessRequestApproval } = require('../validation.js');
 const logger = require('../logger.js');
 const { dbClient, collections } = require('../db');
@@ -101,7 +99,6 @@ apiRouter.get(
   })
 );
 
-
 // Get pending users from Keycloak
 apiRouter.get(
   `/pending-users`,
@@ -137,7 +134,6 @@ apiRouter.get(
     return res.json({ data: scrubbed });
   })
 );
-
 
 apiRouter.post(
   `/approve-user`,

@@ -40,7 +40,7 @@ userDetailsRouter.patch(
   [
     keycloak.allowRolesMiddleware('ministry_of_health'),
     keycloak.getUserInfoMiddleware(),
-    expressRequestBodyValidator(AccessRequestApproval)
+    expressRequestBodyValidator(AccessRequestApproval),
   ],
   asyncMiddleware(async (req, res) => {
     const { hcapUserInfo: user, body: { userId, role, regions, sites } = {} } = req;

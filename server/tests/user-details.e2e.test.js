@@ -6,9 +6,9 @@ const request = require('supertest');
 const app = require('../server');
 const { startDB, closeDB } = require('./util/db');
 const { getKeycloakToken, superuser } = require('./util/keycloak');
- 
 
 describe('api-e2e tests for /api/v1/user-details', () => {
+  let server;
   beforeAll(async () => {
     await startDB();
     server = app.listen();

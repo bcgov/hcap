@@ -79,15 +79,12 @@ describe('Participants Service', () => {
     await Promise.all(allPSIs.map((psi) => makePSI(psi)));
     const psiList = await getPSIs();
     expect(psiList.length).toEqual(5);
-    console.log(psiList);
     psiList.forEach(async (psi) => {
       const { id } = psi;
       const index = allPSIs.findIndex(
         (localEntry) => localEntry.healthAuthority === psi.health_authority
       );
       const [query] = await getPSI(id);
-      console.log('query');
-      console.log(query);
       expect(allPSIs[index].instituteName).toEqual(query.institute_name);
       expect(allPSIs[index].postalCode).toEqual(query.postal_code);
       expect(allPSIs[index].city).toEqual(query.city);

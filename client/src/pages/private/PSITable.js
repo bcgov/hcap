@@ -92,7 +92,7 @@ export default () => {
       fetchPSIs();
     } else {
       const error = await response.json();
-      if (error.status || error.code) {
+      if (error.code) {
         // Closes the menu on duplicate submission
         if (error.code === '23505') {
           setActiveModalForm(null);

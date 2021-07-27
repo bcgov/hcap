@@ -56,6 +56,8 @@ describe('Tests the PSI View', () => {
       });
   });
 
+  // Given that the previous entry was added to Vancouver Coastal, we should
+  // see it show up under that filter and not under others.
   it('Checks to see that Health Authority filtering works', () => {
     cy.kcLogin('test-moh');
     cy.visit('/psi-view');

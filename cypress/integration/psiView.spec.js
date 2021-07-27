@@ -47,6 +47,7 @@ describe('Tests the PSI View', () => {
     cy.get('span.MuiButton-label').contains('Submit').click();
     cy.contains('Da Institoot')
       .should('exist')
+      .parent() // Parent is a link
       .parent('tr')
       .within(() => {
         cy.contains('Vancouver Coastal').should('exist');

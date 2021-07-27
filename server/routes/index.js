@@ -19,8 +19,8 @@ const {
   employerActionsRouter,
 } = require('./participant');
 
+const { userDetailsRouter } = require('./user');
 const employerSitesRoute = require('./employer-sites');
-
 const employerFormRoute = require('./employer-form');
 
 const apiRouter = express.Router();
@@ -41,6 +41,8 @@ apiRouter.use('/employer-sites-detail', employerSitesRoute);
 
 // Employer-form
 apiRouter.use('/employer-form', employerFormRoute);
+// User-details
+apiRouter.use('/user-details', userDetailsRouter);
 
 // Return client info for Keycloak realm for the current environment
 apiRouter.get(`/keycloak-realm-client-info`, (req, res) => res.json(keycloak.RealmInfoFrontend()));
@@ -99,25 +101,6 @@ apiRouter.get(
   })
 );
 
-// Get linked participants for users
-apiRouter.get(
-  `/user/participants`,
-  keycloak.setupUserMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    const { email, user_id: userId } = req.user;
-    if (email && userId) {
-      const response = await getParticipantsForUser(userId, email);
-      logger.info({
-        action: 'user_participant_get',
-        performed_by: userId,
-        id: response.length > 0 ? response[0].id : '',
-      });
-      res.status(200).json(response);
-    } else {
-      res.status(401).send('Unauthorized user');
-    }
-  })
-);
 
 // Get pending users from Keycloak
 apiRouter.get(
@@ -155,54 +138,6 @@ apiRouter.get(
   })
 );
 
-// Get user details - Different from /user, this returns the
-// full user sites and role specified in the query id
-apiRouter.get(
-  `/user-details`,
-  keycloak.allowRolesMiddleware('ministry_of_health'),
-  asyncMiddleware(async (req, res) => {
-    const userId = req.query.id;
-    const roles = await keycloak.getUserRoles(userId);
-    const sites = await getUserSites(userId);
-    return res.json({
-      roles,
-      sites,
-    });
-  })
-);
-
-apiRouter.patch(
-  `/user-details`,
-  keycloak.allowRolesMiddleware('ministry_of_health'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    await validate(AccessRequestApproval, req.body);
-    await keycloak.setUserRoles(req.body.userId, req.body.role, req.body.regions);
-    await dbClient.db[collections.USERS].updateDoc(
-      {
-        keycloakId: req.body.userId,
-      },
-      {
-        sites: req.body.sites,
-      }
-    );
-
-    const user = req.hcapUserInfo;
-    logger.info({
-      action: 'user-details_patch',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-      role_assigned: req.body.role,
-      granted_access_to: req.body.userId,
-      regions_assigned: req.body.regions,
-      siteIds_assigned: req.body.sites,
-    });
-
-    return res.json({});
-  })
-);
 
 apiRouter.post(
   `/approve-user`,

@@ -61,6 +61,7 @@ const errorMessage = ({ path }) => {
     siteName: 'Site name is required',
     instituteName: 'Post Secondary Institute name is required',
     address: 'Address is required',
+    streetAddress: 'Address is required',
     healthAuthority: 'Health authority is required',
     siteContactFirstName: 'First name is required',
     siteContactLastName: 'Last name is required',
@@ -482,6 +483,8 @@ export const EditSiteSchema = yup.object().shape({
 
 export const CreatePSISchema = yup.object().shape({
   instituteName: yup.string().required(errorMessage),
+  streetAddress: yup.string().required(errorMessage),
+  city: yup.string().required(errorMessage),
   postalCode: yup
     .string()
     .required(errorMessage)

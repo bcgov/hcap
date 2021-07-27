@@ -121,6 +121,7 @@ const errorMessage = ({ path }) => {
     // Employer site contact info
     siteName: 'Site name is required',
     address: 'Address is required',
+    streetAddress: 'Address is required',
     healthAuthority: 'Health authority is required',
     siteContactFirstName: 'First name is required',
     siteContactLastName: 'Last name is required',
@@ -152,6 +153,7 @@ const errorMessage = ({ path }) => {
 
     // PSI specific value
     instituteName: 'Institute name is required',
+    city: 'City is required',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
@@ -754,6 +756,8 @@ const CreatePSISchema = yup
   .shape({
     instituteName: yup.string().required(errorMessage),
     healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
+    streetAddress: yup.string().required(errorMessage),
+    city: yup.string().required(errorMessage),
     postalCode: yup
       .string()
       .required(errorMessage)

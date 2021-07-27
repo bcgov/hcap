@@ -17,26 +17,36 @@ describe('Participants Service', () => {
     {
       instituteName: 'Test PSI 1',
       postalCode: 'V1V 2V2',
+      streetAddress: '1815 Blanshard St',
+      city: 'Victoria',
       healthAuthority: regions[0],
     },
     {
       instituteName: 'Test PSI 2',
       postalCode: 'V2V 3V3',
+      streetAddress: '1815 Blanshard St',
+      city: 'Victoria',
       healthAuthority: regions[1],
     },
     {
       instituteName: 'Test PSI 3',
       postalCode: 'V2V 3V4',
+      streetAddress: '1815 Blanshard St',
+      city: 'Victoria',
       healthAuthority: regions[2],
     },
     {
       instituteName: 'Test PSI 4',
       postalCode: 'V2V 3V5',
+      streetAddress: '1815 Blanshard St',
+      city: 'Victoria',
       healthAuthority: regions[3],
     },
     {
       instituteName: 'Test PSI 5',
       postalCode: 'V2V 3V6',
+      streetAddress: '1815 Blanshard St',
+      city: 'Victoria',
       healthAuthority: regions[4],
     },
   ];
@@ -44,18 +54,24 @@ describe('Participants Service', () => {
   const badPostalCode = {
     instituteName: 'Golden',
     postalCode: '1.618',
+    streetAddress: '1815 Blanshard St',
+    city: 'Victoria',
     healthAuthority: 'Interior',
   };
 
   const badHA = {
     instituteName: 'London',
     postalCode: 'V1V 1V1',
+    streetAddress: '1815 Blanshard St',
+    city: 'Victoria',
     healthAuthority: 'Ontario',
   };
 
   const maliciousPSIEntry = {
     instituteName: "xkcd'); DROP TABLE post-secondary-institutions;--",
     postalCode: 'V1V 1V1',
+    streetAddress: '1815 Blanshard St',
+    city: 'Victoria',
     healthAuthority: 'Fraser',
   };
 
@@ -69,8 +85,12 @@ describe('Participants Service', () => {
         (localEntry) => localEntry.healthAuthority === psi.health_authority
       );
       const [query] = await getPSI(id);
+      console.log('query');
+      console.log(query);
       expect(allPSIs[index].instituteName).toEqual(query.institute_name);
       expect(allPSIs[index].postalCode).toEqual(query.postal_code);
+      expect(allPSIs[index].city).toEqual(query.city);
+      expect(allPSIs[index].streetAddress).toEqual(query.street_address);
       expect(allPSIs[index].healthAuthority).toEqual(query.health_authority);
     });
   });

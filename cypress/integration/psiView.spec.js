@@ -29,6 +29,8 @@ describe('Tests the PSI View', () => {
     cy.get('span.MuiButton-label').contains('Submit').click();
     cy.get('p#instituteNameError').should('be.visible');
     cy.get('p#postalCodeError').should('be.visible');
+    cy.get('p#cityError').should('be.visible');
+    cy.get('p#streetAddressError').should('be.visible');
     cy.get('p.Mui-error').contains('Health authority is required').should('be.visible');
 
     // Input incorrectly formatted postal code, check for formatting request
@@ -38,6 +40,8 @@ describe('Tests the PSI View', () => {
     cy.get('p#postalCodeError').contains('Format').should('be.visible');
 
     cy.get('input#postalCode').clear().type('V6V 7V9');
+    cy.get('input#streetAddress').type('1815 Blanshard St.');
+    cy.get('input#city').type('Victoria');
     cy.get('div#mui-component-select-healthAuthority').click();
     cy.get('li').contains('Coastal').click();
     cy.get('span.MuiButton-label').contains('Submit').click();

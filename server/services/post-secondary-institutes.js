@@ -14,6 +14,8 @@ const makePSI = async (psi) => {
     institute_name: psi.instituteName,
     health_authority: psi.healthAuthority,
     postal_code: psi.postalCode,
+    street_address: psi.streetAddress,
+    city: psi.city,
   };
 
   try {

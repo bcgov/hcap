@@ -136,12 +136,16 @@ export default () => {
             initialValues={{
               instituteName: '',
               healthAuthority: '',
+              streetAddress: '',
+              city: '',
               postalCode: '',
             }}
             onSubmit={(values) => {
               handlePSICreate({
                 instituteName: values.instituteName,
                 healthAuthority: values.healthAuthority,
+                streetAddress: values.streetAddress,
+                city: values.city,
                 postalCode: values.postalCode,
               });
             }}

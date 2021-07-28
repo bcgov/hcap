@@ -18,7 +18,7 @@ router.use(keycloak.getUserInfoMiddleware());
 
 router.get(
   '/',
-  asyncMiddleware(async (req, res) => res.status(200).json(await getReport()))
+  asyncMiddleware(async (req, res) => res.status(200).json({ data: await getReport() }))
 );
 
 router.get(

@@ -155,12 +155,12 @@ export default ({ match }) => {
                     <Link href={routes.PSIView}>PSI</Link> / {psi.instituteName}
                   </Typography>
                 </Box>
-                <Grid container direction='row' xs={12}>
+                <Grid container direction='row'>
                   <Typography variant='h2'>
                     <b>{psi.instituteName}</b>
                   </Typography>
                   <CheckPermissions permittedRoles={['ministry_of_health']}>
-                    <Box pl={2} pt={0.5}>
+                    <Box pl={2}>
                       <Button
                         onClick={handleManagePSIClick}
                         variant='outlined'
@@ -187,8 +187,8 @@ export default ({ match }) => {
                 <Typography variant='h4' mt={10}>
                   PSI Info
                 </Typography>
-                <Grid container direction='row' xs={12} sm={9} md={6}>
-                  <Grid container item direction='column' xs={6}>
+                <Grid container direction='row'>
+                  <Grid container item direction='column' xs={3}>
                     <Typography>
                       <b>Street Address: </b>
                     </Typography>

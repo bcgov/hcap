@@ -2,9 +2,7 @@ const express = require('express');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
-const { getPSI, getPSIs, makePSI } = require('../services/post-secondary-institutes');
-
-const cohortRoute = require('./cohorts');
+const { getPSICohorts, getCohort, makeCohort } = require('../services/cohorts.js');
 
 // const { patchObject } = require('../utils');
 
@@ -20,9 +18,7 @@ router.use(applyMiddleware(keycloak.allowRolesMiddleware('ministry_of_health')))
 
 // Controller
 
-router.use(`/:id/cohorts`, cohortRoute);
-
-// Post-Secondary Institutes
+// Participants
 
 router.get(
   '/',
@@ -32,7 +28,8 @@ router.get(
     // our local deployment of keycloak holds the userId under the 'sub' key
     // rather than 'user_id'
     if (email && (userId || localUserId)) {
-      const response = await getPSIs();
+      const psiID = req.params.id;
+      const response = await getPSICohorts(psiID);
       logger.info({
         action: 'post-secondary-institutes_get',
         performed_by: userId || localUserId,
@@ -52,7 +49,7 @@ router.get(
     const { user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;
     const id = parseInt(req.params.id, 10);
-    const [psi] = await getPSI(id);
+    const [psi] = await getCohort(id);
     if (psi === undefined) {
       return res.status(401).send({ message: 'You do not have permission to view this record' });
     }
@@ -74,7 +71,7 @@ router.post(
     const { email, user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;
     if (email && user) {
-      const response = await makePSI(req.body);
+      const response = await makeCohort(req.body);
       if (response.error) {
         res.status(400).send(response);
       }

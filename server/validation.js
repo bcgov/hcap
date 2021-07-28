@@ -153,6 +153,7 @@ const errorMessage = ({ path }) => {
 
     // PSI specific value
     instituteName: 'Institute name is required',
+    cohortName: 'Cohort name is required',
     city: 'City is required',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
@@ -764,6 +765,23 @@ const CreatePSISchema = yup
       .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
   });
 
+const CreateCohortSchema = yup
+  .object()
+  .noUnknown('Unknown field in entry')
+  .shape({
+    cohortName: yup.string().required(errorMessage),
+    startDate: yup
+      .string()
+      .required('Start date is required')
+      .test('is-date', 'Not a valid date', validateDateString),
+    endDate: yup
+      .string()
+      .required('End date is required')
+      .test('is-date', 'Not a valid date', validateDateString),
+    cohortSize: yup.number().required('Cohort size is required'),
+    psiId: yup.number().required('Cohort must be mapped to a PSI'),
+  });
+
 const EditSiteSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
@@ -819,6 +837,7 @@ module.exports = {
   EmployerSiteBatchSchema,
   CreateSiteSchema,
   CreatePSISchema,
+  CreateCohortSchema,
   EditSiteSchema,
   UserParticipantEditSchema,
 };

@@ -39,14 +39,17 @@ export default () => {
     setOrderBy(property);
   };
 
-  const fetchSites = async () => {
+  const fetchCohorts = async () => {
     setLoadingData(true);
-    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
+    const psi_id = 1;
+    const response = await fetch(`${API_URL}/api/v1/psi/${psi_id}/cohorts`, {
       headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
       method: 'GET',
     });
     if (response.ok) {
-      const { data } = await response.json();
+      const data = await response.json();
+      console.log('data');
+      console.log(data);
       const rowsData = data.map((row) => {
         return {
           ...row,
@@ -72,7 +75,7 @@ export default () => {
     });
 
     if (response.ok) {
-      fetchSites();
+      fetchCohorts();
     } else {
       const error = await response.json();
       if (error.status && error.status === 'Duplicate') {
@@ -89,7 +92,7 @@ export default () => {
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
 
   useEffect(() => {
-    fetchSites();
+    fetchCohorts();
     // This fetch sites is a dependency of this function. This needs to be reworked, but it is outside of the scope of the ticket
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history, location]);

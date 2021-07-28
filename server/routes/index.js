@@ -1,8 +1,7 @@
-const csv = require('fast-csv');
+// Index route for /api/v1
 const dayjs = require('dayjs');
 const express = require('express');
 const { getSites } = require('../services/employers.js');
-const { getReport, getHiredParticipantsReport } = require('../services/reporting.js');
 const { validate, AccessRequestApproval } = require('../validation.js');
 const logger = require('../logger.js');
 const { dbClient, collections } = require('../db');
@@ -18,8 +17,9 @@ const {
 } = require('./participant');
 
 const { userDetailsRouter } = require('./user');
-const employerSitesRoute = require('./employer-sites');
-const employerFormRoute = require('./employer-form');
+const employerSitesRouter = require('./employer-sites');
+const employerFormRouter = require('./employer-form');
+const milestoneReportRouter = require('./milestone-report');
 
 const apiRouter = express.Router();
 apiRouter.use(keycloak.expressMiddleware());
@@ -34,70 +34,18 @@ apiRouter.use(`/new-hired-participant`, newHiredParticipantRouter);
 apiRouter.use(`/employer-actions`, employerActionsRouter);
 
 // Employer-sites
-apiRouter.use('/employer-sites', employerSitesRoute);
-apiRouter.use('/employer-sites-detail', employerSitesRoute);
+apiRouter.use('/employer-sites', employerSitesRouter);
+apiRouter.use('/employer-sites-detail', employerSitesRouter);
 
 // Employer-form
-apiRouter.use('/employer-form', employerFormRoute);
+apiRouter.use('/employer-form', employerFormRouter);
 // User-details
 apiRouter.use('/user-details', userDetailsRouter);
+// Milestone report
+apiRouter.use('/milestone-report', milestoneReportRouter);
 
 // Return client info for Keycloak realm for the current environment
 apiRouter.get(`/keycloak-realm-client-info`, (req, res) => res.json(keycloak.RealmInfoFrontend()));
-
-// Get Report
-apiRouter.get(
-  `/milestone-report`,
-  keycloak.allowRolesMiddleware('ministry_of_health'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    const result = await getReport();
-    return res.json({ data: result });
-  })
-);
-
-// Get hired report
-apiRouter.get(
-  `/milestone-report/csv/hired`,
-  keycloak.allowRolesMiddleware('ministry_of_health'),
-  keycloak.getUserInfoMiddleware(),
-  asyncMiddleware(async (req, res) => {
-    const user = req.hcapUserInfo;
-    res.attachment('report.csv');
-    const csvStream = csv.format({ headers: true });
-    csvStream.pipe(res);
-
-    const results = await getHiredParticipantsReport();
-    results.forEach((result) => {
-      csvStream.write({
-        'Participant ID': result.participantId,
-        FSA: result.participantFsa,
-        'Employer ID': result.employerId,
-        'Employer Email': result.employerEmail,
-        'HCAP Position': result.hcapPosition,
-        'Position Type': result.positionType,
-        'Position Title': result.positionTitle,
-        'Employer Site Region': result.employerRegion,
-        'Employer Site': result.employerSite,
-        'Start Date': result.startDate,
-        'Regional Health Office': result.isRHO,
-        'Withdraw Reason': result.withdrawReason,
-        'Withdraw Date': result.withdrawDate,
-        'Intent To Rehire': result?.rehire,
-      });
-    });
-
-    logger.info({
-      action: 'milestone-report_get_csv_hired',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-    });
-
-    csvStream.end();
-  })
-);
 
 // Get pending users from Keycloak
 apiRouter.get(

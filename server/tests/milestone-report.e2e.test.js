@@ -23,6 +23,7 @@ describe('api-e2e test for route /api/v1/milestone-report', () => {
     const header = await getKeycloakToken(superuser);
     const res = await request(app).get('/api/v1/milestone-report').set(header);
     expect(res.status).toEqual(200);
+    expect(res.body?.data).toBeDefined();
   });
 
   it('should get hired report', async () => {

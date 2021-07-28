@@ -50,6 +50,8 @@ services:
       - CHES_HOST=${CHES_HOST}
       - AUTH_URL=${AUTH_URL}
       - CLIENT_URL=${CLIENT_URL}
+      - KC_TEST_SUPER_USER_PWD=${KC_TEST_SUPER_USER_PWD}
+      - KC_TEST_EMPLOYER_PWD=${KC_TEST_EMPLOYER_PWD}
     expose:
       - '8080'
     ports:

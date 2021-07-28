@@ -4,7 +4,7 @@ require('winston-mongodb');
 
 const { timestamp, combine, label, printf } = format;
 
-const myFormat = printf(({ level, message, label: _label, timestamp: _timestamp }) => {
+const formatWithTimestamp = printf(({ level, message, label: _label, timestamp: _timestamp }) => {
   const newMessage = typeof message === 'string' ? message : JSON.stringify(message, null, 2);
   return `${_timestamp} | [${_label || 'console'}] ${level}: ${newMessage}`;
 });
@@ -26,10 +26,12 @@ if (dbServer) {
   );
 }
 
-winston.add(
-  new winston.transports.Console({
-    format: combine(label({ label: 'console' }), timestamp(), myFormat),
-  })
-);
+if (process.env.NODE_ENV !== 'test') {
+  winston.add(
+    new winston.transports.Console({
+      format: combine(label({ label: 'console' }), timestamp(), formatWithTimestamp),
+    })
+  );
+}
 
 module.exports = winston;

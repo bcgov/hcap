@@ -33,7 +33,6 @@ router.get(
       const psiIndex = splitURL.findIndex((entry) => entry === 'psi');
       const psiID = splitURL[psiIndex + 1];
 
-      console.log('getting cohorts for ', psiID);
       const response = await getPSICohorts(psiID);
       logger.info({
         action: 'post-secondary-institutes_get',

@@ -6,10 +6,6 @@ const { getPSI, getPSIs, makePSI } = require('../services/post-secondary-institu
 
 const cohortRoute = require('./cohorts');
 
-// const { patchObject } = require('../utils');
-
-// const { PSIEditSchema, validate } = require('../validation');
-
 // Router
 const router = express.Router();
 
@@ -18,12 +14,10 @@ router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 // Apply role middleware
 router.use(applyMiddleware(keycloak.allowRolesMiddleware('ministry_of_health')));
 
-// Controller
-
+// Catch all requests for cohort and route them separately
 router.use(`/:id/cohorts`, cohortRoute);
 
-// Post-Secondary Institutes
-
+// Get All Post-Secondary Institutes
 router.get(
   '/',
   asyncMiddleware(async (req, res) => {
@@ -45,7 +39,7 @@ router.get(
   })
 );
 
-// Participants with id
+//  Get a specific PSI by its ID
 router.get(
   '/:id',
   asyncMiddleware(async (req, res) => {
@@ -68,6 +62,7 @@ router.get(
   })
 );
 
+// Post a new PSI
 router.post(
   '/',
   asyncMiddleware(async (req, res) => {

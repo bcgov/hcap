@@ -4,10 +4,6 @@ const logger = require('../logger.js');
 const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
 const { getPSICohorts, getCohort, makeCohort } = require('../services/cohorts.js');
 
-// const { patchObject } = require('../utils');
-
-// const { PSIEditSchema, validate } = require('../validation');
-
 // Router
 const router = express.Router();
 
@@ -16,10 +12,7 @@ router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 // Apply role middleware
 router.use(applyMiddleware(keycloak.allowRolesMiddleware('ministry_of_health')));
 
-// Controller
-
-// Participants
-
+// Get all cohorts attached to the given PSI
 router.get(
   '/',
   asyncMiddleware(async (req, res) => {
@@ -46,7 +39,7 @@ router.get(
   })
 );
 
-// Participants with id
+// Get one cohort with its id
 router.get(
   '/:id',
   asyncMiddleware(async (req, res) => {
@@ -69,6 +62,7 @@ router.get(
   })
 );
 
+// Post a cohort
 router.post(
   '/',
   asyncMiddleware(async (req, res) => {

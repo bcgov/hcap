@@ -1,7 +1,19 @@
 const { dbClient, collections } = require('../db');
 const { validate, CreateCohortSchema } = require('../validation');
 
-const getCohorts = async () => dbClient.db[collections.COHORTS].find();
+// Gets all cohorts with their associated list of participants
+const getCohorts = async () =>
+  dbClient.db[collections.COHORTS]
+    .join({
+      participants: {
+        relation: collections.COHORT_PARTICIPANTS,
+        type: 'LEFT OUTER',
+        on: {
+          cohort_id: 'id',
+        },
+      },
+    })
+    .find();
 
 const getCohort = async (id) =>
   dbClient.db[collections.COHORTS].find({

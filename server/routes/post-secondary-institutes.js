@@ -4,7 +4,7 @@ const logger = require('../logger.js');
 const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
 const { getPSI, getPSIs, makePSI } = require('../services/post-secondary-institutes');
 
-const cohortRoute = require('./cohorts');
+const cohortRoute = require('./psi-cohorts');
 
 // Router
 const router = express.Router();

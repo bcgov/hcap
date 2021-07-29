@@ -194,7 +194,7 @@ export default ({ match }) => {
                   PSI Info
                 </Typography>
                 <Grid container direction='row'>
-                  <Grid container item direction='column' xs={3}>
+                  <Grid container item direction='column' xs={4}>
                     <Typography>
                       <b>Street Address: </b>
                     </Typography>

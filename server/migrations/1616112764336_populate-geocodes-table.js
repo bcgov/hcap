@@ -3,6 +3,7 @@ const fs = require('fs');
 const { join } = require('path');
 const readline = require('readline');
 const { dbClient, collections, schema } = require('../db');
+const logger = require('../logger');
 
 const objectMap = (row) => {
   const split_row = row.split('\t');
@@ -40,12 +41,12 @@ exports.up = async () => {
     items.push(objectMap(line));
   }
 
-  console.log(`adding ${items.length} to the geocodes db`);
+  logger.info(`adding ${items.length} to the geocodes db`);
   // Add data in 10k increments
   while (items.length > 0) {
     const subset = items.splice(0, 10000);
     await dbClient.db[collections.GEOCODES].insert(subset);
-    console.log(`${items.length} entries remaining`);
+    logger.info(`${items.length} entries remaining`);
   }
-  console.log('Done!');
+  logger.info('All geocodes inserted!');
 };

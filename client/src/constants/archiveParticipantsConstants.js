@@ -5,6 +5,7 @@ export const archiveReasonOptions = [
   'Personal health concerns',
   'Moving out of province',
   'Moved to different profession',
+  'Delay initiating education',
   'Other',
 ];
 

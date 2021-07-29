@@ -1,10 +1,28 @@
 apiVersion: ops.gov.bc.ca/v1alpha1
 kind: SysdigTeam
 metadata:
-  name: f047a2-sysdigteam
+  name: ${OS_NAMESPACE_PREFIX}-sysdigteam
 spec:
   team:
     description: The Sysdig Team for the HCAP Namespaces
     users:
-      - name: vyas@freshworks.io
+      - name: ${SYSDIG_USER_1}
+        role: ROLE_TEAM_EDIT
+      - name: ${SYSDIG_USER_2}
+        role: ROLE_TEAM_EDIT
+      - name: ${SYSDIG_USER_3}
+        role: ROLE_TEAM_EDIT
+      - name: ${SYSDIG_USER_4}
+        role: ROLE_TEAM_EDIT
+      - name: ${SYSDIG_USER_5}
+        role: ROLE_TEAM_EDIT
+      - name: ${SYSDIG_USER_6}
+        role: ROLE_TEAM_EDIT
+      - name: ${SYSDIG_USER_7}
+        role: ROLE_TEAM_EDIT
+      - name: ${SYSDIG_USER_8}
+        role: ROLE_TEAM_EDIT
+      - name: ${SYSDIG_USER_9}
+        role: ROLE_TEAM_EDIT
+      - name: ${SYSDIG_USER_9}
         role: ROLE_TEAM_EDIT

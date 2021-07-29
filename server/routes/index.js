@@ -20,7 +20,7 @@ const {
 const { userDetailsRouter } = require('./user');
 const employerSitesRouter = require('./employer-sites');
 const employerFormRouter = require('./employer-form');
-const psiRoute = require('./post-secondary-institutes');
+const psiRouter = require('./post-secondary-institutes');
 const milestoneReportRouter = require('./milestone-report');
 
 const apiRouter = express.Router();
@@ -40,7 +40,7 @@ apiRouter.use('/employer-sites', employerSitesRouter);
 apiRouter.use('/employer-sites-detail', employerSitesRouter);
 
 // PSI Routes
-apiRouter.use(`${apiBaseUrl}/psi`, psiRoute);
+apiRouter.use(`/psi`, psiRouter);
 
 // Employer-form
 apiRouter.use('/employer-form', employerFormRouter);

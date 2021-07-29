@@ -163,13 +163,12 @@ export default () => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations, setLocations] = useState([]);
   const {
-    state: { columns, tabs, selectedTab, selectedTabStatuses , pagination },
+    state: { columns, tabs, selectedTab, selectedTabStatuses , currentPage },
     dispatch: participantsDispatch,
   } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
-
   const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
   const fetchParticipants = async (
     offset,
@@ -269,7 +268,6 @@ export default () => {
   const forceReload = async () => {
     if (!columns) return;
     if (!selectedTab) return;
-    const currentPage = reducerState.pagination?.currentPage || 0;
     setLoadingData(true);
     const { data, pagination } = await fetchParticipants(
       currentPage * pageSize,
@@ -282,7 +280,6 @@ export default () => {
       reducerState.siteSelector,
       selectedTabStatuses
     );
-    console.log(pagination);
     participantsDispatch({
       type:ParticipantsContext.types.SELECT_TAB,
       payload:pagination
@@ -311,7 +308,6 @@ export default () => {
 
   useEffect(() => {
     const getParticipants = async () => {
-      const currentPage = reducerState.pagination?.currentPage || 0;
       if (!columns) return;
       if (!selectedTab) return;
       setLoadingData(true);
@@ -326,15 +322,12 @@ export default () => {
         reducerState.siteSelector,
         selectedTabStatuses
       );
-      console.log(pagination)
       dispatch({
         type: 'updateKey',
         key: 'pagination',
-        value: {
-          total: pagination.total,
-          currentPage: currentPage,
-        },
+        value: pagination
       });
+      
       const newRows = filterData(data, columns);
       setRows(newRows);
       setLoadingData(false);
@@ -342,7 +335,7 @@ export default () => {
 
     getParticipants();
   }, [
-    reducerState.pagination?.currentPage,
+    currentPage,
     reducerState.siteSelector,
     reducerState.emailFilter,
     reducerState.locationFilter,
@@ -352,7 +345,7 @@ export default () => {
     roles,
     columns,
     selectedTab,
-    selectedTabStatuses,
+    selectedTabStatuses
   ]);
 
   const defaultOnClose = () => {
@@ -786,23 +779,10 @@ export default () => {
             <CustomTabs
               value={selectedTab || false}
               onChange={async (_, property) => {
-                new Promise((resolve,reject)=>{
-                  dispatch({
-                    type: 'updateKey',
-                    key: 'pagination',
-                    value: {
-                      currentPage: 0,
-                      offset: 0,
-                      total: 0,
-                    },
-                  });
-                  return resolve()
-                }).then(()=>{
-                  participantsDispatch({
-                    type: ParticipantsContext.types.SELECT_TAB,
-                    payload: property,
-                  });
-                })
+                participantsDispatch({
+                  type: ParticipantsContext.types.SELECT_TAB,
+                  payload: property,
+                });
               }}
             >
               {
@@ -815,8 +795,13 @@ export default () => {
               columns={columns}
               order={reducerState.order.direction}
               orderBy={reducerState.order.field}
-              rowsCount={}
-              onChangePage={(oldPage, newPage) => console.log(oldPage,newPage)}
+              rowsCount={reducerState.pagination?.total}
+              onChangePage={(oldPage, newPage) => {
+                participantsDispatch({
+                  type:ParticipantsContext.types.CHANGE_PAGE,
+                  payload:newPage
+                })
+              }}
               rowsPerPage={pageSize}
               currentPage={currentPage}
               renderCell={renderCell}

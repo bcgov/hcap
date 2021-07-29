@@ -27,8 +27,7 @@ const participantsReducer = (state, action) => {
         tabs,
         selectedTab: defaultTab,
         selectedTabStatuses: tabStatuses[defaultTab],
-        currentPage:0,
-        total:0
+        currentPage:0
       };
     }
     case SELECT_TAB: {
@@ -39,13 +38,13 @@ const participantsReducer = (state, action) => {
         columns,
         selectedTab: payload,
         selectedTabStatuses: tabStatuses[payload],
+        currentPage:0
       };
     }
     case CHANGE_PAGE:{  
-      console.log(payload);
       return {
-        ...state
-
+        ...state,
+        currentPage:payload,
       }
     }
     default:
@@ -65,8 +64,6 @@ const ParticipantsProvider = ({ role, children }) => {
     selectedTab: null,
     selectedTabStatuses: null,
     currentPage:0, 
-    offset:10,
-    total:0
   });
 
   useEffect(() => {

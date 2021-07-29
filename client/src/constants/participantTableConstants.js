@@ -85,7 +85,6 @@ export const defaultTableState = {
   lastNameFilter: '',
   pagination: { currentPage: 0 },
   order: { field: 'id', direction: 'asc' },
-  tabValue: '',
   locationFilter: '',
   siteSelector: '',
 };

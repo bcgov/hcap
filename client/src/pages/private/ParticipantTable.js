@@ -71,14 +71,6 @@ const reducer = (state, action) => {
   const { type, key, value } = action;
   let newstate = { ...state };
   switch (type) {
-    // Add pagination to a key update
-    case 'updateKeyWithPagination':
-      newstate.pagination = {
-        ...newstate,
-        currentPage: 0,
-      };
-      newstate[key] = value;
-      return newstate;
     // Update any key in state with the corresponding value
     case 'updateKey':
       newstate[key] = value;
@@ -90,19 +82,8 @@ const reducer = (state, action) => {
       newstate[key] = value ? value.trim() : '';
       newstate.pagination = {
         ...newstate.pagination,
-        currentPage: 0,
       };
       return newstate;
-
-    case 'updatePage':
-      return {
-        ...state,
-        pagination: {
-          ...newstate.pagination,
-          currentPage: value,
-        },
-      };
-
     // Updating site selector also updates the order, so this needed its own case
     case 'updateSiteSelector':
       return {
@@ -112,10 +93,6 @@ const reducer = (state, action) => {
           direction: 'asc',
         },
         siteSelector: value,
-        pagination: {
-          ...newstate.pagination,
-          currentPage: 0,
-        },
       };
     default:
       return state;
@@ -186,7 +163,7 @@ export default () => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations, setLocations] = useState([]);
   const {
-    state: { columns, tabs, selectedTab, selectedTabStatuses },
+    state: { columns, tabs, selectedTab, selectedTabStatuses , pagination },
     dispatch: participantsDispatch,
   } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
@@ -194,7 +171,6 @@ export default () => {
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
 
   const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
-
   const fetchParticipants = async (
     offset,
     regionFilter,
@@ -306,14 +282,11 @@ export default () => {
       reducerState.siteSelector,
       selectedTabStatuses
     );
-    dispatch({
-      type: 'updateKey',
-      key: 'pagination',
-      value: {
-        total: pagination.total,
-        currentPage: currentPage || 0,
-      },
-    });
+    console.log(pagination);
+    participantsDispatch({
+      type:ParticipantsContext.types.SELECT_TAB,
+      payload:pagination
+    })
     const newRows = filterData(data, columns);
     setRows(newRows);
     setLoadingData(false);
@@ -342,7 +315,7 @@ export default () => {
       if (!columns) return;
       if (!selectedTab) return;
       setLoadingData(true);
-      const { data, pagination } = await fetchParticipants(
+      const { data,pagination } = await fetchParticipants(
         currentPage * pageSize,
         reducerState.locationFilter,
         reducerState.fsaFilter || '',
@@ -353,6 +326,7 @@ export default () => {
         reducerState.siteSelector,
         selectedTabStatuses
       );
+      console.log(pagination)
       dispatch({
         type: 'updateKey',
         key: 'pagination',
@@ -492,8 +466,9 @@ export default () => {
               forceReload();
               defaultOnClose();
             }}
-            onSubmit={() => {
+            onSubmit={async () => {
               defaultOnClose();
+              
               participantsDispatch({
                 type: ParticipantsContext.types.SELECT_TAB,
                 payload: 'My Candidates',
@@ -691,7 +666,7 @@ export default () => {
                   disabled={isLoadingData || locations.length === 1}
                   onChange={({ target }) =>
                     dispatch({
-                      type: 'updateKeyWithPagination',
+                      type: 'updateKey',
                       key: 'locationFilter',
                       value: target.value,
                     })
@@ -810,20 +785,24 @@ export default () => {
           <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
             <CustomTabs
               value={selectedTab || false}
-              onChange={(_, property) => {
-                dispatch({
-                  type: 'updateKey',
-                  key: 'pagination',
-                  value: {
-                    currentPage: 0,
-                    offset: 0,
-                    total: 0,
-                  },
-                });
-                participantsDispatch({
-                  type: ParticipantsContext.types.SELECT_TAB,
-                  payload: property,
-                });
+              onChange={async (_, property) => {
+                new Promise((resolve,reject)=>{
+                  dispatch({
+                    type: 'updateKey',
+                    key: 'pagination',
+                    value: {
+                      currentPage: 0,
+                      offset: 0,
+                      total: 0,
+                    },
+                  });
+                  return resolve()
+                }).then(()=>{
+                  participantsDispatch({
+                    type: ParticipantsContext.types.SELECT_TAB,
+                    payload: property,
+                  });
+                })
               }}
             >
               {
@@ -836,14 +815,14 @@ export default () => {
               columns={columns}
               order={reducerState.order.direction}
               orderBy={reducerState.order.field}
-              rowsCount={reducerState.pagination?.total}
-              onChangePage={(oldPage, newPage) => dispatch({ type: 'updatePage', value: newPage })}
+              rowsCount={}
+              onChangePage={(oldPage, newPage) => console.log(oldPage,newPage)}
               rowsPerPage={pageSize}
-              currentPage={reducerState.pagination?.currentPage}
+              currentPage={currentPage}
               renderCell={renderCell}
               onRequestSort={(event, property) =>
                 dispatch({
-                  type: 'updateKeyWithPagination',
+                  type: 'updateKey',
                   key: 'order',
                   value: {
                     field: property,

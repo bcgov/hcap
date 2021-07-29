@@ -215,15 +215,15 @@ export default ({ match }) => {
                     </Typography>
                   </Grid>
                   <Grid container item direction='column' xs={6}>
-                    <Typography>{psi.streetAddress}</Typography>
-                    <Typography>{psi.city}</Typography>
-                    <Typography>{psi.postalCode}</Typography>
+                    <Typography id='streetAddress'>{psi.streetAddress}</Typography>
+                    <Typography id='city'>{psi.city}</Typography>
+                    <Typography id='postalCode'>{psi.postalCode}</Typography>
 
                     {/* Total Cohorts */}
-                    <Typography>{cohorts.length}</Typography>
+                    <Typography id='totalCohorts'>{cohorts.length}</Typography>
 
                     {/* Open Cohorts have less participants than their size */}
-                    <Typography>
+                    <Typography id='openCohorts'>
                       {
                         cohorts.filter(
                           (cohort) => cohort.cohort_size - cohort.participants.length > 0
@@ -232,7 +232,7 @@ export default ({ match }) => {
                     </Typography>
 
                     {/* Closed Cohorts have equal participants to their size */}
-                    <Typography>
+                    <Typography id='closedCohorts'>
                       {
                         cohorts.filter(
                           (cohort) => cohort.cohort_size - cohort.participants.length === 0

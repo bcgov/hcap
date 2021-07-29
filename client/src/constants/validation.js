@@ -35,7 +35,7 @@ const validateDateIsReasonable = (d) => {
 const validateUniqueArray = (a) => Array.isArray(a) && new Set(a).size === a.length;
 
 const validateBlankOrPositiveInteger = (n) =>
-  n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n >= 0);
+  n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n > 0);
 
 const errorMessage = ({ path }) => {
   const errorMessages = {

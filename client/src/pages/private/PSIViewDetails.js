@@ -36,25 +36,6 @@ export default ({ match }) => {
 
   const handlePSIEdit = async (psi) => {
     console.log('TODO: handle PSI Patch');
-    // const response = await fetch(`${API_URL}/api/v1/${psiID}`, {
-    //   method: 'PATCH',
-    //   headers: {
-    //     Authorization: `Bearer ${store.get('TOKEN')}`,
-    //     Accept: 'application/json',
-    //     'Content-type': 'application/json',
-    //   },
-    //   body: JSON.stringify(psi),
-    // });
-
-    // if (response.ok) {
-    //   setActiveModalForm(null);
-    //   fetchPSI(psiID);
-    // } else {
-    //   openToast({
-    //     status: ToastStatus.Error,
-    //     message: response.error || response.statusText || 'Server error',
-    //   });
-    // }
   };
 
   const handleAddCohort = async (cohort) => {
@@ -135,36 +116,8 @@ export default ({ match }) => {
             initialValues={psi}
             validationSchema={EditPSISchema}
             onSubmit={(values) => {
-              // const history = {
-              //   timestamp: new Date(),
-              //   changes: [],
-              // };
-              // Object.keys(values).forEach((key) => {
-              //   if (values[key] !== psi[key]) {
-              //     history.changes.push({
-              //       field: key,
-              //       from: psi[key],
-              //       to: values[key],
-              //     });
-              //   }
-              // });
               handlePSIEdit({
-                // siteContactFirstName: values.siteContactFirstName,
-                // siteContactLastName: values.siteContactLastName,
-                // siteContactPhone: values.siteContactPhone,
-                // siteContactEmail: values.siteContactEmail,
-                // siteName: values.siteName,
-                // registeredBusinessName: values.registeredBusinessName,
-                // address: values.address,
-                // city: values.city,
-                // isRHO: values.isRHO,
-                // postalCode: values.postalCode,
-                // allocation: values.allocation,
-                // operatorContactFirstName: values.operatorContactFirstName,
-                // operatorContactLastName: values.operatorContactLastName,
-                // operatorPhone: values.operatorPhone,
-                // operatorEmail: values.operatorEmail,
-                // history: site.history ? [history, ...site.history] : [history],
+                ...values,
               });
             }}
             onClose={closeModal}

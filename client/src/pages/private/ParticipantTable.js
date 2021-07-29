@@ -163,7 +163,7 @@ export default () => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations, setLocations] = useState([]);
   const {
-    state: { columns, tabs, selectedTab, selectedTabStatuses , currentPage },
+    state: { columns, tabs, selectedTab, selectedTabStatuses, currentPage },
     dispatch: participantsDispatch,
   } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
@@ -281,9 +281,9 @@ export default () => {
       selectedTabStatuses
     );
     participantsDispatch({
-      type:ParticipantsContext.types.SELECT_TAB,
-      payload:pagination
-    })
+      type: ParticipantsContext.types.SELECT_TAB,
+      payload: pagination,
+    });
     const newRows = filterData(data, columns);
     setRows(newRows);
     setLoadingData(false);
@@ -311,7 +311,7 @@ export default () => {
       if (!columns) return;
       if (!selectedTab) return;
       setLoadingData(true);
-      const { data,pagination } = await fetchParticipants(
+      const { data, pagination } = await fetchParticipants(
         currentPage * pageSize,
         reducerState.locationFilter,
         reducerState.fsaFilter || '',
@@ -325,7 +325,7 @@ export default () => {
       dispatch({
         type: 'updateKey',
         key: 'pagination',
-        value: pagination
+        value: pagination,
       });
       const newRows = filterData(data, columns);
       setRows(newRows);
@@ -344,7 +344,7 @@ export default () => {
     roles,
     columns,
     selectedTab,
-    selectedTabStatuses
+    selectedTabStatuses,
   ]);
 
   const defaultOnClose = () => {
@@ -797,9 +797,9 @@ export default () => {
               rowsCount={reducerState.pagination?.total}
               onChangePage={(oldPage, newPage) => {
                 participantsDispatch({
-                  type:ParticipantsContext.types.CHANGE_PAGE,
-                  payload:newPage
-                })
+                  type: ParticipantsContext.types.CHANGE_PAGE,
+                  payload: newPage,
+                });
               }}
               rowsPerPage={pageSize}
               currentPage={currentPage}

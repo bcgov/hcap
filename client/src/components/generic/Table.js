@@ -181,14 +181,12 @@ export const Table = ({
   onChangePage,
   rowsCount,
 }) => {
-  const [page, setPage] = useState(currentPage);
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
 
   const handlePageChange = (_, newPage) => {
-    onChangePage(page, newPage);
-    setPage(newPage);
+    onChangePage(currentPage, newPage);
   };
   return (
     <Fragment>

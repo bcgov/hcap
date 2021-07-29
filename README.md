@@ -173,12 +173,12 @@ and then submits to the /form endpoint. Example of file names:
 
 Parses a given xlsx file inside the `server/scripts/xlsx/` folder and feeds either the `employer_sites` or `participants` table.
 
-If you've spun up the application using Docker Compose i.e. `make local-run`, you can run the site seeding script with either of the following make commands:  
+If you've spun up the application using Docker Compose i.e. `make local-run`, you can run the site seeding script with either of the following make commands:
 
 - `make seed-participants my_spreadsheet.xlsx`
 - `make seed-sites my_spreadsheet.xlsx`
 
-N.B. - The sample seed files are available in Slack channel pinned item.  
+N.B. - The sample seed files are available in Slack channel pinned item.
 
 #### `npm run stats`
 
@@ -276,3 +276,4 @@ On every server startup the `migrations` folder will be scanned for new migratio
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+

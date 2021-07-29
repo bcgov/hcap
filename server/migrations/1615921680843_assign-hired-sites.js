@@ -78,7 +78,4 @@ exports.up = async () => {
       );
     }
   });
-
-  console.log(`Updated the site ID of ${changes.length} hired participant statuses`);
-  console.log(`Skipped ${data.length - changes.length} rows that were not found in the DB`);
 };

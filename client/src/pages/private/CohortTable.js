@@ -29,7 +29,7 @@ export default ({ cohorts }) => {
   useEffect(() => {
     setRows(cohorts);
   }, [cohorts]);
-
+  
   return (
     <Grid
       container

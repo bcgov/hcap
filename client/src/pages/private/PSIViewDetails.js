@@ -1,5 +1,5 @@
 import React, { lazy, useEffect, useState } from 'react';
-import { Card, Dialog, Page, CheckPermissions } from '../../components/generic';
+import { Card, Page, CheckPermissions } from '../../components/generic';
 import Button from '@material-ui/core/Button';
 import { Box, Grid, Link, Typography } from '@material-ui/core';
 import { scrollUp } from '../../utils';

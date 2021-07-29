@@ -182,12 +182,13 @@ export const Table = ({
   rowsCount,
 }) => {
   const [page, setPage] = useState(currentPage);
-
+  console.log(page);
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
 
   const handlePageChange = (_, newPage) => {
+    console.log(`Changing from ${page} to &${newPage}`)
     onChangePage(page, newPage);
     setPage(newPage);
   };
@@ -235,16 +236,15 @@ export const Table = ({
         </TableBody>
       </MuiTable>
       {usePagination && (
-        <TablePagination
-          rowsPerPageOptions={[]}
-          component='div'
-          count={rowsCount || rows.length}
-          rowsPerPage={rowsPerPage || rows.length || 10}
-          page={page}
-          onChangePage={handlePageChange}
-          ActionsComponent={isLoading ? () => null : TablePaginationActions}
-        />
-      )}
+      <TablePagination
+        rowsPerPageOptions={[]}
+        component='div'
+        count={rowsCount || rows.length}
+        rowsPerPage={rowsPerPage || rows.length || 10}
+        page={(page > rowsCount/rowsPerPage)?0: page}
+        onChangePage={handlePageChange}
+        ActionsComponent={isLoading ? () => null : TablePaginationActions}
+      />)}
     </Fragment>
   );
 };

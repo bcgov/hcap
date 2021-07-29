@@ -1,37 +1,22 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
-import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
-import store from 'store';
-import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
-import { NewSiteForm } from '../../components/modal-forms';
-import { useLocation } from 'react-router-dom';
-import { Routes, API_URL } from '../../constants';
-import { useToast } from '../../hooks';
-import { ToastStatus, CreateSiteSchema } from '../../constants';
-import { AuthContext } from '../../providers';
+import { Box, Link } from '@material-ui/core';
+import { Table } from '../../components/generic';
 
 const columns = [
-  { id: 'cohortName', name: 'Cohort Name' },
-  { id: 'startDate', name: 'Start Date' },
-  { id: 'endDate', name: 'End Date' },
-  { id: 'cohortSize', name: 'Cohort Size' },
-  { id: 'remainingSeats', name: 'Remaining Seats' },
+  { id: 'cohort_name', name: 'Cohort Name' },
+  { id: 'start_date', name: 'Start Date' },
+  { id: 'end_date', name: 'End Date' },
+  { id: 'cohort_size', name: 'Cohort Size' },
+  { id: 'remaining_seats', name: 'Remaining Seats' },
 ];
 
-export default () => {
-  const { openToast } = useToast();
+export default ({ cohorts }) => {
   const [order, setOrder] = useState('asc');
-  const [isLoadingData, setLoadingData] = useState(false);
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState(cohorts);
 
-  const [orderBy, setOrderBy] = useState(columns[4].id);
-  const { auth } = AuthContext.useAuth();
-  const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
-
-  const history = useHistory();
-  const location = useLocation();
+  const [orderBy, setOrderBy] = useState('start_date');
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -39,63 +24,12 @@ export default () => {
     setOrderBy(property);
   };
 
-  const fetchCohorts = async () => {
-    setLoadingData(true);
-    const psi_id = 1;
-    const response = await fetch(`${API_URL}/api/v1/psi/${psi_id}/cohorts`, {
-      headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-      method: 'GET',
-    });
-    if (response.ok) {
-      const data = await response.json();
-      console.log('data');
-      console.log(data);
-      const rowsData = data.map((row) => {
-        return {
-          ...row,
-          id: row.id,
-        };
-      });
-      setRows(rowsData);
-    } else {
-      setRows([]);
-    }
-    setLoadingData(false);
-  };
-
-  const handleSiteCreate = async (site) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(site),
-    });
-
-    if (response.ok) {
-      fetchCohorts();
-    } else {
-      const error = await response.json();
-      if (error.status && error.status === 'Duplicate') {
-        openToast({ status: ToastStatus.Error, message: 'Duplicate site ID' });
-      } else {
-        openToast({
-          status: ToastStatus.Error,
-          message: response.error || response.statusText || 'Server error',
-        });
-      }
-    }
-  };
-
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
 
   useEffect(() => {
-    fetchCohorts();
-    // This fetch sites is a dependency of this function. This needs to be reworked, but it is outside of the scope of the ticket
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history, location]);
+    setRows(cohorts);
+  }, [cohorts]);
+
   return (
     <Grid
       container
@@ -111,17 +45,20 @@ export default () => {
           orderBy={orderBy}
           onRequestSort={handleRequestSort}
           rows={sort(rows)}
-          isLoading={isLoadingData}
+          isLoading={false}
           renderCell={(columnId, row) => {
-            if (columnId === 'details')
+            if (columnId === 'cohort_name')
               return (
-                <Button
-                  onClick={() => history.push(Routes.SiteView + `/${row.id}`)}
-                  variant='outlined'
-                  size='small'
-                  text='details'
-                />
+                <Link onClick={() => console.log('TODO: Edit Cohort Info')}>{row.cohort_name}</Link>
               );
+            if (columnId === 'start_date' || columnId === 'end_date') {
+              const d = new Date(row[columnId]);
+              return d.toDateString();
+            }
+
+            if (columnId === 'remaining_seats')
+              return row['cohort_size'] - row['participants'].length;
+
             return row[columnId];
           }}
         />

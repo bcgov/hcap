@@ -28,7 +28,12 @@ router.get(
     // our local deployment of keycloak holds the userId under the 'sub' key
     // rather than 'user_id'
     if (email && (userId || localUserId)) {
-      const psiID = req.params.id;
+      // Parsing the PSI ID from the base URL
+      const splitURL = req.baseUrl.split('/');
+      const psiIndex = splitURL.findIndex((entry) => entry === 'psi');
+      const psiID = splitURL[psiIndex + 1];
+
+      console.log('getting cohorts for ', psiID);
       const response = await getPSICohorts(psiID);
       logger.info({
         action: 'post-secondary-institutes_get',

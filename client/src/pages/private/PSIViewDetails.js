@@ -1,13 +1,13 @@
 import React, { lazy, useEffect, useState } from 'react';
 import { Card, Dialog, Page, CheckPermissions } from '../../components/generic';
 import Button from '@material-ui/core/Button';
-import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
+import { Box, Grid, Link, Typography } from '@material-ui/core';
 import { scrollUp } from '../../utils';
 import store from 'store';
 import routes from '../../constants/routes';
-import { EditSiteForm } from '../../components/modal-forms';
+import { EditPSIForm, NewCohortForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
-import { ToastStatus, EditSiteSchema, API_URL } from '../../constants';
+import { ToastStatus, EditPSISchema, NewCohortSchema, API_URL } from '../../constants';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -17,10 +17,10 @@ const CohortTable = lazy(() => import('./CohortTable'));
 export default ({ match }) => {
   const { openToast } = useToast();
   const [psi, setPSI] = useState({});
-  const [cohorts, setCohorts] = useState({});
+  const [cohorts, setCohorts] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
-  const id = match.params.id;
+  const psiID = parseInt(match.params.id, 10);
 
   const handleManagePSIClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -30,20 +30,48 @@ export default ({ match }) => {
     setAnchorEl(null);
   };
 
+  const closeModal = () => {
+    setActiveModalForm(null);
+  };
+
   const handlePSIEdit = async (psi) => {
-    const response = await fetch(`${API_URL}/api/v1/${id}`, {
-      method: 'PATCH',
+    console.log('TODO: handle PSI Patch');
+    // const response = await fetch(`${API_URL}/api/v1/${psiID}`, {
+    //   method: 'PATCH',
+    //   headers: {
+    //     Authorization: `Bearer ${store.get('TOKEN')}`,
+    //     Accept: 'application/json',
+    //     'Content-type': 'application/json',
+    //   },
+    //   body: JSON.stringify(psi),
+    // });
+
+    // if (response.ok) {
+    //   setActiveModalForm(null);
+    //   fetchPSI(psiID);
+    // } else {
+    //   openToast({
+    //     status: ToastStatus.Error,
+    //     message: response.error || response.statusText || 'Server error',
+    //   });
+    // }
+  };
+
+  const handleAddCohort = async (cohort) => {
+    const response = await fetch(`${API_URL}/api/v1/psi/${psiID}/cohorts/`, {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${store.get('TOKEN')}`,
         Accept: 'application/json',
         'Content-type': 'application/json',
       },
-      body: JSON.stringify(psi),
+      body: JSON.stringify(cohort),
     });
 
     if (response.ok) {
       setActiveModalForm(null);
-      fetchPSI(id);
+      fetchPSI(psiID);
+      fetchCohorts(psiID);
     } else {
       openToast({
         status: ToastStatus.Error,
@@ -52,8 +80,8 @@ export default ({ match }) => {
     }
   };
 
-  const fetchPSI = async (id) => {
-    const response = await fetch(`${API_URL}/api/v1/psi/${id}`, {
+  const fetchPSI = async (psiID) => {
+    const response = await fetch(`${API_URL}/api/v1/psi/${psiID}`, {
       headers: {
         Authorization: `Bearer ${store.get('TOKEN')}`,
       },
@@ -70,81 +98,92 @@ export default ({ match }) => {
         postalCode: psi.postal_code,
         city: psi.city,
       });
+    }
+  };
 
-      // TODO: get cohorts
-      setCohorts([]);
+  const fetchCohorts = async (psiID) => {
+    const response = await fetch(`${API_URL}/api/v1/psi/${psiID}/cohorts/`, {
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const cohortList = await response.json();
+      setCohorts(cohortList);
     }
   };
 
   useEffect(() => {
-    fetchPSI(id);
-  }, [id]);
+    fetchPSI(psiID);
+    fetchCohorts(psiID);
+  }, [psiID]);
 
   scrollUp();
   return (
     <>
-      {/* <Dialog */}
-      {/*   title={`Edit PSI (${psi.instituteName})`} */}
-      {/*   open={activeModalForm != null} */}
-      {/*   onClose={defaultOnClose} */}
-      {/* > */}
-      {/*   {activeModalForm === 'edit-psi' && ( */}
-      {/*     <EditSiteForm */}
-      {/*       initialValues={{ */}
-      {/*         siteContactFirstName: site.siteContactFirstName, */}
-      {/*         siteContactLastName: site.siteContactLastName, */}
-      {/*         siteContactPhone: site.siteContactPhone, */}
-      {/*         siteContactEmail: site.siteContactEmail, */}
-      {/*         siteName: site.siteName, */}
-      {/*         registeredBusinessName: site.registeredBusinessName, */}
-      {/*         address: site.address, */}
-      {/*         city: site.city, */}
-      {/*         isRHO: site.isRHO, */}
-      {/*         postalCode: site.postalCode, */}
-      {/*         allocation: site.allocation, */}
-      {/*         operatorContactFirstName: site.operatorContactFirstName, */}
-      {/*         operatorContactLastName: site.operatorContactLastName, */}
-      {/*         operatorPhone: site.operatorPhone, */}
-      {/*         operatorEmail: site.operatorEmail, */}
-      {/*       }} */}
-      {/*       validationSchema={EditSiteSchema} */}
-      {/*       onSubmit={(values) => { */}
-      {/*         const history = { */}
-      {/*           timestamp: new Date(), */}
-      {/*           changes: [], */}
-      {/*         }; */}
-      {/*         Object.keys(values).forEach((key) => { */}
-      {/*           if (values[key] !== site[key]) { */}
-      {/*             history.changes.push({ */}
-      {/*               field: key, */}
-      {/*               from: site[key], */}
-      {/*               to: values[key], */}
-      {/*             }); */}
-      {/*           } */}
-      {/*         }); */}
-      {/*         handlePSIEdit({ */}
-      {/*           siteContactFirstName: values.siteContactFirstName, */}
-      {/*           siteContactLastName: values.siteContactLastName, */}
-      {/*           siteContactPhone: values.siteContactPhone, */}
-      {/*           siteContactEmail: values.siteContactEmail, */}
-      {/*           siteName: values.siteName, */}
-      {/*           registeredBusinessName: values.registeredBusinessName, */}
-      {/*           address: values.address, */}
-      {/*           city: values.city, */}
-      {/*           isRHO: values.isRHO, */}
-      {/*           postalCode: values.postalCode, */}
-      {/*           allocation: values.allocation, */}
-      {/*           operatorContactFirstName: values.operatorContactFirstName, */}
-      {/*           operatorContactLastName: values.operatorContactLastName, */}
-      {/*           operatorPhone: values.operatorPhone, */}
-      {/*           operatorEmail: values.operatorEmail, */}
-      {/*           history: site.history ? [history, ...site.history] : [history], */}
-      {/*         }); */}
-      {/*       }} */}
-      {/*       onClose={defaultOnClose} */}
-      {/*     /> */}
-      {/*   )} */}
-      {/* </Dialog> */}
+      <Dialog
+        title={
+          activeModalForm === 'edit-psi' ? `Edit PSI (${psi.instituteName})` : `Create New Cohort`
+        }
+        open={activeModalForm != null}
+        onClose={closeModal}
+      >
+        {activeModalForm === 'edit-psi' && (
+          <EditPSIForm
+            initialValues={psi}
+            validationSchema={EditPSISchema}
+            onSubmit={(values) => {
+              // const history = {
+              //   timestamp: new Date(),
+              //   changes: [],
+              // };
+              // Object.keys(values).forEach((key) => {
+              //   if (values[key] !== psi[key]) {
+              //     history.changes.push({
+              //       field: key,
+              //       from: psi[key],
+              //       to: values[key],
+              //     });
+              //   }
+              // });
+              handlePSIEdit({
+                // siteContactFirstName: values.siteContactFirstName,
+                // siteContactLastName: values.siteContactLastName,
+                // siteContactPhone: values.siteContactPhone,
+                // siteContactEmail: values.siteContactEmail,
+                // siteName: values.siteName,
+                // registeredBusinessName: values.registeredBusinessName,
+                // address: values.address,
+                // city: values.city,
+                // isRHO: values.isRHO,
+                // postalCode: values.postalCode,
+                // allocation: values.allocation,
+                // operatorContactFirstName: values.operatorContactFirstName,
+                // operatorContactLastName: values.operatorContactLastName,
+                // operatorPhone: values.operatorPhone,
+                // operatorEmail: values.operatorEmail,
+                // history: site.history ? [history, ...site.history] : [history],
+              });
+            }}
+            onClose={closeModal}
+          />
+        )}
+        {activeModalForm === 'add-cohort' && (
+          <NewCohortForm
+            initialValues={{}}
+            validationSchema={NewCohortSchema}
+            onSubmit={(values) => {
+              handleAddCohort({
+                ...values,
+                psiID,
+              });
+            }}
+            onClose={closeModal}
+          />
+        )}
+      </Dialog>
       <Page>
         <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
           <Card>
@@ -177,8 +216,22 @@ export default ({ match }) => {
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                       >
-                        <MenuItem onClick={handleClose}>Add Cohort</MenuItem>
-                        <MenuItem onClick={handleClose}>Edit PSI Info</MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            setActiveModalForm('add-cohort');
+                            handleClose();
+                          }}
+                        >
+                          Add Cohort
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            setActiveModalForm('edit-psi');
+                            handleClose();
+                          }}
+                        >
+                          Edit PSI Info
+                        </MenuItem>
                       </Menu>
                     </Box>
                   </CheckPermissions>
@@ -213,15 +266,37 @@ export default ({ match }) => {
                     <Typography>{psi.city}</Typography>
                     <Typography>{psi.postalCode}</Typography>
 
-                    {/* This will be calculated in more detail later */}
+                    {/* Total Cohorts */}
                     <Typography>{cohorts.length}</Typography>
-                    <Typography>{cohorts.length}</Typography>
-                    <Typography>{cohorts.length}</Typography>
+
+                    {/* Open Cohorts have less participants than their size */}
+                    <Typography>
+                      {
+                        cohorts.filter(
+                          (cohort) => cohort.cohort_size - cohort.participants.length > 0
+                        ).length
+                      }
+                    </Typography>
+
+                    {/* Closed Cohorts have equal participants to their size */}
+                    <Typography>
+                      {
+                        cohorts.filter(
+                          (cohort) => cohort.cohort_size - cohort.participants.length === 0
+                        ).length
+                      }
+                    </Typography>
                   </Grid>
                 </Grid>
               </Box>
             </Box>
-            <CohortTable />
+            {cohorts.length > 0 ? (
+              <CohortTable cohorts={cohorts} />
+            ) : (
+              <Typography variant='h5' align='center'>
+                No Cohorts Added
+              </Typography>
+            )}
           </Card>
         </CheckPermissions>
       </Page>

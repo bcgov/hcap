@@ -769,17 +769,17 @@ const CreateCohortSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
-    cohortName: yup.string().required(errorMessage),
-    startDate: yup
+    cohort_name: yup.string().required(errorMessage),
+    start_date: yup
       .string()
       .required('Start date is required')
       .test('is-date', 'Not a valid date', validateDateString),
-    endDate: yup
+    end_date: yup
       .string()
       .required('End date is required')
       .test('is-date', 'Not a valid date', validateDateString),
-    cohortSize: yup.number().required('Cohort size is required'),
-    psiId: yup.number().required('Cohort must be mapped to a PSI'),
+    cohort_size: yup.number().required('Cohort size is required'),
+    psi_id: yup.number().required('Cohort must be mapped to a PSI'),
   });
 
 const EditSiteSchema = yup

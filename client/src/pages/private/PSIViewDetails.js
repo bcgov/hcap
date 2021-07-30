@@ -35,7 +35,10 @@ export default ({ match }) => {
   };
 
   const handlePSIEdit = async (psi) => {
-    console.log('TODO: handle PSI Patch');
+    openToast({
+      status: ToastStatus.Error,
+      message: 'TODO: Handle PSI Edit',
+    });
   };
 
   const handleAddCohort = async (cohort) => {

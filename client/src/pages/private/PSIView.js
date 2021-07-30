@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo, lazy } from 'react';
 import { Box, Typography, Grid } from '@material-ui/core';
 
 import { Page, CheckPermissions, Button, Dialog } from '../../components/generic';
-import { NewPSIForm } from '../../components/modal-forms';
-import { ToastStatus, API_URL } from '../../constants';
+import { NewPSIForm, NewCohortForm } from '../../components/modal-forms';
+import { ToastStatus, API_URL, NewCohortSchema } from '../../constants';
 import store from 'store';
 import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
@@ -14,6 +14,7 @@ export default () => {
   // Variables
   const [PSIs, setPSIs] = useState([]);
   const [cohorts, setCohorts] = useState([]);
+  const [selectedPSI, setSelectedPSI] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const { openToast } = useToast();
 
@@ -53,6 +54,32 @@ export default () => {
     }
   };
 
+  const handleAddCohortClick = (psiID) => {
+    setSelectedPSI(psiID);
+    setActiveModalForm('add-cohort');
+  };
+
+  const handleAddCohort = async (cohort) => {
+    const response = await fetch(`${API_URL}/api/v1/psi/${selectedPSI}/cohorts/`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(cohort),
+    });
+
+    if (response.ok) {
+      setActiveModalForm(null);
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
+    }
+  };
+
   // Hooks
   useEffect(() => {
     const fetchCohorts = async () => {
@@ -69,7 +96,7 @@ export default () => {
     };
 
     fetchCohorts();
-  }, []);
+  }, [activeModalForm]);
 
   useEffect(() => {
     const fetchPSIs = async () => {
@@ -104,7 +131,7 @@ export default () => {
     <Page>
       <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
         <Dialog
-          title={`Create New Institute`}
+          title={activeModalForm === 'new-psi' ? `Create New Institute` : `Add Cohort`}
           open={activeModalForm != null}
           onClose={defaultOnClose}
         >
@@ -129,6 +156,19 @@ export default () => {
               onClose={defaultOnClose}
             />
           )}
+          {activeModalForm === 'add-cohort' && (
+            <NewCohortForm
+              initialValues={{}}
+              validationSchema={NewCohortSchema}
+              onSubmit={(values) => {
+                handleAddCohort({
+                  ...values,
+                  psiID: selectedPSI,
+                });
+              }}
+              onClose={defaultOnClose}
+            />
+          )}
         </Dialog>
         <Box pt={4} pb={4} pl={2} pr={2} width={1}>
           <Typography variant='subtitle1' align='center' gutterBottom>
@@ -146,7 +186,7 @@ export default () => {
             </Grid>
           </CheckPermissions>
         </Box>
-        <PSITable PSIs={PSIs} />
+        <PSITable PSIs={PSIs} handleAddCohortClick={handleAddCohortClick} />
       </CheckPermissions>
     </Page>
   );

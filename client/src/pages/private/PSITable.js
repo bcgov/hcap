@@ -17,7 +17,7 @@ const columns = [
   { id: 'addCohort' },
 ];
 
-export default ({ PSIs }) => {
+export default ({ PSIs, handleAddCohortClick }) => {
   const [order, setOrder] = useState('asc');
   const [rows, setRows] = useState([]);
 
@@ -108,7 +108,7 @@ export default ({ PSIs }) => {
               if (columnId === 'addCohort')
                 return (
                   <Button
-                    onClick={() => console.log('TODO: Implement Add Cohort')}
+                    onClick={() => handleAddCohortClick(row.id)}
                     variant='outlined'
                     size='small'
                     text='+ Add Cohort'

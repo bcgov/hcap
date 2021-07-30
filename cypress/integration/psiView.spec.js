@@ -47,8 +47,8 @@ describe('Tests the PSI View', () => {
     cy.get('span.MuiButton-label').contains('Submit').click();
     cy.contains('Da Institoot')
       .should('exist')
-      .parent() // Parent is a link
-      .parent('tr')
+      .parent() // This is the link container
+      .parent('tr') // This is the row, we're checking the data within it
       .within(() => {
         cy.contains('Vancouver Coastal').should('exist');
         cy.contains('0').should('exist');

@@ -21,6 +21,7 @@ const { userDetailsRouter } = require('./user');
 const employerSitesRouter = require('./employer-sites');
 const employerFormRouter = require('./employer-form');
 const psiRouter = require('./post-secondary-institutes');
+const cohortRouter = require('./cohorts');
 const milestoneReportRouter = require('./milestone-report');
 
 const apiRouter = express.Router();
@@ -41,6 +42,7 @@ apiRouter.use('/employer-sites-detail', employerSitesRouter);
 
 // PSI Routes
 apiRouter.use(`/psi`, psiRouter);
+apiRouter.use(`/cohorts`, cohortRouter);
 
 // Employer-form
 apiRouter.use('/employer-form', employerFormRouter);

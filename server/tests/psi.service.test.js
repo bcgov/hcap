@@ -2,7 +2,7 @@
 const { startDB, closeDB } = require('./util/db');
 const { getPSIs, getPSI, makePSI } = require('../services/post-secondary-institutes.js');
 
-describe('Participants Service', () => {
+describe('PSI Service', () => {
   beforeAll(async () => {
     await startDB();
   });

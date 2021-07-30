@@ -1,25 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
-import { Box } from '@material-ui/core';
+import { Box, Link } from '@material-ui/core';
 import { Table } from '../../components/generic';
 
 const columns = [
-  { id: 'cohortName', name: 'Cohort Name' },
-  { id: 'startDate', name: 'Start Date' },
-  { id: 'endDate', name: 'End Date' },
-  { id: 'cohortSize', name: 'Cohort Size' },
-  { id: 'remainingSeats', name: 'Remaining Seats' },
+  { id: 'cohort_name', name: 'Cohort Name' },
+  { id: 'start_date', name: 'Start Date' },
+  { id: 'end_date', name: 'End Date' },
+  { id: 'cohort_size', name: 'Cohort Size' },
+  { id: 'remaining_seats', name: 'Remaining Seats' },
 ];
 
-export default () => {
+export default ({ cohorts }) => {
   const [order, setOrder] = useState('asc');
+  const [rows, setRows] = useState(cohorts);
 
-  // These are dummy values to be replaced
-  const rows = [{}, {}];
-  const isLoadingData = false;
-
-  const [orderBy, setOrderBy] = useState('cohortSize');
+  const [orderBy, setOrderBy] = useState('start_date');
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -28,6 +25,10 @@ export default () => {
   };
 
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
+
+  useEffect(() => {
+    setRows(cohorts);
+  }, [cohorts]);
 
   return (
     <Grid
@@ -44,8 +45,20 @@ export default () => {
           orderBy={orderBy}
           onRequestSort={handleRequestSort}
           rows={sort(rows)}
-          isLoading={isLoadingData}
+          isLoading={false}
           renderCell={(columnId, row) => {
+            if (columnId === 'cohort_name')
+              return (
+                <Link onClick={() => console.log('TODO: Edit Cohort Info')}>{row.cohort_name}</Link>
+              );
+            if (columnId === 'start_date' || columnId === 'end_date') {
+              const d = new Date(row[columnId]);
+              return d.toDateString();
+            }
+
+            if (columnId === 'remaining_seats')
+              return row['cohort_size'] - row['participants'].length;
+
             return row[columnId];
           }}
         />

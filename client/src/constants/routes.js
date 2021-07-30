@@ -28,6 +28,8 @@ export default Object.freeze({
   EOIViewDetails: '/eoi-view/details/:id',
   SiteView: '/site-view',
   SiteViewDetails: '/site-view/:id',
+  PSIView: '/psi-view',
+  PSIViewDetails: '/psi-view/:id',
   ParticipantView: '/participant-view',
   ParticipantUpload: '/participant-upload',
   ParticipantUploadResults: '/participant-upload-results',

@@ -122,6 +122,7 @@ const errorMessage = ({ path }) => {
     // Employer site contact info
     siteName: 'Site name is required',
     address: 'Address is required',
+    streetAddress: 'Address is required',
     healthAuthority: 'Health authority is required',
     siteContactFirstName: 'First name is required',
     siteContactLastName: 'Last name is required',
@@ -150,6 +151,11 @@ const errorMessage = ({ path }) => {
       "We're sorry, but current eligibility to work in Canada is a requirement to submit this form.",
     preferredLocation: "Please select at least one location you'd like to work in.",
     consent: "We're sorry, but we cannot process your request without permission.",
+
+    // PSI specific value
+    instituteName: 'Institute name is required',
+    cohortName: 'Cohort name is required',
+    city: 'City is required',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
@@ -746,6 +752,37 @@ const CreateSiteSchema = yup
     siteContactEmail: yup.string().nullable().email('Invalid email address'),
   });
 
+const CreatePSISchema = yup
+  .object()
+  .noUnknown('Unknown field in entry')
+  .shape({
+    instituteName: yup.string().required(errorMessage),
+    healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
+    streetAddress: yup.string().required(errorMessage),
+    city: yup.string().required(errorMessage),
+    postalCode: yup
+      .string()
+      .required(errorMessage)
+      .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
+  });
+
+const CreateCohortSchema = yup
+  .object()
+  .noUnknown('Unknown field in entry')
+  .shape({
+    cohort_name: yup.string().required(errorMessage),
+    start_date: yup
+      .string()
+      .required('Start date is required')
+      .test('is-date', 'Not a valid date', validateDateString),
+    end_date: yup
+      .string()
+      .required('End date is required')
+      .test('is-date', 'Not a valid date', validateDateString),
+    cohort_size: yup.number().required('Cohort size is required'),
+    psi_id: yup.number().required('Cohort must be mapped to a PSI'),
+  });
+
 const EditSiteSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
@@ -800,6 +837,8 @@ module.exports = {
   ParticipantEditSchema,
   EmployerSiteBatchSchema,
   CreateSiteSchema,
+  CreatePSISchema,
+  CreateCohortSchema,
   EditSiteSchema,
   UserParticipantEditSchema,
 };

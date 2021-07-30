@@ -35,7 +35,7 @@ const validateDateIsReasonable = (d) => {
 const validateUniqueArray = (a) => Array.isArray(a) && new Set(a).size === a.length;
 
 const validateBlankOrPositiveInteger = (n) =>
-  n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n >= 0);
+  n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n > 0);
 
 const errorMessage = ({ path }) => {
   const errorMessages = {
@@ -59,7 +59,9 @@ const errorMessage = ({ path }) => {
 
     // Employer site contact info
     siteName: 'Site name is required',
+    instituteName: 'Post Secondary Institute name is required',
     address: 'Address is required',
+    streetAddress: 'Address is required',
     healthAuthority: 'Health authority is required',
     siteContactFirstName: 'First name is required',
     siteContactLastName: 'Last name is required',
@@ -88,6 +90,8 @@ const errorMessage = ({ path }) => {
       "We're sorry, but current eligibility to work in Canada is a requirement to submit this form.",
     preferredLocation: "Please select at least one location you'd like to work in.",
     consent: "We're sorry, but we cannot process your request without permission.",
+    startDate: 'Please supply a start date',
+    endDate: 'Please supply an end date',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
@@ -477,6 +481,46 @@ export const EditSiteSchema = yup.object().shape({
     .required(errorMessage)
     .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
   operatorEmail: yup.string().required(errorMessage).email('Invalid email address'),
+});
+
+export const CreatePSISchema = yup.object().shape({
+  instituteName: yup.string().required(errorMessage),
+  streetAddress: yup.string().required(errorMessage),
+  city: yup.string().required(errorMessage),
+  postalCode: yup
+    .string()
+    .required(errorMessage)
+    .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
+  healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
+});
+
+export const EditPSISchema = yup.object().shape({
+  instituteName: yup.string().required(errorMessage),
+  streetAddress: yup.string().required(errorMessage),
+  city: yup.string().required(errorMessage),
+  postalCode: yup
+    .string()
+    .required(errorMessage)
+    .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
+  healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
+});
+
+export const NewCohortSchema = yup.object().shape({
+  cohortName: yup.string().required(errorMessage),
+  startDate: yup
+    .date()
+    .required(errorMessage)
+    .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
+  endDate: yup
+    .date()
+    .required(errorMessage)
+    .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
+  cohortSize: yup
+    .number()
+    .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+  psiID: yup
+    .number()
+    .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
 });
 
 export const RejectedFormSchema = yup

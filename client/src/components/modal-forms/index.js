@@ -6,4 +6,7 @@ export * from './NewParticipantForm';
 export * from './EditParticipantForm';
 export * from './NewSiteForm';
 export * from './EditSiteForm';
+export * from './NewPSIForm';
+export * from './EditPSIForm';
+export * from './NewCohortForm';
 export * from './ArchiveHiredParticipantForm';

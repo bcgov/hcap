@@ -13,6 +13,7 @@ describe('Login', () => {
     cy.contains('View Access Requests').should('exist');
     cy.contains('Manage Users').should('exist');
     cy.contains('View Milestone Reports').should('exist');
+    cy.contains('Manage PSI').should('exist');
   });
 
   it('logs in as a MoH user and tests the admin page', () => {
@@ -25,6 +26,7 @@ describe('Login', () => {
     cy.contains('View Access Requests').should('exist');
     cy.contains('Manage Users').should('exist');
     cy.contains('View Milestone Reports').should('exist');
+    cy.contains('Manage PSI').should('exist');
   });
 
   it('logs in as a health authority user and tests the admin page', () => {
@@ -37,6 +39,7 @@ describe('Login', () => {
     cy.contains('View Access Requests').should('not.exist');
     cy.contains('Manage Users').should('not.exist');
     cy.contains('View Milestone Reports').should('not.exist');
+    cy.contains('Manage PSI').should('not.exist');
   });
 
   it('logs in as an employer and tests /admin redirection', () => {

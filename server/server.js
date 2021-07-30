@@ -5,7 +5,6 @@ const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
 const apiRouter = require('./routes');
-
 const { errorHandler } = require('./error-handler.js');
 
 const apiBaseUrl = '/api/v1';
@@ -49,7 +48,7 @@ app.use(
     {
       skip: (req) => {
         const { path: pathName } = req;
-        return pathName.includes('/static/') || pathName.includes('/api/v1/healthcheck');
+        return pathName.includes('/static/') || pathName.includes('healthcheck');
       },
     }
   )
@@ -58,7 +57,6 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
 app.use(`${apiBaseUrl}`, apiRouter);
-
 app.use(errorHandler);
 
 // Client app

@@ -48,7 +48,7 @@ app.use(
     {
       skip: (req) => {
         const { path: pathName } = req;
-        return pathName.includes('/static/') || pathName.includes('/api/v1/healthcheck');
+        return pathName.includes('/static/') || pathName.includes('healthcheck');
       },
     }
   )

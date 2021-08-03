@@ -35,8 +35,7 @@ const validateDateIsReasonable = (d) => {
 };
 const validateUniqueArray = (a) => Array.isArray(a) && new Set(a).size === a.length;
 
-const validateBlankOrPositiveInteger = (n) =>
-  n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n > 0);
+const validateBlankOrPositiveInteger = (n) => (!!n ? Number.isInteger(n) && n > 0 : true);
 
 const errorMessage = ({ path }) => {
   const errorMessages = {
@@ -96,6 +95,7 @@ const errorMessage = ({ path }) => {
     cohortName: 'Cohort Name is required',
     startDate: 'Start Date is required',
     endDate: 'End Date is required',
+    cohortSize: 'Cohort Size must be specified',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
@@ -529,6 +529,8 @@ export const NewCohortSchema = yup.object().shape({
     .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
   cohortSize: yup
     .number()
+    .required(errorMessage)
+    .typeError('Input must be a number')
     .test(
       'validate-blank-or-number',
       'Must be equal to or greater than 1',

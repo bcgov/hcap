@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
-import { Box, Link } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { Table } from '../../components/generic';
 import { useToast } from '../../hooks';
-import { ToastStatus } from '../../constants';
 
 const columns = [
   { id: 'cohort_name', name: 'Cohort Name' },
@@ -17,7 +16,6 @@ const columns = [
 export default ({ cohorts }) => {
   const [order, setOrder] = useState('asc');
   const [rows, setRows] = useState(cohorts);
-  const { openToast } = useToast();
 
   const [orderBy, setOrderBy] = useState('start_date');
 
@@ -50,19 +48,6 @@ export default ({ cohorts }) => {
           rows={sort(rows)}
           isLoading={false}
           renderCell={(columnId, row) => {
-            if (columnId === 'cohort_name')
-              return (
-                <Link
-                  onClick={() =>
-                    openToast({
-                      status: ToastStatus.Error,
-                      message: 'TODO: Handle Cohort Edit',
-                    })
-                  }
-                >
-                  {row.cohort_name}
-                </Link>
-              );
             if (columnId === 'start_date' || columnId === 'end_date') {
               const d = new Date(row[columnId]);
               return d.toDateString();

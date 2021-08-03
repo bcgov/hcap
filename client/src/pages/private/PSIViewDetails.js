@@ -180,14 +180,6 @@ export default ({ match }) => {
                         >
                           Add Cohort
                         </MenuItem>
-                        <MenuItem
-                          onClick={() => {
-                            setActiveModalForm('edit-psi');
-                            handleClose();
-                          }}
-                        >
-                          Edit PSI Info
-                        </MenuItem>
                       </Menu>
                     </Box>
                   </CheckPermissions>

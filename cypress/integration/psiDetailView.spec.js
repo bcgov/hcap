@@ -1,5 +1,5 @@
 describe('Tests the PSI View', () => {
-  // Seed the db with at least one PSI
+  // Seed the db with two PSIs
   before(() => {
     cy.kcLogin('test-moh');
     cy.visit('/psi-view');
@@ -64,8 +64,22 @@ describe('Tests the PSI View', () => {
     cy.get('button').contains('Submit').click();
     cy.contains('No Cohorts Added').should('not.exist');
     cy.contains('Angular Observations').should('exist');
+    cy.contains('01 Sep 2020').should('exist'); // Start Date displays properly
+    cy.contains('01 Sep 2021').should('exist'); // End Date displays properly
     cy.get('p#totalCohorts').should('have.text', 1);
     cy.get('p#openCohorts').should('have.text', 1);
     cy.get('p#closedCohorts').should('have.text', 0);
+
+    // Adds a past cohort, checks to make sure it's marked as closed
+    cy.get('button').contains('Manage PSI').click();
+    cy.get('li').contains('Add Cohort').should('be.visible').click();
+    cy.get('input#cohortName').type('Obtuse Ontologies');
+    cy.get('input[name="StartDate"]').type('19200901');
+    cy.get('input[name="EndDate"]').type('19210901');
+    cy.get('input#cohortSize').type('144');
+    cy.get('button').contains('Submit').click();
+    cy.get('p#totalCohorts').should('have.text', 2);
+    cy.get('p#openCohorts').should('have.text', 1);
+    cy.get('p#closedCohorts').should('have.text', 1);
   });
 });

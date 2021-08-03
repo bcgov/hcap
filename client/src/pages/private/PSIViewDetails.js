@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useState } from 'react';
+import React, { lazy, useEffect, useState, useMemo } from 'react';
 import { Card, Page, CheckPermissions, Dialog } from '../../components/generic';
 import Button from '@material-ui/core/Button';
 import { Box, Grid, Link, Typography } from '@material-ui/core';
@@ -21,6 +21,18 @@ export default ({ match }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const psiID = parseInt(match.params.id, 10);
+
+  const openCohorts = useMemo(
+    () =>
+      cohorts.filter(
+        (cohort) =>
+          cohort.cohort_size - cohort.participants.length > 0 &&
+          new Date(cohort.end_date) > new Date()
+      ).length,
+    [cohorts]
+  );
+
+  const closedCohorts = useMemo(() => cohorts.length - openCohorts, [cohorts, openCohorts]);
 
   const handleManagePSIClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -226,22 +238,9 @@ export default ({ match }) => {
                     <Typography id='totalCohorts'>{cohorts.length}</Typography>
 
                     {/* Open Cohorts have less participants than their size */}
-                    <Typography id='openCohorts'>
-                      {
-                        cohorts.filter(
-                          (cohort) => cohort.cohort_size - cohort.participants.length > 0
-                        ).length
-                      }
-                    </Typography>
+                    <Typography id='openCohorts'>{openCohorts}</Typography>
 
-                    {/* Closed Cohorts have equal participants to their size */}
-                    <Typography id='closedCohorts'>
-                      {
-                        cohorts.filter(
-                          (cohort) => cohort.cohort_size - cohort.participants.length === 0
-                        ).length
-                      }
-                    </Typography>
+                    <Typography id='closedCohorts'>{closedCohorts}</Typography>
                   </Grid>
                 </Grid>
               </Box>

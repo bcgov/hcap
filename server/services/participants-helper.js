@@ -66,40 +66,6 @@ const addDistanceToParticipantFields = (raw, siteDistanceJoin) =>
     }),
   }));
 
-// Find the previous status for each org, create a copy of it
-const revertToOldStatus = async (participantStatuses, setParticipantStatus) => {
-  await participantStatuses.forEach(async (status) => {
-    if (status?.data?.previousStatus !== participantStatus.ARCHIVED) {
-      await setParticipantStatus(
-        status.employer_id,
-        status.participant_id,
-        status.data.previousStatus,
-        {
-          ...(status.data?.previousData || {}),
-        }
-      );
-    }
-  });
-};
-// Withdraw the participant
-const insertWithdrawalParticipantStatus = async (participantStatuses, setParticipantStatus) => {
-  participantStatuses.forEach(async (status) => {
-    // Prevent locking the user into a loop of archived statuses
-    if (!(status.status && status.status === participantStatus.ARCHIVED)) {
-      await setParticipantStatus(
-        status.employer_id,
-        status.participant_id,
-        participantStatus.ARCHIVED,
-        {
-          final_status: 'Withdrawn from HCAP',
-          previousStatus: status.status,
-          previousData: status.data,
-        }
-      );
-    }
-  });
-};
-
 const run = async (context) => {
   const {
     table,
@@ -368,6 +334,4 @@ class ParticipantsFinder {
 
 module.exports = {
   ParticipantsFinder,
-  revertToOldStatus,
-  insertWithdrawalParticipantStatus,
 };

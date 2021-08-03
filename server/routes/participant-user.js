@@ -95,36 +95,6 @@ router.patch(
   })
 );
 
-// Update withdraw
-router.post(
-  '/participant/:id/withdraw',
-  asyncMiddleware(async (req, res) => {
-    const { user_id: userId } = req.user;
-    const { id } = req.params;
-    const participants = await getParticipantByIdWithStatus({ id, userId });
-    if (participants.length > 0) {
-      const participant = participants[0];
-      const isHired = participant.currentStatuses?.some(
-        (statusObj) => statusObj.status === 'hired'
-      );
-      if (!isHired && !['no', 'withdrawn'].includes(participant.body?.interested)) {
-        await withdrawParticipant({ ...participant.body, id });
-        logger.info({
-          action: 'user_participant_withdraw',
-          performed_by: {
-            userId,
-          },
-          id: participant.id,
-        });
-        res.status(200).send('OK');
-      } else {
-        res.status(422).send('Already Hired or Withdrawn');
-      }
-    } else {
-      res.status(422).send(`No expression of interest with id: ${id}`);
-    }
-  })
-);
 
 router.post(
   '/participant/:id/reconfirm_interest',

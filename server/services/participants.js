@@ -5,9 +5,7 @@ const { validate, ParticipantBatchSchema, isBooleanValue } = require('../validat
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const {
-  ParticipantsFinder,
-  revertToOldStatus,
-  insertWithdrawalParticipantStatus,
+  ParticipantsFinder
 } = require('./participants-helper');
 
 const setParticipantStatus = async (
@@ -76,7 +74,8 @@ const setParticipantStatus = async (
     });
 
     // Now check if current status is archived then set interested flag
-    if (status === 'archived') {
+    // Only do this for duplicate records 
+    if (status === 'archived' && data.type ==='duplicate') {
       // eslint-disable-next-line no-use-before-define
       await withdrawParticipant(participant[0]);
     }
@@ -186,16 +185,6 @@ const updateParticipant = async (participantInfo) => {
       participant_id: participantInfo.id,
       current: true,
     });
-    // If no old statuses exist, no need to create a new one.
-    // setParticipantStatus was creating a circular dependancy and not getting loaded in, so I pass it in as a prop.
-    if (participantStatuses.length) {
-      if (changes.interested === 'yes') {
-        // The UI does not support a workflow for a Moh Member
-        await revertToOldStatus(participantStatuses, setParticipantStatus);
-      } else {
-        await insertWithdrawalParticipantStatus(participantStatuses, setParticipantStatus);
-      }
-    }
   }
   const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc(
     {

@@ -3,6 +3,7 @@ import mapValues from 'lodash/mapValues';
 import {
   archiveReasonOptions,
   archiveStatusOptions,
+  minDateString,
   maxDateString,
 } from './archiveParticipantsConstants';
 
@@ -27,7 +28,7 @@ const validateDateIsInThePast = (s) => {
 };
 const validateDateIsReasonable = (d) => {
   try {
-    return Date.parse(d) >= Date.parse(maxDateString);
+    return Date.parse(d) >= Date.parse(minDateString) && Date.parse(d) <= Date.parse(maxDateString);
   } catch (e) {
     return false;
   }
@@ -90,8 +91,11 @@ const errorMessage = ({ path }) => {
       "We're sorry, but current eligibility to work in Canada is a requirement to submit this form.",
     preferredLocation: "Please select at least one location you'd like to work in.",
     consent: "We're sorry, but we cannot process your request without permission.",
-    startDate: 'Please supply a start date',
-    endDate: 'Please supply an end date',
+
+    // Cohort
+    cohortName: 'Cohort Name is required',
+    startDate: 'Start Date is required',
+    endDate: 'End Date is required',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
@@ -510,14 +514,26 @@ export const NewCohortSchema = yup.object().shape({
   startDate: yup
     .date()
     .required(errorMessage)
+    .test('is-reasonable', 'Invalid year, must be between 1900 and 2100', validateDateIsReasonable)
     .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
   endDate: yup
     .date()
     .required(errorMessage)
+    .test('is-reasonable', 'Invalid year, must be between 1900 and 2100', validateDateIsReasonable)
+    .when('startDate', (startDate, schema) => {
+      return schema.test({
+        test: (endDate) => !!startDate && startDate < endDate,
+        message: 'End Date must be after Start Date',
+      });
+    })
     .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
   cohortSize: yup
     .number()
-    .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+    .test(
+      'validate-blank-or-number',
+      'Must be equal to or greater than 1',
+      validateBlankOrPositiveInteger
+    ),
   psiID: yup
     .number()
     .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),

@@ -158,7 +158,12 @@ export default () => {
           )}
           {activeModalForm === 'add-cohort' && (
             <NewCohortForm
-              initialValues={{}}
+              initialValues={{
+                cohortName: '',
+                startDate: '',
+                endDate: '',
+                cohortSize: '',
+              }}
               validationSchema={NewCohortSchema}
               onSubmit={(values) => {
                 handleAddCohort({

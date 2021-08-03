@@ -8,6 +8,8 @@ import { Routes, regionLabelsMap } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { AuthContext } from '../../providers';
 
+const { none, ...customLabelsMap } = regionLabelsMap;
+
 const columns = [
   { id: 'institute_name', name: 'Institutes' },
   { id: 'health_authority', name: 'Health Authority' },
@@ -47,8 +49,8 @@ export default ({ PSIs, handleAddCohortClick }) => {
   useEffect(() => {
     setHealthAuthorities(
       roles.includes('superuser') || roles.includes('ministry_of_health')
-        ? Object.values(regionLabelsMap)
-        : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
+        ? Object.values(customLabelsMap)
+        : roles.map((loc) => customLabelsMap[loc]).filter(Boolean)
     );
   }, [roles]);
 

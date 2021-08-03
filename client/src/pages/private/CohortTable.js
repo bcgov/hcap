@@ -65,7 +65,8 @@ export default ({ cohorts }) => {
               );
             if (columnId === 'start_date' || columnId === 'end_date') {
               const d = new Date(row[columnId]);
-              return d.toDateString();
+              // Parses the relevant section of the date string
+              return d.toUTCString().split(' ').slice(1, 4).join(' ');
             }
 
             if (columnId === 'remaining_seats')

@@ -187,3 +187,8 @@ db-postgres-tunnel:
 db-postgres-rw-tunnel:
 	@oc project $(TARGET_NAMESPACE)
 	@oc port-forward svc/$(APP_NAME)-patroni 5432
+
+# Load Testing
+
+loadtest:
+	@k6 run ./load/$(script) -e RATE=75 -e DURATION=120

@@ -13,8 +13,8 @@ export const NewPSIForm = ({ initialValues, onSubmit, onClose }) => {
         <FormikForm>
           <Box>
             <Field name='instituteName' component={RenderTextField} label='* Institute Name' />
-            <Field name='streetAddress' component={RenderTextField} label='* Street Address' />
-            <Field name='city' component={RenderTextField} label='* City' />
+            <Field name='streetAddress' component={RenderTextField} label='Street Address' />
+            <Field name='city' component={RenderTextField} label='City' />
             <Field name='postalCode' component={RenderTextField} label='* Postal Code' />
             <Field
               name='healthAuthority'

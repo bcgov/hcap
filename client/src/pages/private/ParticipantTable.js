@@ -802,6 +802,7 @@ export default () => {
                   payload: newPage,
                 });
               }}
+              usePagination={true}
               rowsPerPage={pageSize}
               currentPage={currentPage}
               renderCell={renderCell}

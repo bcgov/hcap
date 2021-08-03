@@ -174,6 +174,7 @@ export const Table = ({
   onRequestSort,
   columns,
   rows,
+  usePagination,
   isLoading,
   currentPage = 0,
   rowsPerPage,
@@ -230,15 +231,17 @@ export const Table = ({
               ))}
         </TableBody>
       </MuiTable>
-      <TablePagination
-        rowsPerPageOptions={[]}
-        component='div'
-        count={rowsCount || rows.length}
-        rowsPerPage={rowsPerPage}
-        page={currentPage}
-        onChangePage={handlePageChange}
-        ActionsComponent={isLoading ? () => null : TablePaginationActions}
-      />
+      {usePagination && (
+        <TablePagination
+          rowsPerPageOptions={[]}
+          component='div'
+          count={rowsCount || rows.length}
+          rowsPerPage={rowsPerPage || rows.length || 10}
+          page={currentPage}
+          onChangePage={handlePageChange}
+          ActionsComponent={isLoading ? () => null : TablePaginationActions}
+        />
+      )}
     </Fragment>
   );
 };

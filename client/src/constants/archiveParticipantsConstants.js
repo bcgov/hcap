@@ -22,4 +22,5 @@ export const archiveTypeOptions = [
   { value: 'duplicate', label: 'Duplicate' },
 ];
 
-export const maxDateString = '1899/12/31';
+export const minDateString = '1899/12/31';
+export const maxDateString = '2099/12/31';

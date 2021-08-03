@@ -46,8 +46,20 @@ describe('Tests the PSI View', () => {
     cy.get('button').contains('Manage PSI').click();
     cy.get('li').contains('Add Cohort').should('be.visible').click();
     cy.get('input#cohortName').type('Angular Observations');
-    cy.get('input[name="StartDate"]').type('20200901');
-    cy.get('input[name="EndDate"]').type('20210901');
+
+    // Tests out of range date
+    cy.get('input[name="StartDate"]').type('17200901');
+    cy.get('button').contains('Submit').click();
+    cy.contains('Invalid year').should('exist');
+
+    // Tests Start Date < End Date
+    cy.get('input[name="StartDate"]').clear().type('20200901');
+    cy.get('input[name="EndDate"]').type('20000901');
+    cy.get('button').contains('Submit').click();
+    cy.contains('End Date must be after Start Date').should('exist');
+
+    // Tests Successful Cohort Addition
+    cy.get('input[name="EndDate"]').clear().type('20210901');
     cy.get('input#cohortSize').type('144');
     cy.get('button').contains('Submit').click();
     cy.contains('No Cohorts Added').should('not.exist');

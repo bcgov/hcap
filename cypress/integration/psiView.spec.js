@@ -29,8 +29,6 @@ describe('Tests the PSI View', () => {
     cy.get('span.MuiButton-label').contains('Submit').click();
     cy.get('p#instituteNameError').should('be.visible');
     cy.get('p#postalCodeError').should('be.visible');
-    cy.get('p#cityError').should('be.visible');
-    cy.get('p#streetAddressError').should('be.visible');
     cy.get('p.Mui-error').contains('Health authority is required').should('be.visible');
 
     // Input incorrectly formatted postal code, check for formatting request

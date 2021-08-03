@@ -8,6 +8,7 @@ const {
   updateParticipant,
   createChangeHistory,
   setParticipantLastUpdated,
+  withdrawParticipant
 } = require('../services/participants');
 
 const { patchObject } = require('../utils');
@@ -124,7 +125,6 @@ router.post(
     }
   })
 );
-
 
 router.post(
   '/participant/:id/reconfirm_interest',

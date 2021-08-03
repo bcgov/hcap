@@ -50,7 +50,7 @@ describe('Tests the PSI View', () => {
     // Tests out of range date
     cy.get('input[name="StartDate"]').type('17200901');
     cy.get('button').contains('Submit').click();
-    cy.get('Invalid year').should('exist');
+    cy.contains('Invalid year').should('exist');
 
     // Tests Start Date < End Date
     cy.get('input[name="StartDate"]').clear().type('20200901');

@@ -72,7 +72,6 @@ const setParticipantStatus = async (
     });
 
     // Now check if current status is archived then set interested flag
-    // Only do this for duplicate records
     if (status === 'archived') {
       // eslint-disable-next-line no-use-before-define
       await withdrawParticipant(participant[0]);

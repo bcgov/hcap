@@ -3,7 +3,6 @@ import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
 import { Box } from '@material-ui/core';
 import { Table } from '../../components/generic';
-import { useToast } from '../../hooks';
 
 const columns = [
   { id: 'cohort_name', name: 'Cohort Name' },

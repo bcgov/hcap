@@ -8,7 +8,7 @@ const {
   updateParticipant,
   createChangeHistory,
   setParticipantLastUpdated,
-  withdrawParticipant
+  withdrawParticipant,
 } = require('../services/participants');
 
 const { patchObject } = require('../utils');

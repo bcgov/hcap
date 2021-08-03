@@ -4,9 +4,7 @@ const readXlsxFile = require('node-xlsx').default;
 const { validate, ParticipantBatchSchema, isBooleanValue } = require('../validation.js');
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
-const {
-  ParticipantsFinder
-} = require('./participants-helper');
+const { ParticipantsFinder } = require('./participants-helper');
 
 const setParticipantStatus = async (
   employerId,
@@ -74,8 +72,8 @@ const setParticipantStatus = async (
     });
 
     // Now check if current status is archived then set interested flag
-    // Only do this for duplicate records 
-    if (status === 'archived' && data.type ==='duplicate') {
+    // Only do this for duplicate records
+    if (status === 'archived') {
       // eslint-disable-next-line no-use-before-define
       await withdrawParticipant(participant[0]);
     }
@@ -179,13 +177,6 @@ const updateParticipant = async (participantInfo) => {
     },
     { history: participantInfo.history, userUpdatedAt: new Date().toJSON() }
   );
-  if (changes.interested !== undefined) {
-    // Get the old statuses
-    const participantStatuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
-      participant_id: participantInfo.id,
-      current: true,
-    });
-  }
   const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc(
     {
       id: participantInfo.id,

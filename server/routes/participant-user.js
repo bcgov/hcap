@@ -5,7 +5,6 @@ const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
 const {
   getParticipantsForUser,
   getParticipantByIdWithStatus,
-  withdrawParticipant,
   updateParticipant,
   createChangeHistory,
   setParticipantLastUpdated,
@@ -94,7 +93,6 @@ router.patch(
     }
   })
 );
-
 
 router.post(
   '/participant/:id/reconfirm_interest',

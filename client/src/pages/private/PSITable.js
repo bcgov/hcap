@@ -28,7 +28,6 @@ export default ({ PSIs, handleAddCohortClick }) => {
     'Vancouver Coastal',
     'Vancouver Island',
     'Northern',
-    'None',
   ]);
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);

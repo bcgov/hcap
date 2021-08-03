@@ -5,10 +5,10 @@ const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
 const {
   getParticipantsForUser,
   getParticipantByIdWithStatus,
-  withdrawParticipant,
   updateParticipant,
   createChangeHistory,
   setParticipantLastUpdated,
+  withdrawParticipant,
 } = require('../services/participants');
 
 const { patchObject } = require('../utils');

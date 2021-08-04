@@ -3,7 +3,7 @@ describe('Tests the PSI View', () => {
   before(() => {
     cy.kcLogin('test-moh');
     cy.visit('/psi-view');
-    cy.contains('Add PSI').click();
+    cy.contains('Add Post-Secondary Institute').click();
     cy.get('input#instituteName').type('Testitute');
     cy.get('input#streetAddress').type('314 Pi Ct.');
     cy.get('input#city').type('Port Renfrew');
@@ -12,7 +12,7 @@ describe('Tests the PSI View', () => {
     cy.get('li').contains('Island').click();
     cy.get('span.MuiButton-label').contains('Submit').click();
 
-    cy.contains('Add PSI').click();
+    cy.contains('Add Post-Secondary Institute').click();
     cy.get('input#instituteName').type('Pythagorean Academy');
     cy.get('input#streetAddress').type('144 Numeral Ave.');
     cy.get('input#city').type('Sooke');

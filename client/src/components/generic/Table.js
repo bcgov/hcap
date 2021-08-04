@@ -68,6 +68,7 @@ const TablePaginationActions = (props) => {
   const classes = useStyles();
   const { count, page, rowsPerPage, onChangePage } = props;
 
+
   const handleFirstPageButtonClick = (event) => {
     onChangePage(event, 0);
   };
@@ -176,10 +177,11 @@ export const Table = ({
   rows,
   isLoading,
   currentPage = 0,
-  rowsPerPage,
+  rowsPerPage = 10, 
   onChangePage,
   rowsCount,
 }) => {
+  console.log(currentPage,rowsPerPage,)
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };

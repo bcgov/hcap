@@ -27,8 +27,17 @@ router.get(
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
-    const result = await getEmployers(user);
-    return res.json({ data: result });
+    let offset = 0
+    if(req.query.offset){
+      try{
+        offset = parseInt(req.query.offset);
+      }catch(e){
+        logger.error(e);
+      }
+
+    }
+    const result = await getEmployers(user,offset); 
+    return res.json(result);
   })
 );
 

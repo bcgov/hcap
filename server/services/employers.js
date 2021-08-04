@@ -2,11 +2,17 @@ const { dbClient, collections } = require('../db');
 const { validate, EmployerSiteBatchSchema } = require('../validation');
 const { userRegionQuery } = require('./user.js');
 
-const getEmployers = async (user) => {
+const getEmployers = async (user , offset = 0) => {
   const criteria =
     user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'healthAuthority');
-  return criteria ? dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria) : [];
-};
+    const count = await  dbClient.db[collections.EMPLOYER_FORMS].count(criteria);
+    const data = await  dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria,{offset,limit:10})
+    return {
+      count,
+      data,
+      offset
+    }
+  };
 
 const getEmployerByID = async (id) => dbClient.db[collections.EMPLOYER_FORMS].findDoc({ id });
 

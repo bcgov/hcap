@@ -5,13 +5,15 @@ import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
-import { Routes, regionLabelsMap, API_URL } from '../../constants';
+import { Routes, regionLabelsMap, API_URL, pageSize } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { AuthContext } from '../../providers';
 
 export default () => {
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
+  const [currentPage,setCurrentPage] = useState(0);
+  const [rowsCount,setRowsCount] = useState(0);
   const [fetchedRows, setFetchedRows] = useState([]);
   const [rows, setRows] = useState([]);
   const [columns] = useState([
@@ -98,7 +100,8 @@ export default () => {
 
     const getEOIs = async () => {
       setLoadingData(true);
-      const response = await fetch(`${API_URL}/api/v1/employer-form`, {
+      const offset = pageSize*currentPage;
+      const response = await fetch(`${API_URL}/api/v1/employer-form?offset=${offset}`, {
         headers: {
           Accept: 'application/json',
           'Content-type': 'application/json',
@@ -108,18 +111,20 @@ export default () => {
       });
 
       let rows = [];
+      let newRowsCount = 0; 
       if (response.ok) {
-        const { data } = await response.json();
+        const { data,count } = await response.json();
+        newRowsCount = parseInt(count);
         rows = filterData(data);
       }
-
+      setRowsCount(newRowsCount);
       setFetchedRows(rows);
       setRows(rows);
       setLoadingData(false);
     };
 
     getEOIs();
-  }, [columns, history]);
+  }, [columns, history,currentPage]);
 
   return (
     <Page>
@@ -173,6 +178,12 @@ export default () => {
               onRequestSort={handleRequestSort}
               rows={sort(rows)}
               isLoading={isLoadingData}
+              onChangePage={(oldPage,newPage)=>{
+                setCurrentPage(newPage);
+              }}
+              currentPage={currentPage}
+              pageSite={pageSize}
+              rowsCount={rowsCount}
             />
           </Box>
         </Grid>

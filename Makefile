@@ -191,4 +191,14 @@ db-postgres-rw-tunnel:
 # Load Testing
 
 loadtest:
-	@k6 run ./load/$(script) -e RATE=75 -e DURATION=120
+	@docker run \
+		-v $(PWD)/load:/load \
+		-i loadimpact/k6 run \
+		-e RATE=$(rate) \
+		-e DURATION=$(duration) \
+		-e LOAD_KC_AUTH_USERNAME=$(LOAD_KC_AUTH_USERNAME) \
+		-e LOAD_KC_AUTH_PASSWORD=$(LOAD_KC_AUTH_PASSWORD) \
+		-e LOAD_KC_AUTH_CLIENTID=$(LOAD_KC_AUTH_CLIENTID) \
+		-e OS_NAMESPACE_SUFFIX=$(OS_NAMESPACE_SUFFIX) \
+		-e KEYCLOAK_REALM=$(KEYCLOAK_REALM) \
+		/load/$(script)

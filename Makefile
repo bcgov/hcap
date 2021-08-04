@@ -191,7 +191,7 @@ db-postgres-rw-tunnel:
 # Load Testing
 
 loadtest:
-	@docker run \
+	@docker run --rm \
 		-v $(PWD)/load:/load \
 		-i loadimpact/k6 run \
 		-e RATE=$(rate) \

@@ -811,6 +811,10 @@ export default () => {
             <CustomTabs
               value={selectedTab || false}
               onChange={async (_, property) => {
+                participantsDispatch({
+                  type: ParticipantsContext.types.SELECT_TAB,
+                  payload: property,
+                });
                 dispatch({
                   type: 'updateKey',
                   key: 'pagination',

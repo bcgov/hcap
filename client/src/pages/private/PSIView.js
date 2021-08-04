@@ -176,13 +176,13 @@ export default () => {
             Manage Post-Secondary Institutes
           </Typography>
           <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-            <Grid container item xs={6} md={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
+            <Grid container item xs={6} md={3} style={{ marginLeft: 'auto', marginRight: 20 }}>
               <Button
                 onClick={async () => {
                   setActiveModalForm('new-psi');
                 }}
-                size='medium'
-                text='+ Add PSI'
+                size='large'
+                text='+ Add Post-Secondary Institute'
               />
             </Grid>
           </CheckPermissions>

@@ -15,7 +15,12 @@ export const NewCohortForm = ({ initialValues, onSubmit, onClose }) => {
             <Field name='cohortName' component={RenderTextField} label='* Cohort Name' />
             <Field name='startDate' component={RenderDateField} label='* Start Date' />
             <Field name='endDate' component={RenderDateField} label='* End Date' />
-            <Field name='cohortSize' component={RenderTextField} label='* Cohort Size' />
+            <Field
+              name='cohortSize'
+              type='number'
+              component={RenderTextField}
+              label='* Cohort Size'
+            />
           </Box>
           <Box mt={3}>
             <Grid container spacing={2} justify='flex-end'>

@@ -758,8 +758,8 @@ const CreatePSISchema = yup
   .shape({
     instituteName: yup.string().required(errorMessage),
     healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
-    streetAddress: yup.string().required(errorMessage),
-    city: yup.string().required(errorMessage),
+    streetAddress: yup.string(),
+    city: yup.string(),
     postalCode: yup
       .string()
       .required(errorMessage)

@@ -489,8 +489,8 @@ export const EditSiteSchema = yup.object().shape({
 
 export const CreatePSISchema = yup.object().shape({
   instituteName: yup.string().required(errorMessage),
-  streetAddress: yup.string().required(errorMessage),
-  city: yup.string().required(errorMessage),
+  streetAddress: yup.string(),
+  city: yup.string(),
   postalCode: yup
     .string()
     .required(errorMessage)

@@ -4,11 +4,9 @@ import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography, Link } from '@material-ui/core';
 import { Table, Button } from '../../components/generic';
-import { Routes, regionLabelsMap } from '../../constants';
+import { Routes, psiRegionLabelsMap } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { AuthContext } from '../../providers';
-
-const { none, ...customLabelsMap } = regionLabelsMap;
 
 const columns = [
   { id: 'institute_name', name: 'Institutes' },
@@ -49,8 +47,8 @@ export default ({ PSIs, handleAddCohortClick }) => {
   useEffect(() => {
     setHealthAuthorities(
       roles.includes('superuser') || roles.includes('ministry_of_health')
-        ? Object.values(customLabelsMap)
-        : roles.map((loc) => customLabelsMap[loc]).filter(Boolean)
+        ? Object.values(psiRegionLabelsMap)
+        : roles.map((loc) => psiRegionLabelsMap[loc]).filter(Boolean)
     );
   }, [roles]);
 

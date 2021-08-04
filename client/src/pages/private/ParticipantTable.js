@@ -71,6 +71,14 @@ const reducer = (state, action) => {
   const { type, key, value } = action;
   let newstate = { ...state };
   switch (type) {
+    // Add pagination to a key update
+    case 'updateKeyWithPagination':
+      newstate.pagination = {
+        ...newstate,
+        currentPage: 0,
+      };
+      newstate[key] = value;
+      return newstate;
     // Update any key in state with the corresponding value
     case 'updateKey':
       newstate[key] = value;
@@ -82,8 +90,19 @@ const reducer = (state, action) => {
       newstate[key] = value ? value.trim() : '';
       newstate.pagination = {
         ...newstate.pagination,
+        currentPage: 0,
       };
       return newstate;
+
+    case 'updatePage':
+      return {
+        ...state,
+        pagination: {
+          ...newstate.pagination,
+          currentPage: value,
+        },
+      };
+
     // Updating site selector also updates the order, so this needed its own case
     case 'updateSiteSelector':
       return {
@@ -93,6 +112,10 @@ const reducer = (state, action) => {
           direction: 'asc',
         },
         siteSelector: value,
+        pagination: {
+          ...newstate.pagination,
+          currentPage: 0,
+        },
       };
     default:
       return state;
@@ -163,7 +186,7 @@ export default () => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations, setLocations] = useState([]);
   const {
-    state: { columns, tabs, selectedTab, selectedTabStatuses, currentPage },
+    state: { columns, tabs, selectedTab, selectedTabStatuses },
     dispatch: participantsDispatch,
   } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
@@ -268,6 +291,7 @@ export default () => {
   const forceReload = async () => {
     if (!columns) return;
     if (!selectedTab) return;
+    const currentPage = reducerState.pagination?.currentPage || 0;
     setLoadingData(true);
     const { data, pagination } = await fetchParticipants(
       currentPage * pageSize,
@@ -280,9 +304,13 @@ export default () => {
       reducerState.siteSelector,
       selectedTabStatuses
     );
-    participantsDispatch({
-      type: ParticipantsContext.types.SELECT_TAB,
-      payload: pagination,
+    dispatch({
+      type: 'updateKey',
+      key: 'pagination',
+      value: {
+        total: pagination.total,
+        currentPage: currentPage || 0,
+      },
     });
     const newRows = filterData(data, columns);
     setRows(newRows);
@@ -308,6 +336,7 @@ export default () => {
 
   useEffect(() => {
     const getParticipants = async () => {
+      const currentPage = reducerState.pagination?.currentPage || 0;
       if (!columns) return;
       if (!selectedTab) return;
       setLoadingData(true);
@@ -325,7 +354,10 @@ export default () => {
       dispatch({
         type: 'updateKey',
         key: 'pagination',
-        value: pagination,
+        value: {
+          total: pagination.total,
+          currentPage: currentPage,
+        },
       });
 
       const newRows = filterData(data, columns);
@@ -335,7 +367,7 @@ export default () => {
 
     getParticipants();
   }, [
-    currentPage,
+    reducerState.pagination?.currentPage,
     reducerState.siteSelector,
     reducerState.emailFilter,
     reducerState.locationFilter,
@@ -659,7 +691,7 @@ export default () => {
                   disabled={isLoadingData || locations.length === 1}
                   onChange={({ target }) =>
                     dispatch({
-                      type: 'updateKey',
+                      type: 'updateKeyWithPagination',
                       key: 'locationFilter',
                       value: target.value,
                     })
@@ -779,9 +811,14 @@ export default () => {
             <CustomTabs
               value={selectedTab || false}
               onChange={async (_, property) => {
-                participantsDispatch({
-                  type: ParticipantsContext.types.SELECT_TAB,
-                  payload: property,
+                dispatch({
+                  type: 'updateKey',
+                  key: 'pagination',
+                  value: {
+                    currentPage: 0,
+                    offset: 0,
+                    total: 0,
+                  },
                 });
               }}
             >
@@ -796,19 +833,14 @@ export default () => {
               order={reducerState.order.direction}
               orderBy={reducerState.order.field}
               rowsCount={reducerState.pagination?.total}
-              onChangePage={(oldPage, newPage) => {
-                participantsDispatch({
-                  type: ParticipantsContext.types.CHANGE_PAGE,
-                  payload: newPage,
-                });
-              }}
+              onChangePage={(oldPage, newPage) => dispatch({ type: 'updatePage', value: newPage })}
               usePagination={true}
               rowsPerPage={pageSize}
-              currentPage={currentPage}
+              currentPage={reducerState.pagination?.currentPage}
               renderCell={renderCell}
               onRequestSort={(event, property) =>
                 dispatch({
-                  type: 'updateKey',
+                  type: 'updateKeyWithPagination',
                   key: 'order',
                   value: {
                     field: property,

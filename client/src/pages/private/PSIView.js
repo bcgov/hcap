@@ -106,6 +106,7 @@ export default () => {
       });
       if (response.ok) {
         const data = await response.json();
+        const currentDate = new Date();
         const mappedData = data.map((row) => {
           const rowCohorts = cohorts.filter((cohort) => cohort.psi_id === row.id);
           // To calculate available_seats, we filter out the expired cohorts and
@@ -115,7 +116,7 @@ export default () => {
             id: row.id,
             cohorts: rowCohorts.length,
             available_seats: rowCohorts
-              .filter((cohort) => new Date(cohort.end_date) > new Date())
+              .filter((cohort) => new Date(cohort.end_date) > currentDate)
               .reduce((sum, cohort) => sum + (cohort.cohort_size - cohort.participants.length), 0),
           };
         });

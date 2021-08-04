@@ -38,20 +38,18 @@ export let options = {
 let token = null;
 
 const fetchToken = () => {
-  if (!token) {
-    const credentials = {
-      username: KC_USER.username,
-      password: KC_USER.password,
-      client_id: KC_USER.clientId,
-      grant_type: 'password',
-    };
-    const authParams = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    };
+  const credentials = {
+    username: KC_USER.username,
+    password: KC_USER.password,
+    client_id: KC_USER.clientId,
+    grant_type: 'password',
+  };
+  const authParams = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
 
-    const authRes = http.post(authUrl, credentials, authParams);
-    token = authRes.json().access_token;
-  }
+  const authRes = http.post(authUrl, credentials, authParams);
+  token = authRes.json().access_token;
 };
 
 export default function () {

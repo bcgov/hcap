@@ -181,15 +181,12 @@ export const Table = ({
   onChangePage,
   rowsCount,
 }) => {
-  const [page, setPage] = useState(currentPage);
-
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
 
   const handlePageChange = (_, newPage) => {
-    onChangePage(page, newPage);
-    setPage(newPage);
+    onChangePage(currentPage, newPage);
   };
   return (
     <Fragment>
@@ -239,8 +236,8 @@ export const Table = ({
           rowsPerPageOptions={[]}
           component='div'
           count={rowsCount || rows.length}
-          rowsPerPage={rowsPerPage || rows.length || 10}
-          page={page}
+          rowsPerPage={rowsPerPage}
+          page={currentPage}
           onChangePage={handlePageChange}
           ActionsComponent={isLoading ? () => null : TablePaginationActions}
         />

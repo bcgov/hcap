@@ -7,11 +7,12 @@ const ParticipantsContext = React.createContext();
 const types = {
   UPDATE_ROLE: 'UPDATE_ROLE',
   SELECT_TAB: 'SELECT_TAB',
+  CHANGE_PAGE: 'CHANGE_PAGE',
 };
 
 const participantsReducer = (state, action) => {
   const { type, payload } = action;
-  const { UPDATE_ROLE, SELECT_TAB } = types;
+  const { UPDATE_ROLE, SELECT_TAB, CHANGE_PAGE } = types;
 
   switch (type) {
     case UPDATE_ROLE: {
@@ -26,6 +27,7 @@ const participantsReducer = (state, action) => {
         tabs,
         selectedTab: defaultTab,
         selectedTabStatuses: tabStatuses[defaultTab],
+        currentPage: 0,
       };
     }
     case SELECT_TAB: {
@@ -36,6 +38,13 @@ const participantsReducer = (state, action) => {
         columns,
         selectedTab: payload,
         selectedTabStatuses: tabStatuses[payload],
+        currentPage: 0,
+      };
+    }
+    case CHANGE_PAGE: {
+      return {
+        ...state,
+        currentPage: payload,
       };
     }
     default:
@@ -54,6 +63,7 @@ const ParticipantsProvider = ({ role, children }) => {
     tabs: null,
     selectedTab: null,
     selectedTabStatuses: null,
+    currentPage: 0,
   });
 
   useEffect(() => {

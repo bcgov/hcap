@@ -791,6 +791,7 @@ export default () => {
               }
             </CustomTabs>
             <Table
+              usePagination={true}
               columns={columns}
               order={reducerState.order.direction}
               orderBy={reducerState.order.field}

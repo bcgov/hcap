@@ -160,7 +160,7 @@ export default ({ match }) => {
       <Page>
         <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
           <Card>
-            <Box pt={4} pb={2} pl={4} pr={4}>
+            <Box pt={4} pb={2} pl={4} pr={4} width={400}>
               <Box pb={4} pl={2}>
                 <Box pb={2}>
                   <Typography variant='body1'>
@@ -227,8 +227,10 @@ export default ({ match }) => {
                     </Typography>
                   </Grid>
                   <Grid container item direction='column' xs={6}>
-                    <Typography id='streetAddress'>{psi.streetAddress}</Typography>
-                    <Typography id='city'>{psi.city}</Typography>
+                    <Typography id='streetAddress'>
+                      {psi.streetAddress || 'Not Provided'}
+                    </Typography>
+                    <Typography id='city'>{psi.city || 'Not Provided'}</Typography>
                     <Typography id='postalCode'>{psi.postalCode}</Typography>
 
                     {/* Total Cohorts */}

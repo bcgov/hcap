@@ -232,15 +232,16 @@ export const Table = ({
         </TableBody>
       </MuiTable>
       {usePagination && (
-      <TablePagination
-        rowsPerPageOptions={[]}
-        component='div'
-        count={rowsCount || rows.length}
-        rowsPerPage={rowsPerPage}
-        page={currentPage}
-        onChangePage={handlePageChange}
-        ActionsComponent={isLoading ? () => null : TablePaginationActions}
-      />)}
+        <TablePagination
+          rowsPerPageOptions={[]}
+          component='div'
+          count={rowsCount || rows.length}
+          rowsPerPage={rowsPerPage}
+          page={currentPage}
+          onChangePage={handlePageChange}
+          ActionsComponent={isLoading ? () => null : TablePaginationActions}
+        />
+      )}
     </Fragment>
   );
 };

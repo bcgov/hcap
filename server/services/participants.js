@@ -107,36 +107,43 @@ const getHiredParticipantsBySite = async (siteID) => {
   return participants;
 };
 
+/**
+ * Complexity in this function relates to withdrawal reason being stored in a record separate
+ * from the participant's site.
+ *
+ * 1. Find previously hired participants for a site
+ * 2. Get list of archived candidates with IDs that match previously hired participants
+ *
+ * @param {string} siteID
+ * @returns list of withdrawn participants+status related to a given siteID
+ */
 const getWithdrawnParticipantsBySite = async (siteID) => {
-  const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]
-    .join({
-      participantJoin: {
-        type: 'LEFT OUTER',
-        relation: collections.PARTICIPANTS,
-        decomposeTo: 'object',
-        on: { id: 'participant_id' },
-      },
-    })
-    .find({
-      current: true,
-      status: 'archived',
-    });
+  const participantsStatusJoin = dbClient.db[collections.PARTICIPANTS_STATUS].join({
+    participantJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.PARTICIPANTS,
+      decomposeTo: 'object',
+      on: { id: 'participant_id' },
+    },
+  });
 
-  // In order to make sure we're returning only the statuses relevant to
-  // a given site, we need to match the statuses created by a specific
-  // employer, as the withdrawl action creates two current statuses
-  // simultaneously. One holds the siteID, the other holds the end date and
-  // reason for withdrawal. We match them based on employerID.
-  const employerIDs = participants
-    .filter((participant) => participant.data?.previousData?.site === parseInt(siteID, 10))
-    .map((participant) => participant.employer_id);
+  // List of previously hired participants associated with the given SiteID
+  // Looking for (current = false) to reduce the list (we aren't looking for currently hired records)
+  const hiredParticipants = await participantsStatusJoin.find({
+    status: 'hired',
+    current: false,
+    'data.site': siteID,
+  });
 
-  return participants.filter(
-    (participant) =>
-      employerIDs.includes(participant.employer_id) &&
-      participant.data.endDate !== undefined &&
-      participant.data.type !== 'duplicate'
-  );
+  // Query for archived, non-duplicate participants using the previous list
+  const withdrawnParticipants = await participantsStatusJoin.find({
+    'participant_id IN': hiredParticipants.map((participant) => participant.participant_id),
+    status: 'archived',
+    current: true,
+    'data.type !=': 'duplicate',
+  });
+
+  return withdrawnParticipants;
 };
 
 const getParticipantByID = async (participantInfo) => {

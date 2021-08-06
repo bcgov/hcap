@@ -269,7 +269,7 @@ export default () => {
     if (!columns) return;
     if (!selectedTab) return;
     setLoadingData(true);
-    const { data, pagination } = await fetchParticipants(
+    const { data } = await fetchParticipants(
       currentPage * pageSize,
       reducerState.locationFilter,
       reducerState.fsaFilter,
@@ -280,10 +280,6 @@ export default () => {
       reducerState.siteSelector,
       selectedTabStatuses
     );
-    participantsDispatch({
-      type: ParticipantsContext.types.SELECT_TAB,
-      payload: pagination,
-    });
     const newRows = filterData(data, columns);
     setRows(newRows);
     setLoadingData(false);

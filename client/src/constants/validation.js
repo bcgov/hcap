@@ -536,9 +536,6 @@ export const NewCohortSchema = yup.object().shape({
       'Cohort size must be greater than or equal to 1',
       validateBlankOrPositiveInteger
     ),
-  psiID: yup
-    .number()
-    .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
 });
 
 export const RejectedFormSchema = yup

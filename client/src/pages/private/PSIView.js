@@ -129,7 +129,7 @@ export default () => {
     <Page>
       <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
         <Dialog
-          title={activeModalForm === 'new-psi' ? `Create New Institute` : `Add Cohort`}
+          title={activeModalForm === 'new-psi' ? `Create New Institute` : `Create New Cohort`}
           open={activeModalForm != null}
           onClose={defaultOnClose}
         >

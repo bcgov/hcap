@@ -35,7 +35,8 @@ const validateDateIsReasonable = (d) => {
 };
 const validateUniqueArray = (a) => Array.isArray(a) && new Set(a).size === a.length;
 
-const validateBlankOrPositiveInteger = (n) => (!!n ? Number.isInteger(n) && n > 0 : true);
+const validateBlankOrPositiveInteger = (n) =>
+  n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n > 0);
 
 const errorMessage = ({ path }) => {
   const errorMessages = {
@@ -95,7 +96,6 @@ const errorMessage = ({ path }) => {
     cohortName: 'Cohort Name is required',
     startDate: 'Start Date is required',
     endDate: 'End Date is required',
-    cohortSize: 'Cohort Size must be specified',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
@@ -515,10 +515,11 @@ export const NewCohortSchema = yup.object().shape({
     .date()
     .required(errorMessage)
     .test('is-reasonable', 'Invalid year, must be between 1900 and 2100', validateDateIsReasonable)
-    .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
+    .typeError('Start Date is required'),
   endDate: yup
     .date()
     .required(errorMessage)
+    .notOneOf([''], 'End Date is required')
     .test('is-reasonable', 'Invalid year, must be between 1900 and 2100', validateDateIsReasonable)
     .when('startDate', (startDate, schema) => {
       return schema.test({
@@ -526,11 +527,10 @@ export const NewCohortSchema = yup.object().shape({
         message: 'End Date must be after Start Date',
       });
     })
-    .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
+    .typeError('End Date is required'),
   cohortSize: yup
     .number()
-    .required(errorMessage)
-    .typeError('Input must be a number')
+    .min(1)
     .test(
       'validate-blank-or-number',
       'Must be equal to or greater than 1',

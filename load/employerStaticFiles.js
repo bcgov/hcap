@@ -24,14 +24,11 @@ export let options = {
 };
 
 export default function () {
+  let failed = false;
   const indexRes = http.get(`https://hcapemployers.${__ENV.OS_NAMESPACE_SUFFIX}.freshworks.club/`);
 
-  if (indexRes.status === 200) {
-    successCounter.add(1);
-  }
   if (indexRes.status != 200) {
-    failCounter.add(1);
-    fail(`Failed: ${indexRes.status}, ${indexRes.body.trim()}`);
+    failed = true;
   }
 
   const doc = parseHTML(indexRes.body);
@@ -41,12 +38,15 @@ export default function () {
     const jsRes = http.get(
       `https://hcapemployers.${__ENV.OS_NAMESPACE_SUFFIX}.freshworks.club${scriptPath}`
     );
-    if (jsRes.status === 200) {
-      successCounter.add(1);
-    }
     if (jsRes.status != 200) {
-      failCounter.add(1);
-      fail(`Failed: ${jsRes.status}, ${jsRes.body.trim()}`);
+      failed = true;
     }
+  }
+
+  if (failed) {
+    failCounter.add(1);
+    fail(`Failed: ${indexRes.status}, ${indexRes.body.trim()}`);
+  } else {
+    successCounter.add(1);
   }
 }

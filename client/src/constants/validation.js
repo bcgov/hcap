@@ -530,10 +530,10 @@ export const NewCohortSchema = yup.object().shape({
     .typeError('End Date is required'),
   cohortSize: yup
     .number()
-    .min(1)
+    .min(1, 'Cohort size must be greater than or equal to 1')
     .test(
       'validate-blank-or-number',
-      'Must be equal to or greater than 1',
+      'Cohort size must be greater than or equal to 1',
       validateBlankOrPositiveInteger
     ),
   psiID: yup

@@ -35,8 +35,7 @@ const validateDateIsReasonable = (d) => {
 };
 const validateUniqueArray = (a) => Array.isArray(a) && new Set(a).size === a.length;
 
-const validateBlankOrPositiveInteger = (n) =>
-  n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n > 0);
+const validateBlankOrPositiveInteger = (n) => (!!n ? Number.isInteger(n) && n > 0 : true);
 
 const errorMessage = ({ path }) => {
   const errorMessages = {
@@ -531,14 +530,7 @@ export const NewCohortSchema = yup.object().shape({
   cohortSize: yup
     .number()
     .min(1, 'Cohort size must be greater than or equal to 1')
-    .test(
-      'validate-blank-or-number',
-      'Cohort size must be greater than or equal to 1',
-      validateBlankOrPositiveInteger
-    ),
-  psiID: yup
-    .number()
-    .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+    .required('Cohort size is required'),
 });
 
 export const RejectedFormSchema = yup

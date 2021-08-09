@@ -35,6 +35,8 @@ const ParticipantWithdrawConfirm = lazy(() =>
 );
 const ParticipantActionSuccess = lazy(() => import('../pages/private/ParticipantActionSuccess'));
 
+const ParticipantDetails = lazy(() => import('../pages/private/ParticipantDetailsView'));
+
 const PrivateRoute = ({ component: Component, path, ...rest }) => {
   const [keycloak] = useKeycloak();
   return (
@@ -172,6 +174,7 @@ export default () => {
               path={Routes.ParticipantUploadResults}
               component={ParticipantUploadResults}
             />
+            <PrivateRoute exact path={Routes.ParticipantDetails} component={ParticipantDetails}/>
             <Route exact path={Routes.Base} component={EmployerForm} />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>

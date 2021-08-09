@@ -187,3 +187,18 @@ db-postgres-tunnel:
 db-postgres-rw-tunnel:
 	@oc project $(TARGET_NAMESPACE)
 	@oc port-forward svc/$(APP_NAME)-patroni 5432
+
+# Load Testing
+
+loadtest:
+	@docker run --rm \
+		-v $(PWD)/load:/load \
+		-i loadimpact/k6 run \
+		-e RATE=$(rate) \
+		-e DURATION=$(duration) \
+		-e LOAD_KC_AUTH_USERNAME=$(LOAD_KC_AUTH_USERNAME) \
+		-e LOAD_KC_AUTH_PASSWORD=$(LOAD_KC_AUTH_PASSWORD) \
+		-e LOAD_KC_AUTH_CLIENTID=$(LOAD_KC_AUTH_CLIENTID) \
+		-e OS_NAMESPACE_SUFFIX=$(OS_NAMESPACE_SUFFIX) \
+		-e KEYCLOAK_REALM=$(KEYCLOAK_REALM) \
+		/load/$(script)

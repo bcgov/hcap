@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useReducer, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import math from 'lodash/math';
-import { Box, Typography, TextField, Menu, MenuItem } from '@material-ui/core';
+import { Box, Typography, TextField, Menu, MenuItem, Link } from '@material-ui/core';
 import store from 'store';
 import {
   ToastStatus,
@@ -19,6 +20,7 @@ import {
   makeToasts,
   defaultTableState,
   ArchiveHiredParticipantSchema,
+  Routes,
 } from '../../constants';
 import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
 import {
@@ -32,7 +34,7 @@ import {
 } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
-import { getDialogTitle, prettifyStatus } from '../../utils';
+import { getDialogTitle, prettifyStatus, keyedString } from '../../utils';
 import moment from 'moment';
 import { AuthContext, ParticipantsContext } from '../../providers';
 
@@ -154,6 +156,7 @@ const filterData = (data, columns) => {
 };
 
 export default () => {
+  const history = useHistory();
   const { openToast } = useToast();
   const [isLoadingData, setLoadingData] = useState(false);
   const [rows, setRows] = useState([]);
@@ -349,6 +352,21 @@ export default () => {
   };
 
   const renderCell = (columnId, row) => {
+    if (columnId === 'lastName') {
+      return (
+        <Link
+          component='button'
+          variant='body2'
+          onClick={() => {
+            const { id } = row;
+            const participantDetailsPath = keyedString(Routes.ParticipantDetails, { id });
+            history.push(participantDetailsPath);
+          }}
+        >
+          {row[columnId]}
+        </Link>
+      );
+    }
     if (columnId === 'callbackStatus') {
       return row[columnId] ? 'Primed' : 'Available';
     }

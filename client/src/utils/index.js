@@ -5,3 +5,4 @@ export * from './misc';
 export * from './permissions';
 export * from './getDialogTitle';
 export * from './prettifyStatus';
+export * from './gen-util';

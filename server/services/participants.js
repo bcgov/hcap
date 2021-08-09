@@ -6,28 +6,24 @@ const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
 
-const deleteAcknowledgement = async (statusId, employerId)=>{
+const deleteAcknowledgement = async (statusId, employerId) => {
   dbClient.db.withTransaction(async (tx) => {
     const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
-      id:statusId,
+      id: statusId,
       employerId,
-      status:'pending_awknowlegement'
+      status: 'pending_awknowlegement',
     });
-    if(!item){
-      return {}
+    if (!item) {
+      return {};
     }
     await tx[collections.PARTICIPANTS_STATUS].update(
       {
-        id
+        id,
       },
       { current: false }
     );
-
-    return 
-
   });
-}
-
+};
 
 const setParticipantStatus = async (
   employerId,
@@ -36,8 +32,8 @@ const setParticipantStatus = async (
   data // JSONB on the status row
 ) =>
   dbClient.db.withTransaction(async (tx) => {
-    if(status ==='pending_acknowledgement'){
-      return { status:'invalid_status'}
+    if (status === 'pending_acknowledgement') {
+      return { status: 'invalid_status' };
     }
     if (status !== 'rejected' && status !== 'archived') {
       const items = await tx[collections.PARTICIPANTS_STATUS].find({
@@ -54,7 +50,6 @@ const setParticipantStatus = async (
       employer_id: employerId,
       current: true,
     });
-
 
     // Check the desired status against the current status:
     // -- Rejecting a participant is allowed even if they've been hired elsewhere (handled above)
@@ -77,7 +72,6 @@ const setParticipantStatus = async (
     )
       return { status: 'invalid_status_transition' };
 
-
     // Invalidate pervious status
     await tx[collections.PARTICIPANTS_STATUS].update(
       {
@@ -88,7 +82,7 @@ const setParticipantStatus = async (
       { current: false }
     );
 
-    // Save new status 
+    // Save new status
     await tx[collections.PARTICIPANTS_STATUS].save({
       employer_id: employerId,
       participant_id: participantId,
@@ -106,12 +100,12 @@ const setParticipantStatus = async (
       // eslint-disable-next-line no-use-before-define
       await withdrawParticipant(participant[0]);
 
-      // Add an ephemeral status to warn 
-      if(item?.status === 'hired'){
+      // Add an ephemeral status to warn
+      if (item?.status === 'hired') {
         await tx[collections.PARTICIPANTS_STATUS].save({
           employer_id: employerId,
           participant_id: participantId,
-          status:'PendingAcknowledgement',
+          status: 'PendingAcknowledgement',
           current: true,
           data,
         });
@@ -696,4 +690,5 @@ module.exports = {
   getParticipantByIdWithStatus,
   withdrawParticipant,
   createChangeHistory,
+  deleteAcknowledgement,
 };

@@ -309,6 +309,8 @@ employerActionsRouter.post(
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantStatusChange, req.body);
     const user = req.hcapUserInfo;
+    console.log(user);
+    return res.status(200).json({data:{}})
     const result = await setParticipantStatus(
       user.id,
       req.body.participantId,
@@ -328,14 +330,14 @@ employerActionsRouter.post(
   })
 );
 
-employerActionsRouter.delete('/acknowledgment',keycloak.allowRolesMiddleware('employer'),keycloak.getUserInfoMiddleware(),
+employerActionsRouter.delete(
+  '/acknowledgment',
+  keycloak.allowRolesMiddleware('employer'),
+  keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    
-    await delete
-    res.status(200).json({message:'Withdrawal completed'})
+    await delete res.status(200).json({ message: 'Withdrawal completed' });
   })
 );
-
 
 module.exports = {
   participantRouter,

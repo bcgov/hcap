@@ -640,8 +640,7 @@ export default () => {
             }}
             validationSchema={ArchiveHiredParticipantSchema}
             onSubmit={(values) => {
-
-              values.notify = auth.permissionRole==='health_authority';
+              values.notify = auth.permissionRole === 'health_authority';
               console.log(values);
               handleEngage(actionMenuParticipant.id, 'archived', values);
             }}

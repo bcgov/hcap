@@ -6,6 +6,11 @@ const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
 
+const posthireWithdrawl = async ()=>{
+  
+}
+
+
 const setParticipantStatus = async (
   employerId,
   participantId,
@@ -50,6 +55,8 @@ const setParticipantStatus = async (
     )
       return { status: 'invalid_status_transition' };
 
+
+    // Invalidate pervious status
     await tx[collections.PARTICIPANTS_STATUS].update(
       {
         employer_id: employerId,
@@ -59,6 +66,7 @@ const setParticipantStatus = async (
       { current: false }
     );
 
+    // Save new status 
     await tx[collections.PARTICIPANTS_STATUS].save({
       employer_id: employerId,
       participant_id: participantId,
@@ -75,6 +83,17 @@ const setParticipantStatus = async (
     if (status === 'archived') {
       // eslint-disable-next-line no-use-before-define
       await withdrawParticipant(participant[0]);
+
+      // Add an ephemeral status to warn 
+      if(item?.status === 'hired'){
+        await tx[collections.PARTICIPANTS_STATUS].save({
+          employer_id: employerId,
+          participant_id: participantId,
+          status:'PendingAcknowledgement',
+          current: true,
+          data,
+        });
+      }
     }
 
     if (['prospecting', 'interviewing', 'offer_made', 'hired'].includes(status)) {

@@ -542,6 +542,7 @@ export default () => {
             }}
             validationSchema={EditParticipantFormSchema}
             onSubmit={async (values) => {
+              // TODO: [HCAP-852](https://freshworks.atlassian.net/browse/HCAP-852)
               if (values.phoneNumber && Number.isInteger(values.phoneNumber))
                 values.phoneNumber = values.phoneNumber.toString();
               if (values.postalCode && values.postalCode.length > 3) {

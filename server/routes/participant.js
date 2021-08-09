@@ -328,6 +328,15 @@ employerActionsRouter.post(
   })
 );
 
+employerActionsRouter.delete('/acknowledgment',keycloak.allowRolesMiddleware('employer'),keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    
+    await delete
+    res.status(200).json({message:'Withdrawal completed'})
+  })
+);
+
+
 module.exports = {
   participantRouter,
   participantsRouter,

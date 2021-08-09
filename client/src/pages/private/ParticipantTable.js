@@ -170,6 +170,7 @@ export default () => {
     dispatch: participantsDispatch,
   } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
+  console.log(auth);
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
@@ -639,6 +640,9 @@ export default () => {
             }}
             validationSchema={ArchiveHiredParticipantSchema}
             onSubmit={(values) => {
+
+              values.notify = auth.permissionRole==='health_authority';
+              console.log(values);
               handleEngage(actionMenuParticipant.id, 'archived', values);
             }}
             onClose={defaultOnClose}

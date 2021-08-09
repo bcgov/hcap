@@ -6,8 +6,26 @@ const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
 
-const posthireWithdrawl = async ()=>{
-  
+const deleteAcknowledgement = async (statusId, employerId)=>{
+  dbClient.db.withTransaction(async (tx) => {
+    const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
+      id:statusId,
+      employerId,
+      status:'pending_awknowlegement'
+    });
+    if(!item){
+      return {}
+    }
+    await tx[collections.PARTICIPANTS_STATUS].update(
+      {
+        id
+      },
+      { current: false }
+    );
+
+    return 
+
+  });
 }
 
 
@@ -18,6 +36,9 @@ const setParticipantStatus = async (
   data // JSONB on the status row
 ) =>
   dbClient.db.withTransaction(async (tx) => {
+    if(status ==='pending_acknowledgement'){
+      return { status:'invalid_status'}
+    }
     if (status !== 'rejected' && status !== 'archived') {
       const items = await tx[collections.PARTICIPANTS_STATUS].find({
         participant_id: participantId,
@@ -33,6 +54,7 @@ const setParticipantStatus = async (
       employer_id: employerId,
       current: true,
     });
+
 
     // Check the desired status against the current status:
     // -- Rejecting a participant is allowed even if they've been hired elsewhere (handled above)

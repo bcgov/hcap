@@ -174,7 +174,7 @@ export default () => {
               path={Routes.ParticipantUploadResults}
               component={ParticipantUploadResults}
             />
-            <PrivateRoute exact path={Routes.ParticipantDetails} component={ParticipantDetails}/>
+            <PrivateRoute exact path={Routes.ParticipantDetails} component={ParticipantDetails} />
             <Route exact path={Routes.Base} component={EmployerForm} />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>

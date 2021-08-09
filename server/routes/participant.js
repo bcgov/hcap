@@ -309,13 +309,12 @@ employerActionsRouter.post(
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantStatusChange, req.body);
     const user = req.hcapUserInfo;
-    console.log(user);
-    return res.status(200).json({data:{}})
     const result = await setParticipantStatus(
       user.id,
       req.body.participantId,
       req.body.status,
-      req.body.data
+      req.body.data,
+      isHa
     );
     logger.info({
       action: 'employer-actions_post',

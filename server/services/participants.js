@@ -11,8 +11,9 @@ const deleteAcknowledgement = async (statusId, employerId) => {
     const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
       id: statusId,
       employerId,
-      status: 'pending_awknowlegement',
+      status: 'pending_acknowledgement',
     });
+    console.log(item);
     if (!item) {
       return {};
     }
@@ -29,7 +30,8 @@ const setParticipantStatus = async (
   employerId,
   participantId,
   status,
-  data // JSONB on the status row
+  data, // JSONB on the status row
+  isHa = false
 ) =>
   dbClient.db.withTransaction(async (tx) => {
     if (status === 'pending_acknowledgement') {

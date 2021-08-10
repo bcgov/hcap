@@ -105,7 +105,7 @@ export default () => {
               <Box pb={4} pl={2}>
                 <Box pb={2}>
                   <Typography variant='body1'>
-                    <Link href={Routes.ParticipantView}>Participants</Link> / XYZ
+                    <Link href={Routes.ParticipantView}>Participants</Link> /{participant.fullName}
                   </Typography>
                 </Box>
                 <Grid container>

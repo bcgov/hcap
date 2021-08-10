@@ -351,8 +351,13 @@ export default () => {
     setActionMenuParticipant(null);
   };
 
+  const isAdmin = roles.includes('ministry_of_health') || roles.includes('superuser');
+  const isEmployer = roles.includes('health_authority') || roles.includes('employer');
   const renderCell = (columnId, row) => {
-    if (columnId === 'lastName') {
+    if (
+      columnId === 'lastName' &&
+      (isAdmin || (isEmployer && selectedTab === 'Hired Candidates'))
+    ) {
       return (
         <Link
           component='button'

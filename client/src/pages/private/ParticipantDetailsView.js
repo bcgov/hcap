@@ -7,9 +7,10 @@ import { Box, Card, Grid, Link, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 // Libs
+import { useToast } from '../../hooks';
 import { AuthContext } from '../../providers';
 import { Page, CheckPermissions, Alert, Dialog } from '../../components/generic';
-import { Routes, EditParticipantFormSchema } from '../../constants';
+import { Routes, EditParticipantFormSchema, ToastStatus } from '../../constants';
 import { EditParticipantForm } from '../../components/modal-forms';
 import { updateParticipant, fetchParticipant } from '../../services';
 
@@ -47,7 +48,8 @@ export default () => {
   const [participant, setParticipant] = useState(null);
   const [actualParticipant, setActualParticipant] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [message, setMessage] = useState('Loading participant details');
+  // Hook: Toast
+  const { openToast } = useToast();
   // Auth context
   const { auth } = AuthContext.useAuth();
   // Memo roles
@@ -67,12 +69,12 @@ export default () => {
     setShowEditModal(false);
     try {
       const [updatedParticipant] = await updateParticipant(values, actualParticipant);
-      setMessage('Update Success');
       setParticipant(displayData(updatedParticipant));
       setActualParticipant(updatedParticipant);
-      setTimeout(() => {
-        setMessage('');
-      }, 1000);
+      openToast({
+        status: ToastStatus.Info,
+        message: `${participant.fullName} is successfully updated`,
+      });
     } catch (err) {
       setError(`${err}`);
     }
@@ -97,8 +99,7 @@ export default () => {
         renderErrorMessage={true}
       >
         {error && <Alert severity='error'>{error}</Alert>}
-        {!participant && !error && <Alert severity='info'>{message}</Alert>}
-        {message === 'Update Success' && <Alert severity='success'>{message}</Alert>}
+        {!participant && !error && <Alert severity='info'>Loading participant details</Alert>}
         {participant && (
           <Card>
             <Box pt={4} pb={2} pl={4} pr={4}>

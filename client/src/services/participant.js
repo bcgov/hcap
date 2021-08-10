@@ -40,9 +40,7 @@ export const updateParticipant = async (values, participant) => {
       });
     }
   });
-  values.history = participant.history
-    ? [history, ...participant.history]
-    : [history];
+  values.history = participant.history ? [history, ...participant.history] : [history];
   const response = await fetch(`${API_URL}/api/v1/participant`, {
     method: 'PATCH',
     headers: {
@@ -59,7 +57,7 @@ export const updateParticipant = async (values, participant) => {
     throw new Error('Unable to update participant', {
       status: response.status,
       statusText: response.statusText,
-      cause: response.statusText
-    })
+      cause: response.statusText,
+    });
   }
 };

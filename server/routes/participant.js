@@ -220,6 +220,9 @@ participantsRouter.post(
     }
 
     await validate(ParticipantSchema, req.body);
+    if (process.env.NODE_ENV !== 'test') {
+      return res.status(400).send({ message: 'This route has been close until further notice' });
+    }
 
     const participant = {
       ...req.body,

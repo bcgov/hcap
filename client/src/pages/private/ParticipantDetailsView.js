@@ -1,34 +1,18 @@
 // Participant Details Page
 // Dependency
 import pick from 'lodash/pick';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Card, Grid, Link, Typography } from '@material-ui/core';
+import { Box, Card, Grid, Link, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import store from 'store';
 
 // Libs
-import { Page, CheckPermissions, Alert } from '../../components/generic';
-import { Routes, API_URL } from '../../constants';
-
-// Network call
-const api = async ({ id }) => {
-  const url = `${API_URL}/api/v1/participant?id=${id}`;
-  const resp = await fetch(url, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-  });
-  if (resp.ok) {
-    const [participant] = await resp.json();
-    return participant;
-  } else {
-    throw new Error('Unable to load participant');
-  }
-};
+import { useToast } from '../../hooks';
+import { AuthContext } from '../../providers';
+import { Page, CheckPermissions, Alert, Dialog } from '../../components/generic';
+import { Routes, EditParticipantFormSchema, ToastStatus } from '../../constants';
+import { EditParticipantForm } from '../../components/modal-forms';
+import { updateParticipant, fetchParticipant } from '../../services';
 
 // Key Map
 const keyLabelMap = {
@@ -47,7 +31,7 @@ const displayData = (inputData) => ({
     inputData.interested === 'yes'
       ? 'Interested'
       : inputData.interested === 'no'
-      ? 'Not interested'
+      ? 'Withdrawn'
       : inputData.interested,
 });
 
@@ -62,21 +46,50 @@ export default () => {
   // State
   const [error, setError] = useState(null);
   const [participant, setParticipant] = useState(null);
+  const [actualParticipant, setActualParticipant] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  // Hook: Toast
+  const { openToast } = useToast();
+  // Auth context
+  const { auth } = AuthContext.useAuth();
+  // Memo roles
+  const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   // Style classes
   const classes = customStyle();
   // Get param
   const { id } = useParams();
+  // Edit Button flag
+  const enableEdit = roles.some((role) => ['ministry_of_health', 'superuser'].includes(role));
 
+  // UI Actions
+  // 1. Show edit
+  const showEditInfoModal = async () => setShowEditModal(true);
+  // 2. Update Info
+  const onUpdateInfo = async (values) => {
+    setShowEditModal(false);
+    try {
+      const [updatedParticipant] = await updateParticipant(values, actualParticipant);
+      setParticipant(displayData(updatedParticipant));
+      setActualParticipant(updatedParticipant);
+      openToast({
+        status: ToastStatus.Info,
+        message: `${participant.fullName} is successfully updated`,
+      });
+    } catch (err) {
+      setError(`${err}`);
+    }
+  };
   // Rendering Hook
   useEffect(() => {
-    api({ id })
+    fetchParticipant({ id })
       .then((resp) => {
         setParticipant(displayData(resp));
+        setActualParticipant(resp);
       })
       .catch((err) => {
         setError(`${err}`);
       });
-  }, [setParticipant, setError, id]);
+  }, [setParticipant, setActualParticipant, setError, id]);
 
   // Render
   return (
@@ -86,14 +99,14 @@ export default () => {
         renderErrorMessage={true}
       >
         {error && <Alert severity='error'>{error}</Alert>}
-        {!participant && !error && <Alert severity='info'>Loading participant</Alert>}
+        {!participant && !error && <Alert severity='info'>Loading participant details</Alert>}
         {participant && (
           <Card>
             <Box pt={4} pb={2} pl={4} pr={4}>
               <Box pb={4} pl={2}>
                 <Box pb={2}>
                   <Typography variant='body1'>
-                    <Link href={Routes.ParticipantView}>Participants</Link> / XYZ
+                    <Link href={Routes.ParticipantView}>Participants</Link> /{participant.fullName}
                   </Typography>
                 </Box>
                 <Grid container>
@@ -119,9 +132,32 @@ export default () => {
                 ))}
               </Grid>
             </Box>
+            <Grid container style={{ marginBottom: '10px', marginLeft: '10px' }}>
+              <Grid item xs={4}>
+                <Button variant='outlined' disabled={!enableEdit} onClick={showEditInfoModal}>
+                  Edit Info
+                </Button>
+              </Grid>
+            </Grid>
           </Card>
         )}
       </CheckPermissions>
+      <>
+        {showEditModal && actualParticipant && (
+          <Dialog
+            title='Edit Participant Info'
+            open={showEditModal}
+            onClose={() => setShowEditModal(false)}
+          >
+            <EditParticipantForm
+              initialValues={{ ...actualParticipant }}
+              validationSchema={EditParticipantFormSchema}
+              onSubmit={onUpdateInfo}
+              onClose={() => setShowEditModal(false)}
+            />
+          </Dialog>
+        )}
+      </>
     </Page>
   );
 };

@@ -351,8 +351,13 @@ export default () => {
     setActionMenuParticipant(null);
   };
 
+  const isAdmin = roles.includes('ministry_of_health') || roles.includes('superuser');
+  const isEmployer = roles.includes('health_authority') || roles.includes('employer');
   const renderCell = (columnId, row) => {
-    if (columnId === 'lastName') {
+    if (
+      columnId === 'lastName' &&
+      (isAdmin || (isEmployer && selectedTab === 'Hired Candidates'))
+    ) {
       return (
         <Link
           component='button'
@@ -542,6 +547,7 @@ export default () => {
             }}
             validationSchema={EditParticipantFormSchema}
             onSubmit={async (values) => {
+              // TODO: [HCAP-852](https://freshworks.atlassian.net/browse/HCAP-852)
               if (values.phoneNumber && Number.isInteger(values.phoneNumber))
                 values.phoneNumber = values.phoneNumber.toString();
               if (values.postalCode && values.postalCode.length > 3) {

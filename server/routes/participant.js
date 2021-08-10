@@ -11,7 +11,7 @@ const {
   setParticipantStatus,
   confirmParticipantInterest,
   validateConfirmationId,
-  deleteAcknowledgement
+  deleteAcknowledgement,
 } = require('../services/participants.js');
 const {
   validate,
@@ -335,7 +335,7 @@ employerActionsRouter.delete(
   keycloak.allowRolesMiddleware('employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    await deleteAcknowledgement(req.body.id)
+    await deleteAcknowledgement(req.body.id);
     return res.status(204).json({ message: 'No Content' });
   })
 );

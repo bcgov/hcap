@@ -185,8 +185,8 @@ export default () => {
     statusFilters
   ) => {
     // Only show employers the pending acknowledgement users
-    if(selectedTab === 'Hired Candidates' && auth.permissionRole ==='employer'){
-      statusFilters = ['hired','pending_acknowledgement']
+    if (selectedTab === 'Hired Candidates' && auth.permissionRole === 'employer') {
+      statusFilters = ['hired', 'pending_acknowledgement'];
     }
     const queries = [
       sortField && `sortField=${sortField}`,
@@ -248,7 +248,7 @@ export default () => {
       });
     }
   };
-  const handleAcknowledge = async (id)=>{
+  const handleAcknowledge = async (id) => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions/acknowledgment`, {
       method: 'DELETE',
       headers: {
@@ -258,7 +258,7 @@ export default () => {
       },
       body: JSON.stringify({ id }),
     });
-    if(response.ok){
+    if (response.ok) {
       openToast({
         status: ToastStatus.Success,
         message: 'Update successful',
@@ -266,13 +266,13 @@ export default () => {
       setActionMenuParticipant(null);
       setActiveModalForm(null);
       forceReload();
-    }else{
+    } else {
       openToast({
         status: ToastStatus.Error,
         message: 'An error occured',
       });
     }
-  }
+  };
   const handleExternalHire = async (participantInfo) => {
     const response = await fetch(`${API_URL}/api/v1/new-hired-participant`, {
       method: 'POST',

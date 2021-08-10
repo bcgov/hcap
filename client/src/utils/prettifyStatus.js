@@ -23,11 +23,12 @@ export const prettifyStatus = (status, id, tabValue, handleEngage, handleAcknowl
     ? 'Participant is no longer available.'
     : 'This candidate was hired by another employer.';
 
-  const hideArchiveButton = [ 'Hired Candidates','Archived Candidates', 'Participants'].includes(
+  const hideArchiveButton = ['Hired Candidates', 'Archived Candidates', 'Participants'].includes(
     tabValue
   );
-  const hideAcknowledgeButton = tabValue ==='Hired Candidates' && status.includes['pending_awknowledgement'];
-  
+  const hideAcknowledgeButton =
+    tabValue === 'Hired Candidates' && status.includes['pending_awknowledgement'];
+
   return (
     <div
       style={{
@@ -74,16 +75,16 @@ export const prettifyStatus = (status, id, tabValue, handleEngage, handleAcknowl
                   />
                 </div>
               )}
-              {!hideAcknowledgeButton && 
-                  <Button
-                    onClick={async () => {
-                      handleAcknowledge(id)
-                    }}
-                    size='small'
-                    fullWidth={false}
-                    text='Acknowledge and dismiss'
-                  />
-              }
+              {!hideAcknowledgeButton && (
+                <Button
+                  onClick={async () => {
+                    handleAcknowledge(id);
+                  }}
+                  size='small'
+                  fullWidth={false}
+                  text='Acknowledge and dismiss'
+                />
+              )}
             </div>
           }
         >

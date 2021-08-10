@@ -47,7 +47,7 @@ const participantStatuses = [
   'rejected',
   'unavailable',
   'archived',
-  'pending_acknowledgement'
+  'pending_acknowledgement',
 ];
 
 const archiveReasonOptions = [

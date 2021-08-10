@@ -9,20 +9,20 @@ const { ParticipantsFinder } = require('./participants-helper');
 const deleteAcknowledgement = async (participantId) => {
   dbClient.db.withTransaction(async (tx) => {
     const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
-      participant_id:participantId,
+      participant_id: participantId,
       status: 'pending_acknowledgement',
-      current:true
+      current: true,
     });
-    console.log(item);
     if (!item) {
       return {};
     }
     await tx[collections.PARTICIPANTS_STATUS].update(
       {
-        id:item.id,
+        id: item.id,
       },
       { current: false }
     );
+    return {};
   });
 };
 
@@ -96,7 +96,6 @@ const setParticipantStatus = async (
     const participant = await tx[collections.PARTICIPANTS].findDoc({
       id: participantId,
     });
-    console.log(status, item.status, isHa);
     // Now check if current status is archived then set interested flag
     if (status === 'archived') {
       // eslint-disable-next-line no-use-before-define
@@ -356,7 +355,6 @@ const getParticipants = async (
     .filterExternalFields({ statusFilters, siteIdDistance: siteSelector })
     .paginate(pagination, sortField)
     .run();
-  console.log(participants);
   const { table, criteria } = participantsFinder;
   const paginationData = pagination && {
     offset: (pagination.offset ? Number(pagination.offset) : 0) + participants.length,

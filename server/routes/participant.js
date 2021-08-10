@@ -11,6 +11,7 @@ const {
   setParticipantStatus,
   confirmParticipantInterest,
   validateConfirmationId,
+  deleteAcknowledgement
 } = require('../services/participants.js');
 const {
   validate,
@@ -307,6 +308,7 @@ employerActionsRouter.post(
   keycloak.allowRolesMiddleware('health_authority', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
+    console.log(req.hcapUserInfo);
     await validate(ParticipantStatusChange, req.body);
     const user = req.hcapUserInfo;
     const result = await setParticipantStatus(
@@ -314,7 +316,7 @@ employerActionsRouter.post(
       req.body.participantId,
       req.body.status,
       req.body.data,
-      isHa
+      user.isHA
     );
     logger.info({
       action: 'employer-actions_post',
@@ -334,7 +336,8 @@ employerActionsRouter.delete(
   keycloak.allowRolesMiddleware('employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    await delete res.status(200).json({ message: 'Withdrawal completed' });
+    await deleteAcknowledgement(req.body.id,req.hcapUserInfo)
+    return res.status(204).json({ message: 'No Content' });
   })
 );
 

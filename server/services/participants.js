@@ -6,15 +6,13 @@ const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
 
-const deleteAcknowledgement = async (statusId, employerId) => {
+const deleteAcknowledgement = async (statusId, userInfo) => {
   dbClient.db.withTransaction(async (tx) => {
     const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
       id: statusId,
-      employerId,
       status: 'pending_acknowledgement',
     });
-    console.log(item);
-    if (!item) {
+    if (!item || e) {
       return {};
     }
     await tx[collections.PARTICIPANTS_STATUS].update(
@@ -96,18 +94,18 @@ const setParticipantStatus = async (
     const participant = await tx[collections.PARTICIPANTS].findDoc({
       id: participantId,
     });
-
+    console.log(status, item.status, isHa);
     // Now check if current status is archived then set interested flag
     if (status === 'archived') {
       // eslint-disable-next-line no-use-before-define
       await withdrawParticipant(participant[0]);
 
       // Add an ephemeral status to warn
-      if (item?.status === 'hired') {
+      if (item?.status === 'hired' && isHa) {
         await tx[collections.PARTICIPANTS_STATUS].save({
           employer_id: employerId,
           participant_id: participantId,
-          status: 'PendingAcknowledgement',
+          status: 'pending_acknowledgement',
           current: true,
           data,
         });

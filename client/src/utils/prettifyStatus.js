@@ -23,9 +23,10 @@ export const prettifyStatus = (status, id, tabValue, handleEngage) => {
     ? 'Participant is no longer available.'
     : 'This candidate was hired by another employer.';
 
-  const hideArchiveButton = ['Hired Candidates', 'Archived Candidates', 'Participants'].includes(
+  const hideArchiveButton = [ 'Archived Candidates', 'Participants'].includes(
     tabValue
   );
+  
   return (
     <div
       style={{

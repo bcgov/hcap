@@ -185,6 +185,10 @@ export default () => {
     siteSelector,
     statusFilters
   ) => {
+    // Only show employers the pending acknowledgement users
+    if(selectedTab === 'Hired Candidates' && auth.permissionRole ==='employer'){
+      statusFilters.push('pending_acknowledgement')
+    }
     const queries = [
       sortField && `sortField=${sortField}`,
       offset && `offset=${offset}`,

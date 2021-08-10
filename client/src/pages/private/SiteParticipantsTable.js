@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, Link } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -16,10 +17,12 @@ import {
   makeToasts,
   ArchiveHiredParticipantSchema,
   participantStatus,
+  Routes,
 } from '../../constants';
 import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import moment from 'moment';
+import { keyedString } from '../../utils';
 
 let columnIDs = [
   { id: 'participantId', name: 'ID' },
@@ -82,6 +85,7 @@ const fetchDetails = async (id) => {
 };
 
 export default ({ id, siteId, onArchiveParticipantAction }) => {
+  const history = useHistory();
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
@@ -337,6 +341,28 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
               rows={sort(rows)}
               isLoading={isLoadingData}
               renderCell={(columnId, row) => {
+                const isAdmin = roles.includes('ministry_of_health') || roles.includes('superuser');
+                const isEmployer = roles.includes('health_authority') || roles.includes('employer');
+                if (
+                  columnId === 'participantName' &&
+                  (isAdmin || (isEmployer && selectedTab === 'Hired Participants'))
+                ) {
+                  return (
+                    <Link
+                      component='button'
+                      variant='body2'
+                      onClick={() => {
+                        const { id } = row;
+                        const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
+                          id,
+                        });
+                        history.push(participantDetailsPath);
+                      }}
+                    >
+                      {row[columnId]}
+                    </Link>
+                  );
+                }
                 if (columnId === 'phoneNumber') {
                   const num = String(row['phoneNumber']);
                   return `(${num.substr(0, 3)}) ${num.substr(3, 3)}-${num.substr(6, 4)}`;

@@ -6,18 +6,20 @@ const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
 
-const deleteAcknowledgement = async (statusId, userInfo) => {
+const deleteAcknowledgement = async (participantId) => {
   dbClient.db.withTransaction(async (tx) => {
     const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
-      id: statusId,
+      participant_id:participantId,
       status: 'pending_acknowledgement',
+      current:true
     });
-    if (!item || e) {
+    console.log(item);
+    if (!item) {
       return {};
     }
     await tx[collections.PARTICIPANTS_STATUS].update(
       {
-        id,
+        id:item.id,
       },
       { current: false }
     );
@@ -354,6 +356,7 @@ const getParticipants = async (
     .filterExternalFields({ statusFilters, siteIdDistance: siteSelector })
     .paginate(pagination, sortField)
     .run();
+  console.log(participants);
   const { table, criteria } = participantsFinder;
   const paginationData = pagination && {
     offset: (pagination.offset ? Number(pagination.offset) : 0) + participants.length,

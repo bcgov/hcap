@@ -3,7 +3,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import { ComponentTooltip } from '../components/generic/ComponentTooltip';
 import { Button } from '../components/generic';
 
-export const prettifyStatus = (status, id, tabValue, handleEngage) => {
+export const prettifyStatus = (status, id, tabValue, handleEngage, handleAcknowledge) => {
   let firstStatus = status[0];
   let isWithdrawn = false;
   if (status[0] === 'offer_made') firstStatus = 'Offer Made';
@@ -23,9 +23,10 @@ export const prettifyStatus = (status, id, tabValue, handleEngage) => {
     ? 'Participant is no longer available.'
     : 'This candidate was hired by another employer.';
 
-  const hideArchiveButton = [ 'Archived Candidates', 'Participants'].includes(
+  const hideArchiveButton = [ 'Hired Candidates','Archived Candidates', 'Participants'].includes(
     tabValue
   );
+  const hideAcknowledgeButton = tabValue ==='Hired Candidates' && status.includes['pending_awknowledgement'];
   
   return (
     <div
@@ -73,6 +74,16 @@ export const prettifyStatus = (status, id, tabValue, handleEngage) => {
                   />
                 </div>
               )}
+              {!hideAcknowledgeButton && 
+                  <Button
+                    onClick={async () => {
+                      handleAcknowledge(id)
+                    }}
+                    size='small'
+                    fullWidth={false}
+                    text='Acknowledge and dismiss'
+                  />
+              }
             </div>
           }
         >

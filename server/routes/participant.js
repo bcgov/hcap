@@ -308,7 +308,6 @@ employerActionsRouter.post(
   keycloak.allowRolesMiddleware('health_authority', 'employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    console.log(req.hcapUserInfo);
     await validate(ParticipantStatusChange, req.body);
     const user = req.hcapUserInfo;
     const result = await setParticipantStatus(
@@ -336,7 +335,7 @@ employerActionsRouter.delete(
   keycloak.allowRolesMiddleware('employer'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    await deleteAcknowledgement(req.body.id,req.hcapUserInfo)
+    await deleteAcknowledgement(req.body.id)
     return res.status(204).json({ message: 'No Content' });
   })
 );

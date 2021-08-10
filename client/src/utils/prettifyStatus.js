@@ -26,9 +26,9 @@ export const prettifyStatus = (status, id, tabValue, handleEngage, handleAcknowl
   const hideArchiveButton = ['Hired Candidates', 'Archived Candidates', 'Participants'].includes(
     tabValue
   );
-  const hideAcknowledgeButton =
-    tabValue === 'Hired Candidates' && status.includes['pending_awknowledgement'];
-
+  const hideAcknowledgeButton = !(
+    tabValue === 'Hired Candidates' && status.includes('pending_acknowledgement')
+  );
   return (
     <div
       style={{

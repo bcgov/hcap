@@ -22,11 +22,14 @@ module.exports = (req, res, next) => {
         ip,
         statusCode,
         contentLength,
-        user: sub !== null ? {
-          userName,
-          sub,
-          userId,
-        } : null,
+        user:
+          sub !== null
+            ? {
+                userName,
+                sub,
+                userId,
+              }
+            : null,
       });
     }
   });

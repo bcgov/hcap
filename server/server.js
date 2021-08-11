@@ -1,11 +1,11 @@
 const cors = require('cors');
 const express = require('express');
-const morgan = require('morgan');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
 const apiRouter = require('./routes');
 const { errorHandler } = require('./error-handler.js');
+const { expressAccessLogger } = require('./middleware');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
@@ -42,17 +42,8 @@ app.use(
   })
 );
 
-app.use(
-  morgan(
-    ':date[iso] | :remote-addr | :remote-user | ":method :url HTTP/:http-version" | :status | :res[content-length]',
-    {
-      skip: (req) => {
-        const { path: pathName } = req;
-        return pathName.includes('/static/') || pathName.includes('healthcheck');
-      },
-    }
-  )
-);
+
+app.use(expressAccessLogger);
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 

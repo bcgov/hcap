@@ -243,6 +243,7 @@ export const columnsByRole = {
       id,
       lastName,
       firstName,
+      status,
       postalCodeFsa,
       phoneNumber,
       emailAddress,

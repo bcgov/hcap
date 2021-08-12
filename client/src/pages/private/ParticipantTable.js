@@ -364,7 +364,10 @@ export default () => {
           variant='body2'
           onClick={() => {
             const { id } = row;
-            const participantDetailsPath = keyedString(Routes.ParticipantDetails, { id });
+            const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
+              id,
+              page: 'participant',
+            });
             history.push(participantDetailsPath);
           }}
         >

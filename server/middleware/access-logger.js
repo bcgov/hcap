@@ -4,7 +4,15 @@ module.exports = (req, res, next) => {
   res.on('finish', () => {
     const { path: pathName, method, ip, baseUrl } = req;
     const { statusCode } = res;
-    const skipPaths = ['/static/', 'healthcheck', 'js', 'css', 'keycloak-realm-client-info'];
+    const skipPaths = [
+      'static',
+      'healthcheck',
+      'js',
+      'css',
+      'keycloak-realm-client-info',
+      'favicon',
+      'sitemap.xml',
+    ];
     if (
       skipPaths.reduce((incoming, value) => incoming && !pathName.includes(value), true) ||
       statusCode >= 400

@@ -247,7 +247,7 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
     };
 
     fetchParticipants();
-  }, [siteId]);
+  }, [siteId, setRows, setFetchedRows, setFetchedWithdrawnRows, setLoadingData]);
 
   const handleEngage = async (participantId, status, additional = {}) => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
@@ -341,20 +341,21 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
               rows={sort(rows)}
               isLoading={isLoadingData}
               renderCell={(columnId, row) => {
-                const isAdmin = roles.includes('ministry_of_health') || roles.includes('superuser');
                 const isEmployer = roles.includes('health_authority') || roles.includes('employer');
                 if (
                   columnId === 'participantName' &&
-                  (isAdmin || (isEmployer && selectedTab === 'Hired Participants'))
+                  isEmployer &&
+                  selectedTab === 'Hired Participants'
                 ) {
                   return (
                     <Link
                       component='button'
                       variant='body2'
                       onClick={() => {
-                        const { id } = row;
+                        const { participantId: id } = row;
                         const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
                           id,
+                          page: 'site-details',
                         });
                         history.push(participantDetailsPath);
                       }}

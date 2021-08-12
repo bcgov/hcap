@@ -2,7 +2,7 @@
 // Dependency
 import pick from 'lodash/pick';
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { Box, Card, Grid, Link, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useToast } from '../../hooks';
 import { AuthContext } from '../../providers';
 import { Page, CheckPermissions, Alert, Dialog } from '../../components/generic';
-import { Routes, EditParticipantFormSchema, ToastStatus } from '../../constants';
+import { EditParticipantFormSchema, ToastStatus } from '../../constants';
 import { EditParticipantForm } from '../../components/modal-forms';
 import { updateParticipant, fetchParticipant } from '../../services';
 
@@ -21,6 +21,7 @@ const keyLabelMap = {
   emailAddress: 'Email Address',
   interested: 'Program Interest',
   preferredLocation: 'Preferred Location',
+  postalCodeFsa: 'Postal Code',
 };
 
 // Display Data
@@ -43,6 +44,8 @@ const customStyle = makeStyles({
 });
 
 export default () => {
+  // History
+  const history = useHistory();
   // State
   const [error, setError] = useState(null);
   const [participant, setParticipant] = useState(null);
@@ -57,7 +60,9 @@ export default () => {
   // Style classes
   const classes = customStyle();
   // Get param
-  const { id } = useParams();
+  const { id, page } = useParams();
+  // Breadcrumb name
+  const linkName = page === 'participant' ? 'Participant' : 'Site View';
   // Edit Button flag
   const enableEdit = roles.some((role) => ['ministry_of_health', 'superuser'].includes(role));
 
@@ -106,7 +111,14 @@ export default () => {
               <Box pb={4} pl={2}>
                 <Box pb={2}>
                   <Typography variant='body1'>
-                    <Link href={Routes.ParticipantView}>Participants</Link> /{participant.fullName}
+                    <Link
+                      onClick={() => {
+                        history.goBack();
+                      }}
+                    >
+                      {linkName}
+                    </Link>{' '}
+                    /{participant.fullName}
                   </Typography>
                 </Box>
                 <Grid container>

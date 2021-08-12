@@ -311,7 +311,7 @@ employerActionsRouter.post(
   asyncMiddleware(async (req, res) => {
     await validate(ArchiveRequest, req.body);
     const user = req.hcapUserInfo;
-    await archiveParticipantBySite(req.body.site, req.body.participantId, req.body.data);
+    await archiveParticipantBySite(req.body.site, req.body.participantId, req.body.data, user.id);
     logger.info({
       action: 'employer-actions_post',
       performed_by: {

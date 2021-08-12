@@ -84,7 +84,7 @@ const fetchDetails = async (id) => {
   }
 };
 
-export default ({ id, siteId, onArchiveParticipantAction }) => {
+export default ({ id, onArchiveParticipantAction }) => {
   const history = useHistory();
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);

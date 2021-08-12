@@ -144,12 +144,11 @@ const withdrawParticipant = async (participantInfo) => {
     to: 'withdrawn',
   });
   participant.history = participant.history ? [newHistory, ...participant.history] : [newHistory];
-
   // eslint-disable-next-line no-use-before-define
   return updateParticipant(participant);
 };
 
-const archiveParticipantBySite = async (siteId, participantId, data) => {
+const archiveParticipantBySite = async (siteId, participantId, data, userId) => {
   const users = await getHiredParticipantsBySite(siteId);
   if (!users) {
     return;
@@ -177,16 +176,22 @@ const archiveParticipantBySite = async (siteId, participantId, data) => {
       current: true,
       data,
     });
-
-    // Add an ephemeral status to warn the employer
-    await tx[collections.PARTICIPANTS_STATUS].save({
-      employer_id: chosenOne.employer_id,
-      participant_id: participantId,
-      status: 'pending_acknowledgement',
-      current: true,
-      data,
+    // Only create pending acknowledement status if it's a different person making the request.
+    if (chosenOne.employer_id !== userId) {
+      // Add an ephemeral status to warn the employer
+      await tx[collections.PARTICIPANTS_STATUS].save({
+        employer_id: chosenOne.employer_id,
+        participant_id: participantId,
+        status: 'pending_acknowledgement',
+        current: true,
+        data,
+      });
+    }
+    // Get the full participant record of the user and withdraw that user.
+    const participant = await tx[collections.PARTICIPANTS].findDoc({
+      id: participantId,
     });
-    await withdrawParticipant(chosenOne);
+    await withdrawParticipant(participant[0]);
   });
 };
 

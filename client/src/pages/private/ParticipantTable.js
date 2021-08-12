@@ -210,7 +210,7 @@ export default () => {
       return response.json();
     }
   };
-  const fetchParticipants = useCallback(fetchParticipantsFunction, [selectedTab, auth]);
+  const fetchParticipants = useCallback(fetchParticipantsFunction, []);
 
   const handleEngage = async (participantId, status, additional = {}) => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions`, {

@@ -166,7 +166,6 @@ export default ({ match }) => {
               </Box>
               <SiteParticipantsTable
                 id={id}
-                siteId={site.siteId}
                 onArchiveParticipantAction={() => {
                   setSite({});
                   fetchDetails(id);

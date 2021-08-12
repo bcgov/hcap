@@ -93,7 +93,7 @@ export const tabStatuses = {
   'Available Participants': ['open'],
   'My Candidates': ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
   'Archived Candidates': ['rejected', 'archived'],
-  'Hired Candidates': ['hired'],
+  'Hired Candidates': ['hired', 'pending_acknowledgement'],
   Participants: [
     'open',
     'prospecting',

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
@@ -173,7 +173,7 @@ export default () => {
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
-  const fetchParticipants = async (
+  const fetchParticipantsFunction = async (
     offset,
     regionFilter,
     fsaFilter,
@@ -214,6 +214,7 @@ export default () => {
       return response.json();
     }
   };
+  const fetchParticipants = useCallback(fetchParticipantsFunction, [selectedTab, auth]);
 
   const handleEngage = async (participantId, status, additional = {}) => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
@@ -361,6 +362,7 @@ export default () => {
 
     getParticipants();
   }, [
+    fetchParticipants,
     currentPage,
     reducerState.siteSelector,
     reducerState.emailFilter,

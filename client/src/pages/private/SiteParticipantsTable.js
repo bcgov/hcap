@@ -341,11 +341,11 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
               rows={sort(rows)}
               isLoading={isLoadingData}
               renderCell={(columnId, row) => {
-                const isAdmin = roles.includes('ministry_of_health') || roles.includes('superuser');
                 const isEmployer = roles.includes('health_authority') || roles.includes('employer');
                 if (
                   columnId === 'participantName' &&
-                  (isAdmin || (isEmployer && selectedTab === 'Hired Participants'))
+                  isEmployer &&
+                  selectedTab === 'Hired Participants'
                 ) {
                   return (
                     <Link

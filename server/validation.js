@@ -439,6 +439,55 @@ const ParticipantBatchSchema = yup.array().of(
   })
 );
 
+const ArchiveRequestDataShape = (schema) =>
+  schema.noUnknown('').shape({
+    type: yup
+      .string()
+      .oneOf(['duplicate', 'employmentEnded'], 'Please select a type')
+      .required('Please select a type'),
+    reason: yup.string().when('type', {
+      is: 'employmentEnded',
+      then: yup.string().required('Please include a reason').oneOf(archiveReasonOptions),
+    }),
+    status: yup.string().when('type', {
+      is: 'employmentEnded',
+      then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
+    }),
+    rehire: yup.string().when('type', {
+      is: 'employmentEnded',
+      then: yup
+        .string()
+        .required('Intent to rehire must not be empty')
+        .oneOf(['Yes', 'No'], 'Must be either Yes or No.'),
+    }),
+    endDate: yup.string().when('type', {
+      is: 'employmentEnded',
+      then: yup
+        .string()
+        .test('is-present', 'Invalid entry. Date must be in the past.', validatePastDateString)
+        .required('Please enter the date this participant was removed'),
+    }),
+    confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
+  });
+
+const ArchiveRequest = yup
+  .object()
+  .noUnknown('Unknown field in form')
+  .shape({
+    participantId: yup.number().required('Participant ID is required'),
+    site: yup.number().required('Must include a site id'),
+    data: yup.object().when(['status'], (status, schema) => {
+      if (status !== 'archived') {
+        return schema.test(
+          'is-null-or-empty',
+          `${status} does not require a data object`,
+          (obj) => !obj || Object.keys(obj).length === 0
+        );
+      }
+      return ArchiveRequestDataShape(schema);
+    }),
+    status: yup.string().oneOf(['archived'], 'Must be archived'),
+  });
 const ParticipantSchema = yup
   .object()
   .noUnknown('Unknown field in form')
@@ -575,39 +624,7 @@ const ParticipantStatusChange = yup
         });
       }
       if (status === 'archived') {
-        return schema.noUnknown('').shape({
-          type: yup
-            .string()
-            .oneOf(['duplicate', 'employmentEnded'], 'Please select a type')
-            .required('Please select a type'),
-          reason: yup.string().when('type', {
-            is: 'employmentEnded',
-            then: yup.string().required('Please include a reason').oneOf(archiveReasonOptions),
-          }),
-          status: yup.string().when('type', {
-            is: 'employmentEnded',
-            then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
-          }),
-          rehire: yup.string().when('type', {
-            is: 'employmentEnded',
-            then: yup
-              .string()
-              .required('Intent to rehire must not be empty')
-              .oneOf(['Yes', 'No'], 'Must be either Yes or No.'),
-          }),
-          endDate: yup.string().when('type', {
-            is: 'employmentEnded',
-            then: yup
-              .string()
-              .test(
-                'is-present',
-                'Invalid entry. Date must be in the past.',
-                validatePastDateString
-              )
-              .required('Please enter the date this participant was removed'),
-          }),
-          confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
-        });
+        return ArchiveRequestDataShape(schema);
       }
 
       return schema.test(
@@ -842,4 +859,5 @@ module.exports = {
   CreateCohortSchema,
   EditSiteSchema,
   UserParticipantEditSchema,
+  ArchiveRequest,
 };

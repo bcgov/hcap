@@ -26,104 +26,6 @@ const deleteAcknowledgement = async (participantId) => {
   });
 };
 
-const setParticipantStatus = async (
-  employerId,
-  participantId,
-  status,
-  data, // JSONB on the status row
-  isHa = false
-) =>
-  dbClient.db.withTransaction(async (tx) => {
-    if (status === 'pending_acknowledgement') {
-      return { status: 'invalid_status' };
-    }
-    if (status !== 'rejected' && status !== 'archived') {
-      const items = await tx[collections.PARTICIPANTS_STATUS].find({
-        participant_id: participantId,
-        status: 'hired',
-        current: true,
-      });
-
-      if (items.length > 0) return { status: 'already_hired' };
-    }
-
-    const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
-      participant_id: participantId,
-      employer_id: employerId,
-      current: true,
-    });
-
-    // Check the desired status against the current status:
-    // -- Rejecting a participant is allowed even if they've been hired elsewhere (handled above)
-    // -- Open is the starting point, there is no way to transition here from any other status
-    // -- If engaging (prospecting), participant must be coming from open, null, or rejected status
-    // -- If interviewing, participant must be coming from prospecting status
-    // -- If offer made, must be coming from interviewing
-    // -- If hiring, must be coming from offer made
-    // -- If restoring a user from being archived, any status should be valid
-    if (
-      (status === 'open' ||
-        (status === 'prospecting' &&
-          item !== null &&
-          item.status !== 'open' &&
-          item.status !== 'rejected') ||
-        (status === 'interviewing' && item?.status !== 'prospecting') ||
-        (status === 'offer_made' && item?.status !== 'interviewing') ||
-        (status === 'hired' && item?.status !== 'offer_made')) &&
-      item?.status !== 'archived'
-    )
-      return { status: 'invalid_status_transition' };
-
-    // Invalidate pervious status
-    await tx[collections.PARTICIPANTS_STATUS].update(
-      {
-        employer_id: employerId,
-        participant_id: participantId,
-        current: true,
-      },
-      { current: false }
-    );
-
-    // Save new status
-    await tx[collections.PARTICIPANTS_STATUS].save({
-      employer_id: employerId,
-      participant_id: participantId,
-      status,
-      current: true,
-      data,
-    });
-
-    const participant = await tx[collections.PARTICIPANTS].findDoc({
-      id: participantId,
-    });
-    // Now check if current status is archived then set interested flag
-    if (status === 'archived') {
-      // eslint-disable-next-line no-use-before-define
-      await withdrawParticipant(participant[0]);
-
-      // Add an ephemeral status to warn
-      if (item?.status === 'hired' && isHa) {
-        await tx[collections.PARTICIPANTS_STATUS].save({
-          employer_id: employerId,
-          participant_id: participantId,
-          status: 'pending_acknowledgement',
-          current: true,
-          data,
-        });
-      }
-    }
-
-    if (['prospecting', 'interviewing', 'offer_made', 'hired'].includes(status)) {
-      return {
-        emailAddress: participant[0].emailAddress,
-        phoneNumber: participant[0].phoneNumber,
-        status,
-      };
-    }
-
-    return { status };
-  });
-
 const getHiredParticipantsBySite = async (siteID) => {
   const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
@@ -246,6 +148,146 @@ const withdrawParticipant = async (participantInfo) => {
   // eslint-disable-next-line no-use-before-define
   return updateParticipant(participant);
 };
+
+const archiveParticipantBySite = async (siteId, participantId, data) => {
+  const users = await getHiredParticipantsBySite(siteId);
+  if (!users) {
+    return;
+  }
+  const chosenOne = users.find((user) => user.data.site === siteId);
+  if (!chosenOne) {
+    return;
+  }
+
+  await dbClient.db.withTransaction(async (tx) => {
+    // Invalidate the old status
+    await tx[collections.PARTICIPANTS_STATUS].update(
+      {
+        id: chosenOne.id,
+        participant_id: participantId,
+        current: true,
+      },
+      { current: false }
+    );
+    // Save new status
+    await tx[collections.PARTICIPANTS_STATUS].save({
+      employer_id: chosenOne.employer_id,
+      participant_id: participantId,
+      status: 'archived',
+      current: true,
+      data,
+    });
+
+    // Add an ephemeral status to warn the employer
+    await tx[collections.PARTICIPANTS_STATUS].save({
+      employer_id: chosenOne.employer_id,
+      participant_id: participantId,
+      status: 'pending_acknowledgement',
+      current: true,
+      data,
+    });
+    await withdrawParticipant(chosenOne);
+  });
+};
+
+const setParticipantStatus = async (
+  employerId,
+  participantId,
+  status,
+  data, // JSONB on the status row
+  isHa = false
+) =>
+  dbClient.db.withTransaction(async (tx) => {
+    if (status === 'pending_acknowledgement') {
+      return { status: 'invalid_status' };
+    }
+    if (status !== 'rejected' && status !== 'archived') {
+      const items = await tx[collections.PARTICIPANTS_STATUS].find({
+        participant_id: participantId,
+        status: 'hired',
+        current: true,
+      });
+
+      if (items.length > 0) return { status: 'already_hired' };
+    }
+
+    const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
+      participant_id: participantId,
+      employer_id: employerId,
+      current: true,
+    });
+    // Check the desired status against the current status:
+    // -- Rejecting a participant is allowed even if they've been hired elsewhere (handled above)
+    // -- Open is the starting point, there is no way to transition here from any other status
+    // -- If engaging (prospecting), participant must be coming from open, null, or rejected status
+    // -- If interviewing, participant must be coming from prospecting status
+    // -- If offer made, must be coming from interviewing
+    // -- If hiring, must be coming from offer made
+    // -- If restoring a user from being archived, any status should be valid
+    if (
+      (status === 'open' ||
+        (status === 'prospecting' &&
+          item !== null &&
+          item.status !== 'open' &&
+          item.status !== 'rejected') ||
+        (status === 'interviewing' && item?.status !== 'prospecting') ||
+        (status === 'offer_made' && item?.status !== 'interviewing') ||
+        (status === 'hired' && item?.status !== 'offer_made')) &&
+      item?.status !== 'archived'
+    )
+      return { status: 'invalid_status_transition' };
+    if (status === 'archived' && !item) {
+      return { status: 'Could not find participant' };
+    }
+    // Invalidate pervious status
+    await tx[collections.PARTICIPANTS_STATUS].update(
+      {
+        employer_id: employerId,
+        participant_id: participantId,
+        current: true,
+      },
+      { current: false }
+    );
+
+    // Save new status
+    await tx[collections.PARTICIPANTS_STATUS].save({
+      employer_id: employerId,
+      participant_id: participantId,
+      status,
+      current: true,
+      data,
+    });
+
+    const participant = await tx[collections.PARTICIPANTS].findDoc({
+      id: participantId,
+    });
+    // Now check if current status is archived then set interested flag
+    if (status === 'archived') {
+      // eslint-disable-next-line no-use-before-define
+      await withdrawParticipant(participant[0]);
+
+      // Add an ephemeral status to warn
+      if (item?.status === 'hired' && isHa) {
+        await tx[collections.PARTICIPANTS_STATUS].save({
+          employer_id: employerId,
+          participant_id: participantId,
+          status: 'pending_acknowledgement',
+          current: true,
+          data,
+        });
+      }
+    }
+
+    if (['prospecting', 'interviewing', 'offer_made', 'hired'].includes(status)) {
+      return {
+        emailAddress: participant[0].emailAddress,
+        phoneNumber: participant[0].phoneNumber,
+        status,
+      };
+    }
+
+    return { status };
+  });
 
 const validateConfirmationId = (id) =>
   dbClient.db[collections.CONFIRM_INTEREST].findOne({ otp: id });
@@ -674,6 +716,7 @@ const setParticipantLastUpdated = async (id) => {
 };
 
 module.exports = {
+  archiveParticipantBySite,
   setParticipantLastUpdated,
   parseAndSaveParticipants,
   getParticipants,

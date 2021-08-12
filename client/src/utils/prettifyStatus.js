@@ -19,16 +19,21 @@ export const prettifyStatus = (status, id, tabValue, handleEngage, handleAcknowl
   if (status.includes('archived')) {
     firstStatus = 'Archived';
   }
-  const toolTip = isWithdrawn
-    ? 'Participant is no longer available.'
-    : 'This candidate was hired by another employer.';
-
-  const hideArchiveButton = ['Hired Candidates', 'Archived Candidates', 'Participants'].includes(
-    tabValue
-  );
+  let toolTip = 'This candidate was hired by another employer.';
+  if (isWithdrawn) {
+    if (status.includes('pending_acknowledgement')) {
+      toolTip = 'This candidate was archived.';
+    } else {
+      toolTip = 'Participant is no longer available.';
+    }
+  }
   const hideAcknowledgeButton = !(
     tabValue === 'Hired Candidates' && status.includes('pending_acknowledgement')
   );
+  const hideArchiveButton =
+    ['Hired Candidates', 'Archived Candidates', 'Participants'].includes(tabValue) &&
+    !hideAcknowledgeButton;
+
   return (
     <div
       style={{
@@ -82,7 +87,7 @@ export const prettifyStatus = (status, id, tabValue, handleEngage, handleAcknowl
                   }}
                   size='small'
                   fullWidth={false}
-                  text='Acknowledge and dismiss'
+                  text='Acknowledge'
                 />
               )}
             </div>

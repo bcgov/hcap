@@ -35,4 +35,5 @@ export default Object.freeze({
   ParticipantUploadResults: '/participant-upload-results',
   ReportingView: '/reporting-view',
   ParticipantDetails: '/participant-details/:page/:id',
+  ParticipantDetailsTab: '/participant-details/:page/:id/:tab',
 });

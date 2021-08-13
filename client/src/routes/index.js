@@ -175,6 +175,14 @@ export default () => {
               component={ParticipantUploadResults}
             />
             <PrivateRoute exact path={Routes.ParticipantDetails} component={ParticipantDetails} />
+            {/**
+             * Adding this to support internal tab selection in global navigation
+             */}
+            <PrivateRoute
+              exact
+              path={Routes.ParticipantDetailsTab}
+              component={ParticipantDetails}
+            />
             <Route exact path={Routes.Base} component={EmployerForm} />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>

@@ -465,7 +465,8 @@ export default () => {
       return moment(row.userUpdatedAt).fromNow();
     }
     if (columnId === 'archive') {
-      return (
+      return (<>
+        {!row.status.includes('withdrawn') &&
         <Button
           onClick={async (event) => {
             setAnchorElement(event.currentTarget);
@@ -486,6 +487,8 @@ export default () => {
           size='small'
           text='Archive'
         />
+        }
+        </>
       );
     }
     return row[columnId];

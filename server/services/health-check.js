@@ -11,7 +11,7 @@ const healthCheck = async () => {
     const _ = await dbClient.db[collections.EMPLOYER_SITES].count();
     db = true;
   } catch (excp) {
-    logger.error({
+    logger.error('DB Health Check Failed!', {
       context: 'health-check-db',
       error: excp,
     });
@@ -21,7 +21,7 @@ const healthCheck = async () => {
     await keycloak.authenticateIfNeeded();
     kc = true;
   } catch (excp) {
-    logger.error({
+    logger.error('KC Health Check Failed!', {
       context: 'health-check-kc',
       error: excp,
     });

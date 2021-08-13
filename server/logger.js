@@ -9,6 +9,10 @@ const formatWithTimestamp = printf(({ level, message, label: _label, timestamp: 
   return `${_timestamp} | [${_label || 'console'}] ${level}: ${newMessage}`;
 });
 
+// ============
+// TODO: Mongo logs to be removed, containers, bc, dc, pvc destroyed
+// ============
+
 const dbServer = process.env.MONGO_HOST;
 const dbPort = process.env.MONGO_PORT || '27017';
 const dbUser = process.env.MONGO_USER;
@@ -26,10 +30,16 @@ if (dbServer) {
   );
 }
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV === 'local') {
   winston.add(
     new winston.transports.Console({
       format: combine(label({ label: 'console' }), timestamp(), formatWithTimestamp),
+    })
+  );
+} else {
+  winston.add(
+    new winston.transports.Console({
+      format: winston.format.json(),
     })
   );
 }

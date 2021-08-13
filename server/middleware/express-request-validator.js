@@ -11,7 +11,7 @@ module.exports = function expressRequestBodyValidatorMiddleware(schema) {
       .catch((error) => {
         logger.error({
           context: req.path,
-          message: 'data validation fail',
+          message: 'data validation failed!',
           error,
         });
         resp.status(400).json({ error });

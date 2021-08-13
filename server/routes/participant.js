@@ -11,6 +11,8 @@ const {
   setParticipantStatus,
   confirmParticipantInterest,
   validateConfirmationId,
+  deleteAcknowledgement,
+  archiveParticipantBySite,
 } = require('../services/participants.js');
 const {
   validate,
@@ -19,6 +21,7 @@ const {
   ParticipantEditSchema,
   ExternalHiredParticipantSchema,
   ParticipantSchema,
+  ArchiveRequest,
 } = require('../validation.js');
 const keycloak = require('../keycloak.js');
 const logger = require('../logger.js');
@@ -299,6 +302,28 @@ newHiredParticipantRouter.post(
     }
   })
 );
+// POST ha-actions/withdraw
+// Withdraw a participant
+employerActionsRouter.post(
+  '/archive',
+  keycloak.allowRolesMiddleware('health_authority'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    await validate(ArchiveRequest, req.body);
+    const user = req.hcapUserInfo;
+    await archiveParticipantBySite(req.body.site, req.body.participantId, req.body.data, user.id);
+    logger.info({
+      action: 'employer-actions_post',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      participant_id: req.body.participantId,
+      status: 'archived',
+    });
+    return res.status(201).json({ message: 'success' });
+  })
+);
 
 // POST employer-actions/
 // Engage participant
@@ -313,7 +338,8 @@ employerActionsRouter.post(
       user.id,
       req.body.participantId,
       req.body.status,
-      req.body.data
+      req.body.data,
+      user.isHA
     );
     logger.info({
       action: 'employer-actions_post',
@@ -325,6 +351,16 @@ employerActionsRouter.post(
       status: req.body.status,
     });
     return res.status(201).json({ data: result });
+  })
+);
+
+employerActionsRouter.delete(
+  '/acknowledgment',
+  keycloak.allowRolesMiddleware('employer'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    await deleteAcknowledgement(req.body.id);
+    return res.status(204).json({ message: 'No Content' });
   })
 );
 

@@ -84,7 +84,7 @@ const fetchDetails = async (id) => {
   }
 };
 
-export default ({ id, siteId, onArchiveParticipantAction }) => {
+export default ({ id, onArchiveParticipantAction }) => {
   const history = useHistory();
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
@@ -150,7 +150,7 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
 
   const forceReload = async () => {
     setLoadingData(true);
-    const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
+    const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}/participants`, {
       headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
       method: 'GET',
     });
@@ -199,7 +199,7 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
   useEffect(() => {
     const fetchParticipants = async () => {
       setLoadingData(true);
-      const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
+      const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}/participants`, {
         headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
         method: 'GET',
       });
@@ -247,17 +247,22 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
     };
 
     fetchParticipants();
-  }, [siteId, setRows, setFetchedRows, setFetchedWithdrawnRows, setLoadingData]);
+  }, [id, setRows, setFetchedRows, setFetchedWithdrawnRows, setLoadingData]);
 
-  const handleEngage = async (participantId, status, additional = {}) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
+  const handleArchive = async (participantId, additional = {}) => {
+    const response = await fetch(`${API_URL}/api/v1/employer-actions/archive`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${store.get('TOKEN')}`,
         Accept: 'application/json',
         'Content-type': 'application/json',
       },
-      body: JSON.stringify({ participantId, status, data: additional }),
+      body: JSON.stringify({
+        participantId,
+        site: parseInt(id),
+        data: additional,
+        status: 'archived',
+      }),
     });
 
     if (response.ok) {
@@ -267,6 +272,7 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
       openToast(toasts[participantStatus.ARCHIVED]);
       setActionMenuParticipant(null);
       setActiveModalForm(null);
+      forceReload();
     } else {
       openToast({
         status: ToastStatus.Error,
@@ -424,7 +430,7 @@ export default ({ id, siteId, onArchiveParticipantAction }) => {
             }}
             validationSchema={ArchiveHiredParticipantSchema}
             onSubmit={async (values) => {
-              await handleEngage(actionMenuParticipant.id, participantStatus.ARCHIVED, values);
+              await handleArchive(actionMenuParticipant.id, values);
               if (onArchiveParticipantAction) {
                 onArchiveParticipantAction();
               } else {

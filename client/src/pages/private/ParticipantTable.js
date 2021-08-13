@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
@@ -173,7 +173,7 @@ export default () => {
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
-  const fetchParticipants = async (
+  const fetchParticipantsFunction = async (
     offset,
     regionFilter,
     fsaFilter,
@@ -210,6 +210,7 @@ export default () => {
       return response.json();
     }
   };
+  const fetchParticipants = useCallback(fetchParticipantsFunction, []);
 
   const handleEngage = async (participantId, status, additional = {}) => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
@@ -244,7 +245,31 @@ export default () => {
       });
     }
   };
-
+  const handleAcknowledge = async (id) => {
+    const response = await fetch(`${API_URL}/api/v1/employer-actions/acknowledgment`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({ id }),
+    });
+    if (response.ok) {
+      openToast({
+        status: ToastStatus.Success,
+        message: 'Update successful',
+      });
+      setActionMenuParticipant(null);
+      setActiveModalForm(null);
+      forceReload();
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: 'An error occured',
+      });
+    }
+  };
   const handleExternalHire = async (participantInfo) => {
     const response = await fetch(`${API_URL}/api/v1/new-hired-participant`, {
       method: 'POST',
@@ -333,6 +358,7 @@ export default () => {
 
     getParticipants();
   }, [
+    fetchParticipants,
     currentPage,
     reducerState.siteSelector,
     reducerState.emailFilter,
@@ -379,7 +405,7 @@ export default () => {
       return row[columnId] ? 'Primed' : 'Available';
     }
     if (columnId === 'status') {
-      return prettifyStatus(row[columnId], row.id, selectedTab, handleEngage);
+      return prettifyStatus(row[columnId], row.id, selectedTab, handleEngage, handleAcknowledge);
     }
     if (columnId === 'distance') {
       if (row[columnId] !== null && row[columnId] !== undefined) {

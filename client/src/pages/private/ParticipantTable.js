@@ -465,29 +465,30 @@ export default () => {
       return moment(row.userUpdatedAt).fromNow();
     }
     if (columnId === 'archive') {
-      return (<>
-        {!row.status.includes('withdrawn') &&
-        <Button
-          onClick={async (event) => {
-            setAnchorElement(event.currentTarget);
-            // Get data from row.id
-            const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
-              headers: {
-                Accept: 'application/json',
-                'Content-type': 'application/json',
-                Authorization: `Bearer ${store.get('TOKEN')}`,
-              },
-              method: 'GET',
-            });
-            const participant = await response.json();
-            setActionMenuParticipant(participant[0]);
-            setActiveModalForm('archive');
-          }}
-          variant='outlined'
-          size='small'
-          text='Archive'
-        />
-        }
+      return (
+        <>
+          {!row.status.includes('withdrawn') && (
+            <Button
+              onClick={async (event) => {
+                setAnchorElement(event.currentTarget);
+                // Get data from row.id
+                const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-type': 'application/json',
+                    Authorization: `Bearer ${store.get('TOKEN')}`,
+                  },
+                  method: 'GET',
+                });
+                const participant = await response.json();
+                setActionMenuParticipant(participant[0]);
+                setActiveModalForm('archive');
+              }}
+              variant='outlined'
+              size='small'
+              text='Archive'
+            />
+          )}
         </>
       );
     }

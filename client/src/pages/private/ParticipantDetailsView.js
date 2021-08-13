@@ -14,6 +14,9 @@ import { EditParticipantFormSchema, ToastStatus } from '../../constants';
 import { EditParticipantForm } from '../../components/modal-forms';
 import { updateParticipant, fetchParticipant } from '../../services';
 
+// Sub component
+import { PSICohortView } from '../../components/participant-details';
+
 // Key Map
 const keyLabelMap = {
   fullName: 'Full Name',
@@ -151,6 +154,9 @@ export default () => {
                 </Button>
               </Grid>
             </Grid>
+            <CheckPermissions permittedRoles={['employer', 'health_authority']}>
+              <PSICohortView />
+            </CheckPermissions>
           </Card>
         )}
       </CheckPermissions>

@@ -22,7 +22,7 @@ router.get(
     // rather than 'user_id'
     if (email && (userId || localUserId)) {
       const response = await getCohorts();
-      logger.info({
+      logger.info('Get cohorts', {
         action: 'cohorts_get',
         performed_by: userId || localUserId,
         id: response.length > 0 ? response[0].id : '',

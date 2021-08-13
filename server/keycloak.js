@@ -93,7 +93,7 @@ class Keycloak {
         };
         next();
       } catch (error) {
-        logger.error({
+        logger.error('getUserInfoMiddleware Failed', {
           context: 'kc-getUserInfoMiddleware',
           error,
         });
@@ -130,7 +130,7 @@ class Keycloak {
       const response = await axios.post(url, data, config);
       this.access_token = response.data.access_token;
     } catch (excp) {
-      logger.error({
+      logger.error('KC Auth Failed', {
         context: 'kc-auth',
         retry: this.retryCount,
         error: excp,
@@ -190,7 +190,7 @@ class Keycloak {
         this.roleIdMap = response.data.reduce((a, role) => ({ ...a, [role.name]: role.id }), {});
       }
     } catch (excp) {
-      logger.error({
+      logger.error('kc-buildInternalIdMap Failed', {
         context: 'kc-buildInternalIdMap',
         error: excp,
       });
@@ -229,7 +229,7 @@ class Keycloak {
       );
       return results.flat();
     } catch (error) {
-      logger.error({
+      logger.error('KC getUsers Failed', {
         context: 'kc-getUsers',
         error,
       });
@@ -265,7 +265,7 @@ class Keycloak {
         await axios.post(url, data, config);
       }
     } catch (error) {
-      logger.error({
+      logger.error('KC setUserRoles Failed', {
         context: 'kc-setUserRoles',
         error,
       });
@@ -283,7 +283,7 @@ class Keycloak {
         (item) => item.name
       );
     } catch (error) {
-      logger.error({
+      logger.error('KC getUserRoles Failed', {
         context: 'kc-getUserRoles',
         error,
       });
@@ -301,7 +301,7 @@ class Keycloak {
       const response = await axios.get(url, config);
       return response.data;
     } catch (error) {
-      logger.error({
+      logger.error('KC getUserRoles Failed', {
         context: 'kc-getUserRoles',
         error,
       });

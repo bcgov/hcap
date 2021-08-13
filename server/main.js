@@ -13,7 +13,7 @@ async function shutdown() {
   if (server) {
     server.close((err) => {
       if (err) {
-        logger.error(err);
+        logger.error('shutting down server', err);
         process.exitCode = 1;
       }
       process.exit();
@@ -46,7 +46,7 @@ process.on('SIGTERM', () => {
       logger.info(`Listening on port ${port}`);
     });
   } catch (err) {
-    logger.error(err.message || err);
+    logger.error('Failed to start server!', err);
     logger.info('shutting down server');
     shutdown();
   }

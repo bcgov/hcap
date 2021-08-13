@@ -24,7 +24,7 @@ const getKeycloakToken = async ({ username, password }) => {
     const response = await axios.post(url, data, config);
     return { Authorization: `Bearer ${response.data.access_token}` };
   } catch (error) {
-    logger.error({
+    logger.error('KC Token fetch error', {
       context: `keycloak get token: ${error}`,
       error,
     });

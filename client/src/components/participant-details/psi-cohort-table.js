@@ -10,14 +10,14 @@ import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
+import CohortTable from './cohort-table';
+
 const useStyles = makeStyles({
   root: {
     width: '100%',
     overflowX: 'auto',
   },
-  table: {
-    minWidth: 650,
-  },
+  table: {},
 });
 
 function createData(institute_name, health_authority, cohorts, postal_code) {
@@ -27,6 +27,8 @@ function createData(institute_name, health_authority, cohorts, postal_code) {
 const rows = [
   createData('UVic', 'Vancouver Island', 5, 'V8V 1M6'),
   createData('UBc', 'Vancouver Coastal', 5, 'V8V 1M6'),
+  createData('CCM', 'Vancouver Coastal', 5, 'V8V 1M6'),
+  createData('LLBM', 'Vancouver Island', 5, 'V8V 1M6'),
 ];
 
 const ExpandableTableRow = ({ expand = false, children, expandComponent, ...otherProps }) => {
@@ -35,7 +37,7 @@ const ExpandableTableRow = ({ expand = false, children, expandComponent, ...othe
   return (
     <>
       <TableRow {...otherProps}>
-        <TableCell padding='checkbox'>
+        <TableCell>
           <IconButton onClick={() => setIsExpanded(!isExpanded)}>
             {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
@@ -44,7 +46,7 @@ const ExpandableTableRow = ({ expand = false, children, expandComponent, ...othe
       </TableRow>
       {isExpanded && (
         <TableRow>
-          <TableCell padding='checkbox' />
+          <TableCell />
           {expandComponent}
         </TableRow>
       )}
@@ -63,8 +65,10 @@ export const PSICohortTable = () => {
             <TableCell padding='checkbox' />
             <TableCell>Institute</TableCell>
             <TableCell align='right'>Health Authority</TableCell>
-            <TableCell align='right'>Cohorts</TableCell>
+            <TableCell align='right'>Seats</TableCell>
             <TableCell align='right'>Postal Codes</TableCell>
+            <TableCell align='right'>Start Date</TableCell>
+            <TableCell align='right'>{''}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -74,9 +78,7 @@ export const PSICohortTable = () => {
               key={row.institute_name}
               expandComponent={
                 <TableCell colSpan='5'>
-                  {
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget.'
-                  }
+                  <CohortTable />
                 </TableCell>
               }
             >
@@ -86,6 +88,8 @@ export const PSICohortTable = () => {
               <TableCell align='right'>{row.health_authority}</TableCell>
               <TableCell align='right'>{row.cohorts}</TableCell>
               <TableCell align='right'>{row.postal_code}</TableCell>
+              <TableCell align='right'>{''}</TableCell>
+              <TableCell align='right'>{''}</TableCell>
             </ExpandableTableRow>
           ))}
         </TableBody>

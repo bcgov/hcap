@@ -64,7 +64,7 @@ const PSIRouteTabs = ({ selectedTab = 'assignCohort' }) => {
   const [isLoadingData] = useState(false);
   const [tab, setTab] = useState(selectedTab);
   return (
-    <div>
+    <>
       <CustomTabs
         value={tab}
         onChange={(_, prop) => {
@@ -92,7 +92,7 @@ const PSIRouteTabs = ({ selectedTab = 'assignCohort' }) => {
         </Route>
         <Redirect to='/' />
       </Switch>
-    </div>
+    </>
   );
 };
 
@@ -109,9 +109,9 @@ export const PSICohortView = () => {
       alignContent='flex-start'
       justify='flex-start'
       alignItems='center'
-      direction='column'
+      direction='row'
     >
-      <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
+      <Box pt={2} pb={2} pl={2} pr={2} width='100%' height='auto'>
         <Router basename={baseUrl}>
           <PSIRouteTabs selectedTab={tabKey}></PSIRouteTabs>
         </Router>

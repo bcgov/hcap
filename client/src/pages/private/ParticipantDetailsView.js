@@ -101,7 +101,7 @@ export default () => {
 
   // Render
   return (
-    <Page>
+    <Page isAutoHeight={true}>
       <CheckPermissions
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
         renderErrorMessage={true}

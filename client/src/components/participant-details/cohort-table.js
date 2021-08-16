@@ -12,7 +12,7 @@ import { dateToString } from '../../utils';
 
 const useStyles = makeStyles({
   table: {
-    minWidth: 650,
+    minWidth: 660,
   },
 });
 

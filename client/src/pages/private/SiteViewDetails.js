@@ -14,6 +14,7 @@ const SiteParticipantsTable = lazy(() => import('./SiteParticipantsTable'));
 export default ({ match }) => {
   const { openToast } = useToast();
   const [site, setSite] = useState({});
+  const [stale, setStale] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const id = match.params.id;
 
@@ -31,6 +32,7 @@ export default ({ match }) => {
     if (response.ok) {
       setActiveModalForm(null);
       fetchDetails(id);
+      setStale(true);
     } else {
       openToast({
         status: ToastStatus.Error,
@@ -166,6 +168,8 @@ export default ({ match }) => {
               </Box>
               <SiteParticipantsTable
                 id={id}
+                stale={stale}
+                setStale={setStale}
                 onArchiveParticipantAction={() => {
                   setSite({});
                   fetchDetails(id);

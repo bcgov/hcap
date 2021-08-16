@@ -18,7 +18,9 @@ const useStyles = makeStyles({
     width: '100%',
     overflowX: 'auto',
   },
-  table: {},
+  table: {
+    minWidth: 650,
+  },
 });
 
 const ExpandableTableRow = ({ expand = false, children, expandComponent, ...otherProps }) => {

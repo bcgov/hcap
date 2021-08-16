@@ -59,7 +59,7 @@ const CustomTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-const PSIRouteTabs = ({ selectedTab = 'assignCohort' }) => {
+const PSIRouteTabs = ({ selectedTab = 'assignCohort', psiList = [], assignAction }) => {
   const history = useHistory();
   const [isLoadingData] = useState(false);
   const [tab, setTab] = useState(selectedTab);
@@ -88,7 +88,7 @@ const PSIRouteTabs = ({ selectedTab = 'assignCohort' }) => {
           render={() => <h1>Work in progress</h1>}
         ></Route>
         <Route exact path={TabDetails.assignCohort.path}>
-          <PSICohortTable />
+          <PSICohortTable rows={psiList} assignAction={assignAction} />
         </Route>
         <Redirect to='/' />
       </Switch>
@@ -96,7 +96,7 @@ const PSIRouteTabs = ({ selectedTab = 'assignCohort' }) => {
   );
 };
 
-export const PSICohortView = () => {
+export const PSICohortView = ({ psiList = [], assignAction }) => {
   const match = useRouteMatch();
   const { tab } = useParams();
   const tabKey = Object.keys(TabDetails).reduce((incoming, key) =>
@@ -113,7 +113,11 @@ export const PSICohortView = () => {
     >
       <Box pt={2} pb={2} pl={2} pr={2} width='100%' height='auto'>
         <Router basename={baseUrl}>
-          <PSIRouteTabs selectedTab={tabKey}></PSIRouteTabs>
+          <PSIRouteTabs
+            selectedTab={tabKey}
+            psiList={psiList}
+            assignAction={assignAction}
+          ></PSIRouteTabs>
         </Router>
       </Box>
     </Grid>

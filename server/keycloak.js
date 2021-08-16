@@ -102,10 +102,13 @@ class Keycloak {
     };
   }
 
-  setupUserMiddleware() {
+  setupUserMiddleware(strict = false) {
     return (req, resp, next) => {
       try {
         const { content } = req.kauth?.grant?.access_token;
+        if (strict && !content) {
+          resp.status(401).send('Unauthorized user');
+        }
         const roles = content?.resource_access[this.clientNameFrontend]?.roles || [];
         if (content) req.user = { ...content, roles };
         next();

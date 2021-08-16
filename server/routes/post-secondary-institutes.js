@@ -2,7 +2,12 @@ const express = require('express');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
-const { getPSI, getPSIs, makePSI } = require('../services/post-secondary-institutes');
+const {
+  getPSI,
+  getPSIs,
+  makePSI,
+  getAllPSIWithCohorts,
+} = require('../services/post-secondary-institutes');
 
 const cohortRoute = require('./psi-cohorts');
 
@@ -12,7 +17,11 @@ const router = express.Router();
 // Apply setup user middleware
 router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 // Apply role middleware
-router.use(applyMiddleware(keycloak.allowRolesMiddleware('ministry_of_health')));
+router.use(
+  applyMiddleware(
+    keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority', 'employer')
+  )
+);
 
 // Catch all requests for cohort and route them separately
 router.use(`/:id/cohorts`, cohortRoute);
@@ -36,6 +45,22 @@ router.get(
     } else {
       res.status(401).send('Unauthorized user');
     }
+  })
+);
+
+// Get all psi with cohort info
+router.get(
+  '/with-cohorts',
+  asyncMiddleware(async (req, res) => {
+    const { user_id: userId, sub: localUserId } = req.user;
+    const user = userId || localUserId;
+    const response = (await getAllPSIWithCohorts()) || [];
+    logger.info({
+      action: 'post-secondary-institutes_get',
+      performed_by: user,
+      ids: response.map((item) => item.id),
+    });
+    res.status(200).send(response);
   })
 );
 
@@ -65,6 +90,7 @@ router.get(
 // Post a new PSI
 router.post(
   '/',
+  keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
     const { email, user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;

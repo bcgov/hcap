@@ -3,6 +3,21 @@ const { validate, CreatePSISchema } = require('../validation');
 
 const getPSIs = async () => dbClient.db[collections.POST_SECONDARY_INSTITUTIONS].find();
 
+const getAllPSIWithCohorts = async () => {
+  const results = await dbClient.db[collections.POST_SECONDARY_INSTITUTIONS]
+    .join({
+      cohorts: {
+        relation: collections.COHORTS,
+        type: 'LEFT OUTER',
+        on: {
+          psi_id: 'id',
+        },
+      },
+    })
+    .find();
+  return results;
+};
+
 const getPSI = async (id) =>
   dbClient.db[collections.POST_SECONDARY_INSTITUTIONS].find({
     id,
@@ -33,4 +48,5 @@ module.exports = {
   getPSIs,
   getPSI,
   makePSI,
+  getAllPSIWithCohorts,
 };

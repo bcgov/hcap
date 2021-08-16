@@ -10,6 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
+// Child
 import CohortTable from './cohort-table';
 
 const useStyles = makeStyles({
@@ -19,17 +20,6 @@ const useStyles = makeStyles({
   },
   table: {},
 });
-
-function createData(institute_name, health_authority, cohorts, postal_code) {
-  return { institute_name, health_authority, cohorts, postal_code };
-}
-
-const rows = [
-  createData('UVic', 'Vancouver Island', 5, 'V8V 1M6'),
-  createData('UBc', 'Vancouver Coastal', 5, 'V8V 1M6'),
-  createData('CCM', 'Vancouver Coastal', 5, 'V8V 1M6'),
-  createData('LLBM', 'Vancouver Island', 5, 'V8V 1M6'),
-];
 
 const ExpandableTableRow = ({ expand = false, children, expandComponent, ...otherProps }) => {
   const [isExpanded, setIsExpanded] = React.useState(expand);
@@ -54,9 +44,8 @@ const ExpandableTableRow = ({ expand = false, children, expandComponent, ...othe
   );
 };
 
-export const PSICohortTable = () => {
+export const PSICohortTable = ({ rows, assignAction }) => {
   const classes = useStyles();
-
   return (
     <Paper className={classes.root}>
       <Table className={classes.table} aria-label='simple table'>
@@ -66,8 +55,8 @@ export const PSICohortTable = () => {
             <TableCell>Institute</TableCell>
             <TableCell align='right'>Health Authority</TableCell>
             <TableCell align='right'>Seats</TableCell>
-            <TableCell align='right'>Postal Codes</TableCell>
             <TableCell align='right'>Start Date</TableCell>
+            <TableCell align='right'>Postal Codes</TableCell>
             <TableCell align='right'>{''}</TableCell>
           </TableRow>
         </TableHead>
@@ -75,10 +64,10 @@ export const PSICohortTable = () => {
           {rows.map((row, index) => (
             <ExpandableTableRow
               expand={index === 0}
-              key={row.institute_name}
+              key={row.id}
               expandComponent={
                 <TableCell colSpan='5'>
-                  <CohortTable />
+                  <CohortTable rows={row.cohorts} assignAction={assignAction} />
                 </TableCell>
               }
             >
@@ -86,10 +75,10 @@ export const PSICohortTable = () => {
                 {row.institute_name}
               </TableCell>
               <TableCell align='right'>{row.health_authority}</TableCell>
-              <TableCell align='right'>{row.cohorts}</TableCell>
+              <TableCell align='right'>{row.size}</TableCell>
+              <TableCell align='right'>{''}</TableCell>
+              <TableCell align='right'>{''}</TableCell>
               <TableCell align='right'>{row.postal_code}</TableCell>
-              <TableCell align='right'>{''}</TableCell>
-              <TableCell align='right'>{''}</TableCell>
             </ExpandableTableRow>
           ))}
         </TableBody>

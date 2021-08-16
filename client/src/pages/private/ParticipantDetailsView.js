@@ -12,7 +12,7 @@ import { AuthContext } from '../../providers';
 import { Page, CheckPermissions, Alert, Dialog } from '../../components/generic';
 import { EditParticipantFormSchema, ToastStatus } from '../../constants';
 import { EditParticipantForm } from '../../components/modal-forms';
-import { updateParticipant, fetchParticipant } from '../../services';
+import { updateParticipant, fetchParticipant, psi } from '../../services';
 
 // Sub component
 import { PSICohortView } from '../../components/participant-details';
@@ -54,6 +54,7 @@ export default () => {
   const [participant, setParticipant] = useState(null);
   const [actualParticipant, setActualParticipant] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [psiList, setPSIList] = useState([]);
   // Hook: Toast
   const { openToast } = useToast();
   // Auth context
@@ -87,6 +88,15 @@ export default () => {
       setError(`${err}`);
     }
   };
+
+  // Assign Cohort
+  const assignAction = (cohort) => {
+    openToast({
+      status: ToastStatus.Warning,
+      message: `Assignment of '${cohort.cohort_name}' is not available`,
+    });
+  };
+
   // Rendering Hook
   useEffect(() => {
     fetchParticipant({ id })
@@ -98,6 +108,17 @@ export default () => {
         setError(`${err}`);
       });
   }, [setParticipant, setActualParticipant, setError, id]);
+
+  // Render psi table
+  useEffect(() => {
+    psi()
+      .then((list) => {
+        setPSIList(list);
+      })
+      .catch((err) => {
+        setError(`${err}`);
+      });
+  }, [setPSIList]);
 
   // Render
   return (
@@ -155,7 +176,7 @@ export default () => {
               </Grid>
             </Grid>
             <CheckPermissions permittedRoles={['employer', 'health_authority']}>
-              <PSICohortView />
+              <PSICohortView psiList={psiList} assignAction={assignAction} />
             </CheckPermissions>
           </Card>
         )}

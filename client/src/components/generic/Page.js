@@ -12,15 +12,22 @@ const useStyles = makeStyles(() => ({
     flexWrap: 'nowrap',
     flexDirection: 'column',
   }),
+  autoHeight: (props) => ({
+    height: 'auto',
+    justifyContent: props.centered ? 'center' : 'flex-start',
+    alignItems: 'center',
+    flexWrap: 'nowrap',
+    flexDirection: 'column',
+  }),
 }));
 
 // hideEmployers set to true for participant-facing pages
-export const Page = ({ children, hideEmployers = false, centered }) => {
+export const Page = ({ children, hideEmployers = false, centered, isAutoHeight = false }) => {
   const classes = useStyles({ centered });
   return (
     <Fragment>
       <Header hideEmployers={hideEmployers} />
-      <Grid className={classes.root} container>
+      <Grid className={isAutoHeight ? classes.autoHeight : classes.root} container>
         {children}
       </Grid>
     </Fragment>

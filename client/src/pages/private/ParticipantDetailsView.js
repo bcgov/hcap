@@ -24,7 +24,7 @@ const keyLabelMap = {
   emailAddress: 'Email Address',
   interested: 'Program Interest',
   preferredLocation: 'Preferred Location',
-  postalCodeFsa: 'Postal Code',
+  postalCodeFsa: 'Postal Code FSA',
 };
 
 // Display Data

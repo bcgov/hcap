@@ -11,7 +11,9 @@ import Paper from '@material-ui/core/Paper';
 import { dateToString } from '../../utils';
 
 const useStyles = makeStyles({
-  table: {},
+  table: {
+    minWidth: 650,
+  },
 });
 
 export default function CohortTable({ rows, assignAction }) {
@@ -27,8 +29,7 @@ export default function CohortTable({ rows, assignAction }) {
               <TableCell align='right'>{dateToString(row.start_date)}</TableCell>
               <TableCell align='right'>
                 <Button variant='outlined' color='secondary' onClick={() => assignAction(row)}>
-                  {' '}
-                  Assign{' '}
+                  Assign
                 </Button>
               </TableCell>
             </TableRow>

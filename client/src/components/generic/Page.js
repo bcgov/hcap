@@ -12,10 +12,7 @@ const useStyles = makeStyles(() => ({
     flexWrap: 'nowrap',
     flexDirection: 'column',
   }),
-}));
-
-const useStyleAutoHeight = makeStyles(() => ({
-  root: (props) => ({
+  autoHeight: (props) => ({
     height: 'auto',
     justifyContent: props.centered ? 'center' : 'flex-start',
     alignItems: 'center',
@@ -27,11 +24,10 @@ const useStyleAutoHeight = makeStyles(() => ({
 // hideEmployers set to true for participant-facing pages
 export const Page = ({ children, hideEmployers = false, centered, isAutoHeight = false }) => {
   const classes = useStyles({ centered });
-  const classesAuto = useStyleAutoHeight({ centered });
   return (
     <Fragment>
       <Header hideEmployers={hideEmployers} />
-      <Grid className={isAutoHeight ? classesAuto.root : classes.root} container>
+      <Grid className={isAutoHeight ? classes.autoHeight : classes.root} container>
         {children}
       </Grid>
     </Fragment>

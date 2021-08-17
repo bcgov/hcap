@@ -53,12 +53,26 @@ const customStyle = makeStyles({
 });
 
 // Helper
-const fetchData = ({ setParticipant, setActualParticipant, setPSIList, id, setError }) => {
+const fetchData = ({
+  setParticipant,
+  setActualParticipant,
+  setPSIList,
+  id,
+  setError,
+  setDisableAssign,
+}) => {
   fetchParticipant({ id })
     .then((resp) => {
-      console.dir(resp);
       setParticipant(displayData(resp));
       setActualParticipant(resp);
+      if (
+        resp.interested?.toLowerCase() === 'withdrawn' ||
+        resp.interested?.toLowerCase() === 'no'
+      ) {
+        setDisableAssign(true);
+        return;
+      }
+
       psi()
         .then((list) => {
           setPSIList(list);
@@ -81,6 +95,7 @@ export default () => {
   const [actualParticipant, setActualParticipant] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [psiList, setPSIList] = useState([]);
+  const [disableAssign, setDisableAssign] = useState(false);
   // Hook: Toast
   const { openToast } = useToast();
   // Auth context
@@ -123,7 +138,14 @@ export default () => {
         status: ToastStatus.Success,
         message: `Participant is assigned to ${cohort.cohort_name}.`,
       });
-      fetchData({ setParticipant, setPSIList, setActualParticipant, setError, id });
+      fetchData({
+        setParticipant,
+        setPSIList,
+        setActualParticipant,
+        setError,
+        setDisableAssign,
+        id,
+      });
     } catch (error) {
       openToast({
         status: ToastStatus.Error,
@@ -134,8 +156,8 @@ export default () => {
 
   // Rendering Hook
   useEffect(() => {
-    fetchData({ setParticipant, setPSIList, setActualParticipant, setError, id });
-  }, [setParticipant, setPSIList, setActualParticipant, setError, id]);
+    fetchData({ setParticipant, setPSIList, setActualParticipant, setDisableAssign, setError, id });
+  }, [setParticipant, setPSIList, setActualParticipant, setError, setDisableAssign, id]);
 
   // Render
   return (
@@ -193,11 +215,13 @@ export default () => {
               </Grid>
             </Grid>
             <CheckPermissions permittedRoles={['employer', 'health_authority']}>
-              <PSICohortView
-                psiList={psiList}
-                assignAction={assignAction}
-                participant={actualParticipant}
-              />
+              {!disableAssign && (
+                <PSICohortView
+                  psiList={psiList}
+                  assignAction={assignAction}
+                  participant={actualParticipant}
+                />
+              )}
             </CheckPermissions>
           </Card>
         )}

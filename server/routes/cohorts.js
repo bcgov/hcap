@@ -2,7 +2,8 @@ const express = require('express');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
-const { getCohorts, getCohort } = require('../services/cohorts.js');
+const { getCohorts, getCohort, assignCohort, getAssignCohort } = require('../services/cohorts.js');
+const { getParticipantByID } = require('../services/participants');
 
 // Router
 const router = express.Router();
@@ -10,7 +11,11 @@ const router = express.Router();
 // Apply setup user middleware
 router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 // Apply role middleware
-router.use(applyMiddleware(keycloak.allowRolesMiddleware('ministry_of_health')));
+router.use(
+  applyMiddleware(
+    keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority', 'employer')
+  )
+);
 
 // Get all cohorts
 router.get(
@@ -53,6 +58,65 @@ router.get(
       id: cohort.id || '',
     });
 
+    return res.status(200).json(cohort);
+  })
+);
+
+// Assign participant
+router.post(
+  '/:id/assign/:participantId',
+  [applyMiddleware(keycloak.allowRolesMiddleware('health_authority', 'employer'))],
+  asyncMiddleware(async (req, res) => {
+    const { user_id: userId, sub: localUserId } = req.user;
+    const user = userId || localUserId;
+    const { id, participantId } = req.params;
+    if (id && participantId) {
+      const [participant] = await getParticipantByID({ id: +participantId });
+      if (!participant) {
+        return res.status(400).send('Invalid participant id');
+      }
+      const [cohort] = await getCohort(+id);
+      if (!cohort) {
+        return res.status(400).send('Invalid cohort id');
+      }
+      const response = await assignCohort({ id: cohort.id, participantId: participant.id });
+      logger.info({
+        action: 'cohort_participant_assign',
+        performed_by: {
+          user,
+        },
+        cohortId: cohort.id || '',
+        participantId: participant.id,
+      });
+      return res.status(201).json(response);
+    }
+    return res.status(400).send('Cohort id and participant id required');
+  })
+);
+
+// Get Assigned cohort for participant
+router.get(
+  '/assigned-participant/:id',
+  asyncMiddleware(async (req, res) => {
+    const { user_id: userId, sub: localUserId } = req.user;
+    const user = userId || localUserId;
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).send('Participant id required');
+    }
+    const [participant] = await getParticipantByID({ id: +id });
+    if (!participant) {
+      return res.status(400).send('Invalid participant id');
+    }
+    const [cohort] = (await getAssignCohort({ participantId: participant.id })) || [{}];
+    logger.info({
+      action: 'cohort_participant_get_assigned',
+      performed_by: {
+        user,
+      },
+      cohortId: cohort.id || '',
+      participantId: participant.id,
+    });
     return res.status(200).json(cohort);
   })
 );

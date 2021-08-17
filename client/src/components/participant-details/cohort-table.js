@@ -16,6 +16,12 @@ const useStyles = makeStyles({
   },
 });
 
+const isDisabled = (endDate) => {
+  const today = new Date();
+  const end = new Date(endDate);
+  return end < today;
+};
+
 export default function CohortTable({ rows, assignAction }) {
   const classes = useStyles();
   return (
@@ -28,7 +34,12 @@ export default function CohortTable({ rows, assignAction }) {
               <TableCell align='right'>{row.cohort_size}</TableCell>
               <TableCell align='right'>{dateToString(row.start_date)}</TableCell>
               <TableCell align='right'>
-                <Button variant='outlined' color='secondary' onClick={() => assignAction(row)}>
+                <Button
+                  disabled={isDisabled(row.end_date)}
+                  variant='outlined'
+                  color='secondary'
+                  onClick={() => assignAction(row)}
+                >
                   Assign
                 </Button>
               </TableCell>

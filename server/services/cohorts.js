@@ -72,6 +72,14 @@ const getAssignCohort = async ({ participantId }) => {
           participant_id: participantId,
         },
       },
+      psi: {
+        relation: collections.POST_SECONDARY_INSTITUTIONS,
+        type: 'LEFT OUTER',
+        decomposeTo: 'object',
+        on: {
+          id: 'psi_id',
+        },
+      },
     })
     .find();
   return cohorts;

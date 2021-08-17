@@ -108,7 +108,7 @@ router.get(
     if (!participant) {
       return res.status(400).send('Invalid participant id');
     }
-    const [cohort] = (await getAssignCohort({ participantId: participant.id })) || [{}];
+    const [cohort = {}] = (await getAssignCohort({ participantId: participant.id })) || [{}];
     logger.info({
       action: 'cohort_participant_get_assigned',
       performed_by: {

@@ -30,8 +30,10 @@ describe('Tests the Site Details View', () => {
     cy.get('button').contains('details').click();
     cy.get('button').contains('Edit').click();
     cy.get('input#siteContactFirstName').clear().type('newerName');
+    cy.get('input#siteContactPhone').clear().type('1112223333');
+    cy.get('input#siteContactEmail').clear().type('email@addr.ess');
+    cy.get('input#allocation').clear().type('42');
     cy.get('button').contains('Submit').click();
-    cy.contains('First Name');
     cy.contains('newerName').should('exist');
   });
 

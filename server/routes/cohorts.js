@@ -95,7 +95,7 @@ router.post(
 );
 
 // Get Assigned cohort for participant
-router.post(
+router.get(
   '/assigned-participant/:id',
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;

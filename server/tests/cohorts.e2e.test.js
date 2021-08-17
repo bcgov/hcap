@@ -71,7 +71,7 @@ describe('api e2e tests for /cohorts', () => {
     await assignCohort({ id: cohort.id, participantId: participant.id });
     const header = await getKeycloakToken(employer);
     const res = await request(app)
-      .post(`/api/v1/cohorts/assigned-participant/${participant.id}`)
+      .get(`/api/v1/cohorts/assigned-participant/${participant.id}`)
       .set(header);
     expect(res.status).toEqual(200);
     expect(res.body.id).toEqual(cohort.id);

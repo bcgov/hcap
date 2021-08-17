@@ -79,7 +79,7 @@ router.post(
       if (!cohort) {
         return res.status(400).send('Invalid cohort id');
       }
-      const response = await assignCohort({ id, participantId });
+      const response = await assignCohort({ id: cohort.id, participantId: participant.id });
       logger.info({
         action: 'cohort_participant_assign',
         performed_by: {

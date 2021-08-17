@@ -45,7 +45,7 @@ describe('Tests the Site Details View', () => {
     cy.get('input#operatorPhone').clear().type('3332221111');
     cy.get('input#operatorEmail').clear().type('rooftop@danci.ng');
     cy.get('button').contains('Submit').click();
-    cy.get('div.MuiDialog-container').should('not.be.visible');
+    cy.get('div.MuiDialog-container').should('not.exist');
     cy.contains('newName').should('exist');
   });
 

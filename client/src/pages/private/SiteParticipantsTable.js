@@ -84,7 +84,7 @@ const fetchDetails = async (id) => {
   }
 };
 
-export default ({ id, onArchiveParticipantAction }) => {
+export default ({ id, onArchiveParticipantAction, stale, setStale }) => {
   const history = useHistory();
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
@@ -131,6 +131,22 @@ export default ({ id, onArchiveParticipantAction }) => {
       });
     });
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (stale) {
+      dispatch({
+        type: SiteDetailTabContext.types.LOAD_SITE,
+        payload: {},
+      });
+      fetchDetails(id).then((response) => {
+        dispatch({
+          type: SiteDetailTabContext.types.UPDATE_SITE,
+          payload: { site: response },
+        });
+      });
+      setStale(false);
+    }
+  }, [dispatch, id, stale, setStale]);
 
   useEffect(() => {
     dispatch({

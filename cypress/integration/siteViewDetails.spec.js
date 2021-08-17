@@ -23,6 +23,32 @@ describe('Tests the Site Details View', () => {
     cy.get('button.Mui-selected').should('have.text', 'Site Details');
   });
 
+  it('edits a site and confirms the new data is rendered', () => {
+    cy.kcLogin('test-moh');
+    cy.visit('/site-view');
+    cy.contains('V1V1V1');
+    cy.get('button').contains('details').click();
+    cy.get('button').contains('Edit').click();
+    cy.get('input#siteContactFirstName').clear().type('newName');
+    cy.get('input#siteContactLastName').clear().type('Name');
+    cy.get('input#siteContactPhone').clear().type('1112223333');
+    cy.get('input#siteContactEmail').clear().type('email@addr.ess');
+    cy.get('input#siteName').clear().type('IGotAName');
+    cy.get('input#registeredBusinessName').clear().type('JimCroce');
+    cy.get('input#address').clear().type('123 Place');
+    cy.get('input#city').clear().type('Victoria');
+    cy.get('label.MuiFormControlLabel-root').contains('No').click();
+    cy.get('input#postalCode').clear().type('V1V1V1');
+    cy.get('input#allocation').clear().type('42');
+    cy.get('input#operatorContactFirstName').clear().type('Sylvan');
+    cy.get('input#operatorContactLastName').clear().type('Esso');
+    cy.get('input#operatorPhone').clear().type('3332221111');
+    cy.get('input#operatorEmail').clear().type('rooftop@danci.ng');
+    cy.get('button').contains('Submit').click();
+    cy.get('div.MuiDialog-container').should('not.exist');
+    cy.contains('newName').should('exist');
+  });
+
   it('visits the Site Details View as health authority', () => {
     cy.kcLogin('test-ha');
     cy.visit('/site-view');

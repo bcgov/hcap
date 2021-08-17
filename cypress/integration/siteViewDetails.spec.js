@@ -35,6 +35,7 @@ describe('Tests the Site Details View', () => {
     cy.get('input#siteContactEmail').clear().type('email@addr.ess');
     cy.get('input#allocation').clear().type('42');
     cy.get('button').contains('Submit').click();
+    cy.get('p.Mui-Error').should('not.exist');
     cy.contains('newName').should('exist');
   });
 

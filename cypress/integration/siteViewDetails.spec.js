@@ -3,17 +3,6 @@ describe('Tests the Site Details View', () => {
     cy.kcLogout();
   });
 
-  it('edits a site and confirms the new data is rendered', () => {
-    cy.kcLogin('test-moh');
-    cy.visit('/site-view');
-    cy.contains('V1V1V1');
-    cy.get('button').contains('details').click();
-    cy.get('button').contains('Edit').click();
-    cy.get('input#siteContactFirstName').clear().type('newName');
-    cy.get('button').contains('Submit').click();
-    cy.contains('newName').should('exist');
-  });
-
   it('creates a new site as MoH, asserts that it has default functionality', () => {
     cy.kcLogin('test-moh');
     cy.visit('/site-view');
@@ -32,6 +21,17 @@ describe('Tests the Site Details View', () => {
         cy.get('button').click();
       });
     cy.get('button.Mui-selected').should('have.text', 'Site Details');
+  });
+
+  it('edits a site and confirms the new data is rendered', () => {
+    cy.kcLogin('test-moh');
+    cy.visit('/site-view');
+    cy.contains('V1V1V1');
+    cy.get('button').contains('details').click();
+    cy.get('button').contains('Edit').click();
+    cy.get('input#siteContactFirstName').clear().type('newName');
+    cy.get('button').contains('Submit').click();
+    cy.contains('newName').should('exist');
   });
 
   it('visits the Site Details View as health authority', () => {

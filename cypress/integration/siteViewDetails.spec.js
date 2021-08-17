@@ -29,10 +29,10 @@ describe('Tests the Site Details View', () => {
     cy.contains('V1V1V1');
     cy.get('button').contains('details').click();
     cy.get('button').contains('Edit').click();
-    cy.get('input#siteContactFirstName').clear().type('newName');
+    cy.get('input#siteContactFirstName').clear().type('newerName');
     cy.get('button').contains('Submit').click();
     cy.contains('First Name');
-    cy.contains('newName').should('exist');
+    cy.contains('newerName').should('exist');
   });
 
   it('visits the Site Details View as health authority', () => {

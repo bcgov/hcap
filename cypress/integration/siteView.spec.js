@@ -18,6 +18,14 @@ describe('Tests the Site View', () => {
   it('visits siteView as MoH', () => {
     cy.kcLogin('test-moh');
     cy.visit('/site-view');
+
+    // Testing sortation on Site Name by default
+    cy.contains('Site Name')
+      .parent()
+      .within(() => {
+        cy.get('svg.MuiSvgIcon-root').should('exist');
+      });
+
     // cy.contains('td', 1).should('exist');  // Descoped due to no sites
     cy.get('div.MuiSelect-selectMenu').should('not.have.class', 'Mui-disabled');
     cy.get('div.MuiSelect-selectMenu').click();

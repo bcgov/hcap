@@ -61,10 +61,27 @@ const assignCohort = async ({ id, participantId }) => {
   return participantCohort;
 };
 
+const getAssignCohort = async ({ participantId }) => {
+  const cohorts = await dbClient.db[collections.COHORTS]
+    .join({
+      cohortParticipant: {
+        relation: collections.COHORT_PARTICIPANTS,
+        type: 'INNER',
+        on: {
+          cohort_id: 'id',
+          participant_id: participantId,
+        },
+      },
+    })
+    .find();
+  return cohorts;
+};
+
 module.exports = {
   getCohorts,
   getPSICohorts,
   getCohort,
   makeCohort,
   assignCohort,
+  getAssignCohort,
 };

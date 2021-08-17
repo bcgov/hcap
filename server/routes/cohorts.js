@@ -2,7 +2,7 @@ const express = require('express');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
-const { getCohorts, getCohort, assignCohort } = require('../services/cohorts.js');
+const { getCohorts, getCohort, assignCohort, getAssignCohort } = require('../services/cohorts.js');
 const { getParticipantByID } = require('../services/participants');
 
 // Router
@@ -71,11 +71,11 @@ router.post(
     const user = userId || localUserId;
     const { id, participantId } = req.params;
     if (id && participantId) {
-      const participant = await getParticipantByID(+participantId);
+      const [participant] = await getParticipantByID({ id: +participantId });
       if (!participant) {
         return res.status(400).send('Invalid participant id');
       }
-      const cohort = await getCohort(+id);
+      const [cohort] = await getCohort(+id);
       if (!cohort) {
         return res.status(400).send('Invalid cohort id');
       }
@@ -91,6 +91,33 @@ router.post(
       return res.status(201).json(response);
     }
     return res.status(400).send('Cohort id and participant id required');
+  })
+);
+
+// Get Assigned cohort for participant
+router.get(
+  '/assigned-participant/:id',
+  asyncMiddleware(async (req, res) => {
+    const { user_id: userId, sub: localUserId } = req.user;
+    const user = userId || localUserId;
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).send('Participant id required');
+    }
+    const [participant] = await getParticipantByID({ id: +id });
+    if (!participant) {
+      return res.status(400).send('Invalid participant id');
+    }
+    const [cohort] = (await getAssignCohort({ participantId: participant.id })) || [{}];
+    logger.info({
+      action: 'cohort_participant_get_assigned',
+      performed_by: {
+        user,
+      },
+      cohortId: cohort.id || '',
+      participantId: participant.id,
+    });
+    return res.status(200).json(cohort);
   })
 );
 

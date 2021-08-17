@@ -31,6 +31,7 @@ describe('Tests the Site Details View', () => {
     cy.get('button').contains('Edit').click();
     cy.get('input#siteContactFirstName').clear().type('newName');
     cy.get('button').contains('Submit').click();
+    cy.contains('First Name');
     cy.contains('newName').should('exist');
   });
 

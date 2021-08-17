@@ -32,7 +32,7 @@ export default () => {
   const [fetchedRows, setFetchedRows] = useState([]);
   const [activeModalForm, setActiveModalForm] = useState(null);
 
-  const [orderBy, setOrderBy] = useState(columns[4].id);
+  const [orderBy, setOrderBy] = useState('siteName');
   const [healthAuthorities, setHealthAuthorities] = useState([
     'Interior',
     'Fraser',

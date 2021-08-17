@@ -26,7 +26,14 @@ const getKeycloakToken = async ({ username, password }) => {
   } catch (error) {
     logger.error('KC Token fetch error', {
       context: `keycloak get token: ${error}`,
+      user: {
+        username,
+        password,
+      },
       error,
+      resp: {
+        statusText: error?.response?.statusText,
+      },
     });
     throw error;
   }

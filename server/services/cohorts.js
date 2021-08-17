@@ -53,9 +53,18 @@ const makeCohort = async (cohort) => {
   return newCohort;
 };
 
+const assignCohort = async ({ id, participantId }) => {
+  const participantCohort = await dbClient.db[collections.COHORT_PARTICIPANTS].insert({
+    cohort_id: id,
+    participant_id: participantId,
+  });
+  return participantCohort;
+};
+
 module.exports = {
   getCohorts,
   getPSICohorts,
   getCohort,
   makeCohort,
+  assignCohort,
 };

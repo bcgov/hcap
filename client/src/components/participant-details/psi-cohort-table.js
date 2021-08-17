@@ -46,45 +46,53 @@ const ExpandableTableRow = ({ expand = false, children, expandComponent, ...othe
   );
 };
 
-export const PSICohortTable = ({ rows, assignAction }) => {
+export const PSICohortTable = ({ rows, assignAction, disabled }) => {
   const classes = useStyles();
   return (
-    <Paper className={classes.root}>
-      <Table className={classes.table} aria-label='simple table'>
-        <TableHead>
-          <TableRow>
-            <TableCell padding='checkbox' />
-            <TableCell>Institute</TableCell>
-            <TableCell align='right'>Health Authority</TableCell>
-            <TableCell align='right'>Seats</TableCell>
-            <TableCell align='right'>Start Date</TableCell>
-            <TableCell align='right'>Postal Codes</TableCell>
-            <TableCell align='right'>{''}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row, index) => (
-            <ExpandableTableRow
-              expand={index === 0}
-              key={row.id}
-              expandComponent={
-                <TableCell colSpan='5'>
-                  <CohortTable rows={row.cohorts} assignAction={assignAction} />
+    <div
+      className='ui container'
+      style={{
+        opacity: disabled ? 0.5 : 1,
+        pointerEvents: disabled ? 'none' : 'initial',
+      }}
+    >
+      <Paper className={classes.root}>
+        <Table className={classes.table} aria-label='simple table'>
+          <TableHead>
+            <TableRow>
+              <TableCell padding='checkbox' />
+              <TableCell>Institute</TableCell>
+              <TableCell align='right'>Health Authority</TableCell>
+              <TableCell align='right'>Seats</TableCell>
+              <TableCell align='right'>Start Date</TableCell>
+              <TableCell align='right'>Postal Codes</TableCell>
+              <TableCell align='right'>{''}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row, index) => (
+              <ExpandableTableRow
+                expand={index === 0}
+                key={row.id}
+                expandComponent={
+                  <TableCell colSpan='5'>
+                    <CohortTable rows={row.cohorts} assignAction={assignAction} />
+                  </TableCell>
+                }
+              >
+                <TableCell component='th' scope='row'>
+                  {row.institute_name}
                 </TableCell>
-              }
-            >
-              <TableCell component='th' scope='row'>
-                {row.institute_name}
-              </TableCell>
-              <TableCell align='right'>{row.health_authority}</TableCell>
-              <TableCell align='right'>{row.size}</TableCell>
-              <TableCell align='right'>{''}</TableCell>
-              <TableCell align='right'>{''}</TableCell>
-              <TableCell align='right'>{row.postal_code}</TableCell>
-            </ExpandableTableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Paper>
+                <TableCell align='right'>{row.health_authority}</TableCell>
+                <TableCell align='right'>{row.size}</TableCell>
+                <TableCell align='right'>{''}</TableCell>
+                <TableCell align='right'>{''}</TableCell>
+                <TableCell align='right'>{row.postal_code}</TableCell>
+              </ExpandableTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Paper>
+    </div>
   );
 };

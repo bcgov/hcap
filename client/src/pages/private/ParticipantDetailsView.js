@@ -12,7 +12,12 @@ import { AuthContext } from '../../providers';
 import { Page, CheckPermissions, Alert, Dialog } from '../../components/generic';
 import { EditParticipantFormSchema, ToastStatus } from '../../constants';
 import { EditParticipantForm } from '../../components/modal-forms';
-import { updateParticipant, fetchParticipant, psi } from '../../services';
+import {
+  updateParticipant,
+  fetchParticipant,
+  psi,
+  assignParticipantWithCohort,
+} from '../../services';
 
 // Sub component
 import { PSICohortView } from '../../components/participant-details';
@@ -25,6 +30,7 @@ const keyLabelMap = {
   interested: 'Program Interest',
   preferredLocation: 'Preferred Location',
   postalCodeFsa: 'Postal Code FSA',
+  cohortName: 'Cohort / PSI',
 };
 
 // Display Data
@@ -45,6 +51,26 @@ const customStyle = makeStyles({
     flexGrow: 1,
   },
 });
+
+// Helper
+const fetchData = ({ setParticipant, setActualParticipant, setPSIList, id, setError }) => {
+  fetchParticipant({ id })
+    .then((resp) => {
+      console.dir(resp);
+      setParticipant(displayData(resp));
+      setActualParticipant(resp);
+      psi()
+        .then((list) => {
+          setPSIList(list);
+        })
+        .catch((err) => {
+          setError(`${err}`);
+        });
+    })
+    .catch((err) => {
+      setError(`${err}`);
+    });
+};
 
 export default () => {
   // History
@@ -90,35 +116,26 @@ export default () => {
   };
 
   // Assign Cohort
-  const assignAction = (cohort) => {
-    openToast({
-      status: ToastStatus.Warning,
-      message: `Assignment of '${cohort.cohort_name}' is not available`,
-    });
+  const assignAction = async (cohort) => {
+    try {
+      await assignParticipantWithCohort({ participantId: id, cohortId: cohort.id });
+      openToast({
+        status: ToastStatus.Success,
+        message: `Participant is assigned to ${cohort.cohort_name}.`,
+      });
+      fetchData({ setParticipant, setPSIList, setActualParticipant, setError, id });
+    } catch (error) {
+      openToast({
+        status: ToastStatus.Error,
+        message: `${error}`,
+      });
+    }
   };
 
   // Rendering Hook
   useEffect(() => {
-    fetchParticipant({ id })
-      .then((resp) => {
-        setParticipant(displayData(resp));
-        setActualParticipant(resp);
-      })
-      .catch((err) => {
-        setError(`${err}`);
-      });
-  }, [setParticipant, setActualParticipant, setError, id]);
-
-  // Render psi table
-  useEffect(() => {
-    psi()
-      .then((list) => {
-        setPSIList(list);
-      })
-      .catch((err) => {
-        setError(`${err}`);
-      });
-  }, [setPSIList]);
+    fetchData({ setParticipant, setPSIList, setActualParticipant, setError, id });
+  }, [setParticipant, setPSIList, setActualParticipant, setError, id]);
 
   // Render
   return (
@@ -176,7 +193,11 @@ export default () => {
               </Grid>
             </Grid>
             <CheckPermissions permittedRoles={['employer', 'health_authority']}>
-              <PSICohortView psiList={psiList} assignAction={assignAction} />
+              <PSICohortView
+                psiList={psiList}
+                assignAction={assignAction}
+                participant={actualParticipant}
+              />
             </CheckPermissions>
           </Card>
         )}

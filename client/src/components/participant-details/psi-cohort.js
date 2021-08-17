@@ -14,6 +14,9 @@ import {
   Redirect,
 } from 'react-router-dom';
 
+// Service
+import { sortPSI } from '../../services';
+
 // Component
 import { PSICohortTable } from './psi-cohort-table';
 
@@ -59,10 +62,19 @@ const CustomTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-const PSIRouteTabs = ({ selectedTab = 'assignCohort', psiList = [], assignAction }) => {
+const PSIRouteTabs = ({
+  selectedTab = 'assignCohort',
+  psiList = [],
+  assignAction,
+  participant = {},
+}) => {
   const history = useHistory();
   const [isLoadingData] = useState(false);
   const [tab, setTab] = useState(selectedTab);
+  const disabled =
+    participant !== null &&
+    participant.cohort !== undefined &&
+    Object.keys(participant.cohort).length > 0;
   return (
     <>
       <CustomTabs
@@ -88,7 +100,7 @@ const PSIRouteTabs = ({ selectedTab = 'assignCohort', psiList = [], assignAction
           render={() => <h1>Work in progress</h1>}
         ></Route>
         <Route exact path={TabDetails.assignCohort.path}>
-          <PSICohortTable rows={psiList} assignAction={assignAction} />
+          <PSICohortTable disabled={disabled} rows={psiList} assignAction={assignAction} />
         </Route>
         <Redirect to='/' />
       </Switch>
@@ -96,13 +108,14 @@ const PSIRouteTabs = ({ selectedTab = 'assignCohort', psiList = [], assignAction
   );
 };
 
-export const PSICohortView = ({ psiList = [], assignAction }) => {
+export const PSICohortView = ({ psiList = [], assignAction, participant }) => {
   const match = useRouteMatch();
   const { tab } = useParams();
   const tabKey = Object.keys(TabDetails).reduce((incoming, key) =>
     TabDetails[key]?.path === `/${tab}` ? key : incoming
   );
   const baseUrl = match.url.split(tab)[0];
+  const sortedList = sortPSI({ psiList, cohort: participant ? participant.cohort : {} });
   return (
     <Grid
       container
@@ -115,8 +128,9 @@ export const PSICohortView = ({ psiList = [], assignAction }) => {
         <Router basename={baseUrl}>
           <PSIRouteTabs
             selectedTab={tabKey}
-            psiList={psiList}
+            psiList={sortedList}
             assignAction={assignAction}
+            participant={participant}
           ></PSIRouteTabs>
         </Router>
       </Box>

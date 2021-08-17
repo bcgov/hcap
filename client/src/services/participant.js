@@ -1,6 +1,11 @@
 import store from 'store';
 import { API_URL } from '../constants';
 
+const getCohortName = (cohort = {}) =>
+  cohort.cohort_name && cohort.psi?.institute_name
+    ? `${cohort.cohort_name} / ${cohort.psi?.institute_name}`
+    : 'Not Assigned';
+
 // Fetch Participant
 export const fetchParticipant = async ({ id }) => {
   const url = `${API_URL}/api/v1/participant?id=${id}`;
@@ -14,9 +19,31 @@ export const fetchParticipant = async ({ id }) => {
   });
   if (resp.ok) {
     const [participant] = await resp.json();
-    return participant;
+    const cohort = await fetchParticipantCohort({ id });
+    return {
+      ...participant,
+      cohort,
+      cohortName: getCohortName(cohort),
+    };
   } else {
     throw new Error('Unable to load participant');
+  }
+};
+
+export const fetchParticipantCohort = async ({ id }) => {
+  const url = `${API_URL}/api/v1/cohorts/assigned-participant/${id}`;
+  const resp = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+  });
+  if (resp.ok) {
+    return await resp.json();
+  } else {
+    throw new Error(`Unable to fetch participant's cohorts details`);
   }
 };
 

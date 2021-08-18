@@ -12,6 +12,13 @@ const getAllPSIWithCohorts = async () => {
         on: {
           psi_id: 'id',
         },
+        participantsCohorts: {
+          relation: collections.COHORT_PARTICIPANTS,
+          type: 'LEFT OUTER',
+          on: {
+            cohort_id: `${collections.COHORTS}.id`,
+          },
+        },
       },
     })
     .find();

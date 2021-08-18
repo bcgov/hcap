@@ -42,7 +42,7 @@ const ExpandableTableRow = ({
   ...otherProps
 }) => {
   const [isExpanded, setIsExpanded] = React.useState(expand);
-
+  console.log('cohorts =>', rows);
   return (
     <>
       <TableRow {...otherProps}>
@@ -55,16 +55,16 @@ const ExpandableTableRow = ({
       </TableRow>
       {isExpanded &&
         rows.map((row) => (
-          <TableRow key={row.id + otherProps.key}>
+          <TableRow key={row.id + 9999}>
             <TableCell align='right'>{'-'}</TableCell>
             <TableCell align='left'>{row.cohort_name}</TableCell>
             <TableCell align='right'>{''}</TableCell>
-            <TableCell align='right'>{row.cohort_size}</TableCell>
+            <TableCell align='right'>{row.availableSize}</TableCell>
             <TableCell align='right'>{''}</TableCell>
             <TableCell align='right'>{formatCohortDate(row.start_date)}</TableCell>
             <TableCell align='right'>
               <Button
-                disabled={isDisabled(row.end_date)}
+                disabled={isDisabled(row.end_date) || row.availableSize <= 0}
                 variant='outlined'
                 color='secondary'
                 onClick={() => assignAction({ ...row, psi })}

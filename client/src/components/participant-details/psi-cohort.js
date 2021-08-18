@@ -106,10 +106,8 @@ const PSIRouteTabs = ({
                 <Typography variant='h3'> Assigning Cohort</Typography>
                 <br />
                 <Typography variant='body1'>
-                  {' '}
-                  This participant has been assigned cohort. To re-assign cohort. Please click on
-                  withdraw cohort to withdraw participant from cohort. After that, you can assign
-                  cohort in "Assigning Cohort"
+                  This participant has already been assigned a cohort. To reassign the cohort,
+                  please click on 'Withdraw Cohort' to withdraw them first.
                 </Typography>
               </Box>
             </div>

@@ -213,9 +213,9 @@ export default () => {
                   <br />
                   <Box>
                     <Typography variant='body2'>
-                      Are you you going to assign this participant to{' '}
-                      <b>{cohortName(selectedCohort)}</b>. Please revise information before taking
-                      action
+                      Are you sure that you would like to assign this participant to{' '}
+                      <b>{cohortName(selectedCohort)}</b>.? Please review the above information
+                      before proceeding. action
                     </Typography>
                   </Box>
                 </DialogContent>

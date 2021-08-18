@@ -3,6 +3,9 @@ import { API_URL } from '../constants';
 
 const baseURL = `${API_URL}/api/v1`;
 
+const getCohortAvailAbleSize = (cohort) =>
+  cohort.cohort_size - (cohort.participantsCohorts?.length || 0);
+
 export const psi = async () => {
   const response = await fetch(`${baseURL}/psi/with-cohorts`, {
     method: 'GET',
@@ -16,7 +19,14 @@ export const psi = async () => {
     const psiList = (await response.json()) || [];
     return psiList.map((psi) => ({
       ...psi,
-      size: psi.cohorts?.reduce((incoming, cohort) => incoming + cohort.cohort_size, 0) || 0,
+      size:
+        psi.cohorts?.reduce((incoming, cohort) => incoming + getCohortAvailAbleSize(cohort), 0) ||
+        0,
+      cohorts:
+        psi.cohorts?.map((cohort) => ({
+          ...cohort,
+          availableSize: getCohortAvailAbleSize(cohort),
+        })) || [],
     }));
   } else {
     throw new Error('Unable to load post secondary institutes');

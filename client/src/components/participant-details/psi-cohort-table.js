@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     minWidth: 650,
   },
   innerRow: {
-    widows: '100%',
+    width: '100%',
     paddingLeft: '100px',
   },
 });

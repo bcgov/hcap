@@ -9,9 +9,8 @@ import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-
-// Child
-import CohortTable from './cohort-table';
+import { Button } from '@material-ui/core';
+import { formatCohortDate } from '../../utils';
 
 const useStyles = makeStyles({
   root: {
@@ -21,11 +20,29 @@ const useStyles = makeStyles({
   table: {
     minWidth: 650,
   },
+  innerRow: {
+    width: '100%',
+    paddingLeft: '100px',
+  },
 });
 
-const ExpandableTableRow = ({ expand = false, children, expandComponent, ...otherProps }) => {
-  const [isExpanded, setIsExpanded] = React.useState(expand);
+const isDisabled = (endDate) => {
+  const today = new Date();
+  const end = new Date(endDate);
+  return end < today;
+};
 
+const ExpandableTableRow = ({
+  expand = false,
+  children,
+  assignAction,
+  rows,
+  expandComponent,
+  psi,
+  ...otherProps
+}) => {
+  const [isExpanded, setIsExpanded] = React.useState(expand);
+  console.log('cohorts =>', rows);
   return (
     <>
       <TableRow {...otherProps}>
@@ -36,12 +53,27 @@ const ExpandableTableRow = ({ expand = false, children, expandComponent, ...othe
         </TableCell>
         {children}
       </TableRow>
-      {isExpanded && (
-        <TableRow>
-          <TableCell />
-          {expandComponent}
-        </TableRow>
-      )}
+      {isExpanded &&
+        rows.map((row) => (
+          <TableRow key={row.id + 9999}>
+            <TableCell align='right'>{'-'}</TableCell>
+            <TableCell align='left'>{row.cohort_name}</TableCell>
+            <TableCell align='right'>{''}</TableCell>
+            <TableCell align='right'>{row.availableSize}</TableCell>
+            <TableCell align='right'>{''}</TableCell>
+            <TableCell align='right'>{formatCohortDate(row.start_date)}</TableCell>
+            <TableCell align='right'>
+              <Button
+                disabled={isDisabled(row.end_date) || row.availableSize <= 0}
+                variant='outlined'
+                color='secondary'
+                onClick={() => assignAction({ ...row, psi })}
+              >
+                Assign
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))}
     </>
   );
 };
@@ -64,8 +96,8 @@ export const PSICohortTable = ({ rows, assignAction, disabled }) => {
               <TableCell>Institute</TableCell>
               <TableCell align='right'>Health Authority</TableCell>
               <TableCell align='right'>Seats</TableCell>
+              <TableCell align='right'>Postal Code</TableCell>
               <TableCell align='right'>Start Date</TableCell>
-              <TableCell align='right'>Postal Codes</TableCell>
               <TableCell align='right'>{''}</TableCell>
             </TableRow>
           </TableHead>
@@ -74,20 +106,18 @@ export const PSICohortTable = ({ rows, assignAction, disabled }) => {
               <ExpandableTableRow
                 expand={index === 0}
                 key={row.id}
-                expandComponent={
-                  <TableCell colSpan='5'>
-                    <CohortTable rows={row.cohorts} assignAction={assignAction} />
-                  </TableCell>
-                }
+                rows={row.cohorts}
+                assignAction={assignAction}
+                psi={row}
               >
                 <TableCell component='th' scope='row'>
                   {row.institute_name}
                 </TableCell>
                 <TableCell align='right'>{row.health_authority}</TableCell>
                 <TableCell align='right'>{row.size}</TableCell>
-                <TableCell align='right'>{''}</TableCell>
-                <TableCell align='right'>{''}</TableCell>
                 <TableCell align='right'>{row.postal_code}</TableCell>
+                <TableCell align='right'>{''}</TableCell>
+                <TableCell align='right'>{''}</TableCell>
               </ExpandableTableRow>
             ))}
           </TableBody>

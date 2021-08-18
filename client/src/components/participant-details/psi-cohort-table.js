@@ -10,10 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { Button } from '@material-ui/core';
-import { dateToString } from '../../utils';
-
-// Child
-// import CohortTable from './cohort-table';
+import { formatCohortDate } from '../../utils';
 
 const useStyles = makeStyles({
   root: {
@@ -64,7 +61,7 @@ const ExpandableTableRow = ({
             <TableCell align='right'>{''}</TableCell>
             <TableCell align='right'>{row.cohort_size}</TableCell>
             <TableCell align='right'>{''}</TableCell>
-            <TableCell align='right'>{dateToString(row.start_date)}</TableCell>
+            <TableCell align='right'>{formatCohortDate(row.start_date)}</TableCell>
             <TableCell align='right'>
               <Button
                 disabled={isDisabled(row.end_date)}
@@ -99,7 +96,7 @@ export const PSICohortTable = ({ rows, assignAction, disabled }) => {
               <TableCell>Institute</TableCell>
               <TableCell align='right'>Health Authority</TableCell>
               <TableCell align='right'>Seats</TableCell>
-              <TableCell align='right'>Postal Codes</TableCell>
+              <TableCell align='right'>Postal Code</TableCell>
               <TableCell align='right'>Start Date</TableCell>
               <TableCell align='right'>{''}</TableCell>
             </TableRow>

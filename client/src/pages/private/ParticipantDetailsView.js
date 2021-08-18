@@ -117,11 +117,6 @@ export default () => {
   // Edit Button flag
   const enableEdit = roles.some((role) => ['ministry_of_health', 'superuser'].includes(role));
 
-  if (!enableEdit) {
-    // Delete cohort name for the employer and HA
-    delete keyLabelMap.cohortName;
-  }
-
   // UI Actions
   // 1. Show edit
   const showEditInfoModal = async () => setShowEditModal(true);
@@ -285,7 +280,7 @@ export default () => {
                 </Button>
               </Grid>
             </Grid>
-            <CheckPermissions permittedRoles={['employer', 'health_authority']}>
+            <CheckPermissions permittedRoles={['health_authority']}>
               {!disableAssign && (
                 <PSICohortView
                   psiList={psiList}

@@ -42,7 +42,6 @@ const ExpandableTableRow = ({
   ...otherProps
 }) => {
   const [isExpanded, setIsExpanded] = React.useState(expand);
-  console.log('cohorts =>', rows);
   return (
     <>
       <TableRow {...otherProps}>

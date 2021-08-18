@@ -84,7 +84,7 @@ const fetchDetails = async (id) => {
   }
 };
 
-export default ({ id, onArchiveParticipantAction, stale, setStale }) => {
+export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => {
   const history = useHistory();
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
@@ -166,7 +166,7 @@ export default ({ id, onArchiveParticipantAction, stale, setStale }) => {
 
   const forceReload = async () => {
     setLoadingData(true);
-    const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}/participants`, {
+    const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
       headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
       method: 'GET',
     });
@@ -215,7 +215,7 @@ export default ({ id, onArchiveParticipantAction, stale, setStale }) => {
   useEffect(() => {
     const fetchParticipants = async () => {
       setLoadingData(true);
-      const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}/participants`, {
+      const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
         headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
         method: 'GET',
       });
@@ -263,7 +263,7 @@ export default ({ id, onArchiveParticipantAction, stale, setStale }) => {
     };
 
     fetchParticipants();
-  }, [id, setRows, setFetchedRows, setFetchedWithdrawnRows, setLoadingData]);
+  }, [siteId, setRows, setFetchedRows, setFetchedWithdrawnRows, setLoadingData]);
 
   const handleArchive = async (participantId, additional = {}) => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions/archive`, {
@@ -300,7 +300,6 @@ export default ({ id, onArchiveParticipantAction, stale, setStale }) => {
   useEffect(() => {
     setRows(selectedTab === 'Hired Participants' ? fetchedRows : fetchedWithdrawnRows);
   }, [fetchedRows, fetchedWithdrawnRows, selectedTab]);
-
   return (
     <Grid
       container

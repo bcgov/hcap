@@ -5,6 +5,8 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { Box, Card, Grid, Link, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
 
 // Libs
 import { useToast } from '../../hooks';
@@ -86,6 +88,9 @@ const fetchData = ({
     });
 };
 
+// Get Cohort name
+const cohortName = (cohort) => `${cohort.cohort_name} / ${cohort.psi?.institute_name}`;
+
 export default () => {
   // History
   const history = useHistory();
@@ -96,6 +101,7 @@ export default () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [psiList, setPSIList] = useState([]);
   const [disableAssign, setDisableAssign] = useState(false);
+  const [selectedCohort, setSelectedCohort] = useState(null);
   // Hook: Toast
   const { openToast } = useToast();
   // Auth context
@@ -110,6 +116,11 @@ export default () => {
   const linkName = page === 'participant' ? 'Participant' : 'Site View';
   // Edit Button flag
   const enableEdit = roles.some((role) => ['ministry_of_health', 'superuser'].includes(role));
+
+  if (!enableEdit) {
+    // Delete cohort name for the employer and HA
+    delete keyLabelMap.cohortName;
+  }
 
   // UI Actions
   // 1. Show edit
@@ -130,8 +141,7 @@ export default () => {
     }
   };
 
-  // Assign Cohort
-  const assignAction = async (cohort) => {
+  const callAssignCohort = async (cohort) => {
     try {
       await assignParticipantWithCohort({ participantId: id, cohortId: cohort.id });
       openToast({
@@ -154,6 +164,11 @@ export default () => {
     }
   };
 
+  // Confirmation Close
+  const onClose = () => {
+    setSelectedCohort(null);
+  };
+
   // Rendering Hook
   useEffect(() => {
     fetchData({ setParticipant, setPSIList, setActualParticipant, setDisableAssign, setError, id });
@@ -170,6 +185,62 @@ export default () => {
         {!participant && !error && <Alert severity='info'>Loading participant details</Alert>}
         {participant && (
           <Card>
+            {selectedCohort !== null && (
+              <Dialog
+                showDivider={true}
+                title='Assign Cohort'
+                open={selectedCohort !== null}
+                onClose={onClose}
+              >
+                <DialogContent>
+                  <Grid container spacing={4}>
+                    <Grid item xs={12}>
+                      <Grid container spacing={1}>
+                        <Grid item xs={4}>
+                          <Typography variant='body1'>Participant Name</Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Typography variant='body2'>{participant.fullName}</Typography>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Grid container spacing={1}>
+                        <Grid item xs={4}>
+                          <Typography variant='body1'>Assign Cohort</Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Typography variant='body2'>{cohortName(selectedCohort)}</Typography>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <br />
+                  <Box>
+                    <Typography variant='body2'>
+                      Are you you going to assign this participant to{' '}
+                      <b>{cohortName(selectedCohort)}</b>. Please revise information before taking
+                      action
+                    </Typography>
+                  </Box>
+                </DialogContent>
+                <DialogActions>
+                  <Button variant='outlined' onClick={onClose} color='primary'>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant='contained'
+                    onClick={() => {
+                      callAssignCohort({ ...selectedCohort });
+                      onClose();
+                    }}
+                    color='primary'
+                  >
+                    Assign
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            )}
             <Box pt={4} pb={2} pl={4} pr={4}>
               <Box pb={4} pl={2}>
                 <Box pb={2}>
@@ -218,7 +289,7 @@ export default () => {
               {!disableAssign && (
                 <PSICohortView
                   psiList={psiList}
-                  assignAction={assignAction}
+                  assignAction={(cohort) => setSelectedCohort(cohort)}
                   participant={actualParticipant}
                 />
               )}

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { Box } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import { Typography, Box } from '@material-ui/core';
 import {
   Route,
   useRouteMatch,
@@ -100,7 +100,23 @@ const PSIRouteTabs = ({
           render={() => <h1>Work in progress</h1>}
         ></Route>
         <Route exact path={TabDetails.assignCohort.path}>
-          <PSICohortTable disabled={disabled} rows={psiList} assignAction={assignAction} />
+          {disabled && (
+            <div>
+              <Box>
+                <Typography variant='h3'> Assigning Cohort</Typography>
+                <br />
+                <Typography variant='body1'>
+                  {' '}
+                  This participant has been assigned cohort. To re-assign cohort. Please click on
+                  withdraw cohort to withdraw participant from cohort. After that, you can assign
+                  cohort in "Assigning Cohort"
+                </Typography>
+              </Box>
+            </div>
+          )}
+          {!disabled && (
+            <PSICohortTable disabled={disabled} rows={psiList} assignAction={assignAction} />
+          )}
         </Route>
         <Redirect to='/' />
       </Switch>

@@ -17,7 +17,6 @@ export default ({ match }) => {
   const [stale, setStale] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const id = match.params.id;
-
   const handleSiteEdit = async (site) => {
     const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
       method: 'PATCH',
@@ -168,6 +167,7 @@ export default ({ match }) => {
               </Box>
               <SiteParticipantsTable
                 id={id}
+                siteId={site.siteId}
                 stale={stale}
                 setStale={setStale}
                 onArchiveParticipantAction={() => {

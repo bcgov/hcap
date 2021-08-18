@@ -2,11 +2,7 @@ const winston = require('winston');
 const { format } = require('winston');
 require('winston-mongodb');
 
-const { timestamp, combine, label } = format;
-
-// ============
-// TODO: Mongo logs to be removed, containers, bc, dc, pvc destroyed
-// ============
+const { timestamp, combine, label, prettyPrint } = format;
 
 const dbServer = process.env.MONGO_HOST;
 const dbPort = process.env.MONGO_PORT || '27017';
@@ -25,7 +21,22 @@ if (dbServer) {
   );
 }
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV === 'local') {
+  winston.add(
+    new winston.transports.Console({
+      format: combine(timestamp(), prettyPrint()),
+    })
+  );
+}
+
+// To be removed once bug is fixed - https://issues.redhat.com/browse/LOG-1575
+if (process.env.NODE_ENV !== 'local') {
+  winston.add(
+    new winston.transports.Console({
+      format: combine(timestamp(), prettyPrint()),
+    })
+  );
+
   winston.add(
     new winston.transports.Console({
       format: combine(label({ label: 'console' }), timestamp(), format.json()),

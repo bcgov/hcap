@@ -124,9 +124,10 @@ export default () => {
   const onUpdateInfo = async (values) => {
     setShowEditModal(false);
     try {
-      const [updatedParticipant] = await updateParticipant(values, actualParticipant);
-      setParticipant(displayData(updatedParticipant));
-      setActualParticipant(updatedParticipant);
+      const [updatedParticipant] = await updateParticipant(values, { ...actualParticipant });
+      const mergedParticipant = { ...actualParticipant, ...updatedParticipant };
+      setParticipant(displayData(mergedParticipant));
+      setActualParticipant(mergedParticipant);
       openToast({
         status: ToastStatus.Info,
         message: `${participant.fullName} is successfully updated`,
@@ -300,7 +301,7 @@ export default () => {
             onClose={() => setShowEditModal(false)}
           >
             <EditParticipantForm
-              initialValues={{ ...actualParticipant }}
+              initialValues={actualParticipant}
               validationSchema={EditParticipantFormSchema}
               onSubmit={onUpdateInfo}
               onClose={() => setShowEditModal(false)}

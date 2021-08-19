@@ -153,7 +153,7 @@ export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => 
       type: SiteDetailTabContext.types.SELECT_TAB,
       payload: { tab: tabs[0], roles },
     });
-  }, [dispatch, roles]);
+  }, [dispatch, roles, siteId]);
 
   const [orderBy, setOrderBy] = useState(columns[4]?.id || 'participantName');
   const handleRequestSort = (event, property) => {

@@ -338,8 +338,7 @@ employerActionsRouter.post(
       user.id,
       req.body.participantId,
       req.body.status,
-      req.body.data,
-      user.isHA
+      req.body.data
     );
     logger.info({
       action: 'employer-actions_post',
@@ -356,7 +355,7 @@ employerActionsRouter.post(
 
 employerActionsRouter.delete(
   '/acknowledgment',
-  keycloak.allowRolesMiddleware('employer'),
+  keycloak.allowRolesMiddleware('employer', 'health_authority'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await deleteAcknowledgement(req.body.id);

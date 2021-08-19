@@ -151,11 +151,11 @@ const withdrawParticipant = async (participantInfo) => {
 const archiveParticipantBySite = async (siteId, participantId, data, userId) => {
   const users = await getHiredParticipantsBySite(siteId);
   if (!users) {
-    return;
+    return false;
   }
   const chosenOne = users.find((user) => user.data.site === siteId);
   if (!chosenOne) {
-    return;
+    return false;
   }
 
   await dbClient.db.withTransaction(async (tx) => {
@@ -193,6 +193,7 @@ const archiveParticipantBySite = async (siteId, participantId, data, userId) => 
     });
     await withdrawParticipant(participant[0]);
   });
+  return true;
 };
 
 const setParticipantStatus = async (

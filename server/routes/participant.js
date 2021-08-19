@@ -311,7 +311,15 @@ employerActionsRouter.post(
   asyncMiddleware(async (req, res) => {
     await validate(ArchiveRequest, req.body);
     const user = req.hcapUserInfo;
-    await archiveParticipantBySite(req.body.site, req.body.participantId, req.body.data, user.id);
+    const success = await archiveParticipantBySite(
+      req.body.site,
+      req.body.participantId,
+      req.body.data,
+      user.id
+    );
+    if (!success) {
+      return res.status(400).json({ message: 'Could not find user' });
+    }
     logger.info({
       action: 'employer-actions_post',
       performed_by: {

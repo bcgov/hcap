@@ -112,7 +112,6 @@ export default () => {
             id: row.id,
             cohorts: rowCohorts.length,
             available_seats: rowCohorts
-              .filter((cohort) => new Date(cohort.end_date) > currentDate)
               .reduce((sum, cohort) => sum + (cohort.cohort_size - cohort.participants.length), 0),
           };
         });

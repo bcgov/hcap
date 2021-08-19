@@ -27,11 +27,26 @@ jobs:
           ${{ secrets.ENVFILE }}
           KEYCLOAK_LOCAL_SECRET=${{ secrets.KEYCLOAK_LOCAL_SECRET }}
           EOF
+
       - name: Build Locally
         run: make local-kc-build && make local-kc-run
 
       - name: Import Users
         run: make kc-import-users
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install Dotenv
+        run: cd server && sudo npm install --no-cache dotenv
+
+      - name: Add Sites
+        run: cd server && POSTGRES_HOST=localhost npm run feed-sites sites.xlsx
+
+      - name: Add Participants
+        run: cd server && POSTGRES_HOST=localhost npm run feed-participants participants.xlsx
 
       - name: Cypress run
         uses: cypress-io/github-action@v2

@@ -199,8 +199,7 @@ const setParticipantStatus = async (
   employerId,
   participantId,
   status,
-  data, // JSONB on the status row
-  isHa = false
+  data // JSONB on the status row
 ) =>
   dbClient.db.withTransaction(async (tx) => {
     if (status === 'pending_acknowledgement') {
@@ -270,17 +269,6 @@ const setParticipantStatus = async (
     if (status === 'archived') {
       // eslint-disable-next-line no-use-before-define
       await withdrawParticipant(participant[0]);
-
-      // Add an ephemeral status to warn
-      if (item?.status === 'hired' && isHa) {
-        await tx[collections.PARTICIPANTS_STATUS].save({
-          employer_id: employerId,
-          participant_id: participantId,
-          status: 'pending_acknowledgement',
-          current: true,
-          data,
-        });
-      }
     }
 
     if (['prospecting', 'interviewing', 'offer_made', 'hired'].includes(status)) {

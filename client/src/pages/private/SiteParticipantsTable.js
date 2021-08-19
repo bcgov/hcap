@@ -275,7 +275,7 @@ export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => 
       },
       body: JSON.stringify({
         participantId,
-        site: parseInt(id),
+        site: parseInt(siteId),
         data: additional,
         status: 'archived',
       }),

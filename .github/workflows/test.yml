@@ -49,6 +49,9 @@ jobs:
       - name: Add Participants
         run: cd server && POSTGRES_HOST=localhost npm run feed-participants participants.xlsx
 
+      - name: Reset PSQL
+        run: export POSTGRES_HOST=postgres
+
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:

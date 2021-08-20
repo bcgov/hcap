@@ -40,6 +40,9 @@ jobs:
         with:
           node-version: '14'
 
+      - name: Install Dotenv
+        run: cd server && sudo npm install --no-cache dotenv
+
       - name: Add Sites
         run: cd server && POSTGRES_HOST=localhost npm run feed-sites sites.xlsx
 

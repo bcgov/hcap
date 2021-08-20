@@ -314,9 +314,7 @@ export default () => {
   };
 
   useEffect(() => {
-    setHideLastNameAndEmailFilter(
-      ['Available Participants', 'Archived Candidates'].includes(selectedTab)
-    );
+    setHideLastNameAndEmailFilter(selectedTab === 'Archived Candidates');
   }, [selectedTab]);
 
   useEffect(() => {

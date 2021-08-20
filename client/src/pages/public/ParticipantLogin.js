@@ -16,6 +16,12 @@ const useStyles = makeStyles((theme) => ({
   blueText: {
     color: theme.palette.primary.light,
   },
+  signInButton: {
+    '&:hover': {
+      backgroundColor: '#EDF6FF',
+      cursor: 'pointer',
+    },
+  },
   blueBox: {
     backgroundColor: '#EDF6FF',
     maxWidth: 554,
@@ -79,6 +85,7 @@ export default () => {
             </Typography>
             <Box
               borderRadius={5}
+              className={classes.signInButton}
               onClick={redirectToLogin}
               border={1}
               borderColor='primary.main'

@@ -22,6 +22,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install Dotenv
+        run: cd server && sudo npm install --no-cache dotenv
+
       - name: Make env
         run: |
           cat > .env << EOF
@@ -35,22 +43,11 @@ jobs:
       - name: Import Users
         run: make kc-import-users
 
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
-      - name: Install Dotenv
-        run: cd server && sudo npm install --no-cache dotenv
-
       - name: Add Sites
         run: cd server && POSTGRES_HOST=localhost npm run feed-sites sites.xlsx
 
       - name: Add Participants
         run: cd server && POSTGRES_HOST=localhost npm run feed-participants participants.xlsx
-
-      - name: Reset PSQL
-        run: export POSTGRES_HOST=postgres
 
       - name: Cypress run
         uses: cypress-io/github-action@v2

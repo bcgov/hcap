@@ -27,6 +27,7 @@ const deleteAcknowledgement = async (participantId) => {
 };
 
 const getHiredParticipantsBySite = async (siteID) => {
+  console.log(siteID)
   const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
       participantJoin: {
@@ -41,7 +42,7 @@ const getHiredParticipantsBySite = async (siteID) => {
       status: 'hired',
       'data.site': String(siteID),
     });
-
+  console.log(participants);
   return participants;
 };
 
@@ -159,11 +160,11 @@ const archiveParticipantBySite = async (siteId, participantId, data, userId) => 
   }
 
   await dbClient.db.withTransaction(async (tx) => {
+
     // Invalidate the old status
     await tx[collections.PARTICIPANTS_STATUS].update(
       {
         id: chosenOne.id,
-        participant_id: participantId,
         current: true,
       },
       { current: false }

@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
   button: {
     color: 'white',
     marginTop: '10px',
+    marginBottom: '10px',
   },
   blueText: {
     color: theme.palette.primary.light,
@@ -74,26 +75,21 @@ export default () => {
               </Typography>
             </Box>
             <Typography>
-              You can use a mobile BC Services Card to sign in to the <br /> Health Care Access
+              You can use a mobile BC Services Card to log in to the <br /> Health Care Access
               Program
             </Typography>
             <Button
-              className = {classes.button}
+              className={classes.button}
+              onClick={redirectToLogin}
+              fullWidth={false}
               variant='contained'
               color='primary'
-              text = {'Login with BC Services Card'}
+              text={'Login with BC Services Card'}
             />
-
-              <Typography variant={'body1'}>
-                You can use your BC Services Card to log in to government services. It's a secure
-                way to prove who you are online.
-              </Typography>
             <Typography variant={'body2'}>
-              For more information on the BC Services Card, including how to set up your mobile BC
-              Services Card visit:&nbsp;
-              <a href='https://www.gov.bc.ca/mobilebcservicescard'>
-                https://www.gov.bc.ca/mobilebcservicescard
-              </a>
+              For more information on the BC Services Card, including how to set up your card,
+              please visit the &nbsp;
+              <a href='https://www.gov.bc.ca/mobilebcservicescard'>BC Services Card website.</a>
             </Typography>
           </Box>
         </Grid>
@@ -113,7 +109,7 @@ export default () => {
             </Typography>
             <Box p={4} mt={2} className={classes.blueBox}>
               <Typography variant={'subtitle2'} className={classes.blueText}>
-                Don't have an account yet
+                Don't have an account yet?
               </Typography>
               <Typography>
                 To start as a health care support worker, you need to submit your expression of

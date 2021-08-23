@@ -58,6 +58,7 @@ const archiveReasonOptions = [
   'Moving out of province',
   'Moved to different profession',
   'Delay initiating education',
+  'Did not meet program requirements',
   'Other',
 ];
 

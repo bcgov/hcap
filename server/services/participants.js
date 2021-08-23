@@ -148,11 +148,13 @@ const withdrawParticipant = async (participantInfo) => {
 };
 
 const archiveParticipantBySite = async (siteId, participantId, data, userId) => {
-  const users = await getHiredParticipantsBySite(siteId);
-  if (!users) {
+  const hiredParticipants = await getHiredParticipantsBySite(siteId);
+  if (!hiredParticipants) {
     return false;
   }
-  const chosenOne = users.find((user) => user.data.site === siteId);
+  const chosenOne = hiredParticipants.find(
+    (hiredParticipant) => hiredParticipant.participant_id === participantId
+  );
   if (!chosenOne) {
     return false;
   }

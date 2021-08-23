@@ -161,7 +161,7 @@ const archiveParticipantBySite = async (siteId, participantId, data, userId) => 
     // Invalidate the old status
     await tx[collections.PARTICIPANTS_STATUS].update(
       {
-        id: chosenOne.id
+        id: chosenOne.id,
       },
       { current: false }
     );

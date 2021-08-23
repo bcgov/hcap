@@ -369,22 +369,13 @@ const getParticipants = async (
   statusFilters
 ) => {
   const participantsFinder = new ParticipantsFinder(dbClient, user);
-  // While an employer, if we add 'open' as one of the status filters we won't
-  // be able to filter lastName and emailAddress. The ideal way would be
-  // creating one more AND/OR clausule to handle edge cases when we need to filter
-  // lastName or email with statuses 'open' AND 'hired', for example. Setting this
-  // as a TODO since there's no such case in the application yet.
-  const filterLastNameAndEmail =
-    user.isSuperUser ||
-    user.isMoH ||
-    ((user.isHA || user.isEmployer) && !statusFilters?.includes('open'));
   const interestFilter = (user.isHA || user.isEmployer) && statusFilters?.includes('open');
   const participants = await participantsFinder
     .filterRegion(regionFilter)
     .filterParticipantFields({
       postalCodeFsa: fsaFilter,
-      lastName: filterLastNameAndEmail && lastNameFilter,
-      emailAddress: filterLastNameAndEmail && emailFilter,
+      lastName: lastNameFilter,
+      emailAddress: emailFilter,
       interestFilter: interestFilter && ['no', 'withdrawn'],
     })
     .filterExternalFields({ statusFilters, siteIdDistance: siteSelector })

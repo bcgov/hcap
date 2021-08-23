@@ -152,7 +152,7 @@ const archiveParticipantBySite = async (siteId, participantId, data, userId) => 
   if (!users) {
     return false;
   }
-  const chosenOne = users.find((user) => user.data.site === siteId);
+  const chosenOne = users.find((user) => user.participant_id === participantId);
   if (!chosenOne) {
     return false;
   }

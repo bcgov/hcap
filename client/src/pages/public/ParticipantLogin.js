@@ -70,30 +70,24 @@ export default () => {
           <Box className={classes.leftContainer}>
             <Box mb={3}>
               <Typography variant='h2'>
-                <b>Sign In</b>
+                <b>Login</b>
               </Typography>
             </Box>
             <Typography>
               You can use a mobile BC Services Card to sign in to the <br /> Health Care Access
               Program
             </Typography>
-            <Box
-              borderRadius={5}
-              onClick={redirectToLogin}
-              border={1}
-              borderColor='primary.main'
-              mt={2}
-              mb={2}
-              p={3}
-            >
-              <Typography variant={'subtitle1'} className={classes.blueText}>
-                <b>Sign in with BC Services Card</b>
-              </Typography>
+            <Button
+              className = {classes.button}
+              variant='contained'
+              color='primary'
+              text = {'Login with BC Services Card'}
+            />
+
               <Typography variant={'body1'}>
                 You can use your BC Services Card to log in to government services. It's a secure
                 way to prove who you are online.
               </Typography>
-            </Box>
             <Typography variant={'body2'}>
               For more information on the BC Services Card, including how to set up your mobile BC
               Services Card visit:&nbsp;

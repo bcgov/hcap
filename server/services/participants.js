@@ -41,7 +41,6 @@ const getHiredParticipantsBySite = async (siteID) => {
       status: 'hired',
       'data.site': String(siteID),
     });
-
   return participants;
 };
 
@@ -163,8 +162,6 @@ const archiveParticipantBySite = async (siteId, participantId, data, userId) => 
     await tx[collections.PARTICIPANTS_STATUS].update(
       {
         id: chosenOne.id,
-        participant_id: participantId,
-        current: true,
       },
       { current: false }
     );

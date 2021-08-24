@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
   button: {
     color: 'white',
     marginTop: '10px',
+    marginBottom: '10px',
   },
   blueText: {
     color: theme.palette.primary.light,
@@ -70,36 +71,25 @@ export default () => {
           <Box className={classes.leftContainer}>
             <Box mb={3}>
               <Typography variant='h2'>
-                <b>Sign In</b>
+                <b>Login</b>
               </Typography>
             </Box>
             <Typography>
-              You can use a mobile BC Services Card to sign in to the <br /> Health Care Access
+              You can use a mobile BC Services Card to log in to the <br /> Health Care Access
               Program
             </Typography>
-            <Box
-              borderRadius={5}
+            <Button
+              className={classes.button}
               onClick={redirectToLogin}
-              border={1}
-              borderColor='primary.main'
-              mt={2}
-              mb={2}
-              p={3}
-            >
-              <Typography variant={'subtitle1'} className={classes.blueText}>
-                <b>Sign in with BC Services Card</b>
-              </Typography>
-              <Typography variant={'body1'}>
-                You can use your BC Services Card to log in to government services. It's a secure
-                way to prove who you are online.
-              </Typography>
-            </Box>
+              fullWidth={false}
+              variant='contained'
+              color='primary'
+              text={'Login with BC Services Card'}
+            />
             <Typography variant={'body2'}>
-              For more information on the BC Services Card, including how to set up your mobile BC
-              Services Card visit:&nbsp;
-              <a href='https://www.gov.bc.ca/mobilebcservicescard'>
-                https://www.gov.bc.ca/mobilebcservicescard
-              </a>
+              For more information on the BC Services Card, including how to set up your card,
+              please visit the &nbsp;
+              <a href='https://www.gov.bc.ca/mobilebcservicescard'>BC Services Card website.</a>
             </Typography>
           </Box>
         </Grid>
@@ -119,7 +109,7 @@ export default () => {
             </Typography>
             <Box p={4} mt={2} className={classes.blueBox}>
               <Typography variant={'subtitle2'} className={classes.blueText}>
-                Don't have an account yet
+                Don't have an account yet?
               </Typography>
               <Typography>
                 To start as a health care support worker, you need to submit your expression of

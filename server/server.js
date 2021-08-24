@@ -45,7 +45,6 @@ app.use(
 app.use(expressAccessLogger);
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
-
 app.use(`${apiBaseUrl}`, apiRouter);
 app.use(errorHandler);
 

@@ -15,3 +15,4 @@ jobs:
           SLACK_WEBHOOK: https://hooks.slack.com/services/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
           SLACK_USERNAME: Deploy-Updates
           SLACK_TITLE: 'Tagged xyz'
+          SLACK_MESSAGE: 'Post Content :rocket:'

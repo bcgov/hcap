@@ -104,6 +104,11 @@ jobs:
           make print-status
           make server-build
           make server-deploy
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: 'Deploy To DEV Complete :rocket:'
       - name: Health Check app
         uses: jtalk/url-health-check-action@v1.5
         with:

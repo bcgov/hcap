@@ -103,3 +103,9 @@ jobs:
           oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
           export OS_NAMESPACE_SUFFIX=${{ env.OS_NAMESPACE_SUFFIX }}
           make server-deploy
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: 'Promote To TEST Complete :rocket:'

@@ -12,6 +12,6 @@ jobs:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_WEBHOOK: https://hooks.slack.com/services/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
+          SLACK_WEBHOOK: https://hooks.slack.com/services/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
           SLACK_USERNAME: Deploy-Updates
           SLACK_TITLE: 'Tagged xyz'

@@ -90,7 +90,7 @@ router.get(
 // Post a new PSI
 router.post(
   '/',
-  keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority'),
   asyncMiddleware(async (req, res) => {
     const { email, user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;

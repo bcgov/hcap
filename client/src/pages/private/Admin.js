@@ -78,7 +78,7 @@ export default () => {
               <CheckPermissions permittedRoles={['ministry_of_health']}>
                 {renderAdminButton(Routes.ReportingView, 'View Milestone Reports')}
               </CheckPermissions>
-              <CheckPermissions permittedRoles={['ministry_of_health']}>
+              <CheckPermissions permittedRoles={['ministry_of_health', 'health_authority']}>
                 {renderAdminButton(Routes.PSIView, 'Manage PSI')}
               </CheckPermissions>
             </Grid>

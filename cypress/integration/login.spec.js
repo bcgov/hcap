@@ -39,7 +39,7 @@ describe('Login', () => {
     cy.contains('View Access Requests').should('not.exist');
     cy.contains('Manage Users').should('not.exist');
     cy.contains('View Milestone Reports').should('not.exist');
-    cy.contains('Manage PSI').should('not.exist');
+    cy.contains('Manage PSI').should('exist');
   });
 
   it('logs in as an employer and tests /admin redirection', () => {

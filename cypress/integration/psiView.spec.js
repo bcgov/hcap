@@ -6,7 +6,12 @@ describe('Tests the PSI View', () => {
   it('Visits the PSI View page as a Health Authority', () => {
     cy.kcLogin('test-ha');
     cy.visit('/psi-view');
-    cy.contains("You don't have permission to view this content.");
+    cy.get('div[aria-label="Health Authority filter"]').click();
+    cy.get('li').contains('Fraser').click();
+    cy.contains('Da Institoot').should('not.exist');
+    cy.get('div[aria-label="Health Authority filter"]').click();
+    cy.get('li').contains('Coastal').click();
+    cy.contains('Da Institoot').should('exist');
   });
 
   it('Visits the PSI View Landing Page', () => {

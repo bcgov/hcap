@@ -6,12 +6,11 @@ describe('Tests the PSI View', () => {
   it('Visits the PSI View page as a Health Authority', () => {
     cy.kcLogin('test-ha');
     cy.visit('/psi-view');
-    cy.get('div[aria-label="Health Authority filter"]').click();
-    cy.get('li').contains('Fraser').click();
-    cy.contains('Da Institoot').should('not.exist');
-    cy.get('div[aria-label="Health Authority filter"]').click();
-    cy.get('li').contains('Coastal').click();
-    cy.contains('Da Institoot').should('exist');
+    cy.contains('th', 'Institute').click();
+    cy.contains('th', 'Health Authority').click();
+    cy.contains('th', 'Available Seats').click();
+    cy.contains('th', 'Cohorts').click();
+    cy.contains('th', 'Postal Code').click();
   });
 
   it('Visits the PSI View Landing Page', () => {

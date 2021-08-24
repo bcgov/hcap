@@ -135,6 +135,10 @@ router.get(
   asyncMiddleware(async (req, res) => {
     const { hcapUserInfo: user, params } = req;
     const { id } = params;
+    if (!parseInt(id, 10)) {
+      // parseInt will return NaN (a falsey value) if it cannot parse the string
+      return res.status(400).json({ error: 'Invalid site id' });
+    }
     const [result] = await getSiteByID(id);
     logger.info({
       action: 'employer-sites-detail_get',

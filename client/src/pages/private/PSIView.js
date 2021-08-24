@@ -127,7 +127,10 @@ export default () => {
   // Render
   return (
     <Page>
-      <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
+      <CheckPermissions
+        permittedRoles={['ministry_of_health', 'health_authority']}
+        renderErrorMessage={true}
+      >
         <Dialog
           title={activeModalForm === 'new-psi' ? `Create New Institute` : `Create New Cohort`}
           open={activeModalForm != null}
@@ -177,7 +180,10 @@ export default () => {
           <Typography variant='subtitle1' align='center' gutterBottom>
             Manage Post-Secondary Institutes
           </Typography>
-          <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+          <CheckPermissions
+            roles={roles}
+            permittedRoles={['ministry_of_health', 'health_authority']}
+          >
             <Grid container item xs={6} md={3} style={{ marginLeft: 'auto', marginRight: 20 }}>
               <Button
                 onClick={async () => {

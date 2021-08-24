@@ -12,7 +12,7 @@ jobs:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_WEBHOOK: https://hooks.slack.com/services/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
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_USERNAME: Deploy-Updates
           SLACK_TITLE: 'Tagged xyz'
           SLACK_MESSAGE: 'Post Content :rocket:'

@@ -102,6 +102,12 @@ export default () => {
         clientId: result.clientId,
       })
     );
+    // Saving all received env variables to store
+    if (result.envVariables && Object.keys(result.envVariables).length > 0) {
+      for (const key of Object.keys(result.envVariables)) {
+        store.set(key, result.envVariables[key]);
+      }
+    }
   };
 
   useEffect(() => {

@@ -101,18 +101,31 @@ app: ## Bash into App container
 # Git Tagging Aliases
 
 tag-dev:
-	@echo "Deploying $(APP_NAME):$(COMMIT_SHA) to dev env"
-	@git tag -fa dev -m "Deploying $(APP_NAME):$(COMMIT_SHA) to dev env" $(COMMIT_SHA)
+ifdef ticket
+	@git tag -fa dev -m "Deploy $(ticket) to DEV env"
+else
+	@echo -e '\nTicket name missing - Example :: make tag-dev ticket=HCAP-ABC \n'
+	@echo -e 'Falling Back to using branch name \n'
+	@git tag -fa dev -m "Deploy $(git rev-parse --abbrev-ref HEAD) to DEV env"
+endif
 	@git push --force origin refs/tags/dev:refs/tags/dev
 
 tag-test:
-	@echo "Deploying $(APP_NAME):$(COMMIT_SHA) to test env"
-	@git tag -fa test -m "Deploying $(APP_NAME):$(COMMIT_SHA) to test env" $(COMMIT_SHA)
+ifdef ticket
+	@git tag -fa test -m "Deploy $(ticket) to TEST env"
+else
+	@echo -e '\nTicket name missing - Example :: make tag-test ticket=HCAP-ABC \n'
+	@echo -e 'Falling Back to using branch name\n'
+endif
 	@git push --force origin refs/tags/test:refs/tags/test
 
 tag-prod:
-	@echo "Deploying $(APP_NAME):$(COMMIT_SHA) to prod env"
-	@git tag -fa prod -m "Deploying $(APP_NAME):$(COMMIT_SHA) to prod env" $(COMMIT_SHA)
+ifdef ticket
+	@git tag -fa prod -m "Deploy $(ticket) to PROD env"
+else
+	@echo -e '\nTicket name missing - Example :: make tag-test ticket=HCAP-ABC \n'
+	@echo -e 'Falling Back to using branch name\n'
+endif
 	@git push --force origin refs/tags/prod:refs/tags/prod
 
 tag-config:

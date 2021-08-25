@@ -72,8 +72,11 @@ jobs:
           export OS_NAMESPACE_SUFFIX=${{ env.OS_NAMESPACE_SUFFIX }}
           make server-deploy
 
+      - name: Set Notification Title
+        run: echo "SLACK_TITLE=$(git tag -l --format='%(contents:subject)' prod)" >> $GITHUB_ENV
+
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: 'Promote To PROD Complete :rocket:'
+          SLACK_MESSAGE: 'Deployment Completed :rocket:'

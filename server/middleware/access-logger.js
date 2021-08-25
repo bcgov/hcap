@@ -2,7 +2,7 @@ const logger = require('../logger');
 
 module.exports = (req, res, next) => {
   res.on('finish', () => {
-    const { path: pathName, method, ip, baseUrl } = req;
+    const { path: pathName, method, ip, baseUrl = '' } = req;
     const { statusCode } = res;
     const skipPaths = [
       'static',
@@ -24,7 +24,8 @@ module.exports = (req, res, next) => {
         sub = null,
         user_id: userId = null,
       } = req.kauth?.grant?.access_token?.content || {};
-      logger[logLevel]('Access Logs: ', {
+      logger[logLevel]({
+        message: 'Access Log',
         path: baseUrl + pathName,
         method,
         ip,

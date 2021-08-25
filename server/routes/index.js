@@ -52,7 +52,14 @@ apiRouter.use('/user-details', userDetailsRouter);
 apiRouter.use('/milestone-report', milestoneReportRouter);
 
 // Return client info for Keycloak realm for the current environment
-apiRouter.get(`/keycloak-realm-client-info`, (req, res) => res.json(keycloak.RealmInfoFrontend()));
+apiRouter.get(`/keycloak-realm-client-info`, (req, res) =>
+  res.json({
+    ...keycloak.RealmInfoFrontend(),
+    envVariables: {
+      APP_ENV: process.env.APP_ENV,
+    },
+  })
+);
 
 // Get pending users from Keycloak
 apiRouter.get(

@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
+import {Grid,Card,Box,Typography,Button ,CardActions} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import store from 'store';
-import Typography from '@material-ui/core/Typography';
 import { Page } from '../../components/generic';
 import { API_URL, Routes } from '../../constants';
+const moment = require('moment')
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme)=>({
   rootContainer: {
     flexGrow: 1,
   },
@@ -30,7 +26,24 @@ const useStyles = makeStyles({
   pos: {
     marginBottom: 12,
   },
-});
+  posBox:{  
+    maxWidth:"80%",
+    paddingTop:50
+  },
+  card:{
+    paddingBottom:10,
+    paddingInline:20
+  },
+  peoiLabel:{
+    color:"#9F9F9F"
+  },
+  idBox:{
+    paddingInline:30,
+    paddingTop:5,
+    paddingBottom:5,
+    marginRight:-20
+  }
+}));
 
 const getParticipants = async () => {
   try {
@@ -57,27 +70,55 @@ export default () => {
   }, [setInterests]);
   return (
     <Page>
-      <Grid container spacing={1}>
+      <Grid className = {classes.posBox} container spacing={2}>
         {interests.map((item, index) => (
-          <Grid key={index} xs={12} sm={6} md={3}>
-            <Card className={classes.root}>
-              <CardContent>
-                <Typography variant='h5' component='h2'>
+          <Grid item={true} key={index} xs={12} sm={6} md={3}>
+            <Card className={classes.card} >
+              <Grid container item xs={12} justify = {"flex-end"}>
+                      <Box className={classes.idBox} bgcolor="primary.main">
+                        <Typography style={{color:'#FFFFFF'}} variant={"subtitle2"}>
+                          {item.id}
+                        </Typography>
+                      </Box>
+                  </Grid>
+              <Grid container spacing={0}>
+                <Grid item xs={12}>
+                <Typography variant={'subtitle2'}>
                   {item.firstName} {item.lastName}
                 </Typography>
-                <Typography className={classes.title} color='textSecondary' gutterBottom>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography className={classes.peoiLabel}>
+                    Contact info
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
                   {item.emailAddress}
-                </Typography>
-                <Typography className={classes.pos} color='textSecondary'>
-                  Region: {item.preferredLocation}
-                </Typography>
-                <Typography variant='body2' component='p'>
-                  Submitted at: {item.submittedAt}
-                </Typography>
-              </CardContent>
-              <CardActions>
+                  <br/>
+                  {item.phoneNumber}
+                </Grid>
+                <Grid  item xs={6}>
+                  <Typography className={classes.peoiLabel}>
+                    Date submitted
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  {moment(item.dateSubmitted).format("MMM DD,YYYY")}
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography className={classes.peoiLabel}>
+                    Status
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  {item.status}
+                </Grid>
+              </Grid>
+              
+              <CardActions justify={'center'}>
                 <Button
                   variant='outlined'
+                  fullWidth={true}
                   onClick={() => {
                     const path = Routes.ParticipantEOI.replace(':id', item.id);
                     history.push(path);

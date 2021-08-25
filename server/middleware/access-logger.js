@@ -25,7 +25,7 @@ module.exports = (req, res, next) => {
         user_id: userId = null,
       } = req.kauth?.grant?.access_token?.content || {};
       logger[logLevel]({
-        message: 'Access Log',
+        context: 'access-log',
         path: baseUrl + pathName,
         method,
         ip,

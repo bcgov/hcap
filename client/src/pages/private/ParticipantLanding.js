@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import {Grid,Card,Box,Typography,Button ,CardActions} from '@material-ui/core';
+import { Link, useHistory } from 'react-router-dom';
+import { Grid, Card, Box, Typography, Button, CardActions, Dialog } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import store from 'store';
 import { Page } from '../../components/generic';
 import { API_URL, Routes } from '../../constants';
-const moment = require('moment')
+import { PEOIWithdrawalDialogForm } from '../../components/modal-forms/PEOIWithdrawalDialogForm';
+const moment = require('moment');
 
-const useStyles = makeStyles((theme)=>({
+const useStyles = makeStyles((theme) => ({
   rootContainer: {
     flexGrow: 1,
   },
@@ -26,23 +27,32 @@ const useStyles = makeStyles((theme)=>({
   pos: {
     marginBottom: 12,
   },
-  posBox:{  
-    maxWidth:"80%",
-    paddingTop:50
+  posBox: {
+    maxWidth: '80%',
+    paddingTop: 50,
   },
-  card:{
-    paddingBottom:10,
-    paddingInline:20
+  card: {
+    paddingBottom: 10,
+    paddingInline: 20,
   },
-  peoiLabel:{
-    color:"#9F9F9F"
+  peoiLabel: {
+    color: '#9F9F9F',
   },
-  idBox:{
-    paddingInline:30,
-    paddingTop:5,
-    paddingBottom:5,
-    marginRight:-20
-  }
+  idBox: {
+    paddingInline: 30,
+    paddingTop: 5,
+    paddingBottom: 5,
+    marginRight: -20,
+  },
+  info: {
+    color: 'rgb(13, 60, 97)',
+    borderRadius: '4px',
+    border: '1px solid rgb(175, 217, 252)',
+    width: '100%',
+    padding: 20,
+    marginTop: 20,
+    marginBottom: 20,
+  },
 }));
 
 const getParticipants = async () => {
@@ -63,58 +73,113 @@ const getParticipants = async () => {
 
 export default () => {
   const [interests, setInterests] = useState([]);
+  const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
   const classes = useStyles();
   const history = useHistory();
+  const submitWithdrawal = (values) => {
+    setShowWithdrawDialog(false);
+  };
+
   useEffect(() => {
     getParticipants().then((items) => setInterests(items));
   }, [setInterests]);
+
   return (
     <Page>
-      <Grid className = {classes.posBox} container spacing={2}>
+      <Dialog open={showWithdrawDialog}>
+        <PEOIWithdrawalDialogForm
+          initialValues={{
+            confirmed: false,
+          }}
+          onClose={() => setShowWithdrawDialog(false)}
+          onSubmit={submitWithdrawal}
+        />
+      </Dialog>
+      <Grid className={classes.posBox} container spacing={2}>
+        <Grid style={{ paddingTop: 10 }} item xs={12}>
+          <Typography variant='h2'>My Profile</Typography>
+          {interests.length && (
+            <Box className={classes.info} style={{ backgroundColor: 'rgb(232, 244, 253)' }}>
+              <Typography variant='subtitle1'>
+                Multiple Particiants Expression of Interest forms Found!
+              </Typography>
+              <Typography>
+                We found some Participant Expression of Interest (PEOI) forms associated with your
+                email. Please go through each of your PEOI and review the details to confirm your
+                interest or withdraw rom the program. To view all the statuses of one PEOI click
+                "View more" under the "Latest status" section.
+              </Typography>
+            </Box>
+          )}
+          <Box
+            className={classes.info}
+            style={{ backgroundColor: '#EEEEEE', borderColor: '#888888' }}
+          >
+            <Typography>
+              If you want to completely withdraw from the program, please click on the "Completely
+              Withdraw" button here.
+              <Button
+                style={{
+                  color: '#FFFFFF',
+                  backgroundColor: '#FF0000',
+                  marginLeft: 20,
+                  paddingInline: 20,
+                }}
+                onClick={() => {
+                  setShowWithdrawDialog(true);
+                }}
+              >
+                Completely Withdraw
+              </Button>
+            </Typography>
+          </Box>
+        </Grid>
+
         {interests.map((item, index) => (
-          <Grid item={true} key={index} xs={12} sm={6} md={3}>
-            <Card className={classes.card} >
-              <Grid container item xs={12} justify = {"flex-end"}>
-                      <Box className={classes.idBox} bgcolor="primary.main">
-                        <Typography style={{color:'#FFFFFF'}} variant={"subtitle2"}>
-                          {item.id}
-                        </Typography>
-                      </Box>
-                  </Grid>
+          <Grid item={true} key={index} xs={12} sm={6} md={4}>
+            <Card className={classes.card}>
+              <Grid container item xs={12} justify={'flex-end'}>
+                <Box className={classes.idBox} bgcolor='primary.main'>
+                  <Typography style={{ color: '#FFFFFF' }} variant={'subtitle2'}>
+                    {item.id}
+                  </Typography>
+                </Box>
+              </Grid>
               <Grid container spacing={0}>
                 <Grid item xs={12}>
-                <Typography variant={'subtitle2'}>
-                  {item.firstName} {item.lastName}
-                </Typography>
+                  <Typography variant={'subtitle2'}>
+                    {item.firstName} {item.lastName}
+                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography className={classes.peoiLabel}>
-                    Contact info
-                  </Typography>
+                  <Typography className={classes.peoiLabel}>Contact info</Typography>
                 </Grid>
                 <Grid item xs={6}>
                   {item.emailAddress}
-                  <br/>
+                  <br />
                   {item.phoneNumber}
                 </Grid>
-                <Grid  item xs={6}>
-                  <Typography className={classes.peoiLabel}>
-                    Date submitted
-                  </Typography>
+                <Grid item xs={6}>
+                  <Typography className={classes.peoiLabel}>Date submitted</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  {moment(item.dateSubmitted).format("MMM DD,YYYY")}
+                  {moment(item.dateSubmitted).format('MMM DD,YYYY')}
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography className={classes.peoiLabel}>
-                    Status
-                  </Typography>
+                  <Typography className={classes.peoiLabel}>Latest Status</Typography>
                 </Grid>
                 <Grid item xs={6}>
                   {item.status}
+                  <Link
+                    to={''}
+                    onClick={() => {
+                      console.log('Click Click');
+                    }}
+                  >
+                    View More
+                  </Link>
                 </Grid>
               </Grid>
-              
               <CardActions justify={'center'}>
                 <Button
                   variant='outlined'

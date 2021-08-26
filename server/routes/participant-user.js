@@ -127,9 +127,10 @@ router.post(
   })
 );
 
-router.post('/withdraw',  
+router.post(
+  '/withdraw',
   asyncMiddleware(async (req, res) => {
-    await withdrawParticipantsByEmail(req.user.user_id,req.user.email);
+    await withdrawParticipantsByEmail(req.user.user_id, req.user.email);
     return res.status(204).send({});
   })
 );

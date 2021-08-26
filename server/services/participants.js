@@ -616,11 +616,19 @@ const getParticipantsForUser = async (userId, email) => {
             user_id: userId,
           },
         },
+        hired: {
+          type: 'LEFT OUTER',
+          relation: collections.PARTICIPANTS_STATUS,
+          on: {
+            participant_id: 'id',
+            current: true,
+            status: 'hired',
+          },
+        },
       })
       .find({
         'mapped.user_id': userId,
       });
-
     // Get all unmapped participant
     const newlyMappedParticipants = await createParticipantUserMap(userId, email, tnx);
     return [...participants, ...newlyMappedParticipants];
@@ -629,6 +637,7 @@ const getParticipantsForUser = async (userId, email) => {
     ...mappedParticipants.body,
     id: mappedParticipants.id,
     submittedAt: mappedParticipants.created_at,
+    hired: mappedParticipants.hired,
   }));
 };
 
@@ -699,35 +708,35 @@ const setParticipantLastUpdated = async (id) => {
   }
 };
 
-
-const withdrawParticipantsByEmail = async (userId,email)=>{
-  if(!email){
-    return; 
+const withdrawParticipantsByEmail = async (userId, email) => {
+  if (!email) {
+    return;
   }
   await dbClient.db.withTransaction(async (tx) => {
     const participants = await getParticipantsForUser(userId, email);
-    await participants.forEach(async(participant)=>{
-      if(participant.interested === 'withdrawn' ){
+    await participants.forEach(async (participant) => {
+      if (participant.interested === 'withdrawn') {
         return;
       }
       const historyObj = {
-        to:"withdrawn",
-        from:participant.interested,
-        field:'interested',
-        timestamp:new Date().toJSON(),
-        note:"Withdrawn by participant"
-      }
-      const newHistory = participant.history? participant.history.push(historyObj):[historyObj]
-      console.log(newHistory);
-      await tx[collections.PARTICIPANTS].updateDoc({id:participant.id},{
-        history:newHistory,
-        interested:'withdrawn',
-        userUpdatedAt: new Date().toJSON(),
-      })
+        to: 'withdrawn',
+        from: participant.interested,
+        field: 'interested',
+        timestamp: new Date().toJSON(),
+        note: 'Withdrawn by participant',
+      };
+      const newHistory = participant.history ? participant.history.push(historyObj) : [historyObj];
+      await tx[collections.PARTICIPANTS].updateDoc(
+        { id: participant.id },
+        {
+          history: newHistory,
+          interested: 'withdrawn',
+          userUpdatedAt: new Date().toJSON(),
+        }
+      );
     });
-
   });
-}
+};
 
 module.exports = {
   archiveParticipantBySite,
@@ -749,5 +758,5 @@ module.exports = {
   withdrawParticipant,
   createChangeHistory,
   deleteAcknowledgement,
-  withdrawParticipantsByEmail
+  withdrawParticipantsByEmail,
 };

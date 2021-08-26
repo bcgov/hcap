@@ -8,7 +8,7 @@ import { API_URL, Routes } from '../../constants';
 import { PEOIWithdrawalDialogForm } from '../../components/modal-forms/PEOIWithdrawalDialogForm';
 const moment = require('moment');
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   rootContainer: {
     flexGrow: 1,
   },
@@ -76,8 +76,8 @@ export default () => {
   const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
   const classes = useStyles();
   const history = useHistory();
-  const submitWithdrawal =async (values) => {
-    if(values.confirmed){
+  const submitWithdrawal = async (values) => {
+    if (values.confirmed) {
       await fetch(`${API_URL}/api/v1/participant-user/withdraw`, {
         method: 'POST',
         headers: {
@@ -146,80 +146,78 @@ export default () => {
         </Grid>
 
         {interests.map((item, index) => {
-        let status = 'Active'
-        let color = '#009BDD';
-        if(item.interested === 'withdrawn'){
-          status = 'Withdrawn'
-          color = "#8C8C8C"
-        }else if (item.hired === true){
-          color = '#17d149'
-          status = 'Hired'
-        }
-        
+          let status = 'Active';
+          let color = '#009BDD';
+          if (item.interested === 'withdrawn') {
+            status = 'Withdrawn';
+            color = '#8C8C8C';
+          } else if (item.hired.length > 0) {
+            color = '#17d149';
+            status = 'Hired';
+          }
 
-        return (
-          <Grid item={true} key={index} xs={12} sm={6} md={4}>
-            <Card className={classes.card}>
-              <Grid container item xs={12} justify={'flex-end'}>
-                <Box className={classes.idBox} bgcolor='primary.main'>
-                  <Typography style={{ color: '#FFFFFF' }} variant={'subtitle2'}>
-                    {item.id}
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid container spacing={0}>
-                <Grid item xs={12}>
-                  <Typography variant={'subtitle2'}>
-                    {item.firstName} {item.lastName}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography className={classes.peoiLabel}>Contact info</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  {item.emailAddress}
-                  <br />
-                  {item.phoneNumber}
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography className={classes.peoiLabel}>Date submitted</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  {moment(item.dateSubmitted).format('MMM DD,YYYY')}
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography className={classes.peoiLabel}>Latest Status</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Box style={{borderRadius:5, marginBlock:'5px', padding:"5px 20px",backgroundColor:color,color:'white'}}>
-                    {status}
+          return (
+            <Grid item={true} key={index} xs={12} sm={6} md={4}>
+              <Card className={classes.card}>
+                <Grid container item xs={12} justify={'flex-end'}>
+                  <Box className={classes.idBox} bgcolor='primary.main'>
+                    <Typography style={{ color: '#FFFFFF' }} variant={'subtitle2'}>
+                      {item.id}
+                    </Typography>
                   </Box>
-                  <Link
-                    to={''}
+                </Grid>
+                <Grid container spacing={0}>
+                  <Grid item xs={12}>
+                    <Typography variant={'subtitle2'}>
+                      {item.firstName} {item.lastName}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography className={classes.peoiLabel}>Contact info</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    {item.emailAddress}
+                    <br />
+                    {item.phoneNumber}
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography className={classes.peoiLabel}>Date submitted</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    {moment(item.dateSubmitted).format('MMM DD,YYYY')}
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography className={classes.peoiLabel}>Latest Status</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Box
+                      style={{
+                        borderRadius: 5,
+                        marginBlock: '5px',
+                        padding: '5px 20px',
+                        backgroundColor: color,
+                        color: 'white',
+                      }}
+                    >
+                      {status}
+                    </Box>
+                  </Grid>
+                </Grid>
+                <CardActions justify={'center'}>
+                  <Button
+                    variant='outlined'
+                    fullWidth={true}
                     onClick={() => {
-                      console.log('Click Click');
+                      const path = Routes.ParticipantEOI.replace(':id', item.id);
+                      history.push(path);
                     }}
                   >
-                    View More
-                  </Link>
-                </Grid>
-              </Grid>
-              <CardActions justify={'center'}>
-                <Button
-                  variant='outlined'
-                  fullWidth={true}
-                  onClick={() => {
-                    const path = Routes.ParticipantEOI.replace(':id', item.id);
-                    history.push(path);
-                  }}
-                >
-                  View PEOI
-                </Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        )
-        
+                    View PEOI
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          );
         })}
       </Grid>
     </Page>

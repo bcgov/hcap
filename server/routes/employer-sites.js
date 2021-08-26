@@ -149,9 +149,9 @@ router.get(
       site_internal_id: result.id,
       site_id: result.siteId,
     });
-    // if (user.isHA && !user.regions.includes(result.healthAuthority)) {
-    //   return res.status(403).json({ error: 'you do not have permissions to view this site' });
-    // }
+    if (user.isHA && !user.regions.includes(result.healthAuthority)) {
+      return res.status(403).json({ error: 'you do not have permissions to view this site' });
+    }
     return res.json(result);
   })
 );

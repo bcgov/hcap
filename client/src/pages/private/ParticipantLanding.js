@@ -76,10 +76,20 @@ export default () => {
   const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
   const classes = useStyles();
   const history = useHistory();
-  const submitWithdrawal = (values) => {
+  const submitWithdrawal =async (values) => {
+    if(values.confirmed){
+      await fetch(`${API_URL}/api/v1/participant-user/withdraw`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${store.get('TOKEN')}`,
+          Accept: 'application/json',
+          'Content-type': 'application/json',
+        },
+      });
+    }
+    await getParticipants().then((items) => setInterests(items));
     setShowWithdrawDialog(false);
   };
-
   useEffect(() => {
     getParticipants().then((items) => setInterests(items));
   }, [setInterests]);
@@ -135,7 +145,19 @@ export default () => {
           </Box>
         </Grid>
 
-        {interests.map((item, index) => (
+        {interests.map((item, index) => {
+        let status = 'Active'
+        let color = '#009BDD';
+        if(item.interested === 'withdrawn'){
+          status = 'Withdrawn'
+          color = "#8C8C8C"
+        }else if (item.hired === true){
+          color = '#17d149'
+          status = 'Hired'
+        }
+        
+
+        return (
           <Grid item={true} key={index} xs={12} sm={6} md={4}>
             <Card className={classes.card}>
               <Grid container item xs={12} justify={'flex-end'}>
@@ -169,7 +191,9 @@ export default () => {
                   <Typography className={classes.peoiLabel}>Latest Status</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  {item.status}
+                  <Box style={{borderRadius:5, marginBlock:'5px', padding:"5px 20px",backgroundColor:color,color:'white'}}>
+                    {status}
+                  </Box>
                   <Link
                     to={''}
                     onClick={() => {
@@ -194,7 +218,9 @@ export default () => {
               </CardActions>
             </Card>
           </Grid>
-        ))}
+        )
+        
+        })}
       </Grid>
     </Page>
   );

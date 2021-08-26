@@ -699,6 +699,36 @@ const setParticipantLastUpdated = async (id) => {
   }
 };
 
+
+const withdrawParticipantsByEmail = async (userId,email)=>{
+  if(!email){
+    return; 
+  }
+  await dbClient.db.withTransaction(async (tx) => {
+    const participants = await getParticipantsForUser(userId, email);
+    await participants.forEach(async(participant)=>{
+      if(participant.interested === 'withdrawn' ){
+        return;
+      }
+      const historyObj = {
+        to:"withdrawn",
+        from:participant.interested,
+        field:'interested',
+        timestamp:new Date().toJSON(),
+        note:"Withdrawn by participant"
+      }
+      const newHistory = participant.history? participant.history.push(historyObj):[historyObj]
+      console.log(newHistory);
+      await tx[collections.PARTICIPANTS].updateDoc({id:participant.id},{
+        history:newHistory,
+        interested:'withdrawn',
+        userUpdatedAt: new Date().toJSON(),
+      })
+    });
+
+  });
+}
+
 module.exports = {
   archiveParticipantBySite,
   setParticipantLastUpdated,
@@ -719,4 +749,5 @@ module.exports = {
   withdrawParticipant,
   createChangeHistory,
   deleteAcknowledgement,
+  withdrawParticipantsByEmail
 };

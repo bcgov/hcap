@@ -32,6 +32,18 @@ router.get(
   })
 );
 
+// Get employer forms
+router.get(
+  `/`,
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const user = req.hcapUserInfo;
+    const result = await getEmployers(user);
+    return res.json({ data: result });
+  })
+);
+
 router.get(
   `/:id`,
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),

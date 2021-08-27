@@ -1,6 +1,8 @@
 name: PRs reviews reminder
 
 on:
+  push:
+    branches: [reminder]
   schedule:
     # Every weekday every 2 hours during working hours, send notification
     - cron: '* * * * *'

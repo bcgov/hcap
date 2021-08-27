@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Grid, Card, Box, Typography, Button, CardActions, Dialog } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import store from 'store';
@@ -108,7 +108,7 @@ export default () => {
       <Grid className={classes.posBox} container spacing={2}>
         <Grid style={{ paddingTop: 10 }} item xs={12}>
           <Typography variant='h2'>My Profile</Typography>
-          {interests.length && (
+          {interests.length > 0 && (
             <Box className={classes.info} style={{ backgroundColor: 'rgb(232, 244, 253)' }}>
               <Typography variant='subtitle1'>
                 Multiple Particiants Expression of Interest forms Found!

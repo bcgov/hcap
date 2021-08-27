@@ -32,6 +32,25 @@ router.get(
   })
 );
 
+function add(numbers) {
+  let result = 0;
+  const parts = numbers.split(',');
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < parts.length; i++) {
+    const integer = parseInt(parts[i], 10);
+    // eslint-disable-next-line no-restricted-globals
+    if (!isNaN(integer)) {
+      if (integer >= 0) {
+        if (integer <= 1000) {
+          result += integer;
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
 // Get employer forms
 router.get(
   `/`,
@@ -40,7 +59,7 @@ router.get(
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
     const result = await getEmployers(user);
-    return res.json({ data: result });
+    return res.json({ data: add('10,11'), result });
   })
 );
 

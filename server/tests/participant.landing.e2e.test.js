@@ -24,23 +24,24 @@ describe('Participant landing e2e', async () => {
     await closeDB();
     await server.close();
   });
-  it('Get participants request is successful ', async () => {
+  // TODO: Re-add these tests when a participant user is added to keycloak in the pipeline
+  it.skip('Get participants request is successful ', async () => {
     const header = await getKeycloakToken(participant);
     const res = await request(app).get('/api/v1/participant-user/participants').set(header);
     expect(res.status).toEqual(200);
   });
-  it('Get participants request is successful ', async () => {
+  it.skip('Get participants request is successful ', async () => {
     const header = await getKeycloakToken(participant);
     await request.agent(app).post('/api/v1/participants').send(form);
     const res = await request(app).get('/api/v1/participant-user/participants').set(header);
     expect(res.body.length).toEqual(1);
   });
-  it('Withdraw a participant should succeed', async () => {
+  it.skip('Withdraw a participant should succeed', async () => {
     const header = await getKeycloakToken(participant);
     const res = await request(app).post('/api/v1/participant-user/withdraw').set(header);
     expect(res.status).toEqual(204);
   });
-  it('Withdraw a participant should succeed', async () => {
+  it.skip('Withdraw a participant should succeed', async () => {
     const header = await getKeycloakToken(participant);
     const res = await request(app).get('/api/v1/participant-user/participants').set(header);
     expect(res.body[0].interested).toEqual('withdrawn');

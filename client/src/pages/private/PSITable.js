@@ -1,12 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography, Link } from '@material-ui/core';
 import { Table, Button } from '../../components/generic';
-import { Routes, psiRegionLabelsMap } from '../../constants';
+import { Routes } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
-import { AuthContext } from '../../providers';
 
 const columns = [
   { id: 'institute_name', name: 'Institutes' },
@@ -22,16 +21,13 @@ export default ({ PSIs, handleAddCohortClick }) => {
   const [rows, setRows] = useState([]);
 
   const [orderBy, setOrderBy] = useState('institute_name');
-  const [healthAuthorities, setHealthAuthorities] = useState([
+  const healthAuthorities = [
     'Interior',
     'Fraser',
     'Vancouver Coastal',
     'Vancouver Island',
     'Northern',
-  ]);
-  const { auth } = AuthContext.useAuth();
-  const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
-
+  ];
   const history = useHistory();
 
   const handleRequestSort = (event, property) => {
@@ -41,16 +37,14 @@ export default ({ PSIs, handleAddCohortClick }) => {
   };
 
   useEffect(() => {
-    setRows(PSIs.filter((row) => healthAuthorities.includes(row.health_authority)));
-  }, [PSIs, healthAuthorities]);
-
-  useEffect(() => {
-    setHealthAuthorities(
-      roles.includes('superuser') || roles.includes('ministry_of_health')
-        ? Object.values(psiRegionLabelsMap)
-        : roles.map((loc) => psiRegionLabelsMap[loc]).filter(Boolean)
+    setRows(
+      PSIs.filter((row) =>
+        ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'].includes(
+          row.health_authority
+        )
+      )
     );
-  }, [roles]);
+  }, [PSIs]);
 
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
 

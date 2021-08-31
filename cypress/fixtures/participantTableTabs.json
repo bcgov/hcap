@@ -27,7 +27,7 @@
       "name": "ministry_of_health",
       "fixture": "test-moh",
       "tabsWithActions": ["Participants"],
-      "allTabs": ["Participants", "Participants"],
+      "allTabs": ["Participants"],
       "tableTabs": {
         "Participants": [
           "ID",

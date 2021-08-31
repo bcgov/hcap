@@ -10,7 +10,7 @@ const { expressAccessLogger } = require('./middleware');
 const apiBaseUrl = '/api/v1';
 const app = express();
 
-if (process.env.NODE_ENV === 'local') {
+if (process.env.NODE_ENV === 'local' || process.env.NODE_ENV === 'test') {
   app.use(cors());
 }
 

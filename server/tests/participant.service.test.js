@@ -13,6 +13,7 @@ const {
   updateParticipant,
   getParticipantsForUser,
   mapUserWithParticipant,
+  withdrawParticipantsByEmail,
 } = require('../services/participants.js');
 const { getReport } = require('../services/reporting.js');
 const { evaluateBooleanAnswer } = require('../validation');
@@ -965,5 +966,61 @@ describe('Participants Service', () => {
     await mapUserWithParticipant(userId, resp.id);
     const result = await getParticipantsForUser(userId, 'eddy2990@example.com');
     expect(result[0].emailAddress).toEqual('eddy2990@example.com');
+  });
+  it('Should withdraw multiple participants', async () => {
+    // Setup
+    const participantData = {
+      lastName: 'Extra',
+      firstName: 'Eddy',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy2990@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Fraser',
+      contactedDate: '09/09/2020',
+    };
+
+    const resp1 = await makeParticipant(participantData);
+    const resp2 = await makeParticipant(participantData);
+
+    const userId = v4();
+
+    await mapUserWithParticipant(userId, resp1.id);
+    await mapUserWithParticipant(userId, resp2.id);
+
+    await withdrawParticipantsByEmail(userId, participantData.emailAddress);
+    const finalParticipants = await getParticipantsForUser(userId, participantData.emailAddress);
+    finalParticipants.forEach((participant) => {
+      expect(participant.interested).toEqual('withdrawn');
+    });
+  });
+  it('Getting participants should return hired data.', async () => {
+    const participantData = {
+      lastName: 'Extra',
+      firstName: 'Eddy',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy2990@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Fraser',
+      contactedDate: '09/09/2020',
+    };
+    const resp = await makeParticipant(participantData);
+
+    const userId = v4();
+    const employerId = v4();
+
+    await mapUserWithParticipant(userId, resp.id);
+    // Hire the user
+    await setParticipantStatus(employerId, resp.id, 'prospecting');
+    await setParticipantStatus(employerId, resp.id, 'interviewing');
+    await setParticipantStatus(employerId, resp.id, 'offer_made');
+    await setParticipantStatus(employerId, resp.id, 'hired');
+    const finalParticipants = await getParticipantsForUser(userId, participantData.emailAddress);
+    expect(Boolean(finalParticipants.find((participant) => participant.hired.length > 0))).toEqual(
+      true
+    );
   });
 });

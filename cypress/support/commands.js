@@ -1,5 +1,4 @@
 // These commands were sourced from the cypress-keycloak-login package
-// XYZ
 const crypto = require('crypto');
 
 const getAuthCodeFromLocation = (location) => {

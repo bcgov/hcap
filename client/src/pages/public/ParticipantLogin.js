@@ -84,6 +84,7 @@ export default () => {
               fullWidth={false}
               variant='contained'
               color='primary'
+              style={{ 'text-transform': 'none' }}
               text={'Login with BC Services Card'}
             />
             <Typography variant={'body2'}>

@@ -60,9 +60,13 @@ local-kc-build:
 	@echo "Building test local app container"
 	@docker-compose -f docker-compose.test.yml build
 
-local-kc-run:
+local-kc-run: local-kc-build
 	@echo "Starting test local app container"
 	@docker-compose -f docker-compose.test.yml up -d
+
+local-kc-run-debug: local-kc-build
+	@echo "Starting test local app container"
+	@docker-compose -f docker-compose.test.yml up
 
 local-kc-down:
 	@echo "Stopping local app container"
@@ -79,6 +83,10 @@ local-close:
 local-clean:
 	@echo "Cleaning local app"
 	@docker-compose -f docker-compose.dev.yml down -v --remove-orphans
+
+local-kc-clean:
+	@echo "Cleaning local app"
+	@docker-compose -f docker-compose.test.yml down -v --remove-orphans
 
 local-server-tests:
 	@/bin/bash .docker/keycloak/import-users.sh

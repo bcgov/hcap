@@ -637,6 +637,9 @@ const ParticipantStatusChange = yup
     status: yup.string().oneOf(participantStatuses, 'Invalid status'),
   });
 
+const RemoveParticipantUser = yup.object().shape({
+  email: yup.string().email('Invalid email address'),
+});
 const ExternalHiredParticipantSchema = yup.object().shape({
   firstName: yup.string().required('First Name is required'),
   lastName: yup.string().required('Last Name is required'),
@@ -861,4 +864,5 @@ module.exports = {
   EditSiteSchema,
   UserParticipantEditSchema,
   ArchiveRequest,
+  RemoveParticipantUser,
 };

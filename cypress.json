@@ -1,5 +1,9 @@
 {
   "baseUrl": "http://hcapemployers.local.freshworks.club:4000",
   "chromeWebSecurity": false,
-  "video": false
+  "video": false,
+  "env": {
+    "apiBaseURL": "http://hcapemployers.local.freshworks.club:8081/api/v1",
+    "participantBaseUrl": "http://hcapparticipants.local.freshworks.club:4000"
+  }
 }

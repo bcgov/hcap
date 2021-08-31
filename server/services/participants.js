@@ -6,6 +6,12 @@ const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
 
+const deleteParticipant = async ({ email }) => {
+  await dbClient.db[collections.PARTICIPANTS].destroy({
+    'body.emailAddress': email,
+  });
+};
+
 const deleteAcknowledgement = async (participantId) => {
   dbClient.db.withTransaction(async (tx) => {
     const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
@@ -759,4 +765,5 @@ module.exports = {
   createChangeHistory,
   deleteAcknowledgement,
   withdrawParticipantsByEmail,
+  deleteParticipant,
 };

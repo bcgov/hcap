@@ -297,5 +297,42 @@
         "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
       }
     ]
+  },
+  {
+    "user": {
+      "id": "6d351475-69a5-49be-8852-160e98fd2b1b",
+      "createdTimestamp": 1625597748925,
+      "username": "test.participant",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": false,
+      "firstName": "Cristiano",
+      "lastName": "Ronaldo",
+      "email": "cristiano.ronaldo@hcap.club",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "notBefore": 0,
+      "attributes": {
+        "user_id": "ec3f8e58-55fd-447b-91c9-56d82e02fae9"
+      },
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": true,
+        "manage": true
+      }
+    },
+    "roles": [
+      {
+        "id": "9238dddb-a541-4b82-87a9-438709259ad3",
+        "name": "participant",
+        "description": "Participant use role",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9",
+        "attributes": {}
+      }
+    ]
   }
 ]

@@ -13,6 +13,7 @@ const {
   validateConfirmationId,
   deleteAcknowledgement,
   archiveParticipantBySite,
+  deleteParticipant,
 } = require('../services/participants.js');
 const {
   validate,
@@ -22,10 +23,12 @@ const {
   ExternalHiredParticipantSchema,
   ParticipantSchema,
   ArchiveRequest,
+  RemoveParticipantUser,
 } = require('../validation.js');
 const keycloak = require('../keycloak.js');
 const logger = require('../logger.js');
 const { asyncMiddleware } = require('../error-handler.js');
+const { expressRequestBodyValidator } = require('../middleware/index.js');
 
 const participantRouter = express.Router();
 const participantsRouter = express.Router();
@@ -251,6 +254,29 @@ participantsRouter.post(
     }
   })
 );
+
+if (process.env.APP_ENV === 'local') {
+  participantsRouter.delete(
+    '/',
+    [
+      keycloak.allowRolesMiddleware('superuser'),
+      expressRequestBodyValidator(RemoveParticipantUser),
+    ],
+    asyncMiddleware(async (req, res) => {
+      const { body: { email } = {} } = req;
+      if (email) {
+        await deleteParticipant({ email });
+        logger.info({
+          action: 'participant-delete',
+          email,
+        });
+        res.status(200).send({});
+      } else {
+        res.status(400).send('Required a valid email address');
+      }
+    })
+  );
+}
 
 // POST new-hired-participant/
 // Add Hired Participant to Database

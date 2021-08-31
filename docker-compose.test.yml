@@ -28,7 +28,7 @@ services:
       args:
         VERSION: ${COMMIT_SHA}
     environment:
-      - APP_ENV=${APP_ENV}
+      - APP_ENV=local
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -59,6 +59,7 @@ services:
         condition: service_healthy
     networks:
       - backend
+    restart: 'always'
 
   postgres:
     image: postgis/postgis:13-3.1-alpine

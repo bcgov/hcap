@@ -18,7 +18,7 @@ export const PEOIWithdrawalDialogForm = ({
 
           <hr />
           <Typography>
-            You are going to withdraw from the program. you will no longer receive news and
+            You are going to withdraw from the program. You will no longer receive news and
             notifications from this program. If you want to join HCAP again, you need to submit
             another Participant Expression of Interest.
           </Typography>

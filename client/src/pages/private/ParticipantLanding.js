@@ -111,13 +111,12 @@ export default () => {
           {interests.length > 0 && (
             <Box className={classes.info} style={{ backgroundColor: 'rgb(232, 244, 253)' }}>
               <Typography variant='subtitle1'>
-                Multiple Particiants Expression of Interest forms Found!
+                Multiple Participant Expression of Interest Forms Found
               </Typography>
               <Typography>
-                We found some Participant Expression of Interest (PEOI) forms associated with your
-                email. Please go through each of your PEOI and review the details to confirm your
-                interest or withdraw rom the program. To view all the statuses of one PEOI click
-                "View more" under the "Latest status" section.
+                We found multiple Participant Expression of Interest (PEOI) forms associated with
+                your email. Please go through each PEOI by clicking "View PEOI" and review the
+                details to confirm your interest or withdraw from the program.
               </Typography>
             </Box>
           )}

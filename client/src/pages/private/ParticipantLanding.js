@@ -6,6 +6,7 @@ import store from 'store';
 import { Page } from '../../components/generic';
 import { API_URL, Routes } from '../../constants';
 import { PEOIWithdrawalDialogForm } from '../../components/modal-forms/PEOIWithdrawalDialogForm';
+import { genericConfirm } from '../../constants/validation';
 const moment = require('moment');
 
 const useStyles = makeStyles(() => ({
@@ -101,8 +102,14 @@ export default () => {
           initialValues={{
             confirmed: false,
           }}
-          onClose={() => setShowWithdrawDialog(false)}
-          onSubmit={submitWithdrawal}
+          validationSchema={genericConfirm}
+          onClose={() => {
+            setShowWithdrawDialog(false);
+          }}
+          onSubmit={async (values) => {
+            await submitWithdrawal(values);
+            history.push(Routes.ParticipantFullWithdraw);
+          }}
         />
       </Dialog>
       <Grid className={classes.posBox} container spacing={2}>
@@ -183,7 +190,7 @@ export default () => {
                     <Typography className={classes.peoiLabel}>Date submitted</Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    {moment(item.dateSubmitted).format('MMM DD,YYYY')}
+                    {moment(item.submittedAt).format('MMM DD,YYYY')}
                   </Grid>
                   <Grid item xs={6}>
                     <Typography className={classes.peoiLabel}>Latest Status</Typography>

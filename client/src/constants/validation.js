@@ -389,6 +389,11 @@ export const EditParticipantFormSchema = yup.object().shape({
   emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
   interested: yup.string().nullable(),
 });
+
+export const genericConfirm = yup.object().shape({
+  confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
+});
+
 export const ArchiveHiredParticipantSchema = yup.object().shape({
   type: yup
     .string()

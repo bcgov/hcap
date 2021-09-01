@@ -725,7 +725,10 @@ const withdrawParticipantsByEmail = async (userId, email) => {
         timestamp: new Date().toJSON(),
         note: 'Withdrawn by participant',
       };
-      const newHistory = participant.history ? participant.history.push(historyObj) : [historyObj];
+      const newHistory =
+        participant.history || !participant.history.push
+          ? participant.history.push(historyObj)
+          : [historyObj];
       await tx[collections.PARTICIPANTS].updateDoc(
         { id: participant.id },
         {

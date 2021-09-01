@@ -12,7 +12,10 @@
     "update:root": "npm i",
     "update:client": "npm i --prefix client",
     "update:server": "npm i --prefix server",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "cypress": "cypress open",
+    "cypress-run": "cypress run --spec",
+    "cypress-e2e": "cypress run --headless"
   },
   "engines": {
     "node": ">=14.0",

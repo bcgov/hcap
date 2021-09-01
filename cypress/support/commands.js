@@ -1,6 +1,4 @@
 // These commands were sourced from the cypress-keycloak-login package
-const utils_1 = require('./utils');
-const { v4 } = require('uuid');
 const crypto = require('crypto');
 
 const getAuthCodeFromLocation = (location) => {
@@ -96,5 +94,42 @@ Cypress.Commands.add('kcLogout', function () {
   let realm = Cypress.env('KEYCLOAK_REALM');
   return cy.request({
     url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/logout`,
+  });
+});
+
+Cypress.Commands.add('callAPI', ({ api, method = 'POST', body, followRedirect = false }) => {
+  Cypress.log({ name: 'call-api' });
+  let realm = Cypress.env('KEYCLOAK_REALM');
+  let client_id = Cypress.env('KEYCLOAK_API_CLIENTID');
+  let client_secret = Cypress.env('KEYCLOAK_LOCAL_SECRET');
+
+  // Get super user token
+  cy.request({
+    method: 'POST',
+    url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/token`,
+    followRedirect: false,
+    form: true,
+    body: {
+      grant_type: 'password',
+      client_id,
+      scope: 'openid',
+      client_secret,
+      username: 'test-superuser',
+      password: 'password',
+    },
+  }).then(({ body: respBody }) => {
+    const accessToken = respBody.access_token;
+    const apiBaseURL = Cypress.env('apiBaseURL');
+    cy.request({
+      url: `${apiBaseURL}${api}`,
+      method,
+      followRedirect,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body,
+    });
   });
 });

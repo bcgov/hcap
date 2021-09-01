@@ -1,0 +1,10 @@
+{
+  "lastName": "Ronaldo",
+  "firstName": "Cristiano",
+  "postalCode": "T2A4A5",
+  "eligibility": true,
+  "phoneNumber": "4038376268",
+  "emailAddress": "cristiano.ronaldo@hcap.club",
+  "preferredLocation": ["Fraser"],
+  "consent": true
+}

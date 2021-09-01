@@ -41,7 +41,7 @@ router.get(
       });
       res.status(200).json(response);
     } else {
-      res.status(401).send('Unauthorized user');
+      res.status(401).send('Unauthorized user: no bcsc user id');
     }
   })
 );

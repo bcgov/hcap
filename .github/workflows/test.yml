@@ -13,6 +13,7 @@ env:
   KEYCLOAK_LOCAL_PASSWORD: ${{ secrets.KEYCLOAK_LOCAL_PASSWORD}}
   KEYCLOAK_LOCAL_AUTH_URL: 'http://keycloak.local.freshworks.club:8080/auth'
   KEYCLOAK_LOCAL_SECRET: ${{ secrets.KEYCLOAK_LOCAL_SECRET }}
+  APP_ENV: local
 jobs:
   tests:
     name: Cypress / Jest
@@ -28,7 +29,7 @@ jobs:
           KEYCLOAK_LOCAL_SECRET=${{ secrets.KEYCLOAK_LOCAL_SECRET }}
           EOF
       - name: Build Locally
-        run: make local-kc-build && make local-kc-run
+        run: make local-kc-run
 
       - name: Import Users
         run: make kc-import-users

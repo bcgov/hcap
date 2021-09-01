@@ -150,7 +150,7 @@ export default () => {
           if (item.interested === 'withdrawn') {
             status = 'Withdrawn';
             color = '#8C8C8C';
-          } else if (item.hired.length > 0) {
+          } else if (item.hired?.length > 0) {
             color = '#17d149';
             status = 'Hired';
           }

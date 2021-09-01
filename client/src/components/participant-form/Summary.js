@@ -10,7 +10,7 @@ const Summary = () => {
       </Typography>
       <Typography variant='body1'>
         Complete this expression of interest form if you want to join the&nbsp;
-        <Link href='http://gov.bc.ca/careersinhealth' target='__blank' rel='noreferrer noopener'>
+        <Link href='https://gov.bc.ca/careersinhealth' target='__blank' rel='noreferrer noopener'>
           Health Career Access Program
         </Link>
       </Typography>

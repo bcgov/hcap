@@ -33,6 +33,7 @@ const ParticipantEOIEdit = lazy(() => import('../pages/private/ParticipantEOI'))
 const ParticipantWithdrawConfirm = lazy(() =>
   import('../pages/private/ParticipantWithdrawConfirm')
 );
+const ParticipantFullWithdraw = lazy(() => import('../pages/private/ParticipantFullWithdrawPage'));
 const ParticipantActionSuccess = lazy(() => import('../pages/private/ParticipantActionSuccess'));
 
 const ParticipantDetails = lazy(() => import('../pages/private/ParticipantDetailsView'));
@@ -156,6 +157,11 @@ export default () => {
               exact
               path={Routes.ParticipantWithdrawConfirm}
               component={ParticipantWithdrawConfirm}
+            />
+            <PrivateRoute
+              exact
+              path={Routes.ParticipantFullWithdraw}
+              component={ParticipantFullWithdraw}
             />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>

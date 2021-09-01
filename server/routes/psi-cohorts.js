@@ -10,7 +10,9 @@ const router = express.Router();
 // Apply setup user middleware
 router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 // Apply role middleware
-router.use(applyMiddleware(keycloak.allowRolesMiddleware('ministry_of_health')));
+router.use(
+  applyMiddleware(keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority'))
+);
 
 // Get all cohorts attached to the given PSI
 router.get(

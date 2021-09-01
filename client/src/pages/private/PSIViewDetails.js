@@ -158,7 +158,10 @@ export default ({ match }) => {
         )}
       </Dialog>
       <Page>
-        <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
+        <CheckPermissions
+          permittedRoles={['ministry_of_health', 'health_authority']}
+          renderErrorMessage={true}
+        >
           <Card>
             <Box pt={4} pb={2} pl={4} pr={4} width={400}>
               <Box pb={4} pl={2}>
@@ -171,7 +174,7 @@ export default ({ match }) => {
                   <Typography variant='h2'>
                     <b>{psi.instituteName}</b>
                   </Typography>
-                  <CheckPermissions permittedRoles={['ministry_of_health']}>
+                  <CheckPermissions permittedRoles={['ministry_of_health', 'health_authority']}>
                     <Box pl={2}>
                       <Button
                         onClick={handleManagePSIClick}

@@ -43,7 +43,8 @@ process.on('SIGTERM', () => {
       logger.info(`Migration success: ${result.name}`);
     });
     server = app.listen(port, '0.0.0.0', async () => {
-      logger.info(`Listening on port ${port}`);
+      logger.info(`Listening on port: ${port}`);
+      logger.info(`APP ENV: ${process.env.APP_ENV}`);
     });
   } catch (err) {
     logger.error('Failed to start server!', err);

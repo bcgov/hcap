@@ -11,6 +11,11 @@ const employer = {
   password: process.env.KC_TEST_EMPLOYER_PWD || 'password',
 };
 
+const participant = {
+  username: 'test-participant',
+  password: 'password',
+};
+
 const getKeycloakToken = async ({ username, password }) => {
   try {
     const data = querystring.stringify({
@@ -38,5 +43,4 @@ const getKeycloakToken = async ({ username, password }) => {
     throw error;
   }
 };
-
-module.exports = { superuser, employer, getKeycloakToken };
+module.exports = { superuser, participant, employer, getKeycloakToken };

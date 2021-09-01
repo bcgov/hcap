@@ -41,7 +41,6 @@ const getHiredParticipantsBySite = async (siteID) => {
       status: 'hired',
       'data.site': String(siteID),
     });
-
   return participants;
 };
 
@@ -149,13 +148,15 @@ const withdrawParticipant = async (participantInfo) => {
 };
 
 const archiveParticipantBySite = async (siteId, participantId, data, userId) => {
-  const users = await getHiredParticipantsBySite(siteId);
-  if (!users) {
-    return;
+  const hiredParticipants = await getHiredParticipantsBySite(siteId);
+  if (!hiredParticipants) {
+    return false;
   }
-  const chosenOne = users.find((user) => user.data.site === siteId);
+  const chosenOne = hiredParticipants.find(
+    (hiredParticipant) => hiredParticipant.participant_id === participantId
+  );
   if (!chosenOne) {
-    return;
+    return false;
   }
 
   await dbClient.db.withTransaction(async (tx) => {
@@ -163,8 +164,6 @@ const archiveParticipantBySite = async (siteId, participantId, data, userId) => 
     await tx[collections.PARTICIPANTS_STATUS].update(
       {
         id: chosenOne.id,
-        participant_id: participantId,
-        current: true,
       },
       { current: false }
     );
@@ -193,14 +192,14 @@ const archiveParticipantBySite = async (siteId, participantId, data, userId) => 
     });
     await withdrawParticipant(participant[0]);
   });
+  return true;
 };
 
 const setParticipantStatus = async (
   employerId,
   participantId,
   status,
-  data, // JSONB on the status row
-  isHa = false
+  data // JSONB on the status row
 ) =>
   dbClient.db.withTransaction(async (tx) => {
     if (status === 'pending_acknowledgement') {
@@ -270,17 +269,6 @@ const setParticipantStatus = async (
     if (status === 'archived') {
       // eslint-disable-next-line no-use-before-define
       await withdrawParticipant(participant[0]);
-
-      // Add an ephemeral status to warn
-      if (item?.status === 'hired' && isHa) {
-        await tx[collections.PARTICIPANTS_STATUS].save({
-          employer_id: employerId,
-          participant_id: participantId,
-          status: 'pending_acknowledgement',
-          current: true,
-          data,
-        });
-      }
     }
 
     if (['prospecting', 'interviewing', 'offer_made', 'hired'].includes(status)) {
@@ -381,22 +369,13 @@ const getParticipants = async (
   statusFilters
 ) => {
   const participantsFinder = new ParticipantsFinder(dbClient, user);
-  // While an employer, if we add 'open' as one of the status filters we won't
-  // be able to filter lastName and emailAddress. The ideal way would be
-  // creating one more AND/OR clausule to handle edge cases when we need to filter
-  // lastName or email with statuses 'open' AND 'hired', for example. Setting this
-  // as a TODO since there's no such case in the application yet.
-  const filterLastNameAndEmail =
-    user.isSuperUser ||
-    user.isMoH ||
-    ((user.isHA || user.isEmployer) && !statusFilters?.includes('open'));
   const interestFilter = (user.isHA || user.isEmployer) && statusFilters?.includes('open');
   const participants = await participantsFinder
     .filterRegion(regionFilter)
     .filterParticipantFields({
       postalCodeFsa: fsaFilter,
-      lastName: filterLastNameAndEmail && lastNameFilter,
-      emailAddress: filterLastNameAndEmail && emailFilter,
+      lastName: lastNameFilter,
+      emailAddress: emailFilter,
       interestFilter: interestFilter && ['no', 'withdrawn'],
     })
     .filterExternalFields({ statusFilters, siteIdDistance: siteSelector })
@@ -637,11 +616,19 @@ const getParticipantsForUser = async (userId, email) => {
             user_id: userId,
           },
         },
+        hired: {
+          type: 'LEFT OUTER',
+          relation: collections.PARTICIPANTS_STATUS,
+          on: {
+            participant_id: 'id',
+            current: true,
+            status: 'hired',
+          },
+        },
       })
       .find({
         'mapped.user_id': userId,
       });
-
     // Get all unmapped participant
     const newlyMappedParticipants = await createParticipantUserMap(userId, email, tnx);
     return [...participants, ...newlyMappedParticipants];
@@ -650,6 +637,7 @@ const getParticipantsForUser = async (userId, email) => {
     ...mappedParticipants.body,
     id: mappedParticipants.id,
     submittedAt: mappedParticipants.created_at,
+    hired: mappedParticipants.hired,
   }));
 };
 
@@ -720,6 +708,36 @@ const setParticipantLastUpdated = async (id) => {
   }
 };
 
+const withdrawParticipantsByEmail = async (userId, email) => {
+  if (!email) {
+    return;
+  }
+  await dbClient.db.withTransaction(async (tx) => {
+    const participants = await getParticipantsForUser(userId, email);
+    await participants.forEach(async (participant) => {
+      if (participant.interested === 'withdrawn') {
+        return;
+      }
+      const historyObj = {
+        to: 'withdrawn',
+        from: participant.interested,
+        field: 'interested',
+        timestamp: new Date().toJSON(),
+        note: 'Withdrawn by participant',
+      };
+      const newHistory = participant.history ? participant.history.push(historyObj) : [historyObj];
+      await tx[collections.PARTICIPANTS].updateDoc(
+        { id: participant.id },
+        {
+          history: newHistory,
+          interested: 'withdrawn',
+          userUpdatedAt: new Date().toJSON(),
+        }
+      );
+    });
+  });
+};
+
 module.exports = {
   archiveParticipantBySite,
   setParticipantLastUpdated,
@@ -740,4 +758,5 @@ module.exports = {
   withdrawParticipant,
   createChangeHistory,
   deleteAcknowledgement,
+  withdrawParticipantsByEmail,
 };

@@ -218,14 +218,11 @@ participantsRouter.post(
 participantsRouter.post(
   `/`,
   asyncMiddleware(async (req, res) => {
-    if (process.env.NODE_ENV !== 'test') {
+    if (process.env.APP_ENV === 'prod') {
       return res.status(400).send({ message: 'This route has been close until further' });
     }
 
     await validate(ParticipantSchema, req.body);
-    if (process.env.NODE_ENV !== 'test') {
-      return res.status(400).send({ message: 'This route has been close until further notice' });
-    }
 
     const participant = {
       ...req.body,
@@ -311,7 +308,15 @@ employerActionsRouter.post(
   asyncMiddleware(async (req, res) => {
     await validate(ArchiveRequest, req.body);
     const user = req.hcapUserInfo;
-    await archiveParticipantBySite(req.body.site, req.body.participantId, req.body.data, user.id);
+    const success = await archiveParticipantBySite(
+      req.body.site,
+      req.body.participantId,
+      req.body.data,
+      user.id
+    );
+    if (!success) {
+      return res.status(400).json({ message: 'Could not find user' });
+    }
     logger.info({
       action: 'employer-actions_post',
       performed_by: {
@@ -338,8 +343,7 @@ employerActionsRouter.post(
       user.id,
       req.body.participantId,
       req.body.status,
-      req.body.data,
-      user.isHA
+      req.body.data
     );
     logger.info({
       action: 'employer-actions_post',
@@ -356,7 +360,7 @@ employerActionsRouter.post(
 
 employerActionsRouter.delete(
   '/acknowledgment',
-  keycloak.allowRolesMiddleware('employer'),
+  keycloak.allowRolesMiddleware('employer', 'health_authority'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await deleteAcknowledgement(req.body.id);

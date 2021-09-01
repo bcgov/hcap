@@ -10,7 +10,7 @@ const { expressAccessLogger } = require('./middleware');
 const apiBaseUrl = '/api/v1';
 const app = express();
 
-if (process.env.NODE_ENV === 'local') {
+if (process.env.NODE_ENV === 'local' || process.env.NODE_ENV === 'test') {
   app.use(cors());
 }
 
@@ -45,7 +45,6 @@ app.use(
 app.use(expressAccessLogger);
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
-
 app.use(`${apiBaseUrl}`, apiRouter);
 app.use(errorHandler);
 

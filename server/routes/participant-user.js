@@ -9,6 +9,7 @@ const {
   createChangeHistory,
   setParticipantLastUpdated,
   withdrawParticipant,
+  withdrawParticipantsByEmail,
 } = require('../services/participants');
 
 const { patchObject } = require('../utils');
@@ -123,6 +124,14 @@ router.post(
     } else {
       res.status(422).send(`No expression of interest with id: ${id}`);
     }
+  })
+);
+
+router.post(
+  '/withdraw',
+  asyncMiddleware(async (req, res) => {
+    await withdrawParticipantsByEmail(req.user.user_id, req.user.email);
+    return res.status(204).send({});
   })
 );
 

@@ -102,7 +102,6 @@ export default () => {
       });
       if (response.ok) {
         const data = await response.json();
-        const currentDate = new Date();
         const mappedData = data.map((row) => {
           const rowCohorts = cohorts.filter((cohort) => cohort.psi_id === row.id);
           // To calculate available_seats, we filter out the expired cohorts and
@@ -111,9 +110,10 @@ export default () => {
             ...row,
             id: row.id,
             cohorts: rowCohorts.length,
-            available_seats: rowCohorts
-              .filter((cohort) => new Date(cohort.end_date) > currentDate)
-              .reduce((sum, cohort) => sum + (cohort.cohort_size - cohort.participants.length), 0),
+            available_seats: rowCohorts.reduce(
+              (sum, cohort) => sum + (cohort.cohort_size - cohort.participants.length),
+              0
+            ),
           };
         });
         setPSIs(mappedData);
@@ -127,7 +127,10 @@ export default () => {
   // Render
   return (
     <Page>
-      <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
+      <CheckPermissions
+        permittedRoles={['ministry_of_health', 'health_authority']}
+        renderErrorMessage={true}
+      >
         <Dialog
           title={activeModalForm === 'new-psi' ? `Create New Institute` : `Create New Cohort`}
           open={activeModalForm != null}
@@ -177,7 +180,10 @@ export default () => {
           <Typography variant='subtitle1' align='center' gutterBottom>
             Manage Post-Secondary Institutes
           </Typography>
-          <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+          <CheckPermissions
+            roles={roles}
+            permittedRoles={['ministry_of_health', 'health_authority']}
+          >
             <Grid container item xs={6} md={3} style={{ marginLeft: 'auto', marginRight: 20 }}>
               <Button
                 onClick={async () => {

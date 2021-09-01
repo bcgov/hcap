@@ -1,10 +1,9 @@
 import React from 'react';
-import { Grid, Typography, Icon } from '@material-ui/core';
+import { Grid, Typography, Icon, Link } from '@material-ui/core';
 import { Button } from '../../components/generic';
 import { Page } from '../../components/generic';
 import { makeStyles } from '@material-ui/core/styles';
-
-import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
+import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import { useHistory } from 'react-router-dom';
 import { Routes } from '../../constants';
 const useStyles = makeStyles((theme) => ({
@@ -64,18 +63,18 @@ export default () => {
         <Button
           text={'Submit Expression of Interest'}
           fullWidth={false}
+          style={{ marginTop: '20px' }}
           onClick={() => history.push(Routes.Base)}
         />
-        <Grid item container className={classes.info}>
+        <Grid item container spacing={2} className={classes.info}>
           <Grid item xs={2}>
-            <Icon mx={2} component={PhoneInTalkIcon} className={classes.icon} />
+            <Icon mx={2} component={MailOutlineIcon} className={classes.icon} />
           </Grid>
           <Grid item xs={10}>
             <Typography variant={'h5'}>Need Help?</Typography>
             <Typography>
               Contact a Health Career Access Program agent. <br />
-              <a href='tel:1-877-374-0463'>Dial 1 877 374 0463</a> <br />
-              Service is available from 8:00am to 4:30 pm Pacific Time.
+              <Link href='mailto:HCAPInfoQuery@gov.bc.ca'>HCAPInfoQuery@gov.bc.ca</Link>
             </Typography>
           </Grid>
         </Grid>

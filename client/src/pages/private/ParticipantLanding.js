@@ -115,7 +115,7 @@ export default () => {
       <Grid className={classes.posBox} container spacing={2}>
         <Grid style={{ paddingTop: 10 }} item xs={12}>
           <Typography variant='h2'>My Profile</Typography>
-          {interests.length > 0 && (
+          {interests.length > 1 && (
             <Box className={classes.info} style={{ backgroundColor: 'rgb(232, 244, 253)' }}>
               <Typography variant='subtitle1'>
                 Multiple Participant Expression of Interest Forms Found

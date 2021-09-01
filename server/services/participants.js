@@ -726,7 +726,7 @@ const withdrawParticipantsByEmail = async (userId, email) => {
         note: 'Withdrawn by participant',
       };
       const newHistory =
-        participant.history || !participant.history.push
+        participant.history && participant.history.push
           ? participant.history.push(historyObj)
           : [historyObj];
       await tx[collections.PARTICIPANTS].updateDoc(

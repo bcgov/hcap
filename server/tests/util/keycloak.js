@@ -12,7 +12,7 @@ const employer = {
 };
 
 const participant = {
-  username: 'test-participant',
+  username: 'test.participant',
   password: 'password',
 };
 
@@ -24,12 +24,13 @@ const getKeycloakToken = async ({ username, password }) => {
       username,
       password,
     });
-    const url = `${process.env.KEYCLOAK_AUTH_URL}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/token`;
+    const authURL = process.env.KEYCLOAK_AUTH_URL;
+    const url = `${authURL}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/token`;
     const config = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } };
     const response = await axios.post(url, data, config);
     return { Authorization: `Bearer ${response.data.access_token}` };
   } catch (error) {
-    logger.error('KC Token fetch error', {
+    logger.error({
       context: `keycloak get token: ${error}`,
       user: {
         username,

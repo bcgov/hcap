@@ -7,8 +7,21 @@ const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
 
 const deleteParticipant = async ({ email }) => {
-  await dbClient.db[collections.PARTICIPANTS].destroy({
-    'body.emailAddress': email,
+  await dbClient.db.withTransaction(async (tnx) => {
+    // Delete entry from participant-user-map
+    await tnx.query(
+      `
+      DELETE FROM ${collections.USER_PARTICIPANT_MAP} 
+      WHERE participant_id IN
+      ( SELECT id FROM ${collections.PARTICIPANTS} 
+        WHERE LOWER(body->>'emailAddress') = LOWER($1)
+      );`,
+      [email]
+    );
+    // Delete actual entry
+    await tnx[collections.PARTICIPANTS].destroy({
+      'body.emailAddress': email,
+    });
   });
 };
 

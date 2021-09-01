@@ -55,7 +55,7 @@ describe('Tests the PSI View', () => {
         cy.contains('Vancouver Coastal').should('exist');
         cy.contains('0').should('exist');
         cy.contains('V6V 7V9').should('exist');
-        cy.get('button').click(); // This will bring up the add cohort menu, eventually
+        cy.get('button').click({ force: true }); // This will bring up the add cohort menu, eventually
       });
   });
 

@@ -334,5 +334,73 @@
         "attributes": {}
       }
     ]
+  },
+  {
+    "user": {
+      "id": "fc2aa6d0-31fb-4bb7-a82c-7bb22c5b5a71",
+      "createdTimestamp": 1625597758925,
+      "username": "test-pending-1",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": false,
+      "firstName": "Test",
+      "lastName": "Pending1",
+      "email": "test.pending1@hcap.club",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "notBefore": 0,
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": true,
+        "manage": true
+      }
+    },
+    "roles": [
+      {
+        "id": "1fb5d3b3-ef4f-422d-8901-1b3e40451534",
+        "name": "pending",
+        "description": "Default role added to new users",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9",
+        "attributes": {}
+      }
+    ]
+  },
+  {
+    "user": {
+      "id": "c82a10c0-dc64-4996-97cf-b87ce15b1b04",
+      "createdTimestamp": 1625597778925,
+      "username": "test-pending-2",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": false,
+      "firstName": "Test",
+      "lastName": "Pending2",
+      "email": "test.pending2@hcap.club",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "notBefore": 0,
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": true,
+        "manage": true
+      }
+    },
+    "roles": [
+      {
+        "id": "1fb5d3b3-ef4f-422d-8901-1b3e40451534",
+        "name": "pending",
+        "description": "Default role added to new users",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9",
+        "attributes": {}
+      }
+    ]
   }
 ]

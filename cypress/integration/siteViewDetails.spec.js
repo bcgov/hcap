@@ -18,7 +18,7 @@ describe('Tests the Site Details View', () => {
     cy.contains('1111')
       .parent('tr')
       .within(() => {
-        cy.get('button').click();
+        cy.get('button').click({ force: true });
       });
     cy.get('button.Mui-selected').should('have.text', 'Site Details');
   });

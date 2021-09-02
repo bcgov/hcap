@@ -37,6 +37,12 @@ migrate-up:
 migrate-down:
 	@npm run migrate down --prefix server
 
+
+copy-sample-data:
+	@echo "++\n Copying server/sample-data to server/scripts/xlsx\n++"
+	@mkdir -p server/scripts/xlsx
+	@cp server/sample-data/* server/scripts/xlsx
+
 seed-participants:
 	@echo "Seeding participants from server/scripts/xlsx"
 	@docker-compose -f docker-compose.dev.yml exec server npm run feed-participants $$SHEET

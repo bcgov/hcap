@@ -30,6 +30,9 @@ jobs:
       - name: Install Dotenv
         run: cd server && sudo npm install --no-cache dotenv
 
+      - name: Copy sample site and participant to exact location
+        run: make copy-sample-data
+
       - name: Make env
         run: |
           cat > .env << EOF

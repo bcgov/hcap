@@ -7,6 +7,7 @@ export const archiveReasonOptions = [
   'Moved to different profession',
   'Delay initiating education',
   'Did not meet program requirements',
+  'Issue with mandatory vaccination',
   'Other',
 ];
 

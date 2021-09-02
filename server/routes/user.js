@@ -46,16 +46,31 @@ userDetailsRouter.patch(
     const { hcapUserInfo: user, body: { userId, role, regions, sites } = {} } = req;
     const { username, id } = user;
     await keycloak.setUserRoles(userId, role, regions);
-    await dbClient.db[collections.USERS].updateDoc(
-      {
+    let action;
+    // Check doc exits or not
+    const existing = await dbClient.db[collections.USERS].findDoc({
+      keycloakId: userId,
+    });
+    if (existing && existing.length > 0) {
+      await dbClient.db[collections.USERS].updateDoc(
+        {
+          keycloakId: userId,
+        },
+        {
+          sites,
+        }
+      );
+      action = 'user-details_patch';
+    } else {
+      await dbClient.db[collections.USERS].saveDoc({
         keycloakId: userId,
-      },
-      {
         sites,
-      }
-    );
+      });
+      action = 'user-details_create';
+    }
+
     logger.info({
-      action: 'user-details_patch',
+      action,
       performed_by: {
         username,
         id,

@@ -181,12 +181,18 @@ participantsRouter.post(
   keycloak.getUserInfoMiddleware(),
   multer({
     fileFilter: (req, file, cb) => {
+      const fileSize = parseInt(req.headers['content-length'], 10);
       if (file.fieldname !== 'file') {
         req.fileError = 'Invalid field name.';
         return cb(null, false);
       }
       if (file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
         return cb(null, true);
+      }
+      // 5MB
+      if (fileSize >= 5116000) {
+        req.fileError = 'File too large';
+        return cb(null, false);
       }
       req.fileError = 'File type not allowed.';
       return cb(null, false);

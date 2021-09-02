@@ -41,7 +41,7 @@ migrate-down:
 copy-sample-data:
 	@echo "++\n Copying server/sample-data to server/scripts/xlsx\n++"
 	@mkdir -p server/scripts/xlsx
-	@cp server/sample-data/* server/scripts/xlsx
+	@cp server/test-data/* server/scripts/xlsx
 
 seed-participants:
 	@echo "Seeding participants from server/scripts/xlsx"

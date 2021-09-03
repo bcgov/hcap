@@ -13,7 +13,7 @@ const employer = {
 
 const participant = {
   username: 'test.participant',
-  password: 'password',
+  password: process.env.KC_TEST_PARTICIPANT_PWD || 'password',
 };
 
 const getKeycloakToken = async ({ username, password }) => {

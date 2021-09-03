@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - xss
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:

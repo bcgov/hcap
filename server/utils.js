@@ -29,4 +29,6 @@ const patchObject = (source, patchableFields) =>
     {}
   );
 
-module.exports = { createRows, verifyHeaders, patchObject };
+const sanitize = (input) => input.trim().escape();
+
+module.exports = { createRows, verifyHeaders, patchObject, sanitize };

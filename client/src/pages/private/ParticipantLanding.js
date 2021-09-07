@@ -7,6 +7,7 @@ import { Page } from '../../components/generic';
 import { API_URL, Routes } from '../../constants';
 import { PEOIWithdrawalDialogForm } from '../../components/modal-forms/PEOIWithdrawalDialogForm';
 import { genericConfirm } from '../../constants/validation';
+import ParticipantLandingEmpty from './ParticipantLandingEmpty';
 const moment = require('moment');
 
 const useStyles = makeStyles(() => ({
@@ -74,6 +75,7 @@ const getParticipants = async () => {
 
 export default () => {
   const [interests, setInterests] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
   const classes = useStyles();
   const history = useHistory();
@@ -92,8 +94,18 @@ export default () => {
     setShowWithdrawDialog(false);
   };
   useEffect(() => {
-    getParticipants().then((items) => setInterests(items));
-  }, [setInterests]);
+    getParticipants().then((items) => {
+      setInterests(items);
+      setIsLoading(false);
+    });
+  }, [setInterests, setIsLoading]);
+  if (!isLoading && interests.length === 0) {
+    return (
+      <Page>
+        <ParticipantLandingEmpty />
+      </Page>
+    );
+  }
 
   return (
     <Page>

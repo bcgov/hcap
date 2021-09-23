@@ -36,7 +36,7 @@ app.use(
         'frame-ancestors': ["'self'"],
         'img-src': ["'self'", 'data:'],
         'object-src': ["'none'"],
-        'script-src': ["'self'", 'https://*.gov.bc.ca'],
+        'script-src': ["'self'"],
         'script-src-attr': ["'none'"],
         'style-src': ["'self'", 'https:'],
         'upgrade-insecure-requests': [],

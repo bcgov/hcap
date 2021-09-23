@@ -38,7 +38,7 @@ app.use(
         'object-src': ["'none'"],
         'script-src': ["'self'"],
         'script-src-attr': ["'none'"],
-        'style-src': ["'self'"],
+        'style-src': ["'self'", "'unsafe-inline'"],
         'upgrade-insecure-requests': [],
         'form-action': ["'self'"],
       },
@@ -56,7 +56,7 @@ app.use((req, res, next) => {
 
 // Disable Option OPTIONS / TRACE
 app.use((req, res, next) => {
-  const blockedMethod = ['options', 'trace'];
+  const blockedMethod = ['options', 'trace', 'track'];
   if (blockedMethod.includes(req.method.toLocaleLowerCase())) {
     return res.end(405, 'Method not allowed');
   }

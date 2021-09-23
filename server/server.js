@@ -51,6 +51,7 @@ app.use((req, res, next) => {
   res.set('Cache-Control', 'no-store');
   res.set('X-XSS-Protection', '1; mode=block');
   res.set('Set-Cookie', 'SameSite=Strict');
+  res.set('Pragma', 'no-cache');
   next();
 });
 

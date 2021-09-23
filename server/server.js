@@ -25,9 +25,9 @@ app.use(
         'default-src': ["'self'"],
         'connect-src': [
           "'self'",
-          'https://*.apps.gov.bc.ca',
           'https://orgbook.gov.bc.ca',
-          'https://*.oidc.gov.bc.ca',
+          'https://dev.oidc.gov.bc.ca',
+          'https://test.oidc.gov.bc.ca',
           'https://oidc.gov.bc.ca',
         ],
         'base-uri': ["'self'"],
@@ -38,13 +38,32 @@ app.use(
         'object-src': ["'none'"],
         'script-src': ["'self'", 'https://*.gov.bc.ca'],
         'script-src-attr': ["'none'"],
-        'style-src': ["'self'", 'https:', "'unsafe-inline'"],
+        'style-src': ["'self'", 'https:'],
         'upgrade-insecure-requests': [],
         'form-action': ["'self'"],
       },
     },
   })
 );
+
+// Adding cache control header and xss-protection header
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-cache');
+  res.set('Cache-Control', 'no-store');
+  res.set('Cache-Control', 'must-revalidate');
+  res.set('X-XSS-Protection', '1; mode=block');
+  res.set('Set-Cookie', 'SameSite=Strict');
+  next();
+});
+
+// Disable Option OPTIONS / TRACE
+app.use((req, res, next) => {
+  const blockedMethod = ['options', 'trace'];
+  if (blockedMethod.includes(req.method.toLocaleLowerCase())) {
+    return res.end(405, 'Method not allowed');
+  }
+  return next();
+});
 
 app.use(expressAccessLogger);
 app.use(bodyParser.json());

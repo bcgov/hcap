@@ -48,9 +48,7 @@ app.use(
 
 // Adding cache control header and xss-protection header
 app.use((req, res, next) => {
-  res.set('Cache-Control', 'no-cache');
   res.set('Cache-Control', 'no-store');
-  res.set('Cache-Control', 'must-revalidate');
   res.set('X-XSS-Protection', '1; mode=block');
   res.set('Set-Cookie', 'SameSite=Strict');
   next();

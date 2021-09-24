@@ -9,7 +9,8 @@ const { expressAccessLogger } = require('./middleware');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
-
+app.disable('x-powered-by');
+app.set('trust proxy');
 if (
   process.env.NODE_ENV === 'local' ||
   process.env.NODE_ENV === 'test' ||

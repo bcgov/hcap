@@ -58,9 +58,9 @@ app.use((req, res, next) => {
 
 // Disable Option OPTIONS / TRACE
 app.use((req, res, next) => {
-  const blockedMethod = ['options', 'trace', 'track'];
-  if (blockedMethod.includes(req.method.toLocaleLowerCase())) {
-    return res.end(405, 'Method not allowed');
+  const allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
+  if (!allowedMethods.includes(req.method.toLocaleLowerCase())) {
+    return res.end(405, 'Method is not allowed');
   }
   return next();
 });

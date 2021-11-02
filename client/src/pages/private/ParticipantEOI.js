@@ -308,7 +308,7 @@ export default () => {
                 initialValues={participant.body}
                 isDisabled={!enableEdit}
                 hideSummary={true}
-                enableFields={['phoneNumber', 'postalCode', 'consent']}
+                enableFields={['phoneNumber', 'postalCode']}
                 onSubmit={onFormSubmit}
                 editMode={true}
               />

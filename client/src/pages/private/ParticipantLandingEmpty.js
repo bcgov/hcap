@@ -45,9 +45,8 @@ export default () => {
             haven't submitted an Expression of Interest form, please click on the button below to
             submit one. For more information, please visit the{' '}
             <Link href='https://www2.gov.bc.ca/gov/content/covid-19/economic-recovery/work-in-health-care'>
-              Health Career Access Program
-            </Link>{' '}
-            website by clicking here.
+              Health Career Access Program website.
+            </Link>
           </Typography>
         </Grid>
 

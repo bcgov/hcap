@@ -83,14 +83,14 @@ app.use(`${apiBaseUrl}`, apiRouter);
 app.get('/', (req, res) => {
   const { cspNonce } = res.locals;
 
-  const html = fs.readFileSync(path.join(__dirname, './build/index.html'), 'utf-8');
+  const html = fs.readFileSync(path.join(__dirname, '../client/build/index.html'), 'utf-8');
 
   let newHTML = html.replace(/<(script|style)/g, `<$1 nonce="${cspNonce}"`);
   newHTML = newHTML.replace(/__CSP_NONCE__/g, `${cspNonce}`);
 
   res.send(newHTML);
 });
-app.use(express.static(path.join(__dirname, './build')));
+app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(errorHandler);
 
 module.exports = app;

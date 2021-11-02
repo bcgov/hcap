@@ -1,6 +1,8 @@
 const cors = require('cors');
+const fs = require('fs');
 const express = require('express');
 const helmet = require('helmet');
+const uuid = require('uuid');
 const bodyParser = require('body-parser');
 const path = require('path');
 const apiRouter = require('./routes');
@@ -18,6 +20,15 @@ if (
 ) {
   app.use(cors());
 }
+
+/**
+ * Apply nonce for use in CSP and static files
+ */
+app.use((req, res, next) => {
+  const nonce = Buffer.from(uuid.v4()).toString('base64');
+  res.locals.cspNonce = nonce;
+  next();
+});
 
 app.use(
   helmet({
@@ -37,9 +48,9 @@ app.use(
         'frame-ancestors': ["'self'"],
         'img-src': ["'self'", 'data:'],
         'object-src': ["'none'"],
-        'script-src': ["'self'"],
+        'script-src': ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
         'script-src-attr': ["'none'"],
-        'style-src': ["'self'", "'unsafe-inline'"],
+        'style-src': ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
         'upgrade-insecure-requests': [],
         'form-action': ["'self'"],
       },
@@ -67,13 +78,19 @@ app.use((req, res, next) => {
 
 app.use(expressAccessLogger);
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(`${apiBaseUrl}`, apiRouter);
-app.use(errorHandler);
-
 // Client app
-if (process.env.NODE_ENV === 'production') {
-  app.get('/*', (req, res) => res.sendFile(path.join(__dirname, '../client/build/index.html')));
-}
+app.get('/', (req, res) => {
+  const { cspNonce } = res.locals;
+
+  const html = fs.readFileSync(path.join(__dirname, '../client/build/index.html'), 'utf-8');
+
+  let newHTML = html.replace(/<(script|style)/g, `<$1 nonce="${cspNonce}"`);
+  newHTML = newHTML.replace(/__CSP_NONCE__/g, `${cspNonce}`);
+
+  res.send(newHTML);
+});
+app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(errorHandler);
 
 module.exports = app;

@@ -1,6 +1,7 @@
 const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
+const uuid = require('uuid');
 const bodyParser = require('body-parser');
 const path = require('path');
 const apiRouter = require('./routes');
@@ -18,6 +19,15 @@ if (
 ) {
   app.use(cors());
 }
+
+/**
+ * Apply nonce for use in CSP and static files
+ */
+app.use((req, res, next) => {
+  const nonce = Buffer.from(uuid.v4()).toString('base64');
+  res.locals.cspNonce = nonce;
+  next();
+});
 
 app.use(
   helmet({
@@ -39,7 +49,7 @@ app.use(
         'object-src': ["'none'"],
         'script-src': ["'self'"],
         'script-src-attr': ["'none'"],
-        'style-src': ["'self'", "'unsafe-inline'"],
+        'style-src': ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
         'upgrade-insecure-requests': [],
         'form-action': ["'self'"],
       },

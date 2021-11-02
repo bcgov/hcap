@@ -43,10 +43,9 @@ export default () => {
             If you think this is a mistake please contact us at{' '}
             <Link href='mailto:HCAPInfoQuery@gov.bc.ca'>HCAPInfoQuery@gov.bc.ca</Link>. If you
             haven't submitted an Expression of Interest form, please click on the button below to
-            submit one. For more information, please visit the Health Career Access Porgram website
-            by{'  '}
+            submit one. For more information, please visit the{' '}
             <Link href='https://www2.gov.bc.ca/gov/content/covid-19/economic-recovery/work-in-health-care'>
-              clicking here.
+              Health Career Access Program website.
             </Link>
           </Typography>
         </Grid>

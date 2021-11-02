@@ -1,4 +1,5 @@
 const cors = require('cors');
+const fs = require('fs');
 const express = require('express');
 const helmet = require('helmet');
 const uuid = require('uuid');
@@ -77,13 +78,18 @@ app.use((req, res, next) => {
 
 app.use(expressAccessLogger);
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(`${apiBaseUrl}`, apiRouter);
-app.use(errorHandler);
-
 // Client app
-if (process.env.NODE_ENV === 'production') {
-  app.get('/*', (req, res) => res.sendFile(path.join(__dirname, '../client/build/index.html')));
-}
+app.get('/', (req, res) => {
+  const { cspNonce } = res.locals;
+
+  const html = fs.readFileSync(path.join(__dirname, './build/index.html'), 'utf-8');
+
+  const newHTML = html.replace(/<(script|style)/g, `<$1 nonce="${cspNonce}"`);
+
+  res.send(newHTML);
+});
+app.use(express.static(path.join(__dirname, './build')));
+app.use(errorHandler);
 
 module.exports = app;

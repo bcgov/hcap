@@ -48,7 +48,7 @@ app.use(
         'frame-ancestors': ["'self'"],
         'img-src': ["'self'", 'data:'],
         'object-src': ["'none'"],
-        'script-src': ["'self'"],
+        'script-src': ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
         'script-src-attr': ["'none'"],
         'style-src': ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
         'upgrade-insecure-requests': [],

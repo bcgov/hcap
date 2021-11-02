@@ -48,9 +48,9 @@ app.use(
         'frame-ancestors': ["'self'"],
         'img-src': ["'self'", 'data:'],
         'object-src': ["'none'"],
-        'script-src': ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
+        'script-src': ["'self'", "'unsafe-inline'"],
         'script-src-attr': ["'none'"],
-        'style-src': ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
+        'style-src': ["'self'", "'unsafe-inline'"],
         'upgrade-insecure-requests': [],
         'form-action': ["'self'"],
       },
@@ -79,8 +79,9 @@ app.use((req, res, next) => {
 app.use(expressAccessLogger);
 app.use(bodyParser.json());
 app.use(`${apiBaseUrl}`, apiRouter);
+
 // Client app
-app.get('/*', (req, res) => {
+const renderContent = (_, res) => {
   const { cspNonce } = res.locals;
 
   const html = fs.readFileSync(path.join(__dirname, '../client/build/index.html'), 'utf-8');
@@ -89,8 +90,12 @@ app.get('/*', (req, res) => {
   newHTML = newHTML.replace(/__CSP_NONCE__/g, `${cspNonce}`);
 
   res.send(newHTML);
-});
+};
+
+app.get('/', renderContent);
 app.use(express.static(path.join(__dirname, '../client/build')));
+app.get('/*', renderContent);
+
 app.use(errorHandler);
 
 module.exports = app;

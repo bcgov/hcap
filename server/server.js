@@ -85,7 +85,8 @@ app.get('/', (req, res) => {
 
   const html = fs.readFileSync(path.join(__dirname, './build/index.html'), 'utf-8');
 
-  const newHTML = html.replace(/<(script|style)/g, `<$1 nonce="${cspNonce}"`);
+  let newHTML = html.replace(/<(script|style)/g, `<$1 nonce="${cspNonce}"`);
+  newHTML = newHTML.replace(/__CSP_NONCE__/g, `${cspNonce}`);
 
   res.send(newHTML);
 });

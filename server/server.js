@@ -1,5 +1,5 @@
 const cors = require('cors');
-const fs = require('fs');
+const { stringReplace } = require('string-replace-middleware');
 const express = require('express');
 const helmet = require('helmet');
 const uuid = require('uuid');
@@ -67,6 +67,7 @@ app.use((req, res, next) => {
   next();
 });
 
+const buildFolder = process.env.NODE_ENV === 'production' ? '../client/build' : './build'; // @todo remove
 // Disable Option OPTIONS / TRACE
 app.use((req, res, next) => {
   const allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
@@ -76,21 +77,25 @@ app.use((req, res, next) => {
   return next();
 });
 
+app.use((req, res, next) => {
+  stringReplace({
+    '<script': `<script nonce='${res.locals.cspNonce}'`,
+    '<style': `<style nonce='${res.locals.cspNonce}'`,
+    __CSP_NONCE__: res.locals.cspNonce,
+  })(req, res, next);
+});
+
 app.use(expressAccessLogger);
+app.use(express.static(path.join(__dirname, buildFolder)));
 app.use(bodyParser.json());
 app.use(`${apiBaseUrl}`, apiRouter);
+
 // Client app
-app.get('/', (req, res) => {
-  const { cspNonce } = res.locals;
 
-  const html = fs.readFileSync(path.join(__dirname, '../client/build/index.html'), 'utf-8');
+if (process.env.NODE_ENV === 'production') {
+  app.get('/*', (req, res) => res.sendFile(path.join(__dirname, buildFolder, '/index.html')));
+}
 
-  let newHTML = html.replace(/<(script|style)/g, `<$1 nonce="${cspNonce}"`);
-  newHTML = newHTML.replace(/__CSP_NONCE__/g, `${cspNonce}`);
-
-  res.send(newHTML);
-});
-app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(errorHandler);
 
 module.exports = app;

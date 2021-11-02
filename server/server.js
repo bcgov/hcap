@@ -80,7 +80,7 @@ app.use(expressAccessLogger);
 app.use(bodyParser.json());
 app.use(`${apiBaseUrl}`, apiRouter);
 // Client app
-app.get('/', (req, res) => {
+app.get('/*', (req, res) => {
   const { cspNonce } = res.locals;
 
   const html = fs.readFileSync(path.join(__dirname, '../client/build/index.html'), 'utf-8');

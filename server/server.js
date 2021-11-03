@@ -67,7 +67,6 @@ app.use((req, res, next) => {
   next();
 });
 
-const buildFolder = process.env.NODE_ENV === 'production' ? '../client/build' : './build'; // @todo remove
 // Disable Option OPTIONS / TRACE
 app.use((req, res, next) => {
   const allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
@@ -77,6 +76,9 @@ app.use((req, res, next) => {
   return next();
 });
 
+/**
+ * Apply nonces to static files
+ */
 app.use((req, res, next) => {
   stringReplace({
     '<script': `<script nonce='${res.locals.cspNonce}'`,
@@ -86,14 +88,14 @@ app.use((req, res, next) => {
 });
 
 app.use(expressAccessLogger);
-app.use(express.static(path.join(__dirname, buildFolder)));
+app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.json());
 app.use(`${apiBaseUrl}`, apiRouter);
 
 // Client app
 
 if (process.env.NODE_ENV === 'production') {
-  app.get('/*', (req, res) => res.sendFile(path.join(__dirname, buildFolder, '/index.html')));
+  app.get('/*', (req, res) => res.sendFile(path.join(__dirname, '../client/build', '/index.html')));
 }
 
 app.use(errorHandler);

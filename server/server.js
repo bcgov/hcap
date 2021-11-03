@@ -72,7 +72,7 @@ const buildFolder = process.env.NODE_ENV === 'production' ? '../client/build' : 
 app.use((req, res, next) => {
   const allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
   if (!allowedMethods.includes(req.method.toLocaleLowerCase())) {
-    return res.end(405, 'Method is not allowed');
+    return res.status(405).send('Method is not allowed');
   }
   return next();
 });

@@ -31,6 +31,7 @@ objects:
       name: ${APP_NAME}-server
       annotations:
         haproxy.router.openshift.io/timeout: 90s
+        haproxy.router.openshift.io/disable_cookies: true
     spec:
       host: ''
       port:

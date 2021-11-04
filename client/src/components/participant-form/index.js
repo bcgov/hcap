@@ -17,6 +17,7 @@ import { scrollUp } from '../../utils';
 import { Button } from '../generic';
 import { Summary } from './Summary';
 import { Fields } from './Fields';
+import { isNonPortalHire } from '../../utils/isNonPortalHire';
 
 export const Form = ({
   initialValues,
@@ -94,7 +95,12 @@ export const Form = ({
             </Box>
 
             <Box pt={2} pb={4} pl={2} pr={2}>
-              <Fields isDisabled={isDisabled} hideHelp={hideSummary} enableFields={enableFields} />
+              <Fields
+                isDisabled={isDisabled}
+                hideHelp={hideSummary}
+                enableFields={enableFields}
+                isNonPortalHire={isNonPortalHire(initialValues)}
+              />
             </Box>
 
             {!isDisabled && (

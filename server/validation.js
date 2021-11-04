@@ -693,16 +693,12 @@ const UserParticipantEditSchema = yup.object().shape({
   postalCode: yup
     .string()
     .nullable()
-    .required()
     .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/),
   postalCodeFsa: yup
     .string()
     .nullable()
     .matches(/^[A-Z]\d[A-Z]$/),
-  phoneNumber: yup
-    .string()
-    .required(errorMessage)
-    .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  phoneNumber: yup.string().matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
 });
 const ParticipantEditSchema = yup
   .object()

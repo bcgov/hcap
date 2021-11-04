@@ -13,7 +13,7 @@ export const indigenousIdentityOptions = {
   UNKNOWN: 'unknown',
 };
 
-export const IndigenousDeclarationForm = () => {
+export const IndigenousDeclarationForm = ({ handleSubmit }) => {
   const initialValues = {
     isIndigenous: null,
     [indigenousIdentityOptions.FIRST_NATIONS]: false,
@@ -21,10 +21,6 @@ export const IndigenousDeclarationForm = () => {
     [indigenousIdentityOptions.METIS]: false,
     [indigenousIdentityOptions.OTHER]: false,
     [indigenousIdentityOptions.UNKNOWN]: false,
-  };
-
-  const handleSubmit = (values) => {
-    // console.log(values);
   };
 
   return (

@@ -704,7 +704,7 @@ const UserParticipantEditSchema = yup.object().shape({
   indigenousIdentities: yup.array().when('isIndigenous', {
     is: true,
     then: yup.array().of(yup.string().oneOf(validIndigenousIdentities, 'Invalid identity')),
-  }),
+  }), 
 });
 
 const ParticipantEditSchema = yup

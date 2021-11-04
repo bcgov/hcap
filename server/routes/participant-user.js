@@ -69,7 +69,13 @@ router.get(
 );
 
 // Update user info
-const patchableFields = ['phoneNumber', 'postalCode', 'postalCodeFsa'];
+const patchableFields = [
+  'phoneNumber',
+  'postalCode',
+  'postalCodeFsa',
+  'isIndigenous',
+  'indigenousIdentities',
+];
 router.patch(
   '/participant/:id',
   asyncMiddleware(async (req, res) => {

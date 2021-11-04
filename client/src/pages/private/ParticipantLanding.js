@@ -14,6 +14,8 @@ import { useToast } from '../../hooks';
 
 const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
 
+const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
+
 const moment = require('moment');
 
 const useStyles = makeStyles(() => ({
@@ -154,6 +156,34 @@ export default () => {
     }
   };
 
+  const updateUserIndigenousIdentities = async (id, values) => {
+    const { isIndigenous, ...submittedIdentities } = values;
+    const identities = Object.entries(submittedIdentities)
+      .map(([identity, selected]) => (selected ? identity : null))
+      .filter(Boolean);
+
+    const response = await fetch(`${rootUrl}/${id}`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        isIndigenous: values.isIndigenous,
+        indigenousIdentities: identities,
+      }),
+    });
+
+    if (response.ok) {
+      await getParticipants().then((items) => setInterests(items));
+    }
+  };
+  const handleIndigenousIdentitySubmission = async (values) => {
+    const ids = interests.map((item) => item.id);
+    await Promise.all(ids.map(async (id) => await updateUserIndigenousIdentities(id, values)));
+  };
+
   return (
     <Page>
       <Dialog open={showWithdrawDialog}>
@@ -173,7 +203,7 @@ export default () => {
       </Dialog>
       <Dialog open={hasEmptyIndigenousQuestions && !hideIndigenousIdentityForm}>
         <IndigenousDeclarationForm handleSubmit={handleIndigenousIdentitySubmission} />
-      </Dialog>
+      </Dialog> 
       <Grid className={classes.posBox} container spacing={2}>
         <Grid style={{ paddingTop: 10 }} item xs={12}>
           <Typography variant='h2'>My Profile</Typography>

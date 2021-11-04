@@ -6,6 +6,7 @@ import {
   minDateString,
   maxDateString,
 } from './archiveParticipantsConstants';
+import { indigenousIdentityOptions } from '../components/modal-forms/IndigenousDeclarationForm';
 
 const healthRegions = ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'];
 
@@ -501,6 +502,31 @@ export const CreatePSISchema = yup.object().shape({
     .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
   healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
 });
+
+export const IndigenousDeclarationSchema = yup.object().shape({
+  isIndigenous: yup.boolean().nullable().required('Please complete this field'),
+  [indigenousIdentityOptions.FIRST_NATIONS]: yup
+    .boolean()
+    .test('identityRequired', 'Please complete this field', validateIdentity),
+  [indigenousIdentityOptions.INUIT]: yup
+    .boolean()
+    .test('identityRequired', 'Please complete this field', validateIdentity),
+  [indigenousIdentityOptions.METIS]: yup
+    .boolean()
+    .test('identityRequired', 'Please complete this field', validateIdentity),
+  [indigenousIdentityOptions.OTHER]: yup
+    .boolean()
+    .test('identityRequired', 'Please complete this field', validateIdentity),
+  [indigenousIdentityOptions.UNKNOWN]: yup
+    .boolean()
+    .test('identityRequired', 'Please complete this field', validateIdentity),
+});
+
+function validateIdentity() {
+  if (!this.parent.isIndigenous) return true;
+  // Following checks if any of the options are false
+  return Object.values(indigenousIdentityOptions).find((key) => this.parent[key]);
+}
 
 export const EditPSISchema = yup.object().shape({
   instituteName: yup.string().required(errorMessage),

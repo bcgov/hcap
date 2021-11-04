@@ -8,6 +8,8 @@ import { API_URL, Routes } from '../../constants';
 import { PEOIWithdrawalDialogForm } from '../../components/modal-forms/PEOIWithdrawalDialogForm';
 import { genericConfirm } from '../../constants/validation';
 import ParticipantLandingEmpty from './ParticipantLandingEmpty';
+import { IndigenousDeclarationForm } from '../../components/modal-forms/IndigenousDeclarationForm';
+
 const moment = require('moment');
 
 const useStyles = makeStyles(() => ({
@@ -107,6 +109,10 @@ export default () => {
     );
   }
 
+  const hasEmptyIndigenousQuestions = interests.find(
+    (item) => item.isIndigenous === null || item.isIndigenous === undefined
+  );
+
   return (
     <Page>
       <Dialog open={showWithdrawDialog}>
@@ -123,6 +129,9 @@ export default () => {
             history.push(Routes.ParticipantFullWithdraw);
           }}
         />
+      </Dialog>
+      <Dialog open={hasEmptyIndigenousQuestions}>
+        <IndigenousDeclarationForm />
       </Dialog>
       <Grid className={classes.posBox} container spacing={2}>
         <Grid style={{ paddingTop: 10 }} item xs={12}>

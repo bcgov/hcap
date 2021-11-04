@@ -84,6 +84,20 @@ export default createMuiTheme({
       letterSpacing: 'normal',
       color: '#000000',
     },
+    h4: {
+      fontWeight: 600,
+      fontSize: '20px',
+      lineHeight: '24px',
+      letterSpacing: 'normal',
+      color: '#000000',
+    },
+    h5: {
+      fontWeight: 400,
+      fontSize: '18px',
+      lineHeight: '22px',
+      letterSpacing: 'normal',
+      color: '#000000',
+    },
     subtitle1: {
       fontWeight: 500,
       fontSize: '20px',

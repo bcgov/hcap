@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Fields = ({ isDisabled, hideHelp, enableFields }) => {
+export const Fields = ({ isDisabled, hideHelp, enableFields, isNonPortalHire }) => {
   const classes = useStyles();
   const [isCollectionNoticeExpanded, setCollectionNoticeExpanded] = useState(
     window.innerWidth > 750
@@ -76,24 +76,29 @@ export const Fields = ({ isDisabled, hideHelp, enableFields }) => {
               health sector.
             </Typography>
           </Grid>
-          <Grid item xs={12}>
-            <Typography>
-              <b>* Are you a Canadian citizen or permanent resident?</b>
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <FastField
-              name='eligibility'
-              component={RenderRadioGroup}
-              disabled={checkFieldDisability('eligibility')}
-              setTouched
-              row
-              options={[
-                { value: true, label: 'Yes' },
-                { value: false, label: 'No' },
-              ]}
-            />
-          </Grid>
+
+          {isNonPortalHire ? null : (
+            <>
+              <Grid item xs={12}>
+                <Typography>
+                  <b>* Are you a Canadian citizen or permanent resident?</b>
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <FastField
+                  name='eligibility'
+                  component={RenderRadioGroup}
+                  disabled={checkFieldDisability('eligibility')}
+                  setTouched
+                  row
+                  options={[
+                    { value: true, label: 'Yes' },
+                    { value: false, label: 'No' },
+                  ]}
+                />
+              </Grid>
+            </>
+          )}
 
           {/** Contact Info */}
           <Grid item xs={12}>
@@ -242,19 +247,21 @@ export const Fields = ({ isDisabled, hideHelp, enableFields }) => {
 
         {/** Disclaimer and submission */}
         <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <hr className={classes.line} />
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <FastField
-                  name='consent'
-                  disabled={checkFieldDisability('consent')}
-                  component={RenderCheckbox}
-                  label='I consent to have my personal information shared with the Health Career Access Program.'
-                />
+          {isNonPortalHire ? null : (
+            <Grid item xs={12}>
+              <hr className={classes.line} />
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <FastField
+                    name='consent'
+                    disabled={checkFieldDisability('consent')}
+                    component={RenderCheckbox}
+                    label='I consent to have my personal information shared with the Health Career Access Program.'
+                  />
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
+          )}
           <Grid item xs={12}>
             <Typography variant='body1' gutterBottom>
               <b>Collection Notice</b>

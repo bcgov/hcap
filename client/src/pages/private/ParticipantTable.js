@@ -378,117 +378,117 @@ export default () => {
   const isAdmin = roles.includes('ministry_of_health') || roles.includes('superuser');
   const isEmployer = roles.includes('health_authority') || roles.includes('employer');
   const renderCell = (columnId, row) => {
-    if (
-      columnId === 'lastName' &&
-      (isAdmin || (isEmployer && selectedTab === 'Hired Candidates'))
-    ) {
-      return (
-        <Link
-          component='button'
-          variant='body2'
-          onClick={() => {
-            const { id } = row;
-            const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
-              id,
-              page: 'participant',
-            });
-            history.push(participantDetailsPath);
-          }}
-        >
-          {row[columnId]}
-        </Link>
-      );
-    }
-    if (columnId === 'callbackStatus') {
-      return row[columnId] ? 'Primed' : 'Available';
-    }
-    if (columnId === 'status') {
-      return prettifyStatus(row[columnId], row.id, selectedTab, handleEngage, handleAcknowledge);
-    }
-    if (columnId === 'distance') {
-      if (row[columnId] !== null && row[columnId] !== undefined) {
-        return `${math.round(row[columnId] / 1000) || '<1'} Km`;
-      }
-      return 'N/A';
-    }
-    if (columnId === 'engage') {
-      const engage =
+    switch(columnId){
+      case 'lastName':
+        if(isAdmin || (isEmployer && selectedTab === 'Hired Candidates')){
+          return (<Link
+              component='button'
+              variant='body2'
+              onClick={() => {
+                const { id } = row;
+                const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
+                  id,
+                  page: 'participant',
+                });
+                history.push(participantDetailsPath);
+              }}
+            >
+              {row[columnId]}
+            </Link>
+          );
+        }
+        break;
+      case 'callbackStatus':
+        return row[columnId] ? 'Primed' : 'Available';
+      case 'status':
+        return prettifyStatus(row[columnId], row.id, selectedTab, handleEngage, handleAcknowledge);
+      case 'distance':
+        if (row[columnId] !== null && row[columnId] !== undefined) {
+          return `${math.round(row[columnId] / 1000) || '<1'} Km`;
+        }
+        return 'N/A';
+      case 'engage':
+        const engage =
         !row.status.includes('already_hired') &&
         !row.status.includes('withdrawn') &&
         !row.status.includes('archived');
 
-      return (
-        engage && (
+        return (
+          engage && (
+            <Button
+              onClick={(event) => {
+                setActionMenuParticipant(row[columnId]);
+                setAnchorElement(event.currentTarget);
+              }}
+              variant='outlined'
+              size='small'
+              text='Actions'
+            />
+          )
+        );
+      case 'edit':
+        return (
           <Button
-            onClick={(event) => {
-              setActionMenuParticipant(row[columnId]);
+            onClick={async (event) => {
+              // Get data from row.id
+              const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
+                headers: {
+                  Accept: 'application/json',
+                  'Content-type': 'application/json',
+                  Authorization: `Bearer ${store.get('TOKEN')}`,
+                },
+                method: 'GET',
+              });
+  
+              const participant = await response.json();
+              if (participant[0].postalCode === undefined) {
+                participant[0].postalCode = '';
+              }
+              setActionMenuParticipant(participant[0]);
+              setActiveModalForm('edit-participant');
               setAnchorElement(event.currentTarget);
             }}
             variant='outlined'
             size='small'
-            text='Actions'
+            text='Edit'
           />
-        )
-      );
-    }
-    if (columnId === 'edit') {
-      return (
-        <Button
-          onClick={async (event) => {
-            // Get data from row.id
-            const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
-              headers: {
-                Accept: 'application/json',
-                'Content-type': 'application/json',
-                Authorization: `Bearer ${store.get('TOKEN')}`,
-              },
-              method: 'GET',
-            });
-
-            const participant = await response.json();
-            if (participant[0].postalCode === undefined) {
-              participant[0].postalCode = '';
-            }
-            setActionMenuParticipant(participant[0]);
-            setActiveModalForm('edit-participant');
-            setAnchorElement(event.currentTarget);
-          }}
-          variant='outlined'
-          size='small'
-          text='Edit'
-        />
-      );
-    }
-    if (columnId === 'userUpdatedAt') {
-      return moment(row.userUpdatedAt).fromNow();
-    }
-    if (columnId === 'archive') {
-      return (
-        <>
-          {!row.status.includes('withdrawn') && (
-            <Button
-              onClick={async (event) => {
-                setAnchorElement(event.currentTarget);
-                // Get data from row.id
-                const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
-                  headers: {
-                    Accept: 'application/json',
-                    'Content-type': 'application/json',
-                    Authorization: `Bearer ${store.get('TOKEN')}`,
-                  },
-                  method: 'GET',
-                });
-                const participant = await response.json();
-                setActionMenuParticipant(participant[0]);
-                setActiveModalForm('archive');
-              }}
-              variant='outlined'
-              size='small'
-              text='Archive'
-            />
-          )}
-        </>
-      );
+        );
+        case 'userUpdatedAt':
+          return moment(row.userUpdatedAt).fromNow();
+        case 'archive':
+        return (
+              <>
+                {!row.status.includes('withdrawn') && (
+                  <Button
+                    onClick={async (event) => {
+                      setAnchorElement(event.currentTarget);
+                      // Get data from row.id
+                      const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
+                        headers: {
+                          Accept: 'application/json',
+                          'Content-type': 'application/json',
+                          Authorization: `Bearer ${store.get('TOKEN')}`,
+                        },
+                        method: 'GET',
+                      });
+                      const participant = await response.json();
+                      setActionMenuParticipant(participant[0]);
+                      setActiveModalForm('archive');
+                    }}
+                    variant='outlined'
+                    size='small'
+                    text='Archive'
+                  />
+                )}
+              </>
+            );
+        case 'isIndigenous': 
+            return (
+              <>
+                TBD
+              </>
+            )
+      
     }
     return row[columnId];
   };

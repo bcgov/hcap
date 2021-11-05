@@ -233,7 +233,8 @@ export default () => {
         <Dialog title='Confirm Withdraw' open={openWithdraw} onClose={onClose}>
           <DialogContent>
             <Typography variant='subtitle2'>
-              Are you want to withdraw expression of interest from HCAP? Please Confirm.
+              By clicking confirm, you agree to withdraw this PEOI from the Health Career Access
+              Program.
             </Typography>
           </DialogContent>
           <DialogActions>

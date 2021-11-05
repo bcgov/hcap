@@ -5,7 +5,7 @@ import { RenderRadioGroup } from '../fields';
 import { Field, Formik, Form as FormikForm, ErrorMessage } from 'formik';
 import { IndigenousDeclarationSchema } from '../../constants';
 
-export const indigenousIdentityOptions = {
+export const indigenousIdentities = {
   FIRST_NATIONS: 'first-nations',
   INUIT: 'inuit',
   METIS: 'metis',
@@ -13,14 +13,22 @@ export const indigenousIdentityOptions = {
   UNKNOWN: 'unknown',
 };
 
+export const indigenousIdentityLabels = {
+  FIRST_NATIONS: 'First Nations',
+  INUIT: 'Inuit',
+  METIS: 'Métis',
+  OTHER: 'Other',
+  UNKNOWN: 'Unknown',
+};
+
 export const IndigenousDeclarationForm = ({ handleSubmit }) => {
   const initialValues = {
     isIndigenous: null,
-    [indigenousIdentityOptions.FIRST_NATIONS]: false,
-    [indigenousIdentityOptions.INUIT]: false,
-    [indigenousIdentityOptions.METIS]: false,
-    [indigenousIdentityOptions.OTHER]: false,
-    [indigenousIdentityOptions.UNKNOWN]: false,
+    [indigenousIdentities.FIRST_NATIONS]: false,
+    [indigenousIdentities.INUIT]: false,
+    [indigenousIdentities.METIS]: false,
+    [indigenousIdentities.OTHER]: false,
+    [indigenousIdentities.UNKNOWN]: false,
   };
 
   return (
@@ -78,43 +86,40 @@ export const IndigenousDeclarationForm = ({ handleSubmit }) => {
                       <Typography variant='subtitle2'>What is your Indigenous Identity?</Typography>
                       <Typography>Choose all that apply</Typography>
                     </FormControl>
-                    {[
-                      { label: 'First Nations', value: indigenousIdentityOptions.FIRST_NATIONS },
-                      { label: 'Inuit', value: indigenousIdentityOptions.INUIT },
-                      { label: 'Métis', value: indigenousIdentityOptions.METIS },
-                      { label: 'Other', value: indigenousIdentityOptions.OTHER },
-                      { label: 'Unknown', value: indigenousIdentityOptions.UNKNOWN },
-                    ].map((item) => (
-                      // Not useing RenderCheckbox because I don't want it's errors here
-                      <Field name={item.value} key={item.value}>
-                        {({ field }) => (
-                          <FormControlLabel
-                            label={item.label}
-                            labelPlacement='end'
-                            control={
-                              <Checkbox
-                                sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
-                                size='small'
-                                color='primary'
-                                checked={field.value === true}
-                              />
-                            }
-                            {...field}
-                          />
-                        )}
-                      </Field>
-                    ))}
+                    {Object.keys(indigenousIdentities)
+                      .map((key) => ({
+                        label: indigenousIdentityLabels[key],
+                        value: indigenousIdentities[key],
+                      }))
+                      .map((item) => (
+                        // Not useing RenderCheckbox because I don't want it's errors here
+                        <Field name={item.value} key={item.value}>
+                          {({ field }) => (
+                            <FormControlLabel
+                              label={item.label}
+                              labelPlacement='end'
+                              control={
+                                <Checkbox
+                                  sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
+                                  size='small'
+                                  color='primary'
+                                  checked={field.value === true}
+                                />
+                              }
+                              {...field}
+                            />
+                          )}
+                        </Field>
+                      ))}
                   </FormControl>
 
                   {/* If an error exists for any, show one of them. Their errors are tightly coupled */}
-                  {(errors[indigenousIdentityOptions.FIRST_NATIONS] ||
-                    errors[indigenousIdentityOptions.INUIT] ||
-                    errors[indigenousIdentityOptions.METIS] ||
-                    errors[indigenousIdentityOptions.OTHER] ||
-                    errors[indigenousIdentityOptions.UNKNOWN]) && (
-                    <InputFieldError
-                      error={<ErrorMessage name={indigenousIdentityOptions.FIRST_NATIONS} />}
-                    />
+                  {(errors[indigenousIdentities.FIRST_NATIONS] ||
+                    errors[indigenousIdentities.INUIT] ||
+                    errors[indigenousIdentities.METIS] ||
+                    errors[indigenousIdentities.OTHER] ||
+                    errors[indigenousIdentities.UNKNOWN]) && (
+                    <InputFieldError error={errors[indigenousIdentities.FIRST_NATIONS]} />
                   )}
                 </Box>
               ) : null}

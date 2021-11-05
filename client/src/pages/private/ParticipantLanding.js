@@ -180,6 +180,12 @@ export default () => {
     }
   };
   const handleIndigenousIdentitySubmission = async (values) => {
+    // If the user doesn't fill in the form, hide it for now, it will be shown again on next page load
+    if (isNil(values.isIndigenous)) {
+      setHideIndigenousIdentityForm(true);
+      return;
+    }
+
     const ids = interests.map((item) => item.id);
     await Promise.all(ids.map(async (id) => await updateUserIndigenousIdentities(id, values)));
   };

@@ -504,7 +504,7 @@ export const CreatePSISchema = yup.object().shape({
 });
 
 export const IndigenousDeclarationSchema = yup.object().shape({
-  isIndigenous: yup.boolean().nullable().required('Please complete this field'),
+  isIndigenous: yup.boolean().nullable(),
   [indigenousIdentityOptions.FIRST_NATIONS]: yup
     .boolean()
     .test('identityRequired', 'Please complete this field', validateIdentity),

@@ -9,6 +9,7 @@ import { PEOIWithdrawalDialogForm } from '../../components/modal-forms/PEOIWithd
 import { genericConfirm } from '../../constants/validation';
 import ParticipantLandingEmpty from './ParticipantLandingEmpty';
 import { IndigenousDeclarationForm } from '../../components/modal-forms/IndigenousDeclarationForm';
+import isNil from 'lodash/isNil';
 
 const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
 
@@ -81,6 +82,7 @@ export default () => {
   const [interests, setInterests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
+  const [hideIndigenousIdentityForm, setHideIndigenousIdentityForm] = useState(false);
   const classes = useStyles();
   const history = useHistory();
   const submitWithdrawal = async (values) => {
@@ -139,6 +141,12 @@ export default () => {
     }
   };
   const handleIndigenousIdentitySubmission = async (values) => {
+    // If the user doesn't fill in the form, hide it for now, it will be shown again on next page load
+    if (isNil(values.isIndigenous)) {
+      setHideIndigenousIdentityForm(true);
+      return;
+    }
+
     const ids = interests.map((item) => item.id);
     await Promise.all(ids.map(async (id) => await updateUserIndigenousIdentities(id, values)));
   };
@@ -160,7 +168,7 @@ export default () => {
           }}
         />
       </Dialog>
-      <Dialog open={hasEmptyIndigenousQuestions}>
+      <Dialog open={hasEmptyIndigenousQuestions && !hideIndigenousIdentityForm}>
         <IndigenousDeclarationForm handleSubmit={handleIndigenousIdentitySubmission} />
       </Dialog>
       <Grid className={classes.posBox} container spacing={2}>

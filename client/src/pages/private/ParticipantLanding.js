@@ -119,13 +119,19 @@ export default () => {
     (item) => item.isIndigenous === null || item.isIndigenous === undefined
   );
 
-  const updateUserIndigenousIdentities = async (id, values) => {
+  const handleIndigenousIdentitySubmission = async (values) => {
+    // If the user doesn't fill in the form, hide it for now, it will be shown again on next page load
+    if (isNil(values.isIndigenous)) {
+      setHideIndigenousIdentityForm(true);
+      return;
+    }
+
     const { isIndigenous, ...submittedIdentities } = values;
     const identities = Object.entries(submittedIdentities)
       .map(([identity, selected]) => (selected ? identity : null))
       .filter(Boolean);
 
-    const response = await fetch(`${rootUrl}/${id}`, {
+    const response = await fetch(`${rootUrl}/batch`, {
       method: 'PATCH',
       headers: {
         Authorization: `Bearer ${store.get('TOKEN')}`,
@@ -146,16 +152,6 @@ export default () => {
         message: response.error || response.statusText || 'Server error',
       });
     }
-  };
-  const handleIndigenousIdentitySubmission = async (values) => {
-    // If the user doesn't fill in the form, hide it for now, it will be shown again on next page load
-    if (isNil(values.isIndigenous)) {
-      setHideIndigenousIdentityForm(true);
-      return;
-    }
-
-    const ids = interests.map((item) => item.id);
-    await Promise.all(ids.map(async (id) => await updateUserIndigenousIdentities(id, values)));
   };
 
   return (

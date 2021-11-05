@@ -76,6 +76,41 @@ const patchableFields = [
   'isIndigenous',
   'indigenousIdentities',
 ];
+
+router.patch(
+  '/participant/batch',
+  asyncMiddleware(async (req, res) => {
+    const { user_id: userId, email } = req.user;
+
+    const changes = { ...patchObject(req.body, patchableFields) };
+    await validate(UserParticipantEditSchema, changes);
+
+    // get users PEOIs
+    const participants = await getParticipantsForUser(userId, email);
+
+    if (participants.length > 0) {
+      const updateResults = [];
+      // Make batch updates
+      await Promise.all(
+        participants.map(async (participant) => {
+          const participantBody = createChangeHistory(participant, changes);
+          updateResults.push(await updateParticipant({ ...participantBody, id: participant.id }));
+        })
+      );
+
+      logger.info({
+        action: 'user_participant_batch_patch',
+        performed_by: {
+          userId,
+        },
+      });
+      res.status(200).json(updateResults);
+    } else {
+      res.status(422).send(`No expression of interest with for user: ${userId}`);
+    }
+  })
+);
+
 router.patch(
   '/participant/:id',
   asyncMiddleware(async (req, res) => {

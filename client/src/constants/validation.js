@@ -505,28 +505,12 @@ export const CreatePSISchema = yup.object().shape({
 
 export const IndigenousDeclarationSchema = yup.object().shape({
   isIndigenous: yup.boolean().nullable(),
-  [indigenousIdentities.FIRST_NATIONS]: yup
-    .boolean()
-    .test('identityRequired', 'Please complete this field', validateIdentity),
-  [indigenousIdentities.INUIT]: yup
-    .boolean()
-    .test('identityRequired', 'Please complete this field', validateIdentity),
-  [indigenousIdentities.METIS]: yup
-    .boolean()
-    .test('identityRequired', 'Please complete this field', validateIdentity),
-  [indigenousIdentities.OTHER]: yup
-    .boolean()
-    .test('identityRequired', 'Please complete this field', validateIdentity),
-  [indigenousIdentities.UNKNOWN]: yup
-    .boolean()
-    .test('identityRequired', 'Please complete this field', validateIdentity),
+  [indigenousIdentities.FIRST_NATIONS]: yup.boolean(),
+  [indigenousIdentities.INUIT]: yup.boolean(),
+  [indigenousIdentities.METIS]: yup.boolean(),
+  [indigenousIdentities.OTHER]: yup.boolean(),
+  [indigenousIdentities.UNKNOWN]: yup.boolean(),
 });
-
-function validateIdentity() {
-  if (!this.parent.isIndigenous) return true;
-  // Following checks if any of the options are false
-  return Object.values(indigenousIdentities).find((key) => this.parent[key]);
-}
 
 export const EditPSISchema = yup.object().shape({
   instituteName: yup.string().required(errorMessage),

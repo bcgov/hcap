@@ -703,10 +703,7 @@ const UserParticipantEditSchema = yup.object().shape({
   isIndigenous: yup.boolean(),
   indigenousIdentities: yup.array().when('isIndigenous', {
     is: true,
-    then: yup
-      .array()
-      .of(yup.string().oneOf(validIndigenousIdentities, 'Invalid identity'))
-      .required('Indigenous Identity is required'),
+    then: yup.array().of(yup.string().oneOf(validIndigenousIdentities, 'Invalid identity')),
   }),
 });
 

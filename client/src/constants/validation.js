@@ -505,29 +505,11 @@ export const CreatePSISchema = yup.object().shape({
 
 export const IndigenousDeclarationSchema = yup.object().shape({
   isIndigenous: yup.boolean().nullable(),
-<<<<<<< HEAD
   [indigenousIdentities.FIRST_NATIONS]: yup.boolean(),
   [indigenousIdentities.INUIT]: yup.boolean(),
   [indigenousIdentities.METIS]: yup.boolean(),
   [indigenousIdentities.OTHER]: yup.boolean(),
   [indigenousIdentities.UNKNOWN]: yup.boolean(),
-=======
-  [indigenousIdentityOptions.FIRST_NATIONS]: yup
-    .boolean()
-    .test('identityRequired', 'Please complete this field', validateIdentity),
-  [indigenousIdentityOptions.INUIT]: yup
-    .boolean()
-    .test('identityRequired', 'Please complete this field', validateIdentity),
-  [indigenousIdentityOptions.METIS]: yup
-    .boolean()
-    .test('identityRequired', 'Please complete this field', validateIdentity),
-  [indigenousIdentityOptions.OTHER]: yup
-    .boolean()
-    .test('identityRequired', 'Please complete this field', validateIdentity),
-  [indigenousIdentityOptions.UNKNOWN]: yup
-    .boolean()
-    .test('identityRequired', 'Please complete this field', validateIdentity),
->>>>>>> form is optional
 });
 
 export const EditPSISchema = yup.object().shape({

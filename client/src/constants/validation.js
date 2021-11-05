@@ -503,6 +503,7 @@ export const CreatePSISchema = yup.object().shape({
   healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
 });
 
+
 export const IndigenousDeclarationSchema = yup.object().shape({
   isIndigenous: yup.boolean().nullable(),
   [indigenousIdentities.FIRST_NATIONS]: yup.boolean(),

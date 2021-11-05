@@ -296,7 +296,7 @@ export default () => {
                       color='primary'
                       onClick={() => setOpenWithdraw(true)}
                     >
-                      Withdraw From the Program
+                      Withdraw PEOI
                     </DeleteButton>
                   </Grid>
                 </Grid>

@@ -177,6 +177,11 @@ export default () => {
 
     if (response.ok) {
       await getParticipants().then((items) => setInterests(items));
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
     }
   };
   const handleIndigenousIdentitySubmission = async (values) => {

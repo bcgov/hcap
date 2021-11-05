@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, InputFieldError } from '../generic';
 import { Box, Checkbox, FormControl, FormControlLabel, Grid, Typography } from '@material-ui/core';
 import { RenderRadioGroup } from '../fields';
-import { Field, Formik, Form as FormikForm, ErrorMessage } from 'formik';
+import { Field, Formik, Form as FormikForm } from 'formik';
 import { IndigenousDeclarationSchema } from '../../constants';
 
 export const indigenousIdentities = {

@@ -689,6 +689,7 @@ const ParticipantQuerySchema = yup.object().shape({
   statusFilters: yup.array().of(yup.string().oneOf(participantStatuses, 'Invalid status')),
 });
 
+const validIndigenousIdentities = ['first-nations', 'inuit', 'metis', 'other', 'unknown'];
 const UserParticipantEditSchema = yup.object().shape({
   postalCode: yup
     .string()
@@ -699,7 +700,16 @@ const UserParticipantEditSchema = yup.object().shape({
     .nullable()
     .matches(/^[A-Z]\d[A-Z]$/),
   phoneNumber: yup.string().matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  isIndigenous: yup.boolean(),
+  indigenousIdentities: yup.array().when('isIndigenous', {
+    is: true,
+    then: yup
+      .array()
+      .of(yup.string().oneOf(validIndigenousIdentities, 'Invalid identity'))
+      .required('Indigenous Identity is required'),
+  }),
 });
+
 const ParticipantEditSchema = yup
   .object()
   .noUnknown('Unknown field in entry')

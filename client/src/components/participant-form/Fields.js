@@ -15,7 +15,6 @@ import {
   indigenousIdentityLabels,
 } from '../modal-forms/IndigenousDeclarationForm';
 import { Checkbox, FormControl, FormControlLabel } from '@material-ui/core';
-import { isNil } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
   info: {
@@ -41,7 +40,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Fields = ({ isDisabled, hideHelp, enableFields, isNonPortalHire, values }) => {
+export const Fields = ({
+  isDisabled,
+  hideHelp,
+  enableFields,
+  isNonPortalHire,
+  values,
+  showIdentityQuestions,
+}) => {
   const classes = useStyles();
   const [isCollectionNoticeExpanded, setCollectionNoticeExpanded] = useState(
     window.innerWidth > 750
@@ -73,7 +79,7 @@ export const Fields = ({ isDisabled, hideHelp, enableFields, isNonPortalHire, va
       <Card noShadow={isDisabled}>
         {/** Indigenous Identity - meant to be READ-ONLY, not set up for editing */}
         <Grid container spacing={2}>
-          {isDisabled && !isNil(values.isIndigenous) && (
+          {showIdentityQuestions && values.isIndigenous && (
             <Grid item xs={12}>
               <Typography variant='subtitle2'>Indigenous Identity</Typography>
               <Divider />
@@ -99,32 +105,34 @@ export const Fields = ({ isDisabled, hideHelp, enableFields, isNonPortalHire, va
                   />
                 </FormControl>
 
-                <FormControl component='fieldset'>
-                  <FormControl component='legend'>
-                    <Typography variant='subtitle2'>What is your Indigenous Identity?</Typography>
-                    <Typography>Choose all that apply</Typography>
+                {values.indigenousIdentities.length > 0 ? (
+                  <FormControl component='fieldset'>
+                    <FormControl component='legend'>
+                      <Typography variant='subtitle2'>What is your Indigenous Identity?</Typography>
+                      <Typography>Choose all that apply</Typography>
+                    </FormControl>
+                    {Object.keys(indigenousIdentities)
+                      .map((key) => ({
+                        label: indigenousIdentityLabels[key],
+                        value: indigenousIdentities[key],
+                      }))
+                      .map((item) => (
+                        <FormControlLabel
+                          disabled
+                          label={item.label}
+                          labelPlacement='end'
+                          control={
+                            <Checkbox
+                              sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
+                              size='medium'
+                              color='primary'
+                              checked={values.indigenousIdentities?.includes(item.value)}
+                            />
+                          }
+                        />
+                      ))}
                   </FormControl>
-                  {Object.keys(indigenousIdentities)
-                    .map((key) => ({
-                      label: indigenousIdentityLabels[key],
-                      value: indigenousIdentities[key],
-                    }))
-                    .map((item) => (
-                      <FormControlLabel
-                        disabled
-                        label={item.label}
-                        labelPlacement='end'
-                        control={
-                          <Checkbox
-                            sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
-                            size='medium'
-                            color='primary'
-                            checked={values.indigenousIdentities?.includes(item.value)}
-                          />
-                        }
-                      />
-                    ))}
-                </FormControl>
+                ) : null}
               </Box>
             </Grid>
           )}

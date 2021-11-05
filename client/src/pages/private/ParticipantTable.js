@@ -182,7 +182,8 @@ export default () => {
     sortField,
     sortDirection,
     siteSelector,
-    statusFilters
+    statusFilters,
+    isIndigenous
   ) => {
     const queries = [
       sortField && `sortField=${sortField}`,
@@ -193,6 +194,7 @@ export default () => {
       lastNameFilter && `lastNameFilter=${lastNameFilter}`,
       siteSelector && `siteSelector=${siteSelector}`,
       emailFilter && `emailFilter=${emailFilter}`,
+      isIndigenous && `isIndigenous=${isIndigenous}`,
       ...(statusFilters && statusFilters.map((status) => `statusFilters[]=${status}`)),
     ]
       .filter((item) => item)
@@ -308,6 +310,7 @@ export default () => {
       reducerState.siteSelector,
       selectedTabStatuses
     );
+    console.log(data);
     const newRows = filterData(data, columns);
     setRows(newRows);
     setLoadingData(false);
@@ -333,25 +336,33 @@ export default () => {
       if (!columns) return;
       if (!selectedTab) return;
       setLoadingData(true);
-      const { data, pagination } = await fetchParticipants(
-        currentPage * pageSize,
-        reducerState.locationFilter,
-        reducerState.fsaFilter || '',
-        reducerState.lastNameFilter || '',
-        reducerState.emailFilter || '',
-        reducerState.order.field,
-        reducerState.order.direction,
-        reducerState.siteSelector,
-        selectedTabStatuses
-      );
-      dispatch({
-        type: 'updateKey',
-        key: 'pagination',
-        value: pagination,
-      });
-      const newRows = filterData(data, columns);
-      setRows(newRows);
-      setLoadingData(false);
+      try{
+        const { data, pagination } = await fetchParticipants(
+          currentPage * pageSize,
+          reducerState.locationFilter,
+          reducerState.fsaFilter || '',
+          reducerState.lastNameFilter || '',
+          reducerState.emailFilter || '',
+          reducerState.order.field,
+          reducerState.order.direction,
+          reducerState.siteSelector,
+          selectedTabStatuses
+        );
+        dispatch({
+          type: 'updateKey',
+          key: 'pagination',
+          value: pagination,
+        });
+        const newRows = filterData(data, columns);
+        setRows(newRows);
+        setLoadingData(false);
+      }catch(e){
+        console.log('Woopsie')
+        console.log(e);
+      }
+
+      
+
     };
 
     getParticipants();
@@ -483,12 +494,19 @@ export default () => {
               </>
             );
         case 'isIndigenous': 
+            let displayValue; 
+            if(row.isIndigenous === undefined){
+              displayValue = 'Not set';
+            }else{
+              displayValue = row.isIndigenous? 'Yes':'No';
+            }
             return (
-              <>
-                TBD
-              </>
+              <Typography>
+                {displayValue}
+              </Typography>
             )
-      
+        default:
+          return row[columnId];
     }
     return row[columnId];
   };

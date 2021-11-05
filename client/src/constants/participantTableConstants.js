@@ -87,6 +87,7 @@ export const defaultTableState = {
   order: { field: 'id', direction: 'asc' },
   locationFilter: '',
   siteSelector: '',
+  showIndigenousOnly:''
 };
 
 export const tabStatuses = {

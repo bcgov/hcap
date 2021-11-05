@@ -144,7 +144,9 @@ participantsRouter.get(
       emailFilter,
       siteSelector,
       statusFilters,
+      isIndigenousFilter,
     } = req.query;
+    console.log(req.query);
     const result = await getParticipants(
       user,
       {
@@ -158,7 +160,8 @@ participantsRouter.get(
       lastNameFilter,
       emailFilter,
       siteSelector,
-      statusFilters
+      statusFilters,
+      isIndigenousFilter,
     );
     logger.info({
       action: 'participant_get',

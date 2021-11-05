@@ -115,9 +115,9 @@ export default () => {
     );
   }
 
-  const hasEmptyIndigenousQuestions = interests.find(
-    (item) => item.isIndigenous === null || item.isIndigenous === undefined
-  );
+  const hasEmptyIndigenousQuestions =
+    interests.length > 0 &&
+    interests.find((item) => item.isIndigenous === null || item.isIndigenous === undefined);
 
   const handleIndigenousIdentitySubmission = async (values) => {
     // If the user doesn't fill in the form, hide it for now, it will be shown again on next page load

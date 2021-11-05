@@ -513,7 +513,7 @@ export const IndigenousDeclarationSchema = yup.object().shape({
 });
 
 export const EditPSISchema = yup.object().shape({
-  instituteName: yup.string().required(errorMessage),
+  instituteName: yup.string().required(errorMessage), 
   streetAddress: yup.string().required(errorMessage),
   city: yup.string().required(errorMessage),
   postalCode: yup

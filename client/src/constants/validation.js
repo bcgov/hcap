@@ -6,6 +6,7 @@ import {
   minDateString,
   maxDateString,
 } from './archiveParticipantsConstants';
+import { indigenousIdentities } from '../components/modal-forms/IndigenousDeclarationForm';
 
 const healthRegions = ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'];
 
@@ -500,6 +501,15 @@ export const CreatePSISchema = yup.object().shape({
     .required(errorMessage)
     .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
   healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
+});
+
+export const IndigenousDeclarationSchema = yup.object().shape({
+  isIndigenous: yup.boolean().nullable(),
+  [indigenousIdentities.FIRST_NATIONS]: yup.boolean(),
+  [indigenousIdentities.INUIT]: yup.boolean(),
+  [indigenousIdentities.METIS]: yup.boolean(),
+  [indigenousIdentities.OTHER]: yup.boolean(),
+  [indigenousIdentities.UNKNOWN]: yup.boolean(),
 });
 
 export const EditPSISchema = yup.object().shape({

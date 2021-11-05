@@ -96,6 +96,7 @@ export const Form = ({
 
             <Box pt={2} pb={4} pl={2} pr={2}>
               <Fields
+                values={values}
                 isDisabled={isDisabled}
                 hideHelp={hideSummary}
                 enableFields={enableFields}

@@ -6,5 +6,5 @@
  * @returns {boolean} True if the PEOI is a non-portal hire.
  */
 export const isNonPortalHire = (peoi) => {
-  return !peoi.formVersion;
+  return !peoi?.formVersion;
 };

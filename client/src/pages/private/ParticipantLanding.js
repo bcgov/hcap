@@ -4,10 +4,16 @@ import { Grid, Card, Box, Typography, Button, CardActions, Dialog } from '@mater
 import { makeStyles } from '@material-ui/core/styles';
 import store from 'store';
 import { Page } from '../../components/generic';
-import { API_URL, Routes } from '../../constants';
+import { API_URL, Routes, ToastStatus } from '../../constants';
 import { PEOIWithdrawalDialogForm } from '../../components/modal-forms/PEOIWithdrawalDialogForm';
 import { genericConfirm } from '../../constants/validation';
 import ParticipantLandingEmpty from './ParticipantLandingEmpty';
+import { IndigenousDeclarationForm } from '../../components/modal-forms/IndigenousDeclarationForm';
+import isNil from 'lodash/isNil';
+import { useToast } from '../../hooks';
+
+const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
+
 const moment = require('moment');
 
 const useStyles = makeStyles(() => ({
@@ -77,8 +83,10 @@ export default () => {
   const [interests, setInterests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
+  const [hideIndigenousIdentityForm, setHideIndigenousIdentityForm] = useState(false);
   const classes = useStyles();
   const history = useHistory();
+  const { openToast } = useToast();
   const submitWithdrawal = async (values) => {
     if (values.confirmed) {
       await fetch(`${API_URL}/api/v1/participant-user/withdraw`, {
@@ -107,6 +115,45 @@ export default () => {
     );
   }
 
+  const hasEmptyIndigenousQuestions =
+    interests.length > 0 &&
+    !!interests.find((item) => item.isIndigenous === null || item.isIndigenous === undefined);
+
+  const handleIndigenousIdentitySubmission = async (values) => {
+    // If the user doesn't fill in the form, hide it for now, it will be shown again on next page load
+    if (isNil(values.isIndigenous)) {
+      setHideIndigenousIdentityForm(true);
+      return;
+    }
+
+    const { isIndigenous, ...submittedIdentities } = values;
+    const identities = Object.entries(submittedIdentities)
+      .map(([identity, selected]) => (selected ? identity : null))
+      .filter(Boolean);
+
+    const response = await fetch(`${rootUrl}/batch`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        isIndigenous: values.isIndigenous,
+        indigenousIdentities: identities,
+      }),
+    });
+
+    if (response.ok) {
+      await getParticipants().then((items) => setInterests(items));
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
+    }
+  };
+
   return (
     <Page>
       <Dialog open={showWithdrawDialog}>
@@ -123,6 +170,9 @@ export default () => {
             history.push(Routes.ParticipantFullWithdraw);
           }}
         />
+      </Dialog>
+      <Dialog open={hasEmptyIndigenousQuestions && !hideIndigenousIdentityForm}>
+        <IndigenousDeclarationForm handleSubmit={handleIndigenousIdentitySubmission} />
       </Dialog>
       <Grid className={classes.posBox} container spacing={2}>
         <Grid style={{ paddingTop: 10 }} item xs={12}>

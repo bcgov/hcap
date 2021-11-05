@@ -77,7 +77,7 @@ export const Fields = ({ isDisabled, hideHelp, enableFields, isNonPortalHire }) 
             </Typography>
           </Grid>
 
-          {isNonPortalHire ? null : (
+          {isDisabled && isNonPortalHire ? null : (
             <>
               <Grid item xs={12}>
                 <Typography>
@@ -247,7 +247,7 @@ export const Fields = ({ isDisabled, hideHelp, enableFields, isNonPortalHire }) 
 
         {/** Disclaimer and submission */}
         <Grid container spacing={2}>
-          {isNonPortalHire ? null : (
+          {isDisabled && isNonPortalHire ? null : (
             <Grid item xs={12}>
               <hr className={classes.line} />
               <Grid container spacing={2}>

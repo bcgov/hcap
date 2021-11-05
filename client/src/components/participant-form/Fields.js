@@ -15,6 +15,7 @@ import {
   indigenousIdentityLabels,
 } from '../modal-forms/IndigenousDeclarationForm';
 import { Checkbox, FormControl, FormControlLabel } from '@material-ui/core';
+import { isNil } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
   info: {
@@ -46,7 +47,7 @@ export const Fields = ({
   enableFields,
   isNonPortalHire,
   values,
-  showIdentityQuestions,
+  isSubmitted,
 }) => {
   const classes = useStyles();
   const [isCollectionNoticeExpanded, setCollectionNoticeExpanded] = useState(
@@ -79,7 +80,7 @@ export const Fields = ({
       <Card noShadow={isDisabled}>
         {/** Indigenous Identity - meant to be READ-ONLY, not set up for editing */}
         <Grid container spacing={2}>
-          {showIdentityQuestions && values.isIndigenous && (
+          {isSubmitted && values.isIndigenous && (
             <Grid item xs={12}>
               <Typography variant='subtitle2'>Indigenous Identity</Typography>
               <Divider />
@@ -138,19 +139,19 @@ export const Fields = ({
           )}
 
           {/** Eligibility */}
-          <Grid item xs={12}>
-            <Typography variant='subtitle2'>Check Your Eligibility</Typography>
-            <Divider />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography>
-              <b>Please note:</b> A criminal record check is required for most positions in the
-              health sector.
-            </Typography>
-          </Grid>
 
-          {isDisabled && isNonPortalHire ? null : (
+          {isSubmitted && isNonPortalHire && isNil(values.eligibility) ? null : (
             <>
+              <Grid item xs={12}>
+                <Typography variant='subtitle2'>Check Your Eligibility</Typography>
+                <Divider />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography>
+                  <b>Please note:</b> A criminal record check is required for most positions in the
+                  health sector.
+                </Typography>
+              </Grid>
               <Grid item xs={12}>
                 <Typography>
                   <b>* Are you a Canadian citizen or permanent resident?</b>
@@ -319,7 +320,7 @@ export const Fields = ({
 
         {/** Disclaimer and submission */}
         <Grid container spacing={2}>
-          {isDisabled && isNonPortalHire ? null : (
+          {isSubmitted && isNonPortalHire && isNil(values.consent) ? null : (
             <Grid item xs={12}>
               <hr className={classes.line} />
               <Grid container spacing={2}>

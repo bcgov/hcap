@@ -26,7 +26,7 @@ export const Form = ({
   onSubmit,
   enableFields,
   editMode,
-  showIdentityQuestions,
+  isSubmitted,
 }) => {
   const history = useHistory();
   const { openToast } = useToast();
@@ -102,7 +102,7 @@ export const Form = ({
                 hideHelp={hideSummary}
                 enableFields={enableFields}
                 isNonPortalHire={isNonPortalHire(initialValues)}
-                showIdentityQuestions={showIdentityQuestions}
+                isSubmitted={isSubmitted}
               />
             </Box>
 

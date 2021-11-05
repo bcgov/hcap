@@ -312,6 +312,7 @@ export default () => {
                 enableFields={['phoneNumber', 'postalCode']}
                 onSubmit={onFormSubmit}
                 editMode={true}
+                isSubmitted
               />
             </Grid>
           </Grid>

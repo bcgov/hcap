@@ -15,6 +15,7 @@ import {
   indigenousIdentityLabels,
 } from '../modal-forms/IndigenousDeclarationForm';
 import { Checkbox, FormControl, FormControlLabel } from '@material-ui/core';
+import { isNil } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
   info: {
@@ -72,7 +73,7 @@ export const Fields = ({ isDisabled, hideHelp, enableFields, isNonPortalHire, va
       <Card noShadow={isDisabled}>
         {/** Indigenous Identity - meant to be READ-ONLY, not set up for editing */}
         <Grid container spacing={2}>
-          {isDisabled && (
+          {isDisabled && !isNil(values.isIndigenous) && (
             <Grid item xs={12}>
               <Typography variant='subtitle2'>Indigenous Identity</Typography>
               <Divider />

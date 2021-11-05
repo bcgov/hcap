@@ -4,12 +4,13 @@ import { Grid, Card, Box, Typography, Button, CardActions, Dialog } from '@mater
 import { makeStyles } from '@material-ui/core/styles';
 import store from 'store';
 import { Page } from '../../components/generic';
-import { API_URL, Routes } from '../../constants';
+import { API_URL, Routes, ToastStatus } from '../../constants';
 import { PEOIWithdrawalDialogForm } from '../../components/modal-forms/PEOIWithdrawalDialogForm';
 import { genericConfirm } from '../../constants/validation';
 import ParticipantLandingEmpty from './ParticipantLandingEmpty';
 import { IndigenousDeclarationForm } from '../../components/modal-forms/IndigenousDeclarationForm';
 import isNil from 'lodash/isNil';
+import { useToast } from '../../hooks';
 
 const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
 
@@ -85,6 +86,7 @@ export default () => {
   const [hideIndigenousIdentityForm, setHideIndigenousIdentityForm] = useState(false);
   const classes = useStyles();
   const history = useHistory();
+  const { openToast } = useToast();
   const submitWithdrawal = async (values) => {
     if (values.confirmed) {
       await fetch(`${API_URL}/api/v1/participant-user/withdraw`, {
@@ -138,6 +140,11 @@ export default () => {
 
     if (response.ok) {
       await getParticipants().then((items) => setInterests(items));
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
     }
   };
   const handleIndigenousIdentitySubmission = async (values) => {

@@ -196,6 +196,7 @@ export const columnsByRole = {
       crcClear,
       userUpdatedAt,
       edit,
+      isIndigenous,
     ],
   },
 

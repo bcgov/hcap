@@ -123,9 +123,11 @@ const createChangeHistory = (participantBody, changes) => {
     timestamp: new Date(),
     changes: [...changeDetails],
   };
-  newBody.history = participantBody.history
-    ? [newHistory, ...participantBody.history]
-    : [newHistory];
+  // handle histories that have bad data/aren't objects
+  newBody.history =
+    participantBody.history && typeof participantBody.history === 'object'
+      ? [newHistory, ...participantBody.history]
+      : [newHistory];
   return newBody;
 };
 

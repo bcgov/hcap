@@ -41,7 +41,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Fields = ({ isDisabled, hideHelp, enableFields, isNonPortalHire, values }) => {
+export const Fields = ({
+  isDisabled,
+  hideHelp,
+  enableFields,
+  isNonPortalHire,
+  values,
+  isSubmitted,
+}) => {
   const classes = useStyles();
   const [isCollectionNoticeExpanded, setCollectionNoticeExpanded] = useState(
     window.innerWidth > 750
@@ -73,7 +80,7 @@ export const Fields = ({ isDisabled, hideHelp, enableFields, isNonPortalHire, va
       <Card noShadow={isDisabled}>
         {/** Indigenous Identity - meant to be READ-ONLY, not set up for editing */}
         <Grid container spacing={2}>
-          {isDisabled && !isNil(values.isIndigenous) && (
+          {isSubmitted && values.isIndigenous && (
             <Grid item xs={12}>
               <Typography variant='subtitle2'>Indigenous Identity</Typography>
               <Divider />
@@ -99,50 +106,52 @@ export const Fields = ({ isDisabled, hideHelp, enableFields, isNonPortalHire, va
                   />
                 </FormControl>
 
-                <FormControl component='fieldset'>
-                  <FormControl component='legend'>
-                    <Typography variant='subtitle2'>What is your Indigenous Identity?</Typography>
-                    <Typography>Choose all that apply</Typography>
+                {values.indigenousIdentities.length > 0 ? (
+                  <FormControl component='fieldset'>
+                    <FormControl component='legend'>
+                      <Typography variant='subtitle2'>What is your Indigenous Identity?</Typography>
+                      <Typography>Choose all that apply</Typography>
+                    </FormControl>
+                    {Object.keys(indigenousIdentities)
+                      .map((key) => ({
+                        label: indigenousIdentityLabels[key],
+                        value: indigenousIdentities[key],
+                      }))
+                      .map((item) => (
+                        <FormControlLabel
+                          disabled
+                          label={item.label}
+                          labelPlacement='end'
+                          control={
+                            <Checkbox
+                              sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
+                              size='medium'
+                              color='primary'
+                              checked={values.indigenousIdentities?.includes(item.value)}
+                            />
+                          }
+                        />
+                      ))}
                   </FormControl>
-                  {Object.keys(indigenousIdentities)
-                    .map((key) => ({
-                      label: indigenousIdentityLabels[key],
-                      value: indigenousIdentities[key],
-                    }))
-                    .map((item) => (
-                      <FormControlLabel
-                        disabled
-                        label={item.label}
-                        labelPlacement='end'
-                        control={
-                          <Checkbox
-                            sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
-                            size='medium'
-                            color='primary'
-                            checked={values.indigenousIdentities?.includes(item.value)}
-                          />
-                        }
-                      />
-                    ))}
-                </FormControl>
+                ) : null}
               </Box>
             </Grid>
           )}
 
           {/** Eligibility */}
-          <Grid item xs={12}>
-            <Typography variant='subtitle2'>Check Your Eligibility</Typography>
-            <Divider />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography>
-              <b>Please note:</b> A criminal record check is required for most positions in the
-              health sector.
-            </Typography>
-          </Grid>
 
-          {isDisabled && isNonPortalHire ? null : (
+          {isSubmitted && isNonPortalHire && isNil(values.eligibility) ? null : (
             <>
+              <Grid item xs={12}>
+                <Typography variant='subtitle2'>Check Your Eligibility</Typography>
+                <Divider />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography>
+                  <b>Please note:</b> A criminal record check is required for most positions in the
+                  health sector.
+                </Typography>
+              </Grid>
               <Grid item xs={12}>
                 <Typography>
                   <b>* Are you a Canadian citizen or permanent resident?</b>
@@ -311,7 +320,7 @@ export const Fields = ({ isDisabled, hideHelp, enableFields, isNonPortalHire, va
 
         {/** Disclaimer and submission */}
         <Grid container spacing={2}>
-          {isDisabled && isNonPortalHire ? null : (
+          {isSubmitted && isNonPortalHire && isNil(values.consent) ? null : (
             <Grid item xs={12}>
               <hr className={classes.line} />
               <Grid container spacing={2}>

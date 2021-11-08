@@ -308,9 +308,11 @@ export default () => {
                 initialValues={participant.body}
                 isDisabled={!enableEdit}
                 hideSummary={true}
+                showIdentityQuestions
                 enableFields={['phoneNumber', 'postalCode']}
                 onSubmit={onFormSubmit}
                 editMode={true}
+                isSubmitted
               />
             </Grid>
           </Grid>

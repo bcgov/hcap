@@ -76,14 +76,7 @@ export const Form = ({
   };
 
   return (
-    <Grid
-      item
-      xs={12}
-      sm={isDisabled ? 12 : 11}
-      md={isDisabled ? 12 : 10}
-      lg={isDisabled ? 12 : 8}
-      xl={isDisabled ? 12 : 6}
-    >
+    <Grid item xs={12}>
       <Formik
         initialValues={formValues}
         validationSchema={editMode ? ParticipantEditFormSchema : ParticipantFormSchema}

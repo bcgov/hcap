@@ -80,7 +80,7 @@ export const Fields = ({
       <Card noShadow={isDisabled}>
         {/** Indigenous Identity - meant to be READ-ONLY, not set up for editing */}
         <Grid container spacing={2}>
-          {isSubmitted && values.isIndigenous && (
+          {isSubmitted && !isNil(values.isIndigenous) && (
             <Grid item xs={12}>
               <Typography variant='subtitle2'>Indigenous Identity</Typography>
               <Divider />

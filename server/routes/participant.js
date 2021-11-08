@@ -146,7 +146,6 @@ participantsRouter.get(
       statusFilters,
       isIndigenousFilter,
     } = req.query;
-    console.log(req.query);
     const result = await getParticipants(
       user,
       {

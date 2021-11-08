@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import math from 'lodash/math';
-import { Box, Typography, TextField, Menu, MenuItem, Link } from '@material-ui/core';
+import { Box, Typography, TextField, Menu, MenuItem, Link, Checkbox, FormLabel } from '@material-ui/core';
 import store from 'store';
 import {
   ToastStatus,
@@ -183,7 +183,7 @@ export default () => {
     sortDirection,
     siteSelector,
     statusFilters,
-    isIndigenous
+    isIndigenousFilter
   ) => {
     const queries = [
       sortField && `sortField=${sortField}`,
@@ -194,7 +194,7 @@ export default () => {
       lastNameFilter && `lastNameFilter=${lastNameFilter}`,
       siteSelector && `siteSelector=${siteSelector}`,
       emailFilter && `emailFilter=${emailFilter}`,
-      isIndigenous && `isIndigenous=${isIndigenous}`,
+      isIndigenousFilter && `isIndigenousFilter=${isIndigenousFilter}`,
       ...(statusFilters && statusFilters.map((status) => `statusFilters[]=${status}`)),
     ]
       .filter((item) => item)
@@ -308,9 +308,9 @@ export default () => {
       reducerState.order.field,
       reducerState.order.direction,
       reducerState.siteSelector,
-      selectedTabStatuses
+      selectedTabStatuses,
+      reducerState.isIndigenousFilter,
     );
-    console.log(data);
     const newRows = filterData(data, columns);
     setRows(newRows);
     setLoadingData(false);
@@ -336,7 +336,6 @@ export default () => {
       if (!columns) return;
       if (!selectedTab) return;
       setLoadingData(true);
-      try{
         const { data, pagination } = await fetchParticipants(
           currentPage * pageSize,
           reducerState.locationFilter,
@@ -346,7 +345,8 @@ export default () => {
           reducerState.order.field,
           reducerState.order.direction,
           reducerState.siteSelector,
-          selectedTabStatuses
+          selectedTabStatuses,
+          reducerState.isIndigenousFilter
         );
         dispatch({
           type: 'updateKey',
@@ -356,10 +356,7 @@ export default () => {
         const newRows = filterData(data, columns);
         setRows(newRows);
         setLoadingData(false);
-      }catch(e){
-        console.log('Woopsie')
-        console.log(e);
-      }
+
 
       
 
@@ -375,6 +372,7 @@ export default () => {
     reducerState.lastNameFilter,
     reducerState.fsaFilter,
     reducerState.order,
+    reducerState.isIndigenousFilter,
     roles,
     columns,
     selectedTab,
@@ -804,6 +802,7 @@ export default () => {
                 )}
               </Box>
             </Grid>
+
             {!roles.includes('ministry_of_health') && (
               <Grid item style={{ marginLeft: 20, paddingBottom: 18 }}>
                 <Typography>Site for distance calculation: </Typography>
@@ -833,6 +832,24 @@ export default () => {
                 </Box>
               </Grid>
             )}
+            <Grid container item xs={2} style={{marginLeft:'10px',paddingBottom:'10px'}}>
+                <Grid xs={8} item >
+                  <FormLabel>Indigenous Participants Only</FormLabel>
+                </Grid>
+                <Grid xs={8} item style={{textAlign:'center'}}>
+                  <Checkbox
+                    color='primary'
+                    disabled={isLoadingData}
+                    onChange={()=>{
+                      const newValue = reducerState?.isIndigenousFilter==='true'? '':'true'
+                      dispatch({ 
+                        type:'updateKey',
+                        key:'isIndigenousFilter',
+                        value:newValue})
+                    }}
+                  />
+                </Grid>
+            </Grid>
             {selectedTab === 'Hired Candidates' && (
               <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
                 <Button

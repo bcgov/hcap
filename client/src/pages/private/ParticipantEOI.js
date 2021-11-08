@@ -267,55 +267,50 @@ export default () => {
           </div>
         )}
         {participant && (
-          <Grid justify='center' container>
-            <Grid container direction='row'>
-              <Grid item xs={6}>
-                <Typography variant='h4'>Participant Express of Interest</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Grid container spacing={2} justify='flex-end'>
-                  <Grid item>
-                    <Button variant='contained' onClick={onEdit}>
-                      {!enableEdit ? 'Edit Info' : 'Done Edit'}
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      disabled={disableWithdraw}
-                      variant='contained'
-                      onClick={() => {
-                        setOpenConfirmInterest(true);
-                      }}
-                    >
-                      Reconfirm interest
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <DeleteButton
-                      disabled={disableWithdraw}
-                      variant='contained'
-                      color='primary'
-                      onClick={() => setOpenWithdraw(true)}
-                    >
-                      Withdraw PEOI
-                    </DeleteButton>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
-              {/** Form */}
-              <Form
-                initialValues={participant.body}
-                isDisabled={!enableEdit}
-                hideSummary={true}
-                showIdentityQuestions
-                enableFields={['phoneNumber', 'postalCode']}
-                onSubmit={onFormSubmit}
-                editMode={true}
-                isSubmitted
-              />
-            </Grid>
+          <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
+            {/* Header and controls */}
+            <Box
+              display='flex'
+              flexDirection={{ xs: 'column', md: 'row' }}
+              gridGap={20}
+              justifyContent='space-between'
+              padding={2}
+            >
+              <Typography variant='h4'>Participant Expression of Interest</Typography>
+              <Box display='flex' gridGap={20}>
+                <Button variant='contained' onClick={onEdit}>
+                  {!enableEdit ? 'Edit Info' : 'Done Edit'}
+                </Button>
+                <Button
+                  disabled={disableWithdraw}
+                  variant='contained'
+                  onClick={() => {
+                    setOpenConfirmInterest(true);
+                  }}
+                >
+                  Reconfirm interest
+                </Button>
+                <DeleteButton
+                  disabled={disableWithdraw}
+                  variant='contained'
+                  color='primary'
+                  onClick={() => setOpenWithdraw(true)}
+                >
+                  Withdraw PEOI
+                </DeleteButton>
+              </Box>
+            </Box>
+            {/** Form */}
+            <Form
+              initialValues={participant.body}
+              isDisabled={!enableEdit}
+              hideSummary={true}
+              showIdentityQuestions
+              enableFields={['phoneNumber', 'postalCode']}
+              onSubmit={onFormSubmit}
+              editMode={true}
+              isSubmitted
+            />
           </Grid>
         )}
         {!participant && !loading && <Alert severity='error'>Unable to load participant</Alert>}

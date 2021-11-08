@@ -688,7 +688,7 @@ const ParticipantQuerySchema = yup.object().shape({
   siteSelector: yup.string().matches(/^\d+$/, 'Site Selector must be a `number` type'),
   offset: yup.string().matches(/^\d+$/, 'Offset must be a `number` type'),
   statusFilters: yup.array().of(yup.string().oneOf(participantStatuses, 'Invalid status')),
-  showIndigenousOnly:yup.string().equals(['true'])
+  showIndigenousOnly: yup.string().equals(['true']),
 });
 
 const validIndigenousIdentities = ['first-nations', 'inuit', 'metis', 'other', 'unknown'];
@@ -706,9 +706,8 @@ const UserParticipantEditSchema = yup.object().shape({
   indigenousIdentities: yup.array().when('isIndigenous', {
     is: true,
     then: yup.array().of(yup.string().oneOf(validIndigenousIdentities, 'Invalid identity')),
-  }), 
+  }),
 });
-
 
 const ParticipantEditSchema = yup
   .object()

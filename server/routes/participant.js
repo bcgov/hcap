@@ -160,7 +160,7 @@ participantsRouter.get(
       emailFilter,
       siteSelector,
       statusFilters,
-      isIndigenousFilter,
+      isIndigenousFilter
     );
     logger.info({
       action: 'participant_get',

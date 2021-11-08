@@ -287,14 +287,20 @@ class RegionsFilteredParticipantsFinder {
     this.context = context;
   }
 
-  filterParticipantFields({ postalCodeFsa, lastName, emailAddress, interestFilter, isIndigenousFilter }) {
+  filterParticipantFields({
+    postalCodeFsa,
+    lastName,
+    emailAddress,
+    interestFilter,
+    isIndigenousFilter,
+  }) {
     this.context.criteria = {
       ...this.context.criteria,
       ...(postalCodeFsa && { 'body.postalCodeFsa ilike': `${postalCodeFsa}%` }),
       ...(lastName && { 'body.lastName ilike': `${lastName}%` }),
       ...(emailAddress && { 'body.emailAddress ilike': `${emailAddress}%` }),
       ...(interestFilter && { 'body.interested <>': ['no', 'withdrawn'] }),
-      ...(isIndigenousFilter && {'body.isIndigenous =':true})
+      ...(isIndigenousFilter && { 'body.isIndigenous =': true }),
     };
     return new FieldsFilteredParticipantsFinder(this.context);
   }

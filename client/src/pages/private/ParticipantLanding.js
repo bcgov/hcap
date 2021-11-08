@@ -15,7 +15,7 @@ import { useToast } from '../../hooks';
 const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
 
 const moment = require('moment');
- 
+
 const useStyles = makeStyles(() => ({
   rootContainer: {
     flexGrow: 1,
@@ -119,7 +119,7 @@ export default () => {
     interests.length > 0 &&
     !!interests.find((item) => item.isIndigenous === null || item.isIndigenous === undefined);
 
-  const handleIndigenousIdentitySubmission= async (values) => {
+  const handleIndigenousIdentitySubmission = async (values) => {
     // If the user doesn't fill in the form, hide it for now, it will be shown again on next page load
     if (isNil(values.isIndigenous)) {
       setHideIndigenousIdentityForm(true);
@@ -173,7 +173,7 @@ export default () => {
       </Dialog>
       <Dialog open={hasEmptyIndigenousQuestions && !hideIndigenousIdentityForm}>
         <IndigenousDeclarationForm handleSubmit={handleIndigenousIdentitySubmission} />
-      </Dialog> 
+      </Dialog>
       <Grid className={classes.posBox} container spacing={2}>
         <Grid style={{ paddingTop: 10 }} item xs={12}>
           <Typography variant='h2'>My Profile</Typography>

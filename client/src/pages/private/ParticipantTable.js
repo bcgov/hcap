@@ -5,7 +5,16 @@ import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import math from 'lodash/math';
-import { Box, Typography, TextField, Menu, MenuItem, Link, Checkbox, FormLabel } from '@material-ui/core';
+import {
+  Box,
+  Typography,
+  TextField,
+  Menu,
+  MenuItem,
+  Link,
+  Checkbox,
+  FormLabel,
+} from '@material-ui/core';
 import store from 'store';
 import {
   ToastStatus,
@@ -309,7 +318,7 @@ export default () => {
       reducerState.order.direction,
       reducerState.siteSelector,
       selectedTabStatuses,
-      reducerState.isIndigenousFilter,
+      reducerState.isIndigenousFilter
     );
     const newRows = filterData(data, columns);
     setRows(newRows);
@@ -336,30 +345,26 @@ export default () => {
       if (!columns) return;
       if (!selectedTab) return;
       setLoadingData(true);
-        const { data, pagination } = await fetchParticipants(
-          currentPage * pageSize,
-          reducerState.locationFilter,
-          reducerState.fsaFilter || '',
-          reducerState.lastNameFilter || '',
-          reducerState.emailFilter || '',
-          reducerState.order.field,
-          reducerState.order.direction,
-          reducerState.siteSelector,
-          selectedTabStatuses,
-          reducerState.isIndigenousFilter
-        );
-        dispatch({
-          type: 'updateKey',
-          key: 'pagination',
-          value: pagination,
-        });
-        const newRows = filterData(data, columns);
-        setRows(newRows);
-        setLoadingData(false);
-
-
-      
-
+      const { data, pagination } = await fetchParticipants(
+        currentPage * pageSize,
+        reducerState.locationFilter,
+        reducerState.fsaFilter || '',
+        reducerState.lastNameFilter || '',
+        reducerState.emailFilter || '',
+        reducerState.order.field,
+        reducerState.order.direction,
+        reducerState.siteSelector,
+        selectedTabStatuses,
+        reducerState.isIndigenousFilter
+      );
+      dispatch({
+        type: 'updateKey',
+        key: 'pagination',
+        value: pagination,
+      });
+      const newRows = filterData(data, columns);
+      setRows(newRows);
+      setLoadingData(false);
     };
 
     getParticipants();
@@ -387,10 +392,11 @@ export default () => {
   const isAdmin = roles.includes('ministry_of_health') || roles.includes('superuser');
   const isEmployer = roles.includes('health_authority') || roles.includes('employer');
   const renderCell = (columnId, row) => {
-    switch(columnId){
+    switch (columnId) {
       case 'lastName':
-        if(isAdmin || (isEmployer && selectedTab === 'Hired Candidates')){
-          return (<Link
+        if (isAdmin || (isEmployer && selectedTab === 'Hired Candidates')) {
+          return (
+            <Link
               component='button'
               variant='body2'
               onClick={() => {
@@ -418,9 +424,9 @@ export default () => {
         return 'N/A';
       case 'engage':
         const engage =
-        !row.status.includes('already_hired') &&
-        !row.status.includes('withdrawn') &&
-        !row.status.includes('archived');
+          !row.status.includes('already_hired') &&
+          !row.status.includes('withdrawn') &&
+          !row.status.includes('archived');
 
         return (
           engage && (
@@ -448,7 +454,7 @@ export default () => {
                 },
                 method: 'GET',
               });
-  
+
               const participant = await response.json();
               if (participant[0].postalCode === undefined) {
                 participant[0].postalCode = '';
@@ -462,49 +468,45 @@ export default () => {
             text='Edit'
           />
         );
-        case 'userUpdatedAt':
-          return moment(row.userUpdatedAt).fromNow();
-        case 'archive':
+      case 'userUpdatedAt':
+        return moment(row.userUpdatedAt).fromNow();
+      case 'archive':
         return (
-              <>
-                {!row.status.includes('withdrawn') && (
-                  <Button
-                    onClick={async (event) => {
-                      setAnchorElement(event.currentTarget);
-                      // Get data from row.id
-                      const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
-                        headers: {
-                          Accept: 'application/json',
-                          'Content-type': 'application/json',
-                          Authorization: `Bearer ${store.get('TOKEN')}`,
-                        },
-                        method: 'GET',
-                      });
-                      const participant = await response.json();
-                      setActionMenuParticipant(participant[0]);
-                      setActiveModalForm('archive');
-                    }}
-                    variant='outlined'
-                    size='small'
-                    text='Archive'
-                  />
-                )}
-              </>
-            );
-        case 'isIndigenous': 
-            let displayValue; 
-            if(row.isIndigenous === undefined){
-              displayValue = 'Not set';
-            }else{
-              displayValue = row.isIndigenous? 'Yes':'No';
-            }
-            return (
-              <Typography>
-                {displayValue}
-              </Typography>
-            )
-        default:
-          return row[columnId];
+          <>
+            {!row.status.includes('withdrawn') && (
+              <Button
+                onClick={async (event) => {
+                  setAnchorElement(event.currentTarget);
+                  // Get data from row.id
+                  const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
+                    headers: {
+                      Accept: 'application/json',
+                      'Content-type': 'application/json',
+                      Authorization: `Bearer ${store.get('TOKEN')}`,
+                    },
+                    method: 'GET',
+                  });
+                  const participant = await response.json();
+                  setActionMenuParticipant(participant[0]);
+                  setActiveModalForm('archive');
+                }}
+                variant='outlined'
+                size='small'
+                text='Archive'
+              />
+            )}
+          </>
+        );
+      case 'isIndigenous':
+        let displayValue;
+        if (row.isIndigenous === undefined) {
+          displayValue = 'Not set';
+        } else {
+          displayValue = row.isIndigenous ? 'Yes' : 'No';
+        }
+        return <Typography>{displayValue}</Typography>;
+      default:
+        return row[columnId];
     }
     return row[columnId];
   };
@@ -832,23 +834,24 @@ export default () => {
                 </Box>
               </Grid>
             )}
-            <Grid container item xs={2} style={{marginLeft:'10px',paddingBottom:'10px'}}>
-                <Grid xs={8} item >
-                  <FormLabel>Indigenous participants only</FormLabel>
-                </Grid>
-                <Grid xs={8} item style={{textAlign:'center'}}>
-                  <Checkbox
-                    color='primary'
-                    disabled={isLoadingData}
-                    onChange={()=>{
-                      const newValue = reducerState?.isIndigenousFilter==='true'? '':'true'
-                      dispatch({ 
-                        type:'updateKey',
-                        key:'isIndigenousFilter',
-                        value:newValue})
-                    }}
-                  />
-                </Grid>
+            <Grid container item xs={2} style={{ marginLeft: '10px', paddingBottom: '10px' }}>
+              <Grid xs={8} item>
+                <FormLabel>Indigenous participants only</FormLabel>
+              </Grid>
+              <Grid xs={8} item style={{ textAlign: 'center' }}>
+                <Checkbox
+                  color='primary'
+                  disabled={isLoadingData}
+                  onChange={() => {
+                    const newValue = reducerState?.isIndigenousFilter === 'true' ? '' : 'true';
+                    dispatch({
+                      type: 'updateKey',
+                      key: 'isIndigenousFilter',
+                      value: newValue,
+                    });
+                  }}
+                />
+              </Grid>
             </Grid>
             {selectedTab === 'Hired Candidates' && (
               <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>

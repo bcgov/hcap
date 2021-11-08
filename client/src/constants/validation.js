@@ -503,7 +503,6 @@ export const CreatePSISchema = yup.object().shape({
   healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
 });
 
-
 export const IndigenousDeclarationSchema = yup.object().shape({
   isIndigenous: yup.boolean().nullable(),
   [indigenousIdentities.FIRST_NATIONS]: yup.boolean(),
@@ -514,7 +513,7 @@ export const IndigenousDeclarationSchema = yup.object().shape({
 });
 
 export const EditPSISchema = yup.object().shape({
-  instituteName: yup.string().required(errorMessage), 
+  instituteName: yup.string().required(errorMessage),
   streetAddress: yup.string().required(errorMessage),
   city: yup.string().required(errorMessage),
   postalCode: yup

@@ -396,8 +396,8 @@ const getParticipants = async (
       postalCodeFsa: fsaFilter,
       lastName: lastNameFilter,
       emailAddress: emailFilter,
-      interestFilter: interestFilter && ['no', 'withdrawn'], 
-      isIndigenousFilter
+      interestFilter: interestFilter && ['no', 'withdrawn'],
+      isIndigenousFilter,
     })
     .filterExternalFields({ statusFilters, siteIdDistance: siteSelector })
     .paginate(pagination, sortField)
@@ -466,7 +466,7 @@ const getParticipants = async (
         userUpdatedAt: item.userUpdatedAt,
         callbackStatus: item.callbackStatus,
         distance: item.distance,
-        isIndigenous:item.isIndigenous,
+        isIndigenous: item.isIndigenous,
       };
 
       const hiredBySomeoneElseStatus = item.statusInfos?.find(

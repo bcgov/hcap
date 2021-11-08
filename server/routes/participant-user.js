@@ -109,7 +109,7 @@ router.patch(
       res.status(422).send(`No expression of interest with for user: ${userId}`);
     }
   })
-); 
+);
 
 router.patch(
   '/participant/:id',

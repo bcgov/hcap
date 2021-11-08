@@ -14,8 +14,6 @@ import { useToast } from '../../hooks';
 
 const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
 
-const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
-
 const moment = require('moment');
  
 const useStyles = makeStyles(() => ({
@@ -121,7 +119,7 @@ export default () => {
     interests.length > 0 &&
     !!interests.find((item) => item.isIndigenous === null || item.isIndigenous === undefined);
 
-  const handleIndigenousIdentitySubmission = async (values) => {
+  const handleIndigenousIdentitySubmission= async (values) => {
     // If the user doesn't fill in the form, hide it for now, it will be shown again on next page load
     if (isNil(values.isIndigenous)) {
       setHideIndigenousIdentityForm(true);
@@ -154,45 +152,6 @@ export default () => {
         message: response.error || response.statusText || 'Server error',
       });
     }
-  };
-
-  const updateUserIndigenousIdentities = async (id, values) => {
-    const { isIndigenous, ...submittedIdentities } = values;
-    const identities = Object.entries(submittedIdentities)
-      .map(([identity, selected]) => (selected ? identity : null))
-      .filter(Boolean);
-
-    const response = await fetch(`${rootUrl}/${id}`, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        isIndigenous: values.isIndigenous,
-        indigenousIdentities: identities,
-      }),
-    });
-
-    if (response.ok) {
-      await getParticipants().then((items) => setInterests(items));
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
-      });
-    }
-  };
-  const handleIndigenousIdentitySubmission = async (values) => {
-    // If the user doesn't fill in the form, hide it for now, it will be shown again on next page load
-    if (isNil(values.isIndigenous)) {
-      setHideIndigenousIdentityForm(true);
-      return;
-    }
-
-    const ids = interests.map((item) => item.id);
-    await Promise.all(ids.map(async (id) => await updateUserIndigenousIdentities(id, values)));
   };
 
   return (

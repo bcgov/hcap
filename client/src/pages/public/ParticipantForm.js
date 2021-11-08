@@ -1,7 +1,7 @@
 import React from 'react';
 import store from 'store';
 import { Page } from '../../components/generic';
-import { Typography, Box, Icon } from '@material-ui/core';
+import { Typography, Box, Icon, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InfoIcon from '@material-ui/icons/Info';
 import { Form } from '../../components/participant-form';
@@ -32,7 +32,9 @@ export default () => {
           </Typography>
         </Box>
       ) : (
-        <Form />
+        <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
+          <Form />
+        </Grid>
       )}
     </Page>
   );

@@ -834,7 +834,7 @@ export default () => {
             )}
             <Grid container item xs={2} style={{marginLeft:'10px',paddingBottom:'10px'}}>
                 <Grid xs={8} item >
-                  <FormLabel>Indigenous Participants Only</FormLabel>
+                  <FormLabel>Indigenous participants only</FormLabel>
                 </Grid>
                 <Grid xs={8} item style={{textAlign:'center'}}>
                   <Checkbox

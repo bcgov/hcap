@@ -1,9 +1,10 @@
 import { Page } from '../../components/generic';
 import React from 'react';
-import { Button, Typography, Grid } from '@material-ui/core';
+import { Button, Typography, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Routes } from '../../constants';
 import { useHistory, useParams } from 'react-router-dom';
+
 const useStyles = makeStyles((theme) => ({
   button: {
     backgroundColor: '#009BDD',
@@ -34,20 +35,36 @@ export default () => {
   };
 
   return (
-    <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
-      <Grid container spacing={4} justify='center' alignContent='center' direction='column'>
-        <Grid className={classes.textBoxes} item>
+    <Page
+      hideEmployers={!window.location.hostname.includes('freshworks.club')}
+      isAutoHeight={false}
+    >
+      <Box
+        container
+        justifyContent='center'
+        alignItems='center'
+        display='flex'
+        flexDirection='column'
+        minHeight='100%'
+      >
+        <Box
+          mb={2}
+          px={1}
+          justifyContent='center'
+          display='flex'
+          flexDirection='column'
+          maxWidth='500px'
+          textAlign='center'
+        >
           <Typography variant={'h2'}>Successfully Confirmed Interest</Typography>
           <Typography>
             You have successfully confirmed your interest and status with HCAP
           </Typography>
-        </Grid>
-        <Grid className={classes.buttonBoxes} item>
-          <Button className={classes.button} variant={'contained'} onClick={handleBackClick}>
-            View Expression of Interest
-          </Button>
-        </Grid>
-      </Grid>
+        </Box>
+        <Button className={classes.button} variant={'contained'} onClick={handleBackClick}>
+          Return Home
+        </Button>
+      </Box>
     </Page>
   );
 };

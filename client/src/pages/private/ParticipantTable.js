@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { isNil,math } from 'lodash';
+import { isNil, math } from 'lodash';
 import {
   Box,
   Typography,
@@ -499,10 +499,10 @@ export default () => {
         );
       case 'isIndigenous':
         let displayValue;
-        if (isNil(row.isIndigenous)) {
+        if (isNil(row[columnId])) {
           displayValue = 'Not set';
         } else {
-          displayValue = row.isIndigenous ? 'Yes' : 'No';
+          displayValue = row[columnId] ? 'Yes' : 'No';
         }
         return <Typography>{displayValue}</Typography>;
       default:
@@ -834,22 +834,26 @@ export default () => {
                 </Box>
               </Grid>
             )}
-            <Grid container item xs={2} style={{ paddingLeft: '10px' }}>
-              <Checkbox
-                id={"isIndigenousFilterCheckbox"}
-                color='primary'
-                disabled={isLoadingData}
-                onChange={() => {
-                  const newValue = reducerState?.isIndigenousFilter === 'true' ? '' : 'true';
-                  dispatch({
-                    type: 'updateKey',
-                    key: 'isIndigenousFilter',
-                    value: newValue,
-                  });
-                }}
-              />
-              <FormLabel for={"isIndigenousFilterCheckbox"} style={{ paddingTop: '13px' }}>Indigenous participants only</FormLabel>
-            </Grid>
+            {!roles.includes('ministry_of_health') && (
+              <Grid container item xs={2} style={{ paddingLeft: '10px' }}>
+                <Checkbox
+                  id={'isIndigenousFilterCheckbox'}
+                  color='primary'
+                  disabled={isLoadingData}
+                  onChange={() => {
+                    const newValue = reducerState?.isIndigenousFilter === 'true' ? '' : 'true';
+                    dispatch({
+                      type: 'updateKey',
+                      key: 'isIndigenousFilter',
+                      value: newValue,
+                    });
+                  }}
+                />
+                <FormLabel htmlFor={'isIndigenousFilterCheckbox'} style={{ paddingTop: '13px' }}>
+                  Indigenous participants only
+                </FormLabel>
+              </Grid>
+            )}
             {selectedTab === 'Hired Candidates' && (
               <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
                 <Button

@@ -1,4 +1,5 @@
 const express = require('express');
+const sanitizeHtml = require('sanitize-html');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { asyncMiddleware } = require('../error-handler.js');
@@ -38,7 +39,9 @@ router.post(
       return resp.status(201).json(response);
     } catch (excp) {
       if (excp.code === '23505') {
-        return resp.status(400).send({ siteId: req.body.siteId, status: 'Duplicate' });
+        return resp
+          .status(400)
+          .send({ siteId: sanitizeHtml(req.body.siteId), status: 'Duplicate' });
       }
       return resp.status(400).send(`${excp}`);
     }

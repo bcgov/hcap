@@ -1,4 +1,5 @@
 const express = require('express');
+const sanitizeHtml = require('sanitize-html');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
@@ -132,7 +133,7 @@ router.patch(
       });
       res.status(200).json(result);
     } else {
-      res.status(422).send(`No expression of interest with id: ${id}`);
+      res.status(422).send(`No expression of interest with id: ${sanitizeHtml(id)}`);
     }
   })
 );
@@ -163,7 +164,7 @@ router.post(
         res.status(422).send('Already Hired or Withdrawn');
       }
     } else {
-      res.status(422).send(`No expression of interest with id: ${id}`);
+      res.status(422).send(`No expression of interest with id: ${sanitizeHtml(id)}`);
     }
   })
 );

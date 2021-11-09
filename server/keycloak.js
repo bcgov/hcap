@@ -258,6 +258,7 @@ class Keycloak {
           name: item,
           id: this.roleIdMap[item],
         }));
+        if (!url.startsWith(this.authUrl)) throw new Error('Invalid URL');
         await axios.delete(url, { ...config, data });
       }
       {

@@ -834,24 +834,20 @@ export default () => {
                 </Box>
               </Grid>
             )}
-            <Grid container item xs={2} style={{ marginLeft: '10px', paddingBottom: '10px' }}>
-              <Grid xs={8} item>
-                <FormLabel>Indigenous participants only</FormLabel>
-              </Grid>
-              <Grid xs={8} item style={{ textAlign: 'center' }}>
-                <Checkbox
-                  color='primary'
-                  disabled={isLoadingData}
-                  onChange={() => {
-                    const newValue = reducerState?.isIndigenousFilter === 'true' ? '' : 'true';
-                    dispatch({
-                      type: 'updateKey',
-                      key: 'isIndigenousFilter',
-                      value: newValue,
-                    });
-                  }}
-                />
-              </Grid>
+            <Grid container item xs={2} style={{paddingLeft:'10px'}} >
+              <Checkbox
+                    color='primary'
+                    disabled={isLoadingData}
+                    onChange={() => {
+                      const newValue = reducerState?.isIndigenousFilter === 'true' ? '' : 'true';
+                      dispatch({
+                        type: 'updateKey',
+                        key: 'isIndigenousFilter',
+                        value: newValue,
+                      });
+                    }}
+                  />
+              <FormLabel style={{paddingTop:'13px'}}>Indigenous participants only</FormLabel>
             </Grid>
             {selectedTab === 'Hired Candidates' && (
               <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>

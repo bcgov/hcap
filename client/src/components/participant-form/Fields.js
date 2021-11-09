@@ -119,6 +119,7 @@ export const Fields = ({
                       }))
                       .map((item) => (
                         <FormControlLabel
+                          key={item.value}
                           disabled
                           label={item.label}
                           labelPlacement='end'

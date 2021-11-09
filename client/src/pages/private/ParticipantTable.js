@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import math from 'lodash/math';
+import { isNil,math } from 'lodash';
 import {
   Box,
   Typography,
@@ -499,7 +499,7 @@ export default () => {
         );
       case 'isIndigenous':
         let displayValue;
-        if (row.isIndigenous === undefined) {
+        if (isNil(row.isIndigenous)) {
           displayValue = 'Not set';
         } else {
           displayValue = row.isIndigenous ? 'Yes' : 'No';
@@ -836,6 +836,7 @@ export default () => {
             )}
             <Grid container item xs={2} style={{ paddingLeft: '10px' }}>
               <Checkbox
+                id={"isIndigenousFilterCheckbox"}
                 color='primary'
                 disabled={isLoadingData}
                 onChange={() => {
@@ -847,7 +848,7 @@ export default () => {
                   });
                 }}
               />
-              <FormLabel style={{ paddingTop: '13px' }}>Indigenous participants only</FormLabel>
+              <FormLabel for={"isIndigenousFilterCheckbox"} style={{ paddingTop: '13px' }}>Indigenous participants only</FormLabel>
             </Grid>
             {selectedTab === 'Hired Candidates' && (
               <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>

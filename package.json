@@ -15,7 +15,10 @@
     "prepare": "husky install",
     "cypress": "cypress open",
     "cypress-run": "cypress run --spec",
-    "cypress-e2e": "cypress run --headless"
+    "cypress-e2e": "cypress run --headless",
+    "precommit": "run-s 'precommit:*'",
+    "precommit:lint": "lint-staged",
+    "precommit:format": "pretty-quick --staged"
   },
   "engines": {
     "node": ">=14.0",

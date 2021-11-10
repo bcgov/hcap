@@ -71,7 +71,8 @@
           "Site Distance",
           "Non-HCAP",
           "Callback Status",
-          "Last Updated"
+          "Last Updated",
+          "Is Indigenous"
         ],
         "My Candidates": [
           "ID",
@@ -84,7 +85,8 @@
           "Preferred Region(s)",
           "Site Distance",
           "Non-HCAP",
-          "Last Updated"
+          "Last Updated",
+          "Is Indigenous"
         ],
         "Archived Candidates": [
           "ID",
@@ -97,7 +99,8 @@
           "Preferred Region(s)",
           "Site Distance",
           "Non-HCAP",
-          "Last Updated"
+          "Last Updated",
+          "Is Indigenous"
         ],
         "Hired Candidates": [
           "ID",
@@ -111,7 +114,8 @@
           "Site Distance",
           "Site Name",
           "Non-HCAP",
-          "Last Updated"
+          "Last Updated",
+          "Is Indigenous"
         ]
       }
     },
@@ -143,7 +147,8 @@
           "Site Distance",
           "Non-HCAP",
           "Callback Status",
-          "Last Updated"
+          "Last Updated",
+          "Is Indigenous"
         ],
         "My Candidates": [
           "ID",
@@ -156,7 +161,8 @@
           "Preferred Region(s)",
           "Site Distance",
           "Non-HCAP",
-          "Last Updated"
+          "Last Updated",
+          "Is Indigenous"
         ],
         "Archived Candidates": [
           "ID",
@@ -169,7 +175,8 @@
           "Preferred Region(s)",
           "Site Distance",
           "Non-HCAP",
-          "Last Updated"
+          "Last Updated",
+          "Is Indigenous"
         ],
         "Hired Candidates": [
           "ID",
@@ -183,7 +190,8 @@
           "Site Distance",
           "Site Name",
           "Non-HCAP",
-          "Last Updated"
+          "Last Updated",
+          "Is Indigenous"
         ]
       }
     }

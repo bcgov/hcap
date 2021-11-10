@@ -385,7 +385,8 @@ const getParticipants = async (
   lastNameFilter,
   emailFilter,
   siteSelector,
-  statusFilters
+  statusFilters,
+  isIndigenousFilter
 ) => {
   const participantsFinder = new ParticipantsFinder(dbClient, user);
   const interestFilter = (user.isHA || user.isEmployer) && statusFilters?.includes('open');
@@ -396,6 +397,7 @@ const getParticipants = async (
       lastName: lastNameFilter,
       emailAddress: emailFilter,
       interestFilter: interestFilter && ['no', 'withdrawn'],
+      isIndigenousFilter,
     })
     .filterExternalFields({ statusFilters, siteIdDistance: siteSelector })
     .paginate(pagination, sortField)
@@ -431,7 +433,6 @@ const getParticipants = async (
         if (total > 0)
           returnStatus = total === 1 ? 'In Progress' : `In Progress (${progressStats.total})`;
         if (hired) returnStatus = 'Hired';
-
         return {
           id: item.id,
           firstName: item.firstName,
@@ -465,6 +466,7 @@ const getParticipants = async (
         userUpdatedAt: item.userUpdatedAt,
         callbackStatus: item.callbackStatus,
         distance: item.distance,
+        isIndigenous: item.isIndigenous,
       };
 
       const hiredBySomeoneElseStatus = item.statusInfos?.find(

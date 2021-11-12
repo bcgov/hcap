@@ -134,11 +134,10 @@ const columns = {
   crcClear: { id: 'crcClear', name: 'CRC Clear', sortOrder: 13 },
   callbackStatus: { id: 'callbackStatus', name: 'Callback Status', sortOrder: 14 },
   userUpdatedAt: { id: 'userUpdatedAt', name: 'Last Updated', sortOrder: 15 },
-  isIndigenous: { id: 'isIndigenous', name: 'Is Indigenous', sortOrder: 16 },
-  engage: { id: 'engage', name: null, sortOrder: 17 },
-  edit: { id: 'edit', name: null, sortOrder: 18 },
-  siteName: { id: 'siteName', name: 'Site Name', sortOrder: 19 },
-  archive: { id: 'archive', name: 'Archive', soryOrder: 20 },
+  engage: { id: 'engage', name: null, sortOrder: 16 },
+  edit: { id: 'edit', name: null, sortOrder: 17 },
+  siteName: { id: 'siteName', name: 'Site Name', sortOrder: 18 },
+  archive: { id: 'archive', name: 'Archive', soryOrder: 19 },
 };
 
 const {
@@ -160,7 +159,6 @@ const {
   edit,
   siteName,
   archive,
-  isIndigenous,
 } = columns;
 
 export const columnsByRole = {
@@ -212,7 +210,6 @@ export const columnsByRole = {
       nonHCAP,
       callbackStatus,
       userUpdatedAt,
-      isIndigenous,
       engage,
     ],
     'My Candidates': [
@@ -227,7 +224,6 @@ export const columnsByRole = {
       distance,
       nonHCAP,
       userUpdatedAt,
-      isIndigenous,
       engage,
     ],
     'Archived Candidates': [
@@ -242,7 +238,6 @@ export const columnsByRole = {
       distance,
       nonHCAP,
       userUpdatedAt,
-      isIndigenous,
       engage,
     ],
     'Hired Candidates': [
@@ -258,7 +253,6 @@ export const columnsByRole = {
       siteName,
       nonHCAP,
       userUpdatedAt,
-      isIndigenous,
       archive,
     ],
   },
@@ -276,7 +270,6 @@ export const columnsByRole = {
       nonHCAP,
       callbackStatus,
       userUpdatedAt,
-      isIndigenous,
       engage,
     ],
     'My Candidates': [
@@ -291,7 +284,6 @@ export const columnsByRole = {
       distance,
       nonHCAP,
       userUpdatedAt,
-      isIndigenous,
       engage,
     ],
     'Archived Candidates': [
@@ -306,7 +298,6 @@ export const columnsByRole = {
       distance,
       nonHCAP,
       userUpdatedAt,
-      isIndigenous,
       engage,
     ],
     'Hired Candidates': [
@@ -322,7 +313,6 @@ export const columnsByRole = {
       siteName,
       nonHCAP,
       userUpdatedAt,
-      isIndigenous,
       archive,
     ],
   },

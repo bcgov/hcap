@@ -497,14 +497,6 @@ export default () => {
             )}
           </>
         );
-      case 'isIndigenous':
-        let displayValue;
-        if (isNil(row[columnId])) {
-          displayValue = 'Not set';
-        } else {
-          displayValue = row[columnId] ? 'Yes' : 'No';
-        }
-        return <Typography>{displayValue}</Typography>;
       default:
         return row[columnId];
     }

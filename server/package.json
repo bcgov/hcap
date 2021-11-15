@@ -45,7 +45,7 @@
     "node-xlsx": "0.17.1",
     "pg": "8.5.1",
     "prettier": "2.3.0",
-    "string-replace-middleware": "^1.0.2",
+    "string-replace-middleware": "1.0.2",
     "tiny-async-pool": "1.1.0",
     "uuid": "8.3.2",
     "winston": "3.3.3",

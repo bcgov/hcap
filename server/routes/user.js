@@ -8,7 +8,7 @@ const { asyncMiddleware } = require('../error-handler.js');
 const { expressRequestBodyValidator } = require('../middleware');
 const { AccessRequestApproval } = require('../validation.js');
 const { dbClient, collections } = require('../db');
-
+const { sanitize } = require('../utils');
 // Services
 const { getUserSites } = require('../services/user.js');
 
@@ -26,7 +26,7 @@ userDetailsRouter.get(
     const { query: { id: userId } = {} } = req;
     if (!userId) return res.status(400).send('No user id');
     const roles = await keycloak.getUserRoles(userId);
-    const sites = await getUserSites(userId);
+    const sites = await getUserSites(sanitize(userId));
     return res.status(200).json({
       roles,
       sites,

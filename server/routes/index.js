@@ -9,7 +9,7 @@ const { asyncMiddleware } = require('../error-handler.js');
 const keycloak = require('../keycloak.js');
 const { healthCheck } = require('../services/health-check');
 const participantUserRoute = require('./participant-user');
-
+const { sanitize } = require('../utils');
 const {
   participantRouter,
   participantsRouter,
@@ -103,7 +103,11 @@ apiRouter.post(
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(AccessRequestApproval, req.body);
-    await keycloak.setUserRoles(req.body.userId, req.body.role, req.body.regions);
+    await keycloak.setUserRoles(
+      sanitize(req.body.userId),
+      sanitize(req.body.role),
+      req.body.regions
+    );
     await dbClient.db.saveDoc(collections.USERS, {
       keycloakId: req.body.userId,
       sites: req.body.sites,

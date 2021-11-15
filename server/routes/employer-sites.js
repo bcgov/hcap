@@ -9,7 +9,7 @@ const {
   getHiredParticipantsBySite,
   getWithdrawnParticipantsBySite,
 } = require('../services/participants.js');
-
+const { sanitize } = require('../utils.js');
 // Main router
 const router = express.Router();
 
@@ -38,7 +38,7 @@ router.post(
       return resp.status(201).json(response);
     } catch (excp) {
       if (excp.code === '23505') {
-        return resp.status(400).send({ siteId: req.body.siteId, status: 'Duplicate' });
+        return resp.status(400).send({ siteId: sanitize(req.body.siteId), status: 'Duplicate' });
       }
       return resp.status(400).send(`${excp}`);
     }

@@ -12,7 +12,7 @@ const {
   withdrawParticipantsByEmail,
 } = require('../services/participants');
 
-const { patchObject } = require('../utils');
+const { patchObject, sanitize } = require('../utils');
 
 const { UserParticipantEditSchema, validate } = require('../validation');
 
@@ -115,7 +115,7 @@ router.patch(
   '/participant/:id',
   asyncMiddleware(async (req, res) => {
     const { user_id: userId } = req.user;
-    const { id } = req.params;
+    const id = sanitize(req.params.id);
     const changes = { ...patchObject(req.body, patchableFields), id };
     await validate(UserParticipantEditSchema, changes);
     const participants = await getParticipantByIdWithStatus({ id, userId });

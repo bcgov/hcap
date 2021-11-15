@@ -1,7 +1,6 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Page, Button } from '../../components/generic';
-import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
@@ -45,15 +44,11 @@ const useStyles = makeStyles((theme) => ({
 export default () => {
   const classes = useStyles();
   const [keycloak] = useKeycloak();
-  const history = useHistory();
   const redirectToLogin = () => {
     keycloak.login({
       idpHint: 'BCSC',
       redirectUri: `${window.location.origin}${Routes.ParticipantLanding}`,
     });
-  };
-  const redirectToForm = () => {
-    history.push(Routes.ParticipantForm);
   };
 
   return (

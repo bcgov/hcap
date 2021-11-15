@@ -55,7 +55,6 @@ export const EmailSubmissionForm = () => {
   const classes = useStyles();
 
   const handleSubmit = async (values, { setSubmitting }) => {
-    console.log('submitted', { values });
     await new Promise((resolve) => setTimeout(resolve, 500));
     setSubmitting(false);
   };

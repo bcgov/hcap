@@ -4,7 +4,7 @@ import { Typography, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import heroBackground from '../../assets/images/disabled-peoi-hero.png';
-import { EmailSubmissionForm } from './EmailSubmissionForm';
+import { EmailSubmissionForm, EmailSubmissionHeader } from './EmailSubmissionForm';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -98,15 +98,6 @@ const useStyles = makeStyles((theme) => ({
     top: '100%',
     marginTop: '1rem',
   },
-  submissionHeader: {
-    color: '#1a5a96',
-    margin: '0 1rem 1rem 1rem',
-    [theme.breakpoints.down('sm')]: {
-      textAlign: 'center',
-      fontSize: '1.5rem',
-      lineHeight: '1.75rem',
-    },
-  },
 }));
 
 export const DisabledLanding = () => {
@@ -145,9 +136,7 @@ export const DisabledLanding = () => {
         </Box>
 
         <Box className={classes.submissionContainer}>
-          <Typography variant='subtitle1' className={classes.submissionHeader}>
-            Get notified when the submissions are open
-          </Typography>
+          <EmailSubmissionHeader />
           <EmailSubmissionForm />
         </Box>
       </Box>

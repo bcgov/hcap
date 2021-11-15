@@ -1,7 +1,7 @@
 import React from 'react';
 import { Field, Formik, Form as FormikForm } from 'formik';
 
-import { Box, Icon } from '@material-ui/core';
+import { Box, Icon, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
 
@@ -34,8 +34,19 @@ const useStyles = makeStyles((theme) => ({
   submissionButton: {
     marginTop: '1rem',
     minWidth: '8.5rem',
+    whiteSpace: 'nowrap',
     [theme.breakpoints.down('sm')]: {
       width: '100%',
+    },
+  },
+  submissionHeader: {
+    color: '#1a5a96',
+    marginBottom: '1rem',
+    textAlign: 'center',
+    [theme.breakpoints.down('sm')]: {
+      margin: '0 1rem 1rem 1rem',
+      fontSize: '1.5rem',
+      lineHeight: '1.75rem',
     },
   },
 }));
@@ -81,5 +92,15 @@ export const EmailSubmissionForm = () => {
         </FormikForm>
       )}
     </Formik>
+  );
+};
+
+export const EmailSubmissionHeader = () => {
+  const classes = useStyles();
+
+  return (
+    <Typography variant='subtitle1' className={classes.submissionHeader}>
+      Get notified when the submissions are open
+    </Typography>
   );
 };

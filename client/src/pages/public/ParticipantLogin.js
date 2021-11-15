@@ -6,6 +6,10 @@ import { useKeycloak } from '@react-keycloak/web';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import { Routes } from '../../constants';
+import {
+  EmailSubmissionForm,
+  EmailSubmissionHeader,
+} from '../../components/participant-form/EmailSubmissionForm';
 
 const useStyles = makeStyles((theme) => ({
   blueText: {
@@ -98,24 +102,8 @@ export default () => {
             employer sponsored health care assistant training as part of their employment.
           </Typography>
           <Box p={4} mt={2} className={classes.blueBox}>
-            <Typography variant={'subtitle2'} className={classes.blueText}>
-              Don't have an account yet?
-            </Typography>
-            <Box mb={2}>
-              <Typography>
-                To start as a health care support worker, you need to submit your expression of
-                interest first.
-              </Typography>
-            </Box>
-            <Button
-              className={classes.button}
-              variant='contained'
-              color='primary'
-              fullWidth={false}
-              text={'Submit Your Expression of Interest'}
-              onClick={redirectToForm}
-              m={2}
-            />
+            <EmailSubmissionHeader />
+            <EmailSubmissionForm />
           </Box>
         </Box>
       </Box>

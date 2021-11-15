@@ -62,7 +62,7 @@ export default () => {
           </Typography>
         </Box>
         <Button className={classes.button} variant={'contained'} onClick={handleBackClick}>
-          Return Home
+          Go Back
         </Button>
       </Box>
     </Page>

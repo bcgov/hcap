@@ -36,7 +36,7 @@ export default () => {
           variant='contained'
           onClick={() => history.push(Routes.ParticipantLanding)}
         >
-          Go Back
+          Return Home
         </Button>
       </Box>
     </Page>

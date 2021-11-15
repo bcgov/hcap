@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { isNil, math } from 'lodash';
+import { math } from 'lodash';
 import {
   Box,
   Typography,
@@ -497,14 +497,6 @@ export default () => {
             )}
           </>
         );
-      case 'isIndigenous':
-        let displayValue;
-        if (isNil(row[columnId])) {
-          displayValue = 'Not set';
-        } else {
-          displayValue = row[columnId] ? 'Yes' : 'No';
-        }
-        return <Typography>{displayValue}</Typography>;
       default:
         return row[columnId];
     }

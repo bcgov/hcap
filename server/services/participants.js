@@ -466,7 +466,6 @@ const getParticipants = async (
         userUpdatedAt: item.userUpdatedAt,
         callbackStatus: item.callbackStatus,
         distance: item.distance,
-        isIndigenous: item.isIndigenous,
       };
 
       const hiredBySomeoneElseStatus = item.statusInfos?.find(

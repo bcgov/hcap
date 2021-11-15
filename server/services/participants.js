@@ -123,20 +123,15 @@ const createChangeHistory = (participantBody, changes) => {
     timestamp: new Date(),
     changes: [...changeDetails],
   };
-  if (typeof participantBody.history === 'object') {
-    newBody.history = participantBody.history
-      ? [newHistory, ...participantBody.history]
-      : [newHistory];
-  }
+  newBody.history = participantBody.history
+    ? [newHistory, ...participantBody.history]
+    : [newHistory];
   return newBody;
 };
 
 const updateParticipant = async (participantInfo) => {
   // The below reduce function unpacks the most recent changes in the history
   // and builds them into an object to be used for the update request
-  if (!participantInfo.history[0]?.changes) {
-    return await getParticipantByID(participantInfo);
-  }
   const changes = participantInfo.history[0]?.changes.reduce(
     (acc, change) => {
       const { field, to } = change;

@@ -39,7 +39,7 @@ const saveSites = async (sitesArg) => {
 };
 
 const updateSite = async (id, site) => {
-  const changes = site.history[0]?.changes.reduce(
+  const changes = site.history[0].changes.reduce(
     (acc, change) => {
       const { field, to } = change;
       return { ...acc, [field]: to };

@@ -26,6 +26,7 @@ export default createMuiTheme({
   // Colors
   palette: {
     primary: {
+      lighter: '#1A5A96',
       light: '#003366',
       main: '#002C71',
     },

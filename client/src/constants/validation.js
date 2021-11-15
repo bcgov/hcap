@@ -613,3 +613,7 @@ export const ParticipantFormSchema = yup
       .required(errorMessage)
       .test('is-true', errorMessage, (v) => v === true),
   });
+
+export const EmailSubmissionSchema = yup.object().shape({
+  email: yup.string().email().required('Required'),
+});

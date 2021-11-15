@@ -1,14 +1,10 @@
 import React from 'react';
-import * as yup from 'yup';
-import { Field, Formik, Form as FormikForm } from 'formik';
 
-import { Typography, Box, Icon } from '@material-ui/core';
+import { Typography, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
 
-import { RenderTextField } from '../fields';
-import { Button } from '../generic';
 import heroBackground from '../../assets/images/disabled-peoi-hero.png';
+import { EmailSubmissionForm } from './EmailSubmissionForm';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -111,43 +107,10 @@ const useStyles = makeStyles((theme) => ({
       lineHeight: '1.75rem',
     },
   },
-  submissionInputContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    flexGrow: '1',
-    width: '20rem',
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-    },
-  },
-  submissionForm: {
-    display: 'flex',
-    gap: '1rem',
-    alignItems: 'flex-start',
-    [theme.breakpoints.down('sm')]: {
-      width: 'auto',
-      margin: '1rem',
-      flexDirection: 'column',
-      gap: '0',
-    },
-  },
-  submissionButton: {
-    marginTop: '1rem',
-    minWidth: '8.5rem',
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-    },
-  },
 }));
 
 export const DisabledLanding = () => {
   const classes = useStyles();
-  const handleSubmit = async (values, { setSubmitting }) => {
-    console.log('submitted', { values });
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setSubmitting(false);
-  };
 
   return (
     <Box className={classes.container}>
@@ -185,40 +148,7 @@ export const DisabledLanding = () => {
           <Typography variant='subtitle1' className={classes.submissionHeader}>
             Get notified when the submissions are open
           </Typography>
-          <Formik
-            initialValues={{ email: '' }}
-            validationSchema={yup.object().shape({
-              email: yup.string().email().required('Required'),
-            })}
-            onSubmit={handleSubmit}
-          >
-            {({ isSubmitting }) => (
-              <FormikForm className={classes.submissionForm}>
-                <Box className={classes.submissionInputContainer}>
-                  <Field
-                    name='email'
-                    component={RenderTextField}
-                    label='Email'
-                    placeholder='Type your email here'
-                  />
-                </Box>
-                <Button
-                  type='submit'
-                  variant='contained'
-                  color='primary'
-                  loading={isSubmitting}
-                  className={classes.submissionButton}
-                  text={
-                    <Box display='flex' alignItems='center'>
-                      <Icon component={NotificationsActiveIcon} style={{ marginRight: '.5rem' }} />
-                      Notify me
-                    </Box>
-                  }
-                  fullWidth={false}
-                />
-              </FormikForm>
-            )}
-          </Formik>
+          <EmailSubmissionForm />
         </Box>
       </Box>
     </Box>

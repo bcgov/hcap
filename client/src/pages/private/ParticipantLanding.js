@@ -163,9 +163,9 @@ export default () => {
         indigenousIdentities: identities,
       }),
     });
-
     if (response.ok) {
       await getParticipants().then((items) => setInterests(items));
+      setHideIndigenousIdentityForm(true);
     } else {
       openToast({
         status: ToastStatus.Error,

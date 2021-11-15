@@ -1,12 +1,14 @@
 import React from 'react';
 import * as yup from 'yup';
+import { Field, Formik, Form as FormikForm } from 'formik';
+
 import { Typography, Box, Icon } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Field, Formik, Form as FormikForm } from 'formik';
+import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
+
 import { RenderTextField } from '../../components/fields';
 import { Button } from '../../components/generic';
-
-import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
+import heroBackground from '../../assets/images/disabled-peoi-hero.png';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -149,7 +151,7 @@ export const DisabledForm = () => {
 
   return (
     <Box className={classes.container}>
-      <img src='hero.png' alt='' className={classes.hero} />
+      <img src={heroBackground} alt='' className={classes.hero} />
 
       <Box className={classes.infoContainer}>
         <Typography variant='h1' className={classes.heading}>

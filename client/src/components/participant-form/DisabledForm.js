@@ -51,6 +51,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   infoBoxHeader: {
+    marginBottom: '1rem',
+
     [theme.breakpoints.down('sm')]: {
       fontSize: '2rem',
       lineHeight: '2.25rem',
@@ -149,16 +151,14 @@ export const DisabledForm = () => {
     <Box className={classes.container}>
       <img src='hero.png' alt='' className={classes.hero} />
 
-      <div className={classes.infoContainer}>
+      <Box className={classes.infoContainer}>
         <Typography variant='h1' className={classes.heading}>
           Work In The Health Care Sector
         </Typography>
         <Box className={classes.infoBox}>
-          <Box mb={3}>
-            <Typography variant='h2' className={classes.infoBoxHeader}>
-              Submissions are temporarily closed
-            </Typography>
-          </Box>
+          <Typography variant='h2' className={classes.infoBoxHeader}>
+            Submissions are temporarily closed
+          </Typography>
 
           <Typography variant='body1' className={classes.infoBoxParagraph}>
             The participant expression of interest for the HCAP program is now closed and may reopen
@@ -218,7 +218,7 @@ export const DisabledForm = () => {
             )}
           </Formik>
         </Box>
-      </div>
+      </Box>
     </Box>
   );
 };

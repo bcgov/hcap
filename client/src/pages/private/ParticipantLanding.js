@@ -1,16 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Grid, Card, Box, Typography, Button, CardActions, Dialog } from '@material-ui/core';
+import {
+  Grid,
+  Card,
+  Box,
+  Typography,
+  Button,
+  CardActions,
+  Dialog,
+  CircularProgress,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import store from 'store';
 import { Page } from '../../components/generic';
 import { API_URL, Routes, ToastStatus } from '../../constants';
 import { PEOIWithdrawalDialogForm } from '../../components/modal-forms/PEOIWithdrawalDialogForm';
 import { genericConfirm } from '../../constants/validation';
-import ParticipantLandingEmpty from './ParticipantLandingEmpty';
 import { IndigenousDeclarationForm } from '../../components/modal-forms/IndigenousDeclarationForm';
 import isNil from 'lodash/isNil';
 import { useToast } from '../../hooks';
+import { DisabledLanding } from '../../components/participant-form/DisabledLanding';
 
 const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
 
@@ -107,10 +116,21 @@ export default () => {
       setIsLoading(false);
     });
   }, [setInterests, setIsLoading]);
-  if (!isLoading && interests.length === 0) {
+
+  if (isLoading) {
     return (
       <Page>
-        <ParticipantLandingEmpty />
+        <Box height='100%' display='flex' alignItems='center'>
+          <CircularProgress />
+        </Box>
+      </Page>
+    );
+  }
+
+  if (interests.length === 0) {
+    return (
+      <Page>
+        <DisabledLanding />
       </Page>
     );
   }

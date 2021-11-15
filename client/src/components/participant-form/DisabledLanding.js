@@ -6,8 +6,8 @@ import { Typography, Box, Icon } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
 
-import { RenderTextField } from '../../components/fields';
-import { Button } from '../../components/generic';
+import { RenderTextField } from '../fields';
+import { Button } from '../generic';
 import heroBackground from '../../assets/images/disabled-peoi-hero.png';
 
 const useStyles = makeStyles((theme) => ({
@@ -141,7 +141,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const DisabledForm = () => {
+export const DisabledLanding = () => {
   const classes = useStyles();
   const handleSubmit = async (values, { setSubmitting }) => {
     console.log('submitted', { values });

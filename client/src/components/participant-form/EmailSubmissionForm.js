@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const addEmailToWhitelist = async (email, openToast) => {
+const addEmailToWaitlist = async (email, openToast) => {
   const resp = await fetch(`${API_URL}/api/v1/participants/waitlist`, {
     headers: { Accept: 'application/json', 'Content-type': 'application/json' },
     body: JSON.stringify({ email }),
@@ -78,7 +78,7 @@ export const EmailSubmissionForm = () => {
   const handleSubmit = async (values, { setSubmitting }) => {
     setSubmitting(true);
     try {
-      await addEmailToWhitelist(values.email, openToast);
+      await addEmailToWaitlist(values.email, openToast);
     } catch (e) {
       openToast({
         status: ToastStatus.Error,

@@ -14,8 +14,8 @@ const {
   deleteAcknowledgement,
   archiveParticipantBySite,
   deleteParticipant,
-  addParticipantToWaitlist,
 } = require('../services/participants.js');
+const { addParticipantToWaitlist } = require('../services/waitlist');
 const {
   validate,
   ParticipantQuerySchema,

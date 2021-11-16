@@ -8,6 +8,8 @@ import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
 import { RenderTextField } from '../fields';
 import { Button } from '../generic';
 import { EmailSubmissionSchema } from '../../constants';
+import { API_URL, ToastStatus } from '../../constants';
+import { useToast } from '../../hooks';
 
 const useStyles = makeStyles((theme) => ({
   submissionInputContainer: {
@@ -51,11 +53,39 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const addEmailToWhitelist = async (email) => {
+  const resp = await fetch(`${API_URL}/api/v1/participants/waitlist`, {
+    headers: { Accept: 'application/json', 'Content-type': 'application/json' },
+    body: JSON.stringify({ email }),
+    method: 'POST',
+  });
+  return resp.ok;
+};
+
 export const EmailSubmissionForm = () => {
   const classes = useStyles();
-
+  const { openToast } = useToast();
   const handleSubmit = async (values, { setSubmitting }) => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    setSubmitting(true);
+
+    let resp = false;
+    try {
+      resp = await addEmailToWhitelist(values.email);
+    } catch (e) {
+      resp = false;
+    }
+    if (resp) {
+      openToast({
+        status: ToastStatus.Success,
+        message: 'Your email has been added to the waitlist.',
+      });
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: 'An error occured.',
+      });
+    }
+
     setSubmitting(false);
   };
   return (

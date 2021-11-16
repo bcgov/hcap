@@ -15,6 +15,7 @@ const collections = {
   POST_SECONDARY_INSTITUTIONS: 'post_secondary_institutions',
   COHORTS: 'cohorts',
   COHORT_PARTICIPANTS: 'cohort_participants',
+  WAITLIST: 'waitlist',
 };
 
 const views = {

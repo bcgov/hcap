@@ -166,6 +166,18 @@ const withdrawParticipant = async (participantInfo) => {
   return updateParticipant(participant);
 };
 
+const addParticipantToWaitlist = async (email) => {
+  const alreadyExists = await dbClient.db[collections.WAITLIST].findOne({
+    email,
+  });
+  if (alreadyExists) {
+    return;
+  }
+  await dbClient.db[collections.WAITLIST].save({
+    email,
+  });
+};
+
 const archiveParticipantBySite = async (siteId, participantId, data, userId) => {
   const hiredParticipants = await getHiredParticipantsBySite(siteId);
   if (!hiredParticipants) {
@@ -783,4 +795,5 @@ module.exports = {
   deleteAcknowledgement,
   withdrawParticipantsByEmail,
   deleteParticipant,
+  addParticipantToWaitlist,
 };

@@ -53,13 +53,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const addEmailToWhitelist = async (email) => {
+const addEmailToWhitelist = async (email, openToast) => {
   const resp = await fetch(`${API_URL}/api/v1/participants/waitlist`, {
     headers: { Accept: 'application/json', 'Content-type': 'application/json' },
     body: JSON.stringify({ email }),
     method: 'POST',
   });
-  return resp.ok;
+  console.log(resp);
+  if (resp.ok) {
+    openToast({
+      status: ToastStatus.Success,
+      message:
+        'Your email has been added to the list. You will be notified when submissions are open.',
+    });
+  } else if (resp.status === 400) {
+    openToast({
+      status: ToastStatus.Info,
+      message: 'Your email address was already on the list.',
+    });
+  }
 };
 
 export const EmailSubmissionForm = () => {
@@ -67,25 +79,14 @@ export const EmailSubmissionForm = () => {
   const { openToast } = useToast();
   const handleSubmit = async (values, { setSubmitting }) => {
     setSubmitting(true);
-
-    let resp = false;
     try {
-      resp = await addEmailToWhitelist(values.email);
+      await addEmailToWhitelist(values.email, openToast);
     } catch (e) {
-      resp = false;
-    }
-    if (resp) {
-      openToast({
-        status: ToastStatus.Success,
-        message: 'Your email has been added to the waitlist.',
-      });
-    } else {
       openToast({
         status: ToastStatus.Error,
         message: 'An error occured.',
       });
     }
-
     setSubmitting(false);
   };
   return (

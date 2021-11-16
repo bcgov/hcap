@@ -171,11 +171,12 @@ const addParticipantToWaitlist = async (email) => {
     email,
   });
   if (alreadyExists) {
-    return;
+    return false;
   }
   await dbClient.db[collections.WAITLIST].save({
     email,
   });
+  return true;
 };
 
 const archiveParticipantBySite = async (siteId, participantId, data, userId) => {

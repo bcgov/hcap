@@ -8,43 +8,49 @@ import { EmailSubmissionForm, EmailSubmissionHeader } from './EmailSubmissionFor
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
+    display: 'grid',
+    gridTemplateColumns: '1fr clamp(775px, 65%, 1000px) 1fr',
+    gridTemplateRows: '150px 150px 150px 1fr',
     width: '100%',
-  },
-  infoContainer: {
-    top: '100%',
-    transform: 'translateY(-50%)',
-    position: 'absolute',
-    zIndex: '1',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
     [theme.breakpoints.down('sm')]: {
-      position: 'static',
-      top: 'auto',
-      transform: 'none',
-      width: '100%',
+      display: 'block',
+    },
+  },
+  hero: {
+    zIndex: '0',
+    gridArea: '1 / 1 / 3 / 4',
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
+  },
+  heading: {
+    zIndex: '1',
+    gridArea: '1 / 2',
+    color: 'white',
+    justifySelf: 'center',
+    alignSelf: 'end',
+    padding: '2rem',
+    [theme.breakpoints.down('sm')]: {
+      textAlign: 'center',
+      fontSize: '2rem',
+      fontWeight: 'bold',
+      background: theme.palette.primary.lighter,
     },
   },
   infoBox: {
+    zIndex: 1,
+    gridArea: '2 / 2 / 4 / 3',
     background: 'white',
     padding: '3rem 7.5rem',
     borderRadius: '.25rem',
     textAlign: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: 'clamp(775px, 65%, 1000px)',
     [theme.breakpoints.down('sm')]: {
-      position: 'static',
-      top: 'auto',
-      transform: 'none',
       width: 'auto',
       margin: '1rem',
+      marginBottom: '2rem',
       padding: '1rem',
     },
   },
@@ -64,39 +70,15 @@ const useStyles = makeStyles((theme) => ({
       textAlign: 'left',
     },
   },
-  hero: {
-    width: '100%',
-    minHeight: '300px',
-    zIndex: '0',
-    objectFit: 'cover',
-    [theme.breakpoints.down('sm')]: {
-      display: 'none',
-    },
-  },
-  heading: {
-    position: 'absolute',
-    zIndex: '1',
-    color: 'white',
-    bottom: '100%',
-    marginBottom: '2rem',
-    [theme.breakpoints.down('sm')]: {
-      background: theme.palette.primary.lighter,
-      position: 'static',
-      textAlign: 'center',
-      top: 'auto',
-      transform: 'none',
-      width: '100%',
-      fontSize: '2rem',
-      margin: 0,
-      fontWeight: 'bold',
-      padding: '2rem',
-    },
-  },
   submissionContainer: {
-    position: 'absolute',
-    zIndex: '1',
-    top: '100%',
-    marginTop: '1rem',
+    gridArea: '4 / 2',
+    width: '50%',
+    justifySelf: 'center',
+    margin: '1rem',
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+      margin: '0',
+    },
   },
 }));
 
@@ -107,38 +89,37 @@ export const DisabledLanding = () => {
     <Box className={classes.container}>
       <img src={heroBackground} alt='' className={classes.hero} />
 
-      <Box className={classes.infoContainer}>
-        <Typography variant='h1' className={classes.heading}>
-          Work In The Health Care Sector
+      <Typography variant='h1' className={classes.heading}>
+        Work In The Health Care Sector
+      </Typography>
+
+      <Box className={classes.infoBox}>
+        <Typography variant='h2' className={classes.infoBoxHeader}>
+          Submissions are temporarily closed
         </Typography>
-        <Box className={classes.infoBox}>
-          <Typography variant='h2' className={classes.infoBoxHeader}>
-            Submissions are temporarily closed
-          </Typography>
 
-          <Typography variant='body1' className={classes.infoBoxParagraph}>
-            The participant expression of interest for the HCAP program is now closed and may reopen
-            as more opportunities become available. Thank you for your interest in the program. To
-            learn more, visit the{' '}
-            <a href='https://gov.bc.ca/careersinhealth' target='_blank' rel='noreferrer'>
-              Health Career Access Program
-            </a>
-            .
-          </Typography>
-          <Typography variant='body1' className={classes.infoBoxParagraph}>
-            Eligible employers will continue to reach out to those who are currently in the system.
-            If you have any questions, please email{' '}
-            <a href='mailto:HCAPInfoQuery@gov.bc.ca' target='_blank' rel='noreferrer'>
-              HCAPInfoQuery@gov.bc.ca
-            </a>
-            .
-          </Typography>
-        </Box>
+        <Typography variant='body1' className={classes.infoBoxParagraph}>
+          The participant expression of interest for the HCAP program is now closed and may reopen
+          as more opportunities become available. Thank you for your interest in the program. To
+          learn more, visit the{' '}
+          <a href='https://gov.bc.ca/careersinhealth' target='_blank' rel='noreferrer'>
+            Health Career Access Program
+          </a>
+          .
+        </Typography>
+        <Typography variant='body1' className={classes.infoBoxParagraph}>
+          Eligible employers will continue to reach out to those who are currently in the system. If
+          you have any questions, please email{' '}
+          <a href='mailto:HCAPInfoQuery@gov.bc.ca' target='_blank' rel='noreferrer'>
+            HCAPInfoQuery@gov.bc.ca
+          </a>
+          .
+        </Typography>
+      </Box>
 
-        <Box className={classes.submissionContainer}>
-          <EmailSubmissionHeader />
-          <EmailSubmissionForm />
-        </Box>
+      <Box className={classes.submissionContainer}>
+        <EmailSubmissionHeader />
+        <EmailSubmissionForm />
       </Box>
     </Box>
   );

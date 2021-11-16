@@ -7,8 +7,7 @@ import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
 
 import { RenderTextField } from '../fields';
 import { Button } from '../generic';
-import { EmailSubmissionSchema } from '../../constants';
-import { API_URL, ToastStatus } from '../../constants';
+import { EmailSubmissionSchema, API_URL, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 
 const useStyles = makeStyles((theme) => ({

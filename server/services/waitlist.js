@@ -1,4 +1,5 @@
 const { dbClient, collections } = require('../db');
+
 const waitlistHasEmail = async (email) => {
   const alreadyExists = await dbClient.db[collections.WAITLIST].findOne({
     email,

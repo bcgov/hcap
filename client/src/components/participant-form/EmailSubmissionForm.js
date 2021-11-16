@@ -59,7 +59,6 @@ const addEmailToWhitelist = async (email, openToast) => {
     body: JSON.stringify({ email }),
     method: 'POST',
   });
-  console.log(resp);
   if (resp.ok) {
     openToast({
       status: ToastStatus.Success,

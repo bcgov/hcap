@@ -64,11 +64,13 @@ const addEmailToWaitlist = async (email, openToast) => {
       message:
         'Your email has been added to the list. You will be notified when submissions are open.',
     });
-  } else if (resp.status === 400) {
+  } else if (resp.status === 409) {
     openToast({
       status: ToastStatus.Info,
       message: 'Your email address was already on the list.',
     });
+  } else {
+    throw new Error();
   }
 };
 

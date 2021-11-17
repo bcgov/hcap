@@ -3,7 +3,7 @@
 exports.shorthands = undefined;
 
 exports.up = async (pgm) => {
-  await pgm.createTable('waitlist', {
+  await pgm.createTable('participant_waitlist', {
     id: 'id',
     email: { type: 'varchar(200)', notNull: true, unique: true },
     createdAt: {

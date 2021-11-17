@@ -117,9 +117,10 @@ participantsRouter.post(
   '/waitlist',
   asyncMiddleware(async (req, res) => {
     await validate(WaitlistEmailSchema, req.body);
-    return (await addParticipantToWaitlist(req.body.email))
-      ? res.status(201).send({ message: 'Success' })
-      : res.status(400).send({ message: 'Email already exists' });
+    if (await addParticipantToWaitlist(req.body.email)) {
+      return res.status(201).send({ message: 'Success' });
+    }
+    return res.status(409).send({ message: 'Email already exists' });
   })
 );
 // POST participants/confirm-interest

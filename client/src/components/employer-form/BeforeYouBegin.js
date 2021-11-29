@@ -76,7 +76,7 @@ const BeforeYouBegin = () => {
             &nbsp;that may be interested in participating in the Health Career Access Program.
           </Typography>
           <Typography variant='body1' paragraph>
-            <b>The Employer Expression of Interest (EOI) is now open for submissions</b>
+            <b>The Employer Expression of Interest (EOI) is now open for submissions.</b>
           </Typography>
           <Typography variant='body1' paragraph>
             We appreciate your interest in participating and we encourage you to reach out with any

@@ -849,6 +849,13 @@ const EditSiteSchema = yup
     history: yup.array().required('Edit history is required'),
   });
 
+const WaitlistEmailSchema = yup
+  .object()
+  .noUnknown('Unknown field in entry')
+  .shape({
+    email: yup.string().required('Email is required').email('Invalid email address'),
+  });
+
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
@@ -871,4 +878,5 @@ module.exports = {
   UserParticipantEditSchema,
   ArchiveRequest,
   RemoveParticipantUser,
+  WaitlistEmailSchema,
 };

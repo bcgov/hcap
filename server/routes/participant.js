@@ -15,6 +15,7 @@ const {
   archiveParticipantBySite,
   deleteParticipant,
 } = require('../services/participants.js');
+const { addParticipantToWaitlist } = require('../services/waitlist');
 const {
   validate,
   ParticipantQuerySchema,
@@ -24,6 +25,7 @@ const {
   ParticipantSchema,
   ArchiveRequest,
   RemoveParticipantUser,
+  WaitlistEmailSchema,
 } = require('../validation.js');
 const keycloak = require('../keycloak.js');
 const logger = require('../logger.js');
@@ -111,6 +113,16 @@ participantsRouter.get(
   })
 );
 
+participantsRouter.post(
+  '/waitlist',
+  asyncMiddleware(async (req, res) => {
+    await validate(WaitlistEmailSchema, req.body);
+    if (await addParticipantToWaitlist(req.body.email)) {
+      return res.status(201).send({ message: 'Success' });
+    }
+    return res.status(409).send({ message: 'Email already exists' });
+  })
+);
 // POST participants/confirm-interest
 participantsRouter.post(
   `/confirm-interest`,

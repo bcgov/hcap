@@ -735,7 +735,6 @@ const withdrawParticipantsByEmail = async (userId, email) => {
   await dbClient.db.withTransaction(async (tx) => {
     const participants = await getParticipantsForUser(userId, email);
     await participants.forEach(async (participant) => {
-      participant;
       if (participant.interested === 'withdrawn' || participant.hired.length) {
         return;
       }

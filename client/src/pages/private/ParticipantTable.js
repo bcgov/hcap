@@ -4,7 +4,6 @@ import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { math } from 'lodash';
 import {
   Box,
   Typography,
@@ -419,7 +418,7 @@ export default () => {
         return prettifyStatus(row[columnId], row.id, selectedTab, handleEngage, handleAcknowledge);
       case 'distance':
         if (row[columnId] !== null && row[columnId] !== undefined) {
-          return `${math.round(row[columnId] / 1000) || '<1'} Km`;
+          return `${Math.round(row[columnId] / 1000) || '<1'} Km`;
         }
         return 'N/A';
       case 'engage':

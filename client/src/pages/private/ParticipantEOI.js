@@ -9,7 +9,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import store from 'store';
 import { Routes, ToastStatus } from '../../constants';
 
-import { Page, Alert } from '../../components/generic';
+import { Page } from '../../components/generic';
 import { Form } from '../../components/participant-form';
 import { API_URL } from '../../constants';
 import { useToast } from '../../hooks';
@@ -313,8 +313,6 @@ export default () => {
             />
           </Grid>
         )}
-        {!participant && !loading && <Alert severity='error'>Unable to load participant</Alert>}
-        {!participant && loading && <Alert severity='info'>Loading participant</Alert>}
       </Page>
     </div>
   );

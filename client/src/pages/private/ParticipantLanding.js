@@ -242,6 +242,9 @@ export default () => {
           } else if (item.hired?.length > 0) {
             color = '#17d149';
             status = 'Hired';
+          } else if (!item.interested) {
+            color = '#735613';
+            status = 'Pending';
           }
 
           return (
@@ -283,13 +286,29 @@ export default () => {
                         borderRadius: 5,
                         marginBlock: '5px',
                         padding: '5px 20px',
+                        fontWeight: 'bold',
                         backgroundColor: color,
                         color: 'white',
+                        textAlign: 'center',
                       }}
                     >
                       {status}
                     </Box>
                   </Grid>
+                  {!item.interested && (
+                    <Box
+                      style={{
+                        borderRadius: 5,
+                        marginBlock: '5px',
+                        padding: '5px 20px',
+                        fontWeight: 'bold',
+                        backgroundColor: '#f9f3cd',
+                        color: '#785c19',
+                      }}
+                    >
+                      Please review your PEOI to reconfirm interest or withdraw from the program
+                    </Box>
+                  )}
                 </Grid>
                 <CardActions justify={'center'}>
                   <Button

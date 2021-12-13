@@ -13,6 +13,7 @@ import Hidden from '@material-ui/core/Hidden';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { API_URL, EmployerFormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
@@ -125,7 +126,6 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
   const [activeStep, setActiveStep] = useState(0);
   const isFirstStep = activeStep === 0;
   const isLastStep = activeStep === steps.length - 1;
-
   if (initialValues && formValues !== initialValues) {
     setFormValues(initialValues);
   }
@@ -201,6 +201,23 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
       moveStepper(activeStep + 1, setTouched, values);
     }
   };
+
+  if (!initialValues && isDisabled) {
+    return (
+      <Grid
+        item
+        xs={12}
+        sm={isDisabled ? 12 : 11}
+        md={isDisabled ? 12 : 10}
+        lg={isDisabled ? 12 : 8}
+        xl={isDisabled ? 12 : 6}
+      >
+        <Box pl={1.5} pr={1.5}>
+          <CircularProgress color='inherit' size={20} />
+        </Box>
+      </Grid>
+    );
+  }
 
   return (
     <Grid

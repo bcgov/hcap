@@ -40,6 +40,6 @@ describe('e2e test for participant landing page', () => {
     // Test PEOI
     cy.url().should('contain', 'participant-eoi/');
     cy.wait(1000);
-    cy.contains('div#participant-view');
+    cy.contains('#participant-view');
   });
 });

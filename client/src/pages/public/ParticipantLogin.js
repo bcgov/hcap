@@ -78,9 +78,8 @@ export default () => {
             />
           </Box>
           <Typography variant={'body2'}>
-            For more information on the BC Services Card, including how to set up your card, please
-            visit the &nbsp;
-            <a href='https://www.gov.bc.ca/mobilebcservicescard'>BC Services Card website.</a>
+            A <a href='https://gov.bc.ca/bcservicescard'>BC Services Card</a> provides secure access
+            to government services.
           </Typography>
         </Box>
         <Box className={classes.rightContainer}>

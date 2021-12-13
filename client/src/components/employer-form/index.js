@@ -125,7 +125,6 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
   const [activeStep, setActiveStep] = useState(0);
   const isFirstStep = activeStep === 0;
   const isLastStep = activeStep === steps.length - 1;
-
   if (initialValues && formValues !== initialValues) {
     setFormValues(initialValues);
   }
@@ -215,6 +214,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
         initialValues={formValues}
         validationSchema={EmployerFormSchema}
         onSubmit={handleSubmit}
+        enableReinitialize={isDisabled}
       >
         {({ errors, submitForm, setTouched, values }) => (
           <FormikForm>

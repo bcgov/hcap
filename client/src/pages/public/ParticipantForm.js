@@ -4,7 +4,7 @@ import { DisabledLanding } from '../../components/participant-form/DisabledLandi
 
 export default () => {
   return (
-    <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
+    <Page>
       <DisabledLanding />
     </Page>
   );

@@ -202,23 +202,6 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
     }
   };
 
-  if (!initialValues && isDisabled) {
-    return (
-      <Grid
-        item
-        xs={12}
-        sm={isDisabled ? 12 : 11}
-        md={isDisabled ? 12 : 10}
-        lg={isDisabled ? 12 : 8}
-        xl={isDisabled ? 12 : 6}
-      >
-        <Box pl={1.5} pr={1.5}>
-          <CircularProgress color='inherit' size={20} />
-        </Box>
-      </Grid>
-    );
-  }
-
   return (
     <Grid
       item
@@ -232,6 +215,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
         initialValues={formValues}
         validationSchema={EmployerFormSchema}
         onSubmit={handleSubmit}
+        enableReinitialize={isDisabled}
       >
         {({ errors, submitForm, setTouched, values }) => (
           <FormikForm>

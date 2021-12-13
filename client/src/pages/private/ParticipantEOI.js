@@ -273,10 +273,9 @@ export default () => {
               display='flex'
               flexDirection={{ xs: 'column', md: 'row' }}
               gridGap={20}
-              justifyContent='space-between'
+              justifyContent='flex-end'
               padding={2}
             >
-              <Typography variant='h4'>Participant Expression of Interest</Typography>
               <Box display='flex' gridGap={20}>
                 <Button variant='contained' onClick={onEdit}>
                   {!enableEdit ? 'Edit Info' : 'Done Edit'}

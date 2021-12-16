@@ -90,10 +90,11 @@ export default () => {
             <Typography variant='h2'>Welcome to the Health Career Access Program</Typography>
           </Box>
           <Typography mb={2}>
-            COVID-19 has increased the need for health care assistants in long-term care and
-            assisted living settings across the province. The Health Career Access Program provides
-            a path for applicants with no health care experience to get hired and receive paid
-            employer sponsored health care assistant training as part of their employment.
+            COVID-19 has increased the need for health care assistances in long-term care and
+            assisted living settings and home support locations across the province. The Health
+            Career Access Program provides a path for applicants with no health care experience to
+            get hired and receive paid employer sponsored health care assistant training as part of
+            their employment.
           </Typography>
           <Box p={4} mt={2} className={classes.blueBox}>
             <EmailSubmissionHeader />

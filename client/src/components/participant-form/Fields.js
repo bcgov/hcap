@@ -330,6 +330,7 @@ export const Fields = ({
                 <FastField
                   name='reasonForFindingOut'
                   component={RenderCheckboxGroup}
+                  disabled={checkFieldDisability('reasonForFindingOut')}
                   options={[
                     {
                       value: 'Friend(s)',

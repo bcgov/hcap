@@ -1,11 +1,10 @@
 import React from 'react';
 import { Page } from '../../components/generic';
-import { DisabledLanding } from '../../components/participant-form/DisabledLanding';
-
+import { Form } from '../../components/participant-form';
 export default () => {
   return (
     <Page>
-      <DisabledLanding />
+      <Form />
     </Page>
   );
 };

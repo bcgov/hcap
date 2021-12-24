@@ -46,6 +46,7 @@ describe('Participants Endpoint', () => {
       emailAddress: 'test@test.com',
       postalCode: 'A3A3A3',
       preferredLocation: ['Fraser'],
+      reasonForFindingOut: ['Friend(s)'],
       consent: true,
     };
     const expectedRes = {

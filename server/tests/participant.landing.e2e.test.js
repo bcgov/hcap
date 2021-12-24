@@ -17,6 +17,7 @@ describe('Participant landing e2e', () => {
     emailAddress: 'cristiano.ronaldo@hcap.club',
     postalCode: 'V1V 1V1',
     preferredLocation: ['Fraser'],
+    reasonForFindingOut: ['Friend(s)'],
     consent: true,
   };
   beforeAll(async () => {

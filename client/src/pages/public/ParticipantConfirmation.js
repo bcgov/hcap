@@ -21,7 +21,12 @@ export default () => {
               <Grid container alignItems='center' justify='space-between'>
                 <Grid item>
                   <Typography variant='subtitle1' paragraph>
-                    Thank you for your submission.
+                    Thank you for submitting your expression of interest for the Health Career
+                    Access Program. Your submission has been received and you can now login with
+                    your BC Services Card anytime to manage your personal information, view your
+                    status, and refresh or withdraw your interest. Please note, we are unable to
+                    give a specific timeline when a potential employer may contact a participant and
+                    not all interested participants will be contacted.
                   </Typography>
                   <Typography variant='subtitle1' paragraph>
                     To protect your personal information from third parties, we will not send you a

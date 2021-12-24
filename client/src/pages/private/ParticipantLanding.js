@@ -93,9 +93,15 @@ export default () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
   const [hideIndigenousIdentityForm, setHideIndigenousIdentityForm] = useState(false);
+  const [allWithdrawn, setAllWithdrawn] = useState(false);
   const classes = useStyles();
   const history = useHistory();
   const { openToast } = useToast();
+  const afterInterestFetch = (items) => {
+    const withdrawn = items.filter((item) => item.interested === 'withdrawn');
+    setAllWithdrawn(withdrawn.length === items.length);
+    setInterests(items);
+  };
   const submitWithdrawal = async (values) => {
     if (values.confirmed) {
       await fetch(`${API_URL}/api/v1/participant-user/withdraw`, {
@@ -107,15 +113,17 @@ export default () => {
         },
       });
     }
-    await getParticipants().then((items) => setInterests(items));
+    await getParticipants().then((items) => afterInterestFetch(items));
     setShowWithdrawDialog(false);
   };
   useEffect(() => {
     getParticipants().then((items) => {
+      const withdrawn = items.filter((item) => item.interested === 'withdrawn');
+      setAllWithdrawn(withdrawn.length === items.length);
       setInterests(items);
       setIsLoading(false);
     });
-  }, [setInterests, setIsLoading]);
+  }, [setAllWithdrawn, setInterests, setIsLoading]);
 
   if (isLoading) {
     return (
@@ -164,7 +172,9 @@ export default () => {
       }),
     });
     if (response.ok) {
-      await getParticipants().then((items) => setInterests(items));
+      await getParticipants().then((items) => {
+        afterInterestFetch(items);
+      });
       setHideIndigenousIdentityForm(true);
     } else {
       openToast({
@@ -213,23 +223,51 @@ export default () => {
             className={classes.info}
             style={{ backgroundColor: '#EEEEEE', borderColor: '#888888' }}
           >
-            <Typography>
-              If you want to completely withdraw from the program, please click on the "Completely
-              Withdraw" button here.
-              <Button
-                style={{
-                  color: '#FFFFFF',
-                  backgroundColor: '#FF0000',
-                  marginLeft: 20,
-                  paddingInline: 20,
-                }}
-                onClick={() => {
-                  setShowWithdrawDialog(true);
-                }}
-              >
-                Completely Withdraw
-              </Button>
-            </Typography>
+            {!allWithdrawn && (
+              <Typography variant='subtitle2'>
+                If you want to completely withdraw from the program, please click on the "Completely
+                Withdraw" button here.
+                <Button
+                  style={{
+                    color: '#FFFFFF',
+                    backgroundColor: '#FF0000',
+                    marginLeft: 20,
+                    paddingInline: 20,
+                  }}
+                  onClick={() => {
+                    setShowWithdrawDialog(true);
+                  }}
+                >
+                  Completely Withdraw
+                </Button>
+              </Typography>
+            )}
+            {allWithdrawn && (
+              <Grid container>
+                <Grid item xs={10}>
+                  <Typography variant='body1'>
+                    Your expression of interest has been withdrawn from the employer view. If you
+                    wish to be considered for future participation in HCAP, please resubmit your
+                    expression of interest.
+                  </Typography>
+                </Grid>
+                <Grid item xs={2} alignItems='end'>
+                  <Button
+                    style={{
+                      color: '#FFFFFF',
+                      backgroundColor: '#FF0000',
+                      marginLeft: 10,
+                      paddingInline: 10,
+                    }}
+                    onClick={() => {
+                      history.replace('/');
+                    }}
+                  >
+                    Resubmit
+                  </Button>
+                </Grid>
+              </Grid>
+            )}
           </Box>
         </Grid>
 

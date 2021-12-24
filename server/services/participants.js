@@ -5,6 +5,7 @@ const { validate, ParticipantBatchSchema, isBooleanValue } = require('../validat
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
+const logger = require('../logger.js');
 
 const deleteParticipant = async ({ email }) => {
   await dbClient.db.withTransaction(async (tnx) => {
@@ -110,43 +111,54 @@ const getParticipantByID = async (participantInfo) => {
 };
 
 const createChangeHistory = (participantBody, changes) => {
-  const newBody = { ...participantBody };
-  const changeDetails = Object.keys(changes).reduce((target, key) => {
-    target.push({
-      field: key,
-      from: participantBody[key] || 'none',
-      to: changes[key],
-    });
-    return [...target];
-  }, []);
-  const newHistory = {
-    timestamp: new Date(),
-    changes: [...changeDetails],
-  };
-  newBody.history = participantBody.history
-    ? [newHistory, ...participantBody.history]
-    : [newHistory];
-  return newBody;
+  try {
+    const newBody = { ...participantBody };
+    const changeDetails = Object.keys(changes).reduce((target, key) => {
+      target.push({
+        field: key,
+        from: participantBody[key] || 'none',
+        to: changes[key],
+      });
+      return [...target];
+    }, []);
+    const newHistory = {
+      timestamp: new Date(),
+      changes: [...changeDetails],
+    };
+    newBody.history =
+      participantBody.history && participantBody.history.constructor === Array
+        ? [newHistory, ...participantBody.history]
+        : [newHistory];
+    return newBody;
+  } catch (e) {
+    logger.error(`createChangeHistory: fail to create change history: ${e}`);
+    throw e;
+  }
 };
 
 const updateParticipant = async (participantInfo) => {
-  // The below reduce function unpacks the most recent changes in the history
-  // and builds them into an object to be used for the update request
-  const changes = participantInfo.history[0].changes.reduce(
-    (acc, change) => {
-      const { field, to } = change;
-      return { ...acc, [field]: to };
-    },
-    { history: participantInfo.history, userUpdatedAt: new Date().toJSON() }
-  );
-  const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc(
-    {
-      id: participantInfo.id,
-    },
-    changes
-  );
+  try {
+    // The below reduce function unpacks the most recent changes in the history
+    // and builds them into an object to be used for the update request
+    const changes = participantInfo.history[0].changes.reduce(
+      (acc, change) => {
+        const { field, to } = change;
+        return { ...acc, [field]: to };
+      },
+      { history: participantInfo.history || [], userUpdatedAt: new Date().toJSON() }
+    );
+    const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc(
+      {
+        id: participantInfo.id,
+      },
+      changes
+    );
 
-  return participant;
+    return participant;
+  } catch (error) {
+    logger.error(`updateParticipant: fail to update participant: ${error}`);
+    throw error;
+  }
 };
 
 const withdrawParticipant = async (participantInfo) => {

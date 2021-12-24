@@ -5,10 +5,7 @@ import { useKeycloak } from '@react-keycloak/web';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import { Routes } from '../../constants';
-import {
-  EmailSubmissionForm,
-  EmailSubmissionHeader,
-} from '../../components/participant-form/EmailSubmissionForm';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   blueText: {
@@ -44,11 +41,17 @@ const useStyles = makeStyles((theme) => ({
 export default () => {
   const classes = useStyles();
   const [keycloak] = useKeycloak();
+
+  const history = useHistory();
+
   const redirectToLogin = () => {
     keycloak.login({
       idpHint: 'BCSC',
       redirectUri: `${window.location.origin}${Routes.ParticipantLanding}`,
     });
+  };
+  const redirectToForm = () => {
+    history.push(Routes.ParticipantForm);
   };
 
   return (
@@ -97,8 +100,24 @@ export default () => {
             their employment.
           </Typography>
           <Box p={4} mt={2} className={classes.blueBox}>
-            <EmailSubmissionHeader />
-            <EmailSubmissionForm />
+            <Typography variant={'subtitle2'} className={classes.blueText}>
+              Don't have an account yet?
+            </Typography>
+            <Box mb={2}>
+              <Typography>
+                To start as a health care support worker, you need to submit your expression of
+                interest first.
+              </Typography>
+            </Box>
+            <Button
+              className={classes.button}
+              variant='contained'
+              color='primary'
+              fullWidth={false}
+              text={'Submit Your Expression of Interest'}
+              onClick={redirectToForm}
+              m={2}
+            />
           </Box>
         </Box>
       </Box>

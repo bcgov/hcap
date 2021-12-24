@@ -43,6 +43,7 @@ export const Form = ({
         postalCode: '',
         preferredLocation: [],
         consent: '',
+        reasonForFindingOut: [],
       };
 
   const handleSubmit = async (values) => {

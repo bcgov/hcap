@@ -19,7 +19,7 @@ import { genericConfirm } from '../../constants/validation';
 import { IndigenousDeclarationForm } from '../../components/modal-forms/IndigenousDeclarationForm';
 import isNil from 'lodash/isNil';
 import { useToast } from '../../hooks';
-import { DisabledLanding } from '../../components/participant-form/DisabledLanding';
+import ParticipantLandingEmpty from './ParticipantLandingEmpty';
 
 const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
 
@@ -138,7 +138,7 @@ export default () => {
   if (interests.length === 0) {
     return (
       <Page>
-        <DisabledLanding />
+        <ParticipantLandingEmpty />
       </Page>
     );
   }

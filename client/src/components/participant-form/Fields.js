@@ -53,6 +53,7 @@ export const Fields = ({
   const [isCollectionNoticeExpanded, setCollectionNoticeExpanded] = useState(
     window.innerWidth > 750
   );
+
   const checkFieldDisability = (key) =>
     isDisabled || (enableFields ? !enableFields.includes(key) : false);
   return (
@@ -313,6 +314,55 @@ export const Fields = ({
                       )
                     </span>
                   ),
+                },
+              ]}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant='subtitle2'>How did you learn about HCAP?</Typography>
+            <Divider />
+          </Grid>
+          <Grid item xs={12}>
+            <FastField
+              name='reasonForFindingOut'
+              component={RenderCheckboxGroup}
+              disabled={checkFieldDisability('reasonForFindingOut')}
+              options={[
+                {
+                  value: 'Friend(s)',
+                  label: 'Friend(s)',
+                },
+                {
+                  value: 'WorkBC',
+                  label: 'WorkBC',
+                },
+                {
+                  value: 'Governement announcement',
+                  label: 'Governement announcement',
+                },
+                {
+                  value: 'Colleague(s)',
+                  label: 'Colleague(s)',
+                },
+                {
+                  value: 'Job posting through Health Authority',
+                  label: 'Job posting through Health Authority',
+                },
+                {
+                  value: 'Job posting with employer',
+                  label: 'Job posting with employer',
+                },
+                {
+                  value: 'Web search',
+                  label: 'Web search',
+                },
+                {
+                  value: 'Social media',
+                  label: 'Social media',
+                },
+                {
+                  value: 'Other',
+                  label: 'Other',
                 },
               ]}
             />

@@ -10,6 +10,18 @@ import { indigenousIdentities } from '../components/modal-forms/IndigenousDeclar
 
 const healthRegions = ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'];
 
+const foundOutReasons = [
+  'Friend(s)',
+  'WorkBC',
+  'Governement announcement',
+  'Colleague(s)',
+  'Job posting through Health Authority',
+  'Job posting with employer',
+  'Web search',
+  'Social media',
+  'Other',
+];
+
 const siteTypes = ['Long-term care', 'Assisted living', 'Both', 'Other'];
 
 const userRoles = ['health_authority', 'employer', 'ministry_of_health'];
@@ -90,6 +102,7 @@ const errorMessage = ({ path }) => {
     eligibility:
       "We're sorry, but current eligibility to work in Canada is a requirement to submit this form.",
     preferredLocation: "Please select at least one location you'd like to work in.",
+    reasonForFindingOut: 'Please let us know how you found out about HCAP',
     consent: "We're sorry, but we cannot process your request without permission.",
 
     // Cohort
@@ -605,6 +618,13 @@ export const ParticipantFormSchema = yup
       .required(errorMessage)
       .of(yup.string().oneOf(healthRegions, 'Invalid location'))
       .test('is-unique-array', 'Preferred locations must be unique', validateUniqueArray),
+
+    // How did the participant find out about HCAP
+    reasonForFindingOut: yup
+      .array()
+      .required(errorMessage)
+      .of(yup.string().oneOf(foundOutReasons, 'Invalid selection'))
+      .test('is-unique-array', 'Each reason must be unique', validateUniqueArray),
 
     // Consent
     consent: yup

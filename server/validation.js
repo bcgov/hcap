@@ -3,6 +3,18 @@ const yup = require('yup');
 
 const healthRegions = ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'];
 
+const foundOutReasons = [
+  'Friend(s)',
+  'WorkBC',
+  'Governement announcement',
+  'Colleague(s)',
+  'Job posting through Health Authority',
+  'Job posting with employer',
+  'Web search',
+  'Social media',
+  'Other',
+];
+
 const orderDirections = ['desc', 'asc'];
 
 const sortFields = [
@@ -155,6 +167,7 @@ const errorMessage = ({ path }) => {
       "We're sorry, but current eligibility to work in Canada is a requirement to submit this form.",
     preferredLocation: "Please select at least one location you'd like to work in.",
     consent: "We're sorry, but we cannot process your request without permission.",
+    reasonForFindingOut: 'Please let us know how you found out about HCAP',
 
     // PSI specific value
     instituteName: 'Institute name is required',
@@ -521,6 +534,13 @@ const ParticipantSchema = yup
       .required(errorMessage)
       .of(yup.string().oneOf(healthRegions, 'Invalid location'))
       .test('is-unique-array', 'Preferred locations must be unique', validateUniqueArray),
+
+    // How did the participant find out about HCAP
+    reasonForFindingOut: yup
+      .array()
+      .required(errorMessage)
+      .of(yup.string().oneOf(foundOutReasons, 'Invalid selection'))
+      .test('is-unique-array', 'Each reason must be unique', validateUniqueArray),
 
     // Consent
     consent: yup

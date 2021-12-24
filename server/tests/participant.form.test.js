@@ -25,6 +25,7 @@ describe('Participant Expression of Interest Form Endpoints', () => {
     emailAddress: 'a@b.c',
     postalCode: 'V1V 1V1',
     preferredLocation: ['Fraser'],
+    reasonForFindingOut: ['Friend(s)'],
     consent: true,
   };
 

@@ -26,7 +26,7 @@ export const RenderCheckboxGroup = ({ field, form, label, options, ...props }) =
             <Checkbox
               color='primary'
               value={option.value}
-              checked={field.value.includes(option.value)}
+              checked={Boolean(field?.value?.includes(option.value))}
             />
           }
           {...field}

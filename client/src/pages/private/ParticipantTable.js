@@ -109,7 +109,7 @@ const CustomTab = styled(Tab)(({ theme }) => ({
   },
 
   [`& .${classes.selected}`]: {},
-}))((props) => <Tab disableRipple {...props} />);
+}));
 
 const reducer = (state, action) => {
   const { type, key, value } = action;

@@ -71,7 +71,7 @@ const CustomTab = styled(Tab)(({ theme }) => ({
   },
 
   [`& .${classes.selected}`]: {},
-}))((props) => <Tab disableRipple {...props} />);
+}));
 
 export default () => {
   const [tabValue, setTabValue] = useState(0);

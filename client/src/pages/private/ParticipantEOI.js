@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { Typography, Grid, Button, Box } from '@mui/material';
 import { Redirect, useParams, useLocation, useHistory } from 'react-router-dom';
-import { red } from '@mui/material/colors';
 import LinearProgress from '@mui/material/LinearProgress';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';

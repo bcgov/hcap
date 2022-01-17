@@ -6,6 +6,8 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import 'react-app-polyfill/ie11';
 
+import './index.css';
+
 import { Theme } from './constants';
 import Routes from './routes';
 import { Toast } from './components/generic';

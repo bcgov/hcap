@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { useHistory } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import { withStyles } from '@material-ui/core/styles';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Grid from '@mui/material/Grid';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import {
   Box,
   Typography,
@@ -13,7 +13,7 @@ import {
   Link,
   Checkbox,
   FormLabel,
-} from '@material-ui/core';
+} from '@mui/material';
 import store from 'store';
 import {
   ToastStatus,
@@ -46,18 +46,27 @@ import { getDialogTitle, prettifyStatus, keyedString } from '../../utils';
 import moment from 'moment';
 import { AuthContext, ParticipantsContext } from '../../providers';
 
-const CustomTabs = withStyles((theme) => ({
-  root: {
+const PREFIX = 'ParticipantTable';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  indicator: `${PREFIX}-indicator`,
+  root2: `${PREFIX}-root2`,
+  selected: `${PREFIX}-selected`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.root}`]: {
     borderBottom: `1px solid ${theme.palette.gray.secondary}`,
     marginBottom: theme.spacing(2),
   },
-  indicator: {
+
+  [`& .${classes.indicator}`]: {
     backgroundColor: theme.palette.highlight.primary,
   },
-}))(Tabs);
 
-const CustomTab = withStyles((theme) => ({
-  root: {
+  [`& .${classes.root2}`]: {
     textTransform: 'none',
     minWidth: 72,
     fontWeight: theme.typography.fontWeightRegular,
@@ -74,7 +83,32 @@ const CustomTab = withStyles((theme) => ({
       color: theme.palette.highlight.primary,
     },
   },
-  selected: {},
+
+  [`& .${classes.selected}`]: {},
+}));
+
+const CustomTabs = Tabs;
+
+const CustomTab = styled(Tab)(({ theme }) => ({
+  [`& .${classes.root2}`]: {
+    textTransform: 'none',
+    minWidth: 72,
+    fontWeight: theme.typography.fontWeightRegular,
+    marginRight: theme.spacing(4),
+    '&:hover': {
+      color: theme.palette.highlight.primary,
+      opacity: 1,
+    },
+    '&$selected': {
+      color: theme.palette.highlight.secondary,
+      fontWeight: theme.typography.fontWeightMedium,
+    },
+    '&:focus': {
+      color: theme.palette.highlight.primary,
+    },
+  },
+
+  [`& .${classes.selected}`]: {},
 }))((props) => <Tab disableRipple {...props} />);
 
 const reducer = (state, action) => {
@@ -471,7 +505,7 @@ export default () => {
         return moment(row.userUpdatedAt).fromNow();
       case 'archive':
         return (
-          <>
+          <Root>
             {!row.status.includes('withdrawn') && (
               <Button
                 onClick={async (event) => {
@@ -494,7 +528,7 @@ export default () => {
                 text='Archive'
               />
             )}
-          </>
+          </Root>
         );
       default:
         return row[columnId];
@@ -689,14 +723,14 @@ export default () => {
         <Grid
           container
           alignContent='center'
-          justify='center'
+          justifyContent='center'
           alignItems='center'
           direction='column'
         >
           <Grid
             container
             alignContent='center'
-            justify='flex-start'
+            justifyContent='flex-start'
             alignItems='center'
             direction='row'
           >
@@ -864,10 +898,23 @@ export default () => {
                   payload: property,
                 });
               }}
+              classes={{
+                root: classes.root,
+                indicator: classes.indicator,
+              }}
             >
               {
                 tabs.map((key) => (
-                  <CustomTab key={key} label={key} value={key} disabled={isLoadingData} />
+                  <CustomTab
+                    key={key}
+                    label={key}
+                    value={key}
+                    disabled={isLoadingData}
+                    classes={{
+                      root: classes.root2,
+                      selected: classes.selected,
+                    }}
+                  />
                 )) // Tab component with tab name as value
               }
             </CustomTabs>

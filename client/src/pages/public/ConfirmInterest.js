@@ -1,14 +1,14 @@
 import { Page } from '../../components/generic';
+import { styled } from '@mui/material/styles';
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { API_URL } from '../../constants';
 
-import * as qs from 'querystring';
+import * as qs from 'query-string';
 
-import { Typography, Icon } from '@material-ui/core';
+import { Typography, Icon } from '@mui/material';
 import { Button } from '../../components/generic/Button';
 import { Card } from '../../components/generic/Card';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 
 import {
   confirmInterestDefault,
@@ -17,29 +17,40 @@ import {
   confirmInterestLoading,
 } from '../../constants/confirmInterestConstants';
 
-const useStyles = makeStyles((theme) => {
+const PREFIX = 'ConfirmInterest';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  title: `${PREFIX}-title`,
+  button: `${PREFIX}-button`,
+  icon: `${PREFIX}-icon`,
+  check: `${PREFIX}-check`,
+  error: `${PREFIX}-error`,
+};
+
+const StyledPage = styled(Page)(({ theme }) => {
   return {
-    root: {
+    [`& .${classes.root}`]: {
       marginTop: 100,
       width: 376,
       height: 270,
     },
-    title: {
+    [`& .${classes.title}`]: {
       marginBottom: 10,
     },
-    button: {
+    [`& .${classes.button}`]: {
       marginTop: 10,
     },
-    icon: {
+    [`& .${classes.icon}`]: {
       alignSelf: 'center',
       color: theme.palette.primary.dark,
     },
-    check: {
+    [`& .${classes.check}`]: {
       alignSelf: 'center',
       marginBottom: 10,
       color: 'green',
     },
-    error: {
+    [`& .${classes.error}`]: {
       alignSelf: 'center',
       marginBottom: 10,
       color: 'red',
@@ -49,7 +60,7 @@ const useStyles = makeStyles((theme) => {
 
 export default (props) => {
   const [state, setState] = useState(confirmInterestLoading);
-  const classes = useStyles();
+
   // Get the query string from the url
   // Remove the questionmark from the search
   const query = qs.parse(props.location.search.slice(1), '&', '=');
@@ -91,7 +102,7 @@ export default (props) => {
   if (!state) return null;
 
   return (
-    <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
+    <StyledPage hideEmployers={!window.location.hostname.includes('freshworks.club')}>
       <Card className={classes.root}>
         <Box display='flex' flexDirection='column' height='100%' justifyContent='center'>
           <Icon component={state.icon} className={classes[state.iconClass]} fontSize={'large'} />
@@ -108,6 +119,6 @@ export default (props) => {
           ) : null}
         </Box>
       </Card>
-    </Page>
+    </StyledPage>
   );
 };

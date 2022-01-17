@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import { withStyles } from '@material-ui/core/styles';
-import { Typography, Box } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import { Typography, Box } from '@mui/material';
 import {
   Route,
   useRouteMatch,
@@ -20,29 +20,26 @@ import { sortPSI } from '../../services';
 // Component
 import { PSICohortTable } from './psi-cohort-table';
 
-const TabDetails = {
-  assignCohort: {
-    label: 'Assign Cohort',
-    path: '/',
-  },
-  withdrawCohort: {
-    label: 'Withdraw Cohort',
-    path: '/withdraw-cohort',
-  },
+const PREFIX = 'PSICohortView';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  indicator: `${PREFIX}-indicator`,
+  root2: `${PREFIX}-root2`,
+  selected: `${PREFIX}-selected`,
 };
 
-const CustomTabs = withStyles((theme) => ({
-  root: {
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  [`& .${classes.root}`]: {
     borderBottom: `1px solid ${theme.palette.gray.secondary}`,
     marginBottom: theme.spacing(2),
   },
-  indicator: {
+
+  [`& .${classes.indicator}`]: {
     backgroundColor: theme.palette.highlight.primary,
   },
-}))(Tabs);
 
-const CustomTab = withStyles((theme) => ({
-  root: {
+  [`& .${classes.root2}`]: {
     textTransform: 'none',
     minWidth: 72,
     fontWeight: theme.typography.fontWeightRegular,
@@ -59,7 +56,43 @@ const CustomTab = withStyles((theme) => ({
       color: theme.palette.highlight.primary,
     },
   },
-  selected: {},
+
+  [`& .${classes.selected}`]: {},
+}));
+
+const TabDetails = {
+  assignCohort: {
+    label: 'Assign Cohort',
+    path: '/',
+  },
+  withdrawCohort: {
+    label: 'Withdraw Cohort',
+    path: '/withdraw-cohort',
+  },
+};
+
+const CustomTabs = Tabs;
+
+const CustomTab = styled(Tab)(({ theme }) => ({
+  [`& .${classes.root2}`]: {
+    textTransform: 'none',
+    minWidth: 72,
+    fontWeight: theme.typography.fontWeightRegular,
+    marginRight: theme.spacing(4),
+    '&:hover': {
+      color: theme.palette.highlight.primary,
+      opacity: 1,
+    },
+    '&$selected': {
+      color: theme.palette.highlight.secondary,
+      fontWeight: theme.typography.fontWeightMedium,
+    },
+    '&:focus': {
+      color: theme.palette.highlight.primary,
+    },
+  },
+
+  [`& .${classes.selected}`]: {},
 }))((props) => <Tab disableRipple {...props} />);
 
 const PSIRouteTabs = ({
@@ -83,6 +116,10 @@ const PSIRouteTabs = ({
           setTab(prop);
           history.push(TabDetails[prop]?.path);
         }}
+        classes={{
+          root: classes.root,
+          indicator: classes.indicator,
+        }}
       >
         {Object.keys(TabDetails).map((key) => (
           <CustomTab
@@ -90,6 +127,10 @@ const PSIRouteTabs = ({
             label={TabDetails[key].label}
             value={key}
             disabled={isLoadingData}
+            classes={{
+              root: classes.root2,
+              selected: classes.selected,
+            }}
           ></CustomTab>
         ))}
       </CustomTabs>
@@ -131,10 +172,10 @@ export const PSICohortView = ({ psiList = [], assignAction, participant }) => {
   const baseUrl = match.url.split(tab)[0];
   const sortedList = sortPSI({ psiList, cohort: participant ? participant.cohort : {} });
   return (
-    <Grid
+    <StyledGrid
       container
       alignContent='flex-start'
-      justify='flex-start'
+      justifyContent='flex-start'
       alignItems='center'
       direction='row'
     >
@@ -148,6 +189,6 @@ export const PSICohortView = ({ psiList = [], assignAction, participant }) => {
           ></PSIRouteTabs>
         </Router>
       </Box>
-    </Grid>
+    </StyledGrid>
   );
 };

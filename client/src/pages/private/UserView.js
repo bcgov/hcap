@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import { Box, Typography } from '@mui/material';
 import store from 'store';
 import { useToast } from '../../hooks';
 import { Button, Page, Table, CheckPermissions, Dialog } from '../../components/generic';
@@ -270,9 +270,9 @@ export default () => {
               )}
 
               <Box mt={3}>
-                <Grid container spacing={2} justify='flex-end'>
+                <Grid container spacing={2} justifyContent='flex-end'>
                   <Grid item>
-                    <Button onClick={() => setModalOpen(false)} color='default' text='Cancel' />
+                    <Button onClick={() => setModalOpen(false)} text='Cancel' />
                   </Grid>
                   <Grid item>
                     <Button
@@ -292,7 +292,7 @@ export default () => {
         <Grid
           container
           alignContent='center'
-          justify='center'
+          justifyContent='center'
           alignItems='center'
           direction='column'
         >

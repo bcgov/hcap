@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { Page, CheckPermissions } from '../../components/generic';
 import { Form } from '../../components/employer-form';
 import { scrollUp } from '../../utils';

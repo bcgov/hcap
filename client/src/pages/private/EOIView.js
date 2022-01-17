@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import { Box, Typography } from '@mui/material';
 import store from 'store';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
 import { Routes, regionLabelsMap, API_URL } from '../../constants';
@@ -130,7 +130,7 @@ export default () => {
         <Grid
           container
           alignContent='center'
-          justify='center'
+          justifyContent='center'
           alignItems='center'
           direction='column'
         >
@@ -142,7 +142,7 @@ export default () => {
           <Grid
             container
             alignContent='center'
-            justify='flex-start'
+            justifyContent='flex-start'
             alignItems='center'
             direction='row'
           >

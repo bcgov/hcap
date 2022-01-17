@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Typography, Button, Box } from '@material-ui/core';
+import { Typography, Button, Box } from '@mui/material';
 import { Page } from '../../components/generic';
 import { Routes } from '../../constants';
 

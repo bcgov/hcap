@@ -1,9 +1,9 @@
 import React, { useState, Fragment } from 'react';
 import fetch from 'cross-fetch';
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import { ErrorMessage } from 'formik';
 
 import { InputFieldError, InputFieldLabel } from '../generic';

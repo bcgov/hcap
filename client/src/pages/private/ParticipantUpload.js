@@ -1,25 +1,34 @@
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { useHistory } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
-import { DropzoneArea } from 'material-ui-dropzone';
-import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import { Box, Typography } from '@mui/material';
 import { Page, Button, CheckPermissions } from '../../components/generic';
 import store from 'store';
-import Alert from '@material-ui/lab/Alert';
+import Alert from '@mui/material/Alert';
 import { API_URL, Routes } from '../../constants';
 
-const useStyles = makeStyles((theme) => ({
-  dropzone: {
+const PREFIX = 'ParticipantUpload';
+
+const classes = {
+  dropzone: `${PREFIX}-dropzone`,
+  dropzoneText: `${PREFIX}-dropzoneText`,
+  previewChip: `${PREFIX}-previewChip`,
+};
+
+const StyledPage = styled(Page)(({ theme }) => ({
+  [`& .${classes.dropzone}`]: {
     backgroundColor: theme.palette.gray.primary,
     padding: theme.spacing(3),
     marginBottom: theme.spacing(2),
   },
-  dropzoneText: {
+
+  [`& .${classes.dropzoneText}`]: {
     color: theme.palette.text.secondary,
     fontSize: theme.typography.button.fontSize,
   },
-  previewChip: {
+
+  [`& .${classes.previewChip}`]: {
     minWidth: 160,
     maxWidth: 210,
   },
@@ -29,7 +38,7 @@ export default () => {
   const [file, setFile] = useState();
   const [isLoadingData, setLoadingData] = useState(false);
   const [errors, setErrors] = useState([]);
-  const classes = useStyles();
+
   const history = useHistory();
 
   const handleSubmit = async () => {
@@ -65,12 +74,12 @@ export default () => {
   };
 
   return (
-    <Page>
+    <StyledPage>
       <CheckPermissions permittedRoles={['maximus']} renderErrorMessage={true}>
         <Grid
           container
           alignContent='center'
-          justify='center'
+          justifyContent='center'
           alignItems='center'
           direction='column'
         >
@@ -78,11 +87,11 @@ export default () => {
             Please upload pre-screened participants:
           </Typography>
           <Box pt={4} pl={4} pr={4}>
-            <DropzoneArea
+            {/* <DropzoneArea
               useChipsForPreview
               previewText='Selected file:'
               previewGridProps={{ container: { spacing: 1, direction: 'row' } }}
-              previewChipProps={{ classes: { root: classes.previewChip } }}
+              previewChipProps={{  { root: classes.previewChip } }}
               showPreviews={true}
               showPreviewsInDropzone={false}
               onChange={handleChange}
@@ -91,7 +100,7 @@ export default () => {
               dropzoneClass={classes.dropzone}
               dropzoneParagraphClass={classes.dropzoneText}
               dropzoneText='Drop your participant sheet here or click the box'
-            />
+            /> */}
           </Box>
           <Box pl={4} pr={4} pt={2}>
             {errors.length > 0 &&
@@ -114,6 +123,6 @@ export default () => {
           </Box>
         </Grid>
       </CheckPermissions>
-    </Page>
+    </StyledPage>
   );
 };

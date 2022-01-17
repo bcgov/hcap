@@ -1,21 +1,27 @@
 import React, { useState } from 'react';
-import { Tooltip } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import { Tooltip } from '@mui/material';
+const PREFIX = 'ComponentTooltip';
 
-const useStyles = makeStyles((theme) => ({
-  tooltip: {
+const classes = {
+  tooltip: `${PREFIX}-tooltip`,
+  arrow: `${PREFIX}-arrow`,
+};
+
+const StyledTooltip = styled(Tooltip)(({ theme }) => ({
+  [`& .${classes.tooltip}`]: {
     backgroundColor: theme.palette.common.white,
     color: 'rgba(0, 0, 0, 0.87)',
     boxShadow: theme.shadows[1],
     fontSize: theme.typography.body1.fontSize,
   },
-  arrow: {
+
+  [`& .${classes.arrow}`]: {
     color: theme.palette.common.white,
   },
 }));
 
 export const ComponentTooltip = ({ ...props }) => {
-  const classes = useStyles();
   const [open, setOpen] = useState(false);
 
   const handleClose = () => {

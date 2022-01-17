@@ -1,16 +1,16 @@
 import React, { lazy, useEffect, useState, useMemo } from 'react';
 import { Card, Page, CheckPermissions, Dialog } from '../../components/generic';
-import Button from '@material-ui/core/Button';
-import { Box, Grid, Link, Typography } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import { Box, Grid, Link, Typography } from '@mui/material';
 import { scrollUp } from '../../utils';
 import store from 'store';
 import routes from '../../constants/routes';
 import { EditPSIForm, NewCohortForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { ToastStatus, EditPSISchema, NewCohortSchema, API_URL } from '../../constants';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 const CohortTable = lazy(() => import('./CohortTable'));
 

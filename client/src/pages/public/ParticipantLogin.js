@@ -1,36 +1,50 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { Page, Button } from '../../components/generic';
 import { useKeycloak } from '@react-keycloak/web';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
 import { Routes } from '../../constants';
 import { useHistory } from 'react-router-dom';
 
-const useStyles = makeStyles((theme) => ({
-  blueText: {
+const PREFIX = 'ParticipantLogin';
+
+const classes = {
+  blueText: `${PREFIX}-blueText`,
+  blueBox: `${PREFIX}-blueBox`,
+  pageContainer: `${PREFIX}-pageContainer`,
+  rightContainer: `${PREFIX}-rightContainer`,
+  leftContainer: `${PREFIX}-leftContainer`,
+};
+
+const StyledPage = styled(Page)(({ theme }) => ({
+  [`& .${classes.blueText}`]: {
     color: theme.palette.primary.light,
   },
-  blueBox: {
+
+  [`& .${classes.blueBox}`]: {
     backgroundColor: '#EDF6FF',
     maxWidth: 554,
   },
-  pageContainer: {
-    [theme.breakpoints.down('md')]: {
+
+  [`& .${classes.pageContainer}`]: {
+    [theme.breakpoints.down('lg')]: {
       flexDirection: 'column',
     },
     [theme.breakpoints.up('md')]: {
       flexDirection: 'row',
     },
   },
-  rightContainer: {
+
+  [`& .${classes.rightContainer}`]: {
     padding: '10%',
     [theme.breakpoints.up('md')]: {
       width: '50%',
     },
     backgroundColor: '#FFFFFF',
   },
-  leftContainer: {
+
+  [`& .${classes.leftContainer}`]: {
     padding: '10%',
     [theme.breakpoints.up('md')]: {
       width: '50%',
@@ -39,7 +53,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default () => {
-  const classes = useStyles();
   const [keycloak] = useKeycloak();
 
   const history = useHistory();
@@ -55,7 +68,7 @@ export default () => {
   };
 
   return (
-    <Page hideEmployers={true} isAutoHeight={false}>
+    <StyledPage hideEmployers={true} isAutoHeight={false}>
       <Box container display='flex' minHeight='100%' className={classes.pageContainer}>
         <Box className={classes.leftContainer}>
           <Box mb={3}>
@@ -121,6 +134,6 @@ export default () => {
           </Box>
         </Box>
       </Box>
-    </Page>
+    </StyledPage>
   );
 };

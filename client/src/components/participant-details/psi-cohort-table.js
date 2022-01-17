@@ -1,26 +1,34 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import { Button } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import IconButton from '@mui/material/IconButton';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { Button } from '@mui/material';
 import { formatCohortDate } from '../../utils';
 
-const useStyles = makeStyles({
-  root: {
+const PREFIX = 'PSICohortTable';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  table: `${PREFIX}-table`,
+  innerRow: `${PREFIX}-innerRow`,
+};
+
+const Root = styled('div')({
+  [`& .${classes.root}`]: {
     width: '100%',
     overflowX: 'auto',
   },
-  table: {
+  [`& .${classes.table}`]: {
     minWidth: 650,
   },
-  innerRow: {
+  [`& .${classes.innerRow}`]: {
     width: '100%',
     paddingLeft: '100px',
   },
@@ -46,7 +54,7 @@ const ExpandableTableRow = ({
     <>
       <TableRow {...otherProps}>
         <TableCell>
-          <IconButton onClick={() => setIsExpanded(!isExpanded)}>
+          <IconButton onClick={() => setIsExpanded(!isExpanded)} size='large'>
             {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
@@ -78,9 +86,8 @@ const ExpandableTableRow = ({
 };
 
 export const PSICohortTable = ({ rows, assignAction, disabled }) => {
-  const classes = useStyles();
   return (
-    <div
+    <Root
       className='ui container'
       style={{
         opacity: disabled ? 0.5 : 1,
@@ -122,6 +129,6 @@ export const PSICohortTable = ({ rows, assignAction, disabled }) => {
           </TableBody>
         </Table>
       </Paper>
-    </div>
+    </Root>
   );
 };

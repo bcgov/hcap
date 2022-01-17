@@ -1,7 +1,7 @@
 import React from 'react';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import { useLocation, Redirect } from 'react-router-dom';
 import { Routes } from '../../constants';
 
@@ -18,7 +18,7 @@ export default () => {
           {/** Status */}
           <Box pt={5} pb={2} pl={2} pr={2}>
             <Box mb={2}>
-              <Grid container alignItems='center' justify='space-between'>
+              <Grid container alignItems='center' justifyContent='space-between'>
                 <Grid item>
                   <Typography variant='subtitle1' paragraph>
                     Thank you for submitting your expression of interest for the Health Career
@@ -38,7 +38,7 @@ export default () => {
                   container
                   direction='column'
                   alignItems='center'
-                  justify='center'
+                  justifyContent='center'
                   id='pdfButtonWrapper'
                   item
                 >
@@ -52,7 +52,7 @@ export default () => {
                 </Grid>
               </Grid>
             </Box>
-            <Grid container direction='column' alignItems='center' justify='center' item>
+            <Grid container direction='column' alignItems='center' justifyContent='center' item>
               <Typography variant='body1' paragraph>
                 Your form has been submitted.
               </Typography>

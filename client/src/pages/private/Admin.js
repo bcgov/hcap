@@ -1,21 +1,27 @@
 import React, { useEffect, useMemo } from 'react';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import { Box, Typography } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import { Page, Button, CheckPermissions } from '../../components/generic';
 import { Routes } from '../../constants';
 import { AuthContext } from '../../providers';
 
-const useStyles = makeStyles((theme) => ({
-  button: {
+const PREFIX = 'Admin';
+
+const classes = {
+  button: `${PREFIX}-button`,
+};
+
+const StyledPage = styled(Page)(({ theme }) => ({
+  [`& .${classes.button}`]: {
     marginTop: theme.spacing(3),
   },
 }));
 
 export default () => {
   const history = useHistory();
-  const classes = useStyles();
+
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const name = auth.user?.name || '';
@@ -38,7 +44,7 @@ export default () => {
   );
 
   return (
-    <Page centered>
+    <StyledPage centered>
       <CheckPermissions
         permittedRoles={['maximus', 'employer', 'health_authority', 'ministry_of_health']}
         renderErrorMessage={true}
@@ -46,7 +52,7 @@ export default () => {
         <Grid
           container
           alignContent='center'
-          justify='center'
+          justifyContent='center'
           alignItems='center'
           direction='column'
         >
@@ -85,6 +91,6 @@ export default () => {
           </Box>
         </Grid>
       </CheckPermissions>
-    </Page>
+    </StyledPage>
   );
 };

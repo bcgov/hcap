@@ -1,16 +1,25 @@
 import React, { Fragment } from 'react';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
+import { styled } from '@mui/material/styles';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import classNames from 'classnames';
-import { makeStyles } from '@material-ui/core/styles';
 import { ErrorMessage, useField } from 'formik';
 
 import { InputFieldError, Button } from '../generic';
 
-const useStyles = makeStyles((theme) => ({
-  button: {
+const PREFIX = 'RenderButtonGroup';
+
+const classes = {
+  button: `${PREFIX}-button`,
+  buttonError: `${PREFIX}-buttonError`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.button}`]: {
     boxShadow: 'none',
   },
-  buttonError: {
+
+  [`& .${classes.buttonError}`]: {
     borderColor: theme.palette.error.main,
     '&:hover': {
       borderColor: theme.palette.error.main,
@@ -19,12 +28,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const RenderButtonGroup = ({ field, form, options, ...props }) => {
-  const classes = useStyles();
   const [, , helpers] = useField(field.name);
   const { setValue } = helpers;
   const error = form.errors[field.name];
   return (
-    <Fragment>
+    <Root>
       <ButtonGroup orientation='vertical' fullWidth {...props}>
         {options.map((option) => (
           <Button
@@ -38,6 +46,6 @@ export const RenderButtonGroup = ({ field, form, options, ...props }) => {
         ))}
       </ButtonGroup>
       <InputFieldError error={<ErrorMessage name={field.name} />} />
-    </Fragment>
+    </Root>
   );
 };

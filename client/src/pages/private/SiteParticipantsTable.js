@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { styled } from '@mui/material/styles';
 import { useHistory } from 'react-router-dom';
 import _orderBy from 'lodash/orderBy';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography, Link } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Grid from '@mui/material/Grid';
+import { Box, Typography, Link } from '@mui/material';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import store from 'store';
 import { Table, Button, Dialog } from '../../components/generic';
 import { getDialogTitle } from '../../utils';
@@ -24,31 +24,26 @@ import { useToast } from '../../hooks';
 import moment from 'moment';
 import { keyedString } from '../../utils';
 
-let columnIDs = [
-  { id: 'participantId', name: 'ID' },
-  { id: 'participantName', name: 'Name' },
-  { id: 'hiredDate', name: 'Hire Date' },
-  { id: 'startDate', name: 'Start Date' },
-  { id: 'nonHCAP', name: 'Position' },
-  { id: 'archive', name: 'Archive' },
-  { id: 'withdrawnDate', name: 'Withdrawn Date' },
-  { id: 'reason', name: 'Reason' },
-];
+const PREFIX = 'SiteParticipantsTable';
 
-const tabs = SiteDetailTabContext.tabs;
+const classes = {
+  root: `${PREFIX}-root`,
+  indicator: `${PREFIX}-indicator`,
+  root2: `${PREFIX}-root2`,
+  selected: `${PREFIX}-selected`,
+};
 
-const CustomTabs = withStyles((theme) => ({
-  root: {
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  [`& .${classes.root}`]: {
     borderBottom: `1px solid ${theme.palette.gray.secondary}`,
     marginBottom: theme.spacing(2),
   },
-  indicator: {
+
+  [`& .${classes.indicator}`]: {
     backgroundColor: theme.palette.highlight.primary,
   },
-}))(Tabs);
 
-const CustomTab = withStyles((theme) => ({
-  root: {
+  [`& .${classes.root2}`]: {
     textTransform: 'none',
     minWidth: 72,
     fontWeight: theme.typography.fontWeightRegular,
@@ -65,7 +60,45 @@ const CustomTab = withStyles((theme) => ({
       color: theme.palette.highlight.primary,
     },
   },
-  selected: {},
+
+  [`& .${classes.selected}`]: {},
+}));
+
+let columnIDs = [
+  { id: 'participantId', name: 'ID' },
+  { id: 'participantName', name: 'Name' },
+  { id: 'hiredDate', name: 'Hire Date' },
+  { id: 'startDate', name: 'Start Date' },
+  { id: 'nonHCAP', name: 'Position' },
+  { id: 'archive', name: 'Archive' },
+  { id: 'withdrawnDate', name: 'Withdrawn Date' },
+  { id: 'reason', name: 'Reason' },
+];
+
+const tabs = SiteDetailTabContext.tabs;
+
+const CustomTabs = Tabs;
+
+const CustomTab = styled(Tab)(({ theme }) => ({
+  [`& .${classes.root2}`]: {
+    textTransform: 'none',
+    minWidth: 72,
+    fontWeight: theme.typography.fontWeightRegular,
+    marginRight: theme.spacing(4),
+    '&:hover': {
+      color: theme.palette.highlight.primary,
+      opacity: 1,
+    },
+    '&$selected': {
+      color: theme.palette.highlight.secondary,
+      fontWeight: theme.typography.fontWeightMedium,
+    },
+    '&:focus': {
+      color: theme.palette.highlight.primary,
+    },
+  },
+
+  [`& .${classes.selected}`]: {},
 }))((props) => <Tab disableRipple {...props} />);
 
 const fetchDetails = async (id) => {
@@ -301,10 +334,10 @@ export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => 
     setRows(selectedTab === 'Hired Participants' ? fetchedRows : fetchedWithdrawnRows);
   }, [fetchedRows, fetchedWithdrawnRows, selectedTab]);
   return (
-    <Grid
+    <StyledGrid
       container
       alignContent='flex-start'
-      justify='flex-start'
+      justifyContent='flex-start'
       alignItems='center'
       direction='column'
     >
@@ -318,10 +351,23 @@ export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => 
                 payload: { tab: property, roles },
               })
             }
+            classes={{
+              root: classes.root,
+              indicator: classes.indicator,
+            }}
           >
             {
               tabs.map((key) => (
-                <CustomTab key={key} label={key} value={key} disabled={isLoadingData} />
+                <CustomTab
+                  key={key}
+                  label={key}
+                  value={key}
+                  disabled={isLoadingData}
+                  classes={{
+                    root: classes.root2,
+                    selected: classes.selected,
+                  }}
+                />
               )) // Tab component with tab name as value
             }
           </CustomTabs>
@@ -456,6 +502,6 @@ export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => 
           />
         )}
       </Dialog>
-    </Grid>
+    </StyledGrid>
   );
 };

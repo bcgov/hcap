@@ -1,16 +1,27 @@
 import React from 'react';
-import { Grid, Typography, Icon, Link } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import { Grid, Typography, Icon, Link } from '@mui/material';
 import { Button } from '../../components/generic';
 import { Page } from '../../components/generic';
-import { makeStyles } from '@material-ui/core/styles';
-import MailOutlineIcon from '@material-ui/icons/MailOutline';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { useHistory } from 'react-router-dom';
 import { Routes } from '../../constants';
-const useStyles = makeStyles((theme) => ({
-  rootContainer: {
+const PREFIX = 'ParticipantFullWithdrawPage';
+
+const classes = {
+  rootContainer: `${PREFIX}-rootContainer`,
+  info: `${PREFIX}-info`,
+  icon: `${PREFIX}-icon`,
+  grid_top_level: `${PREFIX}-grid_top_level`,
+  text: `${PREFIX}-text`,
+};
+
+const StyledPage = styled(Page)(({ theme }) => ({
+  [`& .${classes.rootContainer}`]: {
     flexGrow: 1,
   },
-  info: {
+
+  [`& .${classes.info}`]: {
     color: 'rgb(13, 60, 97)',
     borderRadius: '4px',
     border: '1px solid rgb(175, 217, 252)',
@@ -21,21 +32,24 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: 'rgb(230,246,255)',
     maxWidth: '600px',
   },
-  icon: {
+
+  [`& .${classes.icon}`]: {
     height: '100%',
     width: '100%',
     [theme.breakpoints.up('md')]: {
       fontSize: 'large',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       fontSize: 'small',
     },
   },
-  grid_top_level: {
+
+  [`& .${classes.grid_top_level}`]: {
     maxWidth: '60%',
     paddingTop: 100,
   },
-  text: {
+
+  [`& .${classes.text}`]: {
     [theme.breakpoints.up('md')]: {
       'text-align': 'center',
     },
@@ -43,10 +57,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default () => {
-  const classes = useStyles();
   const history = useHistory();
   return (
-    <Page>
+    <StyledPage>
       <Grid className={classes.grid_top_level} container alignContent='center' direction='column'>
         <Grid item>
           <Typography variant={'h4'} className={classes.text}>
@@ -79,6 +92,6 @@ export default () => {
           </Grid>
         </Grid>
       </Grid>
-    </Page>
+    </StyledPage>
   );
 };

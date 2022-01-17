@@ -1,21 +1,30 @@
 import React, { Fragment } from 'react';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Typography from '@material-ui/core/Typography';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
+import { styled } from '@mui/material/styles';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Typography from '@mui/material/Typography';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import { InputFieldError, InputFieldLabel } from '../generic';
-import { Divider, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+import { Divider, Grid } from '@mui/material';
+import TextField from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
 
-const useStyles = makeStyles((theme) => ({
-  dividerSpacing: {
+const PREFIX = 'BaselineList';
+
+const classes = {
+  dividerSpacing: `${PREFIX}-dividerSpacing`,
+  dividerTextSpacing: `${PREFIX}-dividerTextSpacing`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.dividerSpacing}`]: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(2),
   },
-  dividerTextSpacing: {
+
+  [`& .${classes.dividerTextSpacing}`]: {
     marginTop: theme.spacing(2),
   },
 }));
@@ -35,7 +44,6 @@ export const BaselineList = ({
     setFieldValue(name, mergedResult);
   };
 
-  const classes = useStyles();
   const error = form.errors[name];
 
   const sanitizeValue = (value) => {
@@ -50,12 +58,12 @@ export const BaselineList = ({
   };
 
   return (
-    <Fragment>
+    <Root>
       {options.map((option) => (
         <Fragment key={option.value}>
           <Accordion defaultExpanded={true} disabled={disabled} {...props}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Grid container justify='space-between'>
+              <Grid container justifyContent='space-between'>
                 <Grid item>
                   <Typography variant='body1'>
                     <b>{option.label}</b>
@@ -69,7 +77,7 @@ export const BaselineList = ({
                   Current Staff (Headcount)
                 </Typography>
                 <Divider className={classes.dividerSpacing} />
-                <Grid container justify='space-between'>
+                <Grid container justifyContent='space-between'>
                   <Grid item>
                     <InputFieldLabel label='* Full Time' />
                     <TextField
@@ -134,7 +142,7 @@ export const BaselineList = ({
                     Current Vacancies (Headcount)
                   </Typography>
                   <Divider className={classes.dividerSpacing} />
-                  <Grid container justify='space-between'>
+                  <Grid container justifyContent='space-between'>
                     <Grid item>
                       <InputFieldLabel label='* Full Time' />
                       <TextField
@@ -196,6 +204,6 @@ export const BaselineList = ({
           </Accordion>
         </Fragment>
       ))}
-    </Fragment>
+    </Root>
   );
 };

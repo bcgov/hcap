@@ -1,16 +1,24 @@
 import React, { Fragment } from 'react';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import { ErrorMessage } from 'formik';
 
 import { InputFieldError, InputFieldLabel } from '../generic';
 
-const useStyles = makeStyles({
-  inputRoot: {
+const PREFIX = 'RenderAutocomplete';
+
+const classes = {
+  inputRoot: `${PREFIX}-inputRoot`,
+  option: `${PREFIX}-option`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')({
+  [`& .${classes.inputRoot}`]: {
     paddingTop: '0 !important',
   },
-  option: {
+  [`& .${classes.option}`]: {
     backgroundColor: 'white !important',
     '&:hover': {
       backgroundColor: 'rgba(0, 0, 0, 0.04) !important',
@@ -19,19 +27,18 @@ const useStyles = makeStyles({
 });
 
 export const RenderAutocomplete = ({ field: { value, name }, form, label, options }) => {
-  const classes = useStyles();
   const touched = form.touched[name];
   const error = form.errors[name];
   const { setFieldValue } = form;
 
   return (
-    <Fragment>
+    <Root>
       {label && <InputFieldLabel label={label} />}
       <Autocomplete
         classes={classes}
         options={options}
         getOptionLabel={(option) => option?.label || ''}
-        getOptionSelected={(option, value) => value === '' || option.value === value.value}
+        isOptionEqualToValue={(option, value) => value === '' || option.value === value.value}
         value={options.find((option) => option.value === value) || ''}
         onChange={(_, value) => setFieldValue(name, value?.value || '')}
         renderInput={(params) => (
@@ -48,6 +55,6 @@ export const RenderAutocomplete = ({ field: { value, name }, form, label, option
         )}
       />
       <InputFieldError error={<ErrorMessage name={name} />} />
-    </Fragment>
+    </Root>
   );
 };

@@ -1,21 +1,31 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Paper, Grid, Icon, Link } from '@material-ui/core';
+import { Typography, Paper, Grid, Icon, Link } from '@mui/material';
 import { Button } from '../../components/generic';
 import { Routes } from '../../constants';
-import FindInPageOutlinedIcon from '@material-ui/icons/FindInPageOutlined';
-const useStyles = makeStyles(() => ({
-  card: {
+import FindInPageOutlinedIcon from '@mui/icons-material/FindInPageOutlined';
+const PREFIX = 'ParticipantLandingEmpty';
+
+const classes = {
+  card: `${PREFIX}-card`,
+  text_block: `${PREFIX}-text_block`,
+  icon: `${PREFIX}-icon`,
+};
+
+const StyledPaper = styled(Paper)(() => ({
+  [`&.${classes.card}`]: {
     maxWidth: '70%',
     align: 'center',
     padding: 30,
     marginTop: 40,
   },
-  text_block: {
+
+  [`& .${classes.text_block}`]: {
     paddingBlock: 10,
   },
-  icon: {
+
+  [`& .${classes.icon}`]: {
     height: '100%',
     width: '100%',
     maxWidth: '70px',
@@ -24,9 +34,9 @@ const useStyles = makeStyles(() => ({
 
 export default () => {
   const histroy = useHistory();
-  const classes = useStyles();
+
   return (
-    <Paper className={classes.card} elevation={3}>
+    <StyledPaper className={classes.card} elevation={3}>
       <Grid spacing={2} alignItems={'center'} container>
         <Grid item align={'center'} xs={12}>
           <Icon
@@ -60,6 +70,6 @@ export default () => {
           />
         </Grid>
       </Grid>
-    </Paper>
+    </StyledPaper>
   );
 };

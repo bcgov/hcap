@@ -1,61 +1,85 @@
 import React, { useState } from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import store from 'store';
 import BcLogo from '../../assets/images/bc-logo.svg';
 import BcLogoMini from '../../assets/images/bc-logo-mini.svg';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import Hidden from '@material-ui/core/Hidden';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import Hidden from '@mui/material/Hidden';
 import { Routes } from '../../constants';
 import { Button } from './Button';
-import Link from '@material-ui/core/Link';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
+import Link from '@mui/material/Link';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const PREFIX = 'Header';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  appBar: `${PREFIX}-appBar`,
+  toolbar: `${PREFIX}-toolbar`,
+  logoWrapper: `${PREFIX}-logoWrapper`,
+  logoTextWrapper: `${PREFIX}-logoTextWrapper`,
+  title: `${PREFIX}-title`,
+  titleSmall: `${PREFIX}-titleSmall`,
+  logo: `${PREFIX}-logo`,
+  verticalDivider: `${PREFIX}-verticalDivider`,
+  button: `${PREFIX}-button`,
+  buttonWrapper: `${PREFIX}-buttonWrapper`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`&.${classes.root}`]: {
     '& > header': {
       boxShadow: 'none',
     },
   },
-  appBar: {
+
+  [`& .${classes.appBar}`]: {
     height: '70px',
     backgroundColor: theme.palette.primary.light,
     borderBottom: `2px solid ${theme.palette.secondary.main}`,
   },
-  toolbar: {
+
+  [`& .${classes.toolbar}`]: {
     height: '100%',
     justifyContent: 'space-between',
   },
-  logoWrapper: {
+
+  [`& .${classes.logoWrapper}`]: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     overflow: 'hidden',
   },
-  logoTextWrapper: {
+
+  [`& .${classes.logoTextWrapper}`]: {
     overflow: 'hidden',
   },
-  title: {
+
+  [`& .${classes.title}`]: {
     color: theme.palette.headerText.primary,
     fontWeight: 'bold',
     marginTop: -3,
     fontSize: 'min(2.2em, 3.8vw)',
   },
-  titleSmall: {
+
+  [`& .${classes.titleSmall}`]: {
     color: theme.palette.headerText.primary,
     marginBottom: -3,
   },
-  logo: {
+
+  [`& .${classes.logo}`]: {
     height: '40px',
     marginBottom: theme.spacing(1.1),
     flexShrink: 0, // Logo should hold its own
   },
-  verticalDivider: {
+
+  [`& .${classes.verticalDivider}`]: {
     marginLeft: theme.spacing(1.5),
     marginRight: theme.spacing(1.5),
     height: '48px',
@@ -63,11 +87,13 @@ const useStyles = makeStyles((theme) => ({
     color: '#E2A014',
     borderStyle: 'solid',
   },
-  button: {
+
+  [`& .${classes.button}`]: {
     padding: theme.spacing(1, 3),
     margin: theme.spacing(0, 1),
   },
-  buttonWrapper: {
+
+  [`& .${classes.buttonWrapper}`]: {
     display: 'flex',
     flexDirection: 'row',
   },
@@ -76,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
 export const Header = ({ hideEmployers = false }) => {
   const history = useHistory();
   const location = useLocation();
-  const classes = useStyles();
+
   const [keycloak] = useKeycloak();
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -109,12 +135,12 @@ export const Header = ({ hideEmployers = false }) => {
   };
 
   return (
-    <div className={classes.root}>
+    <Root className={classes.root}>
       <AppBar className={classes.appBar} position='static'>
         <Toolbar className={classes.toolbar}>
           <div className={classes.logoWrapper}>
             <Link href='/'>
-              <Hidden smDown>
+              <Hidden mdDown>
                 <img
                   className={classes.logo}
                   src={BcLogo}
@@ -141,7 +167,7 @@ export const Header = ({ hideEmployers = false }) => {
           </div>
           {!hideEmployers && (
             <>
-              <Hidden xsDown>
+              <Hidden smDown>
                 <div className={classes.buttonWrapper}>
                   {keycloak.authenticated && location.pathname !== Routes.Admin && (
                     <Button
@@ -218,6 +244,6 @@ export const Header = ({ hideEmployers = false }) => {
           )}
         </Toolbar>
       </AppBar>
-    </div>
+    </Root>
   );
 };

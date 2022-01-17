@@ -1,10 +1,10 @@
 import React, { Fragment } from 'react';
 import { useLocation } from 'react-router-dom';
-import Alert from '@material-ui/lab/Alert';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import EditIcon from '@material-ui/icons/Edit';
+import Alert from '@mui/material/Alert';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import EditIcon from '@mui/icons-material/Edit';
 
 import { Routes } from '../../constants';
 import { Card, Button } from '../generic';
@@ -35,7 +35,7 @@ export const Review = ({ hideCollectionNotice, handleEditClick, isDisabled }) =>
         <Grid item xs={12}>
           <Card>
             <Box mb={2}>
-              <Grid container alignItems='center' justify='space-between'>
+              <Grid container alignItems='center' justifyContent='space-between'>
                 <Grid item>
                   <Typography variant='subtitle1'>1. Operator Contact Information</Typography>
                 </Grid>
@@ -58,7 +58,7 @@ export const Review = ({ hideCollectionNotice, handleEditClick, isDisabled }) =>
         <Grid item xs={12}>
           <Card>
             <Box mb={2}>
-              <Grid container alignItems='center' justify='space-between' spacing={2}>
+              <Grid container alignItems='center' justifyContent='space-between' spacing={2}>
                 <Grid item>
                   <Typography variant='subtitle1'>2. Site Information</Typography>
                 </Grid>
@@ -81,7 +81,7 @@ export const Review = ({ hideCollectionNotice, handleEditClick, isDisabled }) =>
         <Grid item xs={12}>
           <Card>
             <Box mb={2}>
-              <Grid container alignItems='center' justify='space-between' spacing={2}>
+              <Grid container alignItems='center' justifyContent='space-between' spacing={2}>
                 <Grid item>
                   <Typography variant='subtitle1'>3. Site Workforce Baseline</Typography>
                 </Grid>
@@ -104,7 +104,7 @@ export const Review = ({ hideCollectionNotice, handleEditClick, isDisabled }) =>
         <Grid item xs={12}>
           <Card>
             <Box mb={2}>
-              <Grid container alignItems='center' justify='space-between' spacing={2}>
+              <Grid container alignItems='center' justifyContent='space-between' spacing={2}>
                 <Grid item>
                   <Typography variant='subtitle1'>4. Expression of Interest</Typography>
                 </Grid>

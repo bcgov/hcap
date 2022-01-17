@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
-import Alert from '@material-ui/lab/Alert';
-import Box from '@material-ui/core/Box';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
 
 import { Card, Divider } from '../generic';
 

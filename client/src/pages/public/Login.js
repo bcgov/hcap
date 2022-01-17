@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { useLocation } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { useKeycloak } from '@react-keycloak/web';
 import { Page } from '../../components/generic';
 import { Routes } from '../../constants';
@@ -29,7 +29,7 @@ export default () => {
 
   return (
     <Page>
-      <Grid container alignItems='center' justify='center'>
+      <Grid container alignItems='center' justifyContent='center'>
         <Typography variant='subtitle2'>Redirecting...</Typography>
       </Grid>
     </Page>

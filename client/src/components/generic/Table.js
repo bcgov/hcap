@@ -1,61 +1,35 @@
 import React, { Fragment, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { FixedSizeList } from 'react-window';
-import MuiTable from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import { List, ListItem, ListItemText, Menu, MenuItem } from '@material-ui/core';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import TablePagination from '@material-ui/core/TablePagination';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import FirstPageIcon from '@material-ui/icons/FirstPage';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import LastPageIcon from '@material-ui/icons/LastPage';
+import MuiTable from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import { List, ListItem, ListItemText, Menu, MenuItem } from '@mui/material';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import TablePagination from '@mui/material/TablePagination';
+import Skeleton from '@mui/material/Skeleton';
+import IconButton from '@mui/material/IconButton';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
 
-const StyledTableCell = withStyles((theme) => ({
-  head: {
-    ...theme.typography.body1,
-    backgroundColor: theme.palette.common.white,
-    color: '#333333',
-  },
-  body: {
-    ...theme.typography.body1,
-  },
-}))(TableCell);
+const PREFIX = 'Table';
 
-const StyledHeaderTableCell = withStyles((theme) => ({
-  head: {
-    ...theme.typography.body1,
-    backgroundColor: theme.palette.common.white,
-    borderBottom: `2px solid ${theme.palette.secondary.main}`,
-  },
-}))(TableCell);
+const classes = {
+  head: `${PREFIX}-head`,
+  body: `${PREFIX}-body`,
+  head2: `${PREFIX}-head2`,
+  root: `${PREFIX}-root`,
+  hover: `${PREFIX}-hover`,
+  root2: `${PREFIX}-root2`,
+};
 
-const StyledTableRow = withStyles((theme) => ({
-  root: {
-    '&:nth-child(1)': {
-      borderTop: `2px solid ${theme.palette.secondary.main}`,
-    },
-    '&:nth-of-type(odd)': {
-      backgroundColor: '#FAFAFA',
-    },
-    '&:nth-of-type(even)': {
-      backgroundColor: '#FFFFFF',
-    },
-  },
-  hover: {
-    '&:hover': {
-      backgroundColor: '#F0F7FF !important',
-    },
-  },
-}))(TableRow);
-
-const useStyles = makeStyles((theme) => ({
-  root: {
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.root2}`]: {
     display: 'flex',
     flexDirection: 'row',
     flexShrink: 0,
@@ -63,9 +37,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const StyledTableCell = TableCell;
+
+const StyledHeaderTableCell = TableCell;
+
+const StyledTableRow = TableRow;
+
 const TablePaginationActions = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const classes = useStyles();
+
   const { count, page, rowsPerPage, onChangePage } = props;
 
   const handleFirstPageButtonClick = (event) => {
@@ -107,16 +87,23 @@ const TablePaginationActions = (props) => {
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
         aria-label='first page'
+        size='large'
       >
         <FirstPageIcon />
       </IconButton>
-      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label='previous page'>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label='previous page'
+        size='large'
+      >
         <KeyboardArrowLeft />
       </IconButton>
       <IconButton
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label='next page'
+        size='large'
       >
         <KeyboardArrowRight />
       </IconButton>
@@ -124,6 +111,7 @@ const TablePaginationActions = (props) => {
         onClick={handleLastPageButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label='last page'
+        size='large'
       >
         <LastPageIcon />
       </IconButton>
@@ -189,12 +177,17 @@ export const Table = ({
     onChangePage(currentPage, newPage);
   };
   return (
-    <Fragment>
+    <Root>
       <MuiTable stickyHeader>
         <TableHead>
           <TableRow>
             {columns.map((column, index) => (
-              <StyledHeaderTableCell key={index}>
+              <StyledHeaderTableCell
+                key={index}
+                classes={{
+                  head: classes.head2,
+                }}
+              >
                 {column.name && (
                   <TableSortLabel // Disable sorting if column has no header
                     disabled={isLoading || column.sortable === false}
@@ -212,18 +205,43 @@ export const Table = ({
         <TableBody>
           {isLoading
             ? [...Array(8)].map((_, i) => (
-                <StyledTableRow key={i}>
+                <StyledTableRow
+                  key={i}
+                  classes={{
+                    root: classes.root,
+                    hover: classes.hover,
+                  }}
+                >
                   {[...Array(columns.length)].map((_, i) => (
-                    <StyledTableCell key={i}>
+                    <StyledTableCell
+                      key={i}
+                      classes={{
+                        head: classes.head,
+                        body: classes.body,
+                      }}
+                    >
                       <Skeleton animation='wave' />
                     </StyledTableCell>
                   ))}
                 </StyledTableRow>
               ))
             : rows.map((row, index) => (
-                <StyledTableRow hover key={index}>
+                <StyledTableRow
+                  hover
+                  key={index}
+                  classes={{
+                    root: classes.root,
+                    hover: classes.hover,
+                  }}
+                >
                   {columns.map((column) => (
-                    <StyledTableCell key={column.id}>
+                    <StyledTableCell
+                      key={column.id}
+                      classes={{
+                        head: classes.head,
+                        body: classes.body,
+                      }}
+                    >
                       {renderCell ? renderCell(column.id, row) : row[column.id] || ''}
                     </StyledTableCell>
                   ))}
@@ -238,10 +256,10 @@ export const Table = ({
           count={rowsCount || rows.length}
           rowsPerPage={rowsPerPage}
           page={currentPage}
-          onChangePage={handlePageChange}
+          onPageChange={handlePageChange}
           ActionsComponent={isLoading ? () => null : TablePaginationActions}
         />
       )}
-    </Fragment>
+    </Root>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 
 export const DebounceTextField = ({ time, onDebounce, onChange, ...props }) => {
   const [text, setText] = useState(null);

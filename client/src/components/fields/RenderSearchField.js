@@ -1,17 +1,27 @@
 import React, { Fragment } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import SearchIcon from '@material-ui/icons/Search';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
 
 import { RenderTextField } from '.';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const PREFIX = 'RenderSearchField';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  iconButton: `${PREFIX}-iconButton`,
+  searchIcon: `${PREFIX}-searchIcon`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.root}`]: {
     '& > .MuiOutlinedInput-adornedEnd': {
       paddingRight: '0',
     },
   },
-  iconButton: {
+
+  [`& .${classes.iconButton}`]: {
     paddingLeft: '10px',
     paddingRight: '10px',
     paddingTop: '9px',
@@ -24,15 +34,15 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.primary.main,
     },
   },
-  searchIcon: {
+
+  [`& .${classes.searchIcon}`]: {
     color: '#FFFFFF',
   },
 }));
 
 export const RenderSearchField = ({ ...props }) => {
-  const classes = useStyles();
   return (
-    <Fragment>
+    <Root>
       <RenderTextField
         className={classes.root}
         variant='outlined'
@@ -43,6 +53,7 @@ export const RenderSearchField = ({ ...props }) => {
               className={classes.iconButton}
               color='inherit'
               type='submit'
+              size='large'
             >
               <SearchIcon className={classes.searchIcon} />
             </IconButton>
@@ -50,6 +61,6 @@ export const RenderSearchField = ({ ...props }) => {
         }}
         {...props}
       />
-    </Fragment>
+    </Root>
   );
 };

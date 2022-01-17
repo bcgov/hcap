@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { useHistory } from 'react-router-dom';
 import {
   Grid,
@@ -9,8 +10,7 @@ import {
   CardActions,
   Dialog,
   CircularProgress,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
 import store from 'store';
 import { Page } from '../../components/generic';
 import { API_URL, Routes, ToastStatus } from '../../constants';
@@ -21,47 +21,67 @@ import isNil from 'lodash/isNil';
 import { useToast } from '../../hooks';
 import ParticipantLandingEmpty from './ParticipantLandingEmpty';
 
-const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
+const PREFIX = 'ParticipantLanding';
 
-const moment = require('moment');
+const classes = {
+  rootContainer: `${PREFIX}-rootContainer`,
+  root: `${PREFIX}-root`,
+  bullet: `${PREFIX}-bullet`,
+  title: `${PREFIX}-title`,
+  pos: `${PREFIX}-pos`,
+  posBox: `${PREFIX}-posBox`,
+  card: `${PREFIX}-card`,
+  peoiLabel: `${PREFIX}-peoiLabel`,
+  idBox: `${PREFIX}-idBox`,
+  info: `${PREFIX}-info`,
+};
 
-const useStyles = makeStyles(() => ({
-  rootContainer: {
+const StyledPage = styled(Page)(() => ({
+  [`& .${classes.rootContainer}`]: {
     flexGrow: 1,
   },
-  root: {
+
+  [`& .${classes.root}`]: {
     minWidth: 275,
     margin: 10,
   },
-  bullet: {
+
+  [`& .${classes.bullet}`]: {
     display: 'inline-block',
     margin: '0 2px',
     transform: 'scale(0.8)',
   },
-  title: {
+
+  [`& .${classes.title}`]: {
     fontSize: 14,
   },
-  pos: {
+
+  [`& .${classes.pos}`]: {
     marginBottom: 12,
   },
-  posBox: {
+
+  [`& .${classes.posBox}`]: {
     maxWidth: '80%',
     paddingTop: 50,
   },
-  card: {
+
+  [`& .${classes.card}`]: {
     paddingBottom: 10,
     paddingInline: 20,
   },
-  peoiLabel: {
+
+  [`& .${classes.peoiLabel}`]: {
     color: '#9F9F9F',
   },
-  idBox: {
+
+  [`& .${classes.idBox}`]: {
     paddingInline: 30,
     paddingTop: 5,
     paddingBottom: 5,
     marginRight: -20,
   },
-  info: {
+
+  [`& .${classes.info}`]: {
     color: 'rgb(13, 60, 97)',
     borderRadius: '4px',
     border: '1px solid rgb(175, 217, 252)',
@@ -71,6 +91,10 @@ const useStyles = makeStyles(() => ({
     marginBottom: 20,
   },
 }));
+
+const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
+
+const moment = require('moment');
 
 const getParticipants = async () => {
   try {
@@ -94,7 +118,7 @@ export default () => {
   const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
   const [hideIndigenousIdentityForm, setHideIndigenousIdentityForm] = useState(false);
   const [allWithdrawn, setAllWithdrawn] = useState(false);
-  const classes = useStyles();
+
   const history = useHistory();
   const { openToast } = useToast();
   const afterInterestFetch = (items) => {
@@ -127,11 +151,11 @@ export default () => {
 
   if (isLoading) {
     return (
-      <Page>
+      <StyledPage>
         <Box height='100%' display='flex' alignItems='center'>
           <CircularProgress />
         </Box>
-      </Page>
+      </StyledPage>
     );
   }
 
@@ -288,7 +312,7 @@ export default () => {
           return (
             <Grid item={true} key={index} xs={12} sm={6} md={4}>
               <Card className={classes.card}>
-                <Grid container item xs={12} justify={'flex-end'}>
+                <Grid container item xs={12} justifyContent={'flex-end'}>
                   <Box className={classes.idBox} bgcolor='primary.main'>
                     <Typography style={{ color: '#FFFFFF' }} variant={'subtitle2'}>
                       {item.id}

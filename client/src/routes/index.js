@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import LinearProgress from '@mui/material/LinearProgress';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import { useKeycloak, KeycloakProvider } from '@react-keycloak/web';
 import store from 'store';

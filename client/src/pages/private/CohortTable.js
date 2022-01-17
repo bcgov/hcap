@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
-import Grid from '@material-ui/core/Grid';
-import { Box } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import { Box } from '@mui/material';
 import { Table } from '../../components/generic';
 
 const columns = [
@@ -34,7 +34,7 @@ export default ({ cohorts }) => {
     <Grid
       container
       alignContent='flex-start'
-      justify='flex-start'
+      justifyContent='flex-start'
       alignItems='center'
       direction='column'
     >

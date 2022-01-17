@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { KeyboardDatePicker } from '@material-ui/pickers';
+import DatePicker from '@mui/lab/DatePicker';
 import { ErrorMessage, useField } from 'formik';
 
 import { dateToString, stringToDate } from '../../utils';
@@ -12,8 +12,8 @@ export const RenderDateField = ({ field, form, label, ...props }) => {
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} />}
-      <KeyboardDatePicker
-        format='YYYY/MM/DD'
+      <DatePicker
+        inputFormat='YYYY/MM/DD'
         name={label.replace(/[ *]/g, '')}
         value={!field.value ? null : stringToDate(field.value)}
         onChange={(value) => setValue(dateToString(value))}

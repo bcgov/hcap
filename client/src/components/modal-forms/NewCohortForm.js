@@ -1,7 +1,7 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { Button } from '../generic';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { NewCohortSchema } from '../../constants';
@@ -23,9 +23,9 @@ export const NewCohortForm = ({ initialValues, onSubmit, onClose }) => {
             />
           </Box>
           <Box mt={3}>
-            <Grid container spacing={2} justify='flex-end'>
+            <Grid container spacing={2} justifyContent='flex-end'>
               <Grid item>
-                <Button onClick={onClose} color='default' text='Cancel' />
+                <Button onClick={onClose} text='Cancel' />
               </Grid>
               <Grid item>
                 <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />

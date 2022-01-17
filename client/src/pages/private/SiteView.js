@@ -1,6 +1,6 @@
 import React, { lazy } from 'react';
 import { Page, CheckPermissions } from '../../components/generic';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 
 const SiteTable = lazy(() => import('./SiteTable'));
 

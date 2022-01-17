@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import { Box, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { Button } from '../generic';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderCheckbox } from '../fields';
@@ -24,9 +24,9 @@ export const PEOIWithdrawalDialogForm = ({
           </Typography>
           <Field name='confirmed' component={RenderCheckbox} label='Please click here to confirm' />
           <Box mt={3}>
-            <Grid container spacing={2} justify='flex-end'>
+            <Grid container spacing={2} justifyContent='flex-end'>
               <Grid item>
-                <Button onClick={onClose} color='default' text='Cancel' />
+                <Button onClick={onClose} text='Cancel' />
               </Grid>
               <Grid item>
                 <Button

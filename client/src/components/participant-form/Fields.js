@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import Collapse from '@material-ui/core/Collapse';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import Collapse from '@mui/material/Collapse';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { FastField } from 'formik';
-import { SpeakerNotesOutlined } from '@material-ui/icons';
+import { SpeakerNotesOutlined } from '@mui/icons-material';
 
 import { Card, Divider } from '../generic';
 import { RenderCheckbox, RenderCheckboxGroup, RenderTextField, RenderRadioGroup } from '../fields';
@@ -14,27 +14,40 @@ import {
   indigenousIdentities,
   indigenousIdentityLabels,
 } from '../modal-forms/IndigenousDeclarationForm';
-import { Checkbox, FormControl, FormControlLabel } from '@material-ui/core';
+import { Checkbox, FormControl, FormControlLabel } from '@mui/material';
 import { isNil } from 'lodash';
 
-const useStyles = makeStyles((theme) => ({
-  info: {
+const PREFIX = 'Fields';
+
+const classes = {
+  info: `${PREFIX}-info`,
+  infoHeader: `${PREFIX}-infoHeader`,
+  infoIcon: `${PREFIX}-infoIcon`,
+  line: `${PREFIX}-line`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.info}`]: {
     color: 'rgb(13, 60, 97)',
     backgroundColor: 'rgb(232, 244, 253)',
     borderRadius: '4px',
     border: '1px solid rgb(175, 217, 252)',
   },
-  infoHeader: {
+
+  [`& .${classes.infoHeader}`]: {
     fontSize: '16px',
     marginBottom: theme.spacing(1),
     fontWeight: 'bold',
   },
-  infoIcon: {
+
+  [`& .${classes.infoIcon}`]: {
     color: 'rgb(21, 153, 222)',
     fontSize: '80px',
     marginRight: theme.spacing(2),
   },
-  line: {
+
+  [`& .${classes.line}`]: {
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
     borderTop: '2px solid rgb(204, 204, 204)',
@@ -49,7 +62,6 @@ export const Fields = ({
   values,
   isSubmitted,
 }) => {
-  const classes = useStyles();
   const [isCollectionNoticeExpanded, setCollectionNoticeExpanded] = useState(
     window.innerWidth > 750
   );
@@ -59,7 +71,7 @@ export const Fields = ({
   const hideReasonForFindingOut =
     !values?.reasonForFindingOut && checkFieldDisability('reasonForFindingOut');
   return (
-    <>
+    <Root>
       {!hideHelp && (
         <Box mb={2} py={1} px={2} display='flex' alignItems='center' className={classes.info}>
           <SpeakerNotesOutlined className={classes.infoIcon} />
@@ -79,7 +91,6 @@ export const Fields = ({
           </Box>
         </Box>
       )}
-
       <Card noShadow={isDisabled}>
         {/** Indigenous Identity - meant to be READ-ONLY, not set up for editing */}
         <Grid container spacing={2}>
@@ -444,6 +455,6 @@ export const Fields = ({
           )}
         </Grid>
       </Card>
-    </>
+    </Root>
   );
 };

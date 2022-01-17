@@ -1,36 +1,46 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import classNames from 'classnames';
-import Typography from '@material-ui/core/Typography';
-import MuiCard from '@material-ui/core/Card';
-import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
+import MuiCard from '@mui/material/Card';
+const PREFIX = 'Card';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const classes = {
+  root: `${PREFIX}-root`,
+  title: `${PREFIX}-title`,
+  noPadding: `${PREFIX}-noPadding`,
+  noShadow: `${PREFIX}-noShadow`,
+};
+
+const StyledMuiCard = styled(MuiCard)(({ theme }) => ({
+  [`&.${classes.root}`]: {
     overflow: 'initial',
     padding: theme.spacing(4),
     borderRadius: '8px',
     backgroundColor: '#FFFFFF',
     boxShadow: '0 0 5px 0 #E5E9F2',
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       padding: theme.spacing(2),
     },
   },
-  title: {
+
+  [`& .${classes.title}`]: {
     textAlign: 'center',
     marginBottom: theme.spacing(3),
   },
-  noPadding: {
+
+  [`&.${classes.noPadding}`]: {
     padding: 0,
   },
-  noShadow: {
+
+  [`&.${classes.noShadow}`]: {
     boxShadow: 'none',
   },
 }));
 
 export const Card = ({ children, title, noPadding, noShadow, className, ...props }) => {
-  const classes = useStyles();
   return (
-    <MuiCard
+    <StyledMuiCard
       className={classNames(
         classes.root,
         {
@@ -47,6 +57,6 @@ export const Card = ({ children, title, noPadding, noShadow, className, ...props
         </Typography>
       )}
       {children}
-    </MuiCard>
+    </StyledMuiCard>
   );
 };

@@ -1,15 +1,22 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import classNames from 'classnames';
-import { makeStyles } from '@material-ui/core/styles';
+const PREFIX = 'Divider';
 
-const useStyles = makeStyles(() => ({
-  divider: {
+const classes = {
+  divider: `${PREFIX}-divider`,
+  light: `${PREFIX}-light`,
+};
+
+const Root = styled('hr')(() => ({
+  [`&.${classes.divider}`]: {
     height: '3px',
     backgroundColor: '#E2A014',
     color: '#E2A014',
     borderStyle: 'solid',
   },
-  light: {
+
+  [`&.${classes.light}`]: {
     backgroundColor: '#efefef',
     color: '#efefef',
     height: '1px',
@@ -17,6 +24,5 @@ const useStyles = makeStyles(() => ({
 }));
 
 export const Divider = ({ isLight }) => {
-  const classes = useStyles();
-  return <hr className={classNames(classes.divider, { [classes.light]: isLight })} />;
+  return <Root className={classNames(classes.divider, { [classes.light]: isLight })} />;
 };

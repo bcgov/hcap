@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import { Box, Typography } from '@mui/material';
 import { Card } from '.';
 import { checkPermissions, checkPending } from '../../utils';
 import { AuthContext } from '../../providers';
@@ -44,7 +44,13 @@ export const CheckPermissions = ({ permittedRoles, children, renderErrorMessage 
 
   // Optional message displayed if access not granted by role(s)
   return (
-    <Grid container alignContent='center' justify='center' alignItems='center' direction='column'>
+    <Grid
+      container
+      alignContent='center'
+      justifyContent='center'
+      alignItems='center'
+      direction='column'
+    >
       <Box pb={4} pl={4} pr={4} pt={2} maxWidth={800}>
         <Card>
           <Typography variant='subtitle1' gutterBottom>

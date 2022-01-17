@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react';
-import MenuItem from '@material-ui/core/MenuItem';
+import MenuItem from '@mui/material/MenuItem';
 import { ErrorMessage } from 'formik';
 
 import { InputFieldError, InputFieldLabel } from '../generic';
-import { Select } from '@material-ui/core';
+import { Select } from '@mui/material';
 
 export const RenderMultiSelectField = ({ field, form, label, options, ...props }) => {
   const touched = form.touched[field.name];

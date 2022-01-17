@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography, Link } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import { Box, Typography, Link } from '@mui/material';
 import { Table, Button } from '../../components/generic';
 import { Routes } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
@@ -53,14 +53,14 @@ export default ({ PSIs, handleAddCohortClick }) => {
       <Grid
         container
         alignContent='flex-start'
-        justify='flex-start'
+        justifyContent='flex-start'
         alignItems='center'
         direction='column'
       >
         <Grid
           container
           alignContent='flex-start'
-          justify='flex-start'
+          justifyContent='flex-start'
           alignItems='center'
           direction='row'
         >

@@ -1,6 +1,6 @@
 import React, { lazy, useEffect, useState } from 'react';
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
-import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
+import { Box, Chip, Grid, Link, Typography } from '@mui/material';
 import { scrollUp } from '../../utils';
 import store from 'store';
 import routes from '../../constants/routes';

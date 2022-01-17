@@ -1,7 +1,7 @@
-import InfoIcon from '@material-ui/icons/Info';
-import ContactMailIcon from '@material-ui/icons/ContactMail';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
+import InfoIcon from '@mui/icons-material/Info';
+import ContactMailIcon from '@mui/icons-material/ContactMail';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 
 export const confirmInterestDefault = {
   title: 'Confirm Interest',

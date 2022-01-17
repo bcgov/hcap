@@ -1,12 +1,20 @@
 import { Page } from '../../components/generic';
+import { styled } from '@mui/material/styles';
 import React from 'react';
-import { Button, Typography, Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Button, Typography, Box } from '@mui/material';
 import { Routes } from '../../constants';
 import { useHistory, useParams } from 'react-router-dom';
 
-const useStyles = makeStyles((theme) => ({
-  button: {
+const PREFIX = 'ParticipantActionSuccess';
+
+const classes = {
+  button: `${PREFIX}-button`,
+  buttonBoxes: `${PREFIX}-buttonBoxes`,
+  textBoxes: `${PREFIX}-textBoxes`,
+};
+
+const StyledPage = styled(Page)(({ theme }) => ({
+  [`& .${classes.button}`]: {
     backgroundColor: '#009BDD',
     marginTop: '10px',
     color: 'white',
@@ -14,16 +22,17 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: '10px',
     paddingBottom: '10px',
   },
-  buttonBoxes: {
+
+  [`& .${classes.buttonBoxes}`]: {
     alignSelf: 'center',
   },
-  textBoxes: {
+
+  [`& .${classes.textBoxes}`]: {
     marginTop: '200px',
   },
 }));
 
 export default () => {
-  const classes = useStyles();
   const { id } = useParams();
   const history = useHistory();
   const handleBackClick = () => {
@@ -35,7 +44,7 @@ export default () => {
   };
 
   return (
-    <Page
+    <StyledPage
       hideEmployers={!window.location.hostname.includes('freshworks.club')}
       isAutoHeight={false}
     >
@@ -65,6 +74,6 @@ export default () => {
           Go Back
         </Button>
       </Box>
-    </Page>
+    </StyledPage>
   );
 };

@@ -1,21 +1,27 @@
 import React, { Fragment } from 'react';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { styled } from '@mui/material/styles';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { ErrorMessage } from 'formik';
-import { makeStyles } from '@material-ui/core/styles';
 import { InputFieldLabel, InputFieldError } from '../generic';
 
-const useStyles = makeStyles({
-  root: {
+const PREFIX = 'RenderCheckboxGroup';
+
+const classes = {
+  root: `${PREFIX}-root`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')({
+  [`& .${classes.root}`]: {
     display: 'flex',
     justifyContent: 'left',
   },
 });
 
 export const RenderCheckboxGroup = ({ field, form, label, options, ...props }) => {
-  const classes = useStyles();
   return (
-    <Fragment>
+    <Root>
       {label && <InputFieldLabel label={label} />}
       {options.map((option) => (
         <FormControlLabel
@@ -34,6 +40,6 @@ export const RenderCheckboxGroup = ({ field, form, label, options, ...props }) =
         />
       ))}
       <InputFieldError error={<ErrorMessage name={field.name} />} />
-    </Fragment>
+    </Root>
   );
 };

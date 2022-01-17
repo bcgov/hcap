@@ -1,18 +1,18 @@
 import React, { Fragment, useState } from 'react';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import mapValues from 'lodash/mapValues';
 import { Formik, Form as FormikForm } from 'formik';
 import { useHistory } from 'react-router-dom';
-import Stepper from '@material-ui/core/Stepper';
-import MobileStepper from '@material-ui/core/MobileStepper';
-import Step from '@material-ui/core/Step';
-import StepButton from '@material-ui/core/StepButton';
-import StepLabel from '@material-ui/core/StepLabel';
-import Hidden from '@material-ui/core/Hidden';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import Typography from '@material-ui/core/Typography';
+import Stepper from '@mui/material/Stepper';
+import MobileStepper from '@mui/material/MobileStepper';
+import Step from '@mui/material/Step';
+import StepButton from '@mui/material/StepButton';
+import StepLabel from '@mui/material/StepLabel';
+import Hidden from '@mui/material/Hidden';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import Typography from '@mui/material/Typography';
 
 import { API_URL, EmployerFormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
@@ -222,7 +222,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
               <Box pt={4} pb={1} pl={2} pr={2}>
                 <Card noPadding>
                   {/** Desktop Stepper */}
-                  <Hidden xsDown>
+                  <Hidden smDown>
                     <Stepper nonLinear alternativeLabel activeStep={activeStep}>
                       {steps.map((label, index) => (
                         <Step key={label}>
@@ -268,7 +268,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
 
               {/** Desktop Prev / Next */}
               {!isDisabled && (
-                <Hidden xsDown>
+                <Hidden smDown>
                   <Box mt={3}>
                     <Grid container spacing={2}>
                       {activeStep > 0 && (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, lazy } from 'react';
-import { Box, Typography, Grid } from '@material-ui/core';
+import { Box, Typography, Grid } from '@mui/material';
 
 import { Page, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { NewPSIForm, NewCohortForm } from '../../components/modal-forms';

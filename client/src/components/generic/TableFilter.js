@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MenuItem, TextField } from '@material-ui/core';
+import { MenuItem, TextField } from '@mui/material';
 
 export const TableFilter = ({ onFilter, values, label, rows, filterField }) => {
   const [selectedValue, setValue] = useState();

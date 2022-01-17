@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory, useLocation, Redirect } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
+import Grid from '@mui/material/Grid';
+import { Box, Typography } from '@mui/material';
+import Alert from '@mui/material/Alert';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
 import { Routes } from '../../constants';
 
@@ -49,7 +49,7 @@ export default () => {
         <Grid
           container
           alignContent='center'
-          justify='center'
+          justifyContent='center'
           alignItems='center'
           direction='column'
         >

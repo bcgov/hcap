@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { Typography, Grid, Button, Box } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import { Typography, Grid, Button, Box } from '@mui/material';
 import { Redirect, useParams, useLocation, useHistory } from 'react-router-dom';
-import { red } from '@material-ui/core/colors';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
+import { red } from '@mui/material/colors';
+import LinearProgress from '@mui/material/LinearProgress';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 import store from 'store';
 import { Routes, ToastStatus } from '../../constants';
 
@@ -15,27 +15,26 @@ import { API_URL } from '../../constants';
 import { useToast } from '../../hooks';
 import { Dialog } from '../../components/generic';
 
-const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
+const PREFIX = 'ParticipantEOI';
 
-// Custom UI
-const DeleteButton = withStyles((theme) => ({
-  root: {
-    color: theme.palette.getContrastText(red[500]),
-    backgroundColor: red[500],
-    '&:hover': {
-      backgroundColor: red[700],
-    },
-  },
-}))(Button);
+const classes = {
+  root: `${PREFIX}-root`,
+  root2: `${PREFIX}-root2`,
+};
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.root2}`]: {
     width: '100%',
     '& > * + *': {
       marginTop: theme.spacing(2),
     },
   },
 }));
+
+const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
+
+// Custom UI
+const DeleteButton = Button;
 
 // Helper methods
 const fetchParticipant = async (id) => {
@@ -116,7 +115,7 @@ export default () => {
   const location = useLocation();
   const pathName = location.pathname;
   const { openToast } = useToast();
-  const classes = useStyles();
+
   const history = useHistory();
   // States
   const [participant, setParticipant] = useState(null);
@@ -228,7 +227,7 @@ export default () => {
       </>
     );
   return (
-    <div id='participant-view'>
+    <Root id='participant-view'>
       <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
         <Dialog title='Confirm Withdraw' open={openWithdraw} onClose={onClose}>
           <DialogContent>
@@ -272,11 +271,11 @@ export default () => {
             <Box
               display='flex'
               flexDirection={{ xs: 'column', md: 'row' }}
-              gridGap={20}
+              gap={20}
               justifyContent='flex-end'
               padding={2}
             >
-              <Box display='flex' gridGap={20}>
+              <Box display='flex' gap={20}>
                 <Button variant='contained' onClick={onEdit}>
                   {!enableEdit ? 'Edit Info' : 'Done Edit'}
                 </Button>
@@ -294,6 +293,9 @@ export default () => {
                   variant='contained'
                   color='primary'
                   onClick={() => setOpenWithdraw(true)}
+                  classes={{
+                    root: classes.root,
+                  }}
                 >
                   Withdraw PEOI
                 </DeleteButton>
@@ -313,6 +315,6 @@ export default () => {
           </Grid>
         )}
       </Page>
-    </div>
+    </Root>
   );
 };

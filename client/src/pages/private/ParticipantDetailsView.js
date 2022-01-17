@@ -1,12 +1,12 @@
 // Participant Details Page
 // Dependency
 import pick from 'lodash/pick';
+import { styled } from '@mui/material/styles';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { Box, Card, Grid, Link, Typography, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
+import { Box, Card, Grid, Link, Typography, Button } from '@mui/material';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 
 // Libs
 import { useToast } from '../../hooks';
@@ -23,6 +23,18 @@ import {
 
 // Sub component
 import { PSICohortView } from '../../components/participant-details';
+
+const PREFIX = 'ParticipantDetailsView';
+
+const classes = {
+  rootContainer: `${PREFIX}-rootContainer`,
+};
+
+const StyledPage = styled(Page)({
+  [`& .${classes.rootContainer}`]: {
+    flexGrow: 1,
+  },
+});
 
 // Key Map
 const keyLabelMap = {
@@ -48,8 +60,8 @@ const displayData = (inputData) => ({
 });
 
 // Custom style
-const customStyle = makeStyles({
-  rootContainer: {
+const customStyle = styled('div')({
+  [`& .${classes.rootContainer}`]: {
     flexGrow: 1,
   },
 });
@@ -172,7 +184,7 @@ export default () => {
 
   // Render
   return (
-    <Page isAutoHeight={true}>
+    <StyledPage isAutoHeight={true}>
       <CheckPermissions
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
         renderErrorMessage={true}
@@ -309,6 +321,6 @@ export default () => {
           </Dialog>
         )}
       </>
-    </Page>
+    </StyledPage>
   );
 };

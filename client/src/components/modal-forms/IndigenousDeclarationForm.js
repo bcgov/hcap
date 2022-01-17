@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, InputFieldError } from '../generic';
-import { Box, Checkbox, FormControl, FormControlLabel, Grid, Typography } from '@material-ui/core';
+import { Box, Checkbox, FormControl, FormControlLabel, Grid, Typography } from '@mui/material';
 import { RenderRadioGroup } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { IndigenousDeclarationSchema } from '../../constants';
@@ -125,7 +125,7 @@ export const IndigenousDeclarationForm = ({ handleSubmit }) => {
               ) : null}
             </Box>
 
-            <Grid container justify='flex-end'>
+            <Grid container justifyContent='flex-end'>
               <Button type='submit' color='primary' text='Submit' fullWidth={false} />
             </Grid>
           </Box>

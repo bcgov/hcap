@@ -1,18 +1,27 @@
 import React, { Fragment } from 'react';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
 
 import { Header } from './Header';
 
-const useStyles = makeStyles(() => ({
-  root: (props) => ({
+const PREFIX = 'Page';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  autoHeight: `${PREFIX}-autoHeight`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(() => ({
+  [`& .${classes.root}`]: (props) => ({
     height: 'calc(100vh - 82px)',
     justifyContent: props.centered ? 'center' : 'flex-start',
     alignItems: 'center',
     flexWrap: 'nowrap',
     flexDirection: 'column',
   }),
-  autoHeight: (props) => ({
+
+  [`& .${classes.autoHeight}`]: (props) => ({
     height: 'auto',
     justifyContent: props.centered ? 'center' : 'flex-start',
     alignItems: 'center',
@@ -23,13 +32,12 @@ const useStyles = makeStyles(() => ({
 
 // hideEmployers set to true for participant-facing pages
 export const Page = ({ children, hideEmployers = false, centered, isAutoHeight = false }) => {
-  const classes = useStyles({ centered });
   return (
-    <Fragment>
+    <Root>
       <Header hideEmployers={hideEmployers} />
       <Grid className={isAutoHeight ? classes.autoHeight : classes.root} container>
         {children}
       </Grid>
-    </Fragment>
+    </Root>
   );
 };

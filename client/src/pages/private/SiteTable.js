@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import { Box, Typography } from '@mui/material';
 import store from 'store';
 import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
 import { NewSiteForm } from '../../components/modal-forms';
@@ -186,14 +186,14 @@ export default () => {
       <Grid
         container
         alignContent='flex-start'
-        justify='flex-start'
+        justifyContent='flex-start'
         alignItems='center'
         direction='column'
       >
         <Grid
           container
           alignContent='flex-start'
-          justify='flex-start'
+          justifyContent='flex-start'
           alignItems='center'
           direction='row'
         >

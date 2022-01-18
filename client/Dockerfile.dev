@@ -3,11 +3,9 @@ FROM public.ecr.aws/bitnami/node:14.17.3
 # Allow node modules to be called directly
 ENV PATH $PATH:/client/node_modules/.bin
 
-# Build client
+# Configure client container
 WORKDIR /client
-COPY package*.json ./
-RUN npm set progress=false && npm ci --no-cache
 
-# Run dev client
 EXPOSE 4000
+
 CMD [ "npm", "run", "start" ]

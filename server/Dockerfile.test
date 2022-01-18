@@ -1,0 +1,15 @@
+FROM public.ecr.aws/bitnami/node:14.17.3
+
+# Allow node modules to be called directly
+ENV PATH $PATH:/usr/src/app/node_modules/.bin
+
+# Configure server
+WORKDIR /server
+COPY package*.json ./
+RUN npm set progress=false && npm ci --no-cache
+
+# Static env vars
+ARG VERSION
+ENV VERSION $VERSION
+
+CMD [ "npm", "run", "watch" ]

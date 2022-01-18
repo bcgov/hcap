@@ -5,6 +5,8 @@ name: OpenShift Build and Deploy to Dev with OWSAP ZAP SCAN
 
 on:
   push:
+    branches:
+      - master
     tags:
       - dev
 

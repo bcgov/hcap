@@ -1,22 +1,34 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
+import moment from 'moment';
 import { Button } from '../generic';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderSelectField, RenderDateField, RenderCheckbox, RenderRadioGroup } from '../fields';
-import { archiveReasonOptions, archiveStatusOptions, archiveTypeOptions } from '../../constants';
+import {
+  ArchiveHiredParticipantSchema,
+  archiveReasonOptions,
+  archiveStatusOptions,
+  archiveTypeOptions,
+} from '../../constants';
 import { getTodayDate } from '../../utils';
 
 const statusOptions = archiveStatusOptions.map((option) => ({ value: option, label: option }));
 const reasonOptions = archiveReasonOptions.map((option) => ({ value: option, label: option }));
-export const ArchiveHiredParticipantForm = ({
-  initialValues,
-  validationSchema,
-  onSubmit,
-  onClose,
-}) => {
+export const ArchiveHiredParticipantForm = ({ onSubmit, onClose }) => {
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+    <Formik
+      initialValues={{
+        type: '',
+        reason: '',
+        status: '',
+        rehire: '',
+        endDate: moment().format('YYYY/MM/DD'),
+        confirmed: false,
+      }}
+      validationSchema={ArchiveHiredParticipantSchema}
+      onSubmit={onSubmit}
+    >
       {(props) => (
         <FormikForm>
           <Field

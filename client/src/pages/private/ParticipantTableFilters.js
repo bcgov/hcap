@@ -64,9 +64,6 @@ export const ParticipantTableFilters = ({ loading, locations, reducerState, disp
             value={reducerState.fsaText}
             disabled={loading}
             onDebounce={(text) => dispatch({ type: 'updateFilter', key: 'fsaFilter', value: text })}
-            onChange={({ target }) =>
-              dispatch({ type: 'updateKey', key: 'fsaText', value: target.value })
-            }
             placeholder='Forward Sortation Area'
           />
         </Box>
@@ -82,9 +79,6 @@ export const ParticipantTableFilters = ({ loading, locations, reducerState, disp
               disabled={loading}
               onDebounce={(text) =>
                 dispatch({ type: 'updateFilter', key: 'lastNameFilter', value: text })
-              }
-              onChange={({ target }) =>
-                dispatch({ type: 'updateKey', key: 'lastNameText', value: target.value })
               }
               placeholder='Last Name'
             />
@@ -103,9 +97,6 @@ export const ParticipantTableFilters = ({ loading, locations, reducerState, disp
               onDebounce={(text) =>
                 dispatch({ type: 'updateFilter', key: 'emailFilter', value: text })
               }
-              onChange={({ target }) =>
-                dispatch({ type: 'updateKey', key: 'emailText', value: target.value })
-              }
               placeholder='Email'
             />
           )}
@@ -123,9 +114,6 @@ export const ParticipantTableFilters = ({ loading, locations, reducerState, disp
               inputProps={{ displayEmpty: true }}
               value={reducerState.siteSelector || ''}
               disabled={loading}
-              onChange={({ target }) =>
-                dispatch({ type: 'updateSiteSelector', value: target.value })
-              }
               aria-label='site selector'
             >
               {[{ siteName: 'Select Site', siteId: null }, ...sites].map((option, index) => (

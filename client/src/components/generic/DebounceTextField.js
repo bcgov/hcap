@@ -17,7 +17,7 @@ export const DebounceTextField = ({ time, onDebounce, onChange, ...props }) => {
 
   const handleOnChange = (element) => {
     setText(element.target.value);
-    onChange(element);
+    onChange && onChange(element);
   };
 
   return <TextField {...props} onChange={(element) => handleOnChange(element)} />;

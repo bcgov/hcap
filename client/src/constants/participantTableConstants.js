@@ -77,9 +77,6 @@ export const makeToasts = (firstName, lastName) => {
 };
 
 export const defaultTableState = {
-  fsaText: '',
-  emailText: '',
-  lastNameText: '',
   fsaFilter: '',
   emailFilter: '',
   lastNameFilter: '',

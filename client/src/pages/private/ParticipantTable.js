@@ -358,7 +358,7 @@ const ParticipantTable = () => {
     selectedTabStatuses,
   ]);
 
-  const defaultOnClose = () => {
+  const onFormModalClose = () => {
     setActiveModalForm(null);
     setActionMenuParticipant(null);
   };
@@ -481,17 +481,17 @@ const ParticipantTable = () => {
       <Dialog
         title={getDialogTitle(activeModalForm)}
         open={activeModalForm != null}
-        onClose={defaultOnClose}
+        onClose={onFormModalClose}
       >
         {activeModalForm === 'prospecting' && (
           <ProspectingForm
             name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
             onClose={() => {
               forceReload();
-              defaultOnClose();
+              onFormModalClose();
             }}
             onSubmit={async () => {
-              defaultOnClose();
+              onFormModalClose();
 
               participantsDispatch({
                 type: ParticipantsContext.types.SELECT_TAB,
@@ -510,7 +510,7 @@ const ParticipantTable = () => {
                 contacted_at: values.contactedDate,
               });
             }}
-            onClose={defaultOnClose}
+            onClose={onFormModalClose}
           />
         )}
 
@@ -523,7 +523,7 @@ const ParticipantTable = () => {
                 final_status: values.finalStatus,
               });
             }}
-            onClose={defaultOnClose}
+            onClose={onFormModalClose}
           />
         )}
 
@@ -540,20 +540,20 @@ const ParticipantTable = () => {
                 site: values.site,
               });
             }}
-            onClose={defaultOnClose}
+            onClose={onFormModalClose}
           />
         )}
         {activeModalForm === 'edit-participant' && (
           <EditParticipantForm
             initialValues={actionMenuParticipant}
-            onClose={defaultOnClose}
+            onClose={onFormModalClose}
             submissionCallback={forceReload}
           />
         )}
         {activeModalForm === 'new-participant' && (
           <NewParticipantForm
             sites={sites}
-            onClose={defaultOnClose}
+            onClose={onFormModalClose}
             submissionCallback={forceReload}
           />
         )}
@@ -562,7 +562,7 @@ const ParticipantTable = () => {
             onSubmit={(values) => {
               handleEngage(actionMenuParticipant.id, 'archived', values);
             }}
-            onClose={defaultOnClose}
+            onClose={onFormModalClose}
           />
         )}
       </Dialog>

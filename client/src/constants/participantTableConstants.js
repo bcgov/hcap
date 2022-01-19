@@ -80,7 +80,7 @@ export const FILTERABLE_FIELDS = {
   FSA: 'fsaFilter',
   EMAIL: 'emailFilter',
   LASTNAME: 'lastNameFilter',
-  LOCATION: 'locationFilter',
+  REGION: 'regionFilter',
   IS_INDIGENOUS: 'isIndigenousFilter',
 };
 

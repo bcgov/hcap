@@ -3,10 +3,12 @@ import Grid from '@material-ui/core/Grid';
 import { Box, Typography, TextField, MenuItem, Checkbox, FormLabel } from '@material-ui/core';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { AuthContext, ParticipantsContext } from '../../providers';
+import { FILTERABLE_FIELDS } from '../../constants';
 
-export const ParticipantTableFilters = ({ loading, locations, reducerState, dispatch }) => {
+export const ParticipantTableFilters = ({ loading, locations }) => {
   const {
-    state: { columns, selectedTab },
+    state: { columns, selectedTab, filter, siteSelector },
+    dispatch,
   } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
@@ -14,6 +16,16 @@ export const ParticipantTableFilters = ({ loading, locations, reducerState, disp
   const hideLastNameAndEmailFilter = selectedTab === 'Archived Candidates';
 
   const isMoH = roles.includes('ministry_of_health');
+
+  const setFilter = (key, value) => {
+    dispatch({
+      type: ParticipantsContext.types.UPDATE_FILTER,
+      payload: {
+        key: key,
+        value,
+      },
+    });
+  };
 
   if (!columns) return null;
   return (
@@ -32,15 +44,9 @@ export const ParticipantTableFilters = ({ loading, locations, reducerState, disp
             fullWidth
             variant='filled'
             inputProps={{ displayEmpty: true }}
-            value={reducerState.locationFilter || ''}
             disabled={loading || locations.length === 1}
-            onChange={({ target }) =>
-              dispatch({
-                type: 'updateKey',
-                key: 'locationFilter',
-                value: target.value,
-              })
-            }
+            value={filter[FILTERABLE_FIELDS.LOCATION]?.value || ''}
+            onChange={({ target }) => setFilter(FILTERABLE_FIELDS.LOCATION, target.value)}
             aria-label='location filter'
           >
             {locations.length === 1 ? (
@@ -61,9 +67,9 @@ export const ParticipantTableFilters = ({ loading, locations, reducerState, disp
             time={1000}
             variant='filled'
             fullWidth
-            value={reducerState.fsaText}
             disabled={loading}
-            onDebounce={(text) => dispatch({ type: 'updateFilter', key: 'fsaFilter', value: text })}
+            defaultValue={filter[FILTERABLE_FIELDS.FSA]?.value || ''}
+            onDebounce={(text) => setFilter(FILTERABLE_FIELDS.FSA, text)}
             placeholder='Forward Sortation Area'
           />
         </Box>
@@ -75,11 +81,9 @@ export const ParticipantTableFilters = ({ loading, locations, reducerState, disp
               time={1000}
               variant='filled'
               fullWidth
-              value={reducerState.lastNameText}
               disabled={loading}
-              onDebounce={(text) =>
-                dispatch({ type: 'updateFilter', key: 'lastNameFilter', value: text })
-              }
+              defaultValue={filter[FILTERABLE_FIELDS.LASTNAME]?.value || ''}
+              onDebounce={(text) => setFilter(FILTERABLE_FIELDS.LASTNAME, text)}
               placeholder='Last Name'
             />
           )}
@@ -92,11 +96,9 @@ export const ParticipantTableFilters = ({ loading, locations, reducerState, disp
               time={1000}
               variant='filled'
               fullWidth
-              value={reducerState.emailText}
               disabled={loading}
-              onDebounce={(text) =>
-                dispatch({ type: 'updateFilter', key: 'emailFilter', value: text })
-              }
+              defaultValue={filter[FILTERABLE_FIELDS.EMAIL]?.value}
+              onDebounce={(text) => setFilter(FILTERABLE_FIELDS.EMAIL, text)}
               placeholder='Email'
             />
           )}
@@ -112,9 +114,15 @@ export const ParticipantTableFilters = ({ loading, locations, reducerState, disp
               fullWidth
               variant='filled'
               inputProps={{ displayEmpty: true }}
-              value={reducerState.siteSelector || ''}
+              value={siteSelector || ''}
               disabled={loading}
               aria-label='site selector'
+              onChange={({ target }) =>
+                dispatch({
+                  type: ParticipantsContext.types.UPDATE_SITE_SELECTOR,
+                  payload: target.value,
+                })
+              }
             >
               {[{ siteName: 'Select Site', siteId: null }, ...sites].map((option, index) => (
                 <MenuItem
@@ -135,14 +143,7 @@ export const ParticipantTableFilters = ({ loading, locations, reducerState, disp
             id={'isIndigenousFilterCheckbox'}
             color='primary'
             disabled={loading}
-            onChange={() => {
-              const newValue = reducerState?.isIndigenousFilter === 'true' ? '' : 'true';
-              dispatch({
-                type: 'updateKey',
-                key: 'isIndigenousFilter',
-                value: newValue,
-              });
-            }}
+            onChange={({ target }) => setFilter(FILTERABLE_FIELDS.IS_INDIGENOUS, target.checked)}
           />
           <FormLabel htmlFor={'isIndigenousFilterCheckbox'} style={{ paddingTop: '13px' }}>
             Indigenous participants only

@@ -76,15 +76,12 @@ export const makeToasts = (firstName, lastName) => {
   };
 };
 
-export const defaultTableState = {
-  fsaFilter: '',
-  emailFilter: '',
-  lastNameFilter: '',
-  pagination: { currentPage: 0 },
-  order: { field: 'id', direction: 'asc' },
-  locationFilter: '',
-  siteSelector: '',
-  isIndigenousFilter: '',
+export const FILTERABLE_FIELDS = {
+  FSA: 'fsaFilter',
+  EMAIL: 'emailFilter',
+  LASTNAME: 'lastNameFilter',
+  LOCATION: 'locationFilter',
+  IS_INDIGENOUS: 'isIndigenousFilter',
 };
 
 export const tabStatuses = {

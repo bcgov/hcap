@@ -7,12 +7,22 @@ const ParticipantsContext = React.createContext();
 const types = {
   UPDATE_ROLE: 'UPDATE_ROLE',
   SELECT_TAB: 'SELECT_TAB',
-  CHANGE_PAGE: 'CHANGE_PAGE',
+  UPDATE_PAGINATION: 'UPDATE_PAGINATION',
+  UPDATE_TOTAL_PAGES: 'UPDATE_TOTAL_PAGES',
+  UPDATE_SITE_SELECTOR: 'UPDATE_SITE_SELECTOR',
+  UPDATE_TABLE_ORDER: 'UPDATE_TABLE_ORDER',
 };
 
 const participantsReducer = (state, action) => {
   const { type, payload } = action;
-  const { UPDATE_ROLE, SELECT_TAB, CHANGE_PAGE } = types;
+  const {
+    UPDATE_ROLE,
+    SELECT_TAB,
+    UPDATE_PAGINATION,
+    UPDATE_FILTER,
+    UPDATE_SITE_SELECTOR,
+    UPDATE_TABLE_ORDER,
+  } = types;
 
   switch (type) {
     case UPDATE_ROLE: {
@@ -41,10 +51,45 @@ const participantsReducer = (state, action) => {
         currentPage: 0,
       };
     }
-    case CHANGE_PAGE: {
+    case UPDATE_PAGINATION: {
       return {
         ...state,
-        currentPage: payload,
+        pagination: {
+          ...state.pagination,
+          ...payload,
+        },
+      };
+    }
+    case UPDATE_FILTER: {
+      const { key, value } = payload;
+      return {
+        ...state,
+        filter: {
+          ...state.filter,
+          [payload.key]: {
+            key,
+            value: typeof value === 'string' ? value.trim() : value,
+          },
+        },
+      };
+    }
+    case UPDATE_SITE_SELECTOR: {
+      return {
+        ...state,
+        order: {
+          field: 'distance',
+          direction: 'asc',
+        },
+        siteSelector: payload,
+      };
+    }
+    case UPDATE_TABLE_ORDER: {
+      return {
+        ...state,
+        order: {
+          ...state.order,
+          ...payload,
+        },
       };
     }
     default:
@@ -63,7 +108,14 @@ const ParticipantsProvider = ({ role, children }) => {
     tabs: null,
     selectedTab: null,
     selectedTabStatuses: null,
-    currentPage: 0,
+    filter: {},
+    siteSelector: '',
+    pagination: {
+      page: 0,
+      total: 0,
+      offset: 0,
+    },
+    order: { field: 'id', direction: 'asc' },
   });
 
   useEffect(() => {

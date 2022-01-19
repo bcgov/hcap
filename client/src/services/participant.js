@@ -1,5 +1,5 @@
 import store from 'store';
-import { API_URL } from '../constants';
+import { API_URL, pageSize } from '../constants';
 
 const getCohortName = (cohort = {}) =>
   cohort.cohort_name && cohort.psi?.institute_name
@@ -87,4 +87,43 @@ export const updateParticipant = async (values, participant) => {
       cause: response.statusText,
     });
   }
+};
+
+export const getParticipants = async ({
+  pagination,
+  filter,
+  order,
+  siteSelector,
+  selectedTabStatuses,
+}) => {
+  const params = new URLSearchParams();
+
+  params.append('offset', pagination.page * pageSize);
+  params.append('sortField', order.field);
+  params.append('sortDirection', order.direction);
+
+  Object.entries(filter).forEach(([key, value]) => {
+    value.value && params.append(key, value.value);
+  });
+
+  siteSelector && params.append('siteSelector', siteSelector);
+
+  selectedTabStatuses.forEach((status) => {
+    params.append('statusFilters[]', status);
+  });
+
+  const response = await fetch(`${API_URL}/api/v1/participants?${params.toString()}`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+    },
+    method: 'GET',
+  });
+
+  if (response.ok) {
+    return response.json();
+  }
+
+  throw new Error('Failed to fetch participants');
 };

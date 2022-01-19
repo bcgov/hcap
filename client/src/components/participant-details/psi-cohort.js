@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import { withStyles } from '@material-ui/core/styles';
 import { Typography, Box } from '@material-ui/core';
 import {
   Route,
@@ -19,6 +16,7 @@ import { sortPSI } from '../../services';
 
 // Component
 import { PSICohortTable } from './psi-cohort-table';
+import { CustomTab, CustomTabs } from '../generic';
 
 const TabDetails = {
   assignCohort: {
@@ -30,37 +28,6 @@ const TabDetails = {
     path: '/withdraw-cohort',
   },
 };
-
-const CustomTabs = withStyles((theme) => ({
-  root: {
-    borderBottom: `1px solid ${theme.palette.gray.secondary}`,
-    marginBottom: theme.spacing(2),
-  },
-  indicator: {
-    backgroundColor: theme.palette.highlight.primary,
-  },
-}))(Tabs);
-
-const CustomTab = withStyles((theme) => ({
-  root: {
-    textTransform: 'none',
-    minWidth: 72,
-    fontWeight: theme.typography.fontWeightRegular,
-    marginRight: theme.spacing(4),
-    '&:hover': {
-      color: theme.palette.highlight.primary,
-      opacity: 1,
-    },
-    '&$selected': {
-      color: theme.palette.highlight.secondary,
-      fontWeight: theme.typography.fontWeightMedium,
-    },
-    '&:focus': {
-      color: theme.palette.highlight.primary,
-    },
-  },
-  selected: {},
-}))((props) => <Tab disableRipple {...props} />);
 
 const PSIRouteTabs = ({
   selectedTab = 'assignCohort',

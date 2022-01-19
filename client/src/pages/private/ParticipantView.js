@@ -1,44 +1,10 @@
 import React, { lazy, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import { withStyles } from '@material-ui/core/styles';
-import { Page, CheckPermissions } from '../../components/generic';
+import { Page, CheckPermissions, CustomTab, CustomTabs } from '../../components/generic';
 import { AuthContext, ParticipantsContext } from '../../providers';
 
 const ParticipantTable = lazy(() => import('./ParticipantTable'));
 const SiteTable = lazy(() => import('./SiteTable'));
-
-const CustomTabs = withStyles((theme) => ({
-  root: {
-    borderBottom: `1px solid ${theme.palette.gray.secondary}`,
-    marginBottom: theme.spacing(2),
-  },
-  indicator: {
-    backgroundColor: theme.palette.highlight.primary,
-  },
-}))(Tabs);
-
-const CustomTab = withStyles((theme) => ({
-  root: {
-    textTransform: 'none',
-    minWidth: 60,
-    fontWeight: theme.typography.fontWeightRegular,
-    marginRight: theme.spacing(4),
-    '&:hover': {
-      color: theme.palette.highlight.primary,
-      opacity: 1,
-    },
-    '&$selected': {
-      color: theme.palette.highlight.secondary,
-      fontWeight: theme.typography.fontWeightMedium,
-    },
-    '&:focus': {
-      color: theme.palette.highlight.primary,
-    },
-  },
-  selected: {},
-}))((props) => <Tab disableRipple {...props} />);
 
 export default () => {
   const [tabValue, setTabValue] = useState(0);

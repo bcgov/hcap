@@ -9,3 +9,4 @@ export * from './Toast';
 export * from './PDFButton';
 export * from './CheckPermissions';
 export * from './Dialog';
+export * from './Tabs';

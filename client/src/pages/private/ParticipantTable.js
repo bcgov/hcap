@@ -20,7 +20,6 @@ import {
   InterviewingFormSchema,
   RejectedFormSchema,
   HireFormSchema,
-  ExternalHiredParticipantSchema,
   regionLabelsMap,
   API_URL,
   pageSize,
@@ -282,28 +281,6 @@ const ParticipantTable = () => {
       openToast({
         status: ToastStatus.Error,
         message: 'An error occured',
-      });
-    }
-  };
-  const handleExternalHire = async (participantInfo) => {
-    const response = await fetch(`${API_URL}/api/v1/new-hired-participant`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(participantInfo),
-    });
-
-    if (response.ok) {
-      setActionMenuParticipant(null);
-      setActiveModalForm(null);
-      forceReload();
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
       });
     }
   };
@@ -588,38 +565,8 @@ const ParticipantTable = () => {
         {activeModalForm === 'new-participant' && (
           <NewParticipantForm
             sites={sites}
-            initialValues={{
-              firstName: '',
-              lastName: '',
-              phoneNumber: '',
-              emailAddress: '',
-              origin: '',
-              otherOrigin: '',
-              hcapOpportunity: true,
-              contactedDate: '',
-              hiredDate: '',
-              startDate: '',
-              site: '',
-              acknowledge: false,
-            }}
-            validationSchema={ExternalHiredParticipantSchema}
-            onSubmit={(values) => {
-              handleExternalHire({
-                firstName: values.firstName,
-                lastName: values.lastName,
-                phoneNumber: values.phoneNumber,
-                emailAddress: values.emailAddress,
-                origin: values.origin,
-                otherOrigin: values.otherOrigin,
-                hcapOpportunity: values.hcapOpportunity,
-                contactedDate: values.contactedDate,
-                hiredDate: values.hiredDate,
-                startDate: values.startDate,
-                site: values.site,
-                acknowledge: values.acknowledge,
-              });
-            }}
             onClose={defaultOnClose}
+            submissionCallback={forceReload}
           />
         )}
         {activeModalForm === 'archive' && (

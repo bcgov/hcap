@@ -181,6 +181,12 @@ const ParticipantTable = () => {
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
   const hideLastNameAndEmailFilter = selectedTab === 'Archived Candidates';
+
+  const isMoH = roles.includes('ministry_of_health');
+  const isSuperUser = roles.includes('superuser');
+  const isAdmin = isMoH || isSuperUser;
+  const isEmployer = roles.includes('health_authority') || roles.includes('employer');
+
   const fetchParticipantsFunction = async (
     offset,
     regionFilter,
@@ -326,15 +332,12 @@ const ParticipantTable = () => {
 
   // Set available locations
   useEffect(() => {
-    const isMoH = roles.includes('ministry_of_health');
-    const isSuperUser = roles.includes('superuser');
-
     // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
     const regions = Object.values(regionLabelsMap).filter((value) => value !== 'None');
     setLocations(
       isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
     );
-  }, [roles]);
+  }, [isMoH, isSuperUser, roles]);
 
   // Fetch Data
   useEffect(() => {
@@ -386,8 +389,6 @@ const ParticipantTable = () => {
     setActionMenuParticipant(null);
   };
 
-  const isAdmin = roles.includes('ministry_of_health') || roles.includes('superuser');
-  const isEmployer = roles.includes('health_authority') || roles.includes('employer');
   const renderCell = (columnId, row) => {
     switch (columnId) {
       case 'lastName':
@@ -794,7 +795,7 @@ const ParticipantTable = () => {
               </Box>
             </Grid>
 
-            {!roles.includes('ministry_of_health') && (
+            {!isMoH && (
               <Grid item style={{ marginLeft: 20, paddingBottom: 18 }}>
                 <Typography>Site for distance calculation: </Typography>
                 <Box>
@@ -823,7 +824,7 @@ const ParticipantTable = () => {
                 </Box>
               </Grid>
             )}
-            {!roles.includes('ministry_of_health') && (
+            {!isMoH && (
               <Grid container item xs={2} style={{ paddingLeft: '10px' }}>
                 <Checkbox
                   id={'isIndigenousFilterCheckbox'}
@@ -899,7 +900,7 @@ const ParticipantTable = () => {
             />
           </Box>
         </Grid>
-        {!roles.includes('ministry_of_health') && !roles.includes('superuser') && (
+        {!isAdmin && (
           <Menu
             keepMounted
             open={actionMenuParticipant != null && activeModalForm == null}

@@ -1,9 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import { withStyles } from '@material-ui/core/styles';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import {
   Box,
   Typography,
@@ -26,7 +23,14 @@ import {
   defaultTableState,
   Routes,
 } from '../../constants';
-import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
+import {
+  Table,
+  CheckPermissions,
+  Button,
+  Dialog,
+  CustomTab,
+  CustomTabs,
+} from '../../components/generic';
 import {
   ProspectingForm,
   InterviewingForm,
@@ -41,37 +45,6 @@ import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { getDialogTitle, prettifyStatus, keyedString } from '../../utils';
 import moment from 'moment';
 import { AuthContext, ParticipantsContext } from '../../providers';
-
-const CustomTabs = withStyles((theme) => ({
-  root: {
-    borderBottom: `1px solid ${theme.palette.gray.secondary}`,
-    marginBottom: theme.spacing(2),
-  },
-  indicator: {
-    backgroundColor: theme.palette.highlight.primary,
-  },
-}))(Tabs);
-
-const CustomTab = withStyles((theme) => ({
-  root: {
-    textTransform: 'none',
-    minWidth: 72,
-    fontWeight: theme.typography.fontWeightRegular,
-    marginRight: theme.spacing(4),
-    '&:hover': {
-      color: theme.palette.highlight.primary,
-      opacity: 1,
-    },
-    '&$selected': {
-      color: theme.palette.highlight.secondary,
-      fontWeight: theme.typography.fontWeightMedium,
-    },
-    '&:focus': {
-      color: theme.palette.highlight.primary,
-    },
-  },
-  selected: {},
-}))((props) => <Tab disableRipple {...props} />);
 
 const reducer = (state, action) => {
   const { type, key, value } = action;

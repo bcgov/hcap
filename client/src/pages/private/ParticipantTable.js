@@ -168,7 +168,6 @@ const ParticipantTable = () => {
   const { openToast } = useToast();
   const [isLoadingData, setLoadingData] = useState(false);
   const [rows, setRows] = useState([]);
-  const [hideLastNameAndEmailFilter, setHideLastNameAndEmailFilter] = useState(true);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [anchorElement, setAnchorElement] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
@@ -181,6 +180,7 @@ const ParticipantTable = () => {
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
+  const hideLastNameAndEmailFilter = selectedTab === 'Archived Candidates';
   const fetchParticipantsFunction = async (
     offset,
     regionFilter,
@@ -323,10 +323,6 @@ const ParticipantTable = () => {
     setRows(newRows);
     setLoadingData(false);
   };
-
-  useEffect(() => {
-    setHideLastNameAndEmailFilter(selectedTab === 'Archived Candidates');
-  }, [selectedTab]);
 
   // Set available locations
   useEffect(() => {

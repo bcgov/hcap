@@ -21,7 +21,6 @@ import {
   RejectedFormSchema,
   HireFormSchema,
   ExternalHiredParticipantSchema,
-  EditParticipantFormSchema,
   regionLabelsMap,
   API_URL,
   pageSize,
@@ -581,49 +580,9 @@ const ParticipantTable = () => {
         )}
         {activeModalForm === 'edit-participant' && (
           <EditParticipantForm
-            initialValues={{
-              ...actionMenuParticipant,
-            }}
-            validationSchema={EditParticipantFormSchema}
-            onSubmit={async (values) => {
-              // TODO: [HCAP-852](https://freshworks.atlassian.net/browse/HCAP-852)
-              if (values.phoneNumber && Number.isInteger(values.phoneNumber))
-                values.phoneNumber = values.phoneNumber.toString();
-              if (values.postalCode && values.postalCode.length > 3) {
-                values.postalCodeFsa = values.postalCode.slice(0, 3);
-              }
-              const history = {
-                timestamp: new Date(),
-                changes: [],
-              };
-              Object.keys(values).forEach((key) => {
-                if (values[key] !== actionMenuParticipant[key]) {
-                  history.changes.push({
-                    field: key,
-                    from: actionMenuParticipant[key],
-                    to: values[key],
-                  });
-                }
-              });
-              values.history = actionMenuParticipant.history
-                ? [history, ...actionMenuParticipant.history]
-                : [history];
-              const response = await fetch(`${API_URL}/api/v1/participant`, {
-                method: 'PATCH',
-                headers: {
-                  Authorization: `Bearer ${store.get('TOKEN')}`,
-                  Accept: 'application/json',
-                  'Content-type': 'application/json',
-                },
-                body: JSON.stringify(values),
-              });
-
-              if (response.ok) {
-                forceReload();
-                defaultOnClose();
-              }
-            }}
+            initialValues={actionMenuParticipant}
             onClose={defaultOnClose}
+            submissionCallback={forceReload}
           />
         )}
         {activeModalForm === 'new-participant' && (

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Menu, MenuItem, Link } from '@material-ui/core';
@@ -18,6 +18,7 @@ import moment from 'moment';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
 import { ParticipantTableDialogues } from './ParticipantTableDialogues';
+import { getParticipants } from '../../services/participant';
 
 const filterData = (data, columns) => {
   const emailAddressMask = '***@***.***';
@@ -103,46 +104,24 @@ const ParticipantTable = () => {
   const isAdmin = isMoH || isSuperUser;
   const isEmployer = roles.includes('health_authority') || roles.includes('employer');
 
-  const fetchParticipantsFunction = async (
-    offset,
-    regionFilter,
-    fsaFilter,
-    lastNameFilter,
-    emailFilter,
-    sortField,
-    sortDirection,
-    siteSelector,
-    statusFilters,
-    isIndigenousFilter
-  ) => {
-    const queries = [
-      sortField && `sortField=${sortField}`,
-      offset && `offset=${offset}`,
-      sortDirection && `sortDirection=${sortDirection}`,
-      regionFilter && `regionFilter=${regionFilter}`,
-      fsaFilter && `fsaFilter=${fsaFilter}`,
-      lastNameFilter && `lastNameFilter=${lastNameFilter}`,
-      siteSelector && `siteSelector=${siteSelector}`,
-      emailFilter && `emailFilter=${emailFilter}`,
-      isIndigenousFilter && `isIndigenousFilter=${isIndigenousFilter}`,
-      ...(statusFilters && statusFilters.map((status) => `statusFilters[]=${status}`)),
-    ]
-      .filter((item) => item)
-      .join('&');
-    const response = await fetch(`${API_URL}/api/v1/participants?${queries}`, {
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
+  const fetchParticipants = async () => {
+    if (!columns) return;
+    setLoadingData(true);
+    const { data, pagination: newPagination } = await getParticipants({
+      pagination,
+      filter,
+      order,
+      siteSelector,
+      selectedTabStatuses,
     });
-
-    if (response.ok) {
-      return response.json();
-    }
+    participantsDispatch({
+      type: ParticipantsContext.types.UPDATE_PAGINATION,
+      payload: newPagination,
+    });
+    const newRows = filterData(data, columns);
+    setRows(newRows);
+    setLoadingData(false);
   };
-  const fetchParticipants = useCallback(fetchParticipantsFunction, []);
 
   const handleEngage = async (participantId, status, additional = {}) => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
@@ -168,7 +147,7 @@ const ParticipantTable = () => {
         openToast(toasts[statusData?.status === 'already_hired' ? statusData.status : status]);
         setActionMenuParticipant(null);
         setActiveModalForm(null);
-        forceReload();
+        fetchParticipants();
       }
     } else {
       openToast({
@@ -194,34 +173,13 @@ const ParticipantTable = () => {
       });
       setActionMenuParticipant(null);
       setActiveModalForm(null);
-      forceReload();
+      fetchParticipants();
     } else {
       openToast({
         status: ToastStatus.Error,
         message: 'An error occured',
       });
     }
-  };
-
-  const forceReload = async () => {
-    if (!columns) return;
-    if (!selectedTab) return;
-    setLoadingData(true);
-    const { data } = await fetchParticipants(
-      pagination.page * pageSize,
-      filter.locationFilter?.value || '',
-      filter.fsaFilter?.value || '',
-      filter.lastNameFilter?.value || '',
-      filter.emailFilter?.value || '',
-      order.field,
-      order.direction,
-      siteSelector,
-      selectedTabStatuses,
-      filter.isIndigenousFilter?.value
-    );
-    const newRows = filterData(data, columns);
-    setRows(newRows);
-    setLoadingData(false);
   };
 
   // Set available locations
@@ -233,46 +191,10 @@ const ParticipantTable = () => {
     );
   }, [isMoH, isSuperUser, roles]);
 
-  // Fetch Data
   useEffect(() => {
-    const getParticipants = async () => {
-      if (!columns) return;
-      if (!selectedTab) return;
-      setLoadingData(true);
-      const { data, pagination: newPagination } = await fetchParticipants(
-        pagination.page * pageSize,
-        filter.locationFilter?.value || '',
-        filter.fsaFilter?.value || '',
-        filter.lastNameFilter?.value || '',
-        filter.emailFilter?.value || '',
-        order.field,
-        order.direction,
-        siteSelector,
-        selectedTabStatuses,
-        filter.isIndigenousFilter?.value
-      );
-      participantsDispatch({
-        type: ParticipantsContext.types.UPDATE_PAGINATION,
-        payload: newPagination,
-      });
-      const newRows = filterData(data, columns);
-      setRows(newRows);
-      setLoadingData(false);
-    };
-
-    getParticipants();
-  }, [
-    fetchParticipants,
-    pagination.page,
-    siteSelector,
-    filter,
-    order,
-    roles,
-    columns,
-    selectedTab,
-    selectedTabStatuses,
-    participantsDispatch,
-  ]);
+    fetchParticipants();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, pagination.page, order, selectedTabStatuses, siteSelector]);
 
   const renderCell = (columnId, row) => {
     switch (columnId) {
@@ -390,7 +312,7 @@ const ParticipantTable = () => {
   return (
     <>
       <ParticipantTableDialogues
-        forceReload={forceReload}
+        fetchParticipants={fetchParticipants}
         setActiveModalForm={setActiveModalForm}
         activeModalForm={activeModalForm}
         actionMenuParticipant={actionMenuParticipant}
@@ -414,7 +336,11 @@ const ParticipantTable = () => {
             alignItems='center'
             direction='row'
           >
-            <ParticipantTableFilters loading={isLoadingData} locations={locations} />
+            <ParticipantTableFilters
+              fetchParticipants={fetchParticipants}
+              loading={isLoadingData}
+              locations={locations}
+            />
 
             {selectedTab === 'Hired Candidates' && (
               <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>

@@ -19,13 +19,11 @@ import {
   ToastStatus,
   InterviewingFormSchema,
   RejectedFormSchema,
-  HireFormSchema,
   regionLabelsMap,
   API_URL,
   pageSize,
   makeToasts,
   defaultTableState,
-  ArchiveHiredParticipantSchema,
   Routes,
 } from '../../constants';
 import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
@@ -532,16 +530,6 @@ const ParticipantTable = () => {
         {activeModalForm === 'hired' && (
           <HireForm
             sites={sites}
-            initialValues={{
-              nonHcapOpportunity: false,
-              positionTitle: '',
-              positionType: '',
-              hiredDate: '',
-              startDate: '',
-              site: '',
-              acknowledge: false,
-            }}
-            validationSchema={HireFormSchema}
             onSubmit={(values) => {
               handleEngage(actionMenuParticipant.id, 'hired', {
                 nonHcapOpportunity: values.nonHcapOpportunity,
@@ -571,15 +559,6 @@ const ParticipantTable = () => {
         )}
         {activeModalForm === 'archive' && (
           <ArchiveHiredParticipantForm
-            initialValues={{
-              type: '',
-              reason: '',
-              status: '',
-              rehire: '',
-              endDate: moment().format('YYYY/MM/DD'),
-              confirmed: false,
-            }}
-            validationSchema={ArchiveHiredParticipantSchema}
             onSubmit={(values) => {
               handleEngage(actionMenuParticipant.id, 'archived', values);
             }}

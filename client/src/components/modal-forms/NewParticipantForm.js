@@ -1,4 +1,5 @@
 import React from 'react';
+import store from 'store';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box } from '@material-ui/core';
@@ -6,16 +7,54 @@ import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } f
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { getTodayDate } from '../../utils';
 import { RenderAutocomplete } from '../fields/RenderAutocomplete';
+import { API_URL, ExternalHiredParticipantSchema, ToastStatus } from '../../constants';
+import { useToast } from '../../hooks';
 
-export const NewParticipantForm = ({
-  initialValues,
-  validationSchema,
-  onSubmit,
-  onClose,
-  sites,
-}) => {
+const newParticipantInitialValues = {
+  firstName: '',
+  lastName: '',
+  phoneNumber: '',
+  emailAddress: '',
+  origin: '',
+  otherOrigin: '',
+  hcapOpportunity: true,
+  contactedDate: '',
+  hiredDate: '',
+  startDate: '',
+  site: '',
+  acknowledge: false,
+};
+
+export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
+  const { openToast } = useToast();
+
+  const handleExternalHire = async (participantInfo) => {
+    const response = await fetch(`${API_URL}/api/v1/new-hired-participant`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(participantInfo),
+    });
+
+    if (response.ok) {
+      onClose();
+      submissionCallback();
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
+    }
+  };
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+    <Formik
+      initialValues={newParticipantInitialValues}
+      onSubmit={handleExternalHire}
+      validationSchema={ExternalHiredParticipantSchema}
+    >
       {({ submitForm, values }) => (
         <FormikForm>
           <Box>

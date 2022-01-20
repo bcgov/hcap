@@ -19,15 +19,11 @@ import {
   ToastStatus,
   InterviewingFormSchema,
   RejectedFormSchema,
-  HireFormSchema,
-  ExternalHiredParticipantSchema,
-  EditParticipantFormSchema,
   regionLabelsMap,
   API_URL,
   pageSize,
   makeToasts,
   defaultTableState,
-  ArchiveHiredParticipantSchema,
   Routes,
 } from '../../constants';
 import { Table, CheckPermissions, Button, Dialog } from '../../components/generic';
@@ -286,28 +282,6 @@ const ParticipantTable = () => {
       });
     }
   };
-  const handleExternalHire = async (participantInfo) => {
-    const response = await fetch(`${API_URL}/api/v1/new-hired-participant`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(participantInfo),
-    });
-
-    if (response.ok) {
-      setActionMenuParticipant(null);
-      setActiveModalForm(null);
-      forceReload();
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
-      });
-    }
-  };
 
   const forceReload = async () => {
     if (!columns) return;
@@ -384,7 +358,7 @@ const ParticipantTable = () => {
     selectedTabStatuses,
   ]);
 
-  const defaultOnClose = () => {
+  const onFormModalClose = () => {
     setActiveModalForm(null);
     setActionMenuParticipant(null);
   };
@@ -507,17 +481,17 @@ const ParticipantTable = () => {
       <Dialog
         title={getDialogTitle(activeModalForm)}
         open={activeModalForm != null}
-        onClose={defaultOnClose}
+        onClose={onFormModalClose}
       >
         {activeModalForm === 'prospecting' && (
           <ProspectingForm
             name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
             onClose={() => {
               forceReload();
-              defaultOnClose();
+              onFormModalClose();
             }}
             onSubmit={async () => {
-              defaultOnClose();
+              onFormModalClose();
 
               participantsDispatch({
                 type: ParticipantsContext.types.SELECT_TAB,
@@ -536,7 +510,7 @@ const ParticipantTable = () => {
                 contacted_at: values.contactedDate,
               });
             }}
-            onClose={defaultOnClose}
+            onClose={onFormModalClose}
           />
         )}
 
@@ -549,23 +523,13 @@ const ParticipantTable = () => {
                 final_status: values.finalStatus,
               });
             }}
-            onClose={defaultOnClose}
+            onClose={onFormModalClose}
           />
         )}
 
         {activeModalForm === 'hired' && (
           <HireForm
             sites={sites}
-            initialValues={{
-              nonHcapOpportunity: false,
-              positionTitle: '',
-              positionType: '',
-              hiredDate: '',
-              startDate: '',
-              site: '',
-              acknowledge: false,
-            }}
-            validationSchema={HireFormSchema}
             onSubmit={(values) => {
               handleEngage(actionMenuParticipant.id, 'hired', {
                 nonHcapOpportunity: values.nonHcapOpportunity,
@@ -576,108 +540,29 @@ const ParticipantTable = () => {
                 site: values.site,
               });
             }}
-            onClose={defaultOnClose}
+            onClose={onFormModalClose}
           />
         )}
         {activeModalForm === 'edit-participant' && (
           <EditParticipantForm
-            initialValues={{
-              ...actionMenuParticipant,
-            }}
-            validationSchema={EditParticipantFormSchema}
-            onSubmit={async (values) => {
-              // TODO: [HCAP-852](https://freshworks.atlassian.net/browse/HCAP-852)
-              if (values.phoneNumber && Number.isInteger(values.phoneNumber))
-                values.phoneNumber = values.phoneNumber.toString();
-              if (values.postalCode && values.postalCode.length > 3) {
-                values.postalCodeFsa = values.postalCode.slice(0, 3);
-              }
-              const history = {
-                timestamp: new Date(),
-                changes: [],
-              };
-              Object.keys(values).forEach((key) => {
-                if (values[key] !== actionMenuParticipant[key]) {
-                  history.changes.push({
-                    field: key,
-                    from: actionMenuParticipant[key],
-                    to: values[key],
-                  });
-                }
-              });
-              values.history = actionMenuParticipant.history
-                ? [history, ...actionMenuParticipant.history]
-                : [history];
-              const response = await fetch(`${API_URL}/api/v1/participant`, {
-                method: 'PATCH',
-                headers: {
-                  Authorization: `Bearer ${store.get('TOKEN')}`,
-                  Accept: 'application/json',
-                  'Content-type': 'application/json',
-                },
-                body: JSON.stringify(values),
-              });
-
-              if (response.ok) {
-                forceReload();
-                defaultOnClose();
-              }
-            }}
-            onClose={defaultOnClose}
+            initialValues={actionMenuParticipant}
+            onClose={onFormModalClose}
+            submissionCallback={forceReload}
           />
         )}
         {activeModalForm === 'new-participant' && (
           <NewParticipantForm
             sites={sites}
-            initialValues={{
-              firstName: '',
-              lastName: '',
-              phoneNumber: '',
-              emailAddress: '',
-              origin: '',
-              otherOrigin: '',
-              hcapOpportunity: true,
-              contactedDate: '',
-              hiredDate: '',
-              startDate: '',
-              site: '',
-              acknowledge: false,
-            }}
-            validationSchema={ExternalHiredParticipantSchema}
-            onSubmit={(values) => {
-              handleExternalHire({
-                firstName: values.firstName,
-                lastName: values.lastName,
-                phoneNumber: values.phoneNumber,
-                emailAddress: values.emailAddress,
-                origin: values.origin,
-                otherOrigin: values.otherOrigin,
-                hcapOpportunity: values.hcapOpportunity,
-                contactedDate: values.contactedDate,
-                hiredDate: values.hiredDate,
-                startDate: values.startDate,
-                site: values.site,
-                acknowledge: values.acknowledge,
-              });
-            }}
-            onClose={defaultOnClose}
+            onClose={onFormModalClose}
+            submissionCallback={forceReload}
           />
         )}
         {activeModalForm === 'archive' && (
           <ArchiveHiredParticipantForm
-            initialValues={{
-              type: '',
-              reason: '',
-              status: '',
-              rehire: '',
-              endDate: moment().format('YYYY/MM/DD'),
-              confirmed: false,
-            }}
-            validationSchema={ArchiveHiredParticipantSchema}
             onSubmit={(values) => {
               handleEngage(actionMenuParticipant.id, 'archived', values);
             }}
-            onClose={defaultOnClose}
+            onClose={onFormModalClose}
           />
         )}
       </Dialog>

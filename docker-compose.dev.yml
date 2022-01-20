@@ -14,20 +14,19 @@ services:
       - 4000:4000
     volumes:
       - ./client:/client # Use client dir in host for hot reloading
-      - /client/node_modules # Use node_modules in container
+      - ./client/node_modules:/client/node_modules # Use node_modules in container
     depends_on:
       - server
     networks:
       - network
 
   server:
-    image: ${APP_NAME}-server
+    image: node:14-alpine
     container_name: ${APP_NAME}-server
     build:
       context: ./server
       dockerfile: Dockerfile.dev
-      args:
-        VERSION: ${COMMIT_SHA}
+    command: npm run watch
     environment:
       - APP_ENV=local
       - POSTGRES_HOST=${POSTGRES_HOST}
@@ -59,7 +58,7 @@ services:
       - '8080:8080'
     volumes:
       - ./server:/server # Use server dir in host for hot reloading
-      - /server/node_modules # Use node_modules in container
+      - ./server/node_modules:/server/node_modules
     depends_on:
       - postgres
       - mongodb

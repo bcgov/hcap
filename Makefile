@@ -59,6 +59,7 @@ local-build:
 
 local-run: local-build
 	@echo "Running local app container"
+	npm run update-apps
 	@docker-compose -f docker-compose.dev.yml up
 
 

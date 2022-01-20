@@ -3,10 +3,10 @@ FROM public.ecr.aws/bitnami/node:14.17.3
 # Allow node modules to be called directly
 ENV PATH $PATH:/usr/src/app/node_modules/.bin
 
-# Configure server container
+# Configure server
 WORKDIR /server
-
-EXPOSE 4000
+COPY package*.json ./
+RUN npm set progress=false && npm ci --no-cache
 
 # Static env vars
 ARG VERSION

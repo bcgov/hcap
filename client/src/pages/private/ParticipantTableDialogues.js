@@ -1,12 +1,5 @@
 import React, { useMemo } from 'react';
-import store from 'store';
-import {
-  ToastStatus,
-  InterviewingFormSchema,
-  RejectedFormSchema,
-  API_URL,
-  makeToasts,
-} from '../../constants';
+import { InterviewingFormSchema, RejectedFormSchema } from '../../constants';
 import { Dialog } from '../../components/generic';
 import {
   ProspectingForm,
@@ -17,59 +10,19 @@ import {
   EditParticipantForm,
   ArchiveHiredParticipantForm,
 } from '../../components/modal-forms';
-import { useToast } from '../../hooks';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
 
 export const ParticipantTableDialogues = ({
   fetchParticipants,
-  setActiveModalForm,
   activeModalForm,
   actionMenuParticipant,
-  setActionMenuParticipant,
+  onClose,
+  handleEngage,
 }) => {
-  const { openToast } = useToast();
   const { dispatch: participantsDispatch } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
-
-  const handleEngage = async (participantId, status, additional = {}) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ participantId, status, data: additional }),
-    });
-
-    if (response.ok) {
-      const { data: statusData } = await response.json();
-
-      if (status === 'prospecting') {
-        // Modal appears after submitting
-        setActiveModalForm('prospecting');
-      } else {
-        const { firstName, lastName } = actionMenuParticipant;
-        const toasts = makeToasts(firstName, lastName);
-        openToast(toasts[statusData?.status === 'already_hired' ? statusData.status : status]);
-        setActionMenuParticipant(null);
-        setActiveModalForm(null);
-        fetchParticipants();
-      }
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
-      });
-    }
-  };
-
-  const onClose = () => {
-    setActiveModalForm(null);
-    setActionMenuParticipant(null);
-  };
 
   return (
     <Dialog

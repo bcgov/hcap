@@ -177,6 +177,11 @@ const ParticipantTable = () => {
     setActiveModalForm(formKey);
   };
 
+  const handleDialogueClose = () => {
+    setActiveModalForm(null);
+    setActionMenuParticipant(null);
+  };
+
   // Set available locations
   useEffect(() => {
     // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
@@ -276,10 +281,10 @@ const ParticipantTable = () => {
     <>
       <ParticipantTableDialogues
         fetchParticipants={fetchParticipants}
-        setActiveModalForm={setActiveModalForm}
         activeModalForm={activeModalForm}
         actionMenuParticipant={actionMenuParticipant}
-        setActionMenuParticipant={setActionMenuParticipant}
+        handleEngage={handleEngage}
+        onClose={handleDialogueClose}
       />
       <CheckPermissions
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}

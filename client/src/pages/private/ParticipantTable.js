@@ -163,7 +163,7 @@ const filterData = (data, columns) => {
   return filteredRows;
 };
 
-export default () => {
+const ParticipantTable = () => {
   const history = useHistory();
   const { openToast } = useToast();
   const [isLoadingData, setLoadingData] = useState(false);
@@ -328,6 +328,7 @@ export default () => {
     setHideLastNameAndEmailFilter(selectedTab === 'Archived Candidates');
   }, [selectedTab]);
 
+  // Set available locations
   useEffect(() => {
     const isMoH = roles.includes('ministry_of_health');
     const isSuperUser = roles.includes('superuser');
@@ -339,6 +340,7 @@ export default () => {
     );
   }, [roles]);
 
+  // Fetch Data
   useEffect(() => {
     const getParticipants = async () => {
       if (!columns) return;
@@ -938,3 +940,5 @@ export default () => {
     </>
   );
 };
+
+export default ParticipantTable;

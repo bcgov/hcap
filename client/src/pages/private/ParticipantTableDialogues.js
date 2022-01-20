@@ -22,7 +22,7 @@ import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
 
 export const ParticipantTableDialogues = ({
-  forceReload,
+  fetchParticipants,
   setActiveModalForm,
   activeModalForm,
   actionMenuParticipant,
@@ -56,7 +56,7 @@ export const ParticipantTableDialogues = ({
         openToast(toasts[statusData?.status === 'already_hired' ? statusData.status : status]);
         setActionMenuParticipant(null);
         setActiveModalForm(null);
-        forceReload();
+        fetchParticipants();
       }
     } else {
       openToast({
@@ -81,7 +81,7 @@ export const ParticipantTableDialogues = ({
         <ProspectingForm
           name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
           onClose={() => {
-            forceReload();
+            fetchParticipants();
             onClose();
           }}
           onSubmit={async () => {
@@ -141,11 +141,15 @@ export const ParticipantTableDialogues = ({
         <EditParticipantForm
           initialValues={actionMenuParticipant}
           onClose={onClose}
-          submissionCallback={forceReload}
+          submissionCallback={fetchParticipants}
         />
       )}
       {activeModalForm === 'new-participant' && (
-        <NewParticipantForm sites={sites} onClose={onClose} submissionCallback={forceReload} />
+        <NewParticipantForm
+          sites={sites}
+          onClose={onClose}
+          submissionCallback={fetchParticipants}
+        />
       )}
       {activeModalForm === 'archive' && (
         <ArchiveHiredParticipantForm

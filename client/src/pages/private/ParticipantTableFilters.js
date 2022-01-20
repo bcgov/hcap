@@ -45,8 +45,8 @@ export const ParticipantTableFilters = ({ loading, locations }) => {
             variant='filled'
             inputProps={{ displayEmpty: true }}
             disabled={loading || locations.length === 1}
-            value={filter[FILTERABLE_FIELDS.LOCATION]?.value || ''}
-            onChange={({ target }) => setFilter(FILTERABLE_FIELDS.LOCATION, target.value)}
+            value={filter[FILTERABLE_FIELDS.REGION]?.value || ''}
+            onChange={({ target }) => setFilter(FILTERABLE_FIELDS.REGION, target.value)}
             aria-label='location filter'
           >
             {locations.length === 1 ? (

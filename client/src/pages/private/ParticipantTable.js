@@ -2,14 +2,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Menu, MenuItem, Link } from '@material-ui/core';
-import store from 'store';
 import {
   ToastStatus,
   regionLabelsMap,
-  API_URL,
   pageSize,
   makeToasts,
   Routes,
+  participantStatus,
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
@@ -18,7 +17,12 @@ import moment from 'moment';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
 import { ParticipantTableDialogues } from './ParticipantTableDialogues';
-import { getParticipants } from '../../services/participant';
+import {
+  acknowledgeParticipant,
+  addParticipantStatus,
+  fetchParticipant,
+  getParticipants,
+} from '../../services/participant';
 
 const filterData = (data, columns) => {
   const emailAddressMask = '***@***.***';
@@ -124,62 +128,58 @@ const ParticipantTable = () => {
   };
 
   const handleEngage = async (participantId, status, additional = {}) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ participantId, status, data: additional }),
-    });
+    try {
+      const { data } = await addParticipantStatus({ participantId, status, additional });
 
-    if (response.ok) {
-      const { data: statusData } = await response.json();
-
-      if (status === 'prospecting') {
+      if (status === participantStatus.PROSPECTING) {
         // Modal appears after submitting
-        setActiveModalForm('prospecting');
+        setActiveModalForm(participantStatus.PROSPECTING);
       } else {
         const index = rows.findIndex((row) => row.id === participantId);
         const { firstName, lastName } = rows[index];
         const toasts = makeToasts(firstName, lastName);
-        openToast(toasts[statusData?.status === 'already_hired' ? statusData.status : status]);
+        openToast(toasts[data?.status === 'already_hired' ? data.status : status]);
         setActionMenuParticipant(null);
         setActiveModalForm(null);
         fetchParticipants();
       }
-    } else {
+    } catch (err) {
       openToast({
         status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
+        message: err.message || 'Server error',
       });
     }
   };
+
   const handleAcknowledge = async (id) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-actions/acknowledgment`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ id }),
-    });
-    if (response.ok) {
+    try {
+      await acknowledgeParticipant(id);
+
       openToast({
         status: ToastStatus.Success,
         message: 'Update successful',
       });
+
       setActionMenuParticipant(null);
       setActiveModalForm(null);
       fetchParticipants();
-    } else {
+    } catch (err) {
       openToast({
         status: ToastStatus.Error,
         message: 'An error occured',
       });
     }
+  };
+
+  const openFormForParticipant = async (participantId, formKey) => {
+    const participant = await fetchParticipant({ id: participantId });
+    setActionMenuParticipant(participant);
+    setActiveModalForm(formKey);
+  };
+
+  const handleDialogueClose = () => {
+    setActiveModalForm(null);
+    setActionMenuParticipant(null);
   };
 
   // Set available locations
@@ -249,25 +249,7 @@ const ParticipantTable = () => {
       case 'edit':
         return (
           <Button
-            onClick={async (event) => {
-              // Get data from row.id
-              const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
-                headers: {
-                  Accept: 'application/json',
-                  'Content-type': 'application/json',
-                  Authorization: `Bearer ${store.get('TOKEN')}`,
-                },
-                method: 'GET',
-              });
-
-              const participant = await response.json();
-              if (participant[0].postalCode === undefined) {
-                participant[0].postalCode = '';
-              }
-              setActionMenuParticipant(participant[0]);
-              setActiveModalForm('edit-participant');
-              setAnchorElement(event.currentTarget);
-            }}
+            onClick={() => openFormForParticipant(row.id, 'edit-participant')}
             variant='outlined'
             size='small'
             text='Edit'
@@ -280,21 +262,7 @@ const ParticipantTable = () => {
           <>
             {!row.status.includes('withdrawn') && (
               <Button
-                onClick={async (event) => {
-                  setAnchorElement(event.currentTarget);
-                  // Get data from row.id
-                  const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
-                    headers: {
-                      Accept: 'application/json',
-                      'Content-type': 'application/json',
-                      Authorization: `Bearer ${store.get('TOKEN')}`,
-                    },
-                    method: 'GET',
-                  });
-                  const participant = await response.json();
-                  setActionMenuParticipant(participant[0]);
-                  setActiveModalForm('archive');
-                }}
+                onClick={() => openFormForParticipant(row.id, 'archive')}
                 variant='outlined'
                 size='small'
                 text='Archive'
@@ -313,10 +281,10 @@ const ParticipantTable = () => {
     <>
       <ParticipantTableDialogues
         fetchParticipants={fetchParticipants}
-        setActiveModalForm={setActiveModalForm}
         activeModalForm={activeModalForm}
         actionMenuParticipant={actionMenuParticipant}
-        setActionMenuParticipant={setActionMenuParticipant}
+        handleEngage={handleEngage}
+        onClose={handleDialogueClose}
       />
       <CheckPermissions
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}

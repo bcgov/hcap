@@ -2,11 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Menu, MenuItem, Link } from '@material-ui/core';
-import store from 'store';
 import {
   ToastStatus,
   regionLabelsMap,
-  API_URL,
   pageSize,
   makeToasts,
   Routes,
@@ -173,10 +171,10 @@ const ParticipantTable = () => {
     }
   };
 
-  const handleArchiveButton = async (id) => {
-    const participant = await fetchParticipant({ id });
+  const openFormForParticipant = async (participantId, formKey) => {
+    const participant = await fetchParticipant({ id: participantId });
     setActionMenuParticipant(participant);
-    setActiveModalForm('archive');
+    setActiveModalForm(formKey);
   };
 
   // Set available locations
@@ -246,25 +244,7 @@ const ParticipantTable = () => {
       case 'edit':
         return (
           <Button
-            onClick={async (event) => {
-              // Get data from row.id
-              const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
-                headers: {
-                  Accept: 'application/json',
-                  'Content-type': 'application/json',
-                  Authorization: `Bearer ${store.get('TOKEN')}`,
-                },
-                method: 'GET',
-              });
-
-              const participant = await response.json();
-              if (participant[0].postalCode === undefined) {
-                participant[0].postalCode = '';
-              }
-              setActionMenuParticipant(participant[0]);
-              setActiveModalForm('edit-participant');
-              setAnchorElement(event.currentTarget);
-            }}
+            onClick={() => openFormForParticipant(row.id, 'edit-participant')}
             variant='outlined'
             size='small'
             text='Edit'
@@ -277,7 +257,7 @@ const ParticipantTable = () => {
           <>
             {!row.status.includes('withdrawn') && (
               <Button
-                onClick={() => handleArchiveButton(row.id)}
+                onClick={() => openFormForParticipant(row.id, 'archive')}
                 variant='outlined'
                 size='small'
                 text='Archive'

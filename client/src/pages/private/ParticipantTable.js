@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Menu, MenuItem, Link } from '@material-ui/core';
@@ -11,7 +11,6 @@ import {
   API_URL,
   pageSize,
   makeToasts,
-  defaultTableState,
   Routes,
 } from '../../constants';
 import {
@@ -36,38 +35,6 @@ import { getDialogTitle, prettifyStatus, keyedString } from '../../utils';
 import moment from 'moment';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
-
-const reducer = (state, action) => {
-  const { type, key, value } = action;
-  let newstate = { ...state };
-  switch (type) {
-    // Update any key in state with the corresponding value
-    case 'updateKey':
-      newstate[key] = value;
-      return newstate;
-
-    // Update a search filter. Applies trimming to text
-    case 'updateFilter':
-      if (newstate[key]?.trim() === value?.trim()) return state;
-      newstate[key] = value ? value.trim() : '';
-      newstate.pagination = {
-        ...newstate.pagination,
-      };
-      return newstate;
-    // Updating site selector also updates the order, so this needed its own case
-    case 'updateSiteSelector':
-      return {
-        ...state,
-        order: {
-          field: 'distance',
-          direction: 'asc',
-        },
-        siteSelector: value,
-      };
-    default:
-      return state;
-  }
-};
 
 const filterData = (data, columns) => {
   const emailAddressMask = '***@***.***';
@@ -133,13 +100,21 @@ const ParticipantTable = () => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations, setLocations] = useState([]);
   const {
-    state: { columns, tabs, selectedTab, selectedTabStatuses, currentPage },
+    state: {
+      columns,
+      tabs,
+      selectedTab,
+      selectedTabStatuses,
+      pagination,
+      filter,
+      order,
+      siteSelector,
+    },
     dispatch: participantsDispatch,
   } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
-  const [reducerState, dispatch] = useReducer(reducer, defaultTableState);
 
   const isMoH = roles.includes('ministry_of_health');
   const isSuperUser = roles.includes('superuser');
@@ -251,16 +226,16 @@ const ParticipantTable = () => {
     if (!selectedTab) return;
     setLoadingData(true);
     const { data } = await fetchParticipants(
-      currentPage * pageSize,
-      reducerState.locationFilter,
-      reducerState.fsaFilter,
-      reducerState.lastNameFilter,
-      reducerState.emailFilter,
-      reducerState.order.field,
-      reducerState.order.direction,
-      reducerState.siteSelector,
+      pagination.page * pageSize,
+      filter.locationFilter?.value || '',
+      filter.fsaFilter?.value || '',
+      filter.lastNameFilter?.value || '',
+      filter.emailFilter?.value || '',
+      order.field,
+      order.direction,
+      siteSelector,
       selectedTabStatuses,
-      reducerState.isIndigenousFilter
+      filter.isIndigenousFilter?.value
     );
     const newRows = filterData(data, columns);
     setRows(newRows);
@@ -282,22 +257,21 @@ const ParticipantTable = () => {
       if (!columns) return;
       if (!selectedTab) return;
       setLoadingData(true);
-      const { data, pagination } = await fetchParticipants(
-        currentPage * pageSize,
-        reducerState.locationFilter,
-        reducerState.fsaFilter || '',
-        reducerState.lastNameFilter || '',
-        reducerState.emailFilter || '',
-        reducerState.order.field,
-        reducerState.order.direction,
-        reducerState.siteSelector,
+      const { data, pagination: newPagination } = await fetchParticipants(
+        pagination.page * pageSize,
+        filter.locationFilter?.value || '',
+        filter.fsaFilter?.value || '',
+        filter.lastNameFilter?.value || '',
+        filter.emailFilter?.value || '',
+        order.field,
+        order.direction,
+        siteSelector,
         selectedTabStatuses,
-        reducerState.isIndigenousFilter
+        filter.isIndigenousFilter?.value
       );
-      dispatch({
-        type: 'updateKey',
-        key: 'pagination',
-        value: pagination,
+      participantsDispatch({
+        type: ParticipantsContext.types.UPDATE_PAGINATION,
+        payload: newPagination,
       });
       const newRows = filterData(data, columns);
       setRows(newRows);
@@ -307,18 +281,15 @@ const ParticipantTable = () => {
     getParticipants();
   }, [
     fetchParticipants,
-    currentPage,
-    reducerState.siteSelector,
-    reducerState.emailFilter,
-    reducerState.locationFilter,
-    reducerState.lastNameFilter,
-    reducerState.fsaFilter,
-    reducerState.order,
-    reducerState.isIndigenousFilter,
+    pagination.page,
+    siteSelector,
+    filter,
+    order,
     roles,
     columns,
     selectedTab,
     selectedTabStatuses,
+    participantsDispatch,
   ]);
 
   const onFormModalClose = () => {
@@ -547,12 +518,7 @@ const ParticipantTable = () => {
             alignItems='center'
             direction='row'
           >
-            <ParticipantTableFilters
-              reducerState={reducerState}
-              dispatch={dispatch}
-              loading={isLoadingData}
-              locations={locations}
-            />
+            <ParticipantTableFilters loading={isLoadingData} locations={locations} />
 
             {selectedTab === 'Hired Candidates' && (
               <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
@@ -584,28 +550,27 @@ const ParticipantTable = () => {
             <Table
               usePagination={true}
               columns={columns}
-              order={reducerState.order.direction}
-              orderBy={reducerState.order.field}
-              rowsCount={reducerState.pagination?.total}
-              onChangePage={(oldPage, newPage) => {
+              order={order.direction}
+              orderBy={order.field}
+              rowsCount={pagination.total}
+              onChangePage={(_, newPage) => {
                 participantsDispatch({
-                  type: ParticipantsContext.types.CHANGE_PAGE,
-                  payload: newPage,
+                  type: ParticipantsContext.types.UPDATE_PAGINATION,
+                  payload: { page: newPage },
                 });
               }}
               rowsPerPage={pageSize}
-              currentPage={currentPage}
+              currentPage={pagination.page}
               renderCell={renderCell}
-              onRequestSort={(event, property) =>
-                dispatch({
-                  type: 'updateKey',
-                  key: 'order',
-                  value: {
+              onRequestSort={(event, property) => {
+                participantsDispatch({
+                  type: ParticipantsContext.types.UPDATE_TABLE_ORDER,
+                  payload: {
                     field: property,
-                    direction: reducerState.order.direction === 'desc' ? 'asc' : 'desc',
+                    direction: order.direction === 'desc' ? 'asc' : 'desc',
                   },
-                })
-              }
+                });
+              }}
               rows={rows}
               isLoading={isLoadingData}
             />

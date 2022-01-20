@@ -19,7 +19,12 @@ import moment from 'moment';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
 import { ParticipantTableDialogues } from './ParticipantTableDialogues';
-import { addParticipantStatus, getParticipants } from '../../services/participant';
+import {
+  acknowledgeParticipant,
+  addParticipantStatus,
+  fetchParticipant,
+  getParticipants,
+} from '../../services/participant';
 
 const filterData = (data, columns) => {
   const emailAddressMask = '***@***.***';
@@ -147,30 +152,31 @@ const ParticipantTable = () => {
       });
     }
   };
+
   const handleAcknowledge = async (id) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-actions/acknowledgment`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ id }),
-    });
-    if (response.ok) {
+    try {
+      await acknowledgeParticipant(id);
+
       openToast({
         status: ToastStatus.Success,
         message: 'Update successful',
       });
+
       setActionMenuParticipant(null);
       setActiveModalForm(null);
       fetchParticipants();
-    } else {
+    } catch (err) {
       openToast({
         status: ToastStatus.Error,
         message: 'An error occured',
       });
     }
+  };
+
+  const handleArchiveButton = async (id) => {
+    const participant = await fetchParticipant({ id });
+    setActionMenuParticipant(participant);
+    setActiveModalForm('archive');
   };
 
   // Set available locations
@@ -271,21 +277,7 @@ const ParticipantTable = () => {
           <>
             {!row.status.includes('withdrawn') && (
               <Button
-                onClick={async (event) => {
-                  setAnchorElement(event.currentTarget);
-                  // Get data from row.id
-                  const response = await fetch(`${API_URL}/api/v1/participant?id=${row.id}`, {
-                    headers: {
-                      Accept: 'application/json',
-                      'Content-type': 'application/json',
-                      Authorization: `Bearer ${store.get('TOKEN')}`,
-                    },
-                    method: 'GET',
-                  });
-                  const participant = await response.json();
-                  setActionMenuParticipant(participant[0]);
-                  setActiveModalForm('archive');
-                }}
+                onClick={() => handleArchiveButton(row.id)}
                 variant='outlined'
                 size='small'
                 text='Archive'

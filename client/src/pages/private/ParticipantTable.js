@@ -10,6 +10,7 @@ import {
   pageSize,
   makeToasts,
   Routes,
+  participantStatus,
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
@@ -18,7 +19,7 @@ import moment from 'moment';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
 import { ParticipantTableDialogues } from './ParticipantTableDialogues';
-import { getParticipants } from '../../services/participant';
+import { addParticipantStatus, getParticipants } from '../../services/participant';
 
 const filterData = (data, columns) => {
   const emailAddressMask = '***@***.***';
@@ -124,35 +125,25 @@ const ParticipantTable = () => {
   };
 
   const handleEngage = async (participantId, status, additional = {}) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ participantId, status, data: additional }),
-    });
+    try {
+      const { data } = await addParticipantStatus({ participantId, status, additional });
 
-    if (response.ok) {
-      const { data: statusData } = await response.json();
-
-      if (status === 'prospecting') {
+      if (status === participantStatus.PROSPECTING) {
         // Modal appears after submitting
-        setActiveModalForm('prospecting');
+        setActiveModalForm(participantStatus.PROSPECTING);
       } else {
         const index = rows.findIndex((row) => row.id === participantId);
         const { firstName, lastName } = rows[index];
         const toasts = makeToasts(firstName, lastName);
-        openToast(toasts[statusData?.status === 'already_hired' ? statusData.status : status]);
+        openToast(toasts[data?.status === 'already_hired' ? data.status : status]);
         setActionMenuParticipant(null);
         setActiveModalForm(null);
         fetchParticipants();
       }
-    } else {
+    } catch (err) {
       openToast({
         status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
+        message: err.message || 'Server error',
       });
     }
   };

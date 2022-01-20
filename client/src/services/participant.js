@@ -127,3 +127,21 @@ export const getParticipants = async ({
 
   throw new Error('Failed to fetch participants');
 };
+
+export const addParticipantStatus = async ({ participantId, status, additional }) => {
+  const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({ participantId, status, data: additional }),
+  });
+
+  if (response.ok) {
+    return response.json();
+  }
+
+  throw new Error('Failed to add participant status', response.error || response.statusText);
+};

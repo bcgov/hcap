@@ -5,36 +5,19 @@ import { Box, Menu, MenuItem, Link } from '@material-ui/core';
 import store from 'store';
 import {
   ToastStatus,
-  InterviewingFormSchema,
-  RejectedFormSchema,
   regionLabelsMap,
   API_URL,
   pageSize,
   makeToasts,
   Routes,
 } from '../../constants';
-import {
-  Table,
-  CheckPermissions,
-  Button,
-  Dialog,
-  CustomTab,
-  CustomTabs,
-} from '../../components/generic';
-import {
-  ProspectingForm,
-  InterviewingForm,
-  RejectedForm,
-  HireForm,
-  NewParticipantForm,
-  EditParticipantForm,
-  ArchiveHiredParticipantForm,
-} from '../../components/modal-forms';
+import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
-import { getDialogTitle, prettifyStatus, keyedString } from '../../utils';
+import { prettifyStatus, keyedString } from '../../utils';
 import moment from 'moment';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
+import { ParticipantTableDialogues } from './ParticipantTableDialogues';
 
 const filterData = (data, columns) => {
   const emailAddressMask = '***@***.***';
@@ -114,7 +97,6 @@ const ParticipantTable = () => {
   } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
-  const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
 
   const isMoH = roles.includes('ministry_of_health');
   const isSuperUser = roles.includes('superuser');
@@ -292,11 +274,6 @@ const ParticipantTable = () => {
     participantsDispatch,
   ]);
 
-  const onFormModalClose = () => {
-    setActiveModalForm(null);
-    setActionMenuParticipant(null);
-  };
-
   const renderCell = (columnId, row) => {
     switch (columnId) {
       case 'lastName':
@@ -412,94 +389,13 @@ const ParticipantTable = () => {
   if (!columns) return null;
   return (
     <>
-      <Dialog
-        title={getDialogTitle(activeModalForm)}
-        open={activeModalForm != null}
-        onClose={onFormModalClose}
-      >
-        {activeModalForm === 'prospecting' && (
-          <ProspectingForm
-            name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
-            onClose={() => {
-              forceReload();
-              onFormModalClose();
-            }}
-            onSubmit={async () => {
-              onFormModalClose();
-
-              participantsDispatch({
-                type: ParticipantsContext.types.SELECT_TAB,
-                payload: 'My Candidates',
-              });
-            }}
-          />
-        )}
-
-        {activeModalForm === 'interviewing' && (
-          <InterviewingForm
-            initialValues={{ contactedDate: '' }}
-            validationSchema={InterviewingFormSchema}
-            onSubmit={(values) => {
-              handleEngage(actionMenuParticipant.id, 'interviewing', {
-                contacted_at: values.contactedDate,
-              });
-            }}
-            onClose={onFormModalClose}
-          />
-        )}
-
-        {activeModalForm === 'rejected' && (
-          <RejectedForm
-            initialValues={{ contactedDate: '' }}
-            validationSchema={RejectedFormSchema}
-            onSubmit={(values) => {
-              handleEngage(actionMenuParticipant.id, 'rejected', {
-                final_status: values.finalStatus,
-              });
-            }}
-            onClose={onFormModalClose}
-          />
-        )}
-
-        {activeModalForm === 'hired' && (
-          <HireForm
-            sites={sites}
-            onSubmit={(values) => {
-              handleEngage(actionMenuParticipant.id, 'hired', {
-                nonHcapOpportunity: values.nonHcapOpportunity,
-                positionTitle: values.positionTitle,
-                positionType: values.positionType,
-                hiredDate: values.hiredDate,
-                startDate: values.startDate,
-                site: values.site,
-              });
-            }}
-            onClose={onFormModalClose}
-          />
-        )}
-        {activeModalForm === 'edit-participant' && (
-          <EditParticipantForm
-            initialValues={actionMenuParticipant}
-            onClose={onFormModalClose}
-            submissionCallback={forceReload}
-          />
-        )}
-        {activeModalForm === 'new-participant' && (
-          <NewParticipantForm
-            sites={sites}
-            onClose={onFormModalClose}
-            submissionCallback={forceReload}
-          />
-        )}
-        {activeModalForm === 'archive' && (
-          <ArchiveHiredParticipantForm
-            onSubmit={(values) => {
-              handleEngage(actionMenuParticipant.id, 'archived', values);
-            }}
-            onClose={onFormModalClose}
-          />
-        )}
-      </Dialog>
+      <ParticipantTableDialogues
+        forceReload={forceReload}
+        setActiveModalForm={setActiveModalForm}
+        activeModalForm={activeModalForm}
+        actionMenuParticipant={actionMenuParticipant}
+        setActionMenuParticipant={setActionMenuParticipant}
+      />
       <CheckPermissions
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
         renderErrorMessage={true}

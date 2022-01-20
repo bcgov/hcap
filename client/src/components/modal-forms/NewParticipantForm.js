@@ -10,7 +10,7 @@ import { RenderAutocomplete } from '../fields/RenderAutocomplete';
 import { API_URL, ExternalHiredParticipantSchema, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 
-const netParticipantInitialValues = {
+const newParticipantInitialValues = {
   firstName: '',
   lastName: '',
   phoneNumber: '',
@@ -51,7 +51,7 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
   };
   return (
     <Formik
-      initialValues={netParticipantInitialValues}
+      initialValues={newParticipantInitialValues}
       onSubmit={handleExternalHire}
       validationSchema={ExternalHiredParticipantSchema}
     >

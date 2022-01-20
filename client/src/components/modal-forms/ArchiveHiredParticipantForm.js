@@ -15,17 +15,20 @@ import { getTodayDate } from '../../utils';
 
 const statusOptions = archiveStatusOptions.map((option) => ({ value: option, label: option }));
 const reasonOptions = archiveReasonOptions.map((option) => ({ value: option, label: option }));
+
+const archiveHiredParticipantInitialValues = {
+  type: '',
+  reason: '',
+  status: '',
+  rehire: '',
+  endDate: moment().format('YYYY/MM/DD'),
+  confirmed: false,
+};
+
 export const ArchiveHiredParticipantForm = ({ onSubmit, onClose }) => {
   return (
     <Formik
-      initialValues={{
-        type: '',
-        reason: '',
-        status: '',
-        rehire: '',
-        endDate: moment().format('YYYY/MM/DD'),
-        confirmed: false,
-      }}
+      initialValues={archiveHiredParticipantInitialValues}
       validationSchema={ArchiveHiredParticipantSchema}
       onSubmit={onSubmit}
     >

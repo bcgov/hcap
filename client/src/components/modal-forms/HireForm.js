@@ -7,21 +7,19 @@ import { Field, Formik, Form as FormikForm } from 'formik';
 import { getTodayDate } from '../../utils';
 import { HireFormSchema } from '../../constants';
 
+const hireInitialValues = {
+  nonHcapOpportunity: false,
+  positionTitle: '',
+  positionType: '',
+  hiredDate: '',
+  startDate: '',
+  site: '',
+  acknowledge: false,
+};
+
 export const HireForm = ({ initialValues, validationSchema, onSubmit, onClose, sites }) => {
   return (
-    <Formik
-      initialValues={{
-        nonHcapOpportunity: false,
-        positionTitle: '',
-        positionType: '',
-        hiredDate: '',
-        startDate: '',
-        site: '',
-        acknowledge: false,
-      }}
-      validationSchema={HireFormSchema}
-      onSubmit={onSubmit}
-    >
+    <Formik initialValues={hireInitialValues} validationSchema={HireFormSchema} onSubmit={onSubmit}>
       {({ submitForm, values }) => (
         <FormikForm>
           <Box>

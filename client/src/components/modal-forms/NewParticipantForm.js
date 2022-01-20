@@ -10,6 +10,21 @@ import { RenderAutocomplete } from '../fields/RenderAutocomplete';
 import { API_URL, ExternalHiredParticipantSchema, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 
+const netParticipantInitialValues = {
+  firstName: '',
+  lastName: '',
+  phoneNumber: '',
+  emailAddress: '',
+  origin: '',
+  otherOrigin: '',
+  hcapOpportunity: true,
+  contactedDate: '',
+  hiredDate: '',
+  startDate: '',
+  site: '',
+  acknowledge: false,
+};
+
 export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
   const { openToast } = useToast();
 
@@ -36,23 +51,8 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
   };
   return (
     <Formik
-      initialValues={{
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        emailAddress: '',
-        origin: '',
-        otherOrigin: '',
-        hcapOpportunity: true,
-        contactedDate: '',
-        hiredDate: '',
-        startDate: '',
-        site: '',
-        acknowledge: false,
-      }}
-      onSubmit={(values) => {
-        handleExternalHire(values);
-      }}
+      initialValues={netParticipantInitialValues}
+      onSubmit={handleExternalHire}
       validationSchema={ExternalHiredParticipantSchema}
     >
       {({ submitForm, values }) => (

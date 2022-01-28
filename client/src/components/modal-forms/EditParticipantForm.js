@@ -44,7 +44,9 @@ export const EditParticipantForm = ({ initialValues, onClose, submissionCallback
         });
 
         if (response.ok) {
-          submissionCallback();
+          if (submissionCallback) {
+            submissionCallback();
+          }
           onClose();
         }
       }}

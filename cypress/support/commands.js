@@ -148,6 +148,7 @@ Cypress.Commands.add('kcLogout', function () {
 
 Cypress.Commands.add('kcLogin', (user) => {
   Cypress.log({ name: 'Login' });
+  // Change isLocal to true to enable local
   if (Cypress.env('isLocal')) {
     localLogin(user);
   } else {

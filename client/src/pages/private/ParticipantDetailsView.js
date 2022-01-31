@@ -304,7 +304,17 @@ export default () => {
               initialValues={actualParticipant}
               validationSchema={EditParticipantFormSchema}
               onSubmit={onUpdateInfo}
-              onClose={() => setShowEditModal(false)}
+              onClose={() => {
+                setShowEditModal(false);
+                fetchData({
+                  setParticipant,
+                  setPSIList,
+                  setActualParticipant,
+                  setDisableAssign,
+                  setError,
+                  id,
+                });
+              }}
             />
           </Dialog>
         )}

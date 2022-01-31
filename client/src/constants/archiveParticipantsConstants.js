@@ -8,6 +8,7 @@ export const archiveReasonOptions = [
   'Delay initiating education',
   'Did not meet program requirements',
   'Issue with mandatory vaccination',
+  'Failed cohort, does not wish to continue in HCAP',
   'Other',
 ];
 

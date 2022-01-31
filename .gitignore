@@ -1,3 +1,7 @@
+# Local Data Storage
+.pgdata*
+.mongo-data
+
 # Dependencies
 node_modules
 

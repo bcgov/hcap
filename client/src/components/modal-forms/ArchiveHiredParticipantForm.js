@@ -10,6 +10,8 @@ import {
   archiveReasonOptions,
   archiveStatusOptions,
   archiveTypeOptions,
+  FailedCohortReason,
+  PSIEducationUnderwayStatus,
 } from '../../constants';
 import { getTodayDate } from '../../utils';
 
@@ -57,7 +59,11 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose }) => {
               <Field
                 name='status'
                 component={RenderSelectField}
-                options={statusOptions}
+                options={
+                  props.values.reason === FailedCohortReason
+                    ? [{ value: PSIEducationUnderwayStatus, label: PSIEducationUnderwayStatus }]
+                    : statusOptions
+                }
                 label='Status'
               />
               <Field

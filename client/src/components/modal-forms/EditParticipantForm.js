@@ -54,8 +54,18 @@ export const EditParticipantForm = ({ initialValues, onClose, submissionCallback
       {({ submitForm }) => (
         <FormikForm>
           <Box>
-            <Field name='firstName' component={RenderTextField} label='First Name' />
-            <Field name='lastName' component={RenderTextField} label='Last Name' />
+            <Field
+              data-cy={'editParticipantFirstName'}
+              name='firstName'
+              component={RenderTextField}
+              label='First Name'
+            />
+            <Field
+              data-cy={'editParticipantLastName'}
+              name='lastName'
+              component={RenderTextField}
+              label='Last Name'
+            />
             <Field
               name='phoneNumber'
               component={RenderTextField}
@@ -63,18 +73,21 @@ export const EditParticipantForm = ({ initialValues, onClose, submissionCallback
               type='tel'
             />
             <Field
+              data-cy={'editParticipantEmail'}
               name='emailAddress'
               component={RenderTextField}
               label='* Email Address'
               type='email'
             />
             <Field
+              data-cy={'editParticipantEmail'}
               name='postalCode'
               component={RenderTextField}
               label='* Postal Code'
               type='text'
             />
             <Field
+              data-cy={'editParticipantInterested'}
               name='interested'
               component={RenderSelectField}
               label='Program Interest'
@@ -90,7 +103,13 @@ export const EditParticipantForm = ({ initialValues, onClose, submissionCallback
                 <Button onClick={onClose} color='default' text='Cancel' />
               </Grid>
               <Grid item>
-                <Button onClick={submitForm} variant='contained' color='primary' text='Save' />
+                <Button
+                  data-cy={'editParticipantSave'}
+                  onClick={submitForm}
+                  variant='contained'
+                  color='primary'
+                  text='Save'
+                />
               </Grid>
             </Grid>
           </Box>

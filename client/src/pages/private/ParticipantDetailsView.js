@@ -268,7 +268,9 @@ export default () => {
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography variant='body1'>{participant[key]}</Typography>
+                      <Typography data-cy={'participantDetailsView' + key} variant='body1'>
+                        {participant[key]}
+                      </Typography>
                     </Grid>
                   </Grid>
                 ))}
@@ -276,7 +278,12 @@ export default () => {
             </Box>
             <Grid container style={{ marginBottom: '10px', marginLeft: '10px' }}>
               <Grid item xs={4}>
-                <Button variant='outlined' disabled={!enableEdit} onClick={showEditInfoModal}>
+                <Button
+                  data-cy='editInfoButton'
+                  variant='outlined'
+                  disabled={!enableEdit}
+                  onClick={showEditInfoModal}
+                >
                   Edit Info
                 </Button>
               </Grid>

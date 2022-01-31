@@ -148,12 +148,11 @@ Cypress.Commands.add('kcLogout', function () {
 
 Cypress.Commands.add('kcLogin', (user) => {
   Cypress.log({ name: 'Login' });
-  cy.log(JSON.stringify(Cypress.env()));
-  //if (Cypress.env('isLocal')) {
-  localLogin(user);
-  //} else {
-  //  pipelineLogin(user);
-  //}
+  if (Cypress.env('isLocal')) {
+    localLogin(user);
+  } else {
+    pipelineLogin(user);
+  }
 });
 
 Cypress.Commands.add('kcLogout', function () {

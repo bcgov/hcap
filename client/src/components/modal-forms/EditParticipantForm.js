@@ -67,6 +67,7 @@ export const EditParticipantForm = ({ initialValues, onClose, submissionCallback
               label='Last Name'
             />
             <Field
+              data-cy={'editParticipantPhone'}
               name='phoneNumber'
               component={RenderTextField}
               label='* Phone Number'

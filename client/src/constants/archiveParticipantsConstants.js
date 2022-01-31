@@ -1,3 +1,7 @@
+export const FailedCohortReason = 'Failed cohort, does not wish to continue in HCAP';
+
+export const PSIEducationUnderwayStatus = 'Post secondary education underway';
+
 export const archiveReasonOptions = [
   'No longer interested in HCA/HCSW role',
   'No longer interested in a career in health care',
@@ -8,14 +12,14 @@ export const archiveReasonOptions = [
   'Delay initiating education',
   'Did not meet program requirements',
   'Issue with mandatory vaccination',
-  'Failed cohort, does not wish to continue in HCAP',
+  FailedCohortReason,
   'Other',
 ];
 
 export const archiveStatusOptions = [
   'Not begun orientation or training',
   'Provincial orientation curriculum complete',
-  'Post secondary education underway',
+  PSIEducationUnderwayStatus,
   'Completed post secondary education',
 ];
 

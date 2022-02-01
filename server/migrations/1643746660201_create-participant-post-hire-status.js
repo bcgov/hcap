@@ -1,12 +1,27 @@
 /* eslint-disable camelcase */
-const { dbClient, schema, collections } = require('../db');
+const { collections } = require('../db');
 
 exports.shorthands = undefined;
 
-exports.up = async () => {
-  await dbClient.runRawQuery(schema.postHireRelationTables[0].definition);
+exports.up = async (pgm) => {
+  await pgm.createTable(collections.PARTICIPANT_POST_HIRE_STATUS, {
+    id: 'id',
+    participant_id: {
+      type: 'integer',
+      notNull: true,
+      references: collections.PARTICIPANTS,
+      onDelete: 'cascade',
+    },
+    status: { type: 'varchar(255)', notNull: true },
+    data: { type: 'jsonb', notNull: true },
+    created_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('current_timestamp'),
+    },
+  });
 };
 
-exports.down = async () => {
-  await dbClient.runRawQuery(`DROP TABLE IF EXISTS ${collections.PARTICIPANT_POST_HIRE_STATUS};`);
+exports.down = async (pgm) => {
+  await pgm.dropTable(collections.PARTICIPANT_POST_HIRE_STATUS, { ifExists: true });
 };

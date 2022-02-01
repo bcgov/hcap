@@ -35,11 +35,11 @@ As the HA, I want to be able to track the completion of education for a HCAP par
 
 ## Database
 
-- Create table post-hire-status
+- Create table `participant_post_hire_status`
   columns:
   - id: Int or UUID | Primary key
   
-  - status: Enum (Orientation / Post Secondary Education / Graduated / Fail Cohort)
+  - status: VARCHAR(255) | This field will be represented by application level enum (Orientation / Post Secondary Education / Graduated / Fail Cohort)
 
   - participant_id: INT | Foreign key to participant table
 

@@ -107,18 +107,6 @@ const schema = {
       )`,
     },
   ],
-  postHireRelationTables: [
-    {
-      definition: `CREATE TABLE IF NOT EXISTS ${collections.PARTICIPANT_POST_HIRE_STATUS} (
-      id serial primary key,
-      participant_id integer references ${collections.PARTICIPANTS},
-      status varchar(255) not null,
-      data jsonb,
-      created_at timestamp with time zone DEFAULT now(),
-      updated_at timestamp with time zone DEFAULT now()
-    )`,
-    },
-  ],
   documentTables: [
     {
       collection: collections.PARTICIPANTS,

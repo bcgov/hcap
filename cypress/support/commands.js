@@ -2,31 +2,80 @@
 const crypto = require('crypto');
 
 const getAuthCodeFromLocation = (location) => {
-  let url = new URL(location);
-  let params = url.search.substring(1).split('&');
-  for (let _i = 0, params_1 = params; _i < params_1.length; _i++) {
-    let param = params_1[_i];
-    let _a = param.split('='),
-      key = _a[0],
-      value = _a[1];
-    if (key === 'code') {
-      return value;
+  try {
+    let url = new URL(location);
+
+    let params = url.search.substring(1).split('&');
+    for (let _i = 0, params_1 = params; _i < params_1.length; _i++) {
+      let param = params_1[_i];
+      let _a = param.split('='),
+        key = _a[0],
+        value = _a[1];
+      if (key === 'code') {
+        return value;
+      }
     }
+  } catch (e) {
+    cy.log(e);
+    return '';
   }
 };
 
 const authBaseUrl = Cypress.env('KEYCLOAK_LOCAL_AUTH_URL') || Cypress.env('KEYCLOAK_AUTH_URL');
 
-Cypress.Commands.add('kcLogout', function () {
-  Cypress.log({ name: 'Logout' });
-  let realm = Cypress.env('KEYCLOAK_REALM');
-  return cy.request({
-    url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/logout`,
-  });
-});
+const localLogin = (user) => {
+  cy.fixture('users/' + user).then((userData) => {
+    let realm = Cypress.env('KEYCLOAK_REALM');
+    let client_id = Cypress.env('KEYCLOAK_API_CLIENTID');
 
-Cypress.Commands.add('kcLogin', (user) => {
-  Cypress.log({ name: 'Login' });
+    const base64URLEncode = (str) => {
+      return str.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    };
+
+    const code_challenge = base64URLEncode(crypto.randomBytes(32));
+    const authCompleteUrl = authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/auth';
+    const queryObject = {
+      client_id: client_id,
+      redirect_uri: 'http%3A%2F%2Fhcapemployers.local.freshworks.club%3A4000%2Fkeycloak',
+      response_mode: 'fragment',
+      response_type: 'code',
+      scope: 'openid',
+      code_challenge,
+      code_challenge_method: 'S256',
+    };
+    const queryString = Object.keys(queryObject)
+      .map(function (key) {
+        return key + '=' + queryObject[key];
+      })
+      .join('&');
+    const url = authCompleteUrl + '?' + queryString;
+    cy.request({
+      url,
+      followRedirect: true,
+    })
+      .then(function (response) {
+        let html = document.createElement('html');
+        html.innerHTML = response.body;
+        let form = html.getElementsByTagName('form')[0];
+        let url = form.action;
+        return cy.request({
+          method: 'POST',
+          url: url,
+          followRedirect: true,
+          form: true,
+          body: {
+            username: userData.username,
+            password: userData.password,
+          },
+        });
+      })
+      .then(function (response) {
+        expect(response.status).equal(200);
+      });
+  });
+};
+
+const pipelineLogin = (user) => {
   cy.fixture('users/' + user).then((userData) => {
     let realm = Cypress.env('KEYCLOAK_REALM');
     let client_id = Cypress.env('KEYCLOAK_API_CLIENTID');
@@ -87,6 +136,24 @@ Cypress.Commands.add('kcLogin', (user) => {
         }).its('body');
       });
   });
+};
+
+Cypress.Commands.add('kcLogout', function () {
+  Cypress.log({ name: 'Logout' });
+  let realm = Cypress.env('KEYCLOAK_REALM');
+  return cy.request({
+    url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/logout`,
+  });
+});
+
+Cypress.Commands.add('kcLogin', (user) => {
+  Cypress.log({ name: 'Login' });
+  // Change isLocal to true to enable local
+  if (Cypress.env('isLocal')) {
+    localLogin(user);
+  } else {
+    pipelineLogin(user);
+  }
 });
 
 Cypress.Commands.add('kcLogout', function () {

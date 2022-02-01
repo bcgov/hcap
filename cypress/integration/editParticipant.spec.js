@@ -7,14 +7,14 @@ describe('EOI View', () => {
   });
   it('Should be able edit participant details', () => {
     cy.visit('participant-details/participant/1');
-    cy.get('[data-cy=editInfoButton]').click();
+    cy.get('[test-id=editInfoButton]').click();
     // Generate a new first name
     const newName = 'New Name' + Math.floor(Math.random() * 10000);
     // Edit first name
-    cy.get('[data-cy=editParticipantFirstName]>div>input').clear().type(newName);
+    cy.get('[test-id=editParticipantFirstName]>div>input').clear().type(newName);
     // Save
-    cy.get('[data-cy=editParticipantSave]').click();
+    cy.get('[test-id=editParticipantSave]').click();
     // Verify that saved results shows up
-    cy.get('[data-cy=participantDetailsViewfullName]').should('contain', newName);
+    cy.get('[test-id=participantDetailsViewfullName]').should('contain', newName);
   });
 });

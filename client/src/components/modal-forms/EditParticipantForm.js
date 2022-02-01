@@ -55,40 +55,40 @@ export const EditParticipantForm = ({ initialValues, onClose, submissionCallback
         <FormikForm>
           <Box>
             <Field
-              data-cy={'editParticipantFirstName'}
+              test-id={'editParticipantFirstName'}
               name='firstName'
               component={RenderTextField}
               label='First Name'
             />
             <Field
-              data-cy={'editParticipantLastName'}
+              test-id={'editParticipantLastName'}
               name='lastName'
               component={RenderTextField}
               label='Last Name'
             />
             <Field
-              data-cy={'editParticipantPhone'}
+              test-id={'editParticipantPhone'}
               name='phoneNumber'
               component={RenderTextField}
               label='* Phone Number'
               type='tel'
             />
             <Field
-              data-cy={'editParticipantEmail'}
+              test-id={'editParticipantEmail'}
               name='emailAddress'
               component={RenderTextField}
               label='* Email Address'
               type='email'
             />
             <Field
-              data-cy={'editParticipantEmail'}
+              test-id={'editParticipantEmail'}
               name='postalCode'
               component={RenderTextField}
               label='* Postal Code'
               type='text'
             />
             <Field
-              data-cy={'editParticipantInterested'}
+              test-id={'editParticipantInterested'}
               name='interested'
               component={RenderSelectField}
               label='Program Interest'
@@ -105,7 +105,7 @@ export const EditParticipantForm = ({ initialValues, onClose, submissionCallback
               </Grid>
               <Grid item>
                 <Button
-                  data-cy={'editParticipantSave'}
+                  test-id={'editParticipantSave'}
                   onClick={submitForm}
                   variant='contained'
                   color='primary'

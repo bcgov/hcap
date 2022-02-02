@@ -5,6 +5,7 @@ const { validate, ParticipantBatchSchema, isBooleanValue } = require('../validat
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
+const { getPostHireStatusesForParticipant } = require('./post-hire-flow');
 const logger = require('../logger.js');
 
 const deleteParticipant = async ({ email }) => {
@@ -402,7 +403,7 @@ const getParticipants = async (
 ) => {
   const participantsFinder = new ParticipantsFinder(dbClient, user);
   const interestFilter = (user.isHA || user.isEmployer) && statusFilters?.includes('open');
-  const participants = await participantsFinder
+  let participants = await participantsFinder
     .filterRegion(regionFilter)
     .filterParticipantFields({
       postalCodeFsa: fsaFilter,
@@ -419,6 +420,17 @@ const getParticipants = async (
     offset: (pagination.offset ? Number(pagination.offset) : 0) + participants.length,
     total: Number(await table.count(criteria || {})),
   };
+
+  // HCAP:1030: Get participants post-hire statuses
+  participants = await Promise.all(
+    participants.map(async (participant) => {
+      const statuses = await getPostHireStatusesForParticipant({ participantId: participant.id });
+      return {
+        ...participant,
+        postHireStatuses: statuses || [],
+      };
+    })
+  );
 
   if (user.isSuperUser || user.isMoH) {
     return {
@@ -478,6 +490,7 @@ const getParticipants = async (
         userUpdatedAt: item.userUpdatedAt,
         callbackStatus: item.callbackStatus,
         distance: item.distance,
+        postHireStatuses: item.postHireStatuses || [],
       };
 
       const hiredBySomeoneElseStatus = item.statusInfos?.find(

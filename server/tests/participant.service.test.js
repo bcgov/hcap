@@ -1,3 +1,4 @@
+// Test execution code: npm run test:debug participant.service.test.js
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 const { readFileSync } = require('fs');
 const { join } = require('path');
@@ -333,11 +334,12 @@ describe('Participants Service', () => {
         'statusInfo',
         'userUpdatedAt',
         'progressStats',
+        'postHireStatuses',
       ];
       return a.map((i) =>
         Object.keys(i)
           .filter((k) => employerColumns.includes(k))
-          .reduce((o, k) => ({ ...o, [k]: i[k] }), { nonHCAP: undefined })
+          .reduce((o, k) => ({ ...o, [k]: i[k] }), { nonHCAP: undefined, postHireStatuses: [] })
       );
     };
     const trimIds = (a) =>

@@ -27,9 +27,11 @@ router.post(
     // Check participant exists
     const participant = await getParticipantByID(body.participantId);
     if (!participant) {
-      return res
-        .status(422)
-        .send({ message: `Participant does not exist with id: ${body.participantId}` });
+      logger.error({
+        action: 'post-hire-status_post',
+        message: `Participant does not exist with id ${body.participantId}`,
+      });
+      return res.status(422).send('Participant does not exist. Please check participant ID');
     }
     // Save the record
     const result = await createPostHireStatus(body);

@@ -21,7 +21,6 @@ router.post(
     const { user_id: userId, sub: localUserId } = req.user;
     const { body } = req;
     const user = userId || localUserId;
-    console.dir(body);
     // Validate the request body
     await validate(ParticipantPostHireStatusSchema, body);
     // Check participant exists

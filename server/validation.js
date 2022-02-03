@@ -592,6 +592,31 @@ const AccessRequestApproval = yup
     }),
   });
 
+const ParticipantPostHireStatusSchema = yup
+  .object()
+  .noUnknown('Unknown field in form')
+  .shape({
+    participantId: yup.number().required('Participant ID is required'),
+    status: yup.string().oneOf(postHireStatusesValues, 'Invalid status'),
+    data: yup.object().when(['status'], (status, schema) => {
+      switch (status) {
+        case postHireStatuses.postSecondaryEducationCompleted:
+          return schema.noUnknown('Unknown field in data form').shape({
+            graduationDate: yup
+              .string()
+              .required('Graduation date is required')
+              .test('is-date', 'Invalid date', validateDateString),
+          });
+        default:
+          return schema.test(
+            'is-null-or-empty',
+            `${status} does not require a data object`,
+            (obj) => !obj || Object.keys(obj).length === 0
+          );
+      }
+    }),
+  });
+
 const ParticipantStatusChange = yup
   .object()
   .noUnknown('Unknown field in form')
@@ -911,4 +936,5 @@ module.exports = {
   WaitlistEmailSchema,
   postHireStatuses,
   postHireStatusesValues,
+  ParticipantPostHireStatusSchema,
 };

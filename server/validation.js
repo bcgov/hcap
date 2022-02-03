@@ -63,6 +63,15 @@ const participantStatuses = [
   'pending_acknowledgement',
 ];
 
+const postHireStatuses = {
+  orientationCompleted: 'orientation_completed',
+  postSecondaryEducationUnderway: 'post_secondary_education_underway',
+  postSecondaryEducationCompleted: 'post_secondary_education_completed',
+  failedCohort: 'failed_cohort',
+};
+
+const postHireStatusesValues = Object.values(postHireStatuses).sort();
+
 const archiveReasonOptions = [
   'No longer interested in HCA/HCSW role',
   'No longer interested in a career in health care',
@@ -900,4 +909,6 @@ module.exports = {
   ArchiveRequest,
   RemoveParticipantUser,
   WaitlistEmailSchema,
+  postHireStatuses,
+  postHireStatusesValues,
 };

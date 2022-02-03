@@ -32,6 +32,7 @@ yarn-error.log*
 .vscode
 .eslintcache
 key
+coverage
 
 sysdig_users
 .scannerwork

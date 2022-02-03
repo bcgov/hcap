@@ -1,3 +1,4 @@
+// Test execution code: npm run test:debug participant.service.test.js
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 const { readFileSync } = require('fs');
 const { join } = require('path');
@@ -15,8 +16,9 @@ const {
   mapUserWithParticipant,
   withdrawParticipantsByEmail,
 } = require('../services/participants.js');
+const { createPostHireStatus } = require('../services/post-hire-flow');
 const { getReport } = require('../services/reporting.js');
-const { evaluateBooleanAnswer } = require('../validation');
+const { evaluateBooleanAnswer, postHireStatuses } = require('../validation');
 const { saveSites } = require('../services/employers');
 
 describe('Participants Service', () => {
@@ -333,11 +335,12 @@ describe('Participants Service', () => {
         'statusInfo',
         'userUpdatedAt',
         'progressStats',
+        'postHireStatuses',
       ];
       return a.map((i) =>
         Object.keys(i)
           .filter((k) => employerColumns.includes(k))
-          .reduce((o, k) => ({ ...o, [k]: i[k] }), { nonHCAP: undefined })
+          .reduce((o, k) => ({ ...o, [k]: i[k] }), { nonHCAP: undefined, postHireStatuses: [] })
       );
     };
     const trimIds = (a) =>
@@ -1022,5 +1025,45 @@ describe('Participants Service', () => {
     expect(Boolean(finalParticipants.find((participant) => participant.hired.length > 0))).toEqual(
       true
     );
+  });
+
+  it('should returns post hire statuses', async () => {
+    await closeDB();
+    await startDB();
+    const employerAId = v4();
+
+    const participant1 = {
+      lastName: 'Extra',
+      firstName: 'Eddy',
+      phoneNumber: '2502223333',
+      emailAddress: 'eddy@example.com',
+      interested: 'yes',
+      nonHCAP: 'yes',
+      crcClear: 'yes',
+      preferredLocation: 'Fraser',
+      contactedDate: '09/09/2020',
+    };
+
+    const response = await makeParticipant(participant1);
+
+    // Set Participant Status post hire status
+    await createPostHireStatus({
+      participantId: response.id,
+      status: postHireStatuses.postSecondaryEducationCompleted,
+      data: {},
+    });
+
+    const participants = await getParticipants(
+      { isEmployer: true, id: employerAId, regions },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      ['open']
+    );
+    expect(participants.data[0].postHireStatuses.length).toEqual(1);
   });
 });

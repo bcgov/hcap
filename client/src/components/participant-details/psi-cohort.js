@@ -11,6 +11,8 @@ import {
   Redirect,
 } from 'react-router-dom';
 
+import { TrackGraduation } from './track-graduation';
+
 // Service
 import { sortPSI } from '../../services';
 
@@ -26,6 +28,10 @@ const TabDetails = {
   withdrawCohort: {
     label: 'Withdraw Cohort',
     path: '/withdraw-cohort',
+  },
+  trackGraduation: {
+    label: 'Track Graduation',
+    path: '/track-graduation',
   },
 };
 
@@ -66,6 +72,12 @@ const PSIRouteTabs = ({
           path={TabDetails.withdrawCohort.path}
           render={() => <h1>Work in progress</h1>}
         ></Route>
+        <Route
+          exact
+          path={TabDetails.trackGraduation.path}
+          render={() => <TrackGraduation participant={participant} />}
+        ></Route>
+
         <Route exact path={TabDetails.assignCohort.path}>
           {disabled && (
             <div>

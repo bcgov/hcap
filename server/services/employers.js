@@ -16,7 +16,11 @@ const saveSingleSite = async (siteJson) => {
 };
 
 const saveSites = async (sitesArg) => {
-  const sites = Array.isArray(sitesArg) ? sitesArg : [sitesArg];
+  let sites = Array.isArray(sitesArg) ? sitesArg : [sitesArg];
+  sites = sites.map((site) => {
+    site.allocation = parseInt(site.allocation);
+    return site;
+  });
   await validate(EmployerSiteBatchSchema, sites);
   const promises = sites.map((site) => dbClient.db.saveDoc(collections.EMPLOYER_SITES, site));
   const results = await Promise.allSettled(promises);

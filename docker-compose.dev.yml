@@ -52,6 +52,7 @@ services:
       - CLIENT_URL=${CLIENT_URL}
       - KC_TEST_SUPER_USER_PWD=${KC_TEST_SUPER_USER_PWD}
       - KC_TEST_EMPLOYER_PWD=${KC_TEST_EMPLOYER_PWD}
+      - KC_TEST_HA_PWD=${KC_TEST_HA_PWD}
     expose:
       - '8080'
     ports:

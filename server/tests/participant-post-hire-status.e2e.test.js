@@ -4,7 +4,7 @@ const request = require('supertest');
 const app = require('../server');
 const { startDB, closeDB } = require('./util/db');
 const { makeTestParticipant, makeTestPostHireStatus } = require('./util/integrationTestData');
-const { getKeycloakToken, employer } = require('./util/keycloak');
+const { getKeycloakToken, healthAuthority } = require('./util/keycloak');
 const { postHireStatuses } = require('../validation');
 
 describe('api e2e test for /post-hire-status', () => {
@@ -28,7 +28,7 @@ describe('api e2e test for /post-hire-status', () => {
         graduationDate: '2020/01/01',
       },
     };
-    const header = await getKeycloakToken(employer);
+    const header = await getKeycloakToken(healthAuthority);
     const res = await request(app).post('/api/v1/post-hire-status').send(testData).set(header);
     expect(res.status).toEqual(201);
     expect(res.body).toHaveProperty('id');
@@ -40,7 +40,7 @@ describe('api e2e test for /post-hire-status', () => {
       status: postHireStatuses.postSecondaryEducationCompleted,
     });
 
-    const header = await getKeycloakToken(employer);
+    const header = await getKeycloakToken(healthAuthority);
     const res = await request(app)
       .get(`/api/v1/post-hire-status/participant/${participant.id}`)
       .set(header);

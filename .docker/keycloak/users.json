@@ -67,14 +67,6 @@
         "composite": false,
         "clientRole": true,
         "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
-      },
-      {
-        "id": "7b2b0cb4-f778-438b-8e10-05eeb4edfcad",
-        "name": "health_authority",
-        "description": "Health Authority users dealing with participants and employer sites in their region",
-        "composite": false,
-        "clientRole": true,
-        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
       }
     ]
   },

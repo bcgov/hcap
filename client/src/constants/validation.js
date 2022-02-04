@@ -8,6 +8,8 @@ import {
 } from './archiveParticipantsConstants';
 import { indigenousIdentities } from '../components/modal-forms/IndigenousDeclarationForm';
 
+import { postHireStatuses, postHireStatusesValues } from '../constants/postHireConstants';
+
 const healthRegions = ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'];
 
 const foundOutReasons = [
@@ -637,3 +639,30 @@ export const ParticipantFormSchema = yup
 export const EmailSubmissionSchema = yup.object().shape({
   email: yup.string().email().required('Required'),
 });
+
+export const ParticipantPostHireStatusSchema = yup
+  .object()
+  .noUnknown('Unknown field in form')
+  .shape({
+    status: yup
+      .string()
+      .required('Graduation status is required')
+      .oneOf(postHireStatusesValues, 'Invalid status'),
+    data: yup.object().when(['status'], (status, schema) => {
+      switch (status) {
+        case postHireStatuses.postSecondaryEducationCompleted:
+          return schema.noUnknown('Unknown field in data form').shape({
+            graduationDate: yup
+              .string()
+              .required('Graduation date is required')
+              .test('is-date', 'Invalid date', validateDateString),
+          });
+        default:
+          return schema.test(
+            'is-null-or-empty',
+            `${status} does not require a data object`,
+            (obj) => !obj || Object.keys(obj).length === 0
+          );
+      }
+    }),
+  });

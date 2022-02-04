@@ -33,6 +33,7 @@ const keyLabelMap = {
   preferredLocation: 'Preferred Location',
   postalCodeFsa: 'Postal Code FSA',
   cohortName: 'Cohort / PSI',
+  postHireStatusLabel: 'Graduation Status',
 };
 
 // Display Data

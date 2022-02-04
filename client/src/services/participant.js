@@ -1,10 +1,17 @@
 import store from 'store';
-import { API_URL, pageSize } from '../constants';
+import { API_URL, pageSize, postHireStatuses } from '../constants';
 
 const getCohortName = (cohort = {}) =>
   cohort.cohort_name && cohort.psi?.institute_name
     ? `${cohort.cohort_name} / ${cohort.psi?.institute_name}`
     : 'Not Assigned';
+
+const getPostHireStatusLabel = ({ status, data = {} } = {}) => {
+  if (status === postHireStatuses.postSecondaryEducationCompleted) {
+    return `Graduation Completed on - ${data.graduationDate}`;
+  }
+  return `Status not recorded`;
+};
 
 // Fetch Participant
 export const fetchParticipant = async ({ id }) => {
@@ -20,13 +27,35 @@ export const fetchParticipant = async ({ id }) => {
   if (resp.ok) {
     const [participant] = await resp.json();
     const cohort = await fetchParticipantCohort({ id });
+    const postHireStatus = await fetchParticipantPostHireStatus({ id });
     return {
       ...participant,
       cohort,
       cohortName: getCohortName(cohort),
+      postHireStatus,
+      postHireStatusLabel: getPostHireStatusLabel(postHireStatus),
     };
   } else {
     throw new Error('Unable to load participant');
+  }
+};
+
+export const fetchParticipantPostHireStatus = async ({ id }) => {
+  const url = `${API_URL}/api/v1/post-hire-status/participant/${id}`;
+  const resp = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+  });
+  if (resp.ok) {
+    const statuses = await resp.json();
+    // Return latest status which is the first element in the array
+    return statuses[0];
+  } else {
+    throw new Error(`Unable to fetch participant's post hire status`);
   }
 };
 
@@ -162,4 +191,27 @@ export const acknowledgeParticipant = async ({ participantId }) => {
   }
 
   throw new Error('Failed to acknowledge participant', response.error || response.statusText);
+};
+
+export const createPostHireStatus = async ({ participantId, status, data }) => {
+  const url = `${API_URL}/api/v1/post-hire-status`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      participantId,
+      status,
+      data,
+    }),
+  });
+
+  if (response.ok) {
+    return response.json();
+  }
+
+  throw new Error('Failed to create post-hire status', response.error || response.statusText);
 };

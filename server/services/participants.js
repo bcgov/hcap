@@ -471,6 +471,7 @@ const getParticipants = async (
           userUpdatedAt: item.userUpdatedAt,
           distance: item.distance,
           progressStats,
+          postHireStatuses: item.postHireStatuses,
         };
       }),
       ...(pagination && { pagination: paginationData }),

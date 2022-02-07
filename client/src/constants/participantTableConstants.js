@@ -129,9 +129,10 @@ const columns = {
   callbackStatus: { id: 'callbackStatus', name: 'Callback Status', sortOrder: 14 },
   userUpdatedAt: { id: 'userUpdatedAt', name: 'Last Updated', sortOrder: 15 },
   engage: { id: 'engage', name: null, sortOrder: 16 },
-  edit: { id: 'edit', name: null, sortOrder: 17 },
+  edit: { id: 'edit', name: null, sortOrder: 21 },
   siteName: { id: 'siteName', name: 'Site Name', sortOrder: 18 },
   archive: { id: 'archive', name: 'Archive', soryOrder: 19 },
+  postHireStatuses: { id: 'postHireStatuses', name: 'Graduated', sortOrder: 20 },
 };
 
 const {
@@ -153,6 +154,7 @@ const {
   edit,
   siteName,
   archive,
+  postHireStatuses,
 } = columns;
 
 export const columnsByRole = {
@@ -171,6 +173,7 @@ export const columnsByRole = {
       nonHCAP,
       crcClear,
       userUpdatedAt,
+      postHireStatuses,
       edit,
     ],
   },
@@ -187,6 +190,7 @@ export const columnsByRole = {
       nonHCAP,
       crcClear,
       userUpdatedAt,
+      postHireStatuses,
       edit,
     ],
   },
@@ -247,6 +251,7 @@ export const columnsByRole = {
       siteName,
       nonHCAP,
       userUpdatedAt,
+      postHireStatuses,
       archive,
     ],
   },
@@ -307,6 +312,7 @@ export const columnsByRole = {
       siteName,
       nonHCAP,
       userUpdatedAt,
+      postHireStatuses,
       archive,
     ],
   },

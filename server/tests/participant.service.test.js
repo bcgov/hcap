@@ -240,6 +240,7 @@ describe('Participants Service', () => {
         'userUpdatedAt',
         'distance',
         'progressStats',
+        'postHireStatuses',
       ])
     );
   });
@@ -313,6 +314,7 @@ describe('Participants Service', () => {
         'userUpdatedAt',
         'distance',
         'progressStats',
+        'postHireStatuses',
       ])
     );
   });

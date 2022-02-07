@@ -6,11 +6,21 @@ const getCohortName = (cohort = {}) =>
     ? `${cohort.cohort_name} / ${cohort.psi?.institute_name}`
     : 'Not Assigned';
 
-const getPostHireStatusLabel = ({ status, data = {} } = {}) => {
+export const getPostHireStatusLabel = ({ status, data = {} } = {}) => {
   if (status === postHireStatuses.postSecondaryEducationCompleted) {
     return `Graduation Completed on - ${data.graduationDate}`;
   }
   return `Status not recorded`;
+};
+
+export const getGraduationStatus = (statuses = []) => {
+  const graduationCompleteStatus = statuses.find(
+    (status) => status.status === postHireStatuses.postSecondaryEducationCompleted
+  );
+  if (graduationCompleteStatus) {
+    return 'Yes ✓';
+  }
+  return 'No';
 };
 
 // Fetch Participant

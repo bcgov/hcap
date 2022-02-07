@@ -22,6 +22,7 @@ import {
   addParticipantStatus,
   fetchParticipant,
   getParticipants,
+  getGraduationStatus,
 } from '../../services/participant';
 
 const filterData = (data, columns) => {
@@ -270,6 +271,8 @@ const ParticipantTable = () => {
             )}
           </>
         );
+      case 'postHireStatuses':
+        return getGraduationStatus(row[columnId] || []);
       default:
         return row[columnId];
     }

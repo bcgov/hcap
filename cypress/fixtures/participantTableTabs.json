@@ -19,7 +19,8 @@
           "Interest",
           "Non-HCAP",
           "CRC Clear",
-          "Last Updated"
+          "Last Updated",
+          "Graduated"
         ]
       }
     },
@@ -39,7 +40,8 @@
           "Interest",
           "Non-HCAP",
           "CRC Clear",
-          "Last Updated"
+          "Last Updated",
+          "Graduated"
         ]
       }
     },
@@ -111,7 +113,8 @@
           "Site Distance",
           "Site Name",
           "Non-HCAP",
-          "Last Updated"
+          "Last Updated",
+          "Graduated"
         ]
       }
     },
@@ -183,7 +186,8 @@
           "Site Distance",
           "Site Name",
           "Non-HCAP",
-          "Last Updated"
+          "Last Updated",
+          "Graduated"
         ]
       }
     }

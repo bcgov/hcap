@@ -60,7 +60,6 @@ export const TrackGraduation = (props) => {
                         }
                       : undefined,
                 };
-                console.log(payload);
                 await createPostHireStatus(payload);
                 setShowEditModal(false);
               }}

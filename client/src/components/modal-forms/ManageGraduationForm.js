@@ -43,7 +43,7 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
                     display={values.status === 'post_secondary_education_completed'}
                     test-id={'editGraduationModalStatus'}
                     name={'data.graduationDate'}
-                    label={'Gaduation Date'}
+                    label={'Graduation Date'}
                   />
                 }
                 {values.status === 'failed_cohort' && (

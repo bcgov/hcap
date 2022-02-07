@@ -661,7 +661,10 @@ export const ParticipantPostHireStatusSchema = yup
           return schema.test(
             'is-null-or-empty',
             `${status} does not require a data object`,
-            (obj) => !obj || Object.keys(obj).length === 0
+            (obj) => {
+              // Since graduation date is a tracked field for the form, I needed to
+              return !obj || Object.keys(obj).length === 0 || !obj.graduationDate;
+            }
           );
       }
     }),

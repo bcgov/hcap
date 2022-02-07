@@ -208,9 +208,8 @@ export const createPostHireStatus = async ({ participantId, status, data }) => {
       data,
     }),
   });
-
   if (response.ok) {
-    return response.json();
+    return await response.json();
   }
 
   throw new Error('Failed to create post-hire status', response.error || response.statusText);

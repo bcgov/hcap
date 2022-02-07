@@ -13,7 +13,7 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
         onSubmit={onSubmit}
         validationSchema={ParticipantPostHireStatusSchema}
       >
-        {({ submitForm, values, errors }) => {
+        {({ submitForm, values }) => {
           return (
             <FormikForm>
               <Box>

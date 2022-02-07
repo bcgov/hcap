@@ -40,6 +40,7 @@ const PSIRouteTabs = ({
   psiList = [],
   assignAction,
   participant = {},
+  fetchData,
 }) => {
   const history = useHistory();
   const [isLoadingData] = useState(false);
@@ -75,7 +76,7 @@ const PSIRouteTabs = ({
         <Route
           exact
           path={TabDetails.trackGraduation.path}
-          render={() => <TrackGraduation participant={participant} />}
+          render={() => <TrackGraduation participant={participant} fetchData={fetchData} />}
         ></Route>
 
         <Route exact path={TabDetails.assignCohort.path}>
@@ -92,7 +93,12 @@ const PSIRouteTabs = ({
             </div>
           )}
           {!disabled && (
-            <PSICohortTable disabled={disabled} rows={psiList} assignAction={assignAction} />
+            <PSICohortTable
+              disabled={disabled}
+              rows={psiList}
+              assignAction={assignAction}
+              fetchData={fetchData}
+            />
           )}
         </Route>
         <Redirect to='/' />
@@ -101,7 +107,7 @@ const PSIRouteTabs = ({
   );
 };
 
-export const PSICohortView = ({ psiList = [], assignAction, participant }) => {
+export const PSICohortView = ({ psiList = [], assignAction, participant, fetchData }) => {
   const match = useRouteMatch();
   const { tab } = useParams();
   const tabKey = Object.keys(TabDetails).reduce((incoming, key) =>
@@ -124,6 +130,7 @@ export const PSICohortView = ({ psiList = [], assignAction, participant }) => {
             psiList={sortedList}
             assignAction={assignAction}
             participant={participant}
+            fetchData={fetchData}
           ></PSIRouteTabs>
         </Router>
       </Box>

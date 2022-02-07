@@ -7,6 +7,7 @@ import moment from 'moment';
 import { createPostHireStatus } from '../../services/participant';
 export const TrackGraduation = (props) => {
   const cohort = props?.participant?.cohort;
+  const { fetchData } = props;
   const [showEditModel, setShowEditModal] = useState(false);
   return (
     <>
@@ -62,6 +63,7 @@ export const TrackGraduation = (props) => {
                 };
                 await createPostHireStatus(payload);
                 setShowEditModal(false);
+                fetchData();
               }}
             />
           </Dialog>

@@ -295,6 +295,16 @@ export default () => {
                   psiList={psiList}
                   assignAction={(cohort) => setSelectedCohort(cohort)}
                   participant={actualParticipant}
+                  fetchData={() =>
+                    fetchData({
+                      setParticipant,
+                      setPSIList,
+                      setActualParticipant,
+                      setDisableAssign,
+                      setError,
+                      id,
+                    })
+                  }
                 />
               )}
             </CheckPermissions>

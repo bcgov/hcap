@@ -47,7 +47,7 @@ jobs:
           filters: |
             src:
               - 'openshift/**'
-          base: 'refs/tags/dev'
+          base: ${{ github.ref }}
       - name: Dry run - Dev
         env:
           OS_NAMESPACE_SUFFIX: dev
@@ -80,7 +80,7 @@ jobs:
           filters: |
             src:
               - 'openshift/**'
-          base: 'refs/tags/dev'
+          base: ${{ github.ref}}
       - name: Apply Changes
         env:
           OS_NAMESPACE_SUFFIX: dev

@@ -1,4 +1,4 @@
-export const FailedCohortReason = 'Failed cohort, does not wish to continue in HCAP';
+export const UnsuccessfulCohortReason = 'Unsuccessful cohort, does not wish to continue in HCAP';
 
 export const PSIEducationUnderwayStatus = 'Post secondary education underway';
 
@@ -12,7 +12,7 @@ export const archiveReasonOptions = [
   'Delay initiating education',
   'Did not meet program requirements',
   'Issue with mandatory vaccination',
-  FailedCohortReason,
+  UnsuccessfulCohortReason,
   'Other',
 ];
 

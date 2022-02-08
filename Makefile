@@ -167,18 +167,18 @@ server-create:
 	@oc process -f openshift/server.dc.yml -p APP_NAME=$(APP_NAME) IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) IMAGE_TAG=$(OS_NAMESPACE_SUFFIX) | oc apply -n $(TARGET_NAMESPACE) -f -
 
 server-config-test:
-	@oc -n $(TARGET_NAMESPACE)  process -f openshift/server.dc.yml -p APP_NAME=$(APP_NAME) IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) IMAGE_TAG=$(OS_NAMESPACE_SUFFIX) CONFIG_VERSION=$(COMMIT_SHA)  | oc apply -n $(TARGET_NAMESPACE) -f - --dry-run
+	@oc -n $(TARGET_NAMESPACE)  process -f openshift/server.dc.yml -p APP_NAME=$(APP_NAME) IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) IMAGE_TAG=$(OS_NAMESPACE_SUFFIX) CONFIG_VERSION=$(COMMIT_SHA)  | oc apply -n $(TARGET_NAMESPACE) -f - --dry-run=client
 
 server-config:
 	@oc -n $(TARGET_NAMESPACE) process -f openshift/server.dc.yml -p APP_NAME=$(APP_NAME) IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) IMAGE_TAG=$(OS_NAMESPACE_SUFFIX) CONFIG_VERSION=$(COMMIT_SHA) | oc apply -n $(TARGET_NAMESPACE) -f -
 
 server-build-config-test:
 	@echo "Testing Building config in $(TOOLS_NAMESPACE) namespace"
-	@oc -n $(TOOLS_NAMESPACE) process -f openshift/server.bc.yml -p BUILD_REF=$(BUILD_REF) | oc apply -n $(TOOLS_NAMESPACE) -f - --dry-run
+	@oc -n $(TOOLS_NAMESPACE) process -f openshift/server.bc.yml -p BUILD_REF=$(BUILD_REF) | oc apply -n $(TOOLS_NAMESPACE) -f - --dry-run=client
 
 build-config: server-build-config-test
 	@echo "Processiong and applying Building config in $(TOOLS_NAMESPACE) namespace"
-	@oc -n $(TOOLS_NAMESPACE) process -f openshift/server.bc.yml -p BUILD_REF=$(BUILD_REF) | oc apply -n $(TOOLS_NAMESPACE) -f -
+	@oc -n $(TOOLS_NAMESPACE) process -f openshift/server.bc.yml -p REF=$(BUILD_REF) | oc apply -n $(TOOLS_NAMESPACE) -f -
 
 server-build: build-config
 	@echo "Building server image in $(TOOLS_NAMESPACE) namespace"

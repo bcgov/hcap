@@ -1,4 +1,4 @@
-export const FailedCohortReason = 'Failed cohort, does not wish to continue in HCAP';
+export const FailedCohortReason = 'Unsuccessful cohort, does not wish to continue in HCAP';
 
 export const PSIEducationUnderwayStatus = 'Post secondary education underway';
 

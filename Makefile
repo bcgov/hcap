@@ -22,6 +22,7 @@ print-status:
 	@echo "TOOLS_NAMESPACE: $(TOOLS_NAMESPACE)"
 	@echo "COMMIT_SHA: $(COMMIT_SHA)"
 	@echo "LAST_COMMIT: $(LAST_COMMIT)"
+	@echo "BUILD_REF: $(BUILD_REF)"
 
 # Keycloak
 
@@ -180,7 +181,7 @@ build-config: server-build-config-test
 	@echo "Processiong and applying Building config in $(TOOLS_NAMESPACE) namespace"
 	@oc -n $(TOOLS_NAMESPACE) process -f openshift/server.bc.yml -p REF=$(BUILD_REF) | oc apply -n $(TOOLS_NAMESPACE) -f -
 
-server-build:
+server-build: build-config
 	@echo "Building server image in $(TOOLS_NAMESPACE) namespace"
 	@oc cancel-build bc/$(APP_NAME)-server -n $(TOOLS_NAMESPACE)
 	@oc start-build $(APP_NAME)-server -n $(TOOLS_NAMESPACE) --wait --follow=true --build-arg VERSION="$(LAST_COMMIT)"

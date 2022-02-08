@@ -95,6 +95,8 @@ jobs:
     needs: confirm
     concurrency: ci-${github.ref}-build
     timeout-minutes: 20
+    env:
+      BUILD_REF: ${{ github.ref }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2

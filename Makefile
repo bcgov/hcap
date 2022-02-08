@@ -174,13 +174,13 @@ server-config:
 
 server-build-config-test:
 	@echo "Testing Building config in $(TOOLS_NAMESPACE) namespace"
-	@oc -n $(TOOLS_NAMESPACE) process -f openshift/server.bc.yml -p BUILD_REF=$(BUILD_REF) | oc apply -n $(TOOLS_NAMESPACE) -f - --dry-run=client
+	@oc -n $(TOOLS_NAMESPACE) process -f openshift/server.bc.yml -p REF=$(BUILD_REF) | oc apply -n $(TOOLS_NAMESPACE) -f - --dry-run=client
 
 build-config: server-build-config-test
 	@echo "Processiong and applying Building config in $(TOOLS_NAMESPACE) namespace"
 	@oc -n $(TOOLS_NAMESPACE) process -f openshift/server.bc.yml -p REF=$(BUILD_REF) | oc apply -n $(TOOLS_NAMESPACE) -f -
 
-server-build: build-config
+server-build:
 	@echo "Building server image in $(TOOLS_NAMESPACE) namespace"
 	@oc cancel-build bc/$(APP_NAME)-server -n $(TOOLS_NAMESPACE)
 	@oc start-build $(APP_NAME)-server -n $(TOOLS_NAMESPACE) --wait --follow=true --build-arg VERSION="$(LAST_COMMIT)"

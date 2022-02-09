@@ -156,11 +156,15 @@ const updateParticipant = async (participantInfo) => {
       { history: participantInfo.history || [], userUpdatedAt: new Date().toJSON() }
     );
     if (changes.interested === 'withdrawn') {
-      await createPostHireStatus({
-        participantId: participantInfo.id,
-        status: postHireStatuses.failedCohort,
-        data: {},
-      });
+      const cohort = await getAssignCohort({ participantId: participantInfo.id });
+      // ensure that a participant has a cohort before adding post hire status
+      if (cohort) {
+        await createPostHireStatus({
+          participantId: participantInfo.id,
+          status: postHireStatuses.failedCohort,
+          data: {},
+        });
+      }
     }
     const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc(
       {

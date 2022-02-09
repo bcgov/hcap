@@ -63,7 +63,7 @@ const participantStatuses = [
   'pending_acknowledgement',
 ];
 
-const postHireStatuses = {
+export const postHireStatuses = {
   orientationCompleted: 'orientation_completed',
   postSecondaryEducationUnderway: 'post_secondary_education_underway',
   postSecondaryEducationCompleted: 'post_secondary_education_completed',

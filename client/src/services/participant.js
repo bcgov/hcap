@@ -6,11 +6,15 @@ const getCohortName = (cohort = {}) =>
     ? `${cohort.cohort_name} / ${cohort.psi?.institute_name}`
     : 'Not Assigned';
 
-export const getPostHireStatusLabel = ({ status, data = {} } = {}) => {
-  if (status === postHireStatuses.postSecondaryEducationCompleted) {
-    return `Graduation Completed on - ${data.graduationDate}`;
+const getPostHireStatusLabel = ({ status, data = {} } = {}) => {
+  switch (status) {
+    case postHireStatuses.postSecondaryEducationCompleted:
+      return `Graduation Completed on - ${data.graduationDate}`;
+    case postHireStatuses.failedCohort:
+      return `Failed/incomplete course.`;
+    default:
+      return `Status not recorded`;
   }
-  return `Status not recorded`;
 };
 
 export const getGraduationStatus = (statuses = []) => {

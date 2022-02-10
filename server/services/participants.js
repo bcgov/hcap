@@ -1,12 +1,19 @@
 /* eslint-disable camelcase */
 const assert = require('assert');
 const readXlsxFile = require('node-xlsx').default;
-const { validate, ParticipantBatchSchema, isBooleanValue } = require('../validation.js');
+const {
+  validate,
+  ParticipantBatchSchema,
+  isBooleanValue,
+  postHireStatuses,
+} = require('../validation.js');
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
 const { getPostHireStatusesForParticipant } = require('./post-hire-flow');
 const logger = require('../logger.js');
+const { getAssignCohort } = require('./cohorts');
+const { createPostHireStatus } = require('./post-hire-flow');
 
 const deleteParticipant = async ({ email }) => {
   await dbClient.db.withTransaction(async (tnx) => {
@@ -148,6 +155,17 @@ const updateParticipant = async (participantInfo) => {
       },
       { history: participantInfo.history || [], userUpdatedAt: new Date().toJSON() }
     );
+    if (changes.interested === 'withdrawn') {
+      const cohort = await getAssignCohort({ participantId: participantInfo.id });
+      // ensure that a participant has a cohort before adding post hire status
+      if (cohort) {
+        await createPostHireStatus({
+          participantId: participantInfo.id,
+          status: postHireStatuses.failedCohort,
+          data: {},
+        });
+      }
+    }
     const participant = await dbClient.db[collections.PARTICIPANTS].updateDoc(
       {
         id: participantInfo.id,
@@ -168,7 +186,6 @@ const withdrawParticipant = async (participantInfo) => {
     timestamp: new Date(),
     changes: [],
   };
-
   newHistory.changes.push({
     field: 'interested',
     from: participant.interested || 'yes',

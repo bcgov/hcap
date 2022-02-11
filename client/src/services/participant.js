@@ -18,13 +18,15 @@ const getPostHireStatusLabel = ({ status, data = {} } = {}) => {
 };
 
 export const getGraduationStatus = (statuses = []) => {
-  const graduationCompleteStatus = statuses.find(
-    (status) => status.status === postHireStatuses.postSecondaryEducationCompleted
-  );
-  if (graduationCompleteStatus) {
-    return 'Yes ✓';
+  // I changed the logic here to only consider the most recent status
+  // We might wish to reevaluate this column. We may wish to provide more detailed status tracking here.
+  const switchValue = statuses[0]?.status || '';
+  switch (switchValue) {
+    case postHireStatuses.postSecondaryEducationCompleted:
+      return 'Yes ✓';
+    default:
+      return 'No';
   }
-  return 'No';
 };
 
 // Fetch Participant

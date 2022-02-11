@@ -46,9 +46,6 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
                     label={'Graduation Date'}
                   />
                 }
-                {values.status === 'failed_cohort' && (
-                  <Typography>Failed cohort workflow not implemented yet</Typography>
-                )}
 
                 <Box mt={3}>
                   <Grid container spacing={2} justify='flex-end'>
@@ -62,7 +59,7 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
                         color='primary'
                         text='Submit'
                         // Todo implement failed cohort submission
-                        disabled={values.status === 'failed_cohort'}
+                        disabled={false}
                       />
                     </Grid>
                   </Grid>

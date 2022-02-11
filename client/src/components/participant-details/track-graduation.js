@@ -59,7 +59,7 @@ export const TrackGraduation = (props) => {
                       ? {
                           graduationDate: values.data.graduationDate,
                         }
-                      : undefined,
+                      : {},
                 };
                 await createPostHireStatus(payload);
                 setShowEditModal(false);

@@ -58,8 +58,6 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
                         variant='contained'
                         color='primary'
                         text='Submit'
-                        // Todo implement failed cohort submission
-                        disabled={false}
                       />
                     </Grid>
                   </Grid>

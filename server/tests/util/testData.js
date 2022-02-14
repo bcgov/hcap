@@ -1,3 +1,5 @@
+const { postHireStatuses } = require('../../validation');
+
 const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
 
 const psiData = ({ instituteName, regionIndex, address, postalCode, city }) => ({
@@ -41,6 +43,14 @@ const participantData = ({
   contactedDate: contactedDate || dateStr(new Date()),
 });
 
+const postHireStatusData = ({ graduationDate, participantId, status }) => ({
+  participantId,
+  status: status || postHireStatuses.postSecondaryEducationCompleted,
+  data: {
+    graduationDate,
+  },
+});
+
 module.exports = {
   regions,
   psiData,
@@ -49,4 +59,5 @@ module.exports = {
   today,
   cohortData,
   participantData,
+  postHireStatusData,
 };

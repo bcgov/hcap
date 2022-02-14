@@ -8,6 +8,7 @@ const {
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { getParticipantByID } = require('../services/participants.js');
+const { getAssignCohort } = require('../services/cohorts.js');
 
 const router = express.Router();
 
@@ -20,18 +21,34 @@ router.post(
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const { body } = req;
+
     const user = userId || localUserId;
     // Validate the request body
     await validate(ParticipantPostHireStatusSchema, body);
+    const { participantId } = body;
     // Check participant exists
-    const participant = await getParticipantByID(body.participantId);
+    const participant = await getParticipantByID(participantId);
     if (!participant) {
       logger.error({
         action: 'post-hire-status_post',
-        message: `Participant does not exist with id ${body.participantId}`,
+        message: `Participant does not exist with id ${participantId}`,
       });
       return res.status(422).send('Participant does not exist. Please check participant ID');
     }
+
+    // Get Cohort
+    const cohorts = await getAssignCohort({ participantId });
+    if (cohorts.length === 0) {
+      logger.error({
+        action: 'post-hire-status_post',
+        message: `Cohort does not exist for participant with id ${participantId}`,
+      });
+
+      return res
+        .status(422)
+        .send('Cohort does not exist. Please assign a cohort to the participant');
+    }
+
     // Save the record
     const result = await createPostHireStatus(body);
     logger.info({

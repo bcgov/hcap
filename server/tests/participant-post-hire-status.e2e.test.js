@@ -3,15 +3,34 @@
 const request = require('supertest');
 const app = require('../server');
 const { startDB, closeDB } = require('./util/db');
-const { makeTestParticipant, makeTestPostHireStatus } = require('./util/integrationTestData');
+const {
+  makeTestParticipant,
+  makeTestPostHireStatus,
+  makeCohortAssignment,
+} = require('./util/integrationTestData');
 const { getKeycloakToken, healthAuthority } = require('./util/keycloak');
+const { postHireStatusData } = require('./util/testData');
 const { postHireStatuses } = require('../validation');
 
 describe('api e2e test for /post-hire-status', () => {
   let server;
+  let testParticipantId;
+  let testPSIId;
+  let testCohortId;
   beforeAll(async () => {
     await startDB();
     server = app.listen();
+    const { participantId, cohortId, psiId } = await makeCohortAssignment({
+      email: 'test.post.hire.status@hcap.io',
+      psiName: 'Test PSI For Post Hire Status',
+      cohortName: 'S22.1',
+    });
+    testParticipantId = participantId;
+    testCohortId = cohortId;
+    testPSIId = psiId;
+    expect(testParticipantId).toBeTruthy();
+    expect(testCohortId).toBeTruthy();
+    expect(testPSIId).toBeTruthy();
   });
 
   afterAll(async () => {
@@ -21,6 +40,15 @@ describe('api e2e test for /post-hire-status', () => {
 
   it('should create new status', async () => {
     const p = await makeTestParticipant({ emailAddress: 'test.e2e.post.hire.create@hcap.io' });
+    const { participantId, cohortId, psiId, cohortAssignmentId } = await makeCohortAssignment({
+      participantId: p.id,
+      psiId: testPSIId,
+      cohortName: 'S22.2',
+    });
+    expect(participantId).toBeTruthy();
+    expect(cohortId).toBeTruthy();
+    expect(psiId).toBeTruthy();
+    expect(cohortAssignmentId).toBeTruthy();
     const testData = {
       participantId: p.id,
       status: postHireStatuses.postSecondaryEducationCompleted,
@@ -46,5 +74,19 @@ describe('api e2e test for /post-hire-status', () => {
       .set(header);
     expect(res.status).toEqual(200);
     expect(res.body).toHaveLength(1);
+  });
+
+  it('should return 422 for posting status without cohort assignment', async () => {
+    const participant = await makeTestParticipant({
+      emailAddress: 'test.participant.hire4@hcap.io',
+    });
+    const body = postHireStatusData({
+      participantId: participant.id,
+      status: postHireStatuses.postSecondaryEducationCompleted,
+      graduationDate: '2022/02/01',
+    });
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app).post('/api/v1/post-hire-status').send(body).set(header);
+    expect(res.status).toEqual(422);
   });
 });

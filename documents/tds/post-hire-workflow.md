@@ -5,17 +5,20 @@
     Status:     Draft
     Version:    1.0
     Created On: 1-Feb-2022
-    Update On:  1-Feb-2022
+    Update On:  14-Feb-2022
 
 ## History
 
 | Version | Description | Status |
 | ------- | ----------- | -------
 |   1.0   | Initial version | Draft |
+|   1.0.1 | HCAP-1038 | |
 
 ## Tickets
 
 **User Story:**  [HCAP-1030](https://freshworks.atlassian.net/browse/HCAP-1030)
+
+**User Story:** [HCAP-1038](https://freshworks.atlassian.net/browse/HCAP-1038)
 
 ## Contents
 
@@ -55,6 +58,7 @@ As the HA, I want to be able to track the completion of education for a HCAP par
 
 - Create new end-point:
   - /post-hire-status: with methods POST
+    - Cohort assignment validation should performed
   - /post-hire-status/:id: methods PATCH, GET
   - /participant/:participantId/post-hire-status - Get all post-hire status of the participant
 

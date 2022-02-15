@@ -35,6 +35,7 @@ const sortFields = [
   'siteName',
   'distance',
   'isIndigenous',
+  'postHireStatuses',
 ];
 
 const roles = [

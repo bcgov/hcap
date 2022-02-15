@@ -37,6 +37,7 @@ export const TrackGraduation = (props) => {
               color='default'
               variant='contained'
               text='Update status'
+              disabled={!cohort}
               onClick={() => {
                 setShowEditModal(true);
               }}

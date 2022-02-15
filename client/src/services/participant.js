@@ -142,7 +142,6 @@ export const getParticipants = async ({
   selectedTabStatuses,
 }) => {
   const params = new URLSearchParams();
-
   params.append('offset', pagination.page * pageSize);
   params.append('sortField', order.field);
   params.append('sortDirection', order.direction);
@@ -156,7 +155,7 @@ export const getParticipants = async ({
   selectedTabStatuses.forEach((status) => {
     params.append('statusFilters[]', status);
   });
-
+  console.log(params.toString());
   const response = await fetch(`${API_URL}/api/v1/participants?${params.toString()}`, {
     headers: {
       Accept: 'application/json',

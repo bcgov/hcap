@@ -18,7 +18,7 @@ jobs:
   tests:
     name: Cypress / Jest
     runs-on: ubuntu-20.04
-    concurrency: ci-${github.ref}-ci-test
+    concurrency: ci-${{github.ref}}-ci-test
     timeout-minutes: 20
     steps:
       - name: Checkout

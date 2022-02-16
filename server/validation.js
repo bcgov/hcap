@@ -608,6 +608,15 @@ const ParticipantPostHireStatusSchema = yup
               .required('Graduation date is required')
               .test('is-date', 'Invalid date', validateDateString),
           });
+        case postHireStatuses.failedCohort:
+          return schema.noUnknown('Unknown field in data form').shape({
+            unsuccessfulCohortDate: yup
+              .string()
+              .required('Unsuccessful cohort date required.')
+              .test('is-date', 'Invalid date', validateDateString),
+            rehire: yup.string().required().oneOf(['rehire_yes', 'rehire_no']),
+            withdraw: yup.boolean(),
+          });
         default:
           return schema.test(
             'is-null-or-empty',

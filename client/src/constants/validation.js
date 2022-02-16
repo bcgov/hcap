@@ -652,9 +652,17 @@ export const ParticipantPostHireStatusSchema = yup
       switch (status) {
         case postHireStatuses.postSecondaryEducationCompleted:
           return schema.noUnknown('Unknown field in data form').shape({
-            graduationDate: yup
+            date: yup
               .string()
               .required('Graduation date is required')
+              .test('is-date', 'Invalid date', validateDateString),
+          });
+
+        case postHireStatuses.failedCohort:
+          return schema.noUnknown('Unknown field in data form').shape({
+            date: yup
+              .string()
+              .required('Unsuccessful cohort date is required')
               .test('is-date', 'Invalid date', validateDateString),
           });
         default:
@@ -663,11 +671,13 @@ export const ParticipantPostHireStatusSchema = yup
             `${status} does not require a data object`,
             (obj) => {
               // Since graduation date is a tracked field for the form, I needed to
-              return !obj || Object.keys(obj).length === 0 || !obj.graduationDate;
+              return !obj || Object.keys(obj).length === 0 || !obj.date;
             }
           );
       }
     }),
+    rehire: yup.string().oneOf(['rehire_yes', 'rehire_no']).required(''),
+    withdraw: yup.bool().required(),
   });
 
 export const ParticipantAssignCohortSchema = yup

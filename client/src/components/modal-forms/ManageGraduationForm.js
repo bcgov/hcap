@@ -1,6 +1,6 @@
-import { Field, Formik, Form as FormikForm, useFormikContext } from 'formik';
-import { RenderDateField, RenderRadioGroup } from '../fields';
-import React, { useEffect } from 'react';
+import { Field, Formik, Form as FormikForm } from 'formik';
+import { RenderCheckbox, RenderDateField, RenderRadioGroup } from '../fields';
+import React from 'react';
 import { Box, Grid, Typography } from '@material-ui/core';
 import { getTodayDate } from '../../utils';
 import { Button } from '../../components/generic/Button';
@@ -34,18 +34,49 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
                     },
                     {
                       value: 'failed_cohort',
-                      label: 'Failed',
+                      label: 'Unsuccessful cohort',
                     },
                   ]}
                 />
                 {
-                  <DependantDateForm
-                    display={values.status === 'post_secondary_education_completed'}
+                  <Field
                     test-id={'editGraduationModalStatus'}
-                    name={'data.graduationDate'}
-                    label={'Graduation Date'}
+                    name={'data.date'}
+                    label={
+                      values.status === 'post_secondary_education_completed'
+                        ? 'Graduation Date'
+                        : 'Unsuccesful Graduation Date'
+                    }
+                    component={RenderDateField}
+                    maxDate={getTodayDate()}
                   />
                 }
+                {values.status === 'failed_cohort' && (
+                  <Field
+                    test-id={'editGraduationModalRehire'}
+                    name='rehire'
+                    component={RenderRadioGroup}
+                    label='I intend on rehiring for this position'
+                    options={[
+                      {
+                        value: 'rehire_yes',
+                        label: 'Yes',
+                      },
+                      {
+                        value: 'rehire_no',
+                        label: 'No',
+                      },
+                    ]}
+                  />
+                )}
+                {values?.rehire === 'rehire_no' && (
+                  <Field
+                    test-id={'editGraduationModalWithdraw'}
+                    name='withdraw'
+                    component={RenderCheckbox}
+                    label='Withdraw this participant from the program.'
+                  />
+                )}
 
                 <Box mt={3}>
                   <Grid container spacing={2} justify='flex-end'>
@@ -68,28 +99,5 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
         }}
       </Formik>
     </Box>
-  );
-};
-
-const DependantDateForm = (props) => {
-  const { values, setFieldValue } = useFormikContext();
-
-  useEffect(() => {
-    if (values.status === 'failed_cohort' && values?.data?.graduation_date) {
-      setFieldValue(props.name, '');
-    }
-  }, [values, props.name, setFieldValue]);
-  return (
-    <>
-      {props.display && (
-        <Field
-          test-id={props['test-id']}
-          name={props.name}
-          label={props.label}
-          component={RenderDateField}
-          maxDate={getTodayDate()}
-        />
-      )}
-    </>
   );
 };

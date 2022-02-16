@@ -155,7 +155,6 @@ export const getParticipants = async ({
   selectedTabStatuses.forEach((status) => {
     params.append('statusFilters[]', status);
   });
-  console.log(params.toString());
   const response = await fetch(`${API_URL}/api/v1/participants?${params.toString()}`, {
     headers: {
       Accept: 'application/json',

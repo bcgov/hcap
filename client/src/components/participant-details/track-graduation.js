@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { createPostHireStatus } from '../../services/participant';
 export const TrackGraduation = (props) => {
-  console.dir(props.participant);
   const [cohort, setCohort] = useState(null);
   const { fetchData } = props;
   const [showEditModel, setShowEditModal] = useState(false);

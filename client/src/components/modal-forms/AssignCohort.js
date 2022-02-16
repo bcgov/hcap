@@ -131,7 +131,12 @@ export const AssignCohortForm = ({ initialValues = {}, onClose, onSubmit, partic
                   <Button onClick={onClose} color='default' text='Cancel' />
                 </Grid>
                 <Grid item>
-                  <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />
+                  <Button
+                    onClick={submitForm}
+                    variant='contained'
+                    color='primary'
+                    text='Save Changes'
+                  />
                 </Grid>
               </Grid>
             </Box>

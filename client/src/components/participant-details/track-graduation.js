@@ -20,7 +20,6 @@ export const TrackGraduation = (props) => {
         <Grid item xs={4}>
           <Typography>Cohort start date</Typography>
           <Typography>
-            {' '}
             {cohort?.start_date ? moment(cohort.start_date).format('MMM DD, YYYY') : 'N/A'}
           </Typography>
         </Grid>

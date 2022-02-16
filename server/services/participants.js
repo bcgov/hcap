@@ -159,7 +159,6 @@ const updateParticipant = async (participantInfo) => {
       const cohort = await getAssignCohort({ participantId: participantInfo.id });
       // ensure that a participant has a cohort before adding post hire status
       if (cohort && cohort.length) {
-        console.log('Withdrawing cohort');
         await createPostHireStatus({
           participantId: participantInfo.id,
           status: postHireStatuses.failedCohort,

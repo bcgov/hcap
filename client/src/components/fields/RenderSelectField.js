@@ -29,7 +29,7 @@ export const RenderSelectField = ({
         {...props}
       >
         <MenuItem value='' disabled>
-          Please Select
+          {props.placeholder || 'Please select'}
         </MenuItem>
         {options.map((option) => (
           <MenuItem key={option.value} value={option.value}>

@@ -110,6 +110,7 @@ export const AssignCohortForm = ({ initialValues = {}, onClose, onSubmit, partic
                 type='number'
                 component={RenderSelectField}
                 label='* Institute'
+                placeholder='Select institute'
                 options={psiList}
                 onChange={({ target }) => {
                   const { value } = target;
@@ -121,6 +122,7 @@ export const AssignCohortForm = ({ initialValues = {}, onClose, onSubmit, partic
                 name='cohort'
                 type='number'
                 component={RenderSelectField}
+                placeholder='Select cohort'
                 label='* Cohort'
                 options={cohorts}
               />

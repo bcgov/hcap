@@ -17,27 +17,23 @@ export const TrackGraduation = (props) => {
   return (
     <>
       <Grid container>
-        <Grid item xs={3}>
-          <Typography>Cohort Name</Typography>
-          <Typography> {cohort?.cohort_name || 'N/A'}</Typography>
-        </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Typography>Cohort start date</Typography>
           <Typography>
             {' '}
             {cohort?.start_date ? moment(cohort.start_date).format('MMM DD, YYYY') : 'N/A'}
           </Typography>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Typography>Cohort end date</Typography>
           <Typography>
             {cohort?.end_date ? moment(cohort.end_date).format('MMM DD, YYYY') : 'N/A'}
           </Typography>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Typography>Graduation status</Typography>
           <Typography>{props?.participant?.postHireStatusLabel || 'N/A'}</Typography>
-          <Grid item xs={6}>
+          <Grid item xs={8}>
             <Button
               color='default'
               variant='contained'
@@ -92,7 +88,7 @@ export const TrackGraduation = (props) => {
               participantId={props?.participant.id}
               onClose={() => setShowEditModal(false)}
               onSubmit={async (cohort) => {
-                setCohort(cohort);
+                await fetchData();
               }}
             />
           </Dialog>

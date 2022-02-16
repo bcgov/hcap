@@ -92,7 +92,7 @@ export const AssignCohortForm = ({ initialValues = {}, onClose, onSubmit, partic
             <hr />
             <MuiAlert severity='warning'>
               {
-                'This Participant has not been assigned a cohort. Please assign a cohort to track graduation.'
+                'This participant has not been assigned a cohort. Please assign a cohort in order to track graduation.'
               }
             </MuiAlert>
             <br />

@@ -61,7 +61,7 @@ router.post(
       return res.status(201).json(result);
     } catch (e) {
       logger.error(e);
-      return res.status(400).json({});
+      return res.status(500).json({});
     }
   })
 );

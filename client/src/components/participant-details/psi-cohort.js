@@ -45,6 +45,10 @@ const PSIRouteTabs = ({
     participant !== null &&
     participant.cohort !== undefined &&
     Object.keys(participant.cohort).length > 0;
+
+  if (selectedTab !== tab) {
+    setTab(selectedTab);
+  }
   return (
     <>
       <CustomTabs

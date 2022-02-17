@@ -614,7 +614,7 @@ const ParticipantPostHireStatusSchema = yup
               .string()
               .required('Unsuccessful cohort date required.')
               .test('is-date', 'Invalid date', validateDateString),
-            rehire: yup.string().required().oneOf(['rehire_yes', 'rehire_no']),
+            continue: yup.string().required().oneOf(['continue_yes', 'continue_no']),
             withdraw: yup.boolean(),
           });
         default:

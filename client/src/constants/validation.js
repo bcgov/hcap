@@ -676,7 +676,7 @@ export const ParticipantPostHireStatusSchema = yup
           );
       }
     }),
-    rehire: yup.string().oneOf(['rehire_yes', 'rehire_no']).required(''),
+    continue: yup.string().oneOf(['continue_yes', 'continue_no']).required(''),
     withdraw: yup.bool().required(),
   });
 

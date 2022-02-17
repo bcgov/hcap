@@ -54,22 +54,22 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
                 {values.status === 'failed_cohort' && (
                   <Field
                     test-id={'editGraduationModalRehire'}
-                    name='rehire'
+                    name='continue'
                     component={RenderRadioGroup}
-                    label='I intend on rehiring for this position'
+                    label='Will this participant be continuing in the program?'
                     options={[
                       {
-                        value: 'rehire_yes',
+                        value: 'continue_yes',
                         label: 'Yes',
                       },
                       {
-                        value: 'rehire_no',
+                        value: 'continue_no',
                         label: 'No',
                       },
                     ]}
                   />
                 )}
-                {values?.rehire === 'rehire_no' && (
+                {values?.continue === 'continue_no' && (
                   <Field
                     test-id={'editGraduationModalWithdraw'}
                     name='withdraw'

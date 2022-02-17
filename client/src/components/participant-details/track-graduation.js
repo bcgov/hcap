@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { createPostHireStatus } from '../../services/participant';
 import { ToastStatus, API_URL, ArchiveHiredParticipantSchema } from '../../constants';
+import { postHireStatuses } from '../../constants';
 
 import { useToast } from '../../hooks';
 
@@ -41,6 +42,8 @@ export const TrackGraduation = (props) => {
   const [showEditModel, setShowEditModal] = useState(false);
   const [showArchiveModel, setShowArchiveModal] = useState(false);
   const { openToast } = useToast();
+  const disableTrackGraduation =
+    props.participant?.postHireStatus?.status === postHireStatuses.postSecondaryEducationCompleted;
 
   useEffect(() => {
     setCohort(props.participant?.cohort);
@@ -75,6 +78,7 @@ export const TrackGraduation = (props) => {
               color='default'
               variant='contained'
               text='Update status'
+              disabled={disableTrackGraduation}
               onClick={() => {
                 setShowEditModal(true);
               }}
@@ -89,11 +93,11 @@ export const TrackGraduation = (props) => {
               initialValues={{
                 status:
                   props?.participant?.postHireStatus?.status ||
-                  'post_secondary_education_completed',
+                  postHireStatuses.postSecondaryEducationCompleted,
                 data: {
                   date: '',
                 },
-                rehire: 'rehire_yes',
+                continue: 'continue_yes',
                 withdraw: false,
               }}
               onClose={() => {
@@ -104,27 +108,33 @@ export const TrackGraduation = (props) => {
                   participantId: props?.participant.id,
                   status: values.status,
                   data:
-                    values.status === 'post_secondary_education_completed'
+                    values.status === postHireStatuses.postSecondaryEducationCompleted
                       ? {
                           graduationDate: values?.data?.date,
                         }
                       : {
                           unsuccessfulCohortDate: values?.data?.date,
-                          rehire: values.rehire,
+                          continue: values.continue,
                           withdraw: values.withdraw,
                         },
                 };
-                await createPostHireStatus(payload);
-                setShowEditModal(false);
-                openToast({
-                  status: ToastStatus.Info,
-                  message: 'Participant status updated',
-                });
-                if (values.withdraw && values.rehire === 'rehire_no') {
-                  setShowArchiveModal(true);
+                try {
+                  await createPostHireStatus(payload);
+                  setShowEditModal(false);
+                  openToast({
+                    status: ToastStatus.Info,
+                    message: 'Participant status updated',
+                  });
+                  if (values.withdraw && values.continue === 'continue_no') {
+                    setShowArchiveModal(true);
+                  }
+                  fetchData();
+                } catch (error) {
+                  openToast({
+                    status: ToastStatus.Error,
+                    message: `${error.message}`,
+                  });
                 }
-
-                fetchData();
               }}
             />
           </Dialog>
@@ -145,6 +155,7 @@ export const TrackGraduation = (props) => {
                 onSubmit={async (values) => {
                   setShowArchiveModal(false);
                   await handleArchive(props?.participant?.id, values, openToast);
+                  fetchData();
                 }}
               />
             </Box>

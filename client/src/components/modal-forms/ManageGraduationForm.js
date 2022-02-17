@@ -54,7 +54,7 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
                 }
                 {values.status === postHireStatuses.cohortUnsuccessful && (
                   <Field
-                    test-id={'editGraduationModalRehire'}
+                    test-id={'editGraduationModalContinue'}
                     name='continue'
                     component={RenderRadioGroup}
                     label='Will this participant be continuing in the program?'

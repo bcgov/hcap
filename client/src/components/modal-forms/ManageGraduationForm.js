@@ -5,6 +5,7 @@ import { Box, Grid, Typography } from '@material-ui/core';
 import { getTodayDate } from '../../utils';
 import { Button } from '../../components/generic/Button';
 import { ParticipantPostHireStatusSchema } from '../../constants/validation';
+import { postHireStatuses } from '../../constants';
 export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
   return (
     <Box spacing={10} p={5}>
@@ -29,11 +30,11 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
                   label='Has this participant graduated?'
                   options={[
                     {
-                      value: 'post_secondary_education_completed',
+                      value: postHireStatuses.postSecondaryEducationCompleted,
                       label: 'Graduated',
                     },
                     {
-                      value: 'failed_cohort',
+                      value: postHireStatuses.cohortUnsuccessful,
                       label: 'Unsuccessful cohort',
                     },
                   ]}
@@ -43,15 +44,15 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
                     test-id={'editGraduationModalStatus'}
                     name={'data.date'}
                     label={
-                      values.status === 'post_secondary_education_completed'
+                      values.status === postHireStatuses.postSecondaryEducationCompleted
                         ? 'Graduation Date'
-                        : 'Unsuccesful Graduation Date'
+                        : 'Unsuccessful Graduation Date'
                     }
                     component={RenderDateField}
                     maxDate={getTodayDate()}
                   />
                 }
-                {values.status === 'failed_cohort' && (
+                {values.status === postHireStatuses.cohortUnsuccessful && (
                   <Field
                     test-id={'editGraduationModalRehire'}
                     name='continue'

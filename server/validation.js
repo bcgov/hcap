@@ -68,7 +68,7 @@ const postHireStatuses = {
   orientationCompleted: 'orientation_completed',
   postSecondaryEducationUnderway: 'post_secondary_education_underway',
   postSecondaryEducationCompleted: 'post_secondary_education_completed',
-  failedCohort: 'failed_cohort',
+  cohortUnsuccessful: 'cohort_unsuccessful',
 };
 
 const postHireStatusesValues = Object.values(postHireStatuses).sort();
@@ -608,7 +608,7 @@ const ParticipantPostHireStatusSchema = yup
               .required('Graduation date is required')
               .test('is-date', 'Invalid date', validateDateString),
           });
-        case postHireStatuses.failedCohort:
+        case postHireStatuses.cohortUnsuccessful:
           return schema.noUnknown('Unknown field in data form').shape({
             unsuccessfulCohortDate: yup
               .string()

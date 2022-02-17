@@ -10,7 +10,7 @@ const getPostHireStatusLabel = ({ status, data = {} } = {}) => {
   switch (status) {
     case postHireStatuses.postSecondaryEducationCompleted:
       return `Graduation Completed on - ${data.graduationDate}`;
-    case postHireStatuses.failedCohort:
+    case postHireStatuses.cohortUnsuccessful:
       return `Unsuccessful/incomplete course.`;
     default:
       return `Status not recorded`;

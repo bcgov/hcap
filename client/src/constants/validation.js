@@ -658,7 +658,7 @@ export const ParticipantPostHireStatusSchema = yup
               .test('is-date', 'Invalid date', validateDateString),
           });
 
-        case postHireStatuses.failedCohort:
+        case postHireStatuses.cohortUnsuccessful:
           return schema.noUnknown('Unknown field in data form').shape({
             date: yup
               .string()

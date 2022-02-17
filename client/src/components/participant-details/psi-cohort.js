@@ -25,10 +25,6 @@ const TabDetails = {
     label: 'Assign Cohort',
     path: '/',
   },
-  withdrawCohort: {
-    label: 'Withdraw Cohort',
-    path: '/withdraw-cohort',
-  },
   trackGraduation: {
     label: 'Track Graduation',
     path: '/track-graduation',
@@ -70,11 +66,6 @@ const PSIRouteTabs = ({
       <Switch>
         <Route
           exact
-          path={TabDetails.withdrawCohort.path}
-          render={() => <h1>Work in progress</h1>}
-        ></Route>
-        <Route
-          exact
           path={TabDetails.trackGraduation.path}
           render={() => <TrackGraduation participant={participant} fetchData={fetchData} />}
         ></Route>
@@ -86,8 +77,7 @@ const PSIRouteTabs = ({
                 <Typography variant='h3'> Assigning Cohort</Typography>
                 <br />
                 <Typography variant='body1'>
-                  This participant has already been assigned a cohort. To reassign the cohort,
-                  please click on 'Withdraw Cohort' to withdraw them first.
+                  This participant has already been assigned a cohort.
                 </Typography>
               </Box>
             </div>

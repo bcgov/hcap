@@ -72,7 +72,7 @@ jobs:
     name: OpenShift Promotion
     runs-on: ubuntu-latest
     needs: confirm
-    concurrency: ci-${github.ref}-promote-test
+    concurrency: ci-promote-test
     timeout-minutes: 6
     env:
       OS_NAMESPACE_SUFFIX: test

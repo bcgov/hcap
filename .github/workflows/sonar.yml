@@ -9,7 +9,7 @@ jobs:
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
-    concurrency: ci-${github.ref}-ci-check
+    concurrency: ci-sonar
     timeout-minutes: 6
     steps:
       - uses: actions/checkout@v2

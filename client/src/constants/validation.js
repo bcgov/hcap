@@ -669,3 +669,11 @@ export const ParticipantPostHireStatusSchema = yup
       }
     }),
   });
+
+export const ParticipantAssignCohortSchema = yup
+  .object()
+  .noUnknown('Unknown field in form')
+  .shape({
+    cohort: yup.number().typeError(errorMessage).required('Cohort is required'),
+    institute: yup.number().typeError(errorMessage).required('Institute is required'),
+  });

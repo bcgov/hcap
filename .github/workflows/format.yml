@@ -7,7 +7,7 @@ jobs:
   premerge:
     name: format-check
     runs-on: ubuntu-20.04
-    concurrency: ci-${github.ref}-ci-check
+    concurrency: ci-format
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v2

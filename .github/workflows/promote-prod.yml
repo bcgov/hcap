@@ -18,7 +18,7 @@ jobs:
   promoteProd:
     name: OpenShift Promotion
     runs-on: ubuntu-latest
-    concurrency: ci-${github.ref}-promote-prod
+    concurrency: ci-promote-prod
     timeout-minutes: 6
     environment:
       name: prod

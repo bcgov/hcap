@@ -111,6 +111,8 @@ const errorMessage = ({ path }) => {
     cohortName: 'Cohort Name is required',
     startDate: 'Start Date is required',
     endDate: 'End Date is required',
+    cohort: 'Cohort is required',
+    institute: 'Institute is required',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
@@ -684,6 +686,6 @@ export const ParticipantAssignCohortSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
-    cohort: yup.number().typeError(errorMessage).required('Cohort is required'),
-    institute: yup.number().typeError(errorMessage).required('Institute is required'),
+    cohort: yup.number().required(errorMessage),
+    institute: yup.number().required(errorMessage),
   });

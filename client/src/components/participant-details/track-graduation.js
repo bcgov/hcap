@@ -166,7 +166,6 @@ export const TrackGraduation = (props) => {
         {showEditModel && !cohort?.id && (
           <Dialog title='Assign Cohort' open={showEditModel}>
             <AssignCohortForm
-              initialValues={{}}
               participantId={props?.participant.id}
               onClose={() => setShowEditModal(false)}
               onSubmit={async (cohort) => {

@@ -142,6 +142,10 @@ export const TrackGraduation = (props) => {
         <Dialog title={'Archive Participant'} open={showArchiveModel}>
           {showArchiveModel && (
             <Box spacing={10} p={5}>
+              <Typography color={'primary'} variant={'h4'}>
+                Archive Participant
+              </Typography>
+              <hr />
               <ArchiveHiredParticipantForm
                 initialValues={{
                   type: '',
@@ -152,6 +156,9 @@ export const TrackGraduation = (props) => {
                   confirmed: false,
                 }}
                 validationSchema={ArchiveHiredParticipantSchema}
+                onClose={() => {
+                  setShowArchiveModal(false);
+                }}
                 onSubmit={async (values) => {
                   setShowArchiveModal(false);
                   await handleArchive(props?.participant?.id, values, openToast);

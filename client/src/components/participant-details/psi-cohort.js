@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Typography, Box } from '@material-ui/core';
 import {
@@ -29,6 +29,42 @@ const TabDetails = {
     label: 'Track Graduation',
     path: '/track-graduation',
   },
+};
+
+// Smaller standalone components
+const TabContentAssignCohort = ({ tab, setTab, disabled, psiList, assignAction, fetchData }) => {
+  useEffect(() => {
+    if (tab !== 'assignCohort') {
+      setTab('assignCohort');
+    }
+  }, [tab, setTab]);
+  return disabled ? (
+    <div>
+      <Box>
+        <Typography variant='h3'> Assigning Cohort</Typography>
+        <br />
+        <Typography variant='body1'>
+          This participant has already been assigned a cohort.
+        </Typography>
+      </Box>
+    </div>
+  ) : (
+    <PSICohortTable
+      disabled={disabled}
+      rows={psiList}
+      assignAction={assignAction}
+      fetchData={fetchData}
+    />
+  );
+};
+
+const TabContentTrackGraduation = ({ tab, setTab, participant, fetchData }) => {
+  useEffect(() => {
+    if (tab !== 'trackGraduation') {
+      setTab('trackGraduation');
+    }
+  }, [tab, setTab]);
+  return <TrackGraduation participant={participant} fetchData={fetchData} />;
 };
 
 const PSIRouteTabs = ({
@@ -64,32 +100,24 @@ const PSIRouteTabs = ({
         ))}
       </CustomTabs>
       <Switch>
-        <Route
-          exact
-          path={TabDetails.trackGraduation.path}
-          render={() => <TrackGraduation participant={participant} fetchData={fetchData} />}
-        ></Route>
+        <Route exact path={TabDetails.trackGraduation.path}>
+          <TabContentTrackGraduation
+            tab={tab}
+            setTab={setTab}
+            participant={participant}
+            fetchData={fetchData}
+          />
+        </Route>
 
         <Route exact path={TabDetails.assignCohort.path}>
-          {disabled && (
-            <div>
-              <Box>
-                <Typography variant='h3'> Assigning Cohort</Typography>
-                <br />
-                <Typography variant='body1'>
-                  This participant has already been assigned a cohort.
-                </Typography>
-              </Box>
-            </div>
-          )}
-          {!disabled && (
-            <PSICohortTable
-              disabled={disabled}
-              rows={psiList}
-              assignAction={assignAction}
-              fetchData={fetchData}
-            />
-          )}
+          <TabContentAssignCohort
+            tab={tab}
+            setTab={setTab}
+            fetchData={fetchData}
+            assignAction={assignAction}
+            disabled={disabled}
+            psiList={psiList}
+          />
         </Route>
         <Redirect to='/' />
       </Switch>

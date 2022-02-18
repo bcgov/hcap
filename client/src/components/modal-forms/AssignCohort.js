@@ -46,7 +46,15 @@ const postCohortAssignmentForm = async ({
   }
 };
 
-export const AssignCohortForm = ({ initialValues = {}, onClose, onSubmit, participantId }) => {
+export const AssignCohortForm = ({
+  initialValues = {
+    institute: '',
+    cohort: '',
+  },
+  onClose,
+  onSubmit,
+  participantId,
+}) => {
   // State: PSI List to fill the select field
   const [psiList, setPSIList] = useState([]);
   // State: Cohort list connected with the PSI

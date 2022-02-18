@@ -10,7 +10,7 @@ const getPostHireStatusLabel = ({ status, data = {} } = {}) => {
   switch (status) {
     case postHireStatuses.postSecondaryEducationCompleted:
       return `Graduation Completed on - ${data.graduationDate}`;
-    case postHireStatuses.failedCohort:
+    case postHireStatuses.cohortUnsuccessful:
       return `Unsuccessful/incomplete course.`;
     default:
       return `Status not recorded`;
@@ -142,7 +142,6 @@ export const getParticipants = async ({
   selectedTabStatuses,
 }) => {
   const params = new URLSearchParams();
-
   params.append('offset', pagination.page * pageSize);
   params.append('sortField', order.field);
   params.append('sortDirection', order.direction);
@@ -156,7 +155,6 @@ export const getParticipants = async ({
   selectedTabStatuses.forEach((status) => {
     params.append('statusFilters[]', status);
   });
-
   const response = await fetch(`${API_URL}/api/v1/participants?${params.toString()}`, {
     headers: {
       Accept: 'application/json',

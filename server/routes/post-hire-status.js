@@ -50,13 +50,19 @@ router.post(
     }
 
     // Save the record
-    const result = await createPostHireStatus(body);
-    logger.info({
-      action: 'post-hire-status_post',
-      performed_by: user,
-      id: result !== undefined ? result.id : '',
-    });
-    return res.status(201).json(result);
+    try {
+      const result = await createPostHireStatus(body);
+
+      logger.info({
+        action: 'post-hire-status_post',
+        performed_by: user,
+        id: result !== undefined ? result.id : '',
+      });
+      return res.status(201).json(result);
+    } catch (e) {
+      logger.error(e);
+      return res.status(500).json({});
+    }
   })
 );
 

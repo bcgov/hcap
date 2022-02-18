@@ -111,6 +111,8 @@ const errorMessage = ({ path }) => {
     cohortName: 'Cohort Name is required',
     startDate: 'Start Date is required',
     endDate: 'End Date is required',
+    cohort: 'Cohort is required',
+    institute: 'Institute is required',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };
@@ -652,9 +654,17 @@ export const ParticipantPostHireStatusSchema = yup
       switch (status) {
         case postHireStatuses.postSecondaryEducationCompleted:
           return schema.noUnknown('Unknown field in data form').shape({
-            graduationDate: yup
+            date: yup
               .string()
               .required('Graduation date is required')
+              .test('is-date', 'Invalid date', validateDateString),
+          });
+
+        case postHireStatuses.cohortUnsuccessful:
+          return schema.noUnknown('Unknown field in data form').shape({
+            date: yup
+              .string()
+              .required('Unsuccessful cohort date is required')
               .test('is-date', 'Invalid date', validateDateString),
           });
         default:
@@ -663,17 +673,19 @@ export const ParticipantPostHireStatusSchema = yup
             `${status} does not require a data object`,
             (obj) => {
               // Since graduation date is a tracked field for the form, I needed to
-              return !obj || Object.keys(obj).length === 0 || !obj.graduationDate;
+              return !obj || Object.keys(obj).length === 0 || !obj.date;
             }
           );
       }
     }),
+    continue: yup.string().oneOf(['continue_yes', 'continue_no']).required(''),
+    withdraw: yup.bool().required(),
   });
 
 export const ParticipantAssignCohortSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
-    cohort: yup.number().typeError(errorMessage).required('Cohort is required'),
-    institute: yup.number().typeError(errorMessage).required('Institute is required'),
+    cohort: yup.number().required(errorMessage),
+    institute: yup.number().required(errorMessage),
   });

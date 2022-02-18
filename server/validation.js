@@ -35,6 +35,7 @@ const sortFields = [
   'siteName',
   'distance',
   'isIndigenous',
+  'postHireStatuses',
 ];
 
 const roles = [
@@ -67,7 +68,7 @@ const postHireStatuses = {
   orientationCompleted: 'orientation_completed',
   postSecondaryEducationUnderway: 'post_secondary_education_underway',
   postSecondaryEducationCompleted: 'post_secondary_education_completed',
-  failedCohort: 'failed_cohort',
+  cohortUnsuccessful: 'cohort_unsuccessful',
 };
 
 const postHireStatusesValues = Object.values(postHireStatuses).sort();
@@ -606,6 +607,15 @@ const ParticipantPostHireStatusSchema = yup
               .string()
               .required('Graduation date is required')
               .test('is-date', 'Invalid date', validateDateString),
+          });
+        case postHireStatuses.cohortUnsuccessful:
+          return schema.noUnknown('Unknown field in data form').shape({
+            unsuccessfulCohortDate: yup
+              .string()
+              .required('Unsuccessful cohort date required.')
+              .test('is-date', 'Invalid date', validateDateString),
+            continue: yup.string().required().oneOf(['continue_yes', 'continue_no']),
+            withdraw: yup.boolean(),
           });
         default:
           return schema.test(

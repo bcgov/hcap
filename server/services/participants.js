@@ -161,7 +161,7 @@ const updateParticipant = async (participantInfo) => {
       if (cohort && cohort.length) {
         await createPostHireStatus({
           participantId: participantInfo.id,
-          status: postHireStatuses.failedCohort,
+          status: postHireStatuses.cohortUnsuccessful,
           data: {},
         });
       }

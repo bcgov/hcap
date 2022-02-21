@@ -13,7 +13,7 @@ parameters:
   - name: GIT_URI
     description: Source for Postgres repository with Dockerfile
     required: true
-    value: https://github.com/FreshworksStudio/platform-services.git
+    value: https://github.com/BCDevOps/platform-services.git
   - name: BRANCH
     description: Branch of the boilerplate repository that should be built
     value: master
@@ -21,6 +21,10 @@ parameters:
   - name: PG_VERSION
     description: The version of Postgres to pull from DockerHub
     value: '11'
+    required: true
+  - name: PATRONI_VERSION
+    description: The version of Patroni
+    value: '2.0.1'
     required: true
 objects:
   - kind: ImageStream
@@ -81,6 +85,9 @@ objects:
           from:
             kind: ImageStreamTag
             name: ${APP_NAME}-postgres:${PG_VERSION}
+          buildArgs:
+            - name: 'patroniv'
+              value: ${PATRONI_VERSION}
         type: Docker
       triggers:
         - type: ConfigChange

@@ -23,7 +23,7 @@ const archiveHiredParticipantInitialValues = {
   reason: '',
   status: '',
   rehire: '',
-  endDate: moment().format('YYYY/MM/DD'),
+  endDate: moment().subtract(1, 'days').format('YYYY/MM/DD'),
   confirmed: false,
 };
 
@@ -47,7 +47,7 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose }) => {
               <Field
                 name='endDate'
                 component={RenderDateField}
-                maxDate={getTodayDate()}
+                maxDate={getTodayDate}
                 label='End Date'
               />
               <Field

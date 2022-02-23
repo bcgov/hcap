@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 const assert = require('assert');
+const dayjs = require('dayjs');
 const readXlsxFile = require('node-xlsx').default;
 const {
   validate,
@@ -10,10 +11,9 @@ const {
 const { dbClient, collections } = require('../db');
 const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
-const { getPostHireStatusesForParticipant } = require('./post-hire-flow');
 const logger = require('../logger.js');
 const { getAssignCohort } = require('./cohorts');
-const { createPostHireStatus } = require('./post-hire-flow');
+const { createPostHireStatus, getPostHireStatusesForParticipant } = require('./post-hire-flow');
 
 const deleteParticipant = async ({ email }) => {
   await dbClient.db.withTransaction(async (tnx) => {
@@ -157,12 +157,23 @@ const updateParticipant = async (participantInfo) => {
     );
     if (changes.interested === 'withdrawn') {
       const cohort = await getAssignCohort({ participantId: participantInfo.id });
+      // Get All existing status
+      const statuses = await getPostHireStatusesForParticipant({
+        participantId: participantInfo.id,
+      });
+      const graduationStatuses = statuses.filter(
+        (item) =>
+          item.status === postHireStatuses.postSecondaryEducationCompleted ||
+          item.status === postHireStatuses.cohortUnsuccessful
+      );
       // ensure that a participant has a cohort before adding post hire status
-      if (cohort && cohort.length) {
+      if (cohort && cohort.length > 0 && graduationStatuses.length === 0) {
         await createPostHireStatus({
           participantId: participantInfo.id,
           status: postHireStatuses.cohortUnsuccessful,
-          data: {},
+          data: {
+            unsuccessfulCohortDate: dayjs().format('YYYY/MM/DD'),
+          },
         });
       }
     }

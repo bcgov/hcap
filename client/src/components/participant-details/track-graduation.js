@@ -66,13 +66,6 @@ export const TrackGraduation = (props) => {
         <Grid item xs={4}>
           <Typography variant='subtitle2'>Graduation Status</Typography>
           <Typography>{props?.participant?.postHireStatusLabel || 'N/A'}</Typography>
-          {props?.participant?.postHireStatus?.status === postHireStatuses.cohortUnsuccessful && (
-            <Typography>
-              Unsuccessful cohort date:
-              {props?.participant?.postHireStatus?.data?.unsuccessfulCohortDate}
-            </Typography>
-          )}
-
           <Grid item xs={6}>
             <Button
               color='default'

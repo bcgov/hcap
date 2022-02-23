@@ -31,13 +31,13 @@ const TabDetails = {
   },
 };
 
+const tabKeyForPath = (path) => {
+  const tabKey = Object.keys(TabDetails).find((key) => TabDetails[key].path === path);
+  return { tabKey, tabInfo: TabDetails[tabKey] };
+};
+
 // Smaller standalone components
-const TabContentAssignCohort = ({ tab, setTab, disabled, psiList, assignAction, fetchData }) => {
-  useEffect(() => {
-    if (tab !== 'assignCohort') {
-      setTab('assignCohort');
-    }
-  }, [tab, setTab]);
+const TabContentAssignCohort = ({ disabled, psiList, assignAction, fetchData }) => {
   return disabled ? (
     <div>
       <Box>
@@ -58,12 +58,7 @@ const TabContentAssignCohort = ({ tab, setTab, disabled, psiList, assignAction, 
   );
 };
 
-const TabContentTrackGraduation = ({ tab, setTab, participant, fetchData }) => {
-  useEffect(() => {
-    if (tab !== 'trackGraduation') {
-      setTab('trackGraduation');
-    }
-  }, [tab, setTab]);
+const TabContentTrackGraduation = ({ participant, fetchData }) => {
   return <TrackGraduation participant={participant} fetchData={fetchData} />;
 };
 
@@ -81,6 +76,19 @@ const PSIRouteTabs = ({
     participant !== null &&
     participant.cohort !== undefined &&
     Object.keys(participant.cohort).length > 0;
+
+  useEffect(() => {
+    let unsubscribe = history.listen((location) => {
+      const { pathname: path } = location;
+      const { tabKey } = tabKeyForPath(path);
+      if (tabKey !== tab) {
+        setTab(tabKey);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [tab, setTab, history]);
+
   return (
     <>
       <CustomTabs

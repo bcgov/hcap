@@ -22,6 +22,10 @@ parameters:
     description: The version of Postgres to pull from DockerHub
     value: '11'
     required: true
+  - name: PATRONI_VERSION
+    description: The version of Patroni
+    value: '2.0.1'
+    required: true
 objects:
   - kind: ImageStream
     apiVersion: image.openshift.io/v1
@@ -81,6 +85,9 @@ objects:
           from:
             kind: ImageStreamTag
             name: ${APP_NAME}-postgres:${PG_VERSION}
+          buildArgs:
+            - name: 'patroniv'
+              value: ${PATRONI_VERSION}
         type: Docker
       triggers:
         - type: ConfigChange

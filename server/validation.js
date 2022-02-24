@@ -100,6 +100,13 @@ const validateDateString = (s) => {
   return typeof date === 'number' && !Number.isNaN(date);
 };
 
+const validateOptionalDateString = (s) => {
+  if (!s) return true;
+  if (/^\d{4}\/\d{2}\/\d{2}$/.test(s) === false) return false;
+  const date = Date.parse(s);
+  return typeof date === 'number' && !Number.isNaN(date);
+};
+
 const validatePastDateString = (s) => {
   if (!validateDateString(s)) return false;
   return Date.parse(s) <= new Date();
@@ -876,6 +883,22 @@ const CreateCohortSchema = yup
     psi_id: yup.number().required('Cohort must be mapped to a PSI'),
   });
 
+const EditCohortSchema = yup
+  .object()
+  .noUnknown('Unknown field in entry')
+  .shape({
+    cohortName: yup.string().optional(errorMessage),
+    startDate: yup
+      .string()
+      .optional()
+      .test('is-date', 'startDate: Not a valid date', validateOptionalDateString),
+    endDate: yup
+      .string()
+      .optional()
+      .test('is-date', 'endDate: Not a valid date', validateOptionalDateString),
+    cohortSize: yup.number().optional(),
+  });
+
 const EditSiteSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
@@ -947,4 +970,5 @@ module.exports = {
   postHireStatuses,
   postHireStatusesValues,
   ParticipantPostHireStatusSchema,
+  EditCohortSchema,
 };

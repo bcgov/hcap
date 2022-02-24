@@ -36,22 +36,32 @@ const getPSICohorts = async (psiID) =>
       psi_id: psiID,
     });
 
-const makeCohort = async (cohort) => {
-  const cohortSize = parseInt(cohort.cohortSize, 10);
-
-  const data = {
+const mapDataToCohort = (cohort) => {
+  const temp = {
     cohort_name: cohort.cohortName,
     start_date: cohort.startDate,
     end_date: cohort.endDate,
-    cohort_size: cohortSize,
+    cohort_size: parseInt(cohort.cohortSize, 10),
     psi_id: cohort.psiID,
   };
+  // clean and remove undefined values
+  const cleaned = Object.keys(temp).reduce(
+    (acc, key) => (temp[key] ? { ...acc, [key]: temp[key] } : acc),
+    {}
+  );
 
-  await validate(CreateCohortSchema, data);
+  return cleaned;
+};
 
-  const newCohort = await dbClient.db[collections.COHORTS].insert(data);
+const makeCohort = async (cohortData) => {
+  const cohort = mapDataToCohort(cohortData);
+  await validate(CreateCohortSchema, cohort);
+  const newCohort = await dbClient.db[collections.COHORTS].insert(cohort);
   return newCohort;
 };
+
+const updateCohort = async (id, updateData) =>
+  dbClient.db[collections.COHORTS].update(id, { ...mapDataToCohort(updateData) });
 
 const assignCohort = async ({ id, participantId }) => {
   const participantCohort = await dbClient.db[collections.COHORT_PARTICIPANTS].insert({
@@ -85,6 +95,11 @@ const getAssignCohort = async ({ participantId }) => {
   return cohorts;
 };
 
+const getCountOfAllocation = async ({ cohortId } = {}) =>
+  dbClient.db[collections.COHORT_PARTICIPANTS].count({
+    cohort_id: cohortId,
+  });
+
 module.exports = {
   getCohorts,
   getPSICohorts,
@@ -92,4 +107,6 @@ module.exports = {
   makeCohort,
   assignCohort,
   getAssignCohort,
+  updateCohort,
+  getCountOfAllocation,
 };

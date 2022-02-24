@@ -2,8 +2,16 @@ const express = require('express');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
-const { getCohorts, getCohort, assignCohort, getAssignCohort } = require('../services/cohorts.js');
+const {
+  getCohorts,
+  getCohort,
+  assignCohort,
+  getAssignCohort,
+  updateCohort,
+  getCountOfAllocation,
+} = require('../services/cohorts.js');
 const { getParticipantByID } = require('../services/participants');
+const { EditCohortSchema, validate } = require('../validation');
 
 // Router
 const router = express.Router();
@@ -118,6 +126,44 @@ router.get(
       participantId: participant.id,
     });
     return res.status(200).json(cohort);
+  })
+);
+
+router.patch(
+  '/:id',
+  asyncMiddleware(async (req, res) => {
+    const { email, user_id: userId, sub: localUserId } = req.user;
+    if (email && (userId || localUserId)) {
+      const { id } = req.params;
+      const { body } = req;
+      if (!id) {
+        return res.status(400).send({ message: 'Missing cohort id' });
+      }
+      // Get Cohort
+      const [cohort] = await getCohort(+id);
+      if (!cohort) {
+        return res.status(400).send({ message: 'Invalid cohort id' });
+      }
+      // Validate update body
+      await validate(EditCohortSchema, body);
+
+      // Validate cohort size with allocation
+      const { cohortSize = 0 } = body;
+      const allocation = await getCountOfAllocation({ cohortId: cohort.id });
+
+      // Updated value is less than current allocation, so value is not accepted
+      if (cohortSize < allocation) {
+        return res.status(400).send({ message: 'Cohort size is less than current allocation' });
+      }
+      const response = await updateCohort(id, body);
+      logger.info({
+        action: 'psi-cohort_patch',
+        performed_by: userId || localUserId,
+        id: response !== undefined ? response.id : '',
+      });
+      return res.status(200).json(response);
+    }
+    return res.status(401).send('Unauthorized user');
   })
 );
 

@@ -30,7 +30,7 @@ router.get(
 
       const response = await getPSICohorts(psiID);
       logger.info({
-        action: 'post-secondary-institutes_get',
+        action: 'psi-cohort_get',
         performed_by: userId || localUserId,
         id: response.length > 0 ? response[0].id : '',
       });
@@ -53,7 +53,7 @@ router.get(
       return res.status(401).send({ message: 'You do not have permission to view this record' });
     }
     logger.info({
-      action: 'post-secondary-institute_get',
+      action: 'psi-cohort_get',
       performed_by: {
         user,
       },
@@ -76,11 +76,11 @@ router.post(
         res.status(400).send(response);
       }
       logger.info({
-        action: 'post-secondary-institutes_post',
+        action: 'psi-cohort_post',
         performed_by: user,
         id: response !== undefined ? response.id : '',
       });
-      res.status(200).json(response);
+      res.status(201).json(response);
     } else {
       res.status(401).send('Unauthorized user');
     }

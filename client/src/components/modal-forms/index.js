@@ -8,5 +8,5 @@ export * from './NewSiteForm';
 export * from './EditSiteForm';
 export * from './NewPSIForm';
 export * from './EditPSIForm';
-export * from './NewCohortForm';
+export * from './CohortForm';
 export * from './ArchiveHiredParticipantForm';

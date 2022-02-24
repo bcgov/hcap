@@ -58,3 +58,62 @@ export const sortPSI = ({ psiList = [], cohort = {} }) =>
     }
     return item1 < item2 ? -1 : item1 > item2 ? 1 : 0;
   });
+
+export const fetchPSI = async ({ psiId }) => {
+  const response = await fetch(`${API_URL}/api/v1/psi/${psiId}`, {
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+    },
+    method: 'GET',
+  });
+
+  if (response.ok) {
+    const psi = await response.json();
+    return {
+      id: psi.id,
+      instituteName: psi.institute_name,
+      healthAuthority: psi.health_authority,
+      streetAddress: psi.street_address,
+      postalCode: psi.postal_code,
+      city: psi.city,
+    };
+  }
+
+  throw new Error(
+    response.error || response.statusText || 'Unable to load post secondary institutes'
+  );
+};
+
+export const fetchCohorts = async ({ psiId }) => {
+  const response = await fetch(`${API_URL}/api/v1/psi/${psiId}/cohorts/`, {
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+    },
+    method: 'GET',
+  });
+
+  if (response.ok) {
+    const cohortList = await response.json();
+    return cohortList;
+  }
+
+  throw new Error(response.error || response.statusText || 'Unable to load cohorts details');
+};
+
+export const addCohort = async ({ psiId, cohort }) => {
+  const response = await fetch(`${API_URL}/api/v1/psi/${psiId}/cohorts/`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(cohort),
+  });
+
+  if (response.ok) {
+    return await response.json();
+  }
+
+  throw new Error(response.error || response.statusText || 'Unable to add cohort');
+};

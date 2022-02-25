@@ -45,6 +45,10 @@ export const TrackGraduation = (props) => {
   const disableTrackGraduation =
     props.participant?.postHireStatus?.status === postHireStatuses.postSecondaryEducationCompleted;
 
+  const cohortEndDate = props.participant?.cohort
+    ? moment(props.participant.cohort.end_date).format('YYYY/MM/DD')
+    : null;
+
   useEffect(() => {
     setCohort(props.participant?.cohort);
   }, [setCohort, props.participant?.cohort]);
@@ -83,12 +87,17 @@ export const TrackGraduation = (props) => {
         {showEditModel && cohort?.id && (
           <Dialog title={'Graduation Status'} open={showEditModel}>
             <ManageGraduationForm
+              cohortEndDate={cohortEndDate}
               initialValues={{
                 status:
                   props?.participant?.postHireStatus?.status ||
                   postHireStatuses.postSecondaryEducationCompleted,
                 data: {
-                  date: '',
+                  date:
+                    props?.participant?.postHireStatus?.status ===
+                    postHireStatuses.postSecondaryEducationCompleted
+                      ? cohortEndDate
+                      : null,
                 },
                 continue: 'continue_yes',
                 withdraw: false,

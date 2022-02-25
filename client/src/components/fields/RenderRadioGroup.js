@@ -28,6 +28,14 @@ export const RenderRadioGroup = ({
     } else {
       field.onChange({ target: { name: field.name, value } });
     }
+
+    if (props.onChange) {
+      if (value === 'true' || value === 'false') {
+        props.onChange({ target: { name: field.name, value: value === 'true' } });
+      } else {
+        props.onChange({ target: { name: field.name, value } });
+      }
+    }
   };
 
   return (

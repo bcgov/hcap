@@ -78,6 +78,10 @@ export default ({ match }) => {
     try {
       await addCohort({ cohort, psiId: psiID });
       setActiveModalForm(null);
+      openToast({
+        status: ToastStatus.Success,
+        message: `Cohort '${cohort.cohortName}' added successfully`,
+      });
       const cohorts = await fetchCohorts({ psiId: psiID });
       setCohorts(cohorts);
     } catch (error) {
@@ -94,7 +98,7 @@ export default ({ match }) => {
 
       openToast({
         status: ToastStatus.Success,
-        message: `Cohort ${newCohort.cohortName} (#${cohort.id}) updated successfully`,
+        message: `Cohort '${newCohort.cohortName}' (#${cohort.id}) updated successfully`,
       });
       setActiveModalForm(null);
       setCohort(null);

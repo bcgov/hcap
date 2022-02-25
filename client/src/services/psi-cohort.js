@@ -1,4 +1,5 @@
 import store from 'store';
+import moment from 'moment';
 import { API_URL } from '../constants';
 
 const baseURL = `${API_URL}/api/v1`;
@@ -115,5 +116,34 @@ export const addCohort = async ({ psiId, cohort }) => {
     return await response.json();
   }
 
-  throw new Error(response.error || response.statusText || 'Unable to add cohort');
+  throw new Error(`Unable to add cohort for error ${response.error || response.statusText}`);
 };
+
+export const editCohort = async ({ cohort, cohortId }) => {
+  // Remove id from cohort body
+  const response = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(cohort),
+  });
+
+  if (response.ok) {
+    return await response.json();
+  }
+
+  throw new Error(`Unable to edit cohort for error: ${response.error || response.statusText}`);
+};
+
+export const mapCohortToFormData = (cohort) =>
+  cohort
+    ? {
+        cohortName: cohort.cohort_name,
+        startDate: moment(cohort.start_date).format('YYYY/MM/DD'),
+        endDate: moment(cohort.end_date).format('YYYY/MM/DD'),
+        cohortSize: cohort.cohort_size,
+      }
+    : null;

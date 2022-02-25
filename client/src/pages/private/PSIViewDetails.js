@@ -12,7 +12,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MuiAlert from '@material-ui/lab/Alert';
 
-import { fetchPSI, fetchCohorts, addCohort } from '../../services';
+import { fetchPSI, fetchCohorts, addCohort, mapCohortToFormData, editCohort } from '../../services';
 
 const CohortTable = lazy(() => import('./CohortTable'));
 
@@ -27,6 +27,7 @@ const customStyle = makeStyles({
 // Service layer
 
 export default ({ match }) => {
+  // States and params
   const { openToast } = useToast();
   const [psi, setPSI] = useState({});
   const [cohorts, setCohorts] = useState([]);
@@ -34,10 +35,12 @@ export default ({ match }) => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const psiID = parseInt(match.params.id, 10);
   const [error, setError] = useState(null);
+  const [cohort, setCohort] = useState(null);
 
   // Style classes
   const classes = customStyle();
 
+  // Memo stats
   const openCohorts = useMemo(
     () =>
       cohorts.filter(
@@ -50,6 +53,7 @@ export default ({ match }) => {
 
   const closedCohorts = useMemo(() => cohorts.length - openCohorts, [cohorts, openCohorts]);
 
+  // Actions
   const handleManagePSIClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -59,6 +63,7 @@ export default ({ match }) => {
   };
 
   const closeModal = () => {
+    setCohort(null);
     setActiveModalForm(null);
   };
 
@@ -83,6 +88,32 @@ export default ({ match }) => {
     }
   };
 
+  const handleCohortEdit = async (newCohort) => {
+    try {
+      await editCohort({ cohort: newCohort, cohortId: cohort.id });
+
+      openToast({
+        status: ToastStatus.Success,
+        message: `Cohort ${newCohort.cohortName} (#${cohort.id}) updated successfully`,
+      });
+      setActiveModalForm(null);
+      setCohort(null);
+      const cohorts = await fetchCohorts({ psiId: psiID });
+      setCohorts(cohorts);
+    } catch (error) {
+      openToast({
+        status: ToastStatus.Error,
+        message: error.message || 'Unable to add cohort',
+      });
+    }
+  };
+
+  const displayEditCohortModal = async (cohort) => {
+    setActiveModalForm('show-cohort');
+    setCohort(cohort);
+  };
+
+  // Lifecycle Hooks
   useEffect(() => {
     fetchPSI({ psiId: psiID })
       .then((psiData) => {
@@ -122,14 +153,21 @@ export default ({ match }) => {
             onClose={closeModal}
           />
         )}
-        {activeModalForm === 'add-cohort' && (
+        {activeModalForm === 'show-cohort' && (
           <CohortForm
+            initialValues={mapCohortToFormData(cohort)}
             schema={NewCohortSchema}
             onSubmit={(values) => {
-              handleAddCohort({
-                ...values,
-                psiID,
-              });
+              if (cohort) {
+                handleCohortEdit({
+                  ...values,
+                });
+              } else {
+                handleAddCohort({
+                  ...values,
+                  psiID,
+                });
+              }
             }}
             onClose={closeModal}
           />
@@ -172,7 +210,7 @@ export default ({ match }) => {
                     >
                       <MenuItem
                         onClick={() => {
-                          setActiveModalForm('add-cohort');
+                          setActiveModalForm('show-cohort');
                           handleClose();
                         }}
                       >
@@ -281,7 +319,7 @@ export default ({ match }) => {
             </Box>
           </Box>
           {cohorts.length > 0 ? (
-            <CohortTable cohorts={cohorts} />
+            <CohortTable cohorts={cohorts} editCohortAction={displayEditCohortModal} />
           ) : (
             <Typography variant='h5' align='center'>
               No Cohorts Added

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, lazy } from 'react';
 import { Box, Typography, Grid } from '@material-ui/core';
 
 import { Page, CheckPermissions, Button, Dialog } from '../../components/generic';
-import { NewPSIForm, NewCohortForm } from '../../components/modal-forms';
+import { NewPSIForm, CohortForm } from '../../components/modal-forms';
 import { ToastStatus, API_URL, NewCohortSchema } from '../../constants';
 import store from 'store';
 import { AuthContext } from '../../providers';
@@ -158,13 +158,7 @@ export default () => {
             />
           )}
           {activeModalForm === 'add-cohort' && (
-            <NewCohortForm
-              initialValues={{
-                cohortName: '',
-                startDate: '',
-                endDate: '',
-                cohortSize: '',
-              }}
+            <CohortForm
               validationSchema={NewCohortSchema}
               onSubmit={(values) => {
                 handleAddCohort({

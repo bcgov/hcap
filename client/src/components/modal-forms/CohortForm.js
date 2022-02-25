@@ -6,9 +6,20 @@ import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { NewCohortSchema } from '../../constants';
 
-export const NewCohortForm = ({ initialValues, onSubmit, onClose }) => {
+export const CohortForm = ({ initialValues, onSubmit, onClose, schema }) => {
   return (
-    <Formik initialValues={initialValues} validationSchema={NewCohortSchema} onSubmit={onSubmit}>
+    <Formik
+      initialValues={
+        initialValues || {
+          cohortName: '',
+          startDate: '',
+          endDate: '',
+          cohortSize: '',
+        }
+      }
+      validationSchema={schema || NewCohortSchema}
+      onSubmit={onSubmit}
+    >
       {({ submitForm, values }) => (
         <FormikForm>
           <Box>
@@ -28,7 +39,12 @@ export const NewCohortForm = ({ initialValues, onSubmit, onClose }) => {
                 <Button onClick={onClose} color='default' text='Cancel' />
               </Grid>
               <Grid item>
-                <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />
+                <Button
+                  onClick={submitForm}
+                  variant='contained'
+                  color='primary'
+                  text={initialValues ? 'Save Changes' : 'Submit'}
+                />
               </Grid>
             </Grid>
           </Box>

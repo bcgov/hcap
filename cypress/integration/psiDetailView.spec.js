@@ -29,18 +29,18 @@ describe('Tests the PSI View', () => {
   it('Visits a PSI details page with no cohorts', () => {
     cy.kcLogin('test-moh');
     cy.visit('/admin');
-    cy.contains('Manage').click();
+    cy.contains('Manage PSI').click();
     cy.contains('Testitute').click();
-    cy.get('p#streetAddress').should('have.text', '314 Pi Ct.');
-    cy.get('p#city').should('have.text', 'Port Renfrew');
-    cy.get('p#postalCode').should('have.text', 'V2V 3V4');
+    cy.get('[test-id=psi-details-view-addr]').should('have.text', '314 Pi Ct.');
+    cy.get('[test-id=psi-details-view-city]').should('have.text', 'Port Renfrew');
+    cy.get('[test-id=psi-details-view-postal]').should('have.text', 'V2V 3V4');
     cy.contains('No Cohorts Added').should('exist');
   });
 
   it('Visits a PSI details page, adds a cohort', () => {
     cy.kcLogin('test-moh');
     cy.visit('/admin');
-    cy.contains('Manage').click();
+    cy.contains('Manage PSI').click();
     cy.contains('Pythagorean Academy').click();
     cy.get('button').contains('Manage').click();
     cy.get('li').contains('Add Cohort').should('be.visible').click();
@@ -65,18 +65,18 @@ describe('Tests the PSI View', () => {
     cy.contains('Angular Observations').should('exist');
     cy.contains('01 Sep 2020').should('exist'); // Start Date displays properly
     cy.contains('01 Sep 2021').should('exist'); // End Date displays properly
-    cy.get('p#totalCohorts')
+    cy.get('[test-id=psi-details-view-total-cohort]')
       .invoke('text')
       .then((txt) => {
         expect(+txt).greaterThan(0);
       });
-    cy.get('p#openCohorts')
+    cy.get('[test-id=psi-details-view-open-cohort]')
       .invoke('text')
       .then((txt) => {
         expect(+txt).equal(0);
       });
 
-    cy.get('p#closedCohorts')
+    cy.get('[test-id=psi-details-view-closed-cohort]')
       .invoke('text')
       .then((txt) => {
         expect(+txt).greaterThan(0);
@@ -90,17 +90,17 @@ describe('Tests the PSI View', () => {
     cy.get('input[name="EndDate"]').type('19210901');
     cy.get('input#cohortSize').type('144');
     cy.get('button').contains('Submit').click();
-    cy.get('p#totalCohorts')
+    cy.get('[test-id=psi-details-view-total-cohort]')
       .invoke('text')
       .then((txt) => {
         expect(+txt).greaterThan(0);
       });
-    cy.get('p#openCohorts')
+    cy.get('[test-id=psi-details-view-open-cohort]')
       .invoke('text')
       .then((txt) => {
         expect(+txt).gte(0);
       });
-    cy.get('p#closedCohorts')
+    cy.get('[test-id=psi-details-view-closed-cohort]')
       .invoke('text')
       .then((txt) => {
         expect(+txt).gte(0);

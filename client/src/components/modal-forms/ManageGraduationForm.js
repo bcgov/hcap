@@ -6,7 +6,7 @@ import { getTodayDate } from '../../utils';
 import { Button } from '../../components/generic/Button';
 import { ParticipantPostHireStatusSchema } from '../../constants/validation';
 import { postHireStatuses } from '../../constants';
-export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
+export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortEndDate }) => {
   return (
     <Box spacing={10} p={5}>
       <Formik
@@ -14,7 +14,16 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
         onSubmit={onSubmit}
         validationSchema={ParticipantPostHireStatusSchema}
       >
-        {({ submitForm, values }) => {
+        {({ submitForm, values, setFieldValue }) => {
+          const handleStatusChange = ({ target }) => {
+            const { value } = target;
+            setFieldValue('status', value);
+            if (value === postHireStatuses.postSecondaryEducationCompleted) {
+              setFieldValue('data.date', cohortEndDate);
+            } else {
+              setFieldValue('data.date', '');
+            }
+          };
           return (
             <FormikForm>
               <Box>
@@ -28,6 +37,7 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
                   name='status'
                   component={RenderRadioGroup}
                   label='Has this participant graduated?'
+                  onChange={handleStatusChange}
                   options={[
                     {
                       value: postHireStatuses.postSecondaryEducationCompleted,
@@ -50,6 +60,10 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit }) => {
                     }
                     component={RenderDateField}
                     maxDate={getTodayDate()}
+                    disabled={
+                      values.status === postHireStatuses.postSecondaryEducationCompleted &&
+                      values.data.date === cohortEndDate
+                    }
                   />
                 }
                 {values.status === postHireStatuses.cohortUnsuccessful && (

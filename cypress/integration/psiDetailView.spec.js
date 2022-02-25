@@ -29,9 +29,8 @@ describe('Tests the PSI View', () => {
   it('Visits a PSI details page with no cohorts', () => {
     cy.kcLogin('test-moh');
     cy.visit('/admin');
-    cy.contains('Manage PSI').click();
+    cy.contains('Manage').click();
     cy.contains('Testitute').click();
-    cy.contains('PSI Info').should('exist');
     cy.get('p#streetAddress').should('have.text', '314 Pi Ct.');
     cy.get('p#city').should('have.text', 'Port Renfrew');
     cy.get('p#postalCode').should('have.text', 'V2V 3V4');
@@ -41,9 +40,9 @@ describe('Tests the PSI View', () => {
   it('Visits a PSI details page, adds a cohort', () => {
     cy.kcLogin('test-moh');
     cy.visit('/admin');
-    cy.contains('Manage PSI').click();
+    cy.contains('Manage').click();
     cy.contains('Pythagorean Academy').click();
-    cy.get('button').contains('Manage PSI').click();
+    cy.get('button').contains('Manage').click();
     cy.get('li').contains('Add Cohort').should('be.visible').click();
     cy.get('input#cohortName').type('Angular Observations');
 
@@ -84,7 +83,7 @@ describe('Tests the PSI View', () => {
       });
 
     // Adds a past cohort, checks to make sure it's marked as closed
-    cy.get('button').contains('Manage PSI').click();
+    cy.get('button').contains('Manage').click();
     cy.get('li').contains('Add Cohort').should('be.visible').click();
     cy.get('input#cohortName').type('Obtuse Ontologies');
     cy.get('input[name="StartDate"]').type('19200901');
@@ -106,5 +105,8 @@ describe('Tests the PSI View', () => {
       .then((txt) => {
         expect(+txt).gte(0);
       });
+    cy.get('button').contains('Edit').click();
+    cy.contains(/Edit Cohort */gi).should('be.visible');
+    cy.get('button').contains('Save Changes').click();
   });
 });

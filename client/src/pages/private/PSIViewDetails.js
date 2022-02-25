@@ -140,7 +140,11 @@ export default ({ match }) => {
     <Page isAutoHeight={true}>
       <Dialog
         title={
-          activeModalForm === 'edit-psi' ? `Edit PSI (${psi.instituteName})` : `Create New Cohort`
+          activeModalForm === 'edit-psi'
+            ? `Edit PSI (${psi.instituteName})`
+            : cohort
+            ? `Edit Cohort (${cohort.cohort_name})`
+            : 'Create New Cohort'
         }
         open={activeModalForm != null}
         onClose={closeModal}

@@ -68,7 +68,6 @@ describe('api-e2e tests for /employer-sites route', () => {
 
     delete update.siteId;
     delete update.healthAuthority;
-    delete update.operatorName;
 
     const header = await getKeycloakToken(superuser);
     const res = await request(app)

@@ -210,6 +210,7 @@ const ParticipantTable = () => {
                 const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
                   id,
                   page: 'participant',
+                  pageId: 'none',
                 });
                 history.push(participantDetailsPath);
               }}

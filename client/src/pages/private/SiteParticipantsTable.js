@@ -339,10 +339,11 @@ export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => 
                       component='button'
                       variant='body2'
                       onClick={() => {
-                        const { participantId: id } = row;
+                        const { participantId } = row;
                         const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
-                          id,
+                          id: participantId,
                           page: 'site-details',
+                          pageId: id,
                         });
                         history.push(participantDetailsPath);
                       }}

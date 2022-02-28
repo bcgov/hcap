@@ -12,7 +12,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import { useToast } from '../../hooks';
 import { AuthContext } from '../../providers';
 import { Page, CheckPermissions, Alert, Dialog } from '../../components/generic';
-import { EditParticipantFormSchema, ToastStatus } from '../../constants';
+import { EditParticipantFormSchema, ToastStatus, Routes } from '../../constants';
 import { EditParticipantForm } from '../../components/modal-forms';
 import {
   updateParticipant,
@@ -112,7 +112,7 @@ export default () => {
   // Style classes
   const classes = customStyle();
   // Get param
-  const { id, page } = useParams();
+  const { id, page, pageId } = useParams();
   // Breadcrumb name
   const linkName = page === 'participant' ? 'Participant' : 'Site View';
   // Edit Button flag
@@ -164,6 +164,20 @@ export default () => {
   // Confirmation Close
   const onClose = () => {
     setSelectedCohort(null);
+  };
+
+  // Navigate on link
+  const navigateBackOnLink = () => {
+    switch (linkName) {
+      case 'Participant':
+        history.push(Routes.ParticipantView);
+        break;
+      case 'Site View':
+        history.push(Routes.SiteView + `/${pageId}`);
+        break;
+      default:
+        history.goBack();
+    }
   };
 
   // Rendering Hook
@@ -242,14 +256,7 @@ export default () => {
               <Box pb={4} pl={2}>
                 <Box pb={2}>
                   <Typography variant='body1'>
-                    <Link
-                      onClick={() => {
-                        history.goBack();
-                      }}
-                    >
-                      {linkName}
-                    </Link>{' '}
-                    /{participant.fullName}
+                    <Link onClick={navigateBackOnLink}>{linkName}</Link> /{participant.fullName}
                   </Typography>
                 </Box>
                 <Grid container>

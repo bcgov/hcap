@@ -6,7 +6,7 @@ describe('EOI View', () => {
     cy.kcLogout();
   });
   it('Should be able edit participant details', () => {
-    cy.visit('participant-details/participant/1');
+    cy.visit('participant-details/na/participant/1');
     cy.get('[test-id=editInfoButton]').click();
     // Generate a new first name
     const newName = 'New Name' + Math.floor(Math.random() * 10000);

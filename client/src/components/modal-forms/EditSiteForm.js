@@ -55,6 +55,7 @@ export const EditSiteForm = ({ initialValues, validationSchema, onSubmit, onClos
                 <b>Operator Info</b>
               </Typography>
             </Box>
+            <Field name='operatorName' component={RenderTextField} label='* Operator Name' />
             <Field
               name='operatorContactFirstName'
               component={RenderTextField}

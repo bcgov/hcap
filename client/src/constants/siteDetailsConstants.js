@@ -31,6 +31,7 @@ export const fieldsLabelMap = {
     'Email Address': 'siteContactEmail',
   },
   'Operator Contact': {
+    'Operator Name': 'operatorName',
     'First Name': 'operatorContactFirstName',
     'Last Name': 'operatorContactLastName',
     'Phone Number': 'operatorPhone',

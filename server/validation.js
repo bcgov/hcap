@@ -927,6 +927,7 @@ const EditSiteSchema = yup
         'Must be a positive number',
         validateBlankOrPositiveInteger
       ),
+    operatorName: yup.string().nullable(),
     operatorContactFirstName: yup.string().required(errorMessage),
     operatorContactLastName: yup.string().required(errorMessage),
     operatorPhone: yup

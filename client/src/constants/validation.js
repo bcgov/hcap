@@ -500,6 +500,7 @@ export const EditSiteSchema = yup.object().shape({
     .number()
     .required('Allocation number is required')
     .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
+  operatorName: yup.string().nullable(),
   operatorContactFirstName: yup.string().required(errorMessage),
   operatorContactLastName: yup.string().required(errorMessage),
   operatorPhone: yup

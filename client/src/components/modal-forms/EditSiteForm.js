@@ -1,12 +1,29 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
-import { Box } from '@material-ui/core';
+import { Box, makeStyles } from '@material-ui/core';
 import { RenderRadioGroup, RenderTextField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-export const EditSiteForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    '& > * + *': {
+      marginLeft: theme.spacing(2),
+    },
+  },
+}));
+
+export const EditSiteForm = ({
+  initialValues,
+  validationSchema,
+  onSubmit,
+  onClose,
+  isLoading = false,
+}) => {
+  const classes = useStyles();
   return (
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
       {({ submitForm, values }) => (
@@ -55,6 +72,7 @@ export const EditSiteForm = ({ initialValues, validationSchema, onSubmit, onClos
                 <b>Operator Info</b>
               </Typography>
             </Box>
+            <Field name='operatorName' component={RenderTextField} label='Operator Name' />
             <Field
               name='operatorContactFirstName'
               component={RenderTextField}
@@ -70,7 +88,13 @@ export const EditSiteForm = ({ initialValues, validationSchema, onSubmit, onClos
                 <Button onClick={onClose} color='default' text='Cancel' />
               </Grid>
               <Grid item>
-                <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />
+                {isLoading ? (
+                  <div className={classes.root}>
+                    <CircularProgress />
+                  </div>
+                ) : (
+                  <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />
+                )}
               </Grid>
             </Grid>
           </Box>

@@ -16,6 +16,7 @@ export default ({ match }) => {
   const [site, setSite] = useState({});
   const [stale, setStale] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const id = match.params.id;
   const handleSiteEdit = async (site) => {
     const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
@@ -27,7 +28,7 @@ export default ({ match }) => {
       },
       body: JSON.stringify(site),
     });
-
+    setIsLoading(false);
     if (response.ok) {
       setActiveModalForm(null);
       fetchDetails(id);
@@ -83,13 +84,16 @@ export default ({ match }) => {
               isRHO: site.isRHO,
               postalCode: site.postalCode,
               allocation: site.allocation,
+              operatorName: site.operatorName,
               operatorContactFirstName: site.operatorContactFirstName,
               operatorContactLastName: site.operatorContactLastName,
               operatorPhone: site.operatorPhone,
               operatorEmail: site.operatorEmail,
             }}
             validationSchema={EditSiteSchema}
+            isLoading={isLoading}
             onSubmit={(values) => {
+              setIsLoading(true);
               const history = {
                 timestamp: new Date(),
                 changes: [],
@@ -115,6 +119,7 @@ export default ({ match }) => {
                 isRHO: values.isRHO,
                 postalCode: values.postalCode,
                 allocation: values.allocation,
+                operatorName: values.operatorName,
                 operatorContactFirstName: values.operatorContactFirstName,
                 operatorContactLastName: values.operatorContactLastName,
                 operatorPhone: values.operatorPhone,

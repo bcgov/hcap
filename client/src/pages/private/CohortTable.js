@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
 import { Box } from '@material-ui/core';
@@ -43,7 +44,7 @@ export default ({ cohorts, editCohortAction }) => {
         );
       case 'start_date':
       case 'end_date':
-        return new Date(row[columnId]).toUTCString().split(' ').slice(1, 4).join(' ');
+        return moment(row[columnId]).format('DD MMM YYYY');
       case 'remaining_seats':
         return row['cohort_size'] - row['participants'].length;
       default:

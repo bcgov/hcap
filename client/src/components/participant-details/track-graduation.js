@@ -95,9 +95,9 @@ export const TrackGraduation = (props) => {
                 data: {
                   date:
                     props?.participant?.postHireStatus?.status ===
-                    postHireStatuses.postSecondaryEducationCompleted
-                      ? cohortEndDate
-                      : '',
+                    postHireStatuses.cohortUnsuccessful
+                      ? ''
+                      : cohortEndDate,
                 },
                 continue: 'continue_yes',
                 withdraw: false,

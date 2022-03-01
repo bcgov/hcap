@@ -52,7 +52,7 @@ export const CohortForm = ({ cohort, onSubmit, onClose, schema }) => {
                   onClick={submitForm}
                   variant='contained'
                   color='primary'
-                  text={initialValues ? 'Save Changes' : 'Submit'}
+                  text={cohort ? 'Save Changes' : 'Submit'}
                 />
               </Grid>
             </Grid>

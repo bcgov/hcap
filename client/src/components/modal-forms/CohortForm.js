@@ -5,22 +5,31 @@ import { Box } from '@material-ui/core';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { NewCohortSchema } from '../../constants';
+import { mapCohortToFormData } from '../../services';
 
-export const CohortForm = ({ initialValues, onSubmit, onClose, schema }) => {
+export const CohortForm = ({ cohort, onSubmit, onClose, schema }) => {
+  const initialValues = mapCohortToFormData(cohort) || {
+    cohortName: '',
+    startDate: '',
+    endDate: '',
+    cohortSize: '',
+  };
   return (
     <Formik
-      initialValues={
-        initialValues || {
-          cohortName: '',
-          startDate: '',
-          endDate: '',
-          cohortSize: '',
-        }
-      }
+      initialValues={initialValues}
       validationSchema={schema || NewCohortSchema}
-      onSubmit={onSubmit}
+      onSubmit={(values, { setFieldError }) => {
+        if (cohort && values.cohortSize < cohort.participants.length) {
+          setFieldError(
+            'cohortSize',
+            `Cohort size must be greater than or equal to current allocation (${cohort.participants.length})`
+          );
+        } else {
+          onSubmit(values);
+        }
+      }}
     >
-      {({ submitForm, values }) => (
+      {({ submitForm, values, setFieldError, setFieldValue }) => (
         <FormikForm>
           <Box>
             <Field name='cohortName' component={RenderTextField} label='* Cohort Name' />

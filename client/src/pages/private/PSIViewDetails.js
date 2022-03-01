@@ -12,7 +12,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MuiAlert from '@material-ui/lab/Alert';
 
-import { fetchPSI, fetchCohorts, addCohort, mapCohortToFormData, editCohort } from '../../services';
+import { fetchPSI, fetchCohorts, addCohort, editCohort } from '../../services';
 
 const CohortTable = lazy(() => import('./CohortTable'));
 
@@ -163,7 +163,7 @@ export default ({ match }) => {
         )}
         {activeModalForm === 'show-cohort' && (
           <CohortForm
-            initialValues={mapCohortToFormData(cohort)}
+            cohort={cohort}
             schema={NewCohortSchema}
             onSubmit={(values) => {
               if (cohort) {

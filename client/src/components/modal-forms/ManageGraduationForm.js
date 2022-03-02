@@ -7,7 +7,10 @@ import { getTodayDate } from '../../utils';
 import { Button } from '../../components/generic/Button';
 import { ParticipantPostHireStatusSchema } from '../../constants/validation';
 import { postHireStatuses } from '../../constants';
+import moment from 'moment';
 export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortEndDate }) => {
+  const cohortEndDateObj = moment(cohortEndDate, 'YYYY/MM/DD');
+  const today = new Date();
   return (
     <Box spacing={10} p={4} width={380}>
       <Formik
@@ -25,6 +28,9 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
               setFieldValue('data.date', '');
             }
           };
+          const isGraduatingBeforeCohortEndDate =
+            values.status === postHireStatuses.postSecondaryEducationCompleted &&
+            cohortEndDateObj > today;
           return (
             <FormikForm>
               <Box>
@@ -96,6 +102,11 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
                       </MuiAlert>
                     </Box>
                   )}
+                {isGraduatingBeforeCohortEndDate && (
+                  <MuiAlert severity='warning'>
+                    {'Graduation cannot be tracked before cohort has ended.'}
+                  </MuiAlert>
+                )}
                 <hr />
                 <Box mt={3}>
                   <Grid container spacing={2} justify='flex-end'>
@@ -108,6 +119,7 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
                         variant='contained'
                         color='primary'
                         text='Submit'
+                        disabled={isGraduatingBeforeCohortEndDate}
                       />
                     </Grid>
                   </Grid>

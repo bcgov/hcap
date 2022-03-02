@@ -9,7 +9,7 @@ import { ParticipantPostHireStatusSchema } from '../../constants/validation';
 import { postHireStatuses } from '../../constants';
 export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortEndDate }) => {
   return (
-    <Box spacing={10} p={4} maxWidth={400}>
+    <Box spacing={10} p={4} width={380}>
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
@@ -56,7 +56,7 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
                     name={'data.date'}
                     label={
                       values.status === postHireStatuses.postSecondaryEducationCompleted
-                        ? 'Graduation Date / Cohort End Date     '
+                        ? 'Graduation Date'
                         : 'Estimated Unsuccessful Date'
                     }
                     component={RenderDateField}
@@ -91,7 +91,7 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
                     <Box>
                       <MuiAlert severity='warning'>
                         {
-                          'Participants who no longer wish to to continue in HCAP will need to be archived, please use the archive function provided after you submit.'
+                          'Participants who no longer wish to continue in HCAP will need to be archived, please use the archive function provided after you submit.'
                         }
                       </MuiAlert>
                     </Box>

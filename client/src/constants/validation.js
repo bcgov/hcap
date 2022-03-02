@@ -680,7 +680,6 @@ export const ParticipantPostHireStatusSchema = yup
       }
     }),
     continue: yup.string().oneOf(['continue_yes', 'continue_no']).required(''),
-    withdraw: yup.bool().required(),
   });
 
 export const ParticipantAssignCohortSchema = yup

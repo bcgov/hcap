@@ -100,7 +100,6 @@ export const TrackGraduation = (props) => {
                       : cohortEndDate,
                 },
                 continue: 'continue_yes',
-                withdraw: false,
               }}
               onClose={() => {
                 setShowEditModal(false);
@@ -117,7 +116,6 @@ export const TrackGraduation = (props) => {
                       : {
                           unsuccessfulCohortDate: values?.data?.date,
                           continue: values.continue,
-                          withdraw: values.withdraw,
                         },
                 };
                 try {
@@ -127,7 +125,7 @@ export const TrackGraduation = (props) => {
                     status: ToastStatus.Info,
                     message: 'Participant status updated',
                   });
-                  if (values.withdraw && values.continue === 'continue_no') {
+                  if (values.continue === 'continue_no') {
                     setShowArchiveModal(true);
                   }
                   fetchData();

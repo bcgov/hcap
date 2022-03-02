@@ -1,14 +1,15 @@
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { RenderCheckbox, RenderDateField, RenderRadioGroup } from '../fields';
+import { RenderDateField, RenderRadioGroup } from '../fields';
 import React from 'react';
 import { Box, Grid, Typography } from '@material-ui/core';
+import MuiAlert from '@material-ui/lab/Alert';
 import { getTodayDate } from '../../utils';
 import { Button } from '../../components/generic/Button';
 import { ParticipantPostHireStatusSchema } from '../../constants/validation';
 import { postHireStatuses } from '../../constants';
 export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortEndDate }) => {
   return (
-    <Box spacing={10} p={5}>
+    <Box spacing={10} p={4} width={380}>
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
@@ -56,7 +57,7 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
                     label={
                       values.status === postHireStatuses.postSecondaryEducationCompleted
                         ? 'Graduation Date'
-                        : 'Unsuccessful Graduation Date'
+                        : 'Estimated Unsuccessful Date'
                     }
                     component={RenderDateField}
                     maxDate={getTodayDate()}
@@ -66,6 +67,7 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
                     }
                   />
                 }
+                <br />
                 {values.status === postHireStatuses.cohortUnsuccessful && (
                   <Field
                     test-id={'editGraduationModalContinue'}
@@ -84,15 +86,17 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
                     ]}
                   />
                 )}
-                {values?.continue === 'continue_no' && (
-                  <Field
-                    test-id={'editGraduationModalWithdraw'}
-                    name='withdraw'
-                    component={RenderCheckbox}
-                    label='Withdraw this participant from the program.'
-                  />
-                )}
-
+                {values?.continue === 'continue_no' &&
+                  values.status === postHireStatuses.cohortUnsuccessful && (
+                    <Box>
+                      <MuiAlert severity='warning'>
+                        {
+                          'Participants who no longer wish to continue in HCAP will need to be archived, please use the archive function provided after you submit.'
+                        }
+                      </MuiAlert>
+                    </Box>
+                  )}
+                <hr />
                 <Box mt={3}>
                   <Grid container spacing={2} justify='flex-end'>
                     <Grid item>

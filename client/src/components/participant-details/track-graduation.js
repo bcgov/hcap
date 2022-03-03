@@ -11,7 +11,7 @@ import { ToastStatus, API_URL, ArchiveHiredParticipantSchema } from '../../const
 import { postHireStatuses } from '../../constants';
 
 import { useToast } from '../../hooks';
-
+import { formatCohortDate } from '../../utils';
 // Helper function to call archive participant service
 const handleArchive = async (participantId, additional = {}, openToast) => {
   const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
@@ -46,7 +46,7 @@ export const TrackGraduation = (props) => {
     props.participant?.postHireStatus?.status === postHireStatuses.postSecondaryEducationCompleted;
 
   const cohortEndDate = props.participant?.cohort
-    ? moment(props.participant.cohort.end_date).format('YYYY/MM/DD')
+    ? formatCohortDate(props.participant.cohort.end_date, { isForm: true })
     : null;
 
   useEffect(() => {
@@ -58,14 +58,12 @@ export const TrackGraduation = (props) => {
         <Grid item xs={4}>
           <Typography>Cohort start date</Typography>
           <Typography>
-            {cohort?.start_date ? moment(cohort.start_date).format('MMM DD, YYYY') : 'N/A'}
+            {cohort?.start_date ? formatCohortDate(cohort.start_date) : 'N/A'}
           </Typography>
         </Grid>
         <Grid item xs={4}>
           <Typography>Cohort end date</Typography>
-          <Typography>
-            {cohort?.end_date ? moment(cohort.end_date).format('MMM DD, YYYY') : 'N/A'}
-          </Typography>
+          <Typography>{cohort?.end_date ? formatCohortDate(cohort.end_date) : 'N/A'}</Typography>
         </Grid>
         <Grid item xs={4}>
           <Typography variant='subtitle2'>Graduation Status</Typography>

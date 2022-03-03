@@ -1,6 +1,6 @@
 import store from 'store';
-import moment from 'moment';
 import { API_URL } from '../constants';
+import { formatCohortDate } from '../utils';
 
 const baseURL = `${API_URL}/api/v1`;
 
@@ -142,8 +142,8 @@ export const mapCohortToFormData = (cohort) =>
   cohort
     ? {
         cohortName: cohort.cohort_name,
-        startDate: moment(cohort.start_date).format('YYYY/MM/DD'),
-        endDate: moment(cohort.end_date).format('YYYY/MM/DD'),
+        startDate: formatCohortDate(cohort.start_date, { isForm: true }),
+        endDate: formatCohortDate(cohort.end_date, { isForm: true }),
         cohortSize: cohort.cohort_size,
       }
     : null;

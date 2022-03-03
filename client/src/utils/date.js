@@ -4,7 +4,9 @@ export const dateToString = (dateObj) => moment(dateObj).format('YYYY/MM/DD');
 
 export const stringToDate = (dateStr) => moment(dateStr, 'YYYY/MM/DD');
 
-export const formatCohortDate = (dateStr) => moment(dateStr).format('DD MMM YYYY');
+export const formatCohortDate = (dateStr) => {
+  return moment.utc(dateStr).format('DD MMM YYYY');
+};
 
 export const getTodayDate = () => {
   const today = new Date();

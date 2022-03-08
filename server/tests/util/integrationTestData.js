@@ -1,8 +1,10 @@
+const { dbClient, collections } = require('../../db');
 const { participantData, psiData, cohortData } = require('./testData');
 const { makeParticipant } = require('../../services/participants');
 const { createPostHireStatus } = require('../../services/post-hire-flow');
 const { makePSI } = require('../../services/post-secondary-institutes');
 const { makeCohort, assignCohort } = require('../../services/cohorts');
+const { saveSingleSite } = require('../../services/employers');
 
 const makeTestPostHireStatus = async ({ email, status, data = {} }) => {
   const participantObj = participantData({ emailAddress: email });
@@ -55,8 +57,51 @@ const makeCohortAssignment = async ({
   };
 };
 
+const makeTestSite = async (options) => {
+  if (!options.siteId) {
+    throw new Error('Site ID is required');
+  }
+  return saveSingleSite(options);
+};
+
+const makeTestParticipantStatus = async ({
+  participantId,
+  employerId,
+  status,
+  current = true,
+  data,
+}) =>
+  dbClient.db[collections.PARTICIPANTS_STATUS].insert({
+    participant_id: participantId,
+    employer_id: employerId || 1,
+    status,
+    current,
+    data,
+  });
+
+const createTestParticipantStatus = async ({
+  participantData: participantDataObj,
+  siteData,
+  status,
+}) => {
+  const participant = await makeTestParticipant(participantDataObj);
+  const site = await makeTestSite(siteData);
+  const participantStatus = await makeTestParticipantStatus({
+    participantId: participant.id,
+    status: status || 'hired',
+    current: true,
+    data: {
+      site: site.siteId,
+    },
+  });
+  return { participant, site, participantStatus };
+};
+
 module.exports = {
   makeTestParticipant,
   makeTestPostHireStatus,
   makeCohortAssignment,
+  makeTestSite,
+  makeTestParticipantStatus,
+  createTestParticipantStatus,
 };

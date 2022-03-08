@@ -4,6 +4,11 @@ const validateDateString = (s) => {
   return typeof date === 'number' && !Number.isNaN(date);
 };
 
+const validISODateString = (s) => {
+  const date = Date.parse(s);
+  return typeof date === 'number' && !Number.isNaN(date);
+};
+
 const validateOptionalDateString = (s) => {
   if (!s) return true;
   if (/^\d{4}\/\d{2}\/\d{2}$/.test(s) === false) return false;
@@ -114,4 +119,5 @@ module.exports = {
   validateUniqueArray,
   errorMessage,
   errorMessageIndex,
+  validISODateString,
 };

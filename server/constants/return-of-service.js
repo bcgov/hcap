@@ -13,8 +13,8 @@ const rosEmploymentType = {
 const rosEmploymentTypeValues = Object.values(rosEmploymentType);
 
 const rosError = {
-  participantNotHired: 'Participant-is-not-hired',
-  noSiteAttached: 'No-site-attached',
+  participantNotHired: 'participant-is-not-hired',
+  noSiteAttached: 'no-site-attached',
 };
 
 module.exports = {

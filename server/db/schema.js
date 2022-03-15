@@ -17,6 +17,7 @@ const collections = {
   COHORT_PARTICIPANTS: 'cohort_participants',
   PARTICIPANT_WAITLIST: 'participant_waitlist',
   PARTICIPANT_POST_HIRE_STATUS: 'participant_post_hire_status',
+  ROS_STATUS: 'return_of_service_status',
 };
 
 const views = {

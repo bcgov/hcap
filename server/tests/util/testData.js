@@ -1,4 +1,4 @@
-const { postHireStatuses } = require('../../validation');
+const { postHireStatuses, rosPositionType, rosEmploymentType } = require('../../constants');
 
 const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
 
@@ -51,6 +51,48 @@ const postHireStatusData = ({ graduationDate, participantId, status }) => ({
   },
 });
 
+const siteData = ({
+  siteName,
+  healthAuthority,
+  operatorName,
+  operatorEmail,
+  city,
+  isRHO,
+  postalCode,
+  registeredBusinessName,
+  siteId,
+}) => ({
+  siteId,
+  siteName: siteName || 'Test site',
+  allocation: 1,
+  address: '123 XYZ',
+  city: city || 'Victoria',
+  isRHO: isRHO || false,
+  healthAuthority: healthAuthority || 'Vancouver Island',
+  postalCode: postalCode || 'V8V 1M5',
+  registeredBusinessName: registeredBusinessName || siteName || 'AAA',
+  operatorName: operatorName || siteName || 'Test Operator',
+  operatorContactFirstName: 'AABB',
+  operatorContactLastName: 'CCC',
+  operatorEmail: operatorEmail || 'test@hcpa.fresh',
+  operatorPhone: '2219909090',
+  siteContactFirstName: 'NNN',
+  siteContactLastName: 'PCP',
+  siteContactPhone: '2219909091',
+  siteContactEmail: 'test.site@hcpa.fresh',
+});
+
+const rosData = ({
+  positionType = rosPositionType.permanent,
+  employmentType = rosEmploymentType.fullTime,
+  sameSite = true,
+}) => ({
+  date: new Date(),
+  positionType,
+  employmentType,
+  sameSite,
+});
+
 module.exports = {
   regions,
   psiData,
@@ -60,4 +102,6 @@ module.exports = {
   cohortData,
   participantData,
   postHireStatusData,
+  siteData,
+  rosData,
 };

@@ -24,6 +24,7 @@ const psiRouter = require('./post-secondary-institutes');
 const cohortRouter = require('./cohorts');
 const milestoneReportRouter = require('./milestone-report');
 const postHireStatusRouter = require('./post-hire-status');
+const rosRouter = require('./return-of-service');
 
 const apiRouter = express.Router();
 apiRouter.use(keycloak.expressMiddleware());
@@ -54,6 +55,9 @@ apiRouter.use('/milestone-report', milestoneReportRouter);
 
 // Post hire status
 apiRouter.use('/post-hire-status', postHireStatusRouter);
+
+// Return of service
+apiRouter.use('/ros', rosRouter);
 
 // Return client info for Keycloak realm for the current environment
 apiRouter.get(`/keycloak-realm-client-info`, (req, res) =>

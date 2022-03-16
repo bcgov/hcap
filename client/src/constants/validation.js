@@ -9,6 +9,7 @@ import {
 import { indigenousIdentities } from '../components/modal-forms/IndigenousDeclarationForm';
 
 import { postHireStatuses, postHireStatusesValues } from '../constants/postHireConstants';
+import { rosEmploymentTypeValues, rosPositionTypeValues } from './return-of-service';
 
 const healthRegions = ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'];
 
@@ -688,4 +689,23 @@ export const ParticipantAssignCohortSchema = yup
   .shape({
     cohort: yup.number().required(errorMessage),
     institute: yup.number().required(errorMessage),
+  });
+
+export const ReturnOfServiceSchema = yup
+  .object()
+  .noUnknown('Unknown field in form')
+  .shape({
+    date: yup
+      .string()
+      .required('Return of service date (data.date) is required')
+      .test('is-date', 'Not a valid date', validateDateString),
+    positionType: yup
+      .string()
+      .required('Position Type (data.positionType) is required')
+      .oneOf(rosPositionTypeValues),
+    employmentType: yup
+      .string()
+      .required('Employment Type (data.employmentType) is required')
+      .oneOf(rosEmploymentTypeValues),
+    sameSite: yup.boolean().required('Same Site flag (data.sameSite) is required'),
   });

@@ -697,7 +697,7 @@ export const ReturnOfServiceSchema = yup
   .shape({
     date: yup
       .date()
-      .required('Return of service date (data.date) is required')
+      .required('Return of service date is required')
       .test('is-present', 'Invalid entry. Date must be in the past.', validateDateIsInThePast)
       .test(
         'is-reasonable',
@@ -707,11 +707,11 @@ export const ReturnOfServiceSchema = yup
       .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
     positionType: yup
       .string()
-      .required('Position Type (data.positionType) is required')
+      .required('Position Type is required')
       .oneOf(rosPositionTypeValues),
     employmentType: yup
       .string()
-      .required('Employment Type (data.employmentType) is required')
+      .required('Employment Type is required')
       .oneOf(rosEmploymentTypeValues),
     sameSite: yup.boolean().required('Same Site flag (data.sameSite) is required'),
   });

@@ -10,4 +10,4 @@ export * from './NewPSIForm';
 export * from './EditPSIForm';
 export * from './CohortForm';
 export * from './ArchiveHiredParticipantForm';
-export * from './ReturnOfServiceFrom';
+export * from './ReturnOfServiceForm';

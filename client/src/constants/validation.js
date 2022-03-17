@@ -711,7 +711,16 @@ export const ReturnOfServiceSchema = yup
       .oneOf(rosPositionTypeValues),
     employmentType: yup
       .string()
-      .required('Employment Type is required')
+      .optional('Please select employment type')
       .oneOf(rosEmploymentTypeValues),
-    sameSite: yup.boolean().required('Same Site flag (data.sameSite) is required'),
+    sameSite: yup
+      .boolean()
+      .typeError('Same site is boolean')
+      .required('Please select if participant is returning to the same site')
+      .test('is-true', 'Return of service in different site is not possible', (v) => v === true),
+    confirm: yup
+      .boolean()
+      .typeError('Confirmation is boolean')
+      .required('Please confirm')
+      .test('is-true', 'Please confirm', (v) => v === true),
   });

@@ -6,5 +6,6 @@ export const getDialogTitle = (activeModalForm) => {
   if (activeModalForm === 'new-participant') return 'Add New Non-Portal Hire';
   if (activeModalForm === 'edit-participant') return 'Edit Participant';
   if (activeModalForm === 'archive') return 'Archive Participant';
+  if (activeModalForm === 'return-of-service') return '';
   return 'Change Participant Status';
 };

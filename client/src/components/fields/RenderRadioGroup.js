@@ -14,6 +14,7 @@ export const RenderRadioGroup = ({
   disabled,
   setTouched,
   hiddenCheckbox,
+  boldLabel,
   ...props
 }) => {
   const handleChange = (e) => {
@@ -40,7 +41,7 @@ export const RenderRadioGroup = ({
 
   return (
     <Fragment>
-      {label && <InputFieldLabel label={label} />}
+      {label && <InputFieldLabel label={label} boldLabel={boldLabel} />}
       <RadioGroup {...field} {...props} onChange={handleChange}>
         {options.map((option) => (
           <Fragment key={option.value}>

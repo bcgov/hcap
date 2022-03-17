@@ -696,9 +696,15 @@ export const ReturnOfServiceSchema = yup
   .noUnknown('Unknown field in form')
   .shape({
     date: yup
-      .string()
+      .date()
       .required('Return of service date (data.date) is required')
-      .test('is-date', 'Not a valid date', validateDateString),
+      .test('is-present', 'Invalid entry. Date must be in the past.', validateDateIsInThePast)
+      .test(
+        'is-reasonable',
+        'Invalid entry. Date must be after December 31st 1899.',
+        validateDateIsReasonable
+      )
+      .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
     positionType: yup
       .string()
       .required('Position Type (data.positionType) is required')

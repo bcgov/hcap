@@ -241,6 +241,7 @@ describe('Participants Service', () => {
         'distance',
         'progressStats',
         'postHireStatuses',
+        'rosStatuses',
       ])
     );
   });

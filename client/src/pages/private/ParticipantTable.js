@@ -422,15 +422,16 @@ const ParticipantTable = () => {
                 Archive
               </MenuItem>
             )}
-            {actionMenuParticipant?.status === 'hired' && (
-              <MenuItem
-                onClick={() =>
-                  openFormForParticipant(actionMenuParticipant?.id, 'return-of-service')
-                }
-              >
-                Return Of Service
-              </MenuItem>
-            )}
+            {actionMenuParticipant?.status === 'hired' &&
+              actionMenuParticipant?.rosStatuses.length === 0 && (
+                <MenuItem
+                  onClick={() =>
+                    openFormForParticipant(actionMenuParticipant?.id, 'return-of-service')
+                  }
+                >
+                  Return Of Service
+                </MenuItem>
+              )}
           </Menu>
         )}
       </CheckPermissions>

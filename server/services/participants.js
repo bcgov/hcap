@@ -520,6 +520,7 @@ const getParticipants = async (
         callbackStatus: item.callbackStatus,
         distance: item.distance,
         postHireStatuses: item.postHireStatuses || [],
+        rosStatuses: item.rosStatuses || [],
       };
 
       const hiredBySomeoneElseStatus = item.statusInfos?.find(

@@ -705,10 +705,7 @@ export const ReturnOfServiceSchema = yup
         validateDateIsReasonable
       )
       .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
-    positionType: yup
-      .string()
-      .required('Position Type is required')
-      .oneOf(rosPositionTypeValues),
+    positionType: yup.string().required('Position Type is required').oneOf(rosPositionTypeValues),
     employmentType: yup
       .string()
       .optional('Please select employment type')

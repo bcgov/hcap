@@ -316,6 +316,7 @@ describe('Participants Service', () => {
         'distance',
         'progressStats',
         'postHireStatuses',
+        'rosStatuses',
       ])
     );
   });
@@ -339,11 +340,16 @@ describe('Participants Service', () => {
         'userUpdatedAt',
         'progressStats',
         'postHireStatuses',
+        'rosStatuses',
       ];
       return a.map((i) =>
         Object.keys(i)
           .filter((k) => employerColumns.includes(k))
-          .reduce((o, k) => ({ ...o, [k]: i[k] }), { nonHCAP: undefined, postHireStatuses: [] })
+          .reduce((o, k) => ({ ...o, [k]: i[k] }), {
+            nonHCAP: undefined,
+            postHireStatuses: [],
+            rosStatuses: [],
+          })
       );
     };
     const trimIds = (a) =>

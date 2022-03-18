@@ -92,6 +92,12 @@ app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.json());
 app.use(`${apiBaseUrl}`, apiRouter);
 
+// Certbot acm challenge
+app.get('/.well-known/acme-challenge/:token', (req, res) => {
+  const { token } = req.params;
+  return res.status(200).send(`${token}.ecY9tbsXjF7qcrMjlo0dZwSIG6A5ar5y529Pl4nZYu0`);
+});
+
 // Client app
 
 if (process.env.NODE_ENV === 'production') {

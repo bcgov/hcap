@@ -21,7 +21,7 @@ const CreateReturnOfServiceSchema = yup
           .oneOf(rosPositionTypeValues),
         employmentType: yup
           .string()
-          .required('Employment Type (data.employmentType) is required')
+          .optional('Employment Type (data.employmentType) is required')
           .oneOf(rosEmploymentTypeValues),
         sameSite: yup.boolean().required('Same Site flag (data.sameSite) is required'),
       }),

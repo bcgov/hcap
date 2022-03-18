@@ -152,6 +152,16 @@ const ParticipantTable = () => {
     }
   };
 
+  const handleRosUpdate = (success) => {
+    if (success) {
+      openToast({
+        status: ToastStatus.Success,
+        message: 'Return of Service status updated',
+      });
+      fetchParticipants();
+    }
+  };
+
   const handleAcknowledge = async (id) => {
     try {
       await acknowledgeParticipant(id);
@@ -264,10 +274,13 @@ const ParticipantTable = () => {
           <>
             {!row.status.includes('withdrawn') && (
               <Button
-                onClick={() => openFormForParticipant(row.id, 'archive')}
+                onClick={(event) => {
+                  setActionMenuParticipant(row.engage);
+                  setAnchorElement(event.currentTarget);
+                }}
                 variant='outlined'
                 size='small'
-                text='Archive'
+                text='Actions'
               />
             )}
           </>
@@ -289,6 +302,7 @@ const ParticipantTable = () => {
         actionMenuParticipant={actionMenuParticipant}
         handleEngage={handleEngage}
         onClose={handleDialogueClose}
+        handleRosUpdate={handleRosUpdate}
       />
       <CheckPermissions
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
@@ -401,6 +415,23 @@ const ParticipantTable = () => {
                 Re-engage
               </MenuItem>
             )}
+            {actionMenuParticipant?.status === 'hired' && (
+              <MenuItem
+                onClick={() => openFormForParticipant(actionMenuParticipant?.id, 'archive')}
+              >
+                Archive
+              </MenuItem>
+            )}
+            {actionMenuParticipant?.status === 'hired' &&
+              actionMenuParticipant?.rosStatuses.length === 0 && (
+                <MenuItem
+                  onClick={() =>
+                    openFormForParticipant(actionMenuParticipant?.id, 'return-of-service')
+                  }
+                >
+                  Return Of Service
+                </MenuItem>
+              )}
           </Menu>
         )}
       </CheckPermissions>

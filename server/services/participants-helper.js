@@ -40,6 +40,9 @@ const scrubParticipantData = (raw, joinNames) =>
       ...participant.body,
       id: participant.id,
       statusInfos,
+      rosStatuses: participant.rosStatuses
+        ? participant.rosStatuses.sort((ros1, ros2) => ros2.id - ros1.id)
+        : [],
     };
   });
 
@@ -158,8 +161,15 @@ class FieldsFilteredParticipantsFinder {
   }
 
   filterExternalFields({ statusFilters, siteIdDistance }) {
-    const { user, criteria, employerSpecificJoin, hiredGlobalJoin, siteJoin, siteDistanceJoin } =
-      this.context;
+    const {
+      user,
+      criteria,
+      employerSpecificJoin,
+      hiredGlobalJoin,
+      siteJoin,
+      siteDistanceJoin,
+      rosStatuses,
+    } = this.context;
     this.context.siteIdDistance = siteIdDistance;
 
     if (user.isEmployer || user.isHA) {
@@ -180,6 +190,13 @@ class FieldsFilteredParticipantsFinder {
             participant_id: 'id',
             current: true,
             status: participantStatus.HIRED,
+          },
+        },
+        [rosStatuses]: {
+          type: 'LEFT OUTER',
+          relation: collections.ROS_STATUS,
+          on: {
+            participant_id: 'id',
           },
         },
         ...(siteIdDistance && {
@@ -319,6 +336,7 @@ class ParticipantsFinder {
     this.hiredGlobalJoin = 'hiredGlobalJoin';
     this.siteJoin = 'siteJoin';
     this.siteDistanceJoin = 'siteDistanceJoin';
+    this.rosStatuses = 'rosStatuses';
   }
 
   filterRegion(regionFilter) {

@@ -17,7 +17,9 @@ export const createReturnOfServiceStatus = async ({ participantId, data }) => {
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
-    body: JSON.stringify(finalBody),
+    body: JSON.stringify({
+      data: finalBody,
+    }),
   });
   if (response.ok) {
     return await response.json();

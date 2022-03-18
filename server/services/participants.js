@@ -499,7 +499,8 @@ const getParticipants = async (
           userUpdatedAt: item.userUpdatedAt,
           distance: item.distance,
           progressStats,
-          postHireStatuses: item.postHireStatuses,
+          postHireStatuses: item.postHireStatuses || [],
+          rosStatuses: item.rosStatuses || [],
         };
       }),
       ...(pagination && { pagination: paginationData }),
@@ -520,6 +521,7 @@ const getParticipants = async (
         callbackStatus: item.callbackStatus,
         distance: item.distance,
         postHireStatuses: item.postHireStatuses || [],
+        rosStatuses: item.rosStatuses || [],
       };
 
       const hiredBySomeoneElseStatus = item.statusInfos?.find(

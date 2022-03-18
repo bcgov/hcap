@@ -6,12 +6,12 @@ import { dateToString, stringToDate } from '../../utils';
 
 import { InputFieldError, InputFieldLabel } from '../generic';
 
-export const RenderDateField = ({ field, form, label, ...props }) => {
+export const RenderDateField = ({ field, form, label, boldLabel, ...props }) => {
   const [, , helpers] = useField(field.name);
   const { setValue, setTouched } = helpers;
   return (
     <Fragment>
-      {label && <InputFieldLabel label={label} />}
+      {label && <InputFieldLabel label={label} boldLabel={boldLabel} />}
       <KeyboardDatePicker
         format='YYYY/MM/DD'
         name={label.replace(/[ *]/g, '')}

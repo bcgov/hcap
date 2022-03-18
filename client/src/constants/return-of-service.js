@@ -1,13 +1,25 @@
 export const rosPositionType = {
-  permanent: 'permanent',
-  casual: 'casual',
+  casual: {
+    value: 'casual',
+    label: 'Casual',
+  },
+  permanent: {
+    value: 'permanent',
+    label: 'Permanent',
+  },
 };
 
-export const rosPositionTypeValues = Object.values(rosPositionType);
+export const rosPositionTypeValues = Object.values(rosPositionType).map(({ value }) => value);
 
-const rosEmploymentType = {
-  fullTime: 'full-time',
-  partTime: 'part-time',
+export const rosEmploymentType = {
+  fullTime: {
+    value: 'full-time',
+    label: 'Full Time',
+  },
+  partTime: {
+    value: 'part-time',
+    label: 'Part Time',
+  },
 };
 
-export const rosEmploymentTypeValues = Object.values(rosEmploymentType);
+export const rosEmploymentTypeValues = Object.values(rosEmploymentType).map(({ value }) => value);

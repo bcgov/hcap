@@ -9,6 +9,7 @@ import {
   NewParticipantForm,
   EditParticipantForm,
   ArchiveHiredParticipantForm,
+  ReturnOfServiceForm,
 } from '../../components/modal-forms';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
@@ -19,6 +20,7 @@ export const ParticipantTableDialogues = ({
   actionMenuParticipant,
   onClose,
   handleEngage,
+  handleRosUpdate,
 }) => {
   const { dispatch: participantsDispatch } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
@@ -110,6 +112,13 @@ export const ParticipantTableDialogues = ({
             handleEngage(actionMenuParticipant.id, 'archived', values);
           }}
           onClose={onClose}
+        />
+      )}
+      {activeModalForm === 'return-of-service' && (
+        <ReturnOfServiceForm
+          participantId={actionMenuParticipant.id}
+          onClose={onClose}
+          completionHandler={handleRosUpdate}
         />
       )}
     </Dialog>

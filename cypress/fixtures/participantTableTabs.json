@@ -52,14 +52,16 @@
         "Available Participants",
         "My Candidates",
         "Archived Candidates",
-        "Hired Candidates"
+        "Hired Candidates",
+        "Return Of Service"
       ],
       "allTabs": [
         "Participants",
         "Available Participants",
         "My Candidates",
         "Archived Candidates",
-        "Hired Candidates"
+        "Hired Candidates",
+        "Return Of Service"
       ],
       "tableTabs": {
         "Available Participants": [
@@ -115,6 +117,16 @@
           "Non-HCAP",
           "Last Updated",
           "Graduated"
+        ],
+        "Return Of Service": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "Phone Number",
+          "Email Address",
+          "Return of Service Start Date",
+          "Site Name"
         ]
       }
     },
@@ -125,14 +137,16 @@
         "Available Participants",
         "My Candidates",
         "Archived Candidates",
-        "Hired Candidates"
+        "Hired Candidates",
+        "Return Of Service"
       ],
       "allTabs": [
         "Participants",
         "Available Participants",
         "My Candidates",
         "Archived Candidates",
-        "Hired Candidates"
+        "Hired Candidates",
+        "Return Of Service"
       ],
       "tableTabs": {
         "Available Participants": [
@@ -188,6 +202,16 @@
           "Non-HCAP",
           "Last Updated",
           "Graduated"
+        ],
+        "Return Of Service": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "Phone Number",
+          "Email Address",
+          "Return of Service Start Date",
+          "Site Name"
         ]
       }
     }

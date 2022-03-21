@@ -25,15 +25,26 @@ import {
   getGraduationStatus,
 } from '../../services/participant';
 
+const mapRosData = (data) => ({
+  rosSiteName: data?.rosStatuses?.[0]?.site?.body.siteName,
+  rosStartDate: moment(data?.rosStatuses?.[0]?.data.date).format('MM/DD/YYYY'),
+});
+
 const filterData = (data, columns) => {
   const emailAddressMask = '***@***.***';
   const phoneNumberMask = '(***) ***-****';
 
   const mapItemToColumns = (item, columns) => {
     const row = {};
+    const finalItem =
+      item.rosStatuses && item.rosStatuses.length > 0
+        ? { ...item, ...mapRosData(item) }
+        : { ...item };
 
     columns.forEach((column) => {
-      row[column.id] = item[column.id];
+      if (finalItem[column.id]) {
+        row[column.id] = finalItem[column.id];
+      }
     });
 
     return row;
@@ -55,8 +66,9 @@ const filterData = (data, columns) => {
 
     row.engage = item;
     row.siteName = item?.statusInfos?.[0].data?.siteName;
-
-    if (item.statusInfos && item.statusInfos.length > 0) {
+    if (item.rosStatuses && item.rosStatuses.length > 0) {
+      row.status = ['ros'];
+    } else if (item.statusInfos && item.statusInfos.length > 0) {
       // Handling already_hired and withdrawn status
       const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
       if (item.statusInfos.find((statusInfo) => statusInfo.status === 'withdrawn')) {
@@ -272,17 +284,25 @@ const ParticipantTable = () => {
       case 'archive':
         return (
           <>
-            {!row.status.includes('withdrawn') && (
-              <Button
-                onClick={(event) => {
-                  setActionMenuParticipant(row.engage);
-                  setAnchorElement(event.currentTarget);
-                }}
-                variant='outlined'
-                size='small'
-                text='Actions'
-              />
-            )}
+            {!row.status.includes('withdrawn') &&
+              (row.status.includes('ros') ? (
+                <Button
+                  onClick={() => openFormForParticipant(row.id, 'archive')}
+                  variant='outlined'
+                  size='small'
+                  text='Archive'
+                />
+              ) : (
+                <Button
+                  onClick={(event) => {
+                    setActionMenuParticipant(row.engage);
+                    setAnchorElement(event.currentTarget);
+                  }}
+                  variant='outlined'
+                  size='small'
+                  text='Actions'
+                />
+              ))}
           </>
         );
       case 'postHireStatuses':

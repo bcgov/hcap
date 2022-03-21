@@ -59,6 +59,7 @@ const participantStatuses = [
   'unavailable',
   'archived',
   'pending_acknowledgement',
+  'ros',
 ];
 
 const postHireStatuses = {

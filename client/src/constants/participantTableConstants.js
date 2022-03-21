@@ -9,6 +9,7 @@ export const participantStatus = {
   ARCHIVED: 'archived',
   REJECTED: 'rejected',
   HIRED: 'hired',
+  ROS: 'ros',
 };
 
 export const tabs = {
@@ -28,6 +29,10 @@ export const tabs = {
   'Hired Candidates': {
     roles: ['employer', 'health_authority'],
     statuses: ['hired'],
+  },
+  'Return Of Service': {
+    roles: ['employer', 'health_authority'],
+    statuses: ['ros', 'hired'],
   },
   Participants: {
     roles: ['ministry_of_health', 'superuser'],
@@ -89,6 +94,7 @@ export const tabStatuses = {
   'My Candidates': ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
   'Archived Candidates': ['rejected', 'archived'],
   'Hired Candidates': ['hired', 'pending_acknowledgement'],
+  'Return Of Service': ['ros', 'hired'],
   Participants: [
     'open',
     'prospecting',
@@ -108,8 +114,15 @@ export const tabsByRole = {
     'My Candidates',
     'Archived Candidates',
     'Hired Candidates',
+    'Return Of Service',
   ],
-  employer: ['Available Participants', 'My Candidates', 'Archived Candidates', 'Hired Candidates'],
+  employer: [
+    'Available Participants',
+    'My Candidates',
+    'Archived Candidates',
+    'Hired Candidates',
+    'Return Of Service',
+  ],
 };
 
 const columns = {
@@ -130,9 +143,11 @@ const columns = {
   userUpdatedAt: { id: 'userUpdatedAt', name: 'Last Updated', sortOrder: 15 },
   engage: { id: 'engage', name: null, sortOrder: 16 },
   siteName: { id: 'siteName', name: 'Site Name', sortOrder: 18 },
-  archive: { id: 'archive', name: 'Archive', soryOrder: 19 },
+  archive: { id: 'archive', name: null, sortOrder: 52 },
   postHireStatuses: { id: 'postHireStatuses', name: 'Graduated', sortOrder: 20 },
   edit: { id: 'edit', name: null, sortOrder: 21 },
+  rosStartDate: { id: 'rosStartDate', name: 'Return of Service Start Date', sortOrder: 22 },
+  rosSiteName: { id: 'rosSiteName', name: 'Site Name', sortOrder: 23 },
 };
 
 const {
@@ -155,6 +170,8 @@ const {
   siteName,
   archive,
   postHireStatuses,
+  rosStartDate,
+  rosSiteName,
 } = columns;
 
 export const columnsByRole = {
@@ -254,6 +271,17 @@ export const columnsByRole = {
       postHireStatuses,
       archive,
     ],
+    'Return Of Service': [
+      id,
+      lastName,
+      firstName,
+      phoneNumber,
+      emailAddress,
+      status,
+      rosStartDate,
+      rosSiteName,
+      archive,
+    ],
   },
 
   employer: {
@@ -313,6 +341,17 @@ export const columnsByRole = {
       nonHCAP,
       userUpdatedAt,
       postHireStatuses,
+      archive,
+    ],
+    'Return Of Service': [
+      id,
+      lastName,
+      firstName,
+      phoneNumber,
+      emailAddress,
+      status,
+      rosStartDate,
+      rosSiteName,
       archive,
     ],
   },

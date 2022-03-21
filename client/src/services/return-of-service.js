@@ -8,6 +8,7 @@ export const createReturnOfServiceStatus = async ({ participantId, data }) => {
   const finalBody = {
     ...data,
     date: dateObj,
+    employmentType: data.employmentType || undefined,
   };
   const url = `${API_URL}/api/v1/ros/participant/${participantId}`;
   const response = await fetch(url, {

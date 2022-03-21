@@ -284,25 +284,17 @@ const ParticipantTable = () => {
       case 'archive':
         return (
           <>
-            {!row.status.includes('withdrawn') &&
-              (row.status.includes('ros') ? (
-                <Button
-                  onClick={() => openFormForParticipant(row.id, 'archive')}
-                  variant='outlined'
-                  size='small'
-                  text='Archive'
-                />
-              ) : (
-                <Button
-                  onClick={(event) => {
-                    setActionMenuParticipant(row.engage);
-                    setAnchorElement(event.currentTarget);
-                  }}
-                  variant='outlined'
-                  size='small'
-                  text='Actions'
-                />
-              ))}
+            {!row.status.includes('withdrawn') && (
+              <Button
+                onClick={(event) => {
+                  setActionMenuParticipant(row.engage);
+                  setAnchorElement(event.currentTarget);
+                }}
+                variant='outlined'
+                size='small'
+                text='Actions'
+              />
+            )}
           </>
         );
       case 'postHireStatuses':
@@ -435,7 +427,7 @@ const ParticipantTable = () => {
                 Re-engage
               </MenuItem>
             )}
-            {actionMenuParticipant?.status === 'hired' && (
+            {['hired', 'ros'].includes(actionMenuParticipant?.status) && (
               <MenuItem
                 onClick={() => openFormForParticipant(actionMenuParticipant?.id, 'archive')}
               >
@@ -443,7 +435,8 @@ const ParticipantTable = () => {
               </MenuItem>
             )}
             {actionMenuParticipant?.status === 'hired' &&
-              actionMenuParticipant?.rosStatuses.length === 0 && (
+              actionMenuParticipant?.rosStatuses.length === 0 &&
+              getGraduationStatus(actionMenuParticipant.postHireStatuses) !== 'No' && (
                 <MenuItem
                   onClick={() =>
                     openFormForParticipant(actionMenuParticipant?.id, 'return-of-service')

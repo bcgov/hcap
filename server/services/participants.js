@@ -441,7 +441,7 @@ const getParticipants = async (
       isIndigenousFilter,
     })
     .filterExternalFields({
-      statusFilters: statusFilters.filter((item) => item !== 'ros'),
+      statusFilters: (statusFilters || []).filter((item) => item !== 'ros'),
       siteIdDistance: siteSelector,
     })
     .paginate(pagination, sortField)

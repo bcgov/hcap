@@ -137,14 +137,16 @@
         "Available Participants",
         "My Candidates",
         "Archived Candidates",
-        "Hired Candidates"
+        "Hired Candidates",
+        "Return Of Service"
       ],
       "allTabs": [
         "Participants",
         "Available Participants",
         "My Candidates",
         "Archived Candidates",
-        "Hired Candidates"
+        "Hired Candidates",
+        "Return Of Service"
       ],
       "tableTabs": {
         "Available Participants": [

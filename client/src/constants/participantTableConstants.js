@@ -143,7 +143,7 @@ const columns = {
   userUpdatedAt: { id: 'userUpdatedAt', name: 'Last Updated', sortOrder: 15 },
   engage: { id: 'engage', name: null, sortOrder: 16 },
   siteName: { id: 'siteName', name: 'Site Name', sortOrder: 18 },
-  archive: { id: 'archive', name: 'Archive', soryOrder: 52 },
+  archive: { id: 'archive', name: null, soryOrder: 52 },
   postHireStatuses: { id: 'postHireStatuses', name: 'Graduated', sortOrder: 20 },
   edit: { id: 'edit', name: null, sortOrder: 21 },
   rosStartDate: { id: 'rosStartDate', name: 'Return of Service Start Date', sortOrder: 22 },

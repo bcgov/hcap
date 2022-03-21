@@ -453,7 +453,7 @@ const getParticipants = async (
   };
 
   // Filter all participant if ros is on
-  if (statusFilters.includes('ros')) {
+  if (statusFilters && statusFilters.includes('ros')) {
     participants = participants.filter((participant) => participant.rosStatuses.length > 0);
   }
 

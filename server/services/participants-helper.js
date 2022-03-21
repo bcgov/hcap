@@ -198,6 +198,14 @@ class FieldsFilteredParticipantsFinder {
           on: {
             participant_id: 'id',
           },
+          site: {
+            type: 'LEFT OUTER',
+            relation: collections.EMPLOYER_SITES,
+            decomposeTo: 'object',
+            on: {
+              id: `${collections.ROS_STATUS}.site_id`,
+            },
+          },
         },
         ...(siteIdDistance && {
           [siteDistanceJoin]: {

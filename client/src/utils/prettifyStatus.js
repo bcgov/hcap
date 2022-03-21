@@ -12,6 +12,7 @@ export const prettifyStatus = (status, id, tabValue, handleEngage, handleAcknowl
   if (status[0] === 'interviewing') firstStatus = 'Interviewing';
   if (status[0] === 'rejected') firstStatus = 'Archived';
   if (status[0] === 'hired') firstStatus = 'Hired';
+  if (status[0] === 'ros') firstStatus = 'Return of Service';
   if (status.includes('withdrawn')) {
     firstStatus = 'Withdrawn';
     isWithdrawn = true;

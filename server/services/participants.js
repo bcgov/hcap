@@ -440,7 +440,10 @@ const getParticipants = async (
       interestFilter: interestFilter && ['no', 'withdrawn'],
       isIndigenousFilter,
     })
-    .filterExternalFields({ statusFilters, siteIdDistance: siteSelector })
+    .filterExternalFields({
+      statusFilters: statusFilters.filter((item) => item !== 'ros'),
+      siteIdDistance: siteSelector,
+    })
     .paginate(pagination, sortField)
     .run();
   const { table, criteria } = participantsFinder;
@@ -448,6 +451,11 @@ const getParticipants = async (
     offset: (pagination.offset ? Number(pagination.offset) : 0) + participants.length,
     total: Number(await table.count(criteria || {})),
   };
+
+  // Filter all participant if ros is on
+  if (statusFilters.includes('ros')) {
+    participants = participants.filter((participant) => participant.rosStatuses.length > 0);
+  }
 
   // HCAP:1030: Get participants post-hire statuses
   participants = await Promise.all(

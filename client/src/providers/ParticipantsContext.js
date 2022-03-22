@@ -49,6 +49,11 @@ const participantsReducer = (state, action) => {
         selectedTab: payload,
         selectedTabStatuses: tabStatuses[payload],
         currentPage: 0,
+        pagination: {
+          page: 0,
+          total: 0,
+          offset: 0,
+        },
       };
     }
     case UPDATE_PAGINATION: {

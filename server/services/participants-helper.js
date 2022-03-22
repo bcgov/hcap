@@ -228,6 +228,20 @@ class FieldsFilteredParticipantsFinder {
         }),
       });
 
+      if (statusFilters && statusFilters.includes('ros')) {
+        if (criteria.and) {
+          criteria.and.push({
+            [`${rosStatuses}.participant_id <>`]: null,
+          });
+        } else {
+          criteria.and = [
+            {
+              [`${rosStatuses}.participant_id <>`]: null,
+            },
+          ];
+        }
+      }
+
       if (statusFilters) {
         const newStatusFilters = statusFilters.includes('open')
           ? //  if 'open' is found adds also null because no status

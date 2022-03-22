@@ -66,7 +66,11 @@ const filterData = (data, columns) => {
 
     row.engage = item;
     row.siteName = item?.statusInfos?.[0].data?.siteName;
-    if (item.rosStatuses && item.rosStatuses.length > 0) {
+    if (
+      item.rosStatuses &&
+      item.rosStatuses.length > 0 &&
+      item.statusInfos[0].status !== 'archived'
+    ) {
       row.status = ['ros'];
     } else if (item.statusInfos && item.statusInfos.length > 0) {
       // Handling already_hired and withdrawn status
@@ -222,7 +226,10 @@ const ParticipantTable = () => {
   const renderCell = (columnId, row) => {
     switch (columnId) {
       case 'lastName':
-        if (isAdmin || (isEmployer && selectedTab === 'Hired Candidates')) {
+        if (
+          isAdmin ||
+          (isEmployer && ['Hired Candidates', 'Return Of Service'].includes(selectedTab))
+        ) {
           return (
             <Link
               component='button'

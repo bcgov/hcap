@@ -71,7 +71,10 @@ const filterData = (data, columns) => {
       item.rosStatuses.length > 0 &&
       item.statusInfos[0].status !== 'archived'
     ) {
-      row.status = ['ros'];
+      const otherStatuses = item.statusInfos.find((statusInfo) => statusInfo.status === 'withdrawn')
+        ? ['withdrawn']
+        : [];
+      row.status = ['ros', ...otherStatuses];
     } else if (item.statusInfos && item.statusInfos.length > 0) {
       // Handling already_hired and withdrawn status
       const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);

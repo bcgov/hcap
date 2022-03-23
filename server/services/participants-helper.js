@@ -106,7 +106,8 @@ class FilteredParticipantsFinder {
   }
 
   paginate(pagination, sortField) {
-    const { user, employerSpecificJoin, siteJoin, siteDistanceJoin, siteIdDistance } = this.context;
+    const { user, employerSpecificJoin, siteJoin, siteDistanceJoin, siteIdDistance, rosStatuses } =
+      this.context;
     this.context.options = pagination && {
       // ID is the default sort column
       order: [
@@ -138,6 +139,14 @@ class FilteredParticipantsFinder {
 
       if (sortField === 'siteName') {
         joinFieldName = `${siteJoin}.body.${sortField}`;
+      }
+
+      if (sortField === 'rosStartDate') {
+        joinFieldName = `${rosStatuses}.data.date`;
+      }
+
+      if (sortField === 'rosSiteName') {
+        joinFieldName = `rosSite.body.siteName`;
       }
 
       // If a field to sort is provided we put that as first priority
@@ -198,7 +207,7 @@ class FieldsFilteredParticipantsFinder {
           on: {
             participant_id: 'id',
           },
-          site: {
+          rosSite: {
             type: 'LEFT OUTER',
             relation: collections.EMPLOYER_SITES,
             decomposeTo: 'object',

@@ -33,6 +33,8 @@ const sortFields = [
   'distance',
   'isIndigenous',
   'postHireStatuses',
+  'rosStartDate',
+  'rosSiteName',
 ];
 
 const roles = [

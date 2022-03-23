@@ -26,7 +26,7 @@ import {
 } from '../../services/participant';
 
 const mapRosData = (data) => ({
-  rosSiteName: data?.rosStatuses?.[0]?.site?.body.siteName,
+  rosSiteName: data?.rosStatuses?.[0]?.rosSite?.body.siteName,
   rosStartDate: moment(data?.rosStatuses?.[0]?.data.date).format('MM/DD/YYYY'),
 });
 
@@ -193,7 +193,7 @@ const ParticipantTable = () => {
     } catch (err) {
       openToast({
         status: ToastStatus.Error,
-        message: 'An error occured',
+        message: 'An error occurred',
       });
     }
   };

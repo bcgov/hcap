@@ -26,7 +26,7 @@ import {
 } from '../../services/participant';
 
 const mapRosData = (data) => ({
-  rosSiteName: data?.rosStatuses?.[0]?.site?.body.siteName,
+  rosSiteName: data?.rosStatuses?.[0]?.rosSite?.body.siteName,
   rosStartDate: moment(data?.rosStatuses?.[0]?.data.date).format('MM/DD/YYYY'),
 });
 
@@ -71,7 +71,10 @@ const filterData = (data, columns) => {
       item.rosStatuses.length > 0 &&
       item.statusInfos[0].status !== 'archived'
     ) {
-      row.status = ['ros'];
+      const otherStatuses = item.statusInfos.find((statusInfo) => statusInfo.status === 'withdrawn')
+        ? ['withdrawn']
+        : [];
+      row.status = ['ros', ...otherStatuses];
     } else if (item.statusInfos && item.statusInfos.length > 0) {
       // Handling already_hired and withdrawn status
       const previousStatus = item.statusInfos.find((statusInfo) => statusInfo.data?.previous);
@@ -193,7 +196,7 @@ const ParticipantTable = () => {
     } catch (err) {
       openToast({
         status: ToastStatus.Error,
-        message: 'An error occured',
+        message: 'An error occurred',
       });
     }
   };

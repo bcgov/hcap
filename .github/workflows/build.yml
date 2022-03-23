@@ -115,7 +115,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: 'Dev Deployment Completed :rocket:'
+          SLACK_MESSAGE: 'Dev | Deployment Completed :rocket:'
 
       - name: Health Check app
         uses: jtalk/url-health-check-action@v1.5

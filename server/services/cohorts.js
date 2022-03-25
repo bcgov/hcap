@@ -108,6 +108,23 @@ const getCountOfAllocation = async ({ cohortId } = {}) =>
     cohort_id: cohortId,
   });
 
+const findCohortByName = async ({ cohortName, psiName }) =>
+  dbClient.db[collections.COHORTS]
+    .join({
+      psi: {
+        relation: collections.POST_SECONDARY_INSTITUTIONS,
+        type: 'INNER',
+        decomposeTo: 'object',
+        on: {
+          id: 'psi_id',
+          institute_name: psiName,
+        },
+      },
+    })
+    .find({
+      cohort_name: cohortName,
+    });
+
 const changeCohortParticipant = async (
   { cohortId, participantId, newCohortId, meta } = { meta: {} }
 ) => {
@@ -168,6 +185,7 @@ const changeCohortParticipant = async (
             participantId,
             newCohortId,
             participantPostHireStatuses,
+            newPostHireStatuses,
           },
         },
       });
@@ -192,4 +210,5 @@ module.exports = {
   updateCohort,
   getCountOfAllocation,
   changeCohortParticipant,
+  findCohortByName,
 };

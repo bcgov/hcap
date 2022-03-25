@@ -97,6 +97,10 @@ const createTestParticipantStatus = async ({
   return { participant, site, participantStatus };
 };
 
+const today = new Date();
+const makeTestCohort = async ({ cohortName, psiId, cohortSize, startDate = today, endDate }) =>
+  makeCohort(cohortData({ cohortName, psiID: psiId, cohortSize, startDate, endDate }));
+
 module.exports = {
   makeTestParticipant,
   makeTestPostHireStatus,
@@ -104,4 +108,5 @@ module.exports = {
   makeTestSite,
   makeTestParticipantStatus,
   createTestParticipantStatus,
+  makeTestCohort,
 };

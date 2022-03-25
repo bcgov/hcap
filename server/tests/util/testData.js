@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 const { postHireStatuses, rosPositionType, rosEmploymentType } = require('../../constants');
 
 const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
@@ -13,6 +14,8 @@ const psiData = ({ instituteName, regionIndex, address, postalCode, city }) => (
 const today = new Date();
 
 const after = (months, input = today) => new Date(input.setMonth(input.getMonth() + months));
+
+const before = (months) => dayjs().subtract(months, 'month').toDate();
 
 const dateStr = (date = new Date()) => date.toISOString().split('T')[0].replace(/-/gi, '/');
 
@@ -104,4 +107,5 @@ module.exports = {
   postHireStatusData,
   siteData,
   rosData,
+  before,
 };

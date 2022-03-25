@@ -1,6 +1,6 @@
 # Health Career Access Program (HCAP) Expression of Interest and Employer Portal
 
-### A component of the COVID-19 response
+## A component of the COVID-19 response
 
 ---
 
@@ -42,7 +42,7 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 
 ## Development
 
-### Pre-Requisites:
+### Pre-Requisites
 
 - Make sure you have Docker and Docker-compose installed in your local environment. For instructions on how to install it, follow the links below:
   - https://docs.docker.com/get-docker/
@@ -66,10 +66,12 @@ To seed the database with data in an Excel sheet:
 **Note:** The Excel file should be placed in `server/scripts/xlsx`.
 
 To tear down your environment:
+
 - Run `make local-close`
 - Run `make local-clean`
 
 To create KC test users as well as assign roles:
+
 - Run `make local-kc-build`
 - Run `make local-kc-run`
 - Run `make kc-import-users`
@@ -78,6 +80,7 @@ Go to `http://keycloak.local.freshworks.club:8080/auth` console and add users/as
 `409 Conflict` errors are ok if the user already exists, only the role change will be applied
 
 To run server tests:
+
 - Make sure containers are running
   - `make local-kc-run`
 - Shell into the server container by running
@@ -94,7 +97,7 @@ The application's public routes can be accessed at http://hcapparticipants.local
 
 The application's private routes are located at http://hcapparticipants.local.freshworks.club:4000,
 you'll need an account on the [BCeID test environment](https://www.test.bceid.ca/register/basic/account_details.aspx?type=regular&eServiceType=basic).
-When you first log in an access request will be created and it can be accepted by a teammate through `View Access Requests` or manually through keycloak.
+When you first log in an access request will be created and it can be accepted by a teammate through `View Access Requests` or manually through Keycloak.
 The access request will need to be approved separately on each environment.
 
 ### Formatting
@@ -130,6 +133,7 @@ The Dockerized application is deployed to OpenShift using Makefile targets and Y
 To create the resources required to run the application in OpenShift, run `make server-create`. Optionally, a namespace prefix and/or suffix can be provided to target a namespace other than the default `rupaog-dev` e.g. `NAMESPACE_SUFFIX=test make server-create`.
 
 The OpenShift objects created are defined in the [openshift/server.bc.yml](openshift/server.bc.yml) and [openshift/server.dc.yml](openshift/server.dc.yml). At a hight level, these objects include the following.
+
 - Build Config
 - Image Stream
 - Service
@@ -263,6 +267,7 @@ On every server startup the `migrations` folder will be scanned for new migratio
 
 ## License
 
+```txt
     Copyright 2020 Province of British Columbia
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -276,5 +281,4 @@ On every server startup the `migrations` folder will be scanned for new migratio
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
-
-
+```

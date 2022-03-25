@@ -235,7 +235,7 @@ const archiveParticipantBySite = async (siteId, participantId, data, userId) => 
       current: true,
       data,
     });
-    // Only create pending acknowledement status if it's a different person making the request.
+    // Only create pending acknowledgment status if it's a different person making the request.
     if (chosenOne.employer_id !== userId) {
       // Add an ephemeral status to warn the employer
       await tx[collections.PARTICIPANTS_STATUS].save({

@@ -1,5 +1,13 @@
+const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+
 const { dbClient, collections } = require('../db');
 const { validate, CreateCohortSchema } = require('../validation');
+const { getPostHireStatusesForParticipant } = require('./post-hire-flow');
+const { postHireStatuses } = require('../constants');
+
+// Setup dayjs utc
+dayjs.extend(utc);
 
 // Gets all cohorts with their associated list of participants
 const getCohorts = async () =>
@@ -100,6 +108,80 @@ const getCountOfAllocation = async ({ cohortId } = {}) =>
     cohort_id: cohortId,
   });
 
+const changeCohortParticipant = async (
+  { cohortId, participantId, newCohortId, meta } = { meta: {} }
+) => {
+  // Get existing participant cohort map
+  const participantCohort = await dbClient.db[collections.COHORT_PARTICIPANTS].findOne({
+    participant_id: participantId,
+  });
+  if (!participantCohort || !participantCohort.id) {
+    throw new Error('Participant not found in cohort');
+  }
+  // Get Graduation Status of Participant
+  const participantPostHireStatuses =
+    (await getPostHireStatusesForParticipant({ participantId })) || [];
+  // Get cohort details for both
+  const newCohort = await dbClient.db[collections.COHORTS].findOne({
+    id: newCohortId,
+  });
+
+  // Update all data in transaction
+  const resp = await dbClient.db.withTransaction(async (tnx) => {
+    // Update Cohort Participant
+    await tnx[collections.COHORT_PARTICIPANTS].update(participantCohort.id, {
+      cohort_id: newCohortId,
+    });
+    // Update post-hire status
+    let newPostHireStatuses;
+    if (participantPostHireStatuses.length > 0) {
+      // Delete all post-hire graduations statuses
+      // Delete Post-Hire Status
+      await tnx[collections.PARTICIPANT_POST_HIRE_STATUS].destroy({
+        participant_id: participantId,
+        status: postHireStatuses.postSecondaryEducationCompleted,
+      });
+    }
+    // Now check New cohort is expired or not
+    if (newCohort.end_date && newCohort.end_date < new Date()) {
+      // Update Post-Hire Status
+      newPostHireStatuses = await tnx[collections.PARTICIPANT_POST_HIRE_STATUS].insert({
+        participant_id: participantId,
+        status: postHireStatuses.postSecondaryEducationCompleted,
+        data: {
+          graduationDate: dayjs.utc(newCohort.end_date).format('YYYY/MM/DD'),
+        },
+      });
+    }
+
+    // Update audit log
+    let audit;
+    if (Object.keys(meta).length > 0) {
+      const { user, ...rest } = meta;
+      audit = await tnx[collections.ADMIN_OPS_AUDIT].insert({
+        user: meta.user || 'system',
+        data: {
+          operationMetaData: rest,
+          operationDetails: {
+            operation: 'changeCohortParticipant',
+            cohortId,
+            participantId,
+            newCohortId,
+            participantPostHireStatuses,
+          },
+        },
+      });
+    }
+
+    return {
+      audit,
+      newPostHireStatuses,
+      oldPostHireStatus: participantPostHireStatuses || [],
+    };
+  });
+  return resp;
+};
+
 module.exports = {
   getCohorts,
   getPSICohorts,
@@ -109,4 +191,5 @@ module.exports = {
   getAssignCohort,
   updateCohort,
   getCountOfAllocation,
+  changeCohortParticipant,
 };

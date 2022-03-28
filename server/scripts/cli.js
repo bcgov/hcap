@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const minimist = require('minimist');
 const services = require('./services');
+const { processServiceConfig } = require('./services/common');
 const { dbClient } = require('../db');
 
 // Parsing arguments
@@ -17,7 +18,11 @@ const argv = minimist(process.argv.slice(2));
       const envService = process.env.SERVICE_CONFIG;
       console.log(`Loading service config from env: ${envService}`);
       /* eslint-disable no-cond-assign */
-      if (envService && (serviceOptions = JSON.parse(envService)) && serviceOptions.service) {
+      if (
+        envService &&
+        (serviceOptions = processServiceConfig(envService)) &&
+        serviceOptions.service
+      ) {
         service = serviceOptions.service;
       } else {
         console.log('Please provide a service to run');

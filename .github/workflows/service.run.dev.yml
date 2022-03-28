@@ -1,0 +1,36 @@
+name: Create and execute Service Pod - Dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      IMAGE_TAG:
+        description: 'Image tag'
+        required: true
+        default: latest
+      CONFIG:
+        description: 'The service configuration json string'
+        required: true
+
+env:
+  CLUSTER: https://api.silver.devops.gov.bc.ca:6443
+  AUTH_TOKEN: ${{ secrets.AUTH_TOKEN_OCP4 }}
+  SA_TOKEN: ${{ secrets.SA_TOKEN_CONFIG }}
+  PROJECT: hcap
+
+jobs:
+  # Dev
+  service-exe-dev:
+    name: service-exe
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Execute Service Pod
+        env:
+          OS_NAMESPACE_SUFFIX: dev
+        run: |
+          oc login --token="$SA_TOKEN" --server="$CLUSTER"
+          cd "$GITHUB_WORKSPACE"
+          make service-pod cmd=${{ github.event.inputs.CONFIG }} tag=${{ github.event.inputs.IMAGE_TAG }}

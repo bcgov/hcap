@@ -133,5 +133,6 @@ objects:
               value: ${CONFIG_VERSION}
             - name: SERVICE_CONFIG
               value: ${SERVICE_CONFIG}
-      restartPolicy: Always
+      restartPolicy: Never
+      activeDeadlineSeconds: 600
       dnsPolicy: ClusterFirst

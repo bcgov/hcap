@@ -8,11 +8,24 @@ const argv = minimist(process.argv.slice(2));
 
 // CLI execution entry point
 (async () => {
-  const { service } = argv;
-  if (!service) {
-    console.log('Please provide a service to run');
-    console.log('Usage: node cli.js --service=<service>');
-    process.exit(1);
+  const { service: cmdService } = argv;
+  let service;
+  let serviceOptions;
+  if (!cmdService) {
+    // Try load service config from env
+    const envService = process.env.SERVICE_CONFIG;
+    console.log(`Loading service config from env: ${envService}`);
+    /* eslint-disable no-cond-assign */
+    if (envService && (serviceOptions = JSON.parse(envService)) && serviceOptions.service) {
+      service = serviceOptions.service;
+    } else {
+      console.log('Please provide a service to run');
+      console.log('Usage: node cli.js --service=<service>');
+      process.exit(1);
+    }
+  } else {
+    service = cmdService;
+    serviceOptions = argv;
   }
   if (!services[service]) {
     console.log(`Service '${service}' does not exist`);
@@ -27,9 +40,8 @@ const argv = minimist(process.argv.slice(2));
     console.log(`Failed to connect to database: ${err}`);
     process.exit(1);
   }
-
   try {
-    const result = await services[service](argv);
+    const result = await services[service](serviceOptions);
     if (!result.success) {
       console.log(result.message);
       if (result.usageMessage) {

@@ -1,0 +1,137 @@
+kind: Template
+apiVersion: v1
+labels:
+  app: ${APP_NAME}
+parameters:
+  - name: APP_NAME
+    description: App name that OpenShift objects will be prefixed with
+    required: true
+  - name: IMAGE_NAMESPACE
+    description: Namespace from which to pull the image
+    required: true
+  - name: IMAGE_TAG
+    description: Image tag from image stream
+    value: latest
+    required: true
+  - name: CONFIG_VERSION
+    description: The github repository version of Config (Commit SHA)
+    value: default
+  - name: SERVICE_CONFIG
+    description: The service configuration json string
+    required: true
+objects:
+  - kind: Pod
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-service-pod
+    spec:
+      containers:
+        - name: ${APP_NAME}-service-runner
+          image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
+          command:
+            - container-entrypoint
+            - bash
+            - '-c'
+            - 'node scripts/cli.js'
+          env:
+            - name: APP_ENV
+              value: ${IMAGE_TAG}
+            - name: POSTGRES_HOST
+              value: ${APP_NAME}-patroni
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  key: db-name
+                  name: ${APP_NAME}-patroni
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  key: db-username
+                  name: ${APP_NAME}-patroni
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-password
+                  name: ${APP_NAME}-patroni
+            - name: KEYCLOAK_REALM
+              valueFrom:
+                secretKeyRef:
+                  key: realm
+                  name: ${APP_NAME}-keycloak
+            - name: KEYCLOAK_AUTH_URL
+              valueFrom:
+                secretKeyRef:
+                  key: auth-url
+                  name: ${APP_NAME}-keycloak
+            - name: KEYCLOAK_FE_CLIENTID
+              valueFrom:
+                secretKeyRef:
+                  key: fe-client-id
+                  name: ${APP_NAME}-keycloak
+            - name: KEYCLOAK_API_CLIENTID
+              valueFrom:
+                secretKeyRef:
+                  key: be-client-id
+                  name: ${APP_NAME}-keycloak
+            - name: KEYCLOAK_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: api-secret
+                  name: ${APP_NAME}-keycloak
+            - name: KEYCLOAK_SA_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: sa-username
+                  name: ${APP_NAME}-keycloak
+            - name: KEYCLOAK_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: sa-password
+                  name: ${APP_NAME}-keycloak
+            - name: MONGO_HOST
+              value: ${APP_NAME}-mongo-headless
+            - name: MONGO_PORT
+              value: '27017'
+            - name: MONGO_DB
+              value: ${APP_NAME}
+            - name: MONGO_USER
+              value: ${APP_NAME}
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-password
+                  name: ${APP_NAME}-mongo
+            - name: MONGO_REPLICA
+              value: rs0
+            - name: CHES_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: host
+                  name: ${APP_NAME}-ches
+            - name: CHES_AUTH_URL
+              valueFrom:
+                secretKeyRef:
+                  key: auth-url
+                  name: ${APP_NAME}-ches
+            - name: CLIENT_URL
+              valueFrom:
+                secretKeyRef:
+                  key: client-url
+                  name: ${APP_NAME}-ches
+            - name: CHES_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  key: client-id
+                  name: ${APP_NAME}-ches
+            - name: CHES_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: client-secret
+                  name: ${APP_NAME}-ches
+            - name: CONFIG_VERSION
+              value: ${CONFIG_VERSION}
+            - name: SERVICE_CONFIG
+              value: ${SERVICE_CONFIG}
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst

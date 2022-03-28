@@ -228,8 +228,13 @@ db-postgres-rw-tunnel:
 	@oc project $(TARGET_NAMESPACE)
 	@oc port-forward svc/$(APP_NAME)-patroni 5432
 
-# Load Testing
+# Create Service Pod
+service-pod:
+	echo "Creating Service Pod with cmd: '$(cmd)' with image tag $(tag) in $(TARGET_NAMESPACE) namespace"
+	@oc process -f openshift/service.pod.yml -p APP_NAME=$(APP_NAME) -p SERVICE_CONFIG=$(cmd) -p IMAGE_TAG=$(tag) -p IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f - --dry-run=client
+	@oc process -f openshift/service.pod.yml -p APP_NAME=$(APP_NAME) -p SERVICE_CONFIG='$(cmd)' -p IMAGE_TAG=$(tag) -p IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f -
 
+# Load Testing
 loadtest:
 	@docker run --rm \
 		-v $(PWD)/load:/load \

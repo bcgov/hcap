@@ -19,7 +19,7 @@ env:
 
 jobs:
   # Dev
-  service-exe-dev:
+  service-exe:
     name: service-exe
     runs-on: ubuntu-latest
     environment:

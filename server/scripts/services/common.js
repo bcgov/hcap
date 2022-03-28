@@ -15,6 +15,21 @@ const optionValidator = ({ options, keys = [] }) => {
   return [true, ''];
 };
 
+const processServiceConfig = (configStr) => {
+  const items = configStr.split('^') || [];
+  const config = {};
+  items.forEach((item) => {
+    const [key, value] = item.split('=');
+    if (!Number.isNaN(+value)) {
+      config[key] = +value;
+    } else {
+      config[key] = value;
+    }
+  });
+  return config;
+};
+
 module.exports = {
   optionValidator,
+  processServiceConfig,
 };

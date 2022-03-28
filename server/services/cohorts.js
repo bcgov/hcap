@@ -135,6 +135,9 @@ const changeCohortParticipant = async (
   if (!participantCohort || !participantCohort.id) {
     throw new Error('Participant not found in cohort');
   }
+  if (participantCohort.cohort_id !== cohortId) {
+    throw new Error('Participant not in cohort');
+  }
   // Get Graduation Status of Participant
   const participantPostHireStatuses =
     (await getPostHireStatusesForParticipant({ participantId })) || [];
@@ -142,6 +145,9 @@ const changeCohortParticipant = async (
   const newCohort = await dbClient.db[collections.COHORTS].findOne({
     id: newCohortId,
   });
+  if (!newCohort) {
+    throw new Error('New Cohort not found');
+  }
 
   // Update all data in transaction
   const resp = await dbClient.db.withTransaction(async (tnx) => {

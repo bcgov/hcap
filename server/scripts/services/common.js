@@ -24,7 +24,7 @@ const processServiceConfig = (configStr) => {
   const decoded = buffer.toString('utf8');
   console.log(`Decoded Service Config: ${decoded}`);
   // Parse
-  const items = decoded.split(',') || [];
+  const items = decoded.split(';') || [];
   const config = {};
   items.forEach((item) => {
     const [key, value] = item.split('=');

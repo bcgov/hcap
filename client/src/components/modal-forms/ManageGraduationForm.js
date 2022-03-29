@@ -63,7 +63,7 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
                     label={
                       values.status === postHireStatuses.postSecondaryEducationCompleted
                         ? 'Graduation Date'
-                        : 'Estimated Unsuccessful Date'
+                        : 'Withdrawal date from cohort'
                     }
                     component={RenderDateField}
                     maxDate={getTodayDate()}

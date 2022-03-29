@@ -1,3 +1,5 @@
+const { Buffer } = require('buffer');
+
 const optionValidator = ({ options, keys = [] }) => {
   const requiredKeys = [];
   const usage = [];
@@ -16,7 +18,11 @@ const optionValidator = ({ options, keys = [] }) => {
 };
 
 const processServiceConfig = (configStr) => {
-  const items = configStr.split('^') || [];
+  // Decode
+  const buffer = Buffer.from(configStr, 'base64');
+  const decoded = buffer.toString('utf8');
+  // Parse
+  const items = decoded.split(',') || [];
   const config = {};
   items.forEach((item) => {
     const [key, value] = item.split('=');

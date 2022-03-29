@@ -1,4 +1,4 @@
-name: Create and execute Service Pod - Test
+name: Test - Service Pod
 
 on:
   workflow_dispatch:
@@ -16,9 +16,8 @@ env:
   AUTH_TOKEN: ${{ secrets.AUTH_TOKEN_OCP4 }}
   SA_TOKEN: ${{ secrets.SA_TOKEN_CONFIG }}
   PROJECT: hcap
-
+  SERVICE_CONFIG_INPUT: ${{ github.event.inputs.CONFIG }}
 jobs:
-  # Dev
   service-exe:
     name: service-exe
     runs-on: ubuntu-latest
@@ -27,10 +26,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       - name: Execute Service Pod
         env:
           OS_NAMESPACE_SUFFIX: test
         run: |
           oc login --token="$SA_TOKEN" --server="$CLUSTER"
           cd "$GITHUB_WORKSPACE"
-          make service-pod cmd=${{ github.event.inputs.CONFIG }} tag=${{ github.event.inputs.IMAGE_TAG }}
+          make service-pod tag=${{ github.event.inputs.IMAGE_TAG }}

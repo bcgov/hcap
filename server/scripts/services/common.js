@@ -27,7 +27,7 @@ const processServiceConfig = (configStr) => {
   const items = decoded.split(';') || [];
   const config = {};
   items.forEach((item) => {
-    const [key, value] = item.split('=');
+    const [key, value] = item.trim().split('=');
     if (!Number.isNaN(+value)) {
       config[key] = +value;
     } else {

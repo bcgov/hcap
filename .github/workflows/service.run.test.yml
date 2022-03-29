@@ -6,9 +6,9 @@ on:
       IMAGE_TAG:
         description: 'Image tag'
         required: true
-        default: latest
+        default: dev
       CONFIG:
-        description: 'The service configuration json string'
+        description: 'The service configuration string'
         required: true
 
 env:

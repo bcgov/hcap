@@ -17,12 +17,9 @@ const argv = minimist(process.argv.slice(2));
       // Try load service config from env
       const envService = process.env.SERVICE_CONFIG;
       console.log(`Loading service config from env: ${envService}`);
-      /* eslint-disable no-cond-assign */
-      if (
-        envService &&
-        (serviceOptions = processServiceConfig(envService)) &&
-        serviceOptions.service
-      ) {
+      serviceOptions = processServiceConfig(envService || '');
+      console.log(`Service config: ${JSON.stringify(serviceOptions)}`);
+      if (serviceOptions.service) {
         service = serviceOptions.service;
       } else {
         console.log('Please provide a service to run');

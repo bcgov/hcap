@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { Buffer } = require('buffer');
 
 const optionValidator = ({ options, keys = [] }) => {
@@ -21,6 +22,7 @@ const processServiceConfig = (configStr) => {
   // Decode
   const buffer = Buffer.from(configStr, 'base64');
   const decoded = buffer.toString('utf8');
+  console.log(`Decoded Service Config: ${decoded}`);
   // Parse
   const items = decoded.split(',') || [];
   const config = {};

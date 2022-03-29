@@ -230,6 +230,8 @@ db-postgres-rw-tunnel:
 
 # Create Service Pod
 service-pod:
+	echo "Removing existing pod"
+	@oc delete pod $(APP_NAME)-service-pod --force -n $(TARGET_NAMESPACE) || true
 	echo "Creating Service Pod with Service Config: '$(SERVICE_CONFIG_INPUT)' with image tag $(tag) in $(TARGET_NAMESPACE) namespace"
 	@node .pipeline/service-config.js | xargs -I{} oc process -f openshift/service.pod.yml -p APP_NAME=$(APP_NAME) -p SERVICE_CONFIG={} -p IMAGE_TAG=$(tag) -p IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f - --dry-run=client
 	@node .pipeline/service-config.js | xargs -I{} oc process -f openshift/service.pod.yml -p APP_NAME=$(APP_NAME) -p SERVICE_CONFIG={} -p IMAGE_TAG=$(tag) -p IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f -

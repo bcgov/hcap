@@ -615,7 +615,7 @@ describe('Participants Service', () => {
     const employerBId = v4();
 
     const participantsB = await getParticipants(
-      { isEmployer: true, id: employerBId, regions },
+      { isEmployer: true, id: employerBId, regions, sites: [2] },
       null,
       null,
       null,
@@ -632,10 +632,12 @@ describe('Participants Service', () => {
     await setParticipantStatus(employerBId, selectParticipantId, 'prospecting');
     await setParticipantStatus(employerBId, selectParticipantId, 'interviewing');
     await setParticipantStatus(employerBId, selectParticipantId, 'offer_made');
-    await setParticipantStatus(employerBId, selectParticipantId, 'hired');
+    await setParticipantStatus(employerBId, selectParticipantId, 'hired', {
+      site: 2,
+    });
 
     const unavailableParticipantsA = await getParticipants(
-      { isEmployer: true, id: employerAId, regions },
+      { isEmployer: true, id: employerAId, regions, sites: [1] },
       null,
       null,
       null,
@@ -655,7 +657,7 @@ describe('Participants Service', () => {
     });
 
     const rejectedParticipantsA = await getParticipants(
-      { isEmployer: true, id: employerAId, regions },
+      { isEmployer: true, id: employerAId, regions, sites: [] },
       null,
       null,
       null,
@@ -674,7 +676,7 @@ describe('Participants Service', () => {
     expect(rejectedParticipantsA.data[0].statusInfos[1].status).toEqual('already_hired');
 
     const unavailableParticipantsAafter = await getParticipants(
-      { isEmployer: true, id: employerAId, regions },
+      { isEmployer: true, id: employerAId, regions, sites: [] },
       null,
       null,
       null,
@@ -795,7 +797,7 @@ describe('Participants Service', () => {
     });
 
     const participants = await getParticipants(
-      { isEmployer: true, id: employerAId, regions },
+      { isEmployer: true, id: employerAId, regions, sites: [2] },
       null,
       null,
       null,
@@ -806,6 +808,21 @@ describe('Participants Service', () => {
       ['hired']
     );
     expect(participants.data[0].statusInfos[0].status).toEqual('hired');
+
+    // Multi org support
+    const employerBId = v4();
+    const participantsForEmployerB = await getParticipants(
+      { isEmployer: true, id: employerBId, regions, sites: [2] },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      ['hired']
+    );
+    expect(participantsForEmployerB.data[0].statusInfos[0].status).toEqual('hired');
   });
 
   it("Tests functionality for updating a user's information", async () => {
@@ -895,7 +912,7 @@ describe('Participants Service', () => {
     });
 
     const participants = await getParticipants(
-      { isEmployer: true, id: employerAId, regions },
+      { isEmployer: true, id: employerAId, regions, sites: [2] },
       null,
       null,
       null,

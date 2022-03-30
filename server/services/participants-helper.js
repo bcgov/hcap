@@ -183,7 +183,7 @@ class FieldsFilteredParticipantsFinder {
 
     if (user.isEmployer || user.isHA) {
       this.context.table = this.context.table.join({
-        ...(statusFilters.includes('hired')
+        ...(statusFilters && statusFilters.includes('hired')
           ? {
               [employerSpecificJoin]: {
                 type: 'LEFT OUTER',

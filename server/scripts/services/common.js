@@ -26,6 +26,7 @@ const processServiceConfig = (configStr) => {
   // Try JSON parsing first
   try {
     const serviceConfig = JSON.parse(decoded);
+    console.log('JSON base service config');
     return serviceConfig;
   } catch (error) {
     console.log('Not Json format: Trying as prop string');
@@ -35,10 +36,12 @@ const processServiceConfig = (configStr) => {
   const config = {};
   items.forEach((item) => {
     const [key, value] = item.trim().split('=');
-    if (!Number.isNaN(+value.trim())) {
-      config[key.trim()] = +value.trim();
-    } else {
-      config[key.trim] = value.trim();
+    if (key && value) {
+      if (!Number.isNaN(+value.trim())) {
+        config[key.trim()] = +value.trim();
+      } else {
+        config[key.trim()] = value.trim();
+      }
     }
   });
   return config;

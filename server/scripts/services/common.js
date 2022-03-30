@@ -23,15 +23,22 @@ const processServiceConfig = (configStr) => {
   const buffer = Buffer.from(configStr, 'base64');
   const decoded = buffer.toString('utf8');
   console.log(`Decoded Service Config: ${decoded}`);
+  // Try JSON parsing first
+  try {
+    const serviceConfig = JSON.parse(decoded);
+    return serviceConfig;
+  } catch (error) {
+    console.log('Not Json format: Trying as prop string');
+  }
   // Parse
   const items = decoded.split(';') || [];
   const config = {};
   items.forEach((item) => {
     const [key, value] = item.trim().split('=');
-    if (!Number.isNaN(+value)) {
-      config[key] = +value;
+    if (!Number.isNaN(+value.trim())) {
+      config[key.trim()] = +value.trim();
     } else {
-      config[key] = value;
+      config[key.trim] = value.trim();
     }
   });
   return config;

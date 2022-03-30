@@ -183,15 +183,28 @@ class FieldsFilteredParticipantsFinder {
 
     if (user.isEmployer || user.isHA) {
       this.context.table = this.context.table.join({
-        [employerSpecificJoin]: {
-          type: 'LEFT OUTER',
-          relation: collections.PARTICIPANTS_STATUS,
-          on: {
-            participant_id: 'id',
-            current: true,
-            employer_id: user.id,
-          },
-        },
+        ...(statusFilters.includes('hired')
+          ? {
+              [employerSpecificJoin]: {
+                type: 'LEFT OUTER',
+                relation: collections.PARTICIPANTS_STATUS,
+                on: {
+                  participant_id: 'id',
+                  current: true,
+                },
+              },
+            }
+          : {
+              [employerSpecificJoin]: {
+                type: 'LEFT OUTER',
+                relation: collections.PARTICIPANTS_STATUS,
+                on: {
+                  participant_id: 'id',
+                  current: true,
+                  employer_id: user.id,
+                },
+              },
+            }),
         [hiredGlobalJoin]: {
           type: 'LEFT OUTER',
           relation: collections.PARTICIPANTS_STATUS,
@@ -236,6 +249,13 @@ class FieldsFilteredParticipantsFinder {
           },
         }),
       });
+
+      if (statusFilters && statusFilters.includes('hired')) {
+        const siteQuery = {
+          [`${employerSpecificJoin}.data.site IN`]: user.sites,
+        };
+        criteria.and = criteria.and ? [...criteria.and, siteQuery] : [siteQuery];
+      }
 
       if (statusFilters && statusFilters.includes('ros')) {
         if (criteria.and) {

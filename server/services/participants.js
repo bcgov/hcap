@@ -528,7 +528,7 @@ const getParticipants = async (
       };
 
       const hiredBySomeoneElseStatus = item.statusInfos?.find(
-        (statusInfo) => statusInfo.status === 'hired' && statusInfo.employerId !== user.id
+        (statusInfo) => statusInfo.status === 'hired' && !user.sites.includes(statusInfo.data.site)
       );
 
       // Handling withdrawn and already hired, putting withdrawn as higher priority
@@ -546,7 +546,11 @@ const getParticipants = async (
         });
       }
 
-      const statusInfos = item.statusInfos?.find((statusInfo) => statusInfo.employerId === user.id);
+      const statusInfos = item.statusInfos?.find(
+        (statusInfo) =>
+          statusInfo.employerId === user.id ||
+          (statusInfo.data && user.sites.includes(statusInfo.data.site))
+      );
 
       if (statusInfos) {
         if (!participant.statusInfos) participant.statusInfos = [];

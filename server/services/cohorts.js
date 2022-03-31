@@ -157,7 +157,13 @@ const changeCohortParticipant = async (
     });
     // Update post-hire status
     let newPostHireStatuses;
+    let isGraduated = false;
     if (participantPostHireStatuses.length > 0) {
+      // Check participant is graduated or not
+      isGraduated = participantPostHireStatuses.some(
+        (postHireStatus) =>
+          postHireStatus.status === postHireStatuses.postSecondaryEducationCompleted
+      );
       // Delete all post-hire graduations statuses
       // Delete Post-Hire Status
       await tnx[collections.PARTICIPANT_POST_HIRE_STATUS].destroy({
@@ -165,8 +171,8 @@ const changeCohortParticipant = async (
         status: postHireStatuses.postSecondaryEducationCompleted,
       });
     }
-    // Now check New cohort is expired or not
-    if (newCohort.end_date && newCohort.end_date < new Date()) {
+    // Now check New cohort is expired or not and participant is graduated or not
+    if (isGraduated && newCohort.end_date && newCohort.end_date < new Date()) {
       // Update Post-Hire Status
       newPostHireStatuses = await tnx[collections.PARTICIPANT_POST_HIRE_STATUS].insert({
         participant_id: participantId,

@@ -201,7 +201,7 @@ class Keycloak {
     }
   }
 
-  async getUsers(ignorePendings) {
+  async getUsers(ignorePending) {
     try {
       await this.authenticateIfNeeded();
       const config = {
@@ -215,7 +215,7 @@ class Keycloak {
         return response.data.filter((user) => user.username !== 'service-account');
       };
 
-      if (!ignorePendings) {
+      if (!ignorePending) {
         return getData(
           `${this.authUrl}/admin/realms/${this.realm}/users?briefRepresentation=true&max=1000000`
         );

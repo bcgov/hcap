@@ -51,7 +51,6 @@ describe('Test Post hire flow service', () => {
     });
     expect(r).toBeDefined();
     expect(r.audit).toBeDefined();
-    expect(r.newPostHireStatuses).toBeDefined();
     const cohorts = await getAssignCohort({ participantId: testParticipant });
     expect(cohorts.length).toBeGreaterThan(0);
     expect(cohorts[0].id).toBe(newCohort.id);

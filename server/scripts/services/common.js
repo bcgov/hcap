@@ -21,7 +21,7 @@ const optionValidator = ({ options, keys = [] }) => {
 const processServiceConfig = (configStr) => {
   // Decode
   const buffer = Buffer.from(configStr, 'base64');
-  const decoded = buffer.toString('utf8');
+  const decoded = buffer.toString('utf8').trim();
   console.log(`Decoded Service Config: ${decoded}`);
   // Try JSON parsing first
   try {

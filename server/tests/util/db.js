@@ -1,5 +1,6 @@
 /* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
 const { dbClient, collections } = require('../../db');
+const keycloak = require('../../keycloak');
 
 async function clearDB() {
   for (const value of Object.values(collections)) {
@@ -14,6 +15,7 @@ async function clearDB() {
 async function startDB() {
   await dbClient.connect();
   await clearDB();
+  await keycloak.buildInternalIdMap();
   await dbClient.runMigration();
 }
 

@@ -240,6 +240,26 @@ class Keycloak {
     }
   }
 
+  async getUser(userName) {
+    try {
+      await this.authenticateIfNeeded();
+      const config = {
+        headers: {
+          Authorization: `Bearer ${this.access_token}`,
+        },
+      };
+      const url = `${this.authUrl}/admin/realms/${this.realm}/users?briefRepresentation=true&username=${userName}&exact=true`;
+      const response = await axios.get(url, config);
+      return response.data[0];
+    } catch (error) {
+      logger.error('KC getUser Failed', {
+        context: 'kc-getUses',
+        error,
+      });
+      throw error;
+    }
+  }
+
   async setUserRoles(userId, role, regions) {
     try {
       if (!Object.keys(this.roleIdMap).includes(role)) throw Error(`Invalid role: ${role}`);

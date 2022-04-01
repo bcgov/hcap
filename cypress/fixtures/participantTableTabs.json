@@ -116,7 +116,8 @@
           "Site Name",
           "Non-HCAP",
           "Last Updated",
-          "Graduated"
+          "Graduated",
+          "Hired By"
         ],
         "Return Of Service": [
           "ID",
@@ -126,7 +127,8 @@
           "Phone Number",
           "Email Address",
           "Return of Service Start Date",
-          "Site Name"
+          "Site Name",
+          "Hired By"
         ]
       }
     },
@@ -201,7 +203,8 @@
           "Site Name",
           "Non-HCAP",
           "Last Updated",
-          "Graduated"
+          "Graduated",
+          "Hired By"
         ],
         "Return Of Service": [
           "ID",
@@ -211,7 +214,8 @@
           "Phone Number",
           "Email Address",
           "Return of Service Start Date",
-          "Site Name"
+          "Site Name",
+          "Hired By"
         ]
       }
     }

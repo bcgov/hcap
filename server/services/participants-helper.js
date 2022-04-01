@@ -23,6 +23,13 @@ const scrubParticipantData = (raw, joinNames) =>
         ? { data: statusInfo.data }
         : {}),
       status: statusInfo.status,
+      employerInfo:
+        statusInfo.employerInfo && statusInfo.employerInfo.body.userInfo
+          ? {
+              ...statusInfo.employerInfo.body?.userInfo,
+              id: statusInfo.employerInfo.body.id,
+            }
+          : {},
     });
 
     if (joinNames) {
@@ -182,29 +189,25 @@ class FieldsFilteredParticipantsFinder {
     this.context.siteIdDistance = siteIdDistance;
 
     if (user.isEmployer || user.isHA) {
+      const isFetchingHiresStatus = statusFilters && statusFilters.includes('hired');
       this.context.table = this.context.table.join({
-        ...(statusFilters && statusFilters.includes('hired')
-          ? {
-              [employerSpecificJoin]: {
-                type: 'LEFT OUTER',
-                relation: collections.PARTICIPANTS_STATUS,
-                on: {
-                  participant_id: 'id',
-                  current: true,
-                },
-              },
-            }
-          : {
-              [employerSpecificJoin]: {
-                type: 'LEFT OUTER',
-                relation: collections.PARTICIPANTS_STATUS,
-                on: {
-                  participant_id: 'id',
-                  current: true,
-                  employer_id: user.id,
-                },
-              },
-            }),
+        [employerSpecificJoin]: {
+          type: 'LEFT OUTER',
+          relation: collections.PARTICIPANTS_STATUS,
+          on: {
+            participant_id: 'id',
+            current: true,
+            ...(!isFetchingHiresStatus && { employer_id: user.id }),
+          },
+          employerInfo: {
+            type: 'LEFT OUTER',
+            relation: collections.USERS,
+            decomposeTo: 'object',
+            on: {
+              'body.keycloakId': `${employerSpecificJoin}.employer_id`,
+            },
+          },
+        },
         [hiredGlobalJoin]: {
           type: 'LEFT OUTER',
           relation: collections.PARTICIPANTS_STATUS,

@@ -63,6 +63,7 @@ const AccessRequestApproval = yup
   .noUnknown('Unknown field in form')
   .shape({
     userId: yup.string().required('User ID is required'),
+    username: yup.string().required('Username is required'),
     sites: yup.array().when('role', {
       is: 'ministry_of_health',
       then: yup.array().defined(),

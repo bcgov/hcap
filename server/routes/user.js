@@ -43,10 +43,12 @@ userDetailsRouter.patch(
     expressRequestBodyValidator(AccessRequestApproval),
   ],
   asyncMiddleware(async (req, res) => {
-    const { hcapUserInfo: user, body: { userId, role, regions, sites } = {} } = req;
-    const { username, id } = user;
+    const { hcapUserInfo: user, body: { userId, role, regions, sites, username } = {} } = req;
+    const { id } = user;
     await keycloak.setUserRoles(userId, role, regions);
     let action;
+    // Get user details from keycloak
+    const userInfo = await keycloak.getUser(username);
     // Check doc exits or not
     const existing = await dbClient.db[collections.USERS].findDoc({
       keycloakId: userId,
@@ -58,6 +60,7 @@ userDetailsRouter.patch(
         },
         {
           sites,
+          userInfo,
         }
       );
       action = 'user-details_patch';
@@ -65,6 +68,7 @@ userDetailsRouter.patch(
       await dbClient.db[collections.USERS].saveDoc({
         keycloakId: userId,
         sites,
+        userInfo,
       });
       action = 'user-details_create';
     }

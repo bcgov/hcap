@@ -201,7 +201,7 @@ class Keycloak {
     }
   }
 
-  async getUsers(ignorePendings) {
+  async getUsers(ignorePending) {
     try {
       await this.authenticateIfNeeded();
       const config = {
@@ -215,7 +215,7 @@ class Keycloak {
         return response.data.filter((user) => user.username !== 'service-account');
       };
 
-      if (!ignorePendings) {
+      if (!ignorePending) {
         return getData(
           `${this.authUrl}/admin/realms/${this.realm}/users?briefRepresentation=true&max=1000000`
         );
@@ -234,6 +234,26 @@ class Keycloak {
     } catch (error) {
       logger.error('KC getUsers Failed', {
         context: 'kc-getUsers',
+        error,
+      });
+      throw error;
+    }
+  }
+
+  async getUser(userName) {
+    try {
+      await this.authenticateIfNeeded();
+      const config = {
+        headers: {
+          Authorization: `Bearer ${this.access_token}`,
+        },
+      };
+      const url = `${this.authUrl}/admin/realms/${this.realm}/users?briefRepresentation=true&username=${userName}&exact=true`;
+      const response = await axios.get(url, config);
+      return response.data[0];
+    } catch (error) {
+      logger.error('KC getUser Failed', {
+        context: 'kc-getUses',
         error,
       });
       throw error;

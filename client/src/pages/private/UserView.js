@@ -33,6 +33,7 @@ export default () => {
   const [isLoadingData, setLoadingData] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUserName, setSelectedUserName] = useState(null);
   const [selectedUserDetails, setSelectedUserDetails] = useState(null);
   const [rows, setRows] = useState([]);
 
@@ -58,7 +59,7 @@ export default () => {
           Authorization: `Bearer ${store.get('TOKEN')}`,
         },
         method: isUserAccessRequest ? 'POST' : 'PATCH',
-        body: JSON.stringify({ ...values, userId: selectedUserId }),
+        body: JSON.stringify({ ...values, userId: selectedUserId, username: selectedUserName }),
       }
     );
     if (response.ok) {
@@ -102,6 +103,7 @@ export default () => {
             <Button
               onClick={async () => {
                 setSelectedUserId(row.id);
+                setSelectedUserName(row.username);
                 if (!pending) {
                   const response = await fetch(`${API_URL}/api/v1/user-details?id=${row.id}`, {
                     headers: { Authorization: `Bearer ${store.get('TOKEN')}` },

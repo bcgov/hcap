@@ -148,6 +148,7 @@ const columns = {
   edit: { id: 'edit', name: null, sortOrder: 21 },
   rosStartDate: { id: 'rosStartDate', name: 'Return of Service Start Date', sortOrder: 22 },
   rosSiteName: { id: 'rosSiteName', name: 'Site Name', sortOrder: 23 },
+  employerName: { id: 'employerName', name: 'Hired By', sortOrder: 24 },
 };
 
 const {
@@ -172,6 +173,7 @@ const {
   postHireStatuses,
   rosStartDate,
   rosSiteName,
+  employerName,
 } = columns;
 
 export const columnsByRole = {
@@ -269,6 +271,7 @@ export const columnsByRole = {
       nonHCAP,
       userUpdatedAt,
       postHireStatuses,
+      employerName,
       archive,
     ],
     'Return Of Service': [
@@ -280,6 +283,7 @@ export const columnsByRole = {
       status,
       rosStartDate,
       rosSiteName,
+      employerName,
       archive,
     ],
   },
@@ -341,6 +345,7 @@ export const columnsByRole = {
       nonHCAP,
       userUpdatedAt,
       postHireStatuses,
+      employerName,
       archive,
     ],
     'Return Of Service': [
@@ -352,6 +357,7 @@ export const columnsByRole = {
       status,
       rosStartDate,
       rosSiteName,
+      employerName,
       archive,
     ],
   },

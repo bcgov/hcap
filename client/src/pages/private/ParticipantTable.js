@@ -91,6 +91,13 @@ const filterData = (data, columns) => {
       row.status = ['open'];
     }
 
+    // Manage employer name
+    const statusWithEmployerDetails =
+      item.statusInfos?.filter((statusInfo) => statusInfo.employerInfo) || [];
+    if (statusWithEmployerDetails.length > 0) {
+      row.employerName = `${statusWithEmployerDetails[0].employerInfo.firstName} ${statusWithEmployerDetails[0].employerInfo.lastName}`;
+    }
+
     row.engage.status = row.status[0];
 
     filteredRows.push(row);

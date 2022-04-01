@@ -201,6 +201,7 @@
           "Site Name",
           "Non-HCAP",
           "Last Updated",
+          "Hired By",
           "Graduated"
         ],
         "Return Of Service": [
@@ -211,7 +212,8 @@
           "Phone Number",
           "Email Address",
           "Return of Service Start Date",
-          "Site Name"
+          "Site Name",
+          "Hired By"
         ]
       }
     }

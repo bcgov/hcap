@@ -161,6 +161,20 @@ class FilteredParticipantsFinder {
         field: joinFieldName,
         direction: pagination.direction || 'asc',
       });
+
+      // To manage employer name column sorting we need to sort by employer name
+      if (sortField === 'employerName') {
+        this.context.options.order.unshift(
+          {
+            field: `employerInfo.body.userInfo.firstName`,
+            direction: pagination.direction || 'asc',
+          },
+          {
+            field: `employerInfo.body.userInfo.lastName`,
+            direction: pagination.direction || 'asc',
+          }
+        );
+      }
     }
 
     return new PaginatedParticipantsFinder(this.context);

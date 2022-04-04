@@ -16,7 +16,7 @@ const healthRegions = ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Isl
 const foundOutReasons = [
   'Friend(s)',
   'WorkBC',
-  'Governement announcement',
+  'Government announcement',
   'Colleague(s)',
   'Job posting through Health Authority',
   'Job posting with employer',

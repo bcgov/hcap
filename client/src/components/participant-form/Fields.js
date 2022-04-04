@@ -341,8 +341,8 @@ export const Fields = ({
                       label: 'WorkBC',
                     },
                     {
-                      value: 'Governement announcement',
-                      label: 'Governement announcement',
+                      value: 'Government announcement',
+                      label: 'Government announcement',
                     },
                     {
                       value: 'Colleague(s)',

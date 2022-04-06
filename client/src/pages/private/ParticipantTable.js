@@ -82,6 +82,8 @@ const filterData = (data, columns) => {
         row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'withdrawn'];
       } else if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
         row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'already_hired'];
+      } else if (item.statusInfos.find((statusInfo) => statusInfo.status === 'hired_by_peer')) {
+        row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'hired_by_peer'];
       } else {
         row.status = [item.statusInfos[0].status];
       }
@@ -165,7 +167,13 @@ const ParticipantTable = () => {
         const index = rows.findIndex((row) => row.id === participantId);
         const { firstName, lastName } = rows[index];
         const toasts = makeToasts(firstName, lastName);
-        openToast(toasts[data?.status === 'already_hired' ? data.status : status]);
+        openToast(
+          toasts[
+            ['already_hired', 'invalid_status_transition', 'invalid_archive'].includes(data?.status)
+              ? data.status
+              : status
+          ]
+        );
         setActionMenuParticipant(null);
         setActiveModalForm(null);
         fetchParticipants();

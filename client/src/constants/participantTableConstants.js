@@ -78,6 +78,14 @@ export const makeToasts = (firstName, lastName) => {
       status: ToastStatus.Info,
       message: `${firstName} ${lastName} is already hired by someone else`,
     },
+    invalid_status_transition: {
+      status: ToastStatus.Error,
+      message: `Unable to update status for ${firstName} ${lastName}`,
+    },
+    invalid_archive: {
+      status: ToastStatus.Error,
+      message: `Unable to archive ${firstName} ${lastName}`,
+    },
   };
 };
 

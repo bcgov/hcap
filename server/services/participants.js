@@ -259,19 +259,19 @@ const setParticipantStatus = async (
   employerId,
   participantId,
   status,
-  data // JSONB on the status row
+  data, // JSONB on the status row
+  user
 ) =>
   dbClient.db.withTransaction(async (tx) => {
     if (status === 'pending_acknowledgement') {
       return { status: 'invalid_status' };
     }
+    const items = await tx[collections.PARTICIPANTS_STATUS].find({
+      participant_id: participantId,
+      status: 'hired',
+      current: true,
+    });
     if (status !== 'rejected' && status !== 'archived') {
-      const items = await tx[collections.PARTICIPANTS_STATUS].find({
-        participant_id: participantId,
-        status: 'hired',
-        current: true,
-      });
-
       if (items.length > 0) return { status: 'already_hired' };
     }
 
@@ -300,8 +300,25 @@ const setParticipantStatus = async (
       item?.status !== 'archived'
     )
       return { status: 'invalid_status_transition' };
-    if (status === 'archived' && !item) {
-      return { status: 'Could not find participant' };
+
+    // Handling Hired Status
+    const hiredStatus = items[0];
+    if (
+      ['archived'].includes(status) &&
+      (!item || (hiredStatus && hiredStatus.employer_id !== employerId))
+    ) {
+      if (hiredStatus.data.site && user?.sites.includes(hiredStatus.data.site)) {
+        await tx[collections.PARTICIPANTS_STATUS].update(
+          {
+            employer_id: hiredStatus.employer_id,
+            participant_id: participantId,
+            current: true,
+          },
+          { current: false }
+        );
+      } else {
+        return { status: 'invalid_archive' };
+      }
     }
     // Invalidate pervious status
     await tx[collections.PARTICIPANTS_STATUS].update(
@@ -531,19 +548,43 @@ const getParticipants = async (
         (statusInfo) => statusInfo.status === 'hired' && !user.sites.includes(statusInfo.data.site)
       );
 
+      const hiredBySomeoneInSameOrgStatus = item.statusInfos?.find(
+        (statusInfo) =>
+          statusInfo.status === 'hired' &&
+          user.sites.includes(statusInfo.data.site) &&
+          statusInfo.employerId !== user.id
+      );
+
       // Handling withdrawn and already hired, putting withdrawn as higher priority
+      let computedStatus;
       if (item.interested === 'withdrawn' || item.interested === 'no') {
-        if (!participant.statusInfos) participant.statusInfos = [];
-        participant.statusInfos.push({
+        computedStatus = {
           createdAt: new Date(),
           status: 'withdrawn',
-        });
+        };
       } else if (hiredBySomeoneElseStatus) {
-        if (!participant.statusInfos) participant.statusInfos = [];
-        participant.statusInfos.push({
+        computedStatus = {
           createdAt: hiredBySomeoneElseStatus.createdAt,
           status: 'already_hired',
-        });
+        };
+      } else if (hiredBySomeoneInSameOrgStatus) {
+        const hasOwnInteraction = item.statusInfos.find(
+          (statusInfo) =>
+            !['hired', 'archived', 'rejected'].includes(statusInfo.status) &&
+            statusInfo.employerId === user.id
+        );
+        if (hasOwnInteraction) {
+          computedStatus = {
+            createdAt: hiredBySomeoneInSameOrgStatus.createdAt,
+            status: 'hired_by_peer',
+          };
+        }
+      }
+
+      if (computedStatus) {
+        participant.statusInfos = participant.statusInfos
+          ? [...participant.statusInfos, computedStatus]
+          : [computedStatus];
       }
 
       const statusInfos = item.statusInfos?.find(

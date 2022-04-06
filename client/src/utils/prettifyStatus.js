@@ -28,6 +28,9 @@ export const prettifyStatus = (status, id, tabValue, handleEngage, handleAcknowl
       toolTip = 'Participant is no longer available.';
     }
   }
+
+  if (status[1] === 'hired_by_peer') toolTip = 'This candidate was hired by same organization.';
+
   const hideAcknowledgeButton = !(
     tabValue === 'Hired Candidates' && status.includes('pending_acknowledgement')
   );

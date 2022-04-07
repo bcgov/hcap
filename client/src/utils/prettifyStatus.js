@@ -29,13 +29,16 @@ export const prettifyStatus = (status, id, tabValue, handleEngage, handleAcknowl
     }
   }
 
-  if (status[1] === 'hired_by_peer') toolTip = 'This candidate was hired by same organization.';
+  if (status[1] === 'hired_by_peer')
+    toolTip = 'This candidate was hired by same site. And available in "Hired Participants" tab.';
 
   const hideAcknowledgeButton = !(
     tabValue === 'Hired Candidates' && status.includes('pending_acknowledgement')
   );
   const hideArchiveButton =
-    ['Archived Candidates', 'Participants'].includes(tabValue) || !hideAcknowledgeButton;
+    ['Archived Candidates', 'Participants'].includes(tabValue) ||
+    !hideAcknowledgeButton ||
+    status[1] === 'hired_by_peer';
   return (
     <div
       style={{

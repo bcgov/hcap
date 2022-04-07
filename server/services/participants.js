@@ -34,7 +34,7 @@ const deleteParticipant = async ({ email }) => {
   });
 };
 
-const deleteAcknowledgement = async (participantId) => {
+const deleteAcknowledgement = async (participantId) =>
   dbClient.db.withTransaction(async (tx) => {
     const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
       participant_id: participantId,
@@ -42,7 +42,7 @@ const deleteAcknowledgement = async (participantId) => {
       current: true,
     });
     if (!item) {
-      return {};
+      return { success: false, message: 'No pending acknowledgement found' };
     }
     await tx[collections.PARTICIPANTS_STATUS].update(
       {
@@ -50,9 +50,8 @@ const deleteAcknowledgement = async (participantId) => {
       },
       { current: false }
     );
-    return {};
+    return { success: true, message: 'Move to archive' };
   });
-};
 
 const getHiredParticipantsBySite = async (siteID) => {
   const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]
@@ -301,10 +300,12 @@ const setParticipantStatus = async (
     )
       return { status: 'invalid_status_transition' };
 
-    // Handling Hired Status
+    // Handling Hired Status updated by different employer
+    // For Hired status update all existing employer status
+    // Creating pending_acknowledgement status for hiring employer
     const hiredStatus = items[0];
     if (
-      ['archived'].includes(status) &&
+      status === 'archived' &&
       (!item || (hiredStatus && hiredStatus.employer_id !== employerId))
     ) {
       if (hiredStatus.data.site && user?.sites.includes(hiredStatus.data.site)) {
@@ -316,6 +317,14 @@ const setParticipantStatus = async (
           },
           { current: false }
         );
+        // Add an ephemeral status to warn the employer
+        await tx[collections.PARTICIPANTS_STATUS].save({
+          employer_id: hiredStatus.employer_id,
+          participant_id: participantId,
+          status: 'pending_acknowledgement',
+          current: true,
+          data,
+        });
       } else {
         return { status: 'invalid_archive' };
       }
@@ -544,10 +553,12 @@ const getParticipants = async (
         rosStatuses: item.rosStatuses || [],
       };
 
+      // The hired statuses created by other employer of other org/site
       const hiredBySomeoneElseStatus = item.statusInfos?.find(
         (statusInfo) => statusInfo.status === 'hired' && !user.sites.includes(statusInfo.data.site)
       );
 
+      // The hired statuses created by other employer of same org/site
       const hiredBySomeoneInSameOrgStatus = item.statusInfos?.find(
         (statusInfo) =>
           statusInfo.status === 'hired' &&

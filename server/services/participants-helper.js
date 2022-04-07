@@ -267,9 +267,20 @@ class FieldsFilteredParticipantsFinder {
         }),
       });
 
+      // Updating Status Filter query
+      // Case: 1: Filter all hired statuses  which are matching with user sites
+      // Or Case: 2: pending acknowledgement status for same user
       if (statusFilters && statusFilters.includes('hired')) {
         const siteQuery = {
-          [`${employerSpecificJoin}.data.site IN`]: user.sites,
+          or: [
+            { [`${employerSpecificJoin}.data.site IN`]: user.sites },
+            {
+              and: [
+                { [`${employerSpecificJoin}.status`]: 'pending_acknowledgement' },
+                { [`${employerSpecificJoin}.employer_id`]: user.id },
+              ],
+            },
+          ],
         };
         criteria.and = criteria.and ? [...criteria.and, siteQuery] : [siteQuery];
       }

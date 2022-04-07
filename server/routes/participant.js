@@ -406,8 +406,11 @@ employerActionsRouter.delete(
   keycloak.allowRolesMiddleware('employer', 'health_authority'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    await deleteAcknowledgement(req.body.id);
-    return res.status(204).json({ message: 'No Content' });
+    const { success, message } = await deleteAcknowledgement(req.body.participantId);
+    if (!success) {
+      res.status(400).json({ message });
+    }
+    return res.status(200).json({ message });
   })
 );
 

@@ -201,7 +201,16 @@ export const acknowledgeParticipant = async ({ participantId }) => {
   });
 
   if (response.ok) {
-    return response.json();
+    return {
+      ...(await response.json()),
+      success: true,
+    };
+  }
+  if (response.status === 400) {
+    return {
+      ...(await response.json()),
+      success: false,
+    };
   }
 
   throw new Error('Failed to acknowledge participant', response.error || response.statusText);

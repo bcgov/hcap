@@ -28,7 +28,7 @@ export const tabs = {
   },
   'Hired Candidates': {
     roles: ['employer', 'health_authority'],
-    statuses: ['hired'],
+    statuses: ['hired', 'pending_acknowledgement'],
   },
   'Return Of Service': {
     roles: ['employer', 'health_authority'],

@@ -198,11 +198,11 @@ const ParticipantTable = () => {
 
   const handleAcknowledge = async (id) => {
     try {
-      await acknowledgeParticipant(id);
+      const { message, success } = await acknowledgeParticipant({ participantId: id });
 
       openToast({
-        status: ToastStatus.Success,
-        message: 'Update successful',
+        status: success ? ToastStatus.Success : ToastStatus.Warning,
+        message: message || 'Update successful',
       });
 
       setActionMenuParticipant(null);
@@ -211,7 +211,7 @@ const ParticipantTable = () => {
     } catch (err) {
       openToast({
         status: ToastStatus.Error,
-        message: 'An error occurred',
+        message: err.message || 'An error occurred',
       });
     }
   };

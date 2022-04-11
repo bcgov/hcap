@@ -584,7 +584,12 @@ export const ParticipantAssignCohortSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
-    cohort: yup.number().required(errorMessage),
+    cohort: yup
+      .number()
+      .required(errorMessage)
+      .test('cohort-has-room', 'No available seats in cohort', () => {
+        return yup.ref('availableSize') > 0;
+      }),
     institute: yup.number().required(errorMessage),
   });
 

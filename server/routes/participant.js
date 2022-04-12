@@ -12,6 +12,7 @@ const {
   confirmParticipantInterest,
   validateConfirmationId,
   deleteAcknowledgement,
+  removeAllParticipantStatusForUser,
   archiveParticipantBySite,
   deleteParticipant,
 } = require('../services/participants.js');
@@ -385,7 +386,8 @@ employerActionsRouter.post(
       user.id,
       req.body.participantId,
       req.body.status,
-      req.body.data
+      req.body.data,
+      user
     );
     logger.info({
       action: 'employer-actions_post',
@@ -405,8 +407,39 @@ employerActionsRouter.delete(
   keycloak.allowRolesMiddleware('employer', 'health_authority'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    await deleteAcknowledgement(req.body.id);
-    return res.status(204).json({ message: 'No Content' });
+    // Get user
+    const user = req.hcapUserInfo;
+    // Get request body
+    const { body: { participantId, multiOrgHire } = {} } = req;
+    if (!participantId) {
+      return res.status(400).send('Missing participantId');
+    }
+
+    if (multiOrgHire) {
+      await removeAllParticipantStatusForUser({ user, participantId });
+      logger.info({
+        action: 'acknowledgment_update',
+        performed_by: {
+          username: user.username,
+          id: user.id,
+        },
+        participantId,
+      });
+      return res.status(201).json({ message: 'Participant status acknowledged and closed' });
+    }
+    const { success, message } = await deleteAcknowledgement(req.body.participantId);
+    if (!success) {
+      return res.status(400).json({ message });
+    }
+    logger.info({
+      action: 'acknowledgment_delete',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      participantId,
+    });
+    return res.status(200).json({ message });
   })
 );
 

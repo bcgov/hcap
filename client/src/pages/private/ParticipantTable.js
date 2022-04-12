@@ -12,7 +12,7 @@ import {
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
-import { prettifyStatus, keyedString } from '../../utils';
+import { addEllipsisMask, prettifyStatus, keyedString } from '../../utils';
 import moment from 'moment';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
@@ -92,10 +92,14 @@ const filterData = (data, columns) => {
     }
 
     // Manage employer name
+    const maxStrLen = 50;
     const statusWithEmployerDetails =
       item.statusInfos?.filter((statusInfo) => statusInfo.employerInfo) || [];
     if (statusWithEmployerDetails.length > 0) {
-      row.employerName = `${statusWithEmployerDetails[0].employerInfo.firstName} ${statusWithEmployerDetails[0].employerInfo.lastName}`;
+      row.employerName = addEllipsisMask(
+        `${statusWithEmployerDetails[0].employerInfo.firstName} ${statusWithEmployerDetails[0].employerInfo.lastName}`,
+        maxStrLen
+      );
     }
 
     row.engage.status = row.status[0];

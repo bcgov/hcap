@@ -152,7 +152,7 @@ const columns = {
   engage: { id: 'engage', name: null, sortOrder: 16 },
   siteName: { id: 'siteName', name: 'Site Name', sortOrder: 18 },
   archive: { id: 'archive', name: null, sortOrder: 52 },
-  postHireStatuses: { id: 'postHireStatuses', name: 'Graduated', sortOrder: 20 },
+  postHireStatuses: { id: 'postHireStatuses', name: 'Graduated', sortOrder: 20, sortable: false },
   edit: { id: 'edit', name: null, sortOrder: 21 },
   rosStartDate: { id: 'rosStartDate', name: 'Return of Service Start Date', sortOrder: 22 },
   rosSiteName: { id: 'rosSiteName', name: 'Site Name', sortOrder: 23 },

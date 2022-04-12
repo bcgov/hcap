@@ -153,6 +153,7 @@ export const AssignCohortForm = ({
                 </Grid>
                 <Grid item>
                   <Button
+                    test-id={'updateGraduationStatus'}
                     onClick={submitForm}
                     variant='contained'
                     color='primary'

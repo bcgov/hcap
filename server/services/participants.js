@@ -34,6 +34,17 @@ const deleteParticipant = async ({ email }) => {
   });
 };
 
+const removeAllParticipantStatusForUser = async ({ user, participantId }) =>
+  dbClient.db[collections.PARTICIPANTS_STATUS].update(
+    {
+      participant_id: participantId,
+      employer_id: user.id,
+    },
+    {
+      current: false,
+    }
+  );
+
 const deleteAcknowledgement = async (participantId) =>
   dbClient.db.withTransaction(async (tx) => {
     const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
@@ -50,7 +61,7 @@ const deleteAcknowledgement = async (participantId) =>
       },
       { current: false }
     );
-    return { success: true, message: 'Move to archive' };
+    return { success: true, message: 'Participant status acknowledged and closed' };
   });
 
 const getHiredParticipantsBySite = async (siteID) => {
@@ -896,6 +907,7 @@ module.exports = {
   withdrawParticipant,
   createChangeHistory,
   deleteAcknowledgement,
+  removeAllParticipantStatusForUser,
   withdrawParticipantsByEmail,
   deleteParticipant,
 };

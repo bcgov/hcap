@@ -198,9 +198,12 @@ const ParticipantTable = () => {
     }
   };
 
-  const handleAcknowledge = async (id) => {
+  const handleAcknowledge = async (id, multiOrgHire) => {
     try {
-      const { message, success } = await acknowledgeParticipant({ participantId: id });
+      const { message, success } = await acknowledgeParticipant({
+        participantId: id,
+        multiOrgHire,
+      });
 
       openToast({
         status: success ? ToastStatus.Success : ToastStatus.Warning,
@@ -279,10 +282,9 @@ const ParticipantTable = () => {
         }
         return 'N/A';
       case 'engage':
-        const engage =
-          !row.status.includes('already_hired') &&
-          !row.status.includes('withdrawn') &&
-          !row.status.includes('archived');
+        const engage = !['hired_by_peer', 'already_hired', 'withdrawn', 'archived'].find((status) =>
+          row.status.includes(status)
+        );
 
         return (
           engage && (

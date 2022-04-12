@@ -12,6 +12,7 @@ const {
   confirmParticipantInterest,
   validateConfirmationId,
   deleteAcknowledgement,
+  removeAllParticipantStatusForUser,
   archiveParticipantBySite,
   deleteParticipant,
 } = require('../services/participants.js');
@@ -406,10 +407,38 @@ employerActionsRouter.delete(
   keycloak.allowRolesMiddleware('employer', 'health_authority'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
+    // Get user
+    const user = req.hcapUserInfo;
+    // Get request body
+    const { body: { participantId, multiOrgHire } = {} } = req;
+    if (!participantId) {
+      return res.status(400).send('Missing participantId');
+    }
+
+    if (multiOrgHire) {
+      await removeAllParticipantStatusForUser({ user, participantId });
+      logger.info({
+        action: 'acknowledgment_update',
+        performed_by: {
+          username: user.username,
+          id: user.id,
+        },
+        participantId,
+      });
+      return res.status(201).json({ message: 'Participant status acknowledged and closed' });
+    }
     const { success, message } = await deleteAcknowledgement(req.body.participantId);
     if (!success) {
-      res.status(400).json({ message });
+      return res.status(400).json({ message });
     }
+    logger.info({
+      action: 'acknowledgment_delete',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      participantId,
+    });
     return res.status(200).json({ message });
   })
 );

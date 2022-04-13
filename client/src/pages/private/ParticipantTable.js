@@ -96,14 +96,14 @@ const filterData = (data, columns) => {
     }
 
     // Manage employer name
-    const maxStrLen = 50;
+    const maxStrLen = 20;
     const statusWithEmployerDetails =
       item.statusInfos?.filter((statusInfo) => statusInfo.employerInfo) || [];
     if (statusWithEmployerDetails.length > 0) {
-      row.employerName = addEllipsisMask(
-        `${statusWithEmployerDetails[0].employerInfo.firstName} ${statusWithEmployerDetails[0].employerInfo.lastName}`,
+      row.employerName = `${addEllipsisMask(
+        statusWithEmployerDetails[0].employerInfo.firstName,
         maxStrLen
-      );
+      )} ${addEllipsisMask(statusWithEmployerDetails[0].employerInfo.lastName, maxStrLen)}`;
     }
 
     row.engage.status = row.status[0];

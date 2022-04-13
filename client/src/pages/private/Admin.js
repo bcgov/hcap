@@ -57,7 +57,12 @@ export default () => {
         >
           <Box pb={4} pl={4} pr={4} pt={2}>
             <Grid container direction='column'>
-              <Typography noWrap variant='subtitle1' gutterBottom>
+              <Typography
+                noWrap
+                variant='subtitle1'
+                gutterBottom
+                className={classes.welcomeOverflow}
+              >
                 Welcome, {name}
               </Typography>
               <CheckPermissions permittedRoles={['maximus']}>

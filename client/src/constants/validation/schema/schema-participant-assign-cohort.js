@@ -11,7 +11,7 @@ export const ParticipantAssignCohortSchema = yup
       .required(errorMessage)
       .test('cohort-has-room', 'No available seats in cohort', cohortHasRoom),
     institute: yup.number().required(errorMessage),
-    availableSize: yup.number().required().min(1, 'Cohort available seats must be at least 1'),
+    availableSize: yup.number(),
   });
 
 export const cohortHasRoom = () => {

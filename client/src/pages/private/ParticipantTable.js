@@ -12,7 +12,7 @@ import {
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
-import { prettifyStatus, keyedString } from '../../utils';
+import { addEllipsisMask, prettifyStatus, keyedString } from '../../utils';
 import moment from 'moment';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
@@ -71,9 +71,11 @@ const filterData = (data, columns) => {
       item.rosStatuses.length > 0 &&
       item.statusInfos[0].status !== 'archived'
     ) {
-      const otherStatuses = item.statusInfos.find((statusInfo) => statusInfo.status === 'withdrawn')
-        ? ['withdrawn']
-        : [];
+      const archivedStatuses = item.statusInfos.filter(
+        (statusInfo) =>
+          statusInfo.status === 'withdrawn' || statusInfo.status === 'pending_acknowledgement'
+      );
+      const otherStatuses = archivedStatuses.map((statusInfo) => statusInfo.status);
       row.status = ['ros', ...otherStatuses];
     } else if (item.statusInfos && item.statusInfos.length > 0) {
       // Handling already_hired and withdrawn status
@@ -82,6 +84,8 @@ const filterData = (data, columns) => {
         row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'withdrawn'];
       } else if (item.statusInfos.find((statusInfo) => statusInfo.status === 'already_hired')) {
         row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'already_hired'];
+      } else if (item.statusInfos.find((statusInfo) => statusInfo.status === 'hired_by_peer')) {
+        row.status = [previousStatus?.data.previous || item.statusInfos[0].status, 'hired_by_peer'];
       } else {
         row.status = [item.statusInfos[0].status];
       }
@@ -92,10 +96,14 @@ const filterData = (data, columns) => {
     }
 
     // Manage employer name
+    const maxStrLen = 20;
     const statusWithEmployerDetails =
       item.statusInfos?.filter((statusInfo) => statusInfo.employerInfo) || [];
     if (statusWithEmployerDetails.length > 0) {
-      row.employerName = `${statusWithEmployerDetails[0].employerInfo.firstName} ${statusWithEmployerDetails[0].employerInfo.lastName}`;
+      row.employerName = `${addEllipsisMask(
+        statusWithEmployerDetails[0].employerInfo.firstName,
+        maxStrLen
+      )} ${addEllipsisMask(statusWithEmployerDetails[0].employerInfo.lastName, maxStrLen)}`;
     }
 
     row.engage.status = row.status[0];
@@ -165,7 +173,13 @@ const ParticipantTable = () => {
         const index = rows.findIndex((row) => row.id === participantId);
         const { firstName, lastName } = rows[index];
         const toasts = makeToasts(firstName, lastName);
-        openToast(toasts[data?.status === 'already_hired' ? data.status : status]);
+        openToast(
+          toasts[
+            ['already_hired', 'invalid_status_transition', 'invalid_archive'].includes(data?.status)
+              ? data.status
+              : status
+          ]
+        );
         setActionMenuParticipant(null);
         setActiveModalForm(null);
         fetchParticipants();
@@ -188,13 +202,16 @@ const ParticipantTable = () => {
     }
   };
 
-  const handleAcknowledge = async (id) => {
+  const handleAcknowledge = async (id, multiOrgHire) => {
     try {
-      await acknowledgeParticipant(id);
+      const { message, success } = await acknowledgeParticipant({
+        participantId: id,
+        multiOrgHire,
+      });
 
       openToast({
-        status: ToastStatus.Success,
-        message: 'Update successful',
+        status: success ? ToastStatus.Success : ToastStatus.Warning,
+        message: message || 'Update successful',
       });
 
       setActionMenuParticipant(null);
@@ -203,7 +220,7 @@ const ParticipantTable = () => {
     } catch (err) {
       openToast({
         status: ToastStatus.Error,
-        message: 'An error occurred',
+        message: err.message || 'An error occurred',
       });
     }
   };
@@ -269,10 +286,9 @@ const ParticipantTable = () => {
         }
         return 'N/A';
       case 'engage':
-        const engage =
-          !row.status.includes('already_hired') &&
-          !row.status.includes('withdrawn') &&
-          !row.status.includes('archived');
+        const engage = !['hired_by_peer', 'already_hired', 'withdrawn', 'archived'].find((status) =>
+          row.status.includes(status)
+        );
 
         return (
           engage && (

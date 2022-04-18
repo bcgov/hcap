@@ -28,7 +28,7 @@ export const tabs = {
   },
   'Hired Candidates': {
     roles: ['employer', 'health_authority'],
-    statuses: ['hired'],
+    statuses: ['hired', 'pending_acknowledgement'],
   },
   'Return Of Service': {
     roles: ['employer', 'health_authority'],
@@ -77,6 +77,14 @@ export const makeToasts = (firstName, lastName) => {
     already_hired: {
       status: ToastStatus.Info,
       message: `${firstName} ${lastName} is already hired by someone else`,
+    },
+    invalid_status_transition: {
+      status: ToastStatus.Error,
+      message: `Unable to update status for ${firstName} ${lastName}`,
+    },
+    invalid_archive: {
+      status: ToastStatus.Error,
+      message: `Unable to archive ${firstName} ${lastName}`,
     },
   };
 };
@@ -144,7 +152,7 @@ const columns = {
   engage: { id: 'engage', name: null, sortOrder: 16 },
   siteName: { id: 'siteName', name: 'Site Name', sortOrder: 18 },
   archive: { id: 'archive', name: null, sortOrder: 52 },
-  postHireStatuses: { id: 'postHireStatuses', name: 'Graduated', sortOrder: 20 },
+  postHireStatuses: { id: 'postHireStatuses', name: 'Graduated', sortOrder: 20, sortable: false },
   edit: { id: 'edit', name: null, sortOrder: 21 },
   rosStartDate: { id: 'rosStartDate', name: 'Return of Service Start Date', sortOrder: 22 },
   rosSiteName: { id: 'rosSiteName', name: 'Site Name', sortOrder: 23 },

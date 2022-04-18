@@ -34,7 +34,18 @@ const deleteParticipant = async ({ email }) => {
   });
 };
 
-const deleteAcknowledgement = async (participantId) => {
+const removeAllParticipantStatusForUser = async ({ user, participantId }) =>
+  dbClient.db[collections.PARTICIPANTS_STATUS].update(
+    {
+      participant_id: participantId,
+      employer_id: user.id,
+    },
+    {
+      current: false,
+    }
+  );
+
+const deleteAcknowledgement = async (participantId) =>
   dbClient.db.withTransaction(async (tx) => {
     const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
       participant_id: participantId,
@@ -42,7 +53,7 @@ const deleteAcknowledgement = async (participantId) => {
       current: true,
     });
     if (!item) {
-      return {};
+      return { success: false, message: 'No pending acknowledgement found' };
     }
     await tx[collections.PARTICIPANTS_STATUS].update(
       {
@@ -50,9 +61,8 @@ const deleteAcknowledgement = async (participantId) => {
       },
       { current: false }
     );
-    return {};
+    return { success: true, message: 'Participant status acknowledged and closed' };
   });
-};
 
 const getHiredParticipantsBySite = async (siteID) => {
   const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]
@@ -259,19 +269,19 @@ const setParticipantStatus = async (
   employerId,
   participantId,
   status,
-  data // JSONB on the status row
+  data, // JSONB on the status row
+  user
 ) =>
   dbClient.db.withTransaction(async (tx) => {
     if (status === 'pending_acknowledgement') {
       return { status: 'invalid_status' };
     }
+    const items = await tx[collections.PARTICIPANTS_STATUS].find({
+      participant_id: participantId,
+      status: 'hired',
+      current: true,
+    });
     if (status !== 'rejected' && status !== 'archived') {
-      const items = await tx[collections.PARTICIPANTS_STATUS].find({
-        participant_id: participantId,
-        status: 'hired',
-        current: true,
-      });
-
       if (items.length > 0) return { status: 'already_hired' };
     }
 
@@ -300,8 +310,35 @@ const setParticipantStatus = async (
       item?.status !== 'archived'
     )
       return { status: 'invalid_status_transition' };
-    if (status === 'archived' && !item) {
-      return { status: 'Could not find participant' };
+
+    // Handling Hired Status updated by different employer
+    // For Hired status update all existing employer status
+    // Creating pending_acknowledgement status for hiring employer
+    const hiredStatus = items[0];
+    if (
+      status === 'archived' &&
+      (!item || (hiredStatus && hiredStatus.employer_id !== employerId))
+    ) {
+      if (hiredStatus.data.site && user?.sites.includes(hiredStatus.data.site)) {
+        await tx[collections.PARTICIPANTS_STATUS].update(
+          {
+            employer_id: hiredStatus.employer_id,
+            participant_id: participantId,
+            current: true,
+          },
+          { current: false }
+        );
+        // Add an ephemeral status to warn the employer
+        await tx[collections.PARTICIPANTS_STATUS].save({
+          employer_id: hiredStatus.employer_id,
+          participant_id: participantId,
+          status: 'pending_acknowledgement',
+          current: true,
+          data,
+        });
+      } else {
+        return { status: 'invalid_archive' };
+      }
     }
     // Invalidate pervious status
     await tx[collections.PARTICIPANTS_STATUS].update(
@@ -527,23 +564,49 @@ const getParticipants = async (
         rosStatuses: item.rosStatuses || [],
       };
 
+      // The hired statuses created by other employer of other org/site
       const hiredBySomeoneElseStatus = item.statusInfos?.find(
         (statusInfo) => statusInfo.status === 'hired' && !user.sites.includes(statusInfo.data.site)
       );
 
+      // The hired statuses created by other employer of same org/site
+      const hiredBySomeoneInSameOrgStatus = item.statusInfos?.find(
+        (statusInfo) =>
+          statusInfo.status === 'hired' &&
+          user.sites.includes(statusInfo.data.site) &&
+          statusInfo.employerId !== user.id
+      );
+
       // Handling withdrawn and already hired, putting withdrawn as higher priority
+      let computedStatus;
       if (item.interested === 'withdrawn' || item.interested === 'no') {
-        if (!participant.statusInfos) participant.statusInfos = [];
-        participant.statusInfos.push({
+        computedStatus = {
           createdAt: new Date(),
           status: 'withdrawn',
-        });
+        };
       } else if (hiredBySomeoneElseStatus) {
-        if (!participant.statusInfos) participant.statusInfos = [];
-        participant.statusInfos.push({
+        computedStatus = {
           createdAt: hiredBySomeoneElseStatus.createdAt,
           status: 'already_hired',
-        });
+        };
+      } else if (hiredBySomeoneInSameOrgStatus) {
+        const hasOwnInteraction = item.statusInfos.find(
+          (statusInfo) =>
+            !['hired', 'archived', 'rejected'].includes(statusInfo.status) &&
+            statusInfo.employerId === user.id
+        );
+        if (hasOwnInteraction) {
+          computedStatus = {
+            createdAt: hiredBySomeoneInSameOrgStatus.createdAt,
+            status: 'hired_by_peer',
+          };
+        }
+      }
+
+      if (computedStatus) {
+        participant.statusInfos = participant.statusInfos
+          ? [...participant.statusInfos, computedStatus]
+          : [computedStatus];
       }
 
       const statusInfos = item.statusInfos?.find(
@@ -844,6 +907,7 @@ module.exports = {
   withdrawParticipant,
   createChangeHistory,
   deleteAcknowledgement,
+  removeAllParticipantStatusForUser,
   withdrawParticipantsByEmail,
   deleteParticipant,
 };

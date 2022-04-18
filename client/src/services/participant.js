@@ -189,7 +189,7 @@ export const addParticipantStatus = async ({ participantId, status, additional }
   throw new Error('Failed to add participant status', response.error || response.statusText);
 };
 
-export const acknowledgeParticipant = async ({ participantId }) => {
+export const acknowledgeParticipant = async ({ participantId, multiOrgHire }) => {
   const response = await fetch(`${API_URL}/api/v1/employer-actions/acknowledgment`, {
     method: 'DELETE',
     headers: {
@@ -197,11 +197,20 @@ export const acknowledgeParticipant = async ({ participantId }) => {
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
-    body: JSON.stringify({ participantId }),
+    body: JSON.stringify({ participantId, multiOrgHire }),
   });
 
   if (response.ok) {
-    return response.json();
+    return {
+      ...(await response.json()),
+      success: true,
+    };
+  }
+  if (response.status === 400) {
+    return {
+      ...(await response.json()),
+      success: false,
+    };
   }
 
   throw new Error('Failed to acknowledge participant', response.error || response.statusText);

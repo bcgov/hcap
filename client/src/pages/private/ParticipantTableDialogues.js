@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { InterviewingFormSchema, RejectedFormSchema } from '../../constants';
+import { InterviewingFormSchema, RejectedFormSchema, SitesSchema } from '../../constants';
 import { Dialog } from '../../components/generic';
 import {
   ProspectingForm,
@@ -10,6 +10,7 @@ import {
   EditParticipantForm,
   ArchiveHiredParticipantForm,
   ReturnOfServiceForm,
+  SelectProspectingSiteForm,
 } from '../../components/modal-forms';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
@@ -31,7 +32,19 @@ export const ParticipantTableDialogues = ({
       title={getDialogTitle(activeModalForm)}
       open={activeModalForm != null}
       onClose={onClose}
+      showDivider
     >
+      {activeModalForm === 'single-select-site' && (
+        <SelectProspectingSiteForm
+          initialValues={{ participantSites: [] }}
+          validationSchema={SitesSchema}
+          onSubmit={(values) => {
+            // TODO: add submit form
+          }}
+          onClose={onClose}
+        />
+      )}
+
       {activeModalForm === 'prospecting' && (
         <ProspectingForm
           name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}

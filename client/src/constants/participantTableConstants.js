@@ -12,6 +12,11 @@ export const participantStatus = {
   ROS: 'ros',
 };
 
+export const participantEngageStatus = {
+  SELECT_SITE: 'single-select-site',
+  PROSPECTING_CONFIRM: 'prospecting',
+};
+
 export const tabs = {
   // Tabs, associated allowed roles, displayed statuses
   'Available Participants': {

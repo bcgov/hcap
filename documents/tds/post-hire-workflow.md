@@ -2,7 +2,7 @@
 
 ## Info
 
-    Status:     Draft
+    Status:     Initial version
     Version:    1.0
     Created On: 1-Feb-2022
     Update On:  14-Feb-2022

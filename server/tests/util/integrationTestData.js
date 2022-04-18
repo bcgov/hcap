@@ -57,11 +57,16 @@ const makeCohortAssignment = async ({
   };
 };
 
-const makeTestSite = async (options) => {
-  if (!options.siteId) {
+const makeTestSite = async ({ siteId, city, siteName, ...rest } = {}) => {
+  if (!siteId) {
     throw new Error('Site ID is required');
   }
-  return saveSingleSite(options);
+  return saveSingleSite({
+    siteId,
+    city,
+    siteName,
+    ...rest,
+  });
 };
 
 const makeTestParticipantStatus = async ({

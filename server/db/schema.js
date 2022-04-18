@@ -19,6 +19,7 @@ const collections = {
   PARTICIPANT_POST_HIRE_STATUS: 'participant_post_hire_status',
   ROS_STATUS: 'return_of_service_status',
   ADMIN_OPS_AUDIT: 'admin_operation_audit',
+  SITE_PARTICIPANTS_STATUS: 'site_participants_status',
 };
 
 const views = {

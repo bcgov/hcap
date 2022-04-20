@@ -45,7 +45,6 @@ export const SelectProspectingSiteForm = ({
             name='prospectingSites'
             component={RenderMultiSelectField}
             placeholder='Select Site'
-            // TODO: get the list of options
             options={_orderBy(sites, ['siteName']).map((item) => ({
               value: item.siteId,
               label: item.siteName,

@@ -35,7 +35,6 @@ export const ParticipantTableDialogues = ({
   const handleSelectProspectingSites = (values) => {
     // TODO: form submission is captured as part of HCAP-1107
     handleEngage(actionMenuParticipant.id, participantStatus.PROSPECTING);
-    console.log(values);
   };
 
   return (

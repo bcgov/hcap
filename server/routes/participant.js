@@ -387,7 +387,8 @@ employerActionsRouter.post(
       req.body.participantId,
       req.body.status,
       req.body.data,
-      user
+      user,
+      req.body.sites || null
     );
     logger.info({
       action: 'employer-actions_post',

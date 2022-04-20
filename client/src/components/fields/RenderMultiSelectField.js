@@ -5,10 +5,10 @@ import { ErrorMessage } from 'formik';
 import { InputFieldError, InputFieldLabel } from '../generic';
 import { Select } from '@material-ui/core';
 
-export const RenderMultiSelectField = ({ field, form, label, options, ...props }) => {
+export const RenderMultiSelectField = ({ field, form, label, options, placeholder, ...props }) => {
   const touched = form.touched[field.name];
   const error = form.errors[field.name];
-  const placeholder = 'Please Select';
+  const defaultPlaceholder = placeholder || 'Please Select';
 
   const renderValue = (selecteds) => {
     const labels = selecteds.map(
@@ -17,7 +17,7 @@ export const RenderMultiSelectField = ({ field, form, label, options, ...props }
     if (labels.length > 0) {
       return labels.map((item, index) => <div key={index}>{item}</div>);
     }
-    return placeholder;
+    return defaultPlaceholder;
   };
 
   return (
@@ -35,7 +35,7 @@ export const RenderMultiSelectField = ({ field, form, label, options, ...props }
         {...props}
       >
         <MenuItem value='' disabled>
-          {placeholder}
+          {defaultPlaceholder}
         </MenuItem>
         {options.map((option) => (
           <MenuItem key={option.value} value={option.value}>

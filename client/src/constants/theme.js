@@ -34,8 +34,8 @@ export default createMuiTheme({
       main: '#FDB913',
     },
     highlight: {
-      primary: '#40a9ff',
-      secondary: '#1890ff',
+      primary: '#40A9FF',
+      secondary: '#1890FF',
     },
     warning: {
       main: '#F5A623',
@@ -49,6 +49,7 @@ export default createMuiTheme({
     },
     headerText: {
       primary: '#FFFFFF',
+      secondary: '#606060',
     },
     gray: {
       primary: '#F0F0F0',

@@ -1,5 +1,10 @@
 import React, { useMemo } from 'react';
-import { InterviewingFormSchema, RejectedFormSchema } from '../../constants';
+import {
+  InterviewingFormSchema,
+  RejectedFormSchema,
+  ProspectingSitesSchema,
+  participantStatus,
+} from '../../constants';
 import { Dialog } from '../../components/generic';
 import {
   ProspectingForm,
@@ -10,6 +15,7 @@ import {
   EditParticipantForm,
   ArchiveHiredParticipantForm,
   ReturnOfServiceForm,
+  SelectProspectingSiteForm,
 } from '../../components/modal-forms';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
@@ -26,15 +32,32 @@ export const ParticipantTableDialogues = ({
   const { auth } = AuthContext.useAuth();
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
 
+  const handleSelectProspectingSites = (values) => {
+    // TODO: form submission is captured as part of HCAP-1107
+    handleEngage(actionMenuParticipant.id, participantStatus.PROSPECTING);
+  };
+
   return (
     <Dialog
       title={getDialogTitle(activeModalForm)}
       open={activeModalForm != null}
       onClose={onClose}
+      showDivider
     >
+      {activeModalForm === 'single-select-site' && (
+        <SelectProspectingSiteForm
+          initialValues={{ prospectingSites: [] }}
+          validationSchema={ProspectingSitesSchema}
+          onSubmit={(values) => {
+            handleSelectProspectingSites(values);
+          }}
+          onClose={onClose}
+        />
+      )}
+
       {activeModalForm === 'prospecting' && (
         <ProspectingForm
-          name={`${actionMenuParticipant.firstName} ${actionMenuParticipant.lastName}`}
+          name={`${actionMenuParticipant?.firstName} ${actionMenuParticipant?.lastName}`}
           onClose={() => {
             fetchParticipants();
             onClose();

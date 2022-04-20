@@ -9,6 +9,7 @@ import {
   makeToasts,
   Routes,
   participantStatus,
+  participantEngageStatus,
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
@@ -160,6 +161,10 @@ const ParticipantTable = () => {
     const newRows = filterData(data, columns);
     setRows(newRows);
     setLoadingData(false);
+  };
+
+  const openParticipantSelectSite = () => {
+    setActiveModalForm(participantEngageStatus.SELECT_SITE);
   };
 
   const handleEngage = async (participantId, status, additional = {}) => {
@@ -437,9 +442,7 @@ const ParticipantTable = () => {
             onClose={() => setActionMenuParticipant(null)}
           >
             {actionMenuParticipant?.status === 'open' && (
-              <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>
-                Engage
-              </MenuItem>
+              <MenuItem onClick={() => openParticipantSelectSite()}>Engage</MenuItem>
             )}
             {actionMenuParticipant?.status === 'prospecting' && (
               <MenuItem onClick={() => setActiveModalForm('interviewing')}>Interviewing</MenuItem>

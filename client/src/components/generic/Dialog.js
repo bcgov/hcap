@@ -1,11 +1,23 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, Dialog as MuiDialog, Divider } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import {
+  Box,
+  Dialog as MuiDialog,
+  DialogTitle,
+  IconButton,
+  DialogContent,
+} from '@material-ui/core';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    width: '1000px',
-    maxWidth: '600px',
+    minWidth: '600px',
+    maxWidth: '1000px',
+  },
+  dialogHeader: {
+    fontWeight: 400,
+    fontSize: '24px',
+    color: theme.palette.primary.light,
   },
 }));
 
@@ -13,13 +25,20 @@ export const Dialog = ({ open, onClose, children, title, showDivider = false }) 
   const classes = useStyles();
   return (
     <MuiDialog open={open} onClose={onClose} disableBackdropClick>
-      <Box pt={4} pb={2} pl={4} pr={4} className={classes.root}>
-        <Typography variant='subtitle1'>{title}</Typography>
-      </Box>
-      {showDivider && <Divider />}
-      <Box pb={4} pl={4} pr={4}>
-        {children}
-      </Box>
+      <DialogTitle>
+        <Box pr={4} display='flex' className={classes.root}>
+          <Box flexGrow={1} className={classes.dialogHeader}>
+            {title}
+          </Box>
+          {onClose && (
+            <IconButton aria-label='close' onClick={onClose}>
+              <CloseIcon />
+            </IconButton>
+          )}
+        </Box>
+      </DialogTitle>
+
+      <DialogContent dividers={showDivider}>{children}</DialogContent>
     </MuiDialog>
   );
 };

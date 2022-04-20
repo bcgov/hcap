@@ -163,7 +163,7 @@ const ParticipantTable = () => {
     setLoadingData(false);
   };
 
-  const openParticipantSelectSite = (participantId) => {
+  const openParticipantSelectSite = () => {
     setActiveModalForm(participantEngageStatus.SELECT_SITE);
   };
 
@@ -442,7 +442,7 @@ const ParticipantTable = () => {
             onClose={() => setActionMenuParticipant(null)}
           >
             {actionMenuParticipant?.status === 'open' && (
-              <MenuItem onClick={() => openParticipantSelectSite(actionMenuParticipant.id)}>
+              <MenuItem onClick={() => openParticipantSelectSite()}>
                 Engage
               </MenuItem>
             )}

@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import _orderBy from 'lodash/orderBy';
+import { AuthContext } from '../../providers';
+
 import { Box, Divider, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { FastField, Formik, Form as FormikForm } from 'formik';
+
 import { RenderMultiSelectField } from '../fields';
 import { Button } from '../generic';
-import { FastField, Formik, Form as FormikForm } from 'formik';
-import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   formButton: {
@@ -14,8 +18,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   formLabel: {
-    marginBottom: theme.spacing(2),
-    color: theme.palette.text.secondary,
+    marginBottom: theme.spacing(1),
+    fontWeight: 700,
+    color: theme.palette.headerText.secondary,
   },
 }));
 
@@ -25,6 +30,8 @@ export const SelectProspectingSiteForm = ({
   onSubmit,
   onClose,
 }) => {
+  const { auth } = AuthContext.useAuth();
+  const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const classes = useStyles();
 
   return (
@@ -32,19 +39,17 @@ export const SelectProspectingSiteForm = ({
       {({ submitForm }) => (
         <FormikForm>
           <Typography className={classes.formLabel} variant='subtitle2'>
-            Please select site(s) this participant is prospecting for
+            Please select the site(s) this participant is prospecting for
           </Typography>
           <FastField
-            name='participantSites'
+            name='prospectingSites'
             component={RenderMultiSelectField}
             placeholder='Select Site'
             // TODO: get the list of options
-            options={[
-              { value: 'opt1', label: 'option 1' },
-              { value: 'opt2', label: 'option 2' },
-              { value: 'opt3', label: 'option 3' },
-              { value: 'opt4', label: 'option 4' },
-            ]}
+            options={_orderBy(sites, ['siteName']).map((item) => ({
+              value: item.siteId,
+              label: item.siteName,
+            }))}
           />
 
           <Divider className={classes.formDivider} />

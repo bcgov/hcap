@@ -20,6 +20,7 @@ export * from './schema-participant-form';
 export * from './schema-participant-post-hire-status';
 export * from './schema-rejected-form';
 export * from './schema-return-of-service';
+export * from './schema-select-prospecting-sites';
 
 export const genericConfirm = yup.object().shape({
   confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),

@@ -270,7 +270,8 @@ const setParticipantStatus = async (
   participantId,
   status,
   data, // JSONB on the status row
-  user
+  user,
+  sites
 ) =>
   dbClient.db.withTransaction(async (tx) => {
     if (status === 'pending_acknowledgement') {
@@ -351,13 +352,25 @@ const setParticipantStatus = async (
     );
 
     // Save new status
-    await tx[collections.PARTICIPANTS_STATUS].save({
+    const statusObj = await tx[collections.PARTICIPANTS_STATUS].save({
       employer_id: employerId,
       participant_id: participantId,
       status,
       current: true,
       data,
     });
+
+    // Save sites if supplied
+    if (sites && sites.length > 0 && statusObj.id) {
+      await Promise.all(
+        sites.map(({ id }) =>
+          tx[collections.SITE_PARTICIPANTS_STATUS].save({
+            participant_status_id: statusObj.id,
+            site_id: id,
+          })
+        )
+      );
+    }
 
     const participant = await tx[collections.PARTICIPANTS].findDoc({
       id: participantId,

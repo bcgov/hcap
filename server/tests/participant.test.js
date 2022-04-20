@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
+// Test: npm run test:debug participant.test.js
 const { readFileSync } = require('fs');
 const { join } = require('path');
 const request = require('supertest');

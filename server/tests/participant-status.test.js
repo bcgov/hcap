@@ -1,6 +1,7 @@
 // Test execution code: npm run test:debug participant-status.test.js
 const { v4 } = require('uuid');
 const { dbClient, collections } = require('../db');
+const { setParticipantStatus } = require('../services/participants');
 const { startDB, closeDB } = require('./util/db');
 const {
   makeTestParticipant,
@@ -54,5 +55,44 @@ describe('Test Participant status data model and service', () => {
     expect(readItem.id).toBe(item.id);
     expect(readItem.site_id).toBe(site.id);
     expect(readItem.participant_status_id).toBe(status.id);
+  });
+
+  it('should update site_participants_status item with saving status', async () => {
+    // Create participant
+    const participant = await makeTestParticipant({
+      emailAddress: 'test.site.participant.2@hcap.io',
+    });
+
+    const site1 = await makeTestSite({
+      siteId: 202204181211,
+      siteName: 'Test Site 1020',
+      city: 'Test City 1020',
+    });
+
+    const site2 = await makeTestSite({
+      siteId: 202204181212,
+      siteName: 'Test Site 1021',
+      city: 'Test City 1021',
+    });
+
+    await setParticipantStatus(v4(), participant.id, 'prospecting', {}, {}, [site1, site2]);
+
+    // Read
+    const items = await dbClient.db[collections.SITE_PARTICIPANTS_STATUS]
+      .join({
+        status: {
+          relation: collections.PARTICIPANTS_STATUS,
+          type: 'LEFT OUTER',
+          decomposeTo: 'object',
+          on: {
+            id: 'participant_status_id',
+          },
+        },
+      })
+      .find({
+        'status.participant_id': participant.id,
+      });
+
+    expect(items.length).toBe(2);
   });
 });

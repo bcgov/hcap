@@ -20,6 +20,7 @@ const fetchPSIData = async () => {
     const cohorts = psi.cohorts.map((cohort) => ({
       value: cohort.id,
       label: cohort.cohort_name,
+      availableSize: cohort.availableSize,
     }));
     cohortMap[psi.id] = cohorts;
     return mappedData;
@@ -50,6 +51,7 @@ export const AssignCohortForm = ({
   initialValues = {
     institute: '',
     cohort: '',
+    availableSize: 0,
   },
   onClose,
   onSubmit,
@@ -133,7 +135,14 @@ export const AssignCohortForm = ({
                 placeholder='Select cohort'
                 label='* Cohort'
                 options={cohorts}
+                onChange={({ target }) => {
+                  const { value } = target;
+                  setFieldValue('cohort', value);
+                  const size = cohorts.find((cohort) => cohort.value === value).availableSize ?? 0;
+                  setFieldValue('availableSize', size);
+                }}
               />
+              <Field name='availableSize' type='hidden' />
             </Box>
             <Box mt={3}>
               <Grid container spacing={2} justify='flex-end'>
@@ -142,6 +151,7 @@ export const AssignCohortForm = ({
                 </Grid>
                 <Grid item>
                   <Button
+                    test-id={'updateGraduationStatus'}
                     onClick={submitForm}
                     variant='contained'
                     color='primary'

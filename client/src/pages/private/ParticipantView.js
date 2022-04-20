@@ -30,7 +30,13 @@ export default () => {
             )}
           </CustomTabs>
         </Grid>
-        <Grid container alignItems='center' justify='flex-start' direction='column'>
+        <Grid
+          container
+          alignItems='center'
+          justify='flex-start'
+          direction='column'
+          style={{ overflowX: 'scroll' }}
+        >
           {tabValue === 0 && (
             <ParticipantsContext.ParticipantsProvider role={auth.permissionRole}>
               <ParticipantTable />

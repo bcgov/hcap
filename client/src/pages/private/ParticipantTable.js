@@ -97,7 +97,7 @@ const filterData = (data, columns) => {
     }
 
     // Manage employer name
-    const maxStrLen = 20;
+    const maxStrLen = 50;
     const statusWithEmployerDetails =
       item.statusInfos?.filter((statusInfo) => statusInfo.employerInfo) || [];
     if (statusWithEmployerDetails.length > 0) {

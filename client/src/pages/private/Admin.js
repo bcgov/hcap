@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
   },
   welcomeOverflow: {
-    maxWidth: '250px',
+    maxWidth: '320px',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },

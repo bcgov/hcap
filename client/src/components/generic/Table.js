@@ -1,6 +1,8 @@
 import React, { Fragment, useState } from 'react';
 import { FixedSizeList } from 'react-window';
+
 import MuiTable from '@material-ui/core/Table';
+import Checkbox from '@material-ui/core/Checkbox';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
@@ -9,6 +11,7 @@ import { List, ListItem, ListItemText, Menu, MenuItem } from '@material-ui/core'
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TablePagination from '@material-ui/core/TablePagination';
 import Skeleton from '@material-ui/lab/Skeleton';
+
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import FirstPageIcon from '@material-ui/icons/FirstPage';
@@ -180,7 +183,11 @@ export const Table = ({
   rowsPerPage,
   onChangePage,
   rowsCount,
+  isMultiSelect = false
 }) => {
+  const [selected, setSelected] = useState([]);
+  const isSelected = (rowId) => selected.indexOf(rowId) !== -1;
+
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -188,11 +195,54 @@ export const Table = ({
   const handlePageChange = (_, newPage) => {
     onChangePage(currentPage, newPage);
   };
+
+  const handleSelectAllRows = (event) => {
+    if (event.target.checked) {
+      const selectedRows = rows.map((n) => n.name);
+      setSelected(selectedRows);
+      return;
+    }
+    setSelected([]);
+  };
+
+  const handleSelectRow = (event, rowId) => {
+    const rowInd = selected.indexOf(rowId);
+    let selectedRows = [];
+    console.log(rowInd);
+
+    if (rowInd === -1) {
+      selectedRows = selectedRows.concat(selected, rowId);
+    } else if (rowInd === 0) {
+      selectedRows = selectedRows.concat(selected.slice(1));
+    } else if (rowInd === selected.length - 1) {
+      selectedRows = selectedRows.concat(selected.slice(0, -1));
+    } else if (rowInd > 0) {
+      selectedRows = selectedRows.concat(
+        selected.slice(0, selectedRows),
+        selected.slice(selectedRows + 1)
+      );
+    }
+
+    setSelected(selectedRows);
+    console.log(selectedRows);
+  };
+
   return (
     <Fragment>
       <MuiTable stickyHeader>
         <TableHead>
           <TableRow>
+            {isMultiSelect && (
+              <StyledHeaderTableCell padding='checkbox'>
+                <Checkbox
+                  color='primary'
+                  disabled={isLoading || rowsCount === 0}
+                  indeterminate={selected.length > 0 && selected.length < rowsCount}
+                  checked={rowsCount > 0 && selected.length === rowsCount}
+                  onChange={handleSelectAllRows}
+                />
+              </StyledHeaderTableCell>
+            )}
             {columns.map((column, index) => (
               <StyledHeaderTableCell key={index}>
                 {column.name && (
@@ -213,6 +263,11 @@ export const Table = ({
           {isLoading
             ? [...Array(8)].map((_, i) => (
                 <StyledTableRow key={i}>
+                  {isMultiSelect && (
+                    <StyledTableCell padding='checkbox'>
+                      <Checkbox color='primary' disabled />
+                    </StyledTableCell>
+                  )}
                   {[...Array(columns.length)].map((_, i) => (
                     <StyledTableCell key={i}>
                       <Skeleton animation='wave' />
@@ -220,15 +275,30 @@ export const Table = ({
                   ))}
                 </StyledTableRow>
               ))
-            : rows.map((row, index) => (
-                <StyledTableRow hover key={index}>
-                  {columns.map((column) => (
-                    <StyledTableCell key={column.id}>
-                      {renderCell ? renderCell(column.id, row) : row[column.id] || ''}
-                    </StyledTableCell>
-                  ))}
-                </StyledTableRow>
-              ))}
+            : rows.map((row, index) => {
+                const isRowSelected = isSelected(row.id);
+
+                return (
+                  <StyledTableRow
+                    onClick={(event) => handleSelectRow(event, row.id)}
+                    role='checkbox'
+                    key={index}
+                    selected={isRowSelected}
+                    hover
+                  >
+                    {isMultiSelect && (
+                      <StyledTableCell padding='checkbox'>
+                        <Checkbox color='primary' checked={isRowSelected} />
+                      </StyledTableCell>
+                    )}
+                    {columns.map((column) => (
+                      <StyledTableCell key={column.id}>
+                        {renderCell ? renderCell(column.id, row) : row[column.id] || ''}
+                      </StyledTableCell>
+                    ))}
+                  </StyledTableRow>
+                );
+              })}
         </TableBody>
       </MuiTable>
       {usePagination && (

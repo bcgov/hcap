@@ -3,6 +3,7 @@ import { Tab, Tabs, withStyles } from '@material-ui/core';
 
 export const CustomTabs = withStyles((theme) => ({
   root: {
+    borderTop: `1px solid ${theme.palette.gray.secondary}`,
     borderBottom: `1px solid ${theme.palette.gray.secondary}`,
     marginBottom: theme.spacing(2),
   },

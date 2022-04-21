@@ -33,8 +33,9 @@ export const ParticipantTableDialogues = ({
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
 
   const handleSelectProspectingSites = (values) => {
-    // TODO: form submission is captured as part of HCAP-1107
-    handleEngage(actionMenuParticipant.id, participantStatus.PROSPECTING);
+    handleEngage(actionMenuParticipant.id, participantStatus.PROSPECTING, {
+      sites: values.prospectingSites.map((value) => ({ id: value })),
+    });
   };
 
   return (

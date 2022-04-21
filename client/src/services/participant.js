@@ -172,6 +172,7 @@ export const getParticipants = async ({
 };
 
 export const addParticipantStatus = async ({ participantId, status, additional }) => {
+  const { sites, ...rest } = additional;
   const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
     method: 'POST',
     headers: {
@@ -179,7 +180,7 @@ export const addParticipantStatus = async ({ participantId, status, additional }
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
-    body: JSON.stringify({ participantId, status, data: additional }),
+    body: JSON.stringify({ participantId, status, data: rest, sites }),
   });
 
   if (response.ok) {

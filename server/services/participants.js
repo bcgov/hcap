@@ -321,7 +321,7 @@ const setParticipantStatus = async (
                     and: [
                       {
                         'employer_id <>': employerId,
-                        'siteDetails.body.siteId IN': user.sites,
+                        'siteDetails.body.siteId IN': user?.sites || [],
                       },
                     ],
                   },

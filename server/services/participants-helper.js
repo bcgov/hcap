@@ -216,7 +216,6 @@ class FieldsFilteredParticipantsFinder {
           on: {
             participant_id: 'id',
             current: true,
-            // ...(!isFetchingHiresStatus && { employer_id: user.id }),
           },
           employerInfo: {
             type: 'LEFT OUTER',

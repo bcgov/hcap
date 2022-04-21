@@ -1,16 +1,7 @@
 /* eslint-disable max-classes-per-file */
 const { collections, views } = require('../db');
 const { userRegionQuery } = require('./user.js');
-
-const participantStatus = {
-  OPEN: 'open',
-  PROSPECTING: 'prospecting',
-  INTERVIEWING: 'interviewing',
-  OFFER_MADE: 'offer_made',
-  ARCHIVED: 'archived',
-  REJECTED: 'rejected',
-  HIRED: 'hired',
-};
+const { participantStatus } = require('../constants');
 
 const scrubParticipantData = (raw, joinNames) =>
   raw.map((participant) => {
@@ -23,6 +14,10 @@ const scrubParticipantData = (raw, joinNames) =>
         ? { data: statusInfo.data }
         : {}),
       status: statusInfo.status,
+      associatedSites: statusInfo.statusSiteJoin?.map((site) => site.statusSiteDetailsJoin.body),
+      associatedSitesIds: statusInfo.statusSiteJoin?.map(
+        (site) => site.statusSiteDetailsJoin.body?.siteId
+      ),
       employerInfo:
         statusInfo.employerInfo && statusInfo.employerInfo.body.userInfo
           ? {
@@ -204,6 +199,16 @@ class FieldsFilteredParticipantsFinder {
 
     if (user.isEmployer || user.isHA) {
       const isFetchingHiresStatus = statusFilters && statusFilters.includes('hired');
+      const isFetchingProspectingStatus =
+        statusFilters &&
+        statusFilters.filter((status) =>
+          [
+            participantStatus.PROSPECTING,
+            participantStatus.INTERVIEWING,
+            participantStatus.OFFER_MADE,
+            participantStatus.REJECTED,
+          ].includes(status)
+        ).length > 0;
       this.context.table = this.context.table.join({
         [employerSpecificJoin]: {
           type: 'LEFT OUTER',
@@ -211,7 +216,7 @@ class FieldsFilteredParticipantsFinder {
           on: {
             participant_id: 'id',
             current: true,
-            ...(!isFetchingHiresStatus && { employer_id: user.id }),
+            // ...(!isFetchingHiresStatus && { employer_id: user.id }),
           },
           employerInfo: {
             type: 'LEFT OUTER',
@@ -219,6 +224,21 @@ class FieldsFilteredParticipantsFinder {
             decomposeTo: 'object',
             on: {
               'body.keycloakId': `${employerSpecificJoin}.employer_id`,
+            },
+          },
+          statusSiteJoin: {
+            type: 'LEFT OUTER',
+            relation: collections.SITE_PARTICIPANTS_STATUS,
+            on: {
+              participant_status_id: `${employerSpecificJoin}.id`,
+            },
+            statusSiteDetailsJoin: {
+              type: 'LEFT OUTER',
+              relation: collections.EMPLOYER_SITES,
+              decomposeTo: 'object',
+              on: {
+                id: 'statusSiteJoin.site_id',
+              },
             },
           },
         },
@@ -270,7 +290,7 @@ class FieldsFilteredParticipantsFinder {
       // Updating Status Filter query
       // Case: 1: Filter all hired statuses  which are matching with user sites
       // Or Case: 2: pending acknowledgement status for same user
-      if (statusFilters && statusFilters.includes('hired')) {
+      if (isFetchingHiresStatus) {
         const siteQuery = {
           or: [
             { [`${employerSpecificJoin}.data.site IN`]: user.sites },
@@ -283,6 +303,21 @@ class FieldsFilteredParticipantsFinder {
           ],
         };
         criteria.and = criteria.and ? [...criteria.and, siteQuery] : [siteQuery];
+      }
+
+      if (isFetchingProspectingStatus) {
+        const statusQuery = {
+          or: [
+            { [`${employerSpecificJoin}.employer_id`]: user.id },
+            {
+              and: [
+                { [`${employerSpecificJoin}.employer_id <>`]: user.id },
+                { 'statusSiteDetailsJoin.body.siteId IN': user.sites },
+              ],
+            },
+          ],
+        };
+        criteria.and = criteria.and ? [...criteria.and, statusQuery] : [statusQuery];
       }
 
       if (statusFilters && statusFilters.includes('ros')) {

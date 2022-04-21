@@ -1,16 +1,24 @@
 import React, { lazy, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 import { Page, CheckPermissions, CustomTab, CustomTabs } from '../../components/generic';
 import { AuthContext, ParticipantsContext } from '../../providers';
 
 const ParticipantTable = lazy(() => import('./ParticipantTable'));
 const SiteTable = lazy(() => import('./SiteTable'));
 
+const useStyles = makeStyles((theme) => ({
+  tableContainer: {
+    overflowX: 'scroll',
+  },
+}));
+
 export default () => {
   const [tabValue, setTabValue] = useState(0);
   const { auth } = AuthContext.useAuth();
   const sites = auth.user?.sites || [];
   const roles = auth.user?.roles || [];
+  const classes = useStyles();
 
   const handleTabChange = (event, newTabValue) => {
     setTabValue(newTabValue);
@@ -30,7 +38,13 @@ export default () => {
             )}
           </CustomTabs>
         </Grid>
-        <Grid container alignItems='center' justify='flex-start' direction='column'>
+        <Grid
+          container
+          alignItems='center'
+          justify='flex-start'
+          direction='column'
+          className={classes.tableContainer}
+        >
           {tabValue === 0 && (
             <ParticipantsContext.ParticipantsProvider role={auth.permissionRole}>
               <ParticipantTable />

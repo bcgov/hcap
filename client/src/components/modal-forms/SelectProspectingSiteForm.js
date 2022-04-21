@@ -46,7 +46,7 @@ export const SelectProspectingSiteForm = ({
             component={RenderMultiSelectField}
             placeholder='Select Site'
             options={_orderBy(sites, ['siteName']).map((item) => ({
-              value: item.siteId,
+              value: item.id,
               label: item.siteName,
             }))}
           />
@@ -60,12 +60,7 @@ export const SelectProspectingSiteForm = ({
               variant='outlined'
               text='Cancel'
             />
-            <Button
-              type='submit'
-              className={classes.formButton}
-              onClick={submitForm}
-              text='Submit'
-            />
+            <Button className={classes.formButton} onClick={submitForm} text='Submit' />
           </Box>
         </FormikForm>
       )}

@@ -208,7 +208,7 @@ export const Table = ({
   onChangePage,
   rowsCount,
   isMultiSelect = false,
-  multiSelectAction = (selectedIds) => {},
+  multiSelectAction,
 }) => {
   const [selected, setSelected] = useState([]);
 
@@ -229,24 +229,24 @@ export const Table = ({
     setSelected([]);
   };
 
-  const handleSelectRow = (event, rowId) => {
+  const handleSelectRow = (_event, rowId) => {
     const rowInd = selected.indexOf(rowId);
-    let rows = [];
+    let arr = [];
 
     if (rowInd === -1) {
       // row is not selected -> check
-      rows = rows.concat(selected, rowId);
+      arr = arr.concat(selected, rowId);
     } else {
       // row is selected -> uncheck
       if (rowInd === 0) {
-        rows = rows.concat(selected.slice(1));
+        arr = arr.concat(selected.slice(1));
       } else if (rowInd === selected.length - 1) {
-        rows = rows.concat(selected.slice(0, -1));
+        arr = arr.concat(selected.slice(0, -1));
       } else if (rowInd > 0) {
-        rows = rows.concat(selected.slice(0, rows), selected.slice(rows + 1));
+        arr = arr.concat(selected.slice(0, arr), selected.slice(arr + 1));
       }
     }
-    setSelected(rows);
+    setSelected(arr);
   };
 
   return (

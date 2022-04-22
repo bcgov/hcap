@@ -3,6 +3,7 @@
     {
       "name": "superuser",
       "fixture": "test-superuser",
+      "tabsWithMultiselect": [],
       "tabsWithActions": ["Participants"],
       "allTabs": ["Participants", "My Sites", "Participants"],
       "tableTabs": {
@@ -27,6 +28,7 @@
     {
       "name": "ministry_of_health",
       "fixture": "test-moh",
+      "tabsWithMultiselect": [],
       "tabsWithActions": ["Participants"],
       "allTabs": ["Participants", "Participants"],
       "tableTabs": {

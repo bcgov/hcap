@@ -653,6 +653,11 @@ const getParticipants = async (
           statusInfo.employerId !== user.id
       );
 
+      // Archived by org
+      const archivedByOrgStatus = item.statusInfos?.find(
+        (statusInfo) => statusInfo.status === 'archived' && statusInfo.employerId !== user.id
+      );
+
       // Handling withdrawn and already hired, putting withdrawn as higher priority
       let computedStatus;
       if (item.interested === 'withdrawn' || item.interested === 'no') {
@@ -677,6 +682,8 @@ const getParticipants = async (
             status: 'hired_by_peer',
           };
         }
+      } else if (archivedByOrgStatus) {
+        computedStatus = archivedByOrgStatus;
       }
 
       if (computedStatus) {

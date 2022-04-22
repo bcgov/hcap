@@ -199,7 +199,7 @@ class FieldsFilteredParticipantsFinder {
 
     if (user.isEmployer || user.isHA) {
       const isFetchingHiresStatus = statusFilters && statusFilters.includes('hired');
-      const isFetchingProspectingStatus =
+      const isFetchingNonHireStatus =
         statusFilters &&
         statusFilters.filter((status) =>
           [
@@ -207,6 +207,7 @@ class FieldsFilteredParticipantsFinder {
             participantStatus.INTERVIEWING,
             participantStatus.OFFER_MADE,
             participantStatus.REJECTED,
+            participantStatus.ARCHIVED,
           ].includes(status)
         ).length > 0;
       this.context.table = this.context.table.join({
@@ -239,6 +240,16 @@ class FieldsFilteredParticipantsFinder {
                 id: 'statusSiteJoin.site_id',
               },
             },
+          },
+        },
+        // Join to check any past hire status for archived filer
+        anyPastHiredGlobalJoin: {
+          type: 'LEFT OUTER',
+          relation: collections.PARTICIPANTS_STATUS,
+          on: {
+            participant_id: 'id',
+            current: false,
+            status: participantStatus.HIRED,
           },
         },
         [hiredGlobalJoin]: {
@@ -304,7 +315,11 @@ class FieldsFilteredParticipantsFinder {
         criteria.and = criteria.and ? [...criteria.and, siteQuery] : [siteQuery];
       }
 
-      if (isFetchingProspectingStatus) {
+      // Fetching non hire statuses
+      // Case1: Fetch all statuses with same user (user.id === employer_id)
+      // Case2: Fetch all statuses with same site association
+      // Case3: Fetch all archived status with past hired status for site association
+      if (isFetchingNonHireStatus) {
         const statusQuery = {
           or: [
             { [`${employerSpecificJoin}.employer_id`]: user.id },
@@ -312,6 +327,13 @@ class FieldsFilteredParticipantsFinder {
               and: [
                 { [`${employerSpecificJoin}.employer_id <>`]: user.id },
                 { 'statusSiteDetailsJoin.body.siteId IN': user.sites },
+              ],
+            },
+            {
+              and: [
+                { [`${employerSpecificJoin}.employer_id <>`]: user.id },
+                { [`${employerSpecificJoin}.status`]: participantStatus.ARCHIVED },
+                { [`anyPastHiredGlobalJoin.data.site IN`]: user.sites },
               ],
             },
           ],

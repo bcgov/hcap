@@ -148,5 +148,32 @@ describe('Test Participant status data model and service', () => {
     );
 
     expect(resultFailure.data.length).toBe(0);
+
+    // Now set next status
+    await setParticipantStatus(
+      emp2,
+      participant.id,
+      'interviewing',
+      {},
+      {
+        sites: [site1.siteId],
+      }
+    );
+
+    // Read by multi org employer
+    const resultSuccess2 = await getParticipants(
+      { isEmployer: true, id: emp1, regions, sites: [site1.siteId] },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      ['interviewing']
+    );
+
+    expect(resultSuccess2.data.length).toBeGreaterThanOrEqual(1);
+    expect(resultSuccess2.data[0].id).toBe(participant.id);
   });
 });

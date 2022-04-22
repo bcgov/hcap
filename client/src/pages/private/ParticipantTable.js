@@ -1,7 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import moment from 'moment';
+
 import Grid from '@material-ui/core/Grid';
 import { Box, Menu, MenuItem, Link } from '@material-ui/core';
+
 import {
   ToastStatus,
   regionLabelsMap,
@@ -14,7 +17,6 @@ import {
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
 import { addEllipsisMask, prettifyStatus, keyedString } from '../../utils';
-import moment from 'moment';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
 import { ParticipantTableDialogues } from './ParticipantTableDialogues';
@@ -112,6 +114,11 @@ const filterData = (data, columns) => {
     filteredRows.push(row);
   });
   return filteredRows;
+};
+
+const bulkEngage = (selected) => {
+  // TODO: HCAP-1114
+  // console.log(selected);
 };
 
 const ParticipantTable = () => {
@@ -389,7 +396,7 @@ const ParticipantTable = () => {
             )}
           </Grid>
 
-          <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
+          <Box py={2} px={2} width='100%'>
             <CustomTabs
               value={selectedTab || false}
               onChange={async (_, property) => {
@@ -405,6 +412,7 @@ const ParticipantTable = () => {
                 )) // Tab component with tab name as value
               }
             </CustomTabs>
+
             <Table
               usePagination={true}
               columns={columns}
@@ -431,9 +439,12 @@ const ParticipantTable = () => {
               }}
               rows={rows}
               isLoading={isLoadingData}
+              isMultiSelect={selectedTab === 'Available Participants'}
+              multiSelectAction={bulkEngage}
             />
           </Box>
         </Grid>
+
         {!isAdmin && (
           <Menu
             keepMounted

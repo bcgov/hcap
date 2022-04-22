@@ -2,9 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 
-import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import { Box, Divider, Menu, MenuItem, Link } from '@material-ui/core';
+import { Box, Menu, MenuItem, Link } from '@material-ui/core';
 
 import {
   ToastStatus,
@@ -28,12 +27,6 @@ import {
   getParticipants,
   getGraduationStatus,
 } from '../../services/participant';
-
-const useStyles = makeStyles((theme) => ({
-  actionButton: {
-    maxWidth: '200px',
-  },
-}));
 
 const mapRosData = (data) => ({
   rosSiteName: data?.rosStatuses?.[0]?.rosSite?.body.siteName,
@@ -123,9 +116,13 @@ const filterData = (data, columns) => {
   return filteredRows;
 };
 
+const bulkEngage = (selected) => {
+  // TODO: HCAP-1114
+  // console.log(selected);
+};
+
 const ParticipantTable = () => {
   const history = useHistory();
-  const classes = useStyles();
   const { openToast } = useToast();
   const [isLoadingData, setLoadingData] = useState(false);
   const [rows, setRows] = useState([]);
@@ -400,12 +397,6 @@ const ParticipantTable = () => {
           </Grid>
 
           <Box py={2} px={2} width='100%'>
-            {selectedTab === 'Available Participants' && (
-              <Box pb={2}>
-                <Button className={classes.actionButton} variant='outlined' text='Bulk Engage' />
-              </Box>
-            )}
-
             <CustomTabs
               value={selectedTab || false}
               onChange={async (_, property) => {
@@ -449,10 +440,11 @@ const ParticipantTable = () => {
               rows={rows}
               isLoading={isLoadingData}
               isMultiSelect={selectedTab === 'Available Participants'}
+              multiSelectAction={bulkEngage}
             />
           </Box>
         </Grid>
-        
+
         {!isAdmin && (
           <Menu
             keepMounted

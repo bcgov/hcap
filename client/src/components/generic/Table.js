@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { FixedSizeList } from 'react-window';
 
+import Box from '@material-ui/core/Box';
 import MuiTable from '@material-ui/core/Table';
 import Checkbox from '@material-ui/core/Checkbox';
 import TableBody from '@material-ui/core/TableBody';
@@ -18,6 +19,8 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
+
+import { Button } from './';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -63,6 +66,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row',
     flexShrink: 0,
     marginLeft: theme.spacing(2.5),
+  },
+  actionButton: {
+    maxWidth: '150px',
   },
 }));
 
@@ -170,6 +176,24 @@ const TablePaginationActions = (props) => {
   );
 };
 
+const MultiSelectAction = (props) => {
+  const classes = useStyles();
+  const { multiSelectAction, selected } = props;
+
+  return (
+    <Box pb={2}>
+      <Button
+        className={classes.actionButton}
+        size='small'
+        variant='outlined'
+        text='Bulk Engage'
+        disabled={selected.length === 0}
+        onClick={() => multiSelectAction(selected)}
+      />
+    </Box>
+  );
+};
+
 export const Table = ({
   order,
   orderBy,
@@ -183,10 +207,10 @@ export const Table = ({
   rowsPerPage,
   onChangePage,
   rowsCount,
-  isMultiSelect = false
+  isMultiSelect = false,
+  multiSelectAction = (selectedIds) => {},
 }) => {
   const [selected, setSelected] = useState([]);
-  const isSelected = (rowId) => selected.indexOf(rowId) !== -1;
 
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -198,7 +222,7 @@ export const Table = ({
 
   const handleSelectAllRows = (event) => {
     if (event.target.checked) {
-      const selectedRows = rows.map((n) => n.name);
+      const selectedRows = rows.map((n) => n.id);
       setSelected(selectedRows);
       return;
     }
@@ -207,28 +231,30 @@ export const Table = ({
 
   const handleSelectRow = (event, rowId) => {
     const rowInd = selected.indexOf(rowId);
-    let selectedRows = [];
-    console.log(rowInd);
+    let rows = [];
 
     if (rowInd === -1) {
-      selectedRows = selectedRows.concat(selected, rowId);
-    } else if (rowInd === 0) {
-      selectedRows = selectedRows.concat(selected.slice(1));
-    } else if (rowInd === selected.length - 1) {
-      selectedRows = selectedRows.concat(selected.slice(0, -1));
-    } else if (rowInd > 0) {
-      selectedRows = selectedRows.concat(
-        selected.slice(0, selectedRows),
-        selected.slice(selectedRows + 1)
-      );
+      // row is not selected -> check
+      rows = rows.concat(selected, rowId);
+    } else {
+      // row is selected -> uncheck
+      if (rowInd === 0) {
+        rows = rows.concat(selected.slice(1));
+      } else if (rowInd === selected.length - 1) {
+        rows = rows.concat(selected.slice(0, -1));
+      } else if (rowInd > 0) {
+        rows = rows.concat(selected.slice(0, rows), selected.slice(rows + 1));
+      }
     }
-
-    setSelected(selectedRows);
-    console.log(selectedRows);
+    setSelected(rows);
   };
 
   return (
     <Fragment>
+      {isMultiSelect && multiSelectAction && (
+        <MultiSelectAction selected={selected} multiSelectAction={multiSelectAction} />
+      )}
+
       <MuiTable stickyHeader>
         <TableHead>
           <TableRow>
@@ -276,20 +302,18 @@ export const Table = ({
                 </StyledTableRow>
               ))
             : rows.map((row, index) => {
-                const isRowSelected = isSelected(row.id);
+                const isRowSelected = selected.indexOf(row.id) !== -1;
 
                 return (
-                  <StyledTableRow
-                    onClick={(event) => handleSelectRow(event, row.id)}
-                    role='checkbox'
-                    key={index}
-                    selected={isRowSelected}
-                    hover
-                  >
+                  <StyledTableRow key={index} selected={isRowSelected} hover>
                     {isMultiSelect && (
-                      <StyledTableCell padding='checkbox'>
-                        <Checkbox color='primary' checked={isRowSelected} />
-                      </StyledTableCell>
+                      <StyledHeaderTableCell padding='checkbox'>
+                        <Checkbox
+                          color='primary'
+                          checked={isRowSelected}
+                          onClick={(event) => handleSelectRow(event, row.id)}
+                        />
+                      </StyledHeaderTableCell>
                     )}
                     {columns.map((column) => (
                       <StyledTableCell key={column.id}>

@@ -19,7 +19,11 @@ describe('Participant Table', () => {
         const [tabText, tabHeaders] = [...tab];
 
         const hasActions = role.tabsWithActions.includes(tabText);
-        const columnCount = hasActions ? tabHeaders.length + 1 : tabHeaders.length;
+        const isMultiselect = role.tabsWithMultiselect.includes(tabText);
+        const columnCount = tabHeaders.length;
+        if (hasActions) columnCount++;
+        if (isMultiselect) columnCount++;
+
         if (hasActions) cy.get('th.MuiTableCell-head').last().should('have.text', ''); // action column has no header
 
         cy.get('button.MuiTab-root').contains(tabText).click();

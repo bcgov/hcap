@@ -20,6 +20,11 @@ export const RenderMultiSelectField = ({ field, form, label, options, placeholde
     return defaultPlaceholder;
   };
 
+  const menuProps = {
+    variant: 'menu',
+    getContentAnchorEl: null,
+  };
+
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} />}
@@ -32,6 +37,7 @@ export const RenderMultiSelectField = ({ field, form, label, options, placeholde
         error={touched && !!error}
         inputProps={{ displayEmpty: true }}
         value={field.value || []}
+        MenuProps={menuProps}
         {...props}
       >
         <MenuItem value='' disabled>

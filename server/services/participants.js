@@ -15,6 +15,8 @@ const logger = require('../logger.js');
 const { getAssignCohort } = require('./cohorts');
 const { createPostHireStatus, getPostHireStatusesForParticipant } = require('./post-hire-flow');
 
+const { participantStatus } = require('../constants');
+
 const deleteParticipant = async ({ email }) => {
   await dbClient.db.withTransaction(async (tnx) => {
     // Delete entry from participant-user-map
@@ -286,11 +288,48 @@ const setParticipantStatus = async (
       if (items.length > 0) return { status: 'already_hired' };
     }
 
-    const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
-      participant_id: participantId,
-      employer_id: employerId,
-      current: true,
-    });
+    const item =
+      (
+        await tx[collections.PARTICIPANTS_STATUS]
+          .join({
+            sites: {
+              type: 'LEFT OUTER',
+              relation: collections.SITE_PARTICIPANTS_STATUS,
+              on: {
+                participant_status_id: 'id',
+              },
+              siteDetails: {
+                type: 'LEFT OUTER',
+                relation: collections.EMPLOYER_SITES,
+                decomposeTo: 'object',
+                on: {
+                  id: 'sites.site_id',
+                },
+              },
+            },
+          })
+          .find({
+            participant_id: participantId,
+            current: true,
+            and: [
+              {
+                or: [
+                  {
+                    employer_id: employerId,
+                  },
+                  {
+                    and: [
+                      {
+                        'employer_id <>': employerId,
+                        'siteDetails.body.siteId IN': user?.sites || [],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          })
+      )[0] || null;
     // Check the desired status against the current status:
     // -- Rejecting a participant is allowed even if they've been hired elsewhere (handled above)
     // -- Open is the starting point, there is no way to transition here from any other status
@@ -341,7 +380,31 @@ const setParticipantStatus = async (
         return { status: 'invalid_archive' };
       }
     }
+    // Get site association for prospecting status
+    let associatedSites = sites;
+    if (
+      [
+        participantStatus.INTERVIEWING,
+        participantStatus.OFFER_MADE,
+        participantStatus.REJECTED,
+      ].includes(status) &&
+      !sites &&
+      item.sites &&
+      item.sites.length > 0
+    ) {
+      associatedSites = item.sites.map((site) => ({ id: site.site_id }));
+    }
     // Invalidate pervious status
+    if (item && item.employer_id !== employerId) {
+      await tx[collections.PARTICIPANTS_STATUS].update(
+        {
+          employer_id: item.employer_id,
+          participant_id: participantId,
+          current: true,
+        },
+        { current: false }
+      );
+    }
     await tx[collections.PARTICIPANTS_STATUS].update(
       {
         employer_id: employerId,
@@ -361,9 +424,9 @@ const setParticipantStatus = async (
     });
 
     // Save sites if supplied
-    if (sites && sites.length > 0 && statusObj.id) {
+    if (associatedSites && associatedSites.length > 0 && statusObj.id) {
       await Promise.all(
-        sites.map(({ id }) =>
+        associatedSites.map(({ id }) =>
           tx[collections.SITE_PARTICIPANTS_STATUS].save({
             participant_status_id: statusObj.id,
             site_id: id,
@@ -590,6 +653,11 @@ const getParticipants = async (
           statusInfo.employerId !== user.id
       );
 
+      // Archived by org
+      const archivedByOrgStatus = item.statusInfos?.find(
+        (statusInfo) => statusInfo.status === 'archived' && statusInfo.employerId !== user.id
+      );
+
       // Handling withdrawn and already hired, putting withdrawn as higher priority
       let computedStatus;
       if (item.interested === 'withdrawn' || item.interested === 'no') {
@@ -614,6 +682,8 @@ const getParticipants = async (
             status: 'hired_by_peer',
           };
         }
+      } else if (archivedByOrgStatus) {
+        computedStatus = archivedByOrgStatus;
       }
 
       if (computedStatus) {
@@ -625,7 +695,10 @@ const getParticipants = async (
       const statusInfos = item.statusInfos?.find(
         (statusInfo) =>
           statusInfo.employerId === user.id ||
-          (statusInfo.data && user.sites.includes(statusInfo.data.site))
+          (statusInfo.data && user.sites.includes(statusInfo.data.site)) ||
+          (statusInfo.associatedSitesIds &&
+            statusInfo.associatedSitesIds.length > 0 &&
+            statusInfo.associatedSitesIds.filter((id) => user.sites.includes(id)).length > 0)
       );
 
       if (statusInfos) {

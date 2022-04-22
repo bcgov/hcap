@@ -1,13 +1,15 @@
 // Test execution code: npm run test:debug participant-status.test.js
 const { v4 } = require('uuid');
 const { dbClient, collections } = require('../db');
-const { setParticipantStatus } = require('../services/participants');
+const { setParticipantStatus, getParticipants } = require('../services/participants');
 const { startDB, closeDB } = require('./util/db');
 const {
   makeTestParticipant,
   makeTestParticipantStatus,
   makeTestSite,
 } = require('./util/integrationTestData');
+
+const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
 
 describe('Test Participant status data model and service', () => {
   beforeAll(async () => {
@@ -94,5 +96,84 @@ describe('Test Participant status data model and service', () => {
       });
 
     expect(items.length).toBe(2);
+  });
+
+  it('should return multi org participant', async () => {
+    const participant = await makeTestParticipant({
+      emailAddress: 'test.site.participant.3@hcap.io',
+    });
+
+    const site1 = await makeTestSite({
+      siteId: 202204221211,
+      siteName: 'Test Site 1030',
+      city: 'Test City 1030',
+    });
+
+    const site2 = await makeTestSite({
+      siteId: 202204221212,
+      siteName: 'Test Site 1030',
+      city: 'Test City 1030',
+    });
+
+    const emp1 = v4();
+    const emp2 = v4();
+    const emp3 = v4();
+
+    await setParticipantStatus(emp1, participant.id, 'prospecting', {}, {}, [site1]);
+
+    const resultSuccess = await getParticipants(
+      { isEmployer: true, id: emp2, regions, sites: [site1.siteId] },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      ['prospecting']
+    );
+    expect(resultSuccess.data.length).toBeGreaterThanOrEqual(1);
+    expect(resultSuccess.data[0].id).toBe(participant.id);
+
+    const resultFailure = await getParticipants(
+      { isEmployer: true, id: emp3, regions, sites: [site2.siteId] },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      ['prospecting']
+    );
+
+    expect(resultFailure.data.length).toBe(0);
+
+    // Now set next status
+    await setParticipantStatus(
+      emp2,
+      participant.id,
+      'interviewing',
+      {},
+      {
+        sites: [site1.siteId],
+      }
+    );
+
+    // Read by multi org employer
+    const resultSuccess2 = await getParticipants(
+      { isEmployer: true, id: emp1, regions, sites: [site1.siteId] },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      ['interviewing']
+    );
+
+    expect(resultSuccess2.data.length).toBeGreaterThanOrEqual(1);
+    expect(resultSuccess2.data[0].id).toBe(participant.id);
   });
 });

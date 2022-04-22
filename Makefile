@@ -114,7 +114,7 @@ database: ## <Helper> :: Executes into database container.
 
 app: ## Bash into App container
 	@echo "Make: Shelling into local application container"
-	@docker-compose -f docker-compose.dev.yml exec server /bin/sh
+	@docker-compose -f docker-compose.dev.yml exec server /bin/bash
 
 # Git Tagging Aliases
 

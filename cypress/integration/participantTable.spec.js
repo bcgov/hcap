@@ -20,7 +20,7 @@ describe('Participant Table', () => {
 
         const hasActions = role.tabsWithActions.includes(tabText);
         const isMultiselect = role.tabsWithMultiselect.includes(tabText);
-        const columnCount = tabHeaders.length;
+        let columnCount = tabHeaders.length;
         if (hasActions) columnCount++;
         if (isMultiselect) columnCount++;
 

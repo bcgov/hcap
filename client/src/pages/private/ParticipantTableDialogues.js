@@ -38,6 +38,12 @@ export const ParticipantTableDialogues = ({
     });
   };
 
+  const handleMultiSelectProspectingSites = (values, _participantIds) => {
+    handleEngage(actionMenuParticipant.id, participantStatus.PROSPECTING, {
+      sites: values.prospectingSites.map((value) => ({ id: value })),
+    });
+  };
+
   return (
     <Dialog
       title={getDialogTitle(activeModalForm)}
@@ -51,6 +57,17 @@ export const ParticipantTableDialogues = ({
           validationSchema={ProspectingSitesSchema}
           onSubmit={(values) => {
             handleSelectProspectingSites(values);
+          }}
+          onClose={onClose}
+        />
+      )}
+
+      {activeModalForm === 'multi-select-site' && (
+        <SelectProspectingSiteForm
+          initialValues={{ prospectingSites: [] }}
+          validationSchema={ProspectingSitesSchema}
+          onSubmit={(values, participantIds) => {
+            handleMultiSelectProspectingSites(values, participantIds);
           }}
           onClose={onClose}
         />

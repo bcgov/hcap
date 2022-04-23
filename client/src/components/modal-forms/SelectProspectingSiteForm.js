@@ -2,12 +2,13 @@ import React, { useMemo } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { AuthContext } from '../../providers';
 
-import { Box, Divider, Typography } from '@material-ui/core';
+import { Box, Divider, Typography, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { FastField, Formik, Form as FormikForm } from 'formik';
 
 import { RenderMultiSelectField } from '../fields';
 import { Button } from '../generic';
+import { addEllipsisMask } from '../../utils';
 
 const useStyles = makeStyles((theme) => ({
   formButton: {
@@ -25,6 +26,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const SelectProspectingSiteForm = ({
+  isMultiSelect,
+  selectedIds,
   initialValues,
   validationSchema,
   onSubmit,
@@ -34,12 +37,18 @@ export const SelectProspectingSiteForm = ({
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const classes = useStyles();
 
+  const getFormLabel = (isMultiple, selected) => {
+    const singleSelectLabel = 'Please select the site(s) this participant is prospecting for';
+    const multiSelectLabel = `Please select the site(s) for ${selected?.length} participants`;
+    return isMultiple && selected ? multiSelectLabel : singleSelectLabel;
+  };
+
   return (
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
       {({ submitForm }) => (
         <FormikForm>
           <Typography className={classes.formLabel} variant='subtitle2'>
-            Please select the site(s) this participant is prospecting for
+            {getFormLabel(isMultiSelect, selectedIds)}
           </Typography>
           <FastField
             name='prospectingSites'
@@ -47,12 +56,22 @@ export const SelectProspectingSiteForm = ({
             placeholder='Select Site'
             options={_orderBy(sites, ['siteName']).map((item) => ({
               value: item.id,
-              label: item.siteName,
+              label: addEllipsisMask(item.siteName, 50),
             }))}
           />
-
+          {isMultiSelect && (
+            <Link
+              component='button'
+              color='primary'
+              variant='subtitle2'
+              onClick={() => {
+                // TODO: show selected participants
+              }}
+            >
+              View selected participants
+            </Link>
+          )}
           <Divider className={classes.formDivider} />
-
           <Box display='flex' justifyContent='space-between'>
             <Button
               className={classes.formButton}

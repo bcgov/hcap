@@ -116,11 +116,6 @@ const filterData = (data, columns) => {
   return filteredRows;
 };
 
-const bulkEngage = (selected) => {
-  // TODO: HCAP-1114
-  // console.log(selected);
-};
-
 const ParticipantTable = () => {
   const history = useHistory();
   const { openToast } = useToast();
@@ -172,6 +167,11 @@ const ParticipantTable = () => {
 
   const openParticipantSelectSite = () => {
     setActiveModalForm(participantEngageStatus.SELECT_SITE);
+  };
+
+  const handleBulkEngage = (selected) => {
+    // TODO: HCAP-1114
+    setActiveModalForm(participantEngageStatus.MULTI_SELECT_SITE);
   };
 
   const handleEngage = async (participantId, status, additional = {}) => {
@@ -440,7 +440,7 @@ const ParticipantTable = () => {
               rows={rows}
               isLoading={isLoadingData}
               isMultiSelect={selectedTab === 'Available Participants'}
-              multiSelectAction={bulkEngage}
+              multiSelectAction={handleBulkEngage}
             />
           </Box>
         </Grid>

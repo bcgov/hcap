@@ -121,6 +121,36 @@ describe('Test Participant status data model and service', () => {
 
     await setParticipantStatus(emp1, participant.id, 'prospecting', {}, {}, [site1]);
 
+    // Check with open status for emp1
+    const resultOpenWithEmp1 = await getParticipants(
+      { isEmployer: true, id: emp1, regions, sites: [site1.siteId] },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      ['open']
+    );
+    const filteredOpenForEmp1 = resultOpenWithEmp1.data.filter((p) => p.id === participant.id);
+    expect(filteredOpenForEmp1.length).toBe(0);
+
+    // Check with open status for emp3
+    const resultOpenWithEmp2 = await getParticipants(
+      { isEmployer: true, id: emp2, regions, sites: [site1.siteId] },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      ['open']
+    );
+    const filteredOpenForEmp2 = resultOpenWithEmp2.data.filter((p) => p.id === participant.id);
+    expect(filteredOpenForEmp2.length).toBe(0);
+
     const resultSuccess = await getParticipants(
       { isEmployer: true, id: emp2, regions, sites: [site1.siteId] },
       null,
@@ -175,5 +205,22 @@ describe('Test Participant status data model and service', () => {
 
     expect(resultSuccess2.data.length).toBeGreaterThanOrEqual(1);
     expect(resultSuccess2.data[0].id).toBe(participant.id);
+
+    // Test Open status
+    const resultOpen = await getParticipants(
+      { isEmployer: true, id: emp3, regions, sites: [site2.siteId] },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      ['open']
+    );
+
+    // Check result for participant
+    const filteredOpen = resultOpen.data.filter((p) => p.id === participant.id);
+    expect(filteredOpen.length).toBe(1);
   });
 });

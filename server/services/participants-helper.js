@@ -341,6 +341,26 @@ class FieldsFilteredParticipantsFinder {
         criteria.and = criteria.and ? [...criteria.and, statusQuery] : [statusQuery];
       }
 
+      // Checking for open status
+      // Case1: Fetch all statuses with no employer attached employerSpecificJoin == NULL
+      // Case2: Fetch all statuses with employer but no site association
+      if (statusFilters && statusFilters.includes(participantStatus.OPEN)) {
+        const openQuery = {
+          or: [
+            { [`${employerSpecificJoin}.status`]: null },
+            {
+              and: [
+                { [`${employerSpecificJoin}.status <>`]: null },
+                { [`${employerSpecificJoin}.employer_id <>`]: user.id },
+                { [`statusSiteDetailsJoin.body.siteId <>`]: user.sites },
+              ],
+            },
+          ],
+        };
+        criteria.and = criteria.and ? [...criteria.and, openQuery] : [openQuery];
+      }
+
+      // Checking for ros statuses with null value
       if (statusFilters && statusFilters.includes('ros')) {
         if (criteria.and) {
           criteria.and.push({
@@ -356,21 +376,21 @@ class FieldsFilteredParticipantsFinder {
       }
 
       if (statusFilters) {
-        const newStatusFilters = statusFilters.includes('open')
-          ? //  if 'open' is found adds also null because no status
-            //  means that the participant is open as well
-            [null, ...statusFilters]
-          : statusFilters;
-
-        const statusQuery = {
-          or: newStatusFilters
-            .filter((item) => item !== 'unavailable')
-            .map((status) => ({ [`${employerSpecificJoin}.status`]: status })),
-        };
-        if (criteria.or) {
-          criteria.or[0].and.push(statusQuery);
-        } else {
-          criteria.or = [{ and: [statusQuery] }];
+        // Updating existing logic
+        // Now only handling prospecting and hired status
+        // Removing open status from the list
+        const newStatusFilters = statusFilters.filter((status) => status !== 'open');
+        if (newStatusFilters.length > 0) {
+          const statusQuery = {
+            or: newStatusFilters
+              .filter((item) => item !== 'unavailable')
+              .map((status) => ({ [`${employerSpecificJoin}.status`]: status })),
+          };
+          if (criteria.or) {
+            criteria.or[0].and.push(statusQuery);
+          } else {
+            criteria.or = [{ and: [statusQuery] }];
+          }
         }
 
         // we don't want hired participants listed with such statuses:

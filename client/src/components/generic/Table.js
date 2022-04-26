@@ -242,7 +242,7 @@ export const Table = ({
       } else if (rowInd === selectedRows.length - 1) {
         arr = arr.concat(selectedRows.slice(0, -1));
       } else if (rowInd > 0) {
-        arr = arr.concat(selectedRows.slice(0, arr), selectedRows.slice(arr + 1));
+        arr = arr.concat(selectedRows.slice(0, rowInd), selectedRows.slice(rowInd + 1));
       }
     }
     updateSelectedRows(arr);

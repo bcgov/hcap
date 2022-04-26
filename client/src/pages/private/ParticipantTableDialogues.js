@@ -24,6 +24,7 @@ export const ParticipantTableDialogues = ({
   fetchParticipants,
   activeModalForm,
   actionMenuParticipant,
+  bulkParticipants,
   onClose,
   handleEngage,
   handleRosUpdate,
@@ -32,9 +33,17 @@ export const ParticipantTableDialogues = ({
   const { auth } = AuthContext.useAuth();
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
 
-  const handleSelectProspectingSites = (values) => {
+  const handleSingleSelectProspectingSites = (values) => {
     handleEngage(actionMenuParticipant.id, participantStatus.PROSPECTING, {
       sites: values.prospectingSites.map((value) => ({ id: value })),
+    });
+  };
+
+  const handleMultiSelectProspectingSites = (values) => {
+    bulkParticipants.forEach((participant) => {
+      handleEngage(participant?.id, participantStatus.PROSPECTING, {
+        sites: values.prospectingSites.map((value) => ({ id: value })),
+      });
     });
   };
 
@@ -50,7 +59,20 @@ export const ParticipantTableDialogues = ({
           initialValues={{ prospectingSites: [] }}
           validationSchema={ProspectingSitesSchema}
           onSubmit={(values) => {
-            handleSelectProspectingSites(values);
+            handleSingleSelectProspectingSites(values);
+          }}
+          onClose={onClose}
+        />
+      )}
+
+      {activeModalForm === 'multi-select-site' && (
+        <SelectProspectingSiteForm
+          isMultiSelect
+          selected={bulkParticipants}
+          initialValues={{ prospectingSites: [] }}
+          validationSchema={ProspectingSitesSchema}
+          onSubmit={(values) => {
+            handleMultiSelectProspectingSites(values);
           }}
           onClose={onClose}
         />

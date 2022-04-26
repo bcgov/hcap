@@ -188,7 +188,7 @@ const MultiSelectAction = (props) => {
         variant='outlined'
         text='Bulk Engage'
         disabled={selected.length === 0}
-        onClick={() => multiSelectAction(selected)}
+        onClick={multiSelectAction}
       />
     </Box>
   );
@@ -208,10 +208,10 @@ export const Table = ({
   onChangePage,
   rowsCount,
   isMultiSelect = false,
+  selectedRows = [],
+  updateSelectedRows,
   multiSelectAction,
 }) => {
-  const [selected, setSelected] = useState([]);
-
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -222,37 +222,36 @@ export const Table = ({
 
   const handleSelectAllRows = (event) => {
     if (event.target.checked) {
-      const selectedRows = rows.map((n) => n.id);
-      setSelected(selectedRows);
+      updateSelectedRows(rows);
       return;
     }
-    setSelected([]);
+    updateSelectedRows([]);
   };
 
   const handleSelectRow = (_event, rowId) => {
-    const rowInd = selected.indexOf(rowId);
+    const rowInd = selectedRows.findIndex((row) => row.id === rowId);
     let arr = [];
 
     if (rowInd === -1) {
       // row is not selected -> check
-      arr = arr.concat(selected, rowId);
+      arr = arr.concat(selectedRows, rowId);
     } else {
       // row is selected -> uncheck
       if (rowInd === 0) {
-        arr = arr.concat(selected.slice(1));
-      } else if (rowInd === selected.length - 1) {
-        arr = arr.concat(selected.slice(0, -1));
+        arr = arr.concat(selectedRows.slice(1));
+      } else if (rowInd === selectedRows.length - 1) {
+        arr = arr.concat(selectedRows.slice(0, -1));
       } else if (rowInd > 0) {
-        arr = arr.concat(selected.slice(0, arr), selected.slice(arr + 1));
+        arr = arr.concat(selectedRows.slice(0, arr), selectedRows.slice(arr + 1));
       }
     }
-    setSelected(arr);
+    updateSelectedRows(arr);
   };
 
   return (
     <Fragment>
       {isMultiSelect && multiSelectAction && (
-        <MultiSelectAction selected={selected} multiSelectAction={multiSelectAction} />
+        <MultiSelectAction selected={selectedRows} multiSelectAction={multiSelectAction} />
       )}
 
       <MuiTable stickyHeader>
@@ -263,8 +262,8 @@ export const Table = ({
                 <Checkbox
                   color='primary'
                   disabled={isLoading || rowsCount === 0}
-                  indeterminate={selected.length > 0 && selected.length < rowsCount}
-                  checked={rowsCount > 0 && selected.length === rowsCount}
+                  indeterminate={selectedRows.length > 0 && selectedRows.length < rowsCount}
+                  checked={rowsCount > 0 && selectedRows.length === rowsCount}
                   onChange={handleSelectAllRows}
                 />
               </StyledHeaderTableCell>
@@ -302,16 +301,17 @@ export const Table = ({
                 </StyledTableRow>
               ))
             : rows.map((row, index) => {
-                const isRowSelected = selected.indexOf(row.id) !== -1;
+                const isRowSelected =
+                  selectedRows.findIndex((currentRow) => currentRow.id === row.id) !== -1;
 
                 return (
-                  <StyledTableRow key={index} selected={isRowSelected} hover>
+                  <StyledTableRow key={index} hover>
                     {isMultiSelect && (
                       <StyledHeaderTableCell padding='checkbox'>
                         <Checkbox
                           color='primary'
                           checked={isRowSelected}
-                          onClick={(event) => handleSelectRow(event, row.id)}
+                          onClick={(event) => handleSelectRow(event, row)}
                         />
                       </StyledHeaderTableCell>
                     )}

@@ -116,17 +116,13 @@ const filterData = (data, columns) => {
   return filteredRows;
 };
 
-const bulkEngage = (selected) => {
-  // TODO: HCAP-1114
-  // console.log(selected);
-};
-
 const ParticipantTable = () => {
   const history = useHistory();
   const { openToast } = useToast();
   const [isLoadingData, setLoadingData] = useState(false);
   const [rows, setRows] = useState([]);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
+  const [selectedParticipants, setSelectedParticipants] = useState([]);
   const [anchorElement, setAnchorElement] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations, setLocations] = useState([]);
@@ -170,8 +166,16 @@ const ParticipantTable = () => {
     setLoadingData(false);
   };
 
+  const bulkEngage = () => {
+    openParticipantMultiSelectSite();
+  };
+
   const openParticipantSelectSite = () => {
-    setActiveModalForm(participantEngageStatus.SELECT_SITE);
+    setActiveModalForm(participantEngageStatus.SINGLE_SELECT_SITE);
+  };
+
+  const openParticipantMultiSelectSite = () => {
+    setActiveModalForm(participantEngageStatus.MULTI_SELECT_SITE);
   };
 
   const handleEngage = async (participantId, status, additional = {}) => {
@@ -193,6 +197,7 @@ const ParticipantTable = () => {
           ]
         );
         setActionMenuParticipant(null);
+        setSelectedParticipants([]);
         setActiveModalForm(null);
         fetchParticipants();
       }
@@ -227,6 +232,7 @@ const ParticipantTable = () => {
       });
 
       setActionMenuParticipant(null);
+      setSelectedParticipants([]);
       setActiveModalForm(null);
       fetchParticipants();
     } catch (err) {
@@ -246,6 +252,7 @@ const ParticipantTable = () => {
   const handleDialogueClose = () => {
     setActiveModalForm(null);
     setActionMenuParticipant(null);
+    setSelectedParticipants([]);
   };
 
   // Set available locations
@@ -357,6 +364,7 @@ const ParticipantTable = () => {
         fetchParticipants={fetchParticipants}
         activeModalForm={activeModalForm}
         actionMenuParticipant={actionMenuParticipant}
+        bulkParticipants={selectedParticipants}
         handleEngage={handleEngage}
         onClose={handleDialogueClose}
         handleRosUpdate={handleRosUpdate}
@@ -440,6 +448,8 @@ const ParticipantTable = () => {
               rows={rows}
               isLoading={isLoadingData}
               isMultiSelect={selectedTab === 'Available Participants'}
+              selectedRows={selectedParticipants}
+              updateSelectedRows={setSelectedParticipants}
               multiSelectAction={bulkEngage}
             />
           </Box>

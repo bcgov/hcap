@@ -13,7 +13,8 @@ export const participantStatus = {
 };
 
 export const participantEngageStatus = {
-  SELECT_SITE: 'single-select-site',
+  SINGLE_SELECT_SITE: 'single-select-site',
+  MULTI_SELECT_SITE: 'multi-select-site',
   PROSPECTING_CONFIRM: 'prospecting',
 };
 

@@ -42,6 +42,7 @@ export default createMuiTheme({
     },
     background: {
       default: '#F5F6FA',
+      light: '#F2F2F2',
     },
     text: {
       primary: '#000000',

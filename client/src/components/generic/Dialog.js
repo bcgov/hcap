@@ -10,10 +10,6 @@ import {
 } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    minWidth: '600px',
-    maxWidth: '1000px',
-  },
   dialogHeader: {
     fontWeight: 400,
     fontSize: '24px',
@@ -21,12 +17,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Dialog = ({ open, onClose, children, title, showDivider = false }) => {
+export const Dialog = ({
+  open,
+  onClose,
+  children,
+  title,
+  showDivider = false,
+  maxDialogWidth = 'sm',
+}) => {
   const classes = useStyles();
   return (
-    <MuiDialog open={open} onClose={onClose} disableBackdropClick>
+    <MuiDialog
+      fullWidth
+      maxWidth={maxDialogWidth}
+      open={open}
+      onClose={onClose}
+      disableBackdropClick
+    >
       <DialogTitle>
-        <Box pr={4} display='flex' className={classes.root}>
+        <Box display='flex'>
           <Box flexGrow={1} className={classes.dialogHeader}>
             {title}
           </Box>

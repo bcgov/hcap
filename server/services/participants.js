@@ -455,6 +455,30 @@ const setParticipantStatus = async (
     return { status };
   });
 
+const bulkEngageParticipants = async ({ participants, sites, user }) =>
+  Promise.all(
+    participants.map(async (id) => {
+      const participant = await getParticipantByID({ id });
+      if (!participant) {
+        return { participantId: id, status: 'not found', success: false };
+      }
+
+      const { status } = await setParticipantStatus(
+        user.id,
+        id,
+        participantStatus.PROSPECTING,
+        null,
+        user,
+        sites
+      );
+      return {
+        participantId: id,
+        status,
+        success: !['invalid_status_transition', 'invalid_archive'].includes(status),
+      };
+    })
+  );
+
 const validateConfirmationId = (id) =>
   dbClient.db[collections.CONFIRM_INTEREST].findOne({ otp: id });
 
@@ -983,6 +1007,7 @@ module.exports = {
   getParticipantByID,
   updateParticipant,
   setParticipantStatus,
+  bulkEngageParticipants,
   makeParticipant,
   validateConfirmationId,
   confirmParticipantInterest,

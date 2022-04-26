@@ -15,6 +15,7 @@ const {
   removeAllParticipantStatusForUser,
   archiveParticipantBySite,
   deleteParticipant,
+  bulkEngageParticipants,
 } = require('../services/participants.js');
 const { addParticipantToWaitlist } = require('../services/waitlist');
 const {
@@ -27,6 +28,7 @@ const {
   ArchiveRequest,
   RemoveParticipantUser,
   WaitlistEmailSchema,
+  BulkEngageParticipantSchema,
 } = require('../validation.js');
 const keycloak = require('../keycloak.js');
 const logger = require('../logger.js');
@@ -441,6 +443,30 @@ employerActionsRouter.delete(
       participantId,
     });
     return res.status(200).json({ message });
+  })
+);
+
+// Bulk Engage
+// Expect body: { participants: [ids...], sites: [{id: #site_id}, ...]}
+// Response: [{ participantId: #id, status: #status, success: true/false }]
+employerActionsRouter.post(
+  '/bulk-engage',
+  keycloak.allowRolesMiddleware('employer', 'health_authority'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    // Validate Body
+    const { body, hcapUserInfo: user } = req;
+    await validate(BulkEngageParticipantSchema, body);
+    const result = await bulkEngageParticipants({ ...body, user });
+    logger.info({
+      action: 'employer-action_bulk-engage_post',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      ids: body.participants,
+    });
+    res.status(201).json(result);
   })
 );
 

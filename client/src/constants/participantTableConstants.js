@@ -163,7 +163,7 @@ const columns = {
   rosStartDate: { id: 'rosStartDate', name: 'Return of Service Start Date', sortOrder: 22 },
   rosSiteName: { id: 'rosSiteName', name: 'Site Name', sortOrder: 23 },
   employerName: { id: 'employerName', name: 'Hired By', sortOrder: 24 },
-  engagedBy: { id: 'engagedBy', name: 'Last Engaged By', sortOrder: 16 },
+  engagedBy: { id: 'engagedBy', name: 'Last Engaged By', sortOrder: 16, sortable: false },
 };
 
 const {

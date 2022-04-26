@@ -91,7 +91,8 @@
           "Preferred Region(s)",
           "Site Distance",
           "Non-HCAP",
-          "Last Updated"
+          "Last Updated",
+          "Last Engaged By"
         ],
         "Archived Candidates": [
           "ID",
@@ -179,7 +180,8 @@
           "Preferred Region(s)",
           "Site Distance",
           "Non-HCAP",
-          "Last Updated"
+          "Last Updated",
+          "Last Engaged By"
         ],
         "Archived Candidates": [
           "ID",

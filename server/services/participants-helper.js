@@ -14,9 +14,9 @@ const scrubParticipantData = (raw, joinNames) =>
         ? { data: statusInfo.data }
         : {}),
       status: statusInfo.status,
-      associatedSites: statusInfo.statusSiteJoin?.map((site) => site.statusSiteDetailsJoin.body),
+      associatedSites: statusInfo.statusSiteJoin?.map((site) => site.statusSiteDetailsJoin?.body),
       associatedSitesIds: statusInfo.statusSiteJoin?.map(
-        (site) => site.statusSiteDetailsJoin.body?.siteId
+        (site) => site.statusSiteDetailsJoin?.body?.siteId
       ),
       employerInfo:
         statusInfo.employerInfo && statusInfo.employerInfo.body.userInfo
@@ -210,6 +210,8 @@ class FieldsFilteredParticipantsFinder {
             participantStatus.ARCHIVED,
           ].includes(status)
         ).length > 0;
+
+      const isFetchingOpenStatus = statusFilters && statusFilters.includes(participantStatus.OPEN);
       this.context.table = this.context.table.join({
         [employerSpecificJoin]: {
           type: 'LEFT OUTER',
@@ -231,6 +233,10 @@ class FieldsFilteredParticipantsFinder {
             relation: collections.SITE_PARTICIPANTS_STATUS,
             on: {
               participant_status_id: `${employerSpecificJoin}.id`,
+              ...(isFetchingOpenStatus &&
+                user.siteIds && {
+                  'site_id IN': user.siteIds,
+                }),
             },
             statusSiteDetailsJoin: {
               type: 'LEFT OUTER',
@@ -238,6 +244,7 @@ class FieldsFilteredParticipantsFinder {
               decomposeTo: 'object',
               on: {
                 id: 'statusSiteJoin.site_id',
+                'body.siteId IN': user.sites,
               },
             },
           },
@@ -326,7 +333,7 @@ class FieldsFilteredParticipantsFinder {
             {
               and: [
                 { [`${employerSpecificJoin}.employer_id <>`]: user.id },
-                { 'statusSiteDetailsJoin.body.siteId IN': user.sites },
+                { 'statusSiteDetailsJoin.body <>': null },
               ],
             },
             {
@@ -346,16 +353,7 @@ class FieldsFilteredParticipantsFinder {
       // Case2: Fetch all statuses with employer but no site association
       if (statusFilters && statusFilters.includes(participantStatus.OPEN)) {
         const openQuery = {
-          or: [
-            { [`${employerSpecificJoin}.status`]: null },
-            {
-              and: [
-                { [`${employerSpecificJoin}.status <>`]: null },
-                { [`${employerSpecificJoin}.employer_id <>`]: user.id },
-                { [`statusSiteDetailsJoin.body.siteId <>`]: user.sites },
-              ],
-            },
-          ],
+          or: [{ [`${employerSpecificJoin}.status`]: null }, { 'statusSiteJoin.id': null }],
         };
         criteria.and = criteria.and ? [...criteria.and, openQuery] : [openQuery];
       }

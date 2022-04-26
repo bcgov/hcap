@@ -81,6 +81,9 @@ export const ParticipantTableDialogues = ({
       {activeModalForm === 'prospecting' && (
         <ProspectingForm
           name={`${actionMenuParticipant?.firstName} ${actionMenuParticipant?.lastName}`}
+          participantsCount={
+            !actionMenuParticipant && bulkParticipants?.length > 0 ? bulkParticipants.length : -1
+          }
           onClose={() => {
             fetchParticipants();
             onClose();

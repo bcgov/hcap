@@ -18,13 +18,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ProspectingForm = ({ name, onClose, onSubmit }) => {
+export const ProspectingForm = ({ name, participantsCount, onClose, onSubmit }) => {
   const classes = useStyles();
+  const hasMultipleParticipants = participantsCount !== -1;
 
   return (
     <Fragment>
       <Typography variant='subtitle2' className={classes.formText}>
-        {name} has been engaged. This candidate can now be found in the My Candidates tab.
+        <b>{hasMultipleParticipants ? participantsCount : name}</b>
+        {hasMultipleParticipants
+          ? ` participants have been engaged. These candidates can now be found in the My Candidates Tab.`
+          : ` has been engaged. This candidate can now be found in the My Candidates tab.`}
       </Typography>
 
       <Divider className={classes.formDivider} />

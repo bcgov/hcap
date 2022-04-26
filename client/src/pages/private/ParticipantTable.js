@@ -107,6 +107,7 @@ const filterData = (data, columns) => {
         statusWithEmployerDetails[0].employerInfo.firstName,
         maxStrLen
       )} ${addEllipsisMask(statusWithEmployerDetails[0].employerInfo.lastName, maxStrLen)}`;
+      row.engagedBy = row.employerName;
     }
 
     row.engage.status = row.status[0];

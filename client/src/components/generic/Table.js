@@ -228,13 +228,13 @@ export const Table = ({
     updateSelectedRows([]);
   };
 
-  const handleSelectRow = (_event, rowId) => {
-    const rowInd = selectedRows.findIndex((row) => row.id === rowId);
+  const handleSelectRow = (_event, newRow) => {
+    const rowInd = selectedRows.findIndex((row) => row?.id === newRow?.id);
     let arr = [];
 
     if (rowInd === -1) {
       // row is not selected -> check
-      arr = arr.concat(selectedRows, rowId);
+      arr = arr.concat(selectedRows, newRow);
     } else {
       // row is selected -> uncheck
       if (rowInd === 0) {
@@ -302,7 +302,7 @@ export const Table = ({
               ))
             : rows.map((row, index) => {
                 const isRowSelected =
-                  selectedRows.findIndex((currentRow) => currentRow.id === row.id) !== -1;
+                  selectedRows.findIndex((currentRow) => currentRow?.id === row?.id) !== -1;
 
                 return (
                   <StyledTableRow key={index} hover>

@@ -36,6 +36,7 @@ const sortFields = [
   'rosStartDate',
   'rosSiteName',
   'employerName',
+  'engagedBy',
 ];
 
 const roles = [

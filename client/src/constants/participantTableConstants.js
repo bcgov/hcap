@@ -154,7 +154,7 @@ const columns = {
   crcClear: { id: 'crcClear', name: 'CRC Clear', sortOrder: 13 },
   callbackStatus: { id: 'callbackStatus', name: 'Callback Status', sortOrder: 14 },
   userUpdatedAt: { id: 'userUpdatedAt', name: 'Last Updated', sortOrder: 15 },
-  engage: { id: 'engage', name: null, sortOrder: 16 },
+  engage: { id: 'engage', name: null, sortOrder: 17 },
   siteName: { id: 'siteName', name: 'Site Name', sortOrder: 18 },
   archive: { id: 'archive', name: null, sortOrder: 52 },
   postHireStatuses: { id: 'postHireStatuses', name: 'Graduated', sortOrder: 20, sortable: false },
@@ -162,7 +162,7 @@ const columns = {
   rosStartDate: { id: 'rosStartDate', name: 'Return of Service Start Date', sortOrder: 22 },
   rosSiteName: { id: 'rosSiteName', name: 'Site Name', sortOrder: 23 },
   employerName: { id: 'employerName', name: 'Hired By', sortOrder: 24 },
-  engagedBy: { id: 'engagedBy', name: 'Last Engaged By', sortOrder: 15.5 },
+  engagedBy: { id: 'engagedBy', name: 'Last Engaged By', sortOrder: 16 },
 };
 
 const {

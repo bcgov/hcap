@@ -701,10 +701,10 @@ const getParticipants = async (
       const statusInfos = item.statusInfos?.find(
         (statusInfo) =>
           statusInfo.employerId === user.id ||
-          (statusInfo.data && user.sites.includes(statusInfo.data.site)) ||
+          (statusInfo.data && user.sites?.includes(statusInfo.data.site)) ||
           (statusInfo.associatedSitesIds &&
             statusInfo.associatedSitesIds.length > 0 &&
-            statusInfo.associatedSitesIds.filter((id) => user.sites.includes(id)).length > 0)
+            statusInfo.associatedSitesIds.filter((id) => user.sites?.includes(id)).length > 0)
       );
 
       if (statusInfos) {

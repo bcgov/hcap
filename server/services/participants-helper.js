@@ -217,6 +217,7 @@ class FieldsFilteredParticipantsFinder {
           userSpecificJoin: {
             type: 'LEFT OUTER',
             relation: collections.PARTICIPANTS_STATUS,
+            omit: true,
             on: {
               participant_id: 'id',
               current: true,
@@ -264,6 +265,7 @@ class FieldsFilteredParticipantsFinder {
         anyPastHiredGlobalJoin: {
           type: 'LEFT OUTER',
           relation: collections.PARTICIPANTS_STATUS,
+          omit: true,
           on: {
             participant_id: 'id',
             current: false,

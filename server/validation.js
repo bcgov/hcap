@@ -23,6 +23,7 @@ const {
   WaitlistEmailSchema,
   ParticipantQuerySchema,
   ExternalHiredParticipantSchema,
+  BulkEngageParticipantSchema,
   validate,
 } = require('./validators');
 
@@ -51,4 +52,5 @@ module.exports = {
   postHireStatusesValues,
   ParticipantPostHireStatusSchema,
   EditCohortSchema,
+  BulkEngageParticipantSchema,
 };

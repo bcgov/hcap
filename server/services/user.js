@@ -21,7 +21,7 @@ const getUserSites = async (id) => {
   });
 };
 
-const getUserSiteIds = async (siteIds) =>
+const getUserSiteIds = async (siteIds = []) =>
   dbClient.db[collections.EMPLOYER_SITES].findDoc({
     siteId: siteIds.map((item) => item.toString()),
   });

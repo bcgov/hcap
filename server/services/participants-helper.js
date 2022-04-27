@@ -213,6 +213,17 @@ class FieldsFilteredParticipantsFinder {
 
       const isFetchingOpenStatus = statusFilters && statusFilters.includes(participantStatus.OPEN);
       this.context.table = this.context.table.join({
+        ...(isFetchingOpenStatus && {
+          userSpecificJoin: {
+            type: 'LEFT OUTER',
+            relation: collections.PARTICIPANTS_STATUS,
+            on: {
+              participant_id: 'id',
+              current: true,
+              employer_id: user.id,
+            },
+          },
+        }),
         [employerSpecificJoin]: {
           type: 'LEFT OUTER',
           relation: collections.PARTICIPANTS_STATUS,
@@ -350,10 +361,15 @@ class FieldsFilteredParticipantsFinder {
 
       // Checking for open status
       // Case1: Fetch all statuses with no employer attached employerSpecificJoin == NULL
-      // Case2: Fetch all statuses with employer but no site association
-      if (statusFilters && statusFilters.includes(participantStatus.OPEN)) {
+      // Case2: Fetch all statuses with other employer but no site association
+      if (isFetchingOpenStatus) {
         const openQuery = {
-          or: [{ [`${employerSpecificJoin}.status`]: null }, { 'statusSiteJoin.id': null }],
+          or: [
+            { [`${employerSpecificJoin}.status`]: null },
+            {
+              and: [{ [`userSpecificJoin.status`]: null }, { 'statusSiteJoin.id': null }],
+            },
+          ],
         };
         criteria.and = criteria.and ? [...criteria.and, openQuery] : [openQuery];
       }

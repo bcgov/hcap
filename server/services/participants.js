@@ -16,6 +16,7 @@ const { getAssignCohort } = require('./cohorts');
 const { createPostHireStatus, getPostHireStatusesForParticipant } = require('./post-hire-flow');
 
 const { participantStatus } = require('../constants');
+const { getUserSiteIds } = require('./user');
 
 const deleteParticipant = async ({ email }) => {
   await dbClient.db.withTransaction(async (tnx) => {
@@ -566,7 +567,12 @@ const getParticipants = async (
   statusFilters,
   isIndigenousFilter
 ) => {
-  const participantsFinder = new ParticipantsFinder(dbClient, user);
+  // Get user ids
+  const siteIds = (await getUserSiteIds(user.sites)).map((site) => site.id);
+  const participantsFinder = new ParticipantsFinder(dbClient, {
+    ...user,
+    siteIds,
+  });
   const interestFilter = (user.isHA || user.isEmployer) && statusFilters?.includes('open');
   let participants = await participantsFinder
     .filterRegion(regionFilter)
@@ -719,10 +725,10 @@ const getParticipants = async (
       const statusInfos = item.statusInfos?.find(
         (statusInfo) =>
           statusInfo.employerId === user.id ||
-          (statusInfo.data && user.sites.includes(statusInfo.data.site)) ||
+          (statusInfo.data && user.sites?.includes(statusInfo.data.site)) ||
           (statusInfo.associatedSitesIds &&
             statusInfo.associatedSitesIds.length > 0 &&
-            statusInfo.associatedSitesIds.filter((id) => user.sites.includes(id)).length > 0)
+            statusInfo.associatedSitesIds.filter((id) => user.sites?.includes(id)).length > 0)
       );
 
       if (statusInfos) {

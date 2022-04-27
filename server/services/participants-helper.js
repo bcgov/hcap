@@ -14,9 +14,9 @@ const scrubParticipantData = (raw, joinNames) =>
         ? { data: statusInfo.data }
         : {}),
       status: statusInfo.status,
-      associatedSites: statusInfo.statusSiteJoin?.map((site) => site.statusSiteDetailsJoin.body),
+      associatedSites: statusInfo.statusSiteJoin?.map((site) => site.statusSiteDetailsJoin?.body),
       associatedSitesIds: statusInfo.statusSiteJoin?.map(
-        (site) => site.statusSiteDetailsJoin.body?.siteId
+        (site) => site.statusSiteDetailsJoin?.body?.siteId
       ),
       employerInfo:
         statusInfo.employerInfo && statusInfo.employerInfo.body.userInfo
@@ -158,7 +158,7 @@ class FilteredParticipantsFinder {
       });
 
       // To manage employer name column sorting we need to sort by employer name
-      if (sortField === 'employerName') {
+      if (sortField === 'employerName' || sortField === 'engagedBy') {
         this.context.options.order.unshift(
           {
             field: `employerInfo.body.userInfo.firstName`,
@@ -210,7 +210,21 @@ class FieldsFilteredParticipantsFinder {
             participantStatus.ARCHIVED,
           ].includes(status)
         ).length > 0;
+
+      const isFetchingOpenStatus = statusFilters && statusFilters.includes(participantStatus.OPEN);
       this.context.table = this.context.table.join({
+        ...(isFetchingOpenStatus && {
+          userSpecificJoin: {
+            type: 'LEFT OUTER',
+            relation: collections.PARTICIPANTS_STATUS,
+            omit: true,
+            on: {
+              participant_id: 'id',
+              current: true,
+              employer_id: user.id,
+            },
+          },
+        }),
         [employerSpecificJoin]: {
           type: 'LEFT OUTER',
           relation: collections.PARTICIPANTS_STATUS,
@@ -231,6 +245,10 @@ class FieldsFilteredParticipantsFinder {
             relation: collections.SITE_PARTICIPANTS_STATUS,
             on: {
               participant_status_id: `${employerSpecificJoin}.id`,
+              ...(isFetchingOpenStatus &&
+                user.siteIds && {
+                  'site_id IN': user.siteIds,
+                }),
             },
             statusSiteDetailsJoin: {
               type: 'LEFT OUTER',
@@ -238,6 +256,7 @@ class FieldsFilteredParticipantsFinder {
               decomposeTo: 'object',
               on: {
                 id: 'statusSiteJoin.site_id',
+                'body.siteId IN': user.sites,
               },
             },
           },
@@ -246,6 +265,7 @@ class FieldsFilteredParticipantsFinder {
         anyPastHiredGlobalJoin: {
           type: 'LEFT OUTER',
           relation: collections.PARTICIPANTS_STATUS,
+          omit: true,
           on: {
             participant_id: 'id',
             current: false,
@@ -326,7 +346,7 @@ class FieldsFilteredParticipantsFinder {
             {
               and: [
                 { [`${employerSpecificJoin}.employer_id <>`]: user.id },
-                { 'statusSiteDetailsJoin.body.siteId IN': user.sites },
+                { 'statusSiteDetailsJoin.body <>': null },
               ],
             },
             {
@@ -343,17 +363,13 @@ class FieldsFilteredParticipantsFinder {
 
       // Checking for open status
       // Case1: Fetch all statuses with no employer attached employerSpecificJoin == NULL
-      // Case2: Fetch all statuses with employer but no site association
-      if (statusFilters && statusFilters.includes(participantStatus.OPEN)) {
+      // Case2: Fetch all statuses with other employer but no site association
+      if (isFetchingOpenStatus) {
         const openQuery = {
           or: [
             { [`${employerSpecificJoin}.status`]: null },
             {
-              and: [
-                { [`${employerSpecificJoin}.status <>`]: null },
-                { [`${employerSpecificJoin}.employer_id <>`]: user.id },
-                { [`statusSiteDetailsJoin.body.siteId <>`]: user.sites },
-              ],
+              and: [{ [`userSpecificJoin.status`]: null }, { 'statusSiteJoin.id': null }],
             },
           ],
         };

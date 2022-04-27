@@ -158,7 +158,7 @@ class FilteredParticipantsFinder {
       });
 
       // To manage employer name column sorting we need to sort by employer name
-      if (sortField === 'employerName') {
+      if (sortField === 'employerName' || sortField === 'engagedBy') {
         this.context.options.order.unshift(
           {
             field: `employerInfo.body.userInfo.firstName`,

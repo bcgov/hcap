@@ -425,7 +425,12 @@ const setParticipantStatus = async (
     });
 
     // Save sites if supplied
-    if (associatedSites && associatedSites.length > 0 && statusObj.id) {
+    if (
+      status !== participantStatus.REJECTED &&
+      associatedSites &&
+      associatedSites.length > 0 &&
+      statusObj.id
+    ) {
       await Promise.all(
         associatedSites.map(({ id }) =>
           tx[collections.SITE_PARTICIPANTS_STATUS].save({

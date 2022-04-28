@@ -69,6 +69,7 @@ const filterData = (data, columns) => {
 
     row.engage = item;
     row.siteName = item?.statusInfos?.[0].data?.siteName;
+
     if (
       item.rosStatuses &&
       item.rosStatuses.length > 0 &&
@@ -93,7 +94,10 @@ const filterData = (data, columns) => {
         row.status = [item.statusInfos[0].status];
       }
     } else if (item.progressStats) {
-      row.status = ['open', ...Object.keys(item.progressStats).filter((key) => key === 'archived')];
+      row.status = [item.statusInfo, ...Object.keys(item.progressStats).filter((key) => key === 'archived')];
+      if (item.interested === 'withdrawn') {
+        row.status.push(item.interested);
+      }
     } else {
       row.status = ['open'];
     }

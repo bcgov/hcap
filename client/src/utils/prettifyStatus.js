@@ -47,7 +47,7 @@ export const prettifyStatus = (status, id, tabValue, handleEngage, handleAcknowl
         alignItems: 'center',
       }}
     >
-      {firstStatus}{' '}
+      {firstStatus || status[0]}{' '}
       {status[1] && firstStatus !== 'Archived' && (
         <ComponentTooltip
           arrow

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MomentUtils from '@date-io/moment';
+import dayjs from '@date-io/dayjs';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -13,7 +13,7 @@ import { ToastProvider, AuthContext } from './providers';
 
 const App = () => (
   <ThemeProvider theme={Theme}>
-    <MuiPickersUtilsProvider utils={MomentUtils}>
+    <MuiPickersUtilsProvider utils={dayjs}>
       <CssBaseline />
       <ToastProvider>
         <AuthContext.AuthProvider>

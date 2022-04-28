@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import dayjs from 'dayjs';
+import { dayUtils } from '../../utils';
 
 import Grid from '@material-ui/core/Grid';
 import { Box, Menu, MenuItem, Link } from '@material-ui/core';
@@ -30,7 +30,7 @@ import {
 
 const mapRosData = (data) => ({
   rosSiteName: data?.rosStatuses?.[0]?.rosSite?.body.siteName,
-  rosStartDate: dayjs(data?.rosStatuses?.[0]?.data.date).format('MM/DD/YYYY'),
+  rosStartDate: dayUtils(data?.rosStatuses?.[0]?.data.date).format('MM/DD/YYYY'),
 });
 
 const filterData = (data, columns) => {
@@ -333,7 +333,7 @@ const ParticipantTable = () => {
           />
         );
       case 'userUpdatedAt':
-        return dayjs(row.userUpdatedAt).fromNow();
+        return dayUtils(row.userUpdatedAt).fromNow();
       case 'archive':
         return (
           <>

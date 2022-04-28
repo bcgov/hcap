@@ -1,4 +1,9 @@
 import dayjs from 'dayjs';
+import { relativeTime } from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
+
+export const dayUtils = dayjs;
 
 export const dateToString = (dateObj) => dayjs(dateObj).format('YYYY/MM/DD');
 

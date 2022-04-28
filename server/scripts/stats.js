@@ -2,12 +2,9 @@
 require('dotenv').config({ path: '../.env' });
 const inquirer = require('inquirer');
 const dayjs = require('dayjs');
-const utc = require('dayjs/plugin/utc');
 const { dbClient, collections } = require('../db');
 
-dayjs.extend(utc);
-
-const toPostgresDate = (date) => dayjs(date).utc().format('YYYY-MM-DD HH:mm:ssZ');
+const toPostgresDate = (date) => dayjs.utc(date).format('YYYY-MM-DD HH:mm:ssZ');
 
 (async () => {
   if (require.main === module) {

@@ -7,9 +7,9 @@ import { getTodayDate } from '../../utils';
 import { Button } from '../../components/generic/Button';
 import { ParticipantPostHireStatusSchema } from '../../constants/validation';
 import { postHireStatuses } from '../../constants';
-import moment from 'moment';
+import dayjs from 'dayjs';
 export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortEndDate }) => {
-  const cohortEndDateObj = moment(cohortEndDate, 'YYYY/MM/DD');
+  const cohortEndDateObj = dayjs(cohortEndDate, 'YYYY/MM/DD');
   const today = new Date();
   return (
     <Box spacing={10} p={4} width={380}>

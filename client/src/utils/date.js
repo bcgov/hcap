@@ -1,11 +1,11 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
-export const dateToString = (dateObj) => moment(dateObj).format('YYYY/MM/DD');
+export const dateToString = (dateObj) => dayjs(dateObj).format('YYYY/MM/DD');
 
-export const stringToDate = (dateStr) => moment(dateStr, 'YYYY/MM/DD');
+export const stringToDate = (dateStr) => dayjs(dateStr, 'YYYY/MM/DD');
 
 export const formatCohortDate = (dateStr, { isForm } = { isForm: false }) =>
-  moment.utc(dateStr).format(isForm ? 'YYYY/MM/DD' : 'DD MMM YYYY');
+  dayjs.utc(dateStr).format(isForm ? 'YYYY/MM/DD' : 'DD MMM YYYY');
 
 export const getTodayDate = () => {
   const today = new Date();

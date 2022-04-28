@@ -5,7 +5,7 @@ import store from 'store';
 import { ManageGraduationForm } from '../modal-forms/ManageGraduationForm';
 import { AssignCohortForm } from '../modal-forms/AssignCohort';
 import React, { useEffect, useState } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { createPostHireStatus } from '../../services/participant';
 import { ToastStatus, API_URL, ArchiveHiredParticipantSchema } from '../../constants';
 import { postHireStatuses } from '../../constants';
@@ -149,7 +149,7 @@ export const TrackGraduation = (props) => {
                   type: '',
                   reason: '',
                   status: '',
-                  endDate: moment().format('YYYY/MM/DD'),
+                  endDate: dayjs().format('YYYY/MM/DD'),
                   rehire: '',
                   confirmed: false,
                 }}

@@ -3,13 +3,21 @@ import InfoIcon from '@material-ui/icons/Info';
 import { ComponentTooltip } from '../components/generic/ComponentTooltip';
 import { Button } from '../components/generic';
 
-export const prettifyStatus = (status, id, tabValue, handleEngage, handleAcknowledge) => {
+export const prettifyStatus = (
+  status,
+  id,
+  tabValue,
+  handleEngage,
+  handleAcknowledge,
+  isMoH = false
+) => {
   let firstStatus = status[0];
   let isWithdrawn = false;
-  if (status[0] === 'offer_made') firstStatus = 'Offer Made';
+  if (status[0] === 'available') firstStatus = 'Available';
+  if (status[0] === 'offer_made') firstStatus = isMoH ? 'In Progress (3)' : 'Offer Made';
   if (status[0] === 'open') firstStatus = 'Open';
-  if (status[0] === 'prospecting') firstStatus = 'Prospecting';
-  if (status[0] === 'interviewing') firstStatus = 'Interviewing';
+  if (status[0] === 'prospecting') firstStatus = isMoH ? 'In Progress (2)' : 'Prospecting';
+  if (status[0] === 'interviewing') firstStatus = isMoH ? 'In Progress' : 'Interviewing';
   if (status[0] === 'rejected') firstStatus = 'Archived';
   if (status[0] === 'hired') firstStatus = 'Hired';
   if (status[0] === 'ros') firstStatus = 'Return of Service';
@@ -47,7 +55,7 @@ export const prettifyStatus = (status, id, tabValue, handleEngage, handleAcknowl
         alignItems: 'center',
       }}
     >
-      {firstStatus || status[0]}{' '}
+      {firstStatus}{' '}
       {status[1] && firstStatus !== 'Archived' && (
         <ComponentTooltip
           arrow

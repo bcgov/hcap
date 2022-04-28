@@ -94,7 +94,10 @@ const filterData = (data, columns) => {
         row.status = [item.statusInfos[0].status];
       }
     } else if (item.progressStats) {
-      row.status = [item.statusInfo, ...Object.keys(item.progressStats).filter((key) => key === 'archived')];
+      row.status = [
+        item.statusInfo,
+        ...Object.keys(item.progressStats).filter((key) => key === 'archived'),
+      ];
       if (item.interested === 'withdrawn') {
         row.status.push(item.interested);
       }

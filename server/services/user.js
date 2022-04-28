@@ -21,6 +21,11 @@ const getUserSites = async (id) => {
   });
 };
 
+const getUserSiteIds = async (siteIds = []) =>
+  dbClient.db[collections.EMPLOYER_SITES].findDoc({
+    siteId: siteIds.map((item) => item.toString()),
+  });
+
 const makeUser = async ({ keycloakId, sites }) => {
   await dbClient.db.saveDoc(collections.USERS, {
     keycloakId,
@@ -33,4 +38,5 @@ module.exports = {
   getUserSites,
   userRegionQuery,
   makeUser,
+  getUserSiteIds,
 };

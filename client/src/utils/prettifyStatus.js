@@ -27,10 +27,8 @@ export const prettifyStatus = (
   isMoH = false
 ) => {
   const statusValue = status[0];
-  let firstStatus = statusValue;
+  let firstStatus = getParticipantStatus(isMoH, statusValue);
   let isWithdrawn = false;
-
-  firstStatus = getParticipantStatus(isMoH, statusValue);
 
   if (status.includes('withdrawn')) {
     firstStatus = 'Withdrawn';

@@ -34,6 +34,7 @@ const keycloak = require('../keycloak.js');
 const logger = require('../logger.js');
 const { asyncMiddleware } = require('../error-handler.js');
 const { expressRequestBodyValidator } = require('../middleware/index.js');
+const FEATURE_FLAGS = require('../services/feature-flags');
 
 const participantRouter = express.Router();
 const participantsRouter = express.Router();
@@ -389,8 +390,7 @@ employerActionsRouter.post(
       req.body.participantId,
       req.body.status,
       req.body.data,
-      user,
-      req.body.sites || null
+      user
     );
     logger.info({
       action: 'employer-actions_post',
@@ -454,6 +454,9 @@ employerActionsRouter.post(
   keycloak.allowRolesMiddleware('employer', 'health_authority'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
+    if (!FEATURE_FLAGS.FEATURE_MULTI_ORG_PROSPECTING) {
+      return res.status(405).send('Feature not enabled');
+    }
     // Validate Body
     const { body, hcapUserInfo: user } = req;
     await validate(BulkEngageParticipantSchema, body);
@@ -466,7 +469,7 @@ employerActionsRouter.post(
       },
       ids: body.participants,
     });
-    res.status(201).json(result);
+    return res.status(201).json(result);
   })
 );
 

@@ -16,7 +16,6 @@ const { getAssignCohort } = require('./cohorts');
 const { createPostHireStatus, getPostHireStatusesForParticipant } = require('./post-hire-flow');
 
 const { participantStatus } = require('../constants');
-const { getUserSiteIds } = require('./user');
 
 const deleteParticipant = async ({ email }) => {
   await dbClient.db.withTransaction(async (tnx) => {
@@ -273,8 +272,7 @@ const setParticipantStatus = async (
   participantId,
   status,
   data, // JSONB on the status row
-  user,
-  sites
+  user
 ) =>
   dbClient.db.withTransaction(async (tx) => {
     if (status === 'pending_acknowledgement') {
@@ -289,48 +287,11 @@ const setParticipantStatus = async (
       if (items.length > 0) return { status: 'already_hired' };
     }
 
-    const item =
-      (
-        await tx[collections.PARTICIPANTS_STATUS]
-          .join({
-            sites: {
-              type: 'LEFT OUTER',
-              relation: collections.SITE_PARTICIPANTS_STATUS,
-              on: {
-                participant_status_id: 'id',
-              },
-              siteDetails: {
-                type: 'LEFT OUTER',
-                relation: collections.EMPLOYER_SITES,
-                decomposeTo: 'object',
-                on: {
-                  id: 'sites.site_id',
-                },
-              },
-            },
-          })
-          .find({
-            participant_id: participantId,
-            current: true,
-            and: [
-              {
-                or: [
-                  {
-                    employer_id: employerId,
-                  },
-                  {
-                    and: [
-                      {
-                        'employer_id <>': employerId,
-                        'siteDetails.body.siteId IN': user?.sites || [],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          })
-      )[0] || null;
+    const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
+      participant_id: participantId,
+      employer_id: employerId,
+      current: true,
+    });
     // Check the desired status against the current status:
     // -- Rejecting a participant is allowed even if they've been hired elsewhere (handled above)
     // -- Open is the starting point, there is no way to transition here from any other status
@@ -381,31 +342,7 @@ const setParticipantStatus = async (
         return { status: 'invalid_archive' };
       }
     }
-    // Get site association for prospecting status
-    let associatedSites = sites;
-    if (
-      [
-        participantStatus.INTERVIEWING,
-        participantStatus.OFFER_MADE,
-        participantStatus.REJECTED,
-      ].includes(status) &&
-      !sites &&
-      item.sites &&
-      item.sites.length > 0
-    ) {
-      associatedSites = item.sites.map((site) => ({ id: site.site_id }));
-    }
     // Invalidate pervious status
-    if (item && item.employer_id !== employerId) {
-      await tx[collections.PARTICIPANTS_STATUS].update(
-        {
-          employer_id: item.employer_id,
-          participant_id: participantId,
-          current: true,
-        },
-        { current: false }
-      );
-    }
     await tx[collections.PARTICIPANTS_STATUS].update(
       {
         employer_id: employerId,
@@ -416,30 +353,13 @@ const setParticipantStatus = async (
     );
 
     // Save new status
-    const statusObj = await tx[collections.PARTICIPANTS_STATUS].save({
+    await tx[collections.PARTICIPANTS_STATUS].save({
       employer_id: employerId,
       participant_id: participantId,
       status,
       current: true,
       data,
     });
-
-    // Save sites if supplied
-    if (
-      status !== participantStatus.REJECTED &&
-      associatedSites &&
-      associatedSites.length > 0 &&
-      statusObj.id
-    ) {
-      await Promise.all(
-        associatedSites.map(({ id }) =>
-          tx[collections.SITE_PARTICIPANTS_STATUS].save({
-            participant_status_id: statusObj.id,
-            site_id: id,
-          })
-        )
-      );
-    }
 
     const participant = await tx[collections.PARTICIPANTS].findDoc({
       id: participantId,
@@ -573,11 +493,7 @@ const getParticipants = async (
   isIndigenousFilter
 ) => {
   // Get user ids
-  const siteIds = (await getUserSiteIds(user.sites)).map((site) => site.id);
-  const participantsFinder = new ParticipantsFinder(dbClient, {
-    ...user,
-    siteIds,
-  });
+  const participantsFinder = new ParticipantsFinder(dbClient, user);
   const interestFilter = (user.isHA || user.isEmployer) && statusFilters?.includes('open');
   let participants = await participantsFinder
     .filterRegion(regionFilter)
@@ -730,10 +646,7 @@ const getParticipants = async (
       const statusInfos = item.statusInfos?.find(
         (statusInfo) =>
           statusInfo.employerId === user.id ||
-          (statusInfo.data && user.sites?.includes(statusInfo.data.site)) ||
-          (statusInfo.associatedSitesIds &&
-            statusInfo.associatedSitesIds.length > 0 &&
-            statusInfo.associatedSitesIds.filter((id) => user.sites?.includes(id)).length > 0)
+          (statusInfo.data && user.sites?.includes(statusInfo.data.site))
       );
 
       if (statusInfos) {

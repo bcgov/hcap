@@ -3,7 +3,10 @@ import InfoIcon from '@material-ui/icons/Info';
 import { ComponentTooltip } from '../components/generic/ComponentTooltip';
 import { Button } from '../components/generic';
 
-const getInProgressStatus = (isMoH, status) => {
+const getParticipantStatus = (isMoH, status) => {
+  if (status === 'rejected') return 'Archived';
+  if (status === 'ros') return 'Return of Service';
+
   if (isMoH) {
     if (status === 'prospecting') return 'In Progress';
     if (status === 'interviewing') return 'In Progress (2)';
@@ -26,20 +29,9 @@ export const prettifyStatus = (
   const statusValue = status[0];
   let firstStatus = statusValue;
   let isWithdrawn = false;
-  if (statusValue === 'available') firstStatus = 'Available';
-  if (statusValue === 'open') firstStatus = 'Open';
 
-  if (
-    statusValue === 'offer_made' ||
-    statusValue === 'interviewing' ||
-    statusValue === 'prospecting'
-  ) {
-    firstStatus = getInProgressStatus(isMoH, statusValue);
-  }
+  firstStatus = getParticipantStatus(isMoH, statusValue);
 
-  if (statusValue === 'rejected') firstStatus = 'Archived';
-  if (statusValue === 'hired') firstStatus = 'Hired';
-  if (statusValue === 'ros') firstStatus = 'Return of Service';
   if (status.includes('withdrawn')) {
     firstStatus = 'Withdrawn';
     isWithdrawn = true;
@@ -49,15 +41,14 @@ export const prettifyStatus = (
   }
   let toolTip = 'This candidate was hired by another employer.';
   if (isWithdrawn) {
-    if (status.includes('pending_acknowledgement')) {
-      toolTip = 'This candidate was archived.';
-    } else {
-      toolTip = 'Participant is no longer available.';
-    }
+    toolTip = status.includes('pending_acknowledgement')
+      ? 'This candidate was archived.'
+      : 'Participant is no longer available.';
   }
 
-  if (status[1] === 'hired_by_peer')
+  if (status[1] === 'hired_by_peer') {
     toolTip = 'This candidate was hired by same site. And available in "Hired Participants" tab.';
+  }
 
   const hideAcknowledgeButton =
     !(tabValue === 'Hired Candidates' && status.includes('pending_acknowledgement')) &&

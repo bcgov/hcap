@@ -47,15 +47,14 @@ const getStatusForMoH = (isInterested, progressStats) => {
     isWithdrawn = true;
   }
 
-  if (progressStats.prospecting) {
-    firstStatus = 'prospecting';
+  if (progressStats.total && !progressStats.hired) {
+    const count =
+      progressStats.offer_made || progressStats.interviewing || progressStats.prospecting;
+    if (count > 0) {
+      firstStatus = `inprogress_${count}`;
+    }
   }
-  if (progressStats.interviewing) {
-    firstStatus = 'interviewing';
-  }
-  if (progressStats.offer_made) {
-    firstStatus = 'offer_made';
-  }
+
   if (progressStats.hired) {
     firstStatus = 'hired';
   }

@@ -14,10 +14,9 @@ const getParticipantStatus = (isMoH, status) => {
   if (status === 'rejected') return 'Archived';
   if (status === 'ros') return 'Return of Service';
 
-  if (isMoH) {
-    if (status === 'prospecting') return 'In Progress';
-    if (status === 'interviewing') return 'In Progress (2)';
-    if (status === 'offer_made') return 'In Progress (3)';
+  if (isMoH && status.startsWith('inprogress')) {
+    const count = status.split('_');
+    return `In Progress (${count[1]})`;
   }
 
   if (status === 'offer_made') return 'Offer Made';

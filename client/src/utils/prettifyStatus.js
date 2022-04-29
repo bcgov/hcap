@@ -3,6 +3,13 @@ import InfoIcon from '@material-ui/icons/Info';
 import { ComponentTooltip } from '../components/generic/ComponentTooltip';
 import { Button } from '../components/generic';
 
+/**
+ * Returns participant stats message based on the first status provided
+ *
+ * @param {boolean} isMoH - is this view displayed for MoH user
+ * @param {string} status - first status defined in row.status
+ * @returns {string} specific status message based on value / capitalized status
+ */
 const getParticipantStatus = (isMoH, status) => {
   if (status === 'rejected') return 'Archived';
   if (status === 'ros') return 'Return of Service';

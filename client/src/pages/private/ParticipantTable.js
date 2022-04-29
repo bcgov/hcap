@@ -33,7 +33,40 @@ const mapRosData = (data) => ({
   rosStartDate: moment(data?.rosStatuses?.[0]?.data.date).format('MM/DD/YYYY'),
 });
 
-const filterData = (data, columns) => {
+const getStatusForMoH = (isInterested, progressStats) => {
+  const mohStatuses = [];
+  let firstStatus = 'available';
+  let isWithdrawn = false;
+
+  if (!isInterested) {
+    firstStatus = 'open';
+  }
+
+  if (isInterested === 'no' || isInterested === 'withdrawn') {
+    firstStatus = 'withdrawn';
+    isWithdrawn = true;
+  }
+
+  if (progressStats.total && !progressStats.hired) {
+    const count =
+      progressStats.offer_made || progressStats.interviewing || progressStats.prospecting;
+    if (count > 0) {
+      firstStatus = `inprogress_${count}`;
+    }
+  }
+
+  if (progressStats.hired) {
+    firstStatus = 'hired';
+  }
+
+  mohStatuses.push(firstStatus);
+  if (isWithdrawn) {
+    mohStatuses.push('withdrawn');
+  }
+  return mohStatuses;
+};
+
+const filterData = (data, columns, isMoH = false) => {
   const emailAddressMask = '***@***.***';
   const phoneNumberMask = '(***) ***-****';
 
@@ -69,6 +102,7 @@ const filterData = (data, columns) => {
 
     row.engage = item;
     row.siteName = item?.statusInfos?.[0].data?.siteName;
+
     if (
       item.rosStatuses &&
       item.rosStatuses.length > 0 &&
@@ -93,7 +127,14 @@ const filterData = (data, columns) => {
         row.status = [item.statusInfos[0].status];
       }
     } else if (item.progressStats) {
-      row.status = ['open', ...Object.keys(item.progressStats).filter((key) => key === 'archived')];
+      if (isMoH) {
+        row.status = getStatusForMoH(item.interested, item.progressStats);
+      } else {
+        row.status = [
+          'open',
+          ...Object.keys(item.progressStats).filter((key) => key === 'archived'),
+        ];
+      }
     } else {
       row.status = ['open'];
     }
@@ -162,7 +203,7 @@ const ParticipantTable = () => {
       type: ParticipantsContext.types.UPDATE_PAGINATION,
       payload: newPagination,
     });
-    const newRows = filterData(data, columns);
+    const newRows = filterData(data, columns, isMoH);
     setRows(newRows);
     setLoadingData(false);
   };
@@ -299,7 +340,14 @@ const ParticipantTable = () => {
       case 'callbackStatus':
         return row[columnId] ? 'Primed' : 'Available';
       case 'status':
-        return prettifyStatus(row[columnId], row.id, selectedTab, handleEngage, handleAcknowledge);
+        return prettifyStatus(
+          row[columnId],
+          row.id,
+          selectedTab,
+          handleEngage,
+          handleAcknowledge,
+          isMoH
+        );
       case 'distance':
         if (row[columnId] !== null && row[columnId] !== undefined) {
           return `${Math.round(row[columnId] / 1000) || '<1'} Km`;

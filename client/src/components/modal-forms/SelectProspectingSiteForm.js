@@ -99,7 +99,7 @@ export const SelectProspectingSiteForm = ({
                     {selected.map((participant, index) => (
                       <ListItem key={`p${index}`}>
                         <ListItemText
-                          primary={`${participant.id}   ${participant.firstName} ${participant.lastName}`}
+                          primary={`${participant.id} ${participant.firstName} ${participant.lastName}`}
                         />
                       </ListItem>
                     ))}

@@ -3,6 +3,18 @@ import InfoIcon from '@material-ui/icons/Info';
 import { ComponentTooltip } from '../components/generic/ComponentTooltip';
 import { Button } from '../components/generic';
 
+const getInProgressStatus = (isMoH, status) => {
+  if (isMoH) {
+    if (status === 'prospecting') return 'In Progress';
+    if (status === 'interviewing') return 'In Progress (2)';
+    if (status === 'offer_made') return 'In Progress (3)';
+  }
+
+  if (status === 'offer_made') return 'Offer Made';
+
+  return status.charAt(0).toUpperCase() + status.slice(1);
+};
+
 export const prettifyStatus = (
   status,
   id,
@@ -11,16 +23,23 @@ export const prettifyStatus = (
   handleAcknowledge,
   isMoH = false
 ) => {
-  let firstStatus = status[0];
+  const statusValue = status[0];
+  let firstStatus = statusValue;
   let isWithdrawn = false;
-  if (status[0] === 'available') firstStatus = 'Available';
-  if (status[0] === 'offer_made') firstStatus = isMoH ? 'In Progress (3)' : 'Offer Made';
-  if (status[0] === 'open') firstStatus = 'Open';
-  if (status[0] === 'prospecting') firstStatus = isMoH ? 'In Progress (2)' : 'Prospecting';
-  if (status[0] === 'interviewing') firstStatus = isMoH ? 'In Progress' : 'Interviewing';
-  if (status[0] === 'rejected') firstStatus = 'Archived';
-  if (status[0] === 'hired') firstStatus = 'Hired';
-  if (status[0] === 'ros') firstStatus = 'Return of Service';
+  if (statusValue === 'available') firstStatus = 'Available';
+  if (statusValue === 'open') firstStatus = 'Open';
+
+  if (
+    statusValue === 'offer_made' ||
+    statusValue === 'interviewing' ||
+    statusValue === 'prospecting'
+  ) {
+    firstStatus = getInProgressStatus(isMoH, statusValue);
+  }
+
+  if (statusValue === 'rejected') firstStatus = 'Archived';
+  if (statusValue === 'hired') firstStatus = 'Hired';
+  if (statusValue === 'ros') firstStatus = 'Return of Service';
   if (status.includes('withdrawn')) {
     firstStatus = 'Withdrawn';
     isWithdrawn = true;
@@ -84,7 +103,7 @@ export const prettifyStatus = (
                     onClick={() => {
                       handleEngage(id, 'rejected', {
                         final_status: isWithdrawn ? 'withdrawn' : 'hired by other',
-                        previous: status[0],
+                        previous: statusValue,
                       });
                     }}
                     size='small'

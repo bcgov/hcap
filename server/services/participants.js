@@ -381,7 +381,7 @@ const setParticipantStatus = async (
     return { status };
   });
 
-const bulkEngageParticipants = async ({ participants, sites, user }) =>
+const bulkEngageParticipants = async ({ participants, user }) =>
   Promise.all(
     participants.map(async (id) => {
       const participant = await getParticipantByID({ id });
@@ -394,8 +394,7 @@ const bulkEngageParticipants = async ({ participants, sites, user }) =>
         id,
         participantStatus.PROSPECTING,
         null,
-        user,
-        sites
+        user
       );
       return {
         participantId: id,

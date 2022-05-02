@@ -50,7 +50,7 @@
     {
       "name": "health_authority",
       "fixture": "test-ha",
-      "tabsWithMultiselect": [],
+      "tabsWithMultiselect": ["Available Participants"],
       "tabsWithActions": [
         "Available Participants",
         "My Candidates",
@@ -135,7 +135,7 @@
     {
       "name": "employer",
       "fixture": "test-employer",
-      "tabsWithMultiselect": [],
+      "tabsWithMultiselect": ["Available Participants"],
       "tabsWithActions": [
         "Available Participants",
         "My Candidates",

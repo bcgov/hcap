@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import moment from 'moment';
 
 import Grid from '@material-ui/core/Grid';
 import { Box, Menu, MenuItem, Link } from '@material-ui/core';
@@ -16,7 +15,7 @@ import {
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
-import { addEllipsisMask, prettifyStatus, keyedString } from '../../utils';
+import { dayUtils, addEllipsisMask, prettifyStatus, keyedString } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
 import { ParticipantTableDialogues } from './ParticipantTableDialogues';
@@ -30,7 +29,7 @@ import {
 
 const mapRosData = (data) => ({
   rosSiteName: data?.rosStatuses?.[0]?.rosSite?.body.siteName,
-  rosStartDate: moment(data?.rosStatuses?.[0]?.data.date).format('MM/DD/YYYY'),
+  rosStartDate: dayUtils(data?.rosStatuses?.[0]?.data.date).format('MM/DD/YYYY'),
 });
 
 const getStatusForMoH = (isInterested, progressStats) => {
@@ -381,7 +380,7 @@ const ParticipantTable = () => {
           />
         );
       case 'userUpdatedAt':
-        return moment(row.userUpdatedAt).fromNow();
+        return dayUtils(row.userUpdatedAt).fromNow();
       case 'archive':
         return (
           <>

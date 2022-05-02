@@ -1,11 +1,18 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import utc from 'dayjs/plugin/utc';
 
-export const dateToString = (dateObj) => moment(dateObj).format('YYYY/MM/DD');
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
 
-export const stringToDate = (dateStr) => moment(dateStr, 'YYYY/MM/DD');
+export const dayUtils = dayjs;
+
+export const dateToString = (dateObj) => dayjs(dateObj).format('YYYY/MM/DD');
+
+export const stringToDate = (dateStr) => dayjs(dateStr, 'YYYY/MM/DD');
 
 export const formatCohortDate = (dateStr, { isForm } = { isForm: false }) =>
-  moment.utc(dateStr).format(isForm ? 'YYYY/MM/DD' : 'DD MMM YYYY');
+  dayjs.utc(dateStr).format(isForm ? 'YYYY/MM/DD' : 'DD MMM YYYY');
 
 export const getTodayDate = () => {
   const today = new Date();

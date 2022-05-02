@@ -1,10 +1,10 @@
 import store from 'store';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { API_URL } from '../constants';
 
 export const createReturnOfServiceStatus = async ({ participantId, data }) => {
   // Covert data into date obj
-  const dateObj = moment(data.date, 'YYYY/MM/DD').toDate();
+  const dateObj = dayjs(data.date, 'YYYY/MM/DD').toDate();
   const finalBody = {
     ...data,
     date: dateObj,

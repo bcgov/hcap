@@ -18,7 +18,7 @@ import {
 } from '../../constants';
 import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { keyedString } from '../../utils';
 
 let columnIDs = [
@@ -406,7 +406,7 @@ export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => 
               type: '',
               reason: '',
               status: '',
-              endDate: moment().format('YYYY/MM/DD'),
+              endDate: dayjs().format('YYYY/MM/DD'),
               rehire: '',
               confirmed: false,
             }}

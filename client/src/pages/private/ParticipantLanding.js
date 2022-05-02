@@ -20,10 +20,9 @@ import { IndigenousDeclarationForm } from '../../components/modal-forms/Indigeno
 import isNil from 'lodash/isNil';
 import { useToast } from '../../hooks';
 import ParticipantLandingEmpty from './ParticipantLandingEmpty';
+import dayjs from 'dayjs';
 
 const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
-
-const moment = require('moment');
 
 const useStyles = makeStyles(() => ({
   rootContainer: {
@@ -313,7 +312,7 @@ export default () => {
                     <Typography className={classes.peoiLabel}>Date submitted</Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    {moment(item.submittedAt).format('MMM DD,YYYY')}
+                    {dayjs(item.submittedAt).format('MMM DD,YYYY')}
                   </Grid>
                   <Grid item xs={6}>
                     <Typography className={classes.peoiLabel}>Latest Status</Typography>

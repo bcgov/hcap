@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Button } from '../generic';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderSelectField, RenderDateField, RenderCheckbox, RenderRadioGroup } from '../fields';
@@ -23,7 +23,7 @@ const archiveHiredParticipantInitialValues = {
   reason: '',
   status: '',
   rehire: '',
-  endDate: moment().subtract(1, 'days').format('YYYY/MM/DD'),
+  endDate: dayjs().subtract(1, 'days').format('YYYY/MM/DD'),
   confirmed: false,
 };
 

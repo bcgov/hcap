@@ -23,7 +23,7 @@
     "npm": ">=7.0.0"
   },
   "devDependencies": {
-    "cypress": "6.1.0",
+    "cypress": "6.5.0",
     "cypress-dotenv": "1.2.2",
     "cypress-keycloak": "1.7.0",
     "dotenv": "8.2.0",

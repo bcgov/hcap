@@ -19,7 +19,7 @@
     "@material-ui/pickers": "3.2.10",
     "@react-keycloak/web": "2.1.4",
     "classnames": "2.2.6",
-    "cross-fetch": "3.0.6",
+    "cross-fetch": "3.1.5",
     "dayjs": "1.11.1",
     "dom-to-image": "2.6.0",
     "file-saver": "2.0.5",

@@ -25,6 +25,7 @@ const cohortRouter = require('./cohorts');
 const milestoneReportRouter = require('./milestone-report');
 const postHireStatusRouter = require('./post-hire-status');
 const rosRouter = require('./return-of-service');
+const featureFlags = require('../services/feature-flags');
 
 const apiRouter = express.Router();
 apiRouter.use(keycloak.expressMiddleware());
@@ -65,6 +66,7 @@ apiRouter.get(`/keycloak-realm-client-info`, (req, res) =>
     ...keycloak.RealmInfoFrontend(),
     envVariables: {
       APP_ENV: process.env.APP_ENV,
+      ...featureFlags,
     },
   })
 );

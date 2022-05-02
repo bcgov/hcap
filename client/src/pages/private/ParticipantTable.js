@@ -25,7 +25,9 @@ import {
   fetchParticipant,
   getParticipants,
   getGraduationStatus,
-} from '../../services/participant';
+  featureFlag,
+  FEATURE_MULTI_ORG_PROSPECTING,
+} from '../../services';
 
 const mapRosData = (data) => ({
   rosSiteName: data?.rosStatuses?.[0]?.rosSite?.body.siteName,
@@ -495,7 +497,10 @@ const ParticipantTable = () => {
               }}
               rows={rows}
               isLoading={isLoadingData}
-              isMultiSelect={selectedTab === 'Available Participants'}
+              isMultiSelect={
+                featureFlag(FEATURE_MULTI_ORG_PROSPECTING) &&
+                selectedTab === 'Available Participants'
+              }
               selectedRows={selectedParticipants}
               updateSelectedRows={setSelectedParticipants}
               multiSelectAction={bulkEngage}
@@ -511,7 +516,15 @@ const ParticipantTable = () => {
             onClose={() => setActionMenuParticipant(null)}
           >
             {actionMenuParticipant?.status === 'open' && (
-              <MenuItem onClick={() => openParticipantSelectSite()}>Engage</MenuItem>
+              <MenuItem
+                onClick={() =>
+                  featureFlag(FEATURE_MULTI_ORG_PROSPECTING)
+                    ? openParticipantSelectSite()
+                    : handleEngage(actionMenuParticipant.id, 'prospecting')
+                }
+              >
+                Engage
+              </MenuItem>
             )}
             {actionMenuParticipant?.status === 'prospecting' && (
               <MenuItem onClick={() => setActiveModalForm('interviewing')}>Interviewing</MenuItem>

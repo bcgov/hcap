@@ -15,7 +15,7 @@ const {
 
 const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
 
-describe('Test Participant status data model and service', () => {
+describe.skip('Test Participant status data model and service', () => {
   beforeAll(async () => {
     await startDB();
   });

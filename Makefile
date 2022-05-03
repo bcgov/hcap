@@ -204,6 +204,9 @@ build-mongo-db-backup:
 	@oc -n $(TOOLS_NAMESPACE) process -f openshift/universal.bc.yml -p NAME=$(APP_NAME)-backup-mongo-log -p TAG="latest" -p BASE_IMAGE_NAME="mongodb-36-rhel7" -p BASE_IMAGE_TAG="latest" -p BASE_IMAGE_REPO="registry.redhat.io/rhscl/" -p SOURCE_REPOSITORY_URL="https://github.com/BCDevOps/backup-container.git" -p SOURCE_REPOSITORY_REF="master" -p SOURCE_CONTEXT_DIR="docker" | oc -n $(TOOLS_NAMESPACE) apply -f -
 	@oc -n $(TOOLS_NAMESPACE) start-build bc/$(APP_NAME)-backup-mongo-log --wait
 
+deploy-mongo-db-backup-test:
+	@oc -n $(TARGET_NAMESPACE) process -f openshift/backup-mongo.dc.yml -p NAME=$(APP_NAME)-backup-mongo-log -p IMAGE_STREAM_TAG=$(APP_NAME)-backup-mongo-log:latest -p BUILD_NAMESPACE=$(TOOLS_NAMESPACE) -p DB_NAME=$(APP_NAME)  | oc -n $(TARGET_NAMESPACE) apply -f - --dry-run=client
+
 deploy-mongo-db-backup:
 	@oc -n $(TARGET_NAMESPACE) process -f openshift/backup-mongo.dc.yml -p NAME=$(APP_NAME)-backup-mongo-log -p IMAGE_STREAM_TAG=$(APP_NAME)-backup-mongo-log:latest -p BUILD_NAMESPACE=$(TOOLS_NAMESPACE) -p DB_NAME=$(APP_NAME)  | oc -n $(TARGET_NAMESPACE) apply -f -
 

@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import Grid from '@material-ui/core/Grid';
 import { Box, Menu, MenuItem, Link } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 import {
   ToastStatus,
@@ -149,6 +150,11 @@ const filterData = (data, columns, isMoH = false) => {
         statusWithEmployerDetails[0].employerInfo.firstName,
         maxStrLen
       )} ${addEllipsisMask(statusWithEmployerDetails[0].employerInfo.lastName, maxStrLen)}`;
+
+      const createdAtFormatted = dayUtils(statusWithEmployerDetails[0].createdAt).format(
+        'MMM DD, YYYY'
+      );
+      row.engagedLast = createdAtFormatted;
       row.engagedBy = row.employerName;
     }
 
@@ -189,6 +195,16 @@ const ParticipantTable = () => {
   const isSuperUser = roles.includes('superuser');
   const isAdmin = isMoH || isSuperUser;
   const isEmployer = roles.includes('health_authority') || roles.includes('employer');
+
+  const useStyles = makeStyles((theme) => ({
+    cellTextStrong: {
+      fontWeight: 'bold',
+    },
+    cellTextWeak: {
+      color: theme.palette.gray.dark,
+    },
+  }));
+  const classes = useStyles();
 
   const fetchParticipants = async () => {
     if (!columns) return;
@@ -401,6 +417,13 @@ const ParticipantTable = () => {
         );
       case 'postHireStatuses':
         return getGraduationStatus(row[columnId] || []);
+      case 'engagedBy':
+        return (
+          <>
+            <div className={classes.cellTextStrong}>{row.engagedBy}</div>
+            <div className={classes.cellTextWeak}>{row.engagedLast}</div>
+          </>
+        );
       default:
         return row[columnId];
     }

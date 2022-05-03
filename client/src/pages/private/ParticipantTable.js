@@ -200,7 +200,7 @@ const ParticipantTable = () => {
     cellTextStrong: {
       fontWeight: 'bold',
     },
-    cellTextWeak: {
+    cellTextGray: {
       color: theme.palette.gray.dark,
     },
   }));
@@ -420,8 +420,8 @@ const ParticipantTable = () => {
       case 'engagedBy':
         return (
           <>
-            <div className={classes.cellTextStrong}>{row.engagedBy}</div>
-            <div className={classes.cellTextWeak}>{row.engagedLast}</div>
+            <Box className={classes.cellTextStrong}>{row.engagedBy}</Box>
+            <Box className={classes.cellTextGray}>{row.engagedLast}</Box>
           </>
         );
       default:

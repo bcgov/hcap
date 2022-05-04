@@ -112,7 +112,9 @@ const filterData = (data, columns, isMoH = false) => {
     ) {
       const archivedStatuses = item.statusInfos.filter(
         (statusInfo) =>
-          statusInfo.status === 'withdrawn' || statusInfo.status === 'pending_acknowledgement'
+          statusInfo.status === 'withdrawn' ||
+          statusInfo.status === 'pending_acknowledgement' ||
+          statusInfo.status === 'hired_by_peer'
       );
       const otherStatuses = archivedStatuses.map((statusInfo) => statusInfo.status);
       row.status = ['ros', ...otherStatuses];

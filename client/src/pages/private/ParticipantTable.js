@@ -50,8 +50,7 @@ const getStatusForMoH = (isInterested, progressStats) => {
   }
 
   if (progressStats.total && !progressStats.hired) {
-    const count =
-      progressStats.offer_made || progressStats.interviewing || progressStats.prospecting;
+    const count = progressStats.offer_made + progressStats.interviewing + progressStats.prospecting;
     if (count > 0) {
       firstStatus = `inprogress_${count}`;
     }

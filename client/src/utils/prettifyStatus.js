@@ -32,6 +32,8 @@ export const prettifyStatus = (
   handleAcknowledge,
   isMoH = false
 ) => {
+  if (!status) return;
+
   const statusValue = status[0];
   let firstStatus = getParticipantStatus(isMoH, statusValue);
   let isWithdrawn = false;

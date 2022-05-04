@@ -344,7 +344,7 @@ const ParticipantTable = () => {
       case 'status':
       case 'mohStatus':
         return prettifyStatus(
-          row[columnId],
+          row[columnId] || row['status'],
           row.id,
           selectedTab,
           handleEngage,

@@ -75,6 +75,25 @@ export const fetchParticipantPostHireStatus = async ({ id }) => {
   }
 };
 
+export const fetchParticipantReturnOfServiceStatus = async ({ id }) => {
+  const url = `${API_URL}/api/v1/ros/participant/${id}`;
+  const resp = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+  });
+  if (resp.ok) {
+    const statuses = await resp.json();
+    // Return latest status which is the first element in the array
+    return statuses[0] ?? false;
+  } else {
+    throw new Error(`Unable to fetch participant's return of service status`);
+  }
+};
+
 export const fetchParticipantCohort = async ({ id }) => {
   const url = `${API_URL}/api/v1/cohorts/assigned-participant/${id}`;
   const resp = await fetch(url, {

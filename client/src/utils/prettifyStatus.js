@@ -32,25 +32,26 @@ export const prettifyStatus = (
   handleAcknowledge,
   isMoH = false
 ) => {
+  if (!status) return;
+
   const statusValue = status[0];
   let firstStatus = getParticipantStatus(isMoH, statusValue);
+  let toolTip = 'This candidate was hired by another employer.';
   let isWithdrawn = false;
+  const isHiredByPeer = status[1] === 'hired_by_peer';
 
   if (status.includes('withdrawn')) {
     firstStatus = 'Withdrawn';
     isWithdrawn = true;
-  }
-  if (status.includes('archived')) {
-    firstStatus = 'Archived';
-  }
-  let toolTip = 'This candidate was hired by another employer.';
-  if (isWithdrawn) {
     toolTip = status.includes('pending_acknowledgement')
       ? 'This candidate was archived.'
       : 'Participant is no longer available.';
   }
+  if (status.includes('archived')) {
+    firstStatus = 'Archived';
+  }
 
-  if (status[1] === 'hired_by_peer') {
+  if (isHiredByPeer) {
     toolTip = 'This candidate was hired by same site. And available in "Hired Participants" tab.';
   }
 
@@ -60,7 +61,7 @@ export const prettifyStatus = (
   const hideArchiveButton =
     ['Archived Candidates', 'Participants'].includes(tabValue) ||
     !hideAcknowledgeButton ||
-    status[1] === 'hired_by_peer';
+    isHiredByPeer;
   return (
     <div
       style={{

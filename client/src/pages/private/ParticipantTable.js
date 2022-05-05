@@ -131,7 +131,8 @@ const filterData = (data, columns, isMoH = false) => {
       }
     } else if (item.progressStats) {
       if (isMoH) {
-        row.status = getStatusForMoH(item.interested, item.progressStats);
+        row.mohStatus = getStatusForMoH(item.interested, item.progressStats);
+        row.status = ['open'];
       } else {
         row.status = [
           'open',
@@ -358,8 +359,9 @@ const ParticipantTable = () => {
       case 'callbackStatus':
         return row[columnId] ? 'Primed' : 'Available';
       case 'status':
+      case 'mohStatus':
         return prettifyStatus(
-          row[columnId],
+          row[columnId] || row['status'],
           row.id,
           selectedTab,
           handleEngage,

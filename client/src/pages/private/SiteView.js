@@ -12,7 +12,7 @@ export default () => {
         renderErrorMessage={true}
       >
         <Box py={4} px={2}>
-          <Typography variant='h3' gutterBottom>
+          <Typography variant='subtitle1' gutterBottom>
             View Sites
           </Typography>
         </Box>

@@ -1,22 +1,31 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { RenderTextField, RenderSelectField, RenderRadioGroup } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import Typography from '@material-ui/core/Typography';
 
+const useStyles = makeStyles(() => ({
+  formButton: {
+    maxWidth: '200px',
+  },
+}));
+
 export const NewSiteForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
+  const classes = useStyles();
+
   return (
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
       {({ submitForm, values }) => (
         <FormikForm>
           <Box>
-            <Box pt={2} pb={1}>
+            <Box pb={1}>
               <Typography variant='body1'>
                 <b>Site Key Details</b>
               </Typography>
             </Box>
+
             <Field name='siteId' component={RenderTextField} label='* Site ID' />
             <Field name='siteName' component={RenderTextField} label='* Site Name' />
             <Field name='postalCode' component={RenderTextField} label='* Postal Code' />
@@ -72,7 +81,8 @@ export const NewSiteForm = ({ initialValues, validationSchema, onSubmit, onClose
             />
             <Field name='operatorPhone' component={RenderTextField} label='Phone Number' />
             <Field name='operatorEmail' component={RenderTextField} label='Email address' />
-            <Box pt={1} pb={1}>
+
+            <Box py={1}>
               <Typography variant='body1'>
                 <b>Site Contact</b>
               </Typography>
@@ -82,15 +92,21 @@ export const NewSiteForm = ({ initialValues, validationSchema, onSubmit, onClose
             <Field name='siteContactPhone' component={RenderTextField} label='Phone Number' />
             <Field name='siteContactEmail' component={RenderTextField} label='Email Address' />
           </Box>
-          <Box mt={3}>
-            <Grid container spacing={2} justify='flex-end'>
-              <Grid item>
-                <Button onClick={onClose} color='default' text='Cancel' />
-              </Grid>
-              <Grid item>
-                <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />
-              </Grid>
-            </Grid>
+
+          <Box display='flex' justifyContent='space-between' my={3}>
+            <Button
+              className={classes.formButton}
+              onClick={onClose}
+              color='default'
+              text='Cancel'
+            />
+            <Button
+              className={classes.formButton}
+              onClick={submitForm}
+              variant='contained'
+              color='primary'
+              text='Submit'
+            />
           </Box>
         </FormikForm>
       )}

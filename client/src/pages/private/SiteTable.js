@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
-import { Box, Typography } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import store from 'store';
 
 import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
@@ -15,8 +16,19 @@ import { ToastStatus, CreateSiteSchema } from '../../constants';
 import { AuthContext } from '../../providers';
 
 const useStyles = makeStyles((theme) => ({
+  rootItem: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+  },
+  tableItem: {
+    paddingTop: theme.spacing(4),
+    paddingRight: theme.spacing(2),
+    paddingBottom: theme.spacing(4),
+    paddingLeft: theme.spacing(2),
+  },
   filterLabel: {
     color: theme.palette.gray.dark,
+    fontWeight: 700,
   },
 }));
 
@@ -61,7 +73,7 @@ const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
   };
 
   return (
-    <Dialog title={`Create Site`} open={activeForm != null} onClose={onDialogClose}>
+    <Dialog title='Create Site' open={activeForm != null} onClose={onDialogClose}>
       {activeForm === 'new-site' && (
         <NewSiteForm
           initialValues={{
@@ -182,6 +194,10 @@ export default () => {
     setActiveModalForm(null);
   };
 
+  const downloadHiringReport = () => {
+    // ...
+  };
+
   useEffect(() => {
     setHealthAuthorities(
       roles.includes('superuser') || roles.includes('ministry_of_health')
@@ -206,68 +222,81 @@ export default () => {
         onDialogClose={closeDialog}
       />
 
-      <Box display='flex' px={2}>
-        <Box flexGrow={1}>
-          <Box maxWidth={'25%'}>
-            <Typography className={classes.filterLabel} variant='subtitle2' gutterBottom>
-              Health Region:
-            </Typography>
+      <Grid
+        container
+        alignContent='flex-start'
+        justify='flex-start'
+        alignItems='center'
+        direction='row'
+      >
+        <Grid className={classes.rootItem} item xs={2}>
+          <Typography variant='body1' className={classes.filterLabel} gutterBottom>
+            Health Region:
+          </Typography>
+          <TableFilter
+            onFilter={(filteredRows) => setRows(filteredRows)}
+            values={healthAuthorities}
+            rows={fetchedRows}
+            label='Health Authority'
+            filterField='healthAuthority'
+          />
+        </Grid>
 
-            <TableFilter
-              onFilter={(filteredRows) => setRows(filteredRows)}
-              values={healthAuthorities}
-              rows={fetchedRows}
-              label='Please select'
-              filterField='healthAuthority'
-            />
-          </Box>
-        </Box>
+        <Grid item xs={8} />
 
-        <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-          <Box display='flex' flexDirection='column'>
+        <Grid className={classes.rootItem} item xs={2}>
+          <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
             <Button
               onClick={() => {
                 setActiveModalForm('new-site');
               }}
               size='medium'
               text='Create Site'
+              startIcon={<AddCircleOutlineIcon />}
             />
+          </CheckPermissions>
+        </Grid>
+
+        <Grid item xs={8} />
+
+        <Grid className={classes.rootItem} item xs={4}>
+          <CheckPermissions
+            roles={roles}
+            permittedRoles={['health_authority', 'ministry_of_health']}
+          >
             <Button
+              onClick={downloadHiringReport}
               variant='outlined'
-              onClick={() => {
-                // ...
-              }}
-              size='medium'
               text='Download hiring milestones report'
             />
-          </Box>
-        </CheckPermissions>
-      </Box>
+          </CheckPermissions>
+        </Grid>
 
-      {isPendingRequests && (
-        <Box p={2} width='100%'>
-          <Table
-            columns={columns}
-            order={order}
-            orderBy={orderBy}
-            onRequestSort={handleRequestSort}
-            rows={sort(rows)}
-            isLoading={isLoadingData}
-            renderCell={(columnId, row) => {
-              if (columnId === 'details')
-                return (
-                  <Button
-                    onClick={() => history.push(Routes.SiteView + `/${row.id}`)}
-                    variant='outlined'
-                    size='small'
-                    text='details'
-                  />
-                );
-              return row[columnId];
-            }}
-          />
-        </Box>
-      )}
+        {isPendingRequests && (
+          <Grid className={classes.tableItem} item xs={12}>
+            <Table
+              columns={columns}
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={handleRequestSort}
+              rows={sort(rows)}
+              isLoading={isLoadingData}
+              renderCell={(columnId, row) => {
+                if (columnId === 'details')
+                  return (
+                    <Button
+                      onClick={() => history.push(Routes.SiteView + `/${row.id}`)}
+                      variant='outlined'
+                      size='small'
+                      text='details'
+                    />
+                  );
+                return row[columnId];
+              }}
+            />
+          </Grid>
+        )}
+      </Grid>
     </>
   );
 };

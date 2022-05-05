@@ -8,7 +8,7 @@ const useStyles = makeStyles(() => ({
   root: (props) => ({
     height: props.isAutoHeight ? 'auto' : 'calc(100vh - 82px)',
     justifyContent: props.centered ? 'center' : 'flex-start',
-    alignItems: props.centered ? 'center' : 'normal',
+    alignItems: 'center',
     flexWrap: 'nowrap',
     flexDirection: 'column',
   }),

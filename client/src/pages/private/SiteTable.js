@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import store from 'store';
+
 import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
 import { NewSiteForm } from '../../components/modal-forms';
 import { useLocation } from 'react-router-dom';
@@ -12,6 +13,12 @@ import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import { ToastStatus, CreateSiteSchema } from '../../constants';
 import { AuthContext } from '../../providers';
+
+const useStyles = makeStyles((theme) => ({
+  filterLabel: {
+    color: theme.palette.gray.dark,
+  },
+}));
 
 const columns = [
   { id: 'siteId', name: 'Site ID' },
@@ -108,6 +115,7 @@ const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
 };
 
 export default () => {
+  const classes = useStyles();
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
@@ -198,33 +206,25 @@ export default () => {
         onDialogClose={closeDialog}
       />
 
-      <Grid
-        container
-        alignContent='flex-start'
-        justify='flex-start'
-        alignItems='center'
-        direction='row'
-      >
-        <Grid item>
-          <Box pl={2} pr={2} pt={1}>
-            <Typography variant='body1' gutterBottom>
-              Filter:
+      <Box display='flex' px={2}>
+        <Box flexGrow={1}>
+          <Box maxWidth={'25%'}>
+            <Typography className={classes.filterLabel} variant='subtitle2' gutterBottom>
+              Health Region:
             </Typography>
-          </Box>
-        </Grid>
-        <Grid item>
-          <Box minWidth={180}>
+
             <TableFilter
               onFilter={(filteredRows) => setRows(filteredRows)}
               values={healthAuthorities}
               rows={fetchedRows}
-              label='Health Authority'
+              label='Please select'
               filterField='healthAuthority'
             />
           </Box>
-        </Grid>
+        </Box>
+
         <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-          <Grid item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
+          <Box display='flex' flexDirection='column'>
             <Button
               onClick={() => {
                 setActiveModalForm('new-site');
@@ -232,12 +232,20 @@ export default () => {
               size='medium'
               text='Create Site'
             />
-          </Grid>
+            <Button
+              variant='outlined'
+              onClick={() => {
+                // ...
+              }}
+              size='medium'
+              text='Download hiring milestones report'
+            />
+          </Box>
         </CheckPermissions>
-      </Grid>
+      </Box>
 
       {isPendingRequests && (
-        <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
+        <Box p={2} width='100%'>
           <Table
             columns={columns}
             order={order}

@@ -6,16 +6,9 @@ import { Header } from './Header';
 
 const useStyles = makeStyles(() => ({
   root: (props) => ({
-    height: 'calc(100vh - 82px)',
+    height: props.isAutoHeight ? 'auto' : 'calc(100vh - 82px)',
     justifyContent: props.centered ? 'center' : 'flex-start',
-    alignItems: 'center',
-    flexWrap: 'nowrap',
-    flexDirection: 'column',
-  }),
-  autoHeight: (props) => ({
-    height: 'auto',
-    justifyContent: props.centered ? 'center' : 'flex-start',
-    alignItems: 'center',
+    alignItems: props.centered ? 'center' : 'normal',
     flexWrap: 'nowrap',
     flexDirection: 'column',
   }),
@@ -23,11 +16,11 @@ const useStyles = makeStyles(() => ({
 
 // hideEmployers set to true for participant-facing pages
 export const Page = ({ children, hideEmployers = false, centered, isAutoHeight = false }) => {
-  const classes = useStyles({ centered });
+  const classes = useStyles({ centered, isAutoHeight });
   return (
     <Fragment>
       <Header hideEmployers={hideEmployers} />
-      <Grid className={isAutoHeight ? classes.autoHeight : classes.root} container>
+      <Grid className={classes.root} container>
         {children}
       </Grid>
     </Fragment>

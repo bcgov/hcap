@@ -23,14 +23,97 @@ const columns = [
   { id: 'details' },
 ];
 
-export default () => {
+const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
   const { openToast } = useToast();
+
+  const handleSiteCreate = async (site) => {
+    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(site),
+    });
+
+    if (response.ok) {
+      onDialogClose();
+      await onDialogSubmit();
+    } else {
+      const error = await response.json();
+      if (error.status && error.status === 'Duplicate') {
+        openToast({ status: ToastStatus.Error, message: 'Duplicate site ID' });
+      } else {
+        openToast({
+          status: ToastStatus.Error,
+          message: response.error || response.statusText || 'Server error',
+        });
+      }
+    }
+  };
+
+  return (
+    <Dialog title={`Create Site`} open={activeForm != null} onClose={onDialogClose}>
+      {activeForm === 'new-site' && (
+        <NewSiteForm
+          initialValues={{
+            siteId: '',
+            siteName: '',
+            registeredBusinessName: '',
+            address: '',
+            city: '',
+            isRHO: null,
+            postalCode: '',
+            healthAuthority: '',
+            allocation: '',
+            operatorName: '',
+            operatorContactFirstName: '',
+            operatorContactLastName: '',
+            operatorPhone: '',
+            operatorEmail: '',
+            siteContactFirstName: '',
+            siteContactLastName: '',
+            siteContactPhone: '',
+            siteContactEmail: '',
+          }}
+          validationSchema={CreateSiteSchema}
+          onSubmit={(values) => {
+            handleSiteCreate({
+              siteId: parseInt(values.siteId),
+              siteName: values.siteName,
+              registeredBusinessName: values.registeredBusinessName,
+              address: values.address,
+              city: values.city,
+              isRHO: values.isRHO,
+              postalCode: values.postalCode,
+              healthAuthority: values.healthAuthority,
+              allocation: parseInt(values.allocation),
+              operatorName: values.operatorName,
+              operatorContactFirstName: values.operatorContactFirstName,
+              operatorContactLastName: values.operatorContactLastName,
+              operatorPhone: values.operatorPhone,
+              operatorEmail: values.operatorEmail,
+              siteContactFirstName: values.siteContactFirstName,
+              siteContactLastName: values.siteContactLastName,
+              siteContactPhone: values.siteContactPhone,
+              siteContactEmail: values.siteContactEmail,
+            });
+          }}
+          onClose={onDialogClose}
+        />
+      )}
+    </Dialog>
+  );
+};
+
+export default () => {
+  const [activeModalForm, setActiveModalForm] = useState(null);
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
-  const [activeModalForm, setActiveModalForm] = useState(null);
 
   const [orderBy, setOrderBy] = useState('siteName');
   const [healthAuthorities, setHealthAuthorities] = useState([
@@ -87,32 +170,10 @@ export default () => {
     setLoadingData(false);
   };
 
-  const handleSiteCreate = async (site) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(site),
-    });
-
-    if (response.ok) {
-      setActiveModalForm(null);
-      fetchSites();
-    } else {
-      const error = await response.json();
-      if (error.status && error.status === 'Duplicate') {
-        openToast({ status: ToastStatus.Error, message: 'Duplicate site ID' });
-      } else {
-        openToast({
-          status: ToastStatus.Error,
-          message: response.error || response.statusText || 'Server error',
-        });
-      }
-    }
+  const closeDialog = () => {
+    setActiveModalForm(null);
   };
+
   useEffect(() => {
     setHealthAuthorities(
       roles.includes('superuser') || roles.includes('ministry_of_health')
@@ -128,130 +189,77 @@ export default () => {
     // This fetch sites is a dependency of this function. This needs to be reworked, but it is outside of the scope of the ticket
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history, location]);
-  const defaultOnClose = () => {
-    setActiveModalForm(null);
-  };
+
   return (
     <>
-      <Dialog title={`Create Site`} open={activeModalForm != null} onClose={defaultOnClose}>
-        {activeModalForm === 'new-site' && (
-          <NewSiteForm
-            initialValues={{
-              siteId: '',
-              siteName: '',
-              registeredBusinessName: '',
-              address: '',
-              city: '',
-              isRHO: null,
-              postalCode: '',
-              healthAuthority: '',
-              allocation: '',
-              operatorName: '',
-              operatorContactFirstName: '',
-              operatorContactLastName: '',
-              operatorPhone: '',
-              operatorEmail: '',
-              siteContactFirstName: '',
-              siteContactLastName: '',
-              siteContactPhone: '',
-              siteContactEmail: '',
-            }}
-            validationSchema={CreateSiteSchema}
-            onSubmit={(values) => {
-              handleSiteCreate({
-                siteId: parseInt(values.siteId),
-                siteName: values.siteName,
-                registeredBusinessName: values.registeredBusinessName,
-                address: values.address,
-                city: values.city,
-                isRHO: values.isRHO,
-                postalCode: values.postalCode,
-                healthAuthority: values.healthAuthority,
-                allocation: parseInt(values.allocation),
-                operatorName: values.operatorName,
-                operatorContactFirstName: values.operatorContactFirstName,
-                operatorContactLastName: values.operatorContactLastName,
-                operatorPhone: values.operatorPhone,
-                operatorEmail: values.operatorEmail,
-                siteContactFirstName: values.siteContactFirstName,
-                siteContactLastName: values.siteContactLastName,
-                siteContactPhone: values.siteContactPhone,
-                siteContactEmail: values.siteContactEmail,
-              });
-            }}
-            onClose={defaultOnClose}
-          />
-        )}
-      </Dialog>
+      <SiteFormsDialog
+        activeForm={activeModalForm}
+        onDialogSubmit={fetchSites}
+        onDialogClose={closeDialog}
+      />
+
       <Grid
         container
         alignContent='flex-start'
         justify='flex-start'
         alignItems='center'
-        direction='column'
+        direction='row'
       >
-        <Grid
-          container
-          alignContent='flex-start'
-          justify='flex-start'
-          alignItems='center'
-          direction='row'
-        >
-          <Grid item>
-            <Box pl={2} pr={2} pt={1}>
-              <Typography variant='body1' gutterBottom>
-                Filter:
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item>
-            <Box minWidth={180}>
-              <TableFilter
-                onFilter={(filteredRows) => setRows(filteredRows)}
-                values={healthAuthorities}
-                rows={fetchedRows}
-                label='Health Authority'
-                filterField='healthAuthority'
-              />
-            </Box>
-          </Grid>
-          <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-            <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
-              <Button
-                onClick={async () => {
-                  setActiveModalForm('new-site');
-                }}
-                size='medium'
-                text='Create Site'
-              />
-            </Grid>
-          </CheckPermissions>
+        <Grid item>
+          <Box pl={2} pr={2} pt={1}>
+            <Typography variant='body1' gutterBottom>
+              Filter:
+            </Typography>
+          </Box>
         </Grid>
-        {isPendingRequests && (
-          <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
-            <Table
-              columns={columns}
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={handleRequestSort}
-              rows={sort(rows)}
-              isLoading={isLoadingData}
-              renderCell={(columnId, row) => {
-                if (columnId === 'details')
-                  return (
-                    <Button
-                      onClick={() => history.push(Routes.SiteView + `/${row.id}`)}
-                      variant='outlined'
-                      size='small'
-                      text='details'
-                    />
-                  );
-                return row[columnId];
-              }}
+        <Grid item>
+          <Box minWidth={180}>
+            <TableFilter
+              onFilter={(filteredRows) => setRows(filteredRows)}
+              values={healthAuthorities}
+              rows={fetchedRows}
+              label='Health Authority'
+              filterField='healthAuthority'
             />
           </Box>
-        )}
+        </Grid>
+        <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+          <Grid item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
+            <Button
+              onClick={() => {
+                setActiveModalForm('new-site');
+              }}
+              size='medium'
+              text='Create Site'
+            />
+          </Grid>
+        </CheckPermissions>
       </Grid>
+
+      {isPendingRequests && (
+        <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
+          <Table
+            columns={columns}
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={handleRequestSort}
+            rows={sort(rows)}
+            isLoading={isLoadingData}
+            renderCell={(columnId, row) => {
+              if (columnId === 'details')
+                return (
+                  <Button
+                    onClick={() => history.push(Routes.SiteView + `/${row.id}`)}
+                    variant='outlined'
+                    size='small'
+                    text='details'
+                  />
+                );
+              return row[columnId];
+            }}
+          />
+        </Box>
+      )}
     </>
   );
 };

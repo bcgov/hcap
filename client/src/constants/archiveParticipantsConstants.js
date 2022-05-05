@@ -2,6 +2,10 @@ export const UnsuccessfulCohortReason = 'Unsuccessful cohort, does not wish to c
 
 export const PSIEducationUnderwayStatus = 'Post secondary education underway';
 
+export const ROSUnderwayStatus = 'Return of service underway';
+export const ROSCompletedType = { value: 'rosComplete', label: 'Return of service completed' };
+export const ROSReason = 'Completed all HCAP requirements';
+
 export const archiveReasonOptions = [
   'No longer interested in HCA/HCSW role',
   'No longer interested in a career in health care',
@@ -24,7 +28,6 @@ export const archiveStatusOptions = [
 ];
 
 export const archiveTypeOptions = [
-  { value: '', label: '' },
   { value: 'employmentEnded', label: 'Employment ended' },
   { value: 'duplicate', label: 'Duplicate' },
 ];

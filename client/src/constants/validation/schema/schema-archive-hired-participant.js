@@ -1,19 +1,38 @@
 import * as yup from 'yup';
 import { validateDateIsInThePast, validateDateIsReasonable } from '../functions';
-import { archiveReasonOptions, archiveStatusOptions } from '../../archiveParticipantsConstants';
+import {
+  archiveReasonOptions,
+  archiveStatusOptions,
+  ROSReason,
+  ROSUnderwayStatus,
+} from '../../archiveParticipantsConstants';
 
 export const ArchiveHiredParticipantSchema = yup.object().shape({
   type: yup
     .string()
-    .oneOf(['duplicate', 'employmentEnded'], 'Please select a type')
+    .oneOf(['duplicate', 'employmentEnded', 'rosComplete'], 'Please select a type')
     .required('Please select a type'),
   reason: yup.string().when('type', {
     is: 'employmentEnded',
     then: yup.string().required('Please include a reason').oneOf(archiveReasonOptions),
   }),
+  reason: yup.string().when('type', {
+    is: 'rosComplete',
+    then: yup
+      .string()
+      .required('Please include a reason')
+      .oneOf([ROSReason, ...archiveReasonOptions]),
+  }),
   status: yup.string().when('type', {
     is: 'employmentEnded',
     then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
+  }),
+  status: yup.string().when('type', {
+    is: 'rosComplete',
+    then: yup
+      .string()
+      .required('Please include a status')
+      .oneOf([ROSUnderwayStatus, ...archiveStatusOptions]),
   }),
   endDate: yup.date().when('type', {
     is: 'employmentEnded',
@@ -28,7 +47,7 @@ export const ArchiveHiredParticipantSchema = yup.object().shape({
       .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
   }),
   rehire: yup.string().when('type', {
-    is: 'employmentEnded',
+    is: 'employmentEnded' || 'rosComplete',
     then: yup
       .string()
       .oneOf(['Yes', 'No'], 'Must be either Yes or No.')

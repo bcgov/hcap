@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import dayjs from 'dayjs';
@@ -12,6 +12,9 @@ import {
   archiveTypeOptions,
   UnsuccessfulCohortReason,
   PSIEducationUnderwayStatus,
+  ROSCompletedType,
+  ROSReason,
+  ROSUnderwayStatus,
 } from '../../constants';
 import { getTodayDate } from '../../utils';
 import { fetchParticipantReturnOfServiceStatus } from '../../services';
@@ -22,26 +25,24 @@ import { fetchParticipantReturnOfServiceStatus } from '../../services';
  * @param {FormikProps} formProps
  * @returns ???? options???
  */
-const getStatusOptions = (participantId, formProps) => {
-  console.log(formProps);
-  fetchParticipantReturnOfServiceStatus({ id: participantId }).then(
-    (response) => {
-      // is currently false when no ROS status
-      console.log(response);
-    },
-    (rejected) => {
-      console.log(rejected);
-    }
-  );
-  let options = archiveStatusOptions;
-  if (formProps.reason === UnsuccessfulCohortReason) {
-    options = PSIEducationUnderwayStatus;
-  }
-  return options.map((option) => ({ value: option, label: option }));
-};
+const fetchFormOptionData = async (participantId, formProps) => {
+  const rosStatus = await fetchParticipantReturnOfServiceStatus({ id: participantId });
 
-// const statusOptions = archiveStatusOptions.map((option) => ({ value: option, label: option }));
-const reasonOptions = archiveReasonOptions.map((option) => ({ value: option, label: option }));
+  const statuses = [...archiveStatusOptions];
+  const reasons = [...archiveReasonOptions];
+  const typeOptions = [...archiveTypeOptions];
+  if (rosStatus) {
+    statuses.unshift(ROSUnderwayStatus);
+    reasons.unshift(ROSReason);
+    typeOptions.unshift(ROSCompletedType);
+  } else if (formProps.reason === UnsuccessfulCohortReason) {
+    statuses = PSIEducationUnderwayStatus;
+  }
+
+  const statusOptions = statuses.map((option) => ({ value: option, label: option }));
+  const reasonOptions = reasons.map((option) => ({ value: option, label: option }));
+  return { statusOptions, reasonOptions, typeOptions };
+};
 
 const archiveHiredParticipantInitialValues = {
   type: '',
@@ -53,7 +54,18 @@ const archiveHiredParticipantInitialValues = {
 };
 
 export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }) => {
-  console.log(participantId);
+  const [statusOptions, setStatusOptions] = useState([]);
+  const [reasonOptions, setReasonOptions] = useState([]);
+  const [typeOptions, setTypeOptions] = useState([]);
+
+  useEffect(() => {
+    fetchFormOptionData(participantId).then(({ statusOptions, reasonOptions, typeOptions }) => {
+      setStatusOptions(statusOptions);
+      setReasonOptions(reasonOptions);
+      setTypeOptions(typeOptions);
+    });
+  }, [setStatusOptions, setReasonOptions, setTypeOptions, participantId]);
+
   return (
     <Formik
       initialValues={archiveHiredParticipantInitialValues}
@@ -63,13 +75,8 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }
       {(props) => {
         return (
           <FormikForm>
-            <Field
-              name='type'
-              component={RenderSelectField}
-              options={archiveTypeOptions}
-              label='Type'
-            />
-            {props.values.type === 'employmentEnded' && (
+            <Field name='type' component={RenderSelectField} options={typeOptions} label='Type' />
+            {['employmentEnded', 'rosComplete'].includes(props.values.type) && (
               <>
                 <Field
                   name='endDate'
@@ -86,7 +93,7 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }
                 <Field
                   name='status'
                   component={RenderSelectField}
-                  options={getStatusOptions(participantId, props.values)}
+                  options={statusOptions}
                   label='Status'
                 />
                 <Field

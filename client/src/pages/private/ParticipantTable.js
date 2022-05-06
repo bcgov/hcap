@@ -241,8 +241,12 @@ const ParticipantTable = () => {
 
   const handleEngage = async (participantId, status, additional = {}) => {
     try {
+      if (isLoadingData) {
+        return;
+      }
+      setLoadingData(true);
       const { data } = await addParticipantStatus({ participantId, status, additional });
-
+      setLoadingData(false);
       if (status === participantStatus.PROSPECTING) {
         // Modal appears after submitting
         setActiveModalForm(participantStatus.PROSPECTING);

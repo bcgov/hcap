@@ -17,7 +17,7 @@ const formatWithTimestamp = printf(({ level, message, label: _label, timestamp: 
   return `${_timestamp} | [${_label || 'console'}] ${level}: ${newMessage}`;
 });
 
-if (dbServer) {
+if (dbServer && process.env.NODE_ENV !== 'test') {
   winston.add(
     new winston.transports.MongoDB({
       options: { useUnifiedTopology: true },

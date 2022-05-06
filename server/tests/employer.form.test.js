@@ -12,9 +12,10 @@ const {
 const {
   getParticipants,
   getHiredParticipantsBySite,
-  setParticipantStatus,
   makeParticipant,
 } = require('../services/participants.js');
+
+const { setParticipantStatus } = require('../services/participant-status');
 
 const { startDB, closeDB, cleanDB } = require('./util/db');
 

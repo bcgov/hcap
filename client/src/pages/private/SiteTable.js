@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
+import { saveAs } from 'file-saver';
 import { useHistory } from 'react-router-dom';
 import { Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -134,6 +135,8 @@ export default () => {
   const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
+  const [selectedSite, setSelectedSite] = useState(null);
+  const [isLoadingReport, setLoadingReport] = useState(false);
 
   const [orderBy, setOrderBy] = useState('siteName');
   const [healthAuthorities, setHealthAuthorities] = useState([
@@ -194,8 +197,28 @@ export default () => {
     setActiveModalForm(null);
   };
 
-  const downloadHiringReport = () => {
-    // ...
+  const generateReportByRegion = async (regionId) => {
+    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/hired/${regionId}`, {
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      saveAs(blob, `report-hired-${regionId}-${new Date().toJSON()}.csv`);
+    }
+  };
+
+  const downloadHiringReport = async () => {
+    setLoadingReport(true);
+    for (const region of healthAuthorities) {
+      if (region !== 'None') {
+        await generateReportByRegion(region);
+      }
+    }
+    setLoadingReport(false);
   };
 
   useEffect(() => {
@@ -267,7 +290,8 @@ export default () => {
             <Button
               onClick={downloadHiringReport}
               variant='outlined'
-              text='Download hiring milestones report'
+              text='Download Hiring Milestones Report'
+              loading={isLoadingReport}
             />
           </CheckPermissions>
         </Grid>

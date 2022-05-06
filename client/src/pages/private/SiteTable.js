@@ -135,7 +135,6 @@ export default () => {
   const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
-  const [selectedSite, setSelectedSite] = useState(null);
   const [isLoadingReport, setLoadingReport] = useState(false);
 
   const [orderBy, setOrderBy] = useState('siteName');

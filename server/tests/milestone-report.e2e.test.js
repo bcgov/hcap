@@ -42,6 +42,6 @@ describe('api-e2e test for route /api/v1/milestone-report', () => {
   it('should not let HA get general report', async () => {
     const header = await getKeycloakToken(healthAuthority);
     const res = await request(app).get(`/api/v1/milestone-report/csv/hired`).set(header);
-    expect(res.status).toEqual(500);
+    expect(res.status).toEqual(403);
   });
 });

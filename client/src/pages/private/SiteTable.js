@@ -264,10 +264,11 @@ export default () => {
           />
         </Grid>
 
-        <Grid item xs={8} />
+        <Grid item xs={6} />
 
-        <Grid className={classes.rootItem} item xs={2}>
-          <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+        <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+          <Grid item xs={2} />
+          <Grid className={classes.rootItem} item xs={2}>
             <Button
               onClick={() => {
                 setActiveModalForm('new-site');
@@ -276,16 +277,11 @@ export default () => {
               text='Create Site'
               startIcon={<AddCircleOutlineIcon />}
             />
-          </CheckPermissions>
-        </Grid>
-
-        <Grid item xs={8} />
+          </Grid>
+        </CheckPermissions>
 
         <Grid className={classes.rootItem} item xs={4}>
-          <CheckPermissions
-            roles={roles}
-            permittedRoles={['health_authority', 'ministry_of_health']}
-          >
+          <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
             <Button
               onClick={downloadHiringReport}
               variant='outlined'

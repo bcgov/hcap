@@ -15,34 +15,40 @@ import {
   ROSCompletedType,
   ROSReason,
   ROSUnderwayStatus,
+  ROSCompleteStatus,
 } from '../../constants';
 import { getTodayDate } from '../../utils';
 import { fetchParticipantReturnOfServiceStatus } from '../../services';
 
 /**
- *
+ * Returns form values dependent on the rosStatus of the participant
  * @param {number} participantId
- * @param {FormikProps} formProps
- * @returns ???? options???
+ * @returns { typeOptions, endDate }
  */
-const fetchFormOptionData = async (participantId, formProps) => {
+const fetchFormOptionData = async (participantId) => {
   const rosStatus = await fetchParticipantReturnOfServiceStatus({ id: participantId });
 
-  const statuses = [...archiveStatusOptions];
-  const reasons = [...archiveReasonOptions];
-  const typeOptions = [...archiveTypeOptions];
-  if (rosStatus) {
-    statuses.unshift(ROSUnderwayStatus);
-    reasons.unshift(ROSReason);
-    typeOptions.unshift(ROSCompletedType);
-  } else if (formProps.reason === UnsuccessfulCohortReason) {
-    statuses = PSIEducationUnderwayStatus;
-  }
+  const typeOptions = rosStatus
+    ? [ROSCompletedType, ...archiveTypeOptions]
+    : [...archiveTypeOptions];
 
-  const statusOptions = statuses.map((option) => ({ value: option, label: option }));
-  const reasonOptions = reasons.map((option) => ({ value: option, label: option }));
-  return { statusOptions, reasonOptions, typeOptions };
+  const endDate = rosStatus
+    ? dayjs(rosStatus.data.date).add(1, 'years').format('YYYY/MM/DD')
+    : dayjs().subtract(1, 'days').format('YYYY/MM/DD');
+
+  return { typeOptions, endDate };
 };
+
+/**
+ * Formats for RenderSelectField
+ * @param {[string]} optionList
+ * @returns {[{value: string, label: string},...]}
+ */
+const formatOptions = (optionList) => {
+  return optionList.map((option) => ({ value: option, label: option }));
+};
+
+const reasonOptions = formatOptions(archiveReasonOptions);
 
 const archiveHiredParticipantInitialValues = {
   type: '',
@@ -54,17 +60,27 @@ const archiveHiredParticipantInitialValues = {
 };
 
 export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }) => {
-  const [statusOptions, setStatusOptions] = useState([]);
-  const [reasonOptions, setReasonOptions] = useState([]);
   const [typeOptions, setTypeOptions] = useState([]);
+  const [endDate, setEndDate] = useState([]);
 
   useEffect(() => {
-    fetchFormOptionData(participantId).then(({ statusOptions, reasonOptions, typeOptions }) => {
-      setStatusOptions(statusOptions);
-      setReasonOptions(reasonOptions);
+    fetchFormOptionData(participantId).then(({ typeOptions, endDate }) => {
       setTypeOptions(typeOptions);
+      setEndDate(endDate);
     });
-  }, [setStatusOptions, setReasonOptions, setTypeOptions, participantId]);
+  }, [setTypeOptions, setEndDate, participantId]);
+
+  const getStatusOptions = (selectedReason) => {
+    if (typeOptions.includes(ROSCompletedType)) {
+      return selectedReason === ROSReason
+        ? formatOptions([ROSCompleteStatus])
+        : formatOptions([ROSUnderwayStatus]);
+    } else {
+      return selectedReason === UnsuccessfulCohortReason
+        ? formatOptions([PSIEducationUnderwayStatus])
+        : archiveStatusOptions;
+    }
+  };
 
   return (
     <Formik
@@ -72,28 +88,50 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }
       validationSchema={ArchiveHiredParticipantSchema}
       onSubmit={onSubmit}
     >
-      {(props) => {
+      {({ values, setFieldValue, submitForm }) => {
         return (
           <FormikForm>
-            <Field name='type' component={RenderSelectField} options={typeOptions} label='Type' />
-            {['employmentEnded', 'rosComplete'].includes(props.values.type) && (
+            <Field
+              name='type'
+              component={RenderSelectField}
+              options={typeOptions}
+              label='Type'
+              onChange={(event) => {
+                const newValue = event.target.value;
+                setFieldValue('type', newValue);
+
+                if (newValue === 'rosComplete') {
+                  setFieldValue('reason', ROSReason);
+                  setFieldValue('status', ROSCompleteStatus);
+                  setFieldValue('endDate', endDate);
+                } else if (newValue === 'employmentEnded') {
+                  setFieldValue('reason', '');
+                  setFieldValue('status', ROSUnderwayStatus);
+                  setFieldValue('endDate', dayjs().subtract(1, 'days').format('YYYY/MM/DD'));
+                }
+              }}
+            />
+            {['employmentEnded', 'rosComplete'].includes(values.type) && (
               <>
                 <Field
                   name='endDate'
                   component={RenderDateField}
-                  maxDate={getTodayDate}
+                  maxDate={values.type === 'rosComplete' ? null : getTodayDate()}
+                  disabled={values.type === 'rosComplete'}
                   label='End Date'
                 />
                 <Field
                   name='reason'
                   component={RenderSelectField}
-                  options={reasonOptions}
+                  options={
+                    values.type === 'rosComplete' ? formatOptions([ROSReason]) : reasonOptions
+                  }
                   label='Reason'
                 />
                 <Field
                   name='status'
                   component={RenderSelectField}
-                  options={statusOptions}
+                  options={getStatusOptions(values.reason)}
                   label='Status'
                 />
                 <Field
@@ -118,12 +156,7 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }
                   <Button onClick={onClose} color='default' text='Cancel' />
                 </Grid>
                 <Grid item>
-                  <Button
-                    onClick={props.submitForm}
-                    variant='contained'
-                    color='primary'
-                    text='Submit'
-                  />
+                  <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />
                 </Grid>
               </Grid>
             </Box>

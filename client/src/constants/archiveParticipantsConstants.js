@@ -3,6 +3,7 @@ export const UnsuccessfulCohortReason = 'Unsuccessful cohort, does not wish to c
 export const PSIEducationUnderwayStatus = 'Post secondary education underway';
 
 export const ROSUnderwayStatus = 'Return of service underway';
+export const ROSCompleteStatus = 'Return of service complete';
 export const ROSCompletedType = { value: 'rosComplete', label: 'Return of service completed' };
 export const ROSReason = 'Completed all HCAP requirements';
 

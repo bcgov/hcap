@@ -25,6 +25,7 @@ export const RenderDateField = ({ field, form, label, boldLabel, ...props }) => 
         variant='dialog'
         inputVariant='filled'
         fullWidth
+        disabled={props.disabled ?? false}
         {...props}
       />
       <InputFieldError error={<ErrorMessage name={field.name} />} />

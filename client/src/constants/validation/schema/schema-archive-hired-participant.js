@@ -12,28 +12,34 @@ export const ArchiveHiredParticipantSchema = yup.object().shape({
     .string()
     .oneOf(['duplicate', 'employmentEnded', 'rosComplete'], 'Please select a type')
     .required('Please select a type'),
-  reason: yup.string().when('type', {
-    is: 'employmentEnded',
-    then: yup.string().required('Please include a reason').oneOf(archiveReasonOptions),
-  }),
-  reason: yup.string().when('type', {
-    is: 'rosComplete',
-    then: yup
-      .string()
-      .required('Please include a reason')
-      .oneOf([ROSReason, ...archiveReasonOptions]),
-  }),
-  status: yup.string().when('type', {
-    is: 'employmentEnded',
-    then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
-  }),
-  status: yup.string().when('type', {
-    is: 'rosComplete',
-    then: yup
-      .string()
-      .required('Please include a status')
-      .oneOf([ROSUnderwayStatus, ...archiveStatusOptions]),
-  }),
+  reason: yup.string().when(
+    'type',
+    {
+      is: 'employmentEnded',
+      then: yup.string().required('Please include a reason').oneOf(archiveReasonOptions),
+    },
+    {
+      is: 'rosComplete',
+      then: yup
+        .string()
+        .required('Please include a reason')
+        .oneOf([ROSReason, ...archiveReasonOptions]),
+    }
+  ),
+  status: yup.string().when(
+    'type',
+    {
+      is: 'employmentEnded',
+      then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
+    },
+    {
+      is: 'rosComplete',
+      then: yup
+        .string()
+        .required('Please include a status')
+        .oneOf([ROSUnderwayStatus, ...archiveStatusOptions]),
+    }
+  ),
   endDate: yup.date().when('type', {
     is: 'employmentEnded',
     then: yup

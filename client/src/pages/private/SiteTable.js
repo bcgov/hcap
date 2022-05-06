@@ -280,6 +280,7 @@ export default () => {
           </Grid>
         </CheckPermissions>
 
+        {roles.includes('superuser') && <Grid item xs={8} />}
         <Grid className={classes.rootItem} item xs={4}>
           <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
             <Button

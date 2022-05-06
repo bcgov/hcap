@@ -5,7 +5,7 @@
 const request = require('supertest');
 const app = require('../server');
 const { startDB, closeDB } = require('./util/db');
-const { getKeycloakToken, superuser } = require('./util/keycloak');
+const { getKeycloakToken, superuser, healthAuthority } = require('./util/keycloak');
 
 describe('api-e2e test for route /api/v1/milestone-report', () => {
   let server;
@@ -30,5 +30,18 @@ describe('api-e2e test for route /api/v1/milestone-report', () => {
     const header = await getKeycloakToken(superuser);
     const res = await request(app).get('/api/v1/milestone-report/csv/hired').set(header);
     expect(res.status).toEqual(200);
+  });
+
+  it('should get hired report by region', async () => {
+    const header = await getKeycloakToken(healthAuthority);
+    const region = 'Vancouver Island';
+    const res = await request(app).get(`/api/v1/milestone-report/csv/hired/${region}`).set(header);
+    expect(res.status).toEqual(200);
+  });
+
+  it('should not let HA get general report', async () => {
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app).get(`/api/v1/milestone-report/csv/hired`).set(header);
+    expect(res.status).toEqual(500);
   });
 });

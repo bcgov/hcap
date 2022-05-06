@@ -15,7 +15,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { FastField, Formik, Form as FormikForm } from 'formik';
 
-import { RenderMultiSelectField } from '../fields';
+import { RenderSelectField } from '../fields';
 import { Button } from '../generic';
 import { addEllipsisMask } from '../../utils';
 
@@ -72,8 +72,8 @@ export const SelectProspectingSiteForm = ({
             }`}
           </Typography>
           <FastField
-            name='prospectingSites'
-            component={RenderMultiSelectField}
+            name='prospectingSite'
+            component={RenderSelectField}
             placeholder='Select Site'
             options={_orderBy(sites, ['siteName']).map((item) => ({
               value: item.id,

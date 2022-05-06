@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import {
   InterviewingFormSchema,
   RejectedFormSchema,
-  ProspectingSitesSchema,
+  ProspectingSiteSchema,
   participantStatus,
 } from '../../constants';
 import { Dialog } from '../../components/generic';
@@ -35,14 +35,14 @@ export const ParticipantTableDialogues = ({
 
   const handleSingleSelectProspectingSites = (values) => {
     handleEngage(actionMenuParticipant.id, participantStatus.PROSPECTING, {
-      sites: values.prospectingSites.map((value) => ({ id: value })),
+      sites: [values.prospectingSite],
     });
   };
 
   const handleMultiSelectProspectingSites = (values) => {
     bulkParticipants.forEach((participant) => {
       handleEngage(participant?.id, participantStatus.PROSPECTING, {
-        sites: values.prospectingSites.map((value) => ({ id: value })),
+        sites: [values.prospectingSite],
       });
     });
   };
@@ -56,8 +56,8 @@ export const ParticipantTableDialogues = ({
     >
       {activeModalForm === 'single-select-site' && (
         <SelectProspectingSiteForm
-          initialValues={{ prospectingSites: [] }}
-          validationSchema={ProspectingSitesSchema}
+          initialValues={{ prospectingSite: undefined }}
+          validationSchema={ProspectingSiteSchema}
           onSubmit={(values) => {
             handleSingleSelectProspectingSites(values);
           }}
@@ -69,8 +69,8 @@ export const ParticipantTableDialogues = ({
         <SelectProspectingSiteForm
           isMultiSelect
           selected={bulkParticipants}
-          initialValues={{ prospectingSites: [] }}
-          validationSchema={ProspectingSitesSchema}
+          initialValues={{ prospectingSite: undefined }}
+          validationSchema={ProspectingSiteSchema}
           onSubmit={(values) => {
             handleMultiSelectProspectingSites(values);
           }}

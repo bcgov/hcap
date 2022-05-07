@@ -8,7 +8,6 @@ import { API_URL, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 
 export default () => {
-  const [isLoading, setLoading] = useState(false);
   const { openToast } = useToast();
   const reportStats = {
     total: 'Total Participants',
@@ -24,27 +23,9 @@ export default () => {
     hiredPerRegion: {},
   });
 
-  const handleDownloadHiringClick = async () => {
-    setLoading(true);
-    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/hired`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      const blob = await response.blob();
-      saveAs(blob, `participant-stats-hired-${new Date().toJSON()}.csv`);
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Error while downloading report',
-      });
-    }
-
-    setLoading(false);
-  };
+  const DOWNLOAD_DEFAULT_ERROR_MESSAGE = 'Error while downloading report';
+  const [isLoadingHiringReport, setLoadingHiringReport] = useState(false);
+  const [isLoadingRosReport, setLoadingRosReport] = useState(false);
 
   const fetchReport = async () => {
     const response = await fetch(`${API_URL}/api/v1/milestone-report`, {
@@ -64,6 +45,50 @@ export default () => {
         hiredPerRegion: results.data.hiredPerRegion,
       });
     }
+  };
+
+  const handleDownloadHiringReportClick = async () => {
+    setLoadingHiringReport(true);
+    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/hired`, {
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      saveAs(blob, `participant-stats-hired-${new Date().toJSON()}.csv`);
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+      });
+    }
+
+    setLoadingHiringReport(false);
+  };
+
+  const handleDownloadRosReportClick = async () => {
+    setLoadingRosReport(true);
+    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/ros`, {
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      saveAs(blob, `return-of-service-milestones-${new Date().toJSON()}.csv`);
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+      });
+    }
+
+    setLoadingRosReport(false);
   };
 
   useEffect(() => {
@@ -104,12 +129,20 @@ export default () => {
               </Box>
             </Box>
 
-            <Box display='flex' justifyContent='center'>
+            <Box py={1} display='flex' justifyContent='center'>
               <Button
                 fullWidth={false}
-                loading={isLoading}
-                onClick={() => handleDownloadHiringClick()}
-                text='Download hiring report (CSV)'
+                loading={isLoadingHiringReport}
+                onClick={() => handleDownloadHiringReportClick()}
+                text='Download hiring report'
+              />
+            </Box>
+            <Box py={1} display='flex' justifyContent='center'>
+              <Button
+                fullWidth={false}
+                loading={isLoadingRosReport}
+                onClick={() => handleDownloadRosReportClick()}
+                text='Download return of service milestones report'
               />
             </Box>
           </Box>

@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Container, Typography, List, ListItem, ListItemText } from '@material-ui/core';
 import store from 'store';
 import { saveAs } from 'file-saver';
-import { Page, CheckPermissions, Button } from '../../components/generic';
-import { API_URL } from '../../constants';
+
+import { Page, Card, CheckPermissions, Button } from '../../components/generic';
+import { API_URL, ToastStatus } from '../../constants';
+import { useToast } from '../../hooks';
 
 export default () => {
   const [isLoading, setLoading] = useState(false);
+  const { openToast } = useToast();
+  const reportStats = {
+    total: 'Total Participants',
+    qualified: 'Qualified',
+    inProgress: 'In Progress',
+    hired: 'Participants Hired',
+  };
   const [report, setReport] = useState({
     total: 0,
     qualified: 0,
@@ -28,8 +36,14 @@ export default () => {
     if (response.ok) {
       const blob = await response.blob();
       saveAs(blob, `participant-stats-hired-${new Date().toJSON()}.csv`);
-      setLoading(false);
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Error while downloading report',
+      });
     }
+
+    setLoading(false);
   };
 
   const fetchReport = async () => {
@@ -59,56 +73,47 @@ export default () => {
   return (
     <Page>
       <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
-        <Grid
-          container
-          alignContent='center'
-          justify='center'
-          alignItems='center'
-          direction='column'
-        >
-          <Box width={0.6} py={4} px={2}>
+        <Container maxWidth='md'>
+          <Box py={6}>
             <Typography variant='subtitle1' gutterBottom>
               Milestone Reporting
             </Typography>
-            <Grid container spacing={3} direction='row'>
-              <Grid item xs={3}>
-                <Typography variant='h4'>{report.total}</Typography>
-                Total Participants
-              </Grid>
-              <Grid item xs={3}>
-                <Typography variant='h4'>{report.qualified}</Typography>
-                Qualified
-              </Grid>
-              <Grid item xs={3}>
-                <Typography variant='h4'>{report.inProgress}</Typography>
-                In Progress
-              </Grid>
-              <Grid item xs={3}>
-                <Typography variant='h4'>{report.hired}</Typography>
-                Participants Hired
-              </Grid>
-            </Grid>
-          </Box>
-          <Box width={0.6} py={4} px={2}>
-            <Typography variant='subtitle1' gutterBottom>
-              Hired Per Region
-            </Typography>
-            <ul>
-              {Object.keys(report.hiredPerRegion).map((k) => (
-                <li key={k}>
-                  {k}: {report.hiredPerRegion[k]}
-                </li>
+            <Box py={2} display='flex' justifyContent='space-between'>
+              {Object.keys(reportStats).map((item, ind) => (
+                <Card key={`st_${ind}`}>
+                  <Typography variant='h4'>{report[item]}</Typography>
+                  <Typography variant='body1'>{reportStats[item]}</Typography>
+                </Card>
               ))}
-            </ul>
+            </Box>
+
+            <Box py={4}>
+              <Typography variant='subtitle1' gutterBottom>
+                Hired Per Region
+              </Typography>
+              <Box py={2}>
+                <Card noPadding>
+                  <List>
+                    {Object.keys(report.hiredPerRegion).map((key) => (
+                      <ListItem key={key}>
+                        <ListItemText primary={`${key}: ${report.hiredPerRegion[key]}`} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Card>
+              </Box>
+            </Box>
+
+            <Box display='flex' justifyContent='center'>
+              <Button
+                fullWidth={false}
+                loading={isLoading}
+                onClick={() => handleDownloadHiringClick()}
+                text='Download hiring report (CSV)'
+              />
+            </Box>
           </Box>
-        </Grid>
-        <Button
-          fullWidth={false}
-          loading={isLoading}
-          size='small'
-          onClick={() => handleDownloadHiringClick()}
-          text='Download hiring report (CSV)'
-        />
+        </Container>
       </CheckPermissions>
     </Page>
   );

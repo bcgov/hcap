@@ -6,6 +6,11 @@ const participantStatus = {
   ARCHIVED: 'archived',
   REJECTED: 'rejected',
   HIRED: 'hired',
+  PENDING_ACKNOWLEDGEMENT: 'pending_acknowledgement',
+  ALREADY_HIRED: 'already_hired',
+  INVALID_STATUS_TRANSITION: 'invalid_status_transition',
+  INVALID_ARCHIVE: 'invalid_archive',
+  INVALID_STATUS: 'invalid_status',
 };
 
 module.exports = {

@@ -76,7 +76,7 @@ export const SelectProspectingSiteForm = ({
             component={RenderSelectField}
             placeholder='Select Site'
             options={_orderBy(sites, ['siteName']).map((item) => ({
-              value: item.id,
+              value: item.siteId,
               label: addEllipsisMask(item.siteName, MAX_LABEL_LENGTH),
             }))}
           />

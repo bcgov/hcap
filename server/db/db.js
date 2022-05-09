@@ -43,6 +43,13 @@ class DBClient {
     this.db = await massive(this.settings);
   }
 
+  async disconnect() {
+    if (!this.db) return;
+    logger.info('Disconnecting from database');
+    await this.db.instance.$pool.end();
+    this.db = null;
+  }
+
   async reload() {
     return this.db.reload();
   }

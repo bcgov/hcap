@@ -20,13 +20,14 @@ async function startDB() {
 }
 
 async function cleanDB() {
-  await dbClient.db[collections.PARTICIPANTS].destroy({});
   await dbClient.db[collections.PARTICIPANTS_STATUS].destroy({});
+  await dbClient.db[collections.PARTICIPANTS].destroy({});
   await dbClient.db[collections.EMPLOYER_SITES].destroy({});
 }
 
 async function closeDB() {
   await clearDB();
+  await dbClient.disconnect();
 }
 
 module.exports = {

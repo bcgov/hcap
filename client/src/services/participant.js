@@ -174,7 +174,7 @@ export const getParticipants = async ({
 export const addParticipantStatus = async ({ participantId, status, additional }) => {
   const { sites, ...rest } = additional;
   const [siteObj] = sites;
-  const site = siteObj.id;
+  const site = siteObj;
   const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
     method: 'POST',
     headers: {

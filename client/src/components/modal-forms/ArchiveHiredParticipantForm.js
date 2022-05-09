@@ -13,7 +13,7 @@ import {
   UnsuccessfulCohortReason,
   PSIEducationUnderwayStatus,
   ROSCompletedType,
-  ROSReason,
+  SuccessfulROSReason,
   ROSUnderwayStatus,
   ROSCompleteStatus,
 } from '../../constants';
@@ -26,7 +26,13 @@ import { fetchParticipantReturnOfServiceStatus } from '../../services';
  * @returns { typeOptions, endDate }
  */
 const fetchFormOptionData = async (participantId) => {
-  const rosStatus = await fetchParticipantReturnOfServiceStatus({ id: participantId });
+  let rosStatus;
+  try {
+    rosStatus = await fetchParticipantReturnOfServiceStatus({ id: participantId });
+  } catch (err) {
+    console.log(err);
+    rosStatus = false;
+  }
 
   const typeOptions = rosStatus
     ? [ROSCompletedType, ...archiveTypeOptions]
@@ -72,14 +78,13 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }
 
   const getStatusOptions = (selectedReason) => {
     if (typeOptions.includes(ROSCompletedType)) {
-      return selectedReason === ROSReason
+      return selectedReason === SuccessfulROSReason
         ? formatOptions([ROSCompleteStatus])
         : formatOptions([ROSUnderwayStatus]);
-    } else {
-      return selectedReason === UnsuccessfulCohortReason
-        ? formatOptions([PSIEducationUnderwayStatus])
-        : archiveStatusOptions;
     }
+    return selectedReason === UnsuccessfulCohortReason
+      ? formatOptions([PSIEducationUnderwayStatus])
+      : archiveStatusOptions;
   };
 
   return (
@@ -101,7 +106,7 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }
                 setFieldValue('type', newValue);
 
                 if (newValue === 'rosComplete') {
-                  setFieldValue('reason', ROSReason);
+                  setFieldValue('reason', SuccessfulROSReason);
                   setFieldValue('status', ROSCompleteStatus);
                   setFieldValue('endDate', endDate);
                 } else if (newValue === 'employmentEnded') {
@@ -124,7 +129,9 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }
                   name='reason'
                   component={RenderSelectField}
                   options={
-                    values.type === 'rosComplete' ? formatOptions([ROSReason]) : reasonOptions
+                    values.type === 'rosComplete'
+                      ? formatOptions([SuccessfulROSReason])
+                      : reasonOptions
                   }
                   label='Reason'
                 />

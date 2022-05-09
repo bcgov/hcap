@@ -5,7 +5,7 @@ export const PSIEducationUnderwayStatus = 'Post secondary education underway';
 export const ROSUnderwayStatus = 'Return of service underway';
 export const ROSCompleteStatus = 'Return of service complete';
 export const ROSCompletedType = { value: 'rosComplete', label: 'Return of service completed' };
-export const ROSReason = 'Completed all HCAP requirements';
+export const SuccessfulROSReason = 'Completed all HCAP requirements';
 
 export const archiveReasonOptions = [
   'No longer interested in HCA/HCSW role',

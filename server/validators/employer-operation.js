@@ -4,6 +4,9 @@ const {
   healthRegions,
   userRoles,
   archiveStatusOptions,
+  ROSUnderwayStatus,
+  ROSCompleteStatus,
+  SuccessfulROSReason,
 } = require('../constants');
 
 const { validatePastDateString } = require('./helpers');
@@ -12,18 +15,35 @@ const ArchiveRequestDataShape = (schema) =>
   schema.noUnknown('').shape({
     type: yup
       .string()
-      .oneOf(['duplicate', 'employmentEnded'], 'Please select a type')
+      .oneOf(['duplicate', 'employmentEnded', 'rosComplete'], 'Please select a type')
       .required('Please select a type'),
-    reason: yup.string().when('type', {
-      is: 'employmentEnded',
-      then: yup.string().required('Please include a reason').oneOf(archiveReasonOptions),
-    }),
-    status: yup.string().when('type', {
-      is: 'employmentEnded',
-      then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
-    }),
+    reason: yup.string().when(
+      'type',
+      {
+        is: 'employmentEnded',
+        then: yup.string().required('Please include a reason').oneOf(archiveReasonOptions),
+      },
+      {
+        is: 'rosComplete',
+        then: yup.string().required('Please include a reason').oneOf([SuccessfulROSReason]),
+      }
+    ),
+    status: yup.string().when(
+      'type',
+      {
+        is: 'employmentEnded',
+        then: yup
+          .string()
+          .required('Please include a status')
+          .oneOf([ROSUnderwayStatus, ...archiveStatusOptions]),
+      },
+      {
+        is: 'rosComplete',
+        then: yup.string().required('Please include a status').oneOf([ROSCompleteStatus]),
+      }
+    ),
     rehire: yup.string().when('type', {
-      is: 'employmentEnded',
+      is: 'employmentEnded' || 'rosComplete',
       then: yup
         .string()
         .required('Intent to rehire must not be empty')

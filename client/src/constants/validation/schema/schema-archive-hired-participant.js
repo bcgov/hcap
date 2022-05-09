@@ -3,8 +3,9 @@ import { validateDateIsInThePast, validateDateIsReasonable } from '../functions'
 import {
   archiveReasonOptions,
   archiveStatusOptions,
-  ROSReason,
+  SuccessfulROSReason,
   ROSUnderwayStatus,
+  ROSCompleteStatus,
 } from '../../archiveParticipantsConstants';
 
 export const ArchiveHiredParticipantSchema = yup.object().shape({
@@ -20,24 +21,21 @@ export const ArchiveHiredParticipantSchema = yup.object().shape({
     },
     {
       is: 'rosComplete',
-      then: yup
-        .string()
-        .required('Please include a reason')
-        .oneOf([ROSReason, ...archiveReasonOptions]),
+      then: yup.string().required('Please include a reason').oneOf([SuccessfulROSReason]),
     }
   ),
   status: yup.string().when(
     'type',
     {
       is: 'employmentEnded',
-      then: yup.string().required('Please include a status').oneOf(archiveStatusOptions),
-    },
-    {
-      is: 'rosComplete',
       then: yup
         .string()
         .required('Please include a status')
         .oneOf([ROSUnderwayStatus, ...archiveStatusOptions]),
+    },
+    {
+      is: 'rosComplete',
+      then: yup.string().required('Please include a status').oneOf([ROSCompleteStatus]),
     }
   ),
   endDate: yup.date().when('type', {

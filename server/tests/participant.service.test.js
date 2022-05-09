@@ -8,7 +8,6 @@ const { startDB, closeDB } = require('./util/db');
 const {
   parseAndSaveParticipants,
   getParticipants,
-  setParticipantStatus,
   makeParticipant,
   getParticipantByID,
   updateParticipant,
@@ -16,6 +15,9 @@ const {
   mapUserWithParticipant,
   withdrawParticipantsByEmail,
 } = require('../services/participants.js');
+
+const { setParticipantStatus } = require('../services/participant-status');
+
 const { createPostHireStatus } = require('../services/post-hire-flow');
 const { getReport } = require('../services/reporting.js');
 const { evaluateBooleanAnswer, postHireStatuses } = require('../validation');

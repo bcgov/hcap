@@ -15,10 +15,8 @@ describe('Participant Table', () => {
     it(`Correctly renders columns for ${role.name}`, () => {
       cy.kcLogin(role.fixture);
       cy.visit('/participant-view');
-      const featureMultiOrgProspecting =
-        localStorage.getItem('FEATURE_MULTI_ORG_PROSPECTING') !== undefined
-          ? localStorage.getItem('FEATURE_MULTI_ORG_PROSPECTING')
-          : true;
+
+      // TODO: Develop a way to read localStorage and check feature flags
       Object.entries(role.tableTabs).forEach((tab) => {
         const [tabText, tabHeaders] = [...tab];
 
@@ -26,7 +24,7 @@ describe('Participant Table', () => {
         const isMultiselect = role.tabsWithMultiselect.includes(tabText);
         let columnCount = tabHeaders.length;
         if (hasActions) columnCount++;
-        if (isMultiselect && featureMultiOrgProspecting) columnCount++;
+        if (isMultiselect) columnCount++;
 
         if (hasActions) cy.get('th.MuiTableCell-head').last().should('have.text', ''); // action column has no header
 

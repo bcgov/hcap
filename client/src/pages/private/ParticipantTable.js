@@ -50,8 +50,7 @@ const getStatusForMoH = (isInterested, progressStats) => {
   }
 
   if (progressStats.total && !progressStats.hired) {
-    const count =
-      progressStats.offer_made || progressStats.interviewing || progressStats.prospecting;
+    const count = progressStats.offer_made + progressStats.interviewing + progressStats.prospecting;
     if (count > 0) {
       firstStatus = `inprogress_${count}`;
     }
@@ -112,7 +111,9 @@ const filterData = (data, columns, isMoH = false) => {
     ) {
       const archivedStatuses = item.statusInfos.filter(
         (statusInfo) =>
-          statusInfo.status === 'withdrawn' || statusInfo.status === 'pending_acknowledgement'
+          statusInfo.status === 'withdrawn' ||
+          statusInfo.status === 'pending_acknowledgement' ||
+          statusInfo.status === 'hired_by_peer'
       );
       const otherStatuses = archivedStatuses.map((statusInfo) => statusInfo.status);
       row.status = ['ros', ...otherStatuses];
@@ -130,7 +131,8 @@ const filterData = (data, columns, isMoH = false) => {
       }
     } else if (item.progressStats) {
       if (isMoH) {
-        row.status = getStatusForMoH(item.interested, item.progressStats);
+        row.mohStatus = getStatusForMoH(item.interested, item.progressStats);
+        row.status = ['open'];
       } else {
         row.status = [
           'open',
@@ -239,8 +241,12 @@ const ParticipantTable = () => {
 
   const handleEngage = async (participantId, status, additional = {}) => {
     try {
+      if (isLoadingData) {
+        return;
+      }
+      setLoadingData(true);
       const { data } = await addParticipantStatus({ participantId, status, additional });
-
+      setLoadingData(false);
       if (status === participantStatus.PROSPECTING) {
         // Modal appears after submitting
         setActiveModalForm(participantStatus.PROSPECTING);
@@ -357,8 +363,9 @@ const ParticipantTable = () => {
       case 'callbackStatus':
         return row[columnId] ? 'Primed' : 'Available';
       case 'status':
+      case 'mohStatus':
         return prettifyStatus(
-          row[columnId],
+          row[columnId] || row['status'],
           row.id,
           selectedTab,
           handleEngage,

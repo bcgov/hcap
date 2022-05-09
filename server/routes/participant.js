@@ -8,15 +8,14 @@ const {
   getParticipantByID,
   updateParticipant,
   parseAndSaveParticipants,
-  setParticipantStatus,
   confirmParticipantInterest,
   validateConfirmationId,
   deleteAcknowledgement,
   removeAllParticipantStatusForUser,
   archiveParticipantBySite,
   deleteParticipant,
-  bulkEngageParticipants,
 } = require('../services/participants.js');
+const { setParticipantStatus, bulkEngageParticipants } = require('../services/participant-status');
 const { addParticipantToWaitlist } = require('../services/waitlist');
 const {
   validate,
@@ -384,12 +383,24 @@ employerActionsRouter.post(
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantStatusChange, req.body);
+    const { site, data = {}, participantId, status } = req.body;
     const user = req.hcapUserInfo;
+    // Check participant
+    const participant = await getParticipantByID(participantId);
+    if (!participant) {
+      return res.status(400).json({ message: 'Could not find participant' });
+    }
+    // Check site access
+    if (site && !user.sites.includes(site)) {
+      return res.status(400).json({
+        message: 'User does not have access to this site',
+      });
+    }
     const result = await setParticipantStatus(
       user.id,
-      req.body.participantId,
-      req.body.status,
-      req.body.data,
+      participantId,
+      status,
+      { site, ...data },
       user
     );
     logger.info({
@@ -398,8 +409,8 @@ employerActionsRouter.post(
         username: user.username,
         id: user.id,
       },
-      participant_id: req.body.participantId,
-      status: req.body.status,
+      participant_id: participantId,
+      status,
     });
     return res.status(201).json({ data: result });
   })

@@ -140,14 +140,14 @@ const getParticipantsReport = async () => {
 const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
   const users = await keycloak.getUsers();
 
-  const searchOprions = {
+  const searchOptions = {
     status: ['hired'],
     'duplicateArchivedJoin.status': null,
     // 'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
   };
 
   if (region !== DEFAULT_REGION_NAME) {
-    searchOprions['employerSiteJoin.body.healthAuthority'] = region;
+    searchOptions['employerSiteJoin.body.healthAuthority'] = region;
   }
 
   const hiredEntries = await dbClient.db[collections.PARTICIPANTS_STATUS]
@@ -187,7 +187,7 @@ const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
         },
       },
     })
-    .find(searchOprions);
+    .find(searchOptions);
 
   return hiredEntries.map((entry) => ({
     participantId: entry.participant_id,

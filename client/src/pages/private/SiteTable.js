@@ -114,6 +114,7 @@ const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
 
 export default () => {
   const classes = useStyles();
+  const { openToast } = useToast();
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
@@ -190,8 +191,17 @@ export default () => {
     });
 
     if (response.ok) {
+      openToast({
+        status: ToastStatus.Success,
+        message: response.message || 'Report generated successfully!',
+      });
       const blob = await response.blob();
       saveAs(blob, `report-hired-${regionId}-${new Date().toJSON()}.csv`);
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || 'Error occurred while generating report',
+      });
     }
   };
 

@@ -100,24 +100,9 @@ const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
           validationSchema={CreateSiteSchema}
           onSubmit={(values) => {
             handleSiteCreate({
+              ...values,
               siteId: parseInt(values.siteId),
-              siteName: values.siteName,
-              registeredBusinessName: values.registeredBusinessName,
-              address: values.address,
-              city: values.city,
-              isRHO: values.isRHO,
-              postalCode: values.postalCode,
-              healthAuthority: values.healthAuthority,
               allocation: parseInt(values.allocation),
-              operatorName: values.operatorName,
-              operatorContactFirstName: values.operatorContactFirstName,
-              operatorContactLastName: values.operatorContactLastName,
-              operatorPhone: values.operatorPhone,
-              operatorEmail: values.operatorEmail,
-              siteContactFirstName: values.siteContactFirstName,
-              siteContactLastName: values.siteContactLastName,
-              siteContactPhone: values.siteContactPhone,
-              siteContactEmail: values.siteContactEmail,
             });
           }}
           onClose={onDialogClose}

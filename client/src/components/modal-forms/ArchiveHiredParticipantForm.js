@@ -71,9 +71,9 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }
 
   useEffect(() => {
     if (participantId) {
-      fetchFormOptionData(participantId).then(({ typeOptions, endDate }) => {
-        setTypeOptions(typeOptions);
-        setEndDate(endDate);
+      fetchFormOptionData(participantId).then(({ types, date }) => {
+        setTypeOptions(types);
+        setEndDate(date);
       });
     }
   }, [setTypeOptions, setEndDate, participantId]);

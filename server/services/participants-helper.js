@@ -3,6 +3,42 @@ const { collections, views } = require('../db');
 const { userRegionQuery } = require('./user.js');
 const { participantStatus } = require('../constants');
 
+const {
+  OPEN: open,
+  PROSPECTING: prospecting,
+  INTERVIEWING: interviewing,
+  OFFER_MADE: offerMade,
+  HIRED: hired,
+  ARCHIVED: archived,
+  REJECTED: rejected,
+  PENDING_ACKNOWLEDGEMENT: pendingAcknowledgement,
+  ROS: ros,
+} = participantStatus;
+
+/**
+ * @description Flattens the participants array into a single array based on statuses
+ * @param {Array<any>} participants
+ * @returns {Array<any>}
+ */
+const flattenParticipants = (participants) => {
+  const flattenedParticipantList = [];
+  participants.forEach((participant) => {
+    const { employerSpecificJoin = [], ...participantInfo } = participant;
+    // Single or No employerSpecific statuses
+    if (employerSpecificJoin.length === 0 || employerSpecificJoin.length === 1) {
+      flattenedParticipantList.push(participant);
+    } else {
+      employerSpecificJoin.forEach((status) => {
+        flattenedParticipantList.push({
+          ...participantInfo,
+          employerSpecificJoin: [status],
+        });
+      });
+    }
+  });
+  return flattenedParticipantList;
+};
+
 const scrubParticipantData = (raw, joinNames) =>
   raw.map((participant) => {
     const statusInfos = [];
@@ -44,14 +80,14 @@ const scrubParticipantData = (raw, joinNames) =>
     };
   });
 
-const addSiteNameToStatusData = (raw, employerSpecificJoin, siteJoin) =>
+const addSiteNameToStatusData = (raw, employerSpecificJoin) =>
   raw.map((participant) => ({
     ...participant,
     [employerSpecificJoin]: participant[employerSpecificJoin]?.map((item) => ({
       ...item,
       data: {
         ...item.data,
-        siteName: participant[siteJoin]?.find((site) => site.siteId === item.site)?.body.siteName,
+        siteName: item.employerSite?.body?.siteName,
       },
     })),
   }));
@@ -76,10 +112,10 @@ const run = async (context) => {
     employerSpecificJoin,
     hiredGlobalJoin,
     siteDistanceJoin,
-    siteJoin,
   } = context;
   let participants = await table.find(criteria, options);
-  participants = addSiteNameToStatusData(participants, employerSpecificJoin, siteJoin);
+  participants = flattenParticipants(participants);
+  participants = addSiteNameToStatusData(participants, employerSpecificJoin);
   participants = addDistanceToParticipantFields(participants, siteDistanceJoin);
   participants = scrubParticipantData(
     participants,
@@ -104,7 +140,7 @@ class FilteredParticipantsFinder {
   }
 
   paginate(pagination, sortField) {
-    const { user, employerSpecificJoin, siteJoin, siteDistanceJoin, siteIdDistance, rosStatuses } =
+    const { user, employerSpecificJoin, siteDistanceJoin, siteIdDistance, rosStatuses } =
       this.context;
     this.context.options = pagination && {
       // ID is the default sort column
@@ -126,17 +162,8 @@ class FilteredParticipantsFinder {
     if (sortField && sortField !== 'id' && this.context.options.order) {
       let joinFieldName = `body.${sortField}`;
 
-      if (sortField === 'status') {
-        joinFieldName =
-          user.isEmployer || user.isHA ? `${employerSpecificJoin}.status` : 'status_infos';
-      }
-
       if (sortField === 'distance' && siteIdDistance) {
         joinFieldName = `${siteDistanceJoin}.distance`;
-      }
-
-      if (sortField === 'siteName') {
-        joinFieldName = `${siteJoin}.body.${sortField}`;
       }
 
       if (sortField === 'rosStartDate') {
@@ -166,6 +193,27 @@ class FilteredParticipantsFinder {
           }
         );
       }
+
+      if (sortField === 'siteName') {
+        this.context.options.order.unshift({
+          field: `employerSite.body.siteName`,
+          direction: pagination.direction || 'asc',
+        });
+      }
+
+      if (sortField === 'status') {
+        if (user.isEmployer || user.isHA) {
+          this.context.options.order.unshift({
+            field: `${employerSpecificJoin}.status`,
+            direction: pagination.direction || 'asc',
+          });
+        } else {
+          this.context.options.order.unshift({
+            field: 'status_infos',
+            direction: pagination.direction || 'asc',
+          });
+        }
+      }
     }
 
     return new PaginatedParticipantsFinder(this.context);
@@ -181,169 +229,211 @@ class FieldsFilteredParticipantsFinder {
     this.context = context;
   }
 
-  filterExternalFields({ statusFilters, siteIdDistance }) {
+  joinTables({ siteIdDistance, user, isOpen }) {
     const {
-      user,
-      criteria,
       employerSpecificJoin,
       hiredGlobalJoin,
-      siteJoin,
       siteDistanceJoin,
       rosStatuses,
+      orgSpecificJoin,
     } = this.context;
+
+    // Status: Employer specific join: Here we are loading all statuses and we will filter this for user
+    const employerSpecificStatusJoin = {
+      [employerSpecificJoin]: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'id',
+          current: true,
+          ...(isOpen && { employer_id: user.id }),
+        },
+        employerInfo: {
+          type: 'LEFT OUTER',
+          relation: collections.USERS,
+          decomposeTo: 'object',
+          on: {
+            'body.keycloakId': `${employerSpecificJoin}.employer_id`,
+          },
+        },
+        employerSite: {
+          type: 'LEFT OUTER',
+          relation: collections.EMPLOYER_SITES,
+          decomposeTo: 'object',
+          on: {
+            'body.siteId': `${employerSpecificJoin}.data.site`,
+          },
+        },
+      },
+    };
+
+    // Joining all participant_status with employer of common sites
+    const orgJoin = isOpen
+      ? {
+          [orgSpecificJoin]: {
+            type: 'LEFT OUTER',
+            relation: collections.PARTICIPANTS_STATUS,
+            on: {
+              participant_id: 'id',
+              current: true,
+              'employer_id <>': user.id,
+              'data.site IN': user.sites,
+            },
+          },
+        }
+      : {};
+
+    // Global hire: Trying to join hired statuses for participants
+    const globalHireJoin = {
+      [hiredGlobalJoin]: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'id',
+          status: participantStatus.HIRED,
+        },
+      },
+    };
+
+    // ROS: Joining return of service tables with participant to fetch ros values
+    const rosJoin = {
+      [rosStatuses]: {
+        type: 'LEFT OUTER',
+        relation: collections.ROS_STATUS,
+        on: {
+          participant_id: 'id',
+        },
+        rosSite: {
+          type: 'LEFT OUTER',
+          relation: collections.EMPLOYER_SITES,
+          decomposeTo: 'object',
+          on: {
+            id: `${collections.ROS_STATUS}.site_id`,
+          },
+        },
+      },
+    };
+
+    // Site Distance: Joining site distance with participant location
+    const siteDistanceJoinJoin = {
+      [siteDistanceJoin]: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_DISTANCE,
+        on: {
+          participant_id: 'id',
+          site_id: siteIdDistance,
+        },
+      },
+    };
+
+    // Attach all joins
+    return {
+      ...employerSpecificStatusJoin,
+      ...globalHireJoin,
+      ...rosJoin,
+      ...(siteIdDistance && siteDistanceJoinJoin),
+      ...(isOpen && orgJoin),
+    };
+  }
+
+  filterExternalFields({ statusFilters = [], siteIdDistance }) {
+    const { user, employerSpecificJoin, hiredGlobalJoin, orgSpecificJoin, rosStatuses } =
+      this.context;
     this.context.siteIdDistance = siteIdDistance;
 
     if (user.isEmployer || user.isHA) {
-      const isFetchingHiresStatus = statusFilters && statusFilters.includes('hired');
-      this.context.table = this.context.table.join({
-        [employerSpecificJoin]: {
-          type: 'LEFT OUTER',
-          relation: collections.PARTICIPANTS_STATUS,
-          on: {
-            participant_id: 'id',
-            current: true,
-            ...(!isFetchingHiresStatus && { employer_id: user.id }),
-          },
-          employerInfo: {
-            type: 'LEFT OUTER',
-            relation: collections.USERS,
-            decomposeTo: 'object',
-            on: {
-              'body.keycloakId': `${employerSpecificJoin}.employer_id`,
-            },
-          },
-        },
-        [hiredGlobalJoin]: {
-          type: 'LEFT OUTER',
-          relation: collections.PARTICIPANTS_STATUS,
-          on: {
-            participant_id: 'id',
-            current: true,
-            status: participantStatus.HIRED,
-          },
-        },
-        [rosStatuses]: {
-          type: 'LEFT OUTER',
-          relation: collections.ROS_STATUS,
-          on: {
-            participant_id: 'id',
-          },
-          rosSite: {
-            type: 'LEFT OUTER',
-            relation: collections.EMPLOYER_SITES,
-            decomposeTo: 'object',
-            on: {
-              id: `${collections.ROS_STATUS}.site_id`,
-            },
-          },
-        },
-        ...(siteIdDistance && {
-          [siteDistanceJoin]: {
-            type: 'LEFT OUTER',
-            relation: collections.PARTICIPANTS_DISTANCE,
-            on: {
-              participant_id: 'id',
-              site_id: siteIdDistance,
-            },
-          },
-        }),
-        ...(statusFilters.includes('hired') && {
-          [siteJoin]: {
-            type: 'LEFT OUTER',
-            relation: collections.EMPLOYER_SITES,
-            on: {
-              'body.siteId': `${hiredGlobalJoin}.data.site`,
-            },
-          },
-        }),
-      });
+      // Check fetching open status or not
+      // Flags
+      let criteria = { ...this.context.criteria };
+      const isOpen = statusFilters.includes(open);
+      const isInProgress =
+        statusFilters.includes(prospecting) ||
+        statusFilters.includes(interviewing) ||
+        statusFilters.includes(offerMade);
+      const isHired = statusFilters.includes(hired);
+      const isArchived = statusFilters.includes(archived);
+      const isRejected = statusFilters.includes(rejected);
+      const isRos = statusFilters.includes(ros);
 
-      // Updating Status Filter query
-      // Case: 1: Filter all hired statuses  which are matching with user sites
-      // Or Case: 2: pending acknowledgement status for same user
-      if (statusFilters && statusFilters.includes('hired')) {
-        const siteQuery = {
-          or: [
-            { [`${employerSpecificJoin}.data.site IN`]: user.sites },
-            {
-              and: [
-                { [`${employerSpecificJoin}.status`]: 'pending_acknowledgement' },
-                { [`${employerSpecificJoin}.employer_id`]: user.id },
-              ],
-            },
-          ],
-        };
-        criteria.and = criteria.and ? [...criteria.and, siteQuery] : [siteQuery];
-      }
+      // Groups
+      const inProgressStatuses = [prospecting, interviewing, offerMade];
 
-      if (statusFilters && statusFilters.includes('ros')) {
-        if (criteria.and) {
-          criteria.and.push({
-            [`${rosStatuses}.participant_id <>`]: null,
-          });
-        } else {
-          criteria.and = [
-            {
-              [`${rosStatuses}.participant_id <>`]: null,
-            },
-          ];
-        }
-      }
+      // Attache external tables
+      this.context.table = this.context.table.join(
+        this.joinTables({ siteIdDistance, user, isOpen })
+      );
 
-      if (statusFilters) {
-        const newStatusFilters = statusFilters.includes('open')
-          ? //  if 'open' is found adds also null because no status
-            //  means that the participant is open as well
-            [null, ...statusFilters]
-          : statusFilters;
+      // Apply filtering logic
 
-        const statusQuery = {
-          or: newStatusFilters
-            .filter((item) => item !== 'unavailable')
-            .map((status) => ({ [`${employerSpecificJoin}.status`]: status })),
-        };
-        if (criteria.or) {
-          criteria.or[0].and.push(statusQuery);
-        } else {
-          criteria.or = [{ and: [statusQuery] }];
-        }
+      // Common employer Filtering criteria
+      const employerFilteringCriteria = {
+        or: [
+          { [`${employerSpecificJoin}.employer_id`]: user.id },
+          { [`${employerSpecificJoin}.data.site IN`]: user.sites },
+        ],
+      };
 
-        // we don't want hired participants listed with such statuses:
-        if (
-          statusFilters.some((item) =>
-            [
-              participantStatus.OPEN,
-              participantStatus.PROSPECTING,
-              participantStatus.INTERVIEWING,
-              participantStatus.OFFER_MADE,
-            ].includes(item)
-          )
-        ) {
-          criteria.or[0].and.push({ [`${hiredGlobalJoin}.status`]: null });
-        }
+      // Open
+      //  Choose all participants with
+      //    no employer status(no interaction with employer)
+      //    no status with org
+      //    no global hired status
+      const openQuery = {
+        [`${hiredGlobalJoin}.status`]: null,
+        [`${orgSpecificJoin}.status`]: null,
+        [`${employerSpecificJoin}.status`]: null,
+      };
+      criteria = { ...criteria, ...(isOpen && openQuery) };
 
-        //  the higher level 'unavailable' status filter covers participants with
-        //  'prospecting', 'interviewing', 'offer_made' statuses which have
-        //  been hired by someone else
-        if (statusFilters.includes('unavailable')) {
-          const unavailableQuery = {
+      // Hired status
+      //  Choose all participant hired by user or orgs or load pending ack
+      const hiredQuery = {
+        [`${employerSpecificJoin}.status`]: hired,
+        and: [
+          {
+            ...employerFilteringCriteria,
+          },
+        ],
+      };
+      const pendingAckQuery = {
+        [`${employerSpecificJoin}.status`]: pendingAcknowledgement,
+        [`${employerSpecificJoin}.employer_id`]: user.id,
+      };
+      criteria = isHired
+        ? {
+            ...criteria,
             and: [
               {
-                or: ['prospecting', 'interviewing', 'offer_made'].map((status) => ({
-                  [`${employerSpecificJoin}.status`]: status,
-                })),
+                or: [hiredQuery, pendingAckQuery],
               },
-              { [`${hiredGlobalJoin}.status`]: 'hired' },
             ],
-          };
-
-          if (criteria.or) {
-            criteria.or.push(unavailableQuery);
-          } else {
-            criteria.or = [unavailableQuery];
           }
-        }
-      }
+        : criteria;
+
+      // Archived/Rejected status: Only user specific
+      criteria =
+        isArchived || isRejected
+          ? {
+              ...criteria,
+              [`${employerSpecificJoin}.status IN`]: [archived, rejected],
+              [`${employerSpecificJoin}.employer_id`]: user.id,
+            }
+          : criteria;
+
+      // ROS: Selecting participants with ros enabled
+      criteria = isRos ? { ...criteria, [`${rosStatuses}.participant_id <>`]: null } : criteria;
+
+      // Inprogress statuses: only user specific
+      const inProgressStatusQuery = {
+        [`${employerSpecificJoin}.status IN`]: inProgressStatuses,
+        and: [
+          {
+            ...employerFilteringCriteria,
+          },
+        ],
+      };
+      criteria = isInProgress ? { ...criteria, ...inProgressStatusQuery } : criteria;
+      this.context.criteria = { ...this.context.criteria, ...criteria };
     } else {
       // PARTICIPANTS_STATUS_INFOS is a view with a join that
       // brings all current statuses of each participant
@@ -403,6 +493,7 @@ class ParticipantsFinder {
     this.user = user;
     this.table = dbClient.db[collections.PARTICIPANTS];
     this.employerSpecificJoin = 'employerSpecificJoin';
+    this.orgSpecificJoin = 'orgSpecificJoin';
     this.hiredGlobalJoin = 'hiredGlobalJoin';
     this.siteJoin = 'siteJoin';
     this.siteDistanceJoin = 'siteDistanceJoin';

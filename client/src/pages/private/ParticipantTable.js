@@ -102,7 +102,7 @@ const filterData = (data, columns, isMoH = false) => {
     const row = mapItemToColumns(item, columns);
 
     row.engage = item;
-    row.siteName = item?.statusInfos?.[0].data?.siteName;
+    row.siteName = item?.statusInfos?.[0].data?.siteName || 'Not Available';
 
     if (
       item.rosStatuses &&
@@ -245,7 +245,21 @@ const ParticipantTable = () => {
         return;
       }
       setLoadingData(true);
-      const { data } = await addParticipantStatus({ participantId, status, additional });
+      // Adding site from exiting statuses
+      const statusInfo =
+        actionMenuParticipant.statusInfos && actionMenuParticipant.statusInfos.length > 0
+          ? actionMenuParticipant.statusInfos[0]
+          : {};
+      const site = statusInfo.data?.site;
+      const additionalParma = {
+        ...(site && { sites: [site] }),
+        ...additional,
+      };
+      const { data } = await addParticipantStatus({
+        participantId,
+        status,
+        additional: additionalParma,
+      });
       setLoadingData(false);
       if (status === participantStatus.PROSPECTING) {
         // Modal appears after submitting

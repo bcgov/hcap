@@ -95,10 +95,8 @@ const setParticipantStatus = async (
     // For Hired status update all existing employer status
     // Creating pending_acknowledgement status for hiring employer
     const hiredStatus = hiredStatusItems[0];
-    let updatedHireStatus = false;
     if (status === ARCHIVED && hiredStatus && hiredStatus.employer_id !== employerId) {
       if (hiredStatus.data.site && user?.sites.includes(hiredStatus.data.site)) {
-        updatedHireStatus = true;
         await tx[collections.PARTICIPANTS_STATUS].update(
           {
             employer_id: hiredStatus.employer_id,

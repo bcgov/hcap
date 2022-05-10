@@ -70,10 +70,12 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }
   const [endDate, setEndDate] = useState([]);
 
   useEffect(() => {
-    fetchFormOptionData(participantId).then(({ typeOptions, endDate }) => {
-      setTypeOptions(typeOptions);
-      setEndDate(endDate);
-    });
+    if (participantId) {
+      fetchFormOptionData(participantId).then(({ typeOptions, endDate }) => {
+        setTypeOptions(typeOptions);
+        setEndDate(endDate);
+      });
+    }
   }, [setTypeOptions, setEndDate, participantId]);
 
   const getStatusOptions = (selectedReason) => {

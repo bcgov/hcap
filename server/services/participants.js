@@ -451,18 +451,27 @@ const getParticipants = async (
         rosStatuses: item.rosStatuses || [],
       };
 
-      // The hired statuses created by other employer of other org/site
-      const hiredBySomeoneElseStatus = item.statusInfos?.find(
-        (statusInfo) => statusInfo.status === 'hired' && !user.sites.includes(statusInfo.data.site)
-      );
+      // Get hired status
+      const hiredStatus = item.statusInfos?.find((statusInfo) => statusInfo.status === 'hired');
+      const hiredForAssociatedSites = hiredStatus && user.sites.includes(hiredStatus?.data.site);
 
-      // The hired statuses created by other employer of same org/site
-      const hiredBySomeoneInSameOrgStatus = item.statusInfos?.find(
-        (statusInfo) =>
-          statusInfo.status === 'hired' &&
-          user.sites.includes(statusInfo.data.site) &&
-          statusInfo.employerId !== user.id
-      );
+      // The participant is hired in a site which is not associated with user
+      const hiredByOtherOrg = hiredStatus && !hiredForAssociatedSites;
+      // The participant is hired by some other user but site associated by user
+      const hiredBySomeoneInSameOrgStatus =
+        hiredStatus && hiredForAssociatedSites && hiredStatus.employerId !== user.id;
+      // Hired by same user but different site
+      const hiredForOtherSite =
+        hiredStatus &&
+        hiredForAssociatedSites &&
+        !hiredByOtherOrg &&
+        !hiredBySomeoneInSameOrgStatus &&
+        item.statusInfos?.find(
+          (status) =>
+            status.data?.site !== hiredStatus?.data?.site &&
+            status.employerId === hiredStatus.employerId &&
+            status.employerId === user.id
+        );
 
       // Archived by org
       const archivedByOrgStatus = item.statusInfos?.find(
@@ -476,12 +485,12 @@ const getParticipants = async (
           createdAt: new Date(),
           status: 'withdrawn',
         };
-      } else if (hiredBySomeoneElseStatus) {
+      } else if (hiredByOtherOrg) {
         computedStatus = {
-          createdAt: hiredBySomeoneElseStatus.createdAt,
+          createdAt: hiredStatus.createdAt,
           status: 'already_hired',
         };
-      } else if (hiredBySomeoneInSameOrgStatus) {
+      } else if (hiredBySomeoneInSameOrgStatus || hiredForOtherSite) {
         const hasOwnInteraction = item.statusInfos.find(
           (statusInfo) =>
             !['hired', 'archived', 'rejected'].includes(statusInfo.status) &&
@@ -489,7 +498,7 @@ const getParticipants = async (
         );
         if (hasOwnInteraction) {
           computedStatus = {
-            createdAt: hiredBySomeoneInSameOrgStatus.createdAt,
+            createdAt: hiredStatus.createdAt,
             status: 'hired_by_peer',
           };
         }
@@ -516,7 +525,7 @@ const getParticipants = async (
         const showContactInfo = participant.statusInfos.find((statusInfo) =>
           ['prospecting', 'interviewing', 'offer_made', 'hired'].includes(statusInfo.status)
         );
-        if (showContactInfo && !hiredBySomeoneElseStatus) {
+        if (showContactInfo && !hiredByOtherOrg) {
           participant = {
             ...participant,
             phoneNumber: item.phoneNumber,

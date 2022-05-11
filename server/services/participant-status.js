@@ -59,7 +59,14 @@ const setParticipantStatus = async (
       criteria = { ...criteria, employer_id: employerId };
     }
 
-    const existingCurrentStatus = await tx[collections.PARTICIPANTS_STATUS].findOne(criteria);
+    let existingCurrentStatus = await tx[collections.PARTICIPANTS_STATUS].findOne(criteria);
+    if (!existingCurrentStatus && status === HIRED) {
+      existingCurrentStatus = await tx[collections.PARTICIPANTS_STATUS].findOne({
+        participant_id: participantId,
+        current: true,
+        employer_id: employerId,
+      });
+    }
     // Checking existing status and new status
     if (
       existingCurrentStatus &&

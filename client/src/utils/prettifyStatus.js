@@ -36,7 +36,7 @@ export const prettifyStatus = (
 
   const statusValue = status[0];
   let firstStatus = getParticipantStatus(isMoH, statusValue);
-  let toolTip = 'This candidate was hired by another employer.';
+  let toolTip = 'This candidate was hired by another site.';
   let isWithdrawn = false;
   const isHiredByPeer = status[1] === 'hired_by_peer';
 
@@ -52,7 +52,8 @@ export const prettifyStatus = (
   }
 
   if (isHiredByPeer) {
-    toolTip = 'This candidate was hired by same site. And available in "Hired Participants" tab.';
+    toolTip =
+      'This candidate was hired by other associated site. And available in "Hired Participants" tab.';
   }
 
   const hideAcknowledgeButton =

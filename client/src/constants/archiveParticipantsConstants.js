@@ -7,6 +7,8 @@ export const ROSCompleteStatus = 'Return of service complete';
 export const ROSCompletedType = { value: 'rosComplete', label: 'Return of service completed' };
 export const SuccessfulROSReason = 'Completed all HCAP requirements';
 
+export const EmploymentEndedType = { value: 'employmentEnded', label: 'Employment ended' };
+
 export const archiveReasonOptions = [
   'No longer interested in HCA/HCSW role',
   'No longer interested in a career in health care',
@@ -28,10 +30,7 @@ export const archiveStatusOptions = [
   'Completed post secondary education',
 ];
 
-export const archiveTypeOptions = [
-  { value: 'employmentEnded', label: 'Employment ended' },
-  { value: 'duplicate', label: 'Duplicate' },
-];
+export const archiveTypeOptions = [EmploymentEndedType, { value: 'duplicate', label: 'Duplicate' }];
 
 export const minDateString = '1899/12/31';
 export const maxDateString = '2099/12/31';

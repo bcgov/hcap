@@ -12,6 +12,7 @@ import {
   archiveTypeOptions,
   UnsuccessfulCohortReason,
   PSIEducationUnderwayStatus,
+  EmploymentEndedType,
   ROSCompletedType,
   SuccessfulROSReason,
   ROSUnderwayStatus,
@@ -22,27 +23,27 @@ import { fetchParticipantReturnOfServiceStatus } from '../../services';
 
 /**
  * Returns form values dependent on the rosStatus of the participant
+ * isROS is for logic purposes
  * @param {number} participantId
- * @returns { typeOptions, endDate }
+ * @returns { types, date, isROS } => { [{}], string, boolean }
  */
-const fetchFormOptionData = async (participantId) => {
+const fetchFormData = async (participantId) => {
   let rosStatus;
   try {
     rosStatus = await fetchParticipantReturnOfServiceStatus({ id: participantId });
   } catch (err) {
-    console.log(err);
     rosStatus = false;
   }
 
-  const typeOptions = rosStatus
-    ? [ROSCompletedType, ...archiveTypeOptions]
-    : [...archiveTypeOptions];
+  const isROS = rosStatus ? true : false;
 
-  const endDate = rosStatus
+  const types = isROS ? [ROSCompletedType, ...archiveTypeOptions] : [...archiveTypeOptions];
+
+  const date = isROS
     ? dayjs(rosStatus.data.date).add(1, 'years').format('YYYY/MM/DD')
     : dayjs().subtract(1, 'days').format('YYYY/MM/DD');
 
-  return { typeOptions, endDate };
+  return { types, date, isROS };
 };
 
 /**
@@ -68,25 +69,27 @@ const archiveHiredParticipantInitialValues = {
 export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }) => {
   const [typeOptions, setTypeOptions] = useState([]);
   const [endDate, setEndDate] = useState([]);
+  const [isROSStarted, setROSStatus] = useState(false);
 
   useEffect(() => {
     if (participantId) {
-      fetchFormOptionData(participantId).then(({ types, date }) => {
+      fetchFormData(participantId).then(({ types, date, isROS }) => {
         setTypeOptions(types);
         setEndDate(date);
+        setROSStatus(isROS);
       });
     }
-  }, [setTypeOptions, setEndDate, participantId]);
+  }, [setTypeOptions, setEndDate, setROSStatus, participantId]);
 
   const getStatusOptions = (selectedReason) => {
-    if (typeOptions.includes(ROSCompletedType)) {
+    if (isROSStarted) {
       return selectedReason === SuccessfulROSReason
         ? formatOptions([ROSCompleteStatus])
         : formatOptions([ROSUnderwayStatus]);
     }
     return selectedReason === UnsuccessfulCohortReason
       ? formatOptions([PSIEducationUnderwayStatus])
-      : archiveStatusOptions;
+      : formatOptions(archiveStatusOptions);
   };
 
   return (
@@ -107,31 +110,33 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }
                 const newValue = event.target.value;
                 setFieldValue('type', newValue);
 
-                if (newValue === 'rosComplete') {
-                  setFieldValue('reason', SuccessfulROSReason);
-                  setFieldValue('status', ROSCompleteStatus);
-                  setFieldValue('endDate', endDate);
-                } else if (newValue === 'employmentEnded') {
-                  setFieldValue('reason', '');
-                  setFieldValue('status', ROSUnderwayStatus);
-                  setFieldValue('endDate', dayjs().subtract(1, 'days').format('YYYY/MM/DD'));
+                if (isROSStarted) {
+                  if (newValue === ROSCompletedType.value) {
+                    setFieldValue('reason', SuccessfulROSReason);
+                    setFieldValue('status', ROSCompleteStatus);
+                    setFieldValue('endDate', endDate);
+                  } else {
+                    setFieldValue('reason', '');
+                    setFieldValue('status', ROSUnderwayStatus);
+                    setFieldValue('endDate', dayjs().subtract(1, 'days').format('YYYY/MM/DD'));
+                  }
                 }
               }}
             />
-            {['employmentEnded', 'rosComplete'].includes(values.type) && (
+            {[EmploymentEndedType.value, ROSCompletedType.value].includes(values.type) && (
               <>
                 <Field
                   name='endDate'
                   component={RenderDateField}
-                  maxDate={values.type === 'rosComplete' ? null : getTodayDate()}
-                  disabled={values.type === 'rosComplete'}
+                  maxDate={values.type === ROSCompletedType.value ? null : getTodayDate()}
+                  disabled={values.type === ROSCompletedType.value}
                   label='End Date'
                 />
                 <Field
                   name='reason'
                   component={RenderSelectField}
                   options={
-                    values.type === 'rosComplete'
+                    values.type === ROSCompletedType.value
                       ? formatOptions([SuccessfulROSReason])
                       : reasonOptions
                   }

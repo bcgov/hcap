@@ -6,40 +6,35 @@ import {
   SuccessfulROSReason,
   ROSUnderwayStatus,
   ROSCompleteStatus,
+  ROSCompletedType,
+  EmploymentEndedType,
 } from '../../archiveParticipantsConstants';
+
+const typeValidationMap = {
+  [ROSCompletedType.value]: { reasons: [SuccessfulROSReason], statuses: [ROSCompleteStatus] },
+  [EmploymentEndedType.value]: {
+    reasons: archiveReasonOptions,
+    statuses: [ROSUnderwayStatus, ...archiveStatusOptions],
+  },
+};
 
 export const ArchiveHiredParticipantSchema = yup.object().shape({
   type: yup
     .string()
     .oneOf(['duplicate', 'employmentEnded', 'rosComplete'], 'Please select a type')
     .required('Please select a type'),
-  reason: yup.string().when(
-    'type',
-    {
-      is: 'employmentEnded',
-      then: yup.string().required('Please include a reason').oneOf(archiveReasonOptions),
-    },
-    {
-      is: 'rosComplete',
-      then: yup.string().required('Please include a reason').oneOf([SuccessfulROSReason]),
-    }
-  ),
-  status: yup.string().when(
-    'type',
-    {
-      is: 'employmentEnded',
-      then: yup
-        .string()
-        .required('Please include a status')
-        .oneOf([ROSUnderwayStatus, ...archiveStatusOptions]),
-    },
-    {
-      is: 'rosComplete',
-      then: yup.string().required('Please include a status').oneOf([ROSCompleteStatus]),
-    }
-  ),
+  reason: yup.string().when(['type'], (type, schema) => {
+    return typeValidationMap[type]
+      ? schema.required('Please include a reason').oneOf(typeValidationMap[type].reasons)
+      : schema.optional().nullable();
+  }),
+  status: yup.string().when(['type'], (type, schema) => {
+    return typeValidationMap[type]
+      ? schema.required('Please include a status').oneOf(typeValidationMap[type].statuses)
+      : schema.optional().nullable();
+  }),
   endDate: yup.date().when('type', {
-    is: 'employmentEnded',
+    is: EmploymentEndedType.value,
     then: yup
       .date()
       .test('is-present', 'Invalid entry. Date must be in the past.', validateDateIsInThePast)
@@ -51,7 +46,7 @@ export const ArchiveHiredParticipantSchema = yup.object().shape({
       .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
   }),
   rehire: yup.string().when('type', {
-    is: 'employmentEnded' || 'rosComplete',
+    is: (type) => [EmploymentEndedType.value, ROSCompletedType.value].includes(type),
     then: yup
       .string()
       .oneOf(['Yes', 'No'], 'Must be either Yes or No.')

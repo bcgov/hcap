@@ -43,7 +43,7 @@ const ArchiveRequestDataShape = (schema) =>
       }
     ),
     rehire: yup.string().when('type', {
-      is: 'employmentEnded' || 'rosComplete',
+      is: (type) => ['employmentEnded', 'rosComplete'].includes(type),
       then: yup
         .string()
         .required('Intent to rehire must not be empty')

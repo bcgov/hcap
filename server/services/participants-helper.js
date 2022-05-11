@@ -113,15 +113,25 @@ const run = async (context) => {
     hiredGlobalJoin,
     siteDistanceJoin,
   } = context;
-  let participants = await table.find(criteria, options);
-  participants = flattenParticipants(participants);
-  participants = addSiteNameToStatusData(participants, employerSpecificJoin);
-  participants = addDistanceToParticipantFields(participants, siteDistanceJoin);
-  participants = scrubParticipantData(
-    participants,
-    (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin]
-  );
-  return participants;
+  try {
+    let participants = await table.find(criteria, options);
+    participants = flattenParticipants(participants);
+    participants = addSiteNameToStatusData(participants, employerSpecificJoin);
+    participants = addDistanceToParticipantFields(participants, siteDistanceJoin);
+    participants = scrubParticipantData(
+      participants,
+      (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin]
+    );
+    return participants;
+  } catch (error) {
+    if (['test', 'local', 'dev'].includes(process.env.APP_ENV)) {
+      const sql = await table.find(criteria, { ...options, build: true });
+      // Logging debugging info for dev/local/test environments
+      console.log('participant-helper:run: sql: ', sql); /* eslint-disable no-console */
+      console.log('participant-helper:run: criteria: ', criteria); /* eslint-disable no-console */
+    }
+    throw new Error(`participant-helper:run: ${error}`);
+  }
 };
 
 class PaginatedParticipantsFinder {
@@ -248,22 +258,26 @@ class FieldsFilteredParticipantsFinder {
           current: true,
           ...(isOpen && { employer_id: user.id }),
         },
-        employerInfo: {
-          type: 'LEFT OUTER',
-          relation: collections.USERS,
-          decomposeTo: 'object',
-          on: {
-            'body.keycloakId': `${employerSpecificJoin}.employer_id`,
+        ...(!isOpen && {
+          employerInfo: {
+            type: 'LEFT OUTER',
+            relation: collections.USERS,
+            decomposeTo: 'object',
+            on: {
+              'body.keycloakId': `${employerSpecificJoin}.employer_id`,
+            },
           },
-        },
-        employerSite: {
-          type: 'LEFT OUTER',
-          relation: collections.EMPLOYER_SITES,
-          decomposeTo: 'object',
-          on: {
-            'body.siteId': `${employerSpecificJoin}.data.site`,
+        }),
+        ...(!isOpen && {
+          employerSite: {
+            type: 'LEFT OUTER',
+            relation: collections.EMPLOYER_SITES,
+            decomposeTo: 'object',
+            on: {
+              'body.siteId': `${employerSpecificJoin}.data.site`,
+            },
           },
-        },
+        }),
       },
     };
 
@@ -330,7 +344,7 @@ class FieldsFilteredParticipantsFinder {
     return {
       ...employerSpecificStatusJoin,
       ...globalHireJoin,
-      ...rosJoin,
+      ...(!isOpen && rosJoin),
       ...(siteIdDistance && siteDistanceJoinJoin),
       ...(isOpen && orgJoin),
     };
@@ -433,13 +447,13 @@ class FieldsFilteredParticipantsFinder {
         ],
       };
       criteria = isInProgress ? { ...criteria, ...inProgressStatusQuery } : criteria;
-      this.context.criteria = { ...this.context.criteria, ...criteria };
+      this.context.criteria = { ...criteria };
     } else {
       // PARTICIPANTS_STATUS_INFOS is a view with a join that
       // brings all current statuses of each participant
       this.context.table = this.context.dbClient.db[views.PARTICIPANTS_STATUS_INFOS];
 
-      if (statusFilters) {
+      if (statusFilters && statusFilters.length > 0) {
         const statuses = statusFilters.includes('open')
           ? [null, ...statusFilters]
           : statusFilters || [];

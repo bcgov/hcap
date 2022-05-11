@@ -91,7 +91,8 @@
           "Preferred Region(s)",
           "Site Distance",
           "Last Updated",
-          "Last Engaged By"
+          "Last Engaged By",
+          "Site Name"
         ],
         "Archived Candidates": [
           "ID",
@@ -176,7 +177,8 @@
           "Preferred Region(s)",
           "Site Distance",
           "Last Updated",
-          "Last Engaged By"
+          "Last Engaged By",
+          "Site Name"
         ],
         "Archived Candidates": [
           "ID",

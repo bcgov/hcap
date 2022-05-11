@@ -53,7 +53,7 @@ const setParticipantStatus = async (
     if (FEATURE_MULTI_ORG_PROSPECTING && site) {
       criteria = {
         ...criteria,
-        or: [{ employer_id: employerId }, { 'data.site': site }],
+        'data.site': site,
       };
     } else {
       criteria = { ...criteria, employer_id: employerId };

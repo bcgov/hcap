@@ -302,25 +302,25 @@ describe('Participants Service', () => {
       isMoH: true,
     });
 
-    expect(res.data.map((item) => Object.keys(item))).toEqual(
-      allParticipants.map(() => [
-        'id',
-        'firstName',
-        'lastName',
-        'postalCodeFsa',
-        'preferredLocation',
-        'nonHCAP',
-        'interested',
-        'crcClear',
-        'callbackStatus',
-        'statusInfo',
-        'userUpdatedAt',
-        'distance',
-        'progressStats',
-        'postHireStatuses',
-        'rosStatuses',
-      ])
-    );
+    const received = res.data.map((item) => Object.keys(item));
+    const expected = allParticipants.map(() => [
+      'id',
+      'firstName',
+      'lastName',
+      'postalCodeFsa',
+      'preferredLocation',
+      'nonHCAP',
+      'interested',
+      'crcClear',
+      'callbackStatus',
+      'statusInfo',
+      'userUpdatedAt',
+      'distance',
+      'progressStats',
+      'postHireStatuses',
+      'rosStatuses',
+    ]);
+    expect(received).toEqual(expected);
   });
 
   it('Get participants as HA, receive successfully', async () => {

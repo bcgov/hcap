@@ -143,7 +143,7 @@ describe('Test Participant status data model and service', () => {
     expect(previousHiredStatus.employer_id).toBe(emp2.id);
   });
 
-  it.skip('should return multi org participant', async () => {
+  it('should return multi org participant', async () => {
     const participant = await makeTestParticipant({
       emailAddress: 'test.site.participant.3@hcap.io',
     });
@@ -164,7 +164,15 @@ describe('Test Participant status data model and service', () => {
     const emp2 = v4();
     const emp3 = v4();
 
-    await setParticipantStatus(emp1, participant.id, 'prospecting', {}, {}, [site1]);
+    await setParticipantStatus(
+      emp1,
+      participant.id,
+      'prospecting',
+      {
+        site: site1.siteId,
+      },
+      {}
+    );
 
     // Check with open status for emp1
     const resultOpenWithEmp1 = await getParticipants(
@@ -229,7 +237,9 @@ describe('Test Participant status data model and service', () => {
       emp2,
       participant.id,
       'interviewing',
-      {},
+      {
+        site: site1.siteId,
+      },
       {
         sites: [site1.siteId],
       }
@@ -267,6 +277,34 @@ describe('Test Participant status data model and service', () => {
     // Check result for participant
     const filteredOpen = resultOpen.data.filter((p) => p.id === participant.id);
     expect(filteredOpen.length).toBe(1);
+
+    // Now check duel statuses
+    await setParticipantStatus(
+      emp1,
+      participant.id,
+      'prospecting',
+      {
+        site: site2.siteId,
+      },
+      {
+        sites: [site1.siteId, site2.siteId],
+      }
+    );
+
+    // Get statuses with emp1 for duel statuses for mult org employee
+    const resultDuel = await getParticipants(
+      { isEmployer: true, id: emp3, regions, sites: [site2.siteId, site1.siteId] },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      ['prospecting', 'interviewing']
+    );
+    const duelStatuses = resultDuel.data.filter((p) => p.id === participant.id);
+    expect(duelStatuses.length).toBe(2);
   });
 
   it.skip('should bulk engage participants', async () => {

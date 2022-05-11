@@ -1,9 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
+import { saveAs } from 'file-saver';
 import { useHistory } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import store from 'store';
+
 import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
 import { NewSiteForm } from '../../components/modal-forms';
 import { useLocation } from 'react-router-dom';
@@ -12,6 +15,23 @@ import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import { ToastStatus, CreateSiteSchema } from '../../constants';
 import { AuthContext } from '../../providers';
+
+const useStyles = makeStyles((theme) => ({
+  rootItem: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+  },
+  tableItem: {
+    paddingTop: theme.spacing(4),
+    paddingRight: theme.spacing(2),
+    paddingBottom: theme.spacing(4),
+    paddingLeft: theme.spacing(2),
+  },
+  filterLabel: {
+    color: theme.palette.gray.dark,
+    fontWeight: 700,
+  },
+}));
 
 const columns = [
   { id: 'siteId', name: 'Site ID' },
@@ -23,14 +43,85 @@ const columns = [
   { id: 'details' },
 ];
 
-export default () => {
+const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
   const { openToast } = useToast();
+
+  const handleSiteCreate = async (site) => {
+    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(site),
+    });
+
+    if (response.ok) {
+      onDialogClose();
+      await onDialogSubmit();
+    } else {
+      const error = await response.json();
+      if (error.status && error.status === 'Duplicate') {
+        openToast({ status: ToastStatus.Error, message: 'Duplicate site ID' });
+      } else {
+        openToast({
+          status: ToastStatus.Error,
+          message: response.error || response.statusText || 'Server error',
+        });
+      }
+    }
+  };
+
+  return (
+    <Dialog title='Create Site' open={activeForm != null} onClose={onDialogClose}>
+      {activeForm === 'new-site' && (
+        <NewSiteForm
+          initialValues={{
+            siteId: '',
+            siteName: '',
+            registeredBusinessName: '',
+            address: '',
+            city: '',
+            isRHO: null,
+            postalCode: '',
+            healthAuthority: '',
+            allocation: '',
+            operatorName: '',
+            operatorContactFirstName: '',
+            operatorContactLastName: '',
+            operatorPhone: '',
+            operatorEmail: '',
+            siteContactFirstName: '',
+            siteContactLastName: '',
+            siteContactPhone: '',
+            siteContactEmail: '',
+          }}
+          validationSchema={CreateSiteSchema}
+          onSubmit={(values) => {
+            handleSiteCreate({
+              ...values,
+              siteId: parseInt(values.siteId),
+              allocation: parseInt(values.allocation),
+            });
+          }}
+          onClose={onDialogClose}
+        />
+      )}
+    </Dialog>
+  );
+};
+
+export default () => {
+  const classes = useStyles();
+  const { openToast } = useToast();
+  const [activeModalForm, setActiveModalForm] = useState(null);
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
-  const [activeModalForm, setActiveModalForm] = useState(null);
+  const [isLoadingReport, setLoadingReport] = useState(false);
 
   const [orderBy, setOrderBy] = useState('siteName');
   const [healthAuthorities, setHealthAuthorities] = useState([
@@ -87,32 +178,43 @@ export default () => {
     setLoadingData(false);
   };
 
-  const handleSiteCreate = async (site) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
-      method: 'POST',
+  const closeDialog = () => {
+    setActiveModalForm(null);
+  };
+
+  const generateReportByRegion = async (regionId) => {
+    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/hired/${regionId}`, {
       headers: {
         Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
       },
-      body: JSON.stringify(site),
+      method: 'GET',
     });
 
     if (response.ok) {
-      setActiveModalForm(null);
-      fetchSites();
+      openToast({
+        status: ToastStatus.Success,
+        message: response.message || 'Report generated successfully!',
+      });
+      const blob = await response.blob();
+      saveAs(blob, `report-hired-${regionId}-${new Date().toJSON()}.csv`);
     } else {
-      const error = await response.json();
-      if (error.status && error.status === 'Duplicate') {
-        openToast({ status: ToastStatus.Error, message: 'Duplicate site ID' });
-      } else {
-        openToast({
-          status: ToastStatus.Error,
-          message: response.error || response.statusText || 'Server error',
-        });
-      }
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || 'Error occurred while generating report',
+      });
     }
   };
+
+  const downloadHiringReport = async () => {
+    setLoadingReport(true);
+    for (const region of healthAuthorities) {
+      if (region !== 'None') {
+        await generateReportByRegion(region);
+      }
+    }
+    setLoadingReport(false);
+  };
+
   useEffect(() => {
     setHealthAuthorities(
       roles.includes('superuser') || roles.includes('ministry_of_health')
@@ -128,107 +230,65 @@ export default () => {
     // This fetch sites is a dependency of this function. This needs to be reworked, but it is outside of the scope of the ticket
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history, location]);
-  const defaultOnClose = () => {
-    setActiveModalForm(null);
-  };
+
   return (
     <>
-      <Dialog title={`Create Site`} open={activeModalForm != null} onClose={defaultOnClose}>
-        {activeModalForm === 'new-site' && (
-          <NewSiteForm
-            initialValues={{
-              siteId: '',
-              siteName: '',
-              registeredBusinessName: '',
-              address: '',
-              city: '',
-              isRHO: null,
-              postalCode: '',
-              healthAuthority: '',
-              allocation: '',
-              operatorName: '',
-              operatorContactFirstName: '',
-              operatorContactLastName: '',
-              operatorPhone: '',
-              operatorEmail: '',
-              siteContactFirstName: '',
-              siteContactLastName: '',
-              siteContactPhone: '',
-              siteContactEmail: '',
-            }}
-            validationSchema={CreateSiteSchema}
-            onSubmit={(values) => {
-              handleSiteCreate({
-                siteId: parseInt(values.siteId),
-                siteName: values.siteName,
-                registeredBusinessName: values.registeredBusinessName,
-                address: values.address,
-                city: values.city,
-                isRHO: values.isRHO,
-                postalCode: values.postalCode,
-                healthAuthority: values.healthAuthority,
-                allocation: parseInt(values.allocation),
-                operatorName: values.operatorName,
-                operatorContactFirstName: values.operatorContactFirstName,
-                operatorContactLastName: values.operatorContactLastName,
-                operatorPhone: values.operatorPhone,
-                operatorEmail: values.operatorEmail,
-                siteContactFirstName: values.siteContactFirstName,
-                siteContactLastName: values.siteContactLastName,
-                siteContactPhone: values.siteContactPhone,
-                siteContactEmail: values.siteContactEmail,
-              });
-            }}
-            onClose={defaultOnClose}
-          />
-        )}
-      </Dialog>
+      <SiteFormsDialog
+        activeForm={activeModalForm}
+        onDialogSubmit={fetchSites}
+        onDialogClose={closeDialog}
+      />
+
       <Grid
         container
         alignContent='flex-start'
         justify='flex-start'
         alignItems='center'
-        direction='column'
+        direction='row'
       >
-        <Grid
-          container
-          alignContent='flex-start'
-          justify='flex-start'
-          alignItems='center'
-          direction='row'
-        >
-          <Grid item>
-            <Box pl={2} pr={2} pt={1}>
-              <Typography variant='body1' gutterBottom>
-                Filter:
-              </Typography>
-            </Box>
+        <Grid className={classes.rootItem} item xs={2}>
+          <Typography variant='body1' className={classes.filterLabel} gutterBottom>
+            Health Region:
+          </Typography>
+          <TableFilter
+            onFilter={(filteredRows) => setRows(filteredRows)}
+            values={healthAuthorities}
+            rows={fetchedRows}
+            label='Health Authority'
+            filterField='healthAuthority'
+          />
+        </Grid>
+
+        <Grid item xs={6} />
+
+        <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+          <Grid item xs={2} />
+          <Grid className={classes.rootItem} item xs={2}>
+            <Button
+              onClick={() => {
+                setActiveModalForm('new-site');
+              }}
+              size='medium'
+              text='Create Site'
+              startIcon={<AddCircleOutlineIcon />}
+            />
           </Grid>
-          <Grid item>
-            <Box minWidth={180}>
-              <TableFilter
-                onFilter={(filteredRows) => setRows(filteredRows)}
-                values={healthAuthorities}
-                rows={fetchedRows}
-                label='Health Authority'
-                filterField='healthAuthority'
-              />
-            </Box>
-          </Grid>
-          <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-            <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
-              <Button
-                onClick={async () => {
-                  setActiveModalForm('new-site');
-                }}
-                size='medium'
-                text='Create Site'
-              />
-            </Grid>
+        </CheckPermissions>
+
+        {roles.includes('superuser') && <Grid item xs={8} />}
+        <Grid className={classes.rootItem} item xs={4}>
+          <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
+            <Button
+              onClick={downloadHiringReport}
+              variant='outlined'
+              text='Download Hiring Milestones Report'
+              loading={isLoadingReport}
+            />
           </CheckPermissions>
         </Grid>
+
         {isPendingRequests && (
-          <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
+          <Grid className={classes.tableItem} item xs={12}>
             <Table
               columns={columns}
               order={order}
@@ -249,7 +309,7 @@ export default () => {
                 return row[columnId];
               }}
             />
-          </Box>
+          </Grid>
         )}
       </Grid>
     </>

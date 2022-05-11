@@ -11,11 +11,12 @@ export default () => {
         permittedRoles={['health_authority', 'ministry_of_health']}
         renderErrorMessage={true}
       >
-        <Box pt={4} pb={4} pl={2} pr={2}>
+        <Box py={4} px={2}>
           <Typography variant='subtitle1' gutterBottom>
-            Sites
+            View Sites
           </Typography>
         </Box>
+
         <SiteTable />
       </CheckPermissions>
     </Page>

@@ -1,6 +1,8 @@
 const { dbClient, collections } = require('../db');
 const keycloak = require('../keycloak');
 
+const DEFAULT_REGION_NAME = '';
+
 const getReport = async () => {
   const total = await dbClient.db[collections.PARTICIPANTS].countDoc({});
   const qualified = await dbClient.db[collections.PARTICIPANTS].countDoc({ interested: 'yes' });
@@ -135,8 +137,18 @@ const getParticipantsReport = async () => {
   }));
 };
 
-const getHiredParticipantsReport = async () => {
+const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
   const users = await keycloak.getUsers();
+
+  const searchOptions = {
+    status: ['hired'],
+    'duplicateArchivedJoin.status': null,
+    // 'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
+  };
+
+  if (region !== DEFAULT_REGION_NAME) {
+    searchOptions['employerSiteJoin.body.healthAuthority'] = region;
+  }
 
   const hiredEntries = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
@@ -175,11 +187,8 @@ const getHiredParticipantsReport = async () => {
         },
       },
     })
-    .find({
-      status: ['hired'],
-      'duplicateArchivedJoin.status': null,
-      // 'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
-    });
+    .find(searchOptions);
+
   return hiredEntries.map((entry) => ({
     participantId: entry.participant_id,
     participantFsa: entry.participantJoin?.[0]?.body?.postalCodeFsa,
@@ -288,4 +297,5 @@ module.exports = {
   getHiredParticipantsReport,
   getRejectedParticipantsReport,
   getNoOfferParticipantsReport,
+  DEFAULT_REGION_NAME,
 };

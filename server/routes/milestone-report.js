@@ -11,8 +11,10 @@ const { asyncMiddleware } = require('../error-handler.js');
 const {
   getReport,
   getHiredParticipantsReport,
+  getRosParticipantsReport,
   DEFAULT_REGION_NAME,
 } = require('../services/reporting');
+const { reportType } = require('../constants');
 
 // Router
 const router = express.Router();
@@ -20,14 +22,11 @@ const router = express.Router();
 router.use(keycloak.getUserInfoMiddleware());
 
 /**
- * Template for generating a hired report
- * @param user user data of a person requesting report
- * @param res response
+ * Generate hired milestone report
+ * @param csvStream output stream
  * @param {string} region health region; optional - defaults to ''
  */
-const generateMilestoneReport = async (user, res, region = DEFAULT_REGION_NAME) => {
-  const csvStream = csv.format({ headers: true });
-  csvStream.pipe(res);
+const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
   const results = await getHiredParticipantsReport(region);
   results.forEach((result) => {
     csvStream.write({
@@ -47,8 +46,60 @@ const generateMilestoneReport = async (user, res, region = DEFAULT_REGION_NAME) 
       'Intent To Rehire': result?.rehire,
     });
   });
+};
+
+/**
+ * Generate ROS milestone report
+ * @param csvStream output stream
+ */
+const generateRosReport = async (csvStream) => {
+  const results = await getRosParticipantsReport();
+  results.forEach((result) => {
+    csvStream.write({
+      'Participant ID': result.participantId,
+      'Confirm HCA': result.isHCA,
+      'ROS Start Date': result.startDate,
+      'ROS End Date': result.endDate,
+      'Start Date at a Site': result.siteStartDate,
+      'Site of ROS': result.site,
+      'Health Region': result.healthRegion,
+    });
+  });
+};
+
+/**
+ * Template for generating a hired report
+ * @param user user data of a person requesting report
+ * @param res response
+ * @param {reportType} type type of report
+ * @param {string} region health region; optional - defaults to ''
+ */
+const generateReport = async (user, res, type, region = DEFAULT_REGION_NAME) => {
+  const csvStream = csv.format({ headers: true });
+  csvStream.pipe(res);
+
+  switch (type) {
+    case reportType.HIRED:
+      await generateHiredReport(csvStream, region);
+      break;
+
+    case reportType.ROS:
+      await generateRosReport(csvStream);
+      break;
+
+    default:
+      logger.info({
+        action: `generate-report-action`,
+        performed_by: {
+          username: user.username,
+          id: user.id,
+        },
+      });
+      break;
+  }
+
   logger.info({
-    action: 'milestone-report_get_csv_hired',
+    action: `report-csv-${type}`,
     performed_by: {
       username: user.username,
       id: user.id,
@@ -77,7 +128,7 @@ router.get(
   asyncMiddleware(async (req, res) => {
     const { hcapUserInfo: user } = req;
     res.attachment('report.csv');
-    await generateMilestoneReport(user, res);
+    await generateReport(user, res, reportType.HIRED);
   })
 );
 
@@ -93,8 +144,18 @@ router.get(
     }
 
     res.attachment('report.csv');
-    await generateMilestoneReport(user, res, regionId);
+    await getReport(user, res, reportType.HIRED, regionId);
     return res.status(200).json({ message: 'Report generated successfully!' });
+  })
+);
+
+router.get(
+  '/csv/ros',
+  [keycloak.allowRolesMiddleware('ministry_of_health')],
+  asyncMiddleware(async (req, res) => {
+    const { hcapUserInfo: user } = req;
+    res.attachment('report.csv');
+    await generateReport(user, res, reportType.ROS);
   })
 );
 

@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 const { dbClient, collections } = require('../db');
 const keycloak = require('../keycloak');
 
@@ -291,11 +292,53 @@ const getNoOfferParticipantsReport = async () => {
   }));
 };
 
+const getRosParticipantsReport = async () => {
+  const searchOptions = {};
+  const rosEntries = await dbClient.db[collections.ROS_STATUS]
+    .join({
+      participantJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS,
+        on: {
+          id: 'participant_id',
+        },
+      },
+      statusJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'participant_id',
+          current: true,
+        },
+      },
+      siteJoin: {
+        type: 'LEFT OUTER',
+        decomposeTo: 'object',
+        relation: collections.EMPLOYER_SITES,
+        on: {
+          id: 'site_id',
+        },
+      },
+    })
+    .find(searchOptions);
+
+  return rosEntries.map((entry) => ({
+    participantId: entry.participant_id,
+    isHCA: true, // TODO: confirm if we need to track this information in our db
+    startDate: dayjs(entry.data?.date),
+    endDate: dayjs(entry.data?.date).add(1, 'y'),
+    siteStartDate: dayjs(entry.data?.date), // TODO: update once the support for multiple sites is enabled
+    site: entry.siteJoin?.body?.siteName,
+    healthRegion: entry.siteJoin?.body?.healthAuthority,
+  }));
+};
+
 module.exports = {
   getReport,
   getParticipantsReport,
   getHiredParticipantsReport,
   getRejectedParticipantsReport,
   getNoOfferParticipantsReport,
+  getRosParticipantsReport,
   DEFAULT_REGION_NAME,
 };

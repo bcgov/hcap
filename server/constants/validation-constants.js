@@ -64,6 +64,7 @@ const participantStatuses = [
   'archived',
   'pending_acknowledgement',
   'ros',
+  'rosComplete',
 ];
 
 const postHireStatuses = {
@@ -98,6 +99,11 @@ const archiveStatusOptions = [
 
 const validIndigenousIdentities = ['first-nations', 'inuit', 'metis', 'other', 'unknown'];
 
+const ROSUnderwayStatus = 'Return of service underway';
+const ROSCompleteStatus = 'Return of service complete';
+const ROSCompletedType = { value: 'rosComplete', label: 'Return of service completed' };
+const SuccessfulROSReason = 'Completed all HCAP requirements';
+
 module.exports = {
   healthRegions,
   foundOutReasons,
@@ -112,4 +118,8 @@ module.exports = {
   roles,
   orderDirections,
   validIndigenousIdentities,
+  ROSUnderwayStatus,
+  ROSCompleteStatus,
+  ROSCompletedType,
+  SuccessfulROSReason,
 };

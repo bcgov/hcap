@@ -420,6 +420,7 @@ export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => 
               }
             }}
             onClose={defaultOnClose}
+            participant={actionMenuParticipant}
           />
         )}
       </Dialog>

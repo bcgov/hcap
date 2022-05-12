@@ -12,11 +12,24 @@ import {
   archiveTypeOptions,
   UnsuccessfulCohortReason,
   PSIEducationUnderwayStatus,
+  EmploymentEndedType,
+  ROSCompletedType,
+  SuccessfulROSReason,
+  ROSUnderwayStatus,
+  ROSCompleteStatus,
 } from '../../constants';
 import { getTodayDate } from '../../utils';
 
-const statusOptions = archiveStatusOptions.map((option) => ({ value: option, label: option }));
-const reasonOptions = archiveReasonOptions.map((option) => ({ value: option, label: option }));
+/**
+ * Formats for RenderSelectField
+ * @param {[string]} optionList
+ * @returns {[{value: string, label: string},...]}
+ */
+const formatOptions = (optionList) => {
+  return optionList.map((option) => ({ value: option, label: option }));
+};
+
+const reasonOptions = formatOptions(archiveReasonOptions);
 
 const archiveHiredParticipantInitialValues = {
   type: '',
@@ -27,78 +40,116 @@ const archiveHiredParticipantInitialValues = {
   confirmed: false,
 };
 
-export const ArchiveHiredParticipantForm = ({ onSubmit, onClose }) => {
+export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participant }) => {
+  if (!participant) {
+    return null;
+  }
+  const isROSStarted = participant.rosStatuses ? true : false;
+
+  const typeOptions = isROSStarted
+    ? [ROSCompletedType, ...archiveTypeOptions]
+    : [...archiveTypeOptions];
+
+  const endDate = isROSStarted
+    ? dayjs(participant.rosStatuses[0].data.date).add(1, 'years').format('YYYY/MM/DD')
+    : dayjs().subtract(1, 'days').format('YYYY/MM/DD');
+
+  const getStatusOptions = (selectedReason) => {
+    if (isROSStarted) {
+      return selectedReason === SuccessfulROSReason
+        ? formatOptions([ROSCompleteStatus])
+        : formatOptions([ROSUnderwayStatus]);
+    }
+    return selectedReason === UnsuccessfulCohortReason
+      ? formatOptions([PSIEducationUnderwayStatus])
+      : formatOptions(archiveStatusOptions);
+  };
+
   return (
     <Formik
       initialValues={archiveHiredParticipantInitialValues}
       validationSchema={ArchiveHiredParticipantSchema}
       onSubmit={onSubmit}
     >
-      {(props) => (
-        <FormikForm>
-          <Field
-            name='type'
-            component={RenderSelectField}
-            options={archiveTypeOptions}
-            label='Type'
-          />
-          {props.values.type === 'employmentEnded' && (
-            <>
-              <Field
-                name='endDate'
-                component={RenderDateField}
-                maxDate={getTodayDate}
-                label='End Date'
-              />
-              <Field
-                name='reason'
-                component={RenderSelectField}
-                options={reasonOptions}
-                label='Reason'
-              />
-              <Field
-                name='status'
-                component={RenderSelectField}
-                options={
-                  props.values.reason === UnsuccessfulCohortReason
-                    ? [{ value: PSIEducationUnderwayStatus, label: PSIEducationUnderwayStatus }]
-                    : statusOptions
+      {({ values, setFieldValue, submitForm }) => {
+        return (
+          <FormikForm>
+            <Field
+              name='type'
+              component={RenderSelectField}
+              options={typeOptions}
+              label='Type'
+              onChange={(event) => {
+                const newValue = event.target.value;
+                setFieldValue('type', newValue);
+
+                if (isROSStarted) {
+                  if (newValue === ROSCompletedType.value) {
+                    setFieldValue('reason', SuccessfulROSReason);
+                    setFieldValue('status', ROSCompleteStatus);
+                    setFieldValue('endDate', endDate);
+                  } else {
+                    setFieldValue('reason', '');
+                    setFieldValue('status', ROSUnderwayStatus);
+                    setFieldValue('endDate', dayjs().subtract(1, 'days').format('YYYY/MM/DD'));
+                  }
                 }
-                label='Status'
-              />
-              <Field
-                name='rehire'
-                component={RenderRadioGroup}
-                options={[
-                  { value: 'Yes', label: 'Yes' },
-                  { value: 'No', label: 'No' },
-                ]}
-                label='I intend to rehire this position'
-              />
-            </>
-          )}
-          <Field
-            name='confirmed'
-            component={RenderCheckbox}
-            label='I acknowledge that the information above is correct and that archiving this participant is irreversible.'
-          />
-          <Box mt={3}>
-            <Grid container spacing={2} justify='flex-end'>
-              <Grid item>
-                <Button onClick={onClose} color='default' text='Cancel' />
-              </Grid>
-              <Grid item>
-                <Button
-                  onClick={props.submitForm}
-                  variant='contained'
-                  color='primary'
-                  text='Submit'
+              }}
+            />
+            {[EmploymentEndedType.value, ROSCompletedType.value].includes(values.type) && (
+              <>
+                <Field
+                  name='endDate'
+                  component={RenderDateField}
+                  maxDate={values.type === ROSCompletedType.value ? null : getTodayDate()}
+                  disabled={values.type === ROSCompletedType.value}
+                  label='End Date'
                 />
+                <Field
+                  name='reason'
+                  component={RenderSelectField}
+                  options={
+                    values.type === ROSCompletedType.value
+                      ? formatOptions([SuccessfulROSReason])
+                      : reasonOptions
+                  }
+                  label='Reason'
+                />
+                <Field
+                  name='status'
+                  component={RenderSelectField}
+                  options={getStatusOptions(values.reason)}
+                  label='Status'
+                />
+                <Field
+                  name='rehire'
+                  component={RenderRadioGroup}
+                  options={[
+                    { value: 'Yes', label: 'Yes' },
+                    { value: 'No', label: 'No' },
+                  ]}
+                  label='I intend to rehire this position'
+                />
+              </>
+            )}
+            <Field
+              name='confirmed'
+              component={RenderCheckbox}
+              label='I acknowledge that the information above is correct and that archiving this participant is irreversible.'
+            />
+            <Box mt={3}>
+              <Grid container spacing={2} justify='flex-end'>
+                <Grid item>
+                  <Button onClick={onClose} color='default' text='Cancel' />
+                </Grid>
+                <Grid item>
+                  <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />
+                </Grid>
               </Grid>
-            </Grid>
-          </Box>
-        </FormikForm>
-      )}
+            </Box>
+          </FormikForm>
+        );
+      }}
     </Formik>
   );
 };

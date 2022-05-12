@@ -161,6 +161,7 @@ export const ParticipantTableDialogues = ({
             handleEngage(actionMenuParticipant.id, 'archived', values);
           }}
           onClose={onClose}
+          participant={actionMenuParticipant}
         />
       )}
       {activeModalForm === 'return-of-service' && (

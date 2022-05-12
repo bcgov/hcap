@@ -309,8 +309,10 @@ const ParticipantTable = () => {
   };
 
   const openFormForParticipant = async (participantId, formKey) => {
-    const participant = await fetchParticipant({ id: participantId });
-    setActionMenuParticipant(participant);
+    if (formKey === 'edit-participant') {
+      const participant = await fetchParticipant({ id: participantId });
+      setActionMenuParticipant(participant);
+    }
     setActiveModalForm(formKey);
   };
 

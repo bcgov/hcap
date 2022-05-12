@@ -37,6 +37,9 @@ const setParticipantStatus = async (
       status: HIRED,
       current: true,
     });
+    // Statuses from when ROS ends & participant archived
+    const isRosComplete = data?.type === 'rosComplete';
+    const isRosIncomplete = data?.type === 'employmentEnded';
 
     // Case: Changing status for hired participant
     if (status !== REJECTED && status !== ARCHIVED) {
@@ -119,8 +122,9 @@ const setParticipantStatus = async (
     // Invalidate pervious status
     if (
       existingCurrentStatus &&
-      existingCurrentStatus.id !== hiredStatus?.id &&
-      !updatedHireStatus
+      ((existingCurrentStatus.id !== hiredStatus?.id && !updatedHireStatus) ||
+        isRosComplete ||
+        isRosIncomplete)
     ) {
       await tx[collections.PARTICIPANTS_STATUS].update(
         {
@@ -143,7 +147,7 @@ const setParticipantStatus = async (
       id: participantId,
     });
     // Now check if current status is archived then set interested flag
-    if (status === ARCHIVED) {
+    if (status === ARCHIVED && !isRosComplete) {
       // eslint-disable-next-line no-use-before-define
       await withdrawParticipant(participant[0]);
     }

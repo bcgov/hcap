@@ -34,11 +34,10 @@ const deleteParticipant = async ({ email }) => {
   });
 };
 
-const removeAllParticipantStatusForUser = async ({ user, participantId }) =>
+const removeAllParticipantStatusForUser = async ({ currentStatusId }) =>
   dbClient.db[collections.PARTICIPANTS_STATUS].update(
     {
-      participant_id: participantId,
-      employer_id: user.id,
+      id: currentStatusId,
     },
     {
       current: false,
@@ -461,17 +460,12 @@ const getParticipants = async (
       const hiredBySomeoneInSameOrgStatus =
         hiredStatus && hiredForAssociatedSites && hiredStatus.employerId !== user.id;
       // Hired by same user but different site
+      const currentStatusInfo = item.statusInfos[0] || {};
       const hiredForOtherSite =
         hiredStatus &&
-        hiredForAssociatedSites &&
-        !hiredByOtherOrg &&
-        !hiredBySomeoneInSameOrgStatus &&
-        item.statusInfos?.find(
-          (status) =>
-            status.data?.site !== hiredStatus?.data?.site &&
-            status.employerId === hiredStatus.employerId &&
-            status.employerId === user.id
-        );
+        currentStatusInfo.data?.site !== hiredStatus.data.site &&
+        !['hired', 'archived'].includes(currentStatusInfo.status) &&
+        hiredStatus.employerId === user.id;
 
       // Archived by org
       const archivedByOrgStatus = item.statusInfos?.find(
@@ -496,7 +490,10 @@ const getParticipants = async (
             !['hired', 'archived', 'rejected'].includes(statusInfo.status) &&
             statusInfo.employerId === user.id
         );
-        if (hasOwnInteraction) {
+        if (
+          (hasOwnInteraction && hiredBySomeoneInSameOrgStatus) ||
+          (hiredStatus.employerId === user.id && hiredForOtherSite)
+        ) {
           computedStatus = {
             createdAt: hiredStatus.createdAt,
             status: 'hired_by_peer',

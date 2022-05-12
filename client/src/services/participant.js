@@ -172,7 +172,7 @@ export const getParticipants = async ({
 };
 
 export const addParticipantStatus = async ({ participantId, status, additional }) => {
-  const { sites = [], ...rest } = additional;
+  const { sites = [], currentStatusId, ...rest } = additional;
   const [siteObj] = sites;
   const site = siteObj;
   const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
@@ -182,7 +182,7 @@ export const addParticipantStatus = async ({ participantId, status, additional }
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
-    body: JSON.stringify({ participantId, status, data: rest, site }),
+    body: JSON.stringify({ participantId, status, data: rest, site, currentStatusId }),
   });
 
   if (response.ok) {
@@ -192,7 +192,7 @@ export const addParticipantStatus = async ({ participantId, status, additional }
   throw new Error('Failed to add participant status', response.error || response.statusText);
 };
 
-export const acknowledgeParticipant = async ({ participantId, multiOrgHire }) => {
+export const acknowledgeParticipant = async ({ participantId, multiOrgHire, currentStatusId }) => {
   const response = await fetch(`${API_URL}/api/v1/employer-actions/acknowledgment`, {
     method: 'DELETE',
     headers: {
@@ -200,7 +200,7 @@ export const acknowledgeParticipant = async ({ participantId, multiOrgHire }) =>
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
-    body: JSON.stringify({ participantId, multiOrgHire }),
+    body: JSON.stringify({ participantId, multiOrgHire, currentStatusId }),
   });
 
   if (response.ok) {

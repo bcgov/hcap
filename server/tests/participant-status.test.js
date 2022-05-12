@@ -44,7 +44,7 @@ describe('Test Participant status data model and service', () => {
     const emp1 = { id: v4(), sites: [site.siteId] };
     const emp2 = { id: v4(), sites: [site.siteId] };
 
-    await setParticipantStatus(
+    const ps1 = await setParticipantStatus(
       emp1.id,
       participant.id,
       PROSPECTING,
@@ -61,7 +61,6 @@ describe('Test Participant status data model and service', () => {
     });
     expect(prospectingStatus).toBeDefined();
     expect(prospectingStatus.status).toBe(PROSPECTING);
-
     // Moving to next status
     let result = await setParticipantStatus(
       emp2.id,
@@ -70,7 +69,8 @@ describe('Test Participant status data model and service', () => {
       {
         site: site.siteId,
       },
-      emp2
+      emp2,
+      ps1.id
     );
     expect(result.status).not.toBe(INVALID_STATUS_TRANSITION);
 
@@ -82,14 +82,15 @@ describe('Test Participant status data model and service', () => {
     expect(existingStatuses.length).toBe(2);
 
     // Move to offer made and hired
-    await setParticipantStatus(
+    const ps2 = await setParticipantStatus(
       emp2.id,
       participant.id,
       OFFER_MADE,
       {
         site: site.siteId,
       },
-      emp2
+      emp2,
+      result.id
     );
     expect(
       (
@@ -99,14 +100,15 @@ describe('Test Participant status data model and service', () => {
         })
       ).length
     ).toBe(3);
-    await setParticipantStatus(
+    const ps3 = await setParticipantStatus(
       emp2.id,
       participant.id,
       HIRED,
       {
         site: site.siteId,
       },
-      emp2
+      emp2,
+      ps2.id
     );
     expect(
       (
@@ -126,7 +128,7 @@ describe('Test Participant status data model and service', () => {
     ).toBe(HIRED);
 
     // Archived by emp1
-    result = await setParticipantStatus(emp1.id, participant.id, ARCHIVED, {}, emp1);
+    result = await setParticipantStatus(emp1.id, participant.id, ARCHIVED, {}, emp1, ps3.id);
     expect(result.status).not.toBe(INVALID_ARCHIVE);
     expect(result.status).not.toBe(INVALID_STATUS_TRANSITION);
     const allStatuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
@@ -164,7 +166,7 @@ describe('Test Participant status data model and service', () => {
     const emp2 = v4();
     const emp3 = v4();
 
-    await setParticipantStatus(
+    const ps1 = await setParticipantStatus(
       emp1,
       participant.id,
       'prospecting',
@@ -242,7 +244,8 @@ describe('Test Participant status data model and service', () => {
       },
       {
         sites: [site1.siteId],
-      }
+      },
+      ps1.id
     );
 
     // Read by multi org employer

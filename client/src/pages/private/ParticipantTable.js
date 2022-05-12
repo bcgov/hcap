@@ -251,8 +251,10 @@ const ParticipantTable = () => {
           ? actionMenuParticipant.statusInfos[0]
           : {};
       const site = statusInfo.data?.site;
+      const currentStatusId = statusInfo?.id;
       const additionalParma = {
         ...(site && { sites: [site] }),
+        ...(currentStatusId && { currentStatusId }),
         ...additional,
       };
       const { data } = await addParticipantStatus({
@@ -300,9 +302,18 @@ const ParticipantTable = () => {
 
   const handleAcknowledge = async (id, multiOrgHire) => {
     try {
+      // Need to find status for participant
+      const participantInfo = rows.find((row) => row.id === id) || {};
+      const statusInfo =
+        participantInfo.engage?.statusInfos && participantInfo.engage?.statusInfos.length > 0
+          ? participantInfo.engage.statusInfos[0]
+          : {};
+      console.log('p', participantInfo);
+      console.log('s', statusInfo);
       const { message, success } = await acknowledgeParticipant({
         participantId: id,
         multiOrgHire,
+        currentStatusId: statusInfo?.id,
       });
 
       openToast({
@@ -322,6 +333,7 @@ const ParticipantTable = () => {
     }
   };
 
+  // TODO: There will ba merge conflict with Tara
   const openFormForParticipant = async (participantId, formKey) => {
     if (formKey === 'edit-participant') {
       const participant = await fetchParticipant({ id: participantId });

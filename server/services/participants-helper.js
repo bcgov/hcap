@@ -44,6 +44,7 @@ const scrubParticipantData = (raw, joinNames) =>
     const statusInfos = [];
 
     const decomposeStatusInfo = (statusInfo) => ({
+      id: statusInfo.id,
       createdAt: statusInfo.created_at,
       employerId: statusInfo.employer_id,
       ...(statusInfo.data && Object.keys(statusInfo.data).length > 0
@@ -239,7 +240,7 @@ class FieldsFilteredParticipantsFinder {
     this.context = context;
   }
 
-  joinTables({ siteIdDistance, user, isOpen }) {
+  joinTables({ siteIdDistance, user, isOpen, isInProgress }) {
     const {
       employerSpecificJoin,
       hiredGlobalJoin,
@@ -340,6 +341,21 @@ class FieldsFilteredParticipantsFinder {
       },
     };
 
+    const userRejectJoin = isInProgress
+      ? {
+          userRejectedStatus: {
+            type: 'LEFT OUTER',
+            relation: collections.PARTICIPANTS_STATUS,
+            on: {
+              participant_id: 'id',
+              current: true,
+              status: rejected,
+              employer_id: user.id,
+            },
+          },
+        }
+      : {};
+
     // Attach all joins
     return {
       ...employerSpecificStatusJoin,
@@ -347,6 +363,7 @@ class FieldsFilteredParticipantsFinder {
       ...(!isOpen && rosJoin),
       ...(siteIdDistance && siteDistanceJoinJoin),
       ...(isOpen && orgJoin),
+      ...(isInProgress && userRejectJoin),
     };
   }
 
@@ -374,7 +391,7 @@ class FieldsFilteredParticipantsFinder {
 
       // Attache external tables
       this.context.table = this.context.table.join(
-        this.joinTables({ siteIdDistance, user, isOpen })
+        this.joinTables({ siteIdDistance, user, isOpen, isInProgress })
       );
 
       // Apply filtering logic
@@ -443,6 +460,9 @@ class FieldsFilteredParticipantsFinder {
         and: [
           {
             ...employerFilteringCriteria,
+          },
+          {
+            [`userRejectedStatus.status`]: null,
           },
         ],
       };

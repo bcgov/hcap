@@ -383,7 +383,7 @@ employerActionsRouter.post(
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantStatusChange, req.body);
-    const { site, data = {}, participantId, status } = req.body;
+    const { site, data = {}, participantId, status, currentStatusId = null } = req.body;
     const user = req.hcapUserInfo;
     // Check participant
     const participant = await getParticipantByID(participantId);
@@ -401,7 +401,8 @@ employerActionsRouter.post(
       participantId,
       status,
       { site, ...data },
-      user
+      user,
+      currentStatusId
     );
     logger.info({
       action: 'employer-actions_post',
@@ -424,13 +425,13 @@ employerActionsRouter.delete(
     // Get user
     const user = req.hcapUserInfo;
     // Get request body
-    const { body: { participantId, multiOrgHire } = {} } = req;
+    const { body: { participantId, multiOrgHire, currentStatusId } = {} } = req;
     if (!participantId) {
       return res.status(400).send('Missing participantId');
     }
 
     if (multiOrgHire) {
-      await removeAllParticipantStatusForUser({ user, participantId });
+      await removeAllParticipantStatusForUser({ participantId, currentStatusId });
       logger.info({
         action: 'acknowledgment_update',
         performed_by: {

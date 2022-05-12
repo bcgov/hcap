@@ -4,7 +4,12 @@ import store from 'store';
 import { saveAs } from 'file-saver';
 
 import { Page, Card, CheckPermissions, Button } from '../../components/generic';
-import { API_URL, ToastStatus } from '../../constants';
+import {
+  API_URL,
+  ToastStatus,
+  DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+  DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
+} from '../../constants';
 import { useToast } from '../../hooks';
 
 export default () => {
@@ -23,7 +28,6 @@ export default () => {
     hiredPerRegion: {},
   });
 
-  const DOWNLOAD_DEFAULT_ERROR_MESSAGE = 'Error while downloading report';
   const [isLoadingHiringReport, setLoadingHiringReport] = useState(false);
   const [isLoadingRosReport, setLoadingRosReport] = useState(false);
 
@@ -47,6 +51,22 @@ export default () => {
     }
   };
 
+  const onReportDownloadResult = async (response, reportFileName) => {
+    if (response.ok) {
+      const blob = await response.blob();
+      saveAs(blob, reportFileName);
+      openToast({
+        status: ToastStatus.Success,
+        message: response.message || DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
+      });
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+      });
+    }
+  };
+
   const handleDownloadHiringReportClick = async () => {
     setLoadingHiringReport(true);
     const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/hired`, {
@@ -56,15 +76,7 @@ export default () => {
       method: 'GET',
     });
 
-    if (response.ok) {
-      const blob = await response.blob();
-      saveAs(blob, `participant-stats-hired-${new Date().toJSON()}.csv`);
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
-      });
-    }
+    await onReportDownloadResult(response, `participant-stats-hired-${new Date().toJSON()}.csv`);
 
     setLoadingHiringReport(false);
   };
@@ -78,15 +90,10 @@ export default () => {
       method: 'GET',
     });
 
-    if (response.ok) {
-      const blob = await response.blob();
-      saveAs(blob, `return-of-service-milestones-${new Date().toJSON()}.csv`);
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
-      });
-    }
+    await onReportDownloadResult(
+      response,
+      `return-of-service-milestones-${new Date().toJSON()}.csv`
+    );
 
     setLoadingRosReport(false);
   };

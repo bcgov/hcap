@@ -12,9 +12,8 @@ const {
   getReport,
   getHiredParticipantsReport,
   getRosParticipantsReport,
-  DEFAULT_REGION_NAME,
 } = require('../services/reporting');
-const { reportType } = require('../constants');
+const { reportType, DEFAULT_REGION_NAME } = require('../constants');
 
 // Router
 const router = express.Router();
@@ -71,7 +70,7 @@ const generateRosReport = async (csvStream) => {
  * Template for generating a hired report
  * @param user user data of a person requesting report
  * @param res response
- * @param {reportType} type type of report
+ * @param {REPORT_TYPE} type type of report
  * @param {string} region health region; optional - defaults to ''
  */
 const generateReport = async (user, res, type, region = DEFAULT_REGION_NAME) => {
@@ -144,8 +143,8 @@ router.get(
     }
 
     res.attachment('report.csv');
-    await getReport(user, res, reportType.HIRED, regionId);
-    return res.status(200).json({ message: 'Report generated successfully!' });
+    await generateReport(user, res, reportType.HIRED, regionId);
+    return res.status(200);
   })
 );
 

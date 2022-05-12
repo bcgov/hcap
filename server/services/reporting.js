@@ -1,8 +1,7 @@
 const dayjs = require('dayjs');
 const { dbClient, collections } = require('../db');
 const keycloak = require('../keycloak');
-
-const DEFAULT_REGION_NAME = '';
+const { DEFAULT_REGION_NAME } = require('../constants');
 
 const getReport = async () => {
   const total = await dbClient.db[collections.PARTICIPANTS].countDoc({});

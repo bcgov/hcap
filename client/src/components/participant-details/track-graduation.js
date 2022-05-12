@@ -162,7 +162,7 @@ export const TrackGraduation = (props) => {
                   await handleArchive(props?.participant?.id, values, openToast);
                   fetchData();
                 }}
-                participantId={props?.participant?.id}
+                participant={props?.participant}
               />
             </Box>
           )}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import dayjs from 'dayjs';
@@ -19,32 +19,6 @@ import {
   ROSCompleteStatus,
 } from '../../constants';
 import { getTodayDate } from '../../utils';
-import { fetchParticipantReturnOfServiceStatus } from '../../services';
-
-/**
- * Returns form values dependent on the rosStatus of the participant
- * isROS is for logic purposes
- * @param {number} participantId
- * @returns { types, date, isROS } => { [{}], string, boolean }
- */
-const fetchFormData = async (participantId) => {
-  let rosStatus;
-  try {
-    rosStatus = await fetchParticipantReturnOfServiceStatus({ id: participantId });
-  } catch (err) {
-    rosStatus = false;
-  }
-
-  const isROS = rosStatus ? true : false;
-
-  const types = isROS ? [ROSCompletedType, ...archiveTypeOptions] : [...archiveTypeOptions];
-
-  const date = isROS
-    ? dayjs(rosStatus.data.date).add(1, 'years').format('YYYY/MM/DD')
-    : dayjs().subtract(1, 'days').format('YYYY/MM/DD');
-
-  return { types, date, isROS };
-};
 
 /**
  * Formats for RenderSelectField
@@ -66,20 +40,19 @@ const archiveHiredParticipantInitialValues = {
   confirmed: false,
 };
 
-export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participantId }) => {
-  const [typeOptions, setTypeOptions] = useState([]);
-  const [endDate, setEndDate] = useState([]);
-  const [isROSStarted, setROSStatus] = useState(false);
+export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participant }) => {
+  if (!participant) {
+    return null;
+  }
+  const isROSStarted = participant.rosStatuses ? true : false;
 
-  useEffect(() => {
-    if (participantId) {
-      fetchFormData(participantId).then(({ types, date, isROS }) => {
-        setTypeOptions(types);
-        setEndDate(date);
-        setROSStatus(isROS);
-      });
-    }
-  }, [setTypeOptions, setEndDate, setROSStatus, participantId]);
+  const typeOptions = isROSStarted
+    ? [ROSCompletedType, ...archiveTypeOptions]
+    : [...archiveTypeOptions];
+
+  const endDate = isROSStarted
+    ? dayjs(participant.rosStatuses[0].data.date).add(1, 'years').format('YYYY/MM/DD')
+    : dayjs().subtract(1, 'days').format('YYYY/MM/DD');
 
   const getStatusOptions = (selectedReason) => {
     if (isROSStarted) {

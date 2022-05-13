@@ -189,6 +189,11 @@ export const addParticipantStatus = async ({ participantId, status, additional }
     return response.json();
   }
 
+  if (response.status === 400) {
+    const error = await response.json();
+    throw new Error(error.message);
+  }
+
   throw new Error('Failed to add participant status', response.error || response.statusText);
 };
 

@@ -399,7 +399,14 @@ class FieldsFilteredParticipantsFinder {
       // Common employer Filtering criteria
       const employerFilteringCriteria = {
         or: [
-          { [`${employerSpecificJoin}.employer_id`]: user.id },
+          {
+            and: [
+              {
+                [`${employerSpecificJoin}.employer_id`]: user.id,
+                [`${employerSpecificJoin}.data.site`]: null,
+              },
+            ],
+          },
           { [`${employerSpecificJoin}.data.site IN`]: user.sites },
         ],
       };

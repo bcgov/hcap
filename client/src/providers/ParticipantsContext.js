@@ -13,6 +13,8 @@ const types = {
   UPDATE_TABLE_ORDER: 'UPDATE_TABLE_ORDER',
 };
 
+const DEFAULT_SORT_ORDER = { field: 'id', direction: 'asc' };
+
 const participantsReducer = (state, action) => {
   const { type, payload } = action;
   const {
@@ -54,6 +56,7 @@ const participantsReducer = (state, action) => {
           total: 0,
           offset: 0,
         },
+        order: { ...DEFAULT_SORT_ORDER }, // Clearing the sort order when changing tabs
       };
     }
     case UPDATE_PAGINATION: {
@@ -120,7 +123,7 @@ const ParticipantsProvider = ({ role, children }) => {
       total: 0,
       offset: 0,
     },
-    order: { field: 'id', direction: 'asc' },
+    order: { ...DEFAULT_SORT_ORDER },
   });
 
   useEffect(() => {

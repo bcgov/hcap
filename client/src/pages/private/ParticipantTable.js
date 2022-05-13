@@ -277,17 +277,20 @@ const ParticipantTable = () => {
               : status
           ]
         );
-        setActionMenuParticipant(null);
-        setSelectedParticipants([]);
-        setActiveModalForm(null);
-        fetchParticipants();
       }
     } catch (err) {
+      setLoadingData(false);
       openToast({
         status: ToastStatus.Error,
         message: err.message || 'Server error',
       });
     }
+
+    // Reload
+    setActionMenuParticipant(null);
+    setSelectedParticipants([]);
+    setActiveModalForm(null);
+    fetchParticipants();
   };
 
   const handleRosUpdate = (success) => {

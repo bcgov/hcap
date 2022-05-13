@@ -124,22 +124,29 @@ const setParticipantStatus = async (
     }
     // Invalidate pervious status
     let dataToSave = data;
+    const invalidateSiteStatus = async () =>
+      tx[collections.PARTICIPANTS_STATUS].update(
+        {
+          participant_id: participantId,
+          'data.site': site,
+          'status IN': [PROSPECTING, INTERVIEWING, OFFER_MADE],
+        },
+        {
+          current: false,
+        }
+      );
     if (existingCurrentStatus) {
       // Incase of hire site may mismatch with existing status site
-      if (existingCurrentStatus.data?.site !== site && status === HIRED) {
+      if (
+        existingCurrentStatus.data?.site &&
+        existingCurrentStatus.data?.site !== site &&
+        status === HIRED
+      ) {
         // Now track this info in data body
         dataToSave = { ...dataToSave, previousStatus: existingCurrentStatus.id };
         // Invalidate all previous status for hiring site
         // TODO: May be a notification is required for user
-        await tx[collections.PARTICIPANTS_STATUS].update(
-          {
-            participant_id: participantId,
-            'data.site': site,
-          },
-          {
-            current: false,
-          }
-        );
+        await invalidateSiteStatus();
       } else {
         await tx[collections.PARTICIPANTS_STATUS].update(
           {
@@ -147,6 +154,10 @@ const setParticipantStatus = async (
           },
           { current: false }
         );
+        if (!existingCurrentStatus.data?.site) {
+          // Invalidate all current in progress statuses for site
+          await invalidateSiteStatus();
+        }
       }
     }
 

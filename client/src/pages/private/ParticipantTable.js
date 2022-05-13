@@ -240,6 +240,7 @@ const ParticipantTable = () => {
   };
 
   const handleEngage = async (participantId, status, additional = {}) => {
+    let closeModal = true;
     try {
       if (isLoadingData) {
         return;
@@ -266,6 +267,7 @@ const ParticipantTable = () => {
       if (status === participantStatus.PROSPECTING) {
         // Modal appears after submitting
         setActiveModalForm(participantStatus.PROSPECTING);
+        closeModal = false;
       } else {
         const index = rows.findIndex((row) => row.id === participantId);
         const { firstName, lastName } = rows[index];
@@ -287,9 +289,11 @@ const ParticipantTable = () => {
     }
 
     // Reload
-    setActionMenuParticipant(null);
+    if (closeModal) {
+      setActionMenuParticipant(null);
+      setActiveModalForm(null);
+    }
     setSelectedParticipants([]);
-    setActiveModalForm(null);
     fetchParticipants();
   };
 

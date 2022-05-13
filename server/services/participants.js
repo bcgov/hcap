@@ -454,15 +454,21 @@ const getParticipants = async (
       const hiredStatus = item.statusInfos?.find((statusInfo) => statusInfo.status === 'hired');
       const hiredForAssociatedSites = hiredStatus && user.sites.includes(hiredStatus?.data.site);
 
+      // Current Status
+      const currentStatusInfo = item.statusInfos[0] || {};
+      const currentStatusInProgress = !['hired', 'archived'].includes(currentStatusInfo.status);
       // The participant is hired in a site which is not associated with user
       const hiredByOtherOrg = hiredStatus && !hiredForAssociatedSites;
       // The participant is hired by some other user but site associated by user
       const hiredBySomeoneInSameOrgStatus =
-        hiredStatus && hiredForAssociatedSites && hiredStatus.employerId !== user.id;
+        hiredStatus &&
+        hiredForAssociatedSites &&
+        hiredStatus.employerId !== user.id &&
+        currentStatusInProgress;
       // Hired by same user but different site
-      const currentStatusInfo = item.statusInfos[0] || {};
       const hiredForOtherSite =
         hiredStatus &&
+        hiredForAssociatedSites &&
         currentStatusInfo.data?.site !== hiredStatus.data.site &&
         !['hired', 'archived'].includes(currentStatusInfo.status) &&
         hiredStatus.employerId === user.id;
@@ -485,20 +491,10 @@ const getParticipants = async (
           status: 'already_hired',
         };
       } else if (hiredBySomeoneInSameOrgStatus || hiredForOtherSite) {
-        const hasOwnInteraction = item.statusInfos.find(
-          (statusInfo) =>
-            !['hired', 'archived', 'rejected'].includes(statusInfo.status) &&
-            statusInfo.employerId === user.id
-        );
-        if (
-          (hasOwnInteraction && hiredBySomeoneInSameOrgStatus) ||
-          (hiredStatus.employerId === user.id && hiredForOtherSite)
-        ) {
-          computedStatus = {
-            createdAt: hiredStatus.createdAt,
-            status: 'hired_by_peer',
-          };
-        }
+        computedStatus = {
+          createdAt: hiredStatus.createdAt,
+          status: 'hired_by_peer',
+        };
       } else if (archivedByOrgStatus) {
         computedStatus = archivedByOrgStatus;
       }

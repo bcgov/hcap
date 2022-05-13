@@ -302,14 +302,6 @@ const getRosParticipantsReport = async () => {
           id: 'participant_id',
         },
       },
-      statusJoin: {
-        type: 'LEFT OUTER',
-        relation: collections.PARTICIPANTS_STATUS,
-        on: {
-          participant_id: 'participant_id',
-          current: true,
-        },
-      },
       siteJoin: {
         type: 'LEFT OUTER',
         decomposeTo: 'object',

@@ -29,6 +29,6 @@ const patchObject = (source, patchableFields) =>
     {}
   );
 
-const sanitize = (input) => encodeURIComponent(input.trim());
+const sanitize = (input) => encodeURIComponent(input.toString().trim());
 
 module.exports = { createRows, verifyHeaders, patchObject, sanitize };

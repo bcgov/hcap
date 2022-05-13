@@ -154,7 +154,7 @@ const setParticipantStatus = async (
           },
           { current: false }
         );
-        if (!existingCurrentStatus.data?.site) {
+        if (!existingCurrentStatus.data?.site && status === HIRED) {
           // Invalidate all current in progress statuses for site
           await invalidateSiteStatus();
         }

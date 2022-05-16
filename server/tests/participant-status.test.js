@@ -281,7 +281,7 @@ describe('Test Participant status data model and service', () => {
     const filteredOpen = resultOpen.data.filter((p) => p.id === participant.id);
     expect(filteredOpen.length).toBe(1);
 
-    // Now check duel statuses
+    // Now check dual statuses
     await setParticipantStatus(
       emp1,
       participant.id,
@@ -294,8 +294,8 @@ describe('Test Participant status data model and service', () => {
       }
     );
 
-    // Get statuses with emp1 for duel statuses for mult org employee
-    const resultDuel = await getParticipants(
+    // Get statuses with emp1 for Dual statuses for mult org employee
+    const resultDual = await getParticipants(
       { isEmployer: true, id: emp3, regions, sites: [site2.siteId, site1.siteId] },
       null,
       null,
@@ -306,8 +306,8 @@ describe('Test Participant status data model and service', () => {
       null,
       ['prospecting', 'interviewing']
     );
-    const duelStatuses = resultDuel.data.filter((p) => p.id === participant.id);
-    expect(duelStatuses.length).toBe(2);
+    const dualStatuses = resultDual.data.filter((p) => p.id === participant.id);
+    expect(dualStatuses.length).toBe(2);
   });
 
   it.skip('should bulk engage participants', async () => {

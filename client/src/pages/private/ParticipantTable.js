@@ -247,10 +247,12 @@ const ParticipantTable = () => {
       }
       setLoadingData(true);
       // Adding site from exiting statuses
-      const participant = rows.find((row) => row.id === participantId) || {};
+      console.dir(actionMenuParticipant);
+      const participant =
+        actionMenuParticipant || rows.find((row) => row.id === participantId)?.engage || {};
       const statusInfo =
-        participant.engage?.statusInfos && participant.engage?.statusInfos.length > 0
-          ? participant.engage.statusInfos[0]
+        participant.statusInfos && participant.statusInfos.length > 0
+          ? participant.statusInfos[0]
           : {};
       const site = statusInfo.data?.site;
       const currentStatusId = statusInfo?.id;

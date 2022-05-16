@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useState } from 'react';
+import React, { lazy, useEffect, useState, useCallback } from 'react';
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
 import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 import { scrollUp } from '../../utils';
@@ -41,22 +41,25 @@ export default ({ match }) => {
     }
   };
 
-  const fetchDetails = async (id) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
+  const fetchDetails = useCallback(
+    async (id) => {
+      const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
+        headers: {
+          Authorization: `Bearer ${store.get('TOKEN')}`,
+        },
+        method: 'GET',
+      });
 
-    if (response.ok) {
-      setSite(await response.json());
-    }
-  };
+      if (response.ok) {
+        setSite(await response.json());
+      }
+    },
+    [setSite]
+  );
 
   useEffect(() => {
     fetchDetails(id);
-  }, [id]);
+  }, [id, fetchDetails]);
 
   const defaultOnClose = () => {
     setActiveModalForm(null);
@@ -175,10 +178,6 @@ export default ({ match }) => {
                 siteId={site.siteId}
                 stale={stale}
                 setStale={setStale}
-                onArchiveParticipantAction={() => {
-                  setSite({});
-                  fetchDetails(id);
-                }}
               />
             </Card>
           </SiteDetailTabContext.TabProvider>

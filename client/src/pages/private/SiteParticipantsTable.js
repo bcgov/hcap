@@ -50,7 +50,7 @@ const fetchDetails = async (id) => {
   }
 };
 
-export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => {
+export default ({ id, siteId }) => {
   const history = useHistory();
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
@@ -87,35 +87,6 @@ export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => 
 
   useEffect(() => {
     dispatch({
-      type: SiteDetailTabContext.types.LOAD_SITE,
-      payload: {},
-    });
-    fetchDetails(id).then((response) => {
-      dispatch({
-        type: SiteDetailTabContext.types.UPDATE_SITE,
-        payload: { site: response },
-      });
-    });
-  }, [dispatch, id]);
-
-  useEffect(() => {
-    if (stale) {
-      dispatch({
-        type: SiteDetailTabContext.types.LOAD_SITE,
-        payload: {},
-      });
-      fetchDetails(id).then((response) => {
-        dispatch({
-          type: SiteDetailTabContext.types.UPDATE_SITE,
-          payload: { site: response },
-        });
-      });
-      setStale(false);
-    }
-  }, [dispatch, id, stale, setStale]);
-
-  useEffect(() => {
-    dispatch({
       type: SiteDetailTabContext.types.SELECT_TAB,
       payload: { tab: tabs[0], roles },
     });
@@ -129,54 +100,6 @@ export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => 
   };
 
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
-
-  const forceReload = async () => {
-    setLoadingData(true);
-    const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
-      headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      const { hired, withdrawn } = await response.json();
-      const mapToData = (response) => {
-        return response.map((row) => {
-          // Pull all relevant props from row based on columns constant
-          const values = {
-            participantId: row.participant_id,
-            participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
-            hiredDate: row.data.hiredDate,
-            startDate: row.data.startDate,
-            withdrawnDate: row.data?.endDate,
-            reason: row.data?.reason,
-            nonHCAP: row.data.nonHcapOpportunity,
-          };
-
-          const mappedRow = columnIDs.reduce(
-            (accumulator, column) => ({
-              ...accumulator,
-              [column.id]: values[column.id],
-            }),
-            {}
-          );
-          // Add additional props (user ID, button) to row
-          return {
-            ...mappedRow,
-            id: row.id,
-          };
-        });
-      };
-      const rowsData = mapToData(hired);
-      const withdrawnRowsData = mapToData(withdrawn);
-      setFetchedRows(rowsData);
-      setFetchedWithdrawnRows(withdrawnRowsData);
-    } else {
-      setRows([]);
-      setFetchedRows([]);
-      setFetchedWithdrawnRows([]);
-    }
-    setLoadingData(false);
-  };
 
   useEffect(() => {
     const fetchParticipants = async () => {
@@ -254,7 +177,12 @@ export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => 
       openToast(toasts[participantStatus.ARCHIVED]);
       setActionMenuParticipant(null);
       setActiveModalForm(null);
-      forceReload();
+      fetchDetails(id).then((response) => {
+        dispatch({
+          type: SiteDetailTabContext.types.UPDATE_SITE,
+          payload: { site: response },
+        });
+      });
     } else {
       openToast({
         status: ToastStatus.Error,
@@ -413,11 +341,6 @@ export default ({ id, siteId, onArchiveParticipantAction, stale, setStale }) => 
             validationSchema={ArchiveHiredParticipantSchema}
             onSubmit={async (values) => {
               await handleArchive(actionMenuParticipant.id, values);
-              if (onArchiveParticipantAction) {
-                onArchiveParticipantAction();
-              } else {
-                forceReload();
-              }
             }}
             onClose={defaultOnClose}
             participant={actionMenuParticipant}

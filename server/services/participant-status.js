@@ -40,7 +40,6 @@ const setParticipantStatus = async (
     });
     // Statuses from when ROS ends & participant archived
     const isRosComplete = data?.type === 'rosComplete';
-    const isRosIncomplete = data?.type === 'employmentEnded';
 
     // Case: Changing status for hired participant
     if (status !== REJECTED && status !== ARCHIVED) {

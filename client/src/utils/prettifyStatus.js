@@ -30,7 +30,8 @@ export const prettifyStatus = (
   tabValue,
   handleEngage,
   handleAcknowledge,
-  isMoH = false
+  isMoH = false,
+  participantInfo = {}
 ) => {
   if (!status) return;
 
@@ -98,10 +99,15 @@ export const prettifyStatus = (
                 >
                   <Button
                     onClick={() => {
-                      handleEngage(id, 'rejected', {
-                        final_status: isWithdrawn ? 'withdrawn' : 'hired by other',
-                        previous: statusValue,
-                      });
+                      handleEngage(
+                        id,
+                        'rejected',
+                        {
+                          final_status: isWithdrawn ? 'withdrawn' : 'hired by other',
+                          previous: statusValue,
+                        },
+                        participantInfo
+                      );
                     }}
                     size='small'
                     fullWidth={false}
@@ -112,7 +118,7 @@ export const prettifyStatus = (
               {!hideAcknowledgeButton && (
                 <Button
                   onClick={async () => {
-                    handleAcknowledge(id, status.includes('hired_by_peer'));
+                    handleAcknowledge(id, status.includes('hired_by_peer'), participantInfo);
                   }}
                   size='small'
                   fullWidth={false}

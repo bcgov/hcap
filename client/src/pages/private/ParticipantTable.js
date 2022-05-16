@@ -239,7 +239,7 @@ const ParticipantTable = () => {
     setActiveModalForm(participantEngageStatus.MULTI_SELECT_SITE);
   };
 
-  const handleEngage = async (participantId, status, additional = {}) => {
+  const handleEngage = async (participantId, status, additional = {}, participantInfo = null) => {
     let closeModal = true;
     try {
       if (isLoadingData) {
@@ -310,13 +310,14 @@ const ParticipantTable = () => {
     }
   };
 
-  const handleAcknowledge = async (id, multiOrgHire) => {
+  const handleAcknowledge = async (id, multiOrgHire, participantInfoData = null) => {
     try {
       // Need to find status for participant
-      const participantInfo = rows.find((row) => row.id === id) || {};
+      const participantInfo =
+        participantInfoData || rows.find((row) => row.id === id)?.engage || {};
       const statusInfo =
-        participantInfo.engage?.statusInfos && participantInfo.engage?.statusInfos.length > 0
-          ? participantInfo.engage.statusInfos[0]
+        participantInfo.statusInfos && participantInfo.statusInfos.length > 0
+          ? participantInfo.statusInfos[0]
           : {};
       const { message, success } = await acknowledgeParticipant({
         participantId: id,
@@ -406,7 +407,8 @@ const ParticipantTable = () => {
           selectedTab,
           handleEngage,
           handleAcknowledge,
-          isMoH
+          isMoH,
+          row.engage || null
         );
       case 'distance':
         if (row[columnId] !== null && row[columnId] !== undefined) {

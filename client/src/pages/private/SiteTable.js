@@ -13,7 +13,12 @@ import { useLocation } from 'react-router-dom';
 import { Routes, regionLabelsMap, API_URL } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
-import { ToastStatus, CreateSiteSchema } from '../../constants';
+import {
+  ToastStatus,
+  CreateSiteSchema,
+  DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+  DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
+} from '../../constants';
 import { AuthContext } from '../../providers';
 
 const useStyles = makeStyles((theme) => ({
@@ -193,14 +198,14 @@ export default () => {
     if (response.ok) {
       openToast({
         status: ToastStatus.Success,
-        message: response.message || 'Report generated successfully!',
+        message: response.message || DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
       });
       const blob = await response.blob();
       saveAs(blob, `report-hired-${regionId}-${new Date().toJSON()}.csv`);
     } else {
       openToast({
         status: ToastStatus.Error,
-        message: response.error || 'Error occurred while generating report',
+        message: response.error || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
       });
     }
   };

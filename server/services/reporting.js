@@ -1,7 +1,7 @@
+const dayjs = require('dayjs');
 const { dbClient, collections } = require('../db');
 const keycloak = require('../keycloak');
-
-const DEFAULT_REGION_NAME = '';
+const { DEFAULT_REGION_NAME } = require('../constants');
 
 const getReport = async () => {
   const total = await dbClient.db[collections.PARTICIPANTS].countDoc({});
@@ -291,11 +291,45 @@ const getNoOfferParticipantsReport = async () => {
   }));
 };
 
+const getRosParticipantsReport = async () => {
+  const searchOptions = {};
+  const rosEntries = await dbClient.db[collections.ROS_STATUS]
+    .join({
+      participantJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS,
+        on: {
+          id: 'participant_id',
+        },
+      },
+      siteJoin: {
+        type: 'LEFT OUTER',
+        decomposeTo: 'object',
+        relation: collections.EMPLOYER_SITES,
+        on: {
+          id: 'site_id',
+        },
+      },
+    })
+    .find(searchOptions);
+
+  return rosEntries.map((entry) => ({
+    participantId: entry.participant_id,
+    isHCA: true, // TODO: confirm if we need to track this information in our db
+    startDate: dayjs(entry.data?.date).format('YYYY-MM-DD'),
+    endDate: dayjs(entry.data?.date).add(1, 'y').format('YYYY-MM-DD'),
+    siteStartDate: dayjs(entry.data?.date).format('YYYY-MM-DD'), // TODO: update once the support for multiple sites is enabled
+    site: entry.siteJoin?.body?.siteName,
+    healthRegion: entry.siteJoin?.body?.healthAuthority,
+  }));
+};
+
 module.exports = {
   getReport,
   getParticipantsReport,
   getHiredParticipantsReport,
   getRejectedParticipantsReport,
   getNoOfferParticipantsReport,
+  getRosParticipantsReport,
   DEFAULT_REGION_NAME,
 };

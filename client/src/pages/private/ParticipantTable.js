@@ -316,8 +316,6 @@ const ParticipantTable = () => {
         participantInfo.engage?.statusInfos && participantInfo.engage?.statusInfos.length > 0
           ? participantInfo.engage.statusInfos[0]
           : {};
-      console.log('p', participantInfo);
-      console.log('s', statusInfo);
       const { message, success } = await acknowledgeParticipant({
         participantId: id,
         multiOrgHire,

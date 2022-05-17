@@ -2,6 +2,7 @@
 const { collections, views } = require('../db');
 const { userRegionQuery } = require('./user.js');
 const { participantStatus } = require('../constants');
+const logger = require('../logger.js');
 
 const {
   OPEN: open,
@@ -128,8 +129,8 @@ const run = async (context) => {
     if (['test', 'local', 'dev'].includes(process.env.APP_ENV)) {
       const sql = await table.find(criteria, { ...options, build: true });
       // Logging debugging info for dev/local/test environments
-      console.log('participant-helper:run: sql: ', sql); /* eslint-disable no-console */
-      console.log('participant-helper:run: criteria: ', criteria); /* eslint-disable no-console */
+      logger.info('participant-helper:run: sql: ', sql);
+      logger.info('participant-helper:run: criteria: ', criteria);
     }
     throw new Error(`participant-helper:run: ${error}`);
   }

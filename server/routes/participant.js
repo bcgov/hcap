@@ -11,7 +11,7 @@ const {
   confirmParticipantInterest,
   validateConfirmationId,
   deleteAcknowledgement,
-  removeAllParticipantStatusForUser,
+  invalidateStatus,
   archiveParticipantBySite,
   deleteParticipant,
 } = require('../services/participants.js');
@@ -431,7 +431,7 @@ employerActionsRouter.delete(
     }
 
     if (multiOrgHire) {
-      await removeAllParticipantStatusForUser({ participantId, currentStatusId });
+      await invalidateStatus({ participantId, currentStatusId });
       logger.info({
         action: 'acknowledgment_update',
         performed_by: {

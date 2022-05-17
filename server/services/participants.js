@@ -34,7 +34,7 @@ const deleteParticipant = async ({ email }) => {
   });
 };
 
-const removeAllParticipantStatusForUser = async ({ currentStatusId }) =>
+const invalidateStatus = async ({ currentStatusId }) =>
   dbClient.db[collections.PARTICIPANTS_STATUS].update(
     {
       id: currentStatusId,
@@ -802,7 +802,7 @@ module.exports = {
   withdrawParticipant,
   createChangeHistory,
   deleteAcknowledgement,
-  removeAllParticipantStatusForUser,
+  invalidateStatus,
   withdrawParticipantsByEmail,
   deleteParticipant,
 };

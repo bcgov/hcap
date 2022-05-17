@@ -21,7 +21,7 @@ import { useToast } from '../../hooks';
 import dayjs from 'dayjs';
 import { keyedString } from '../../utils';
 
-let columnIDs = [
+const columnIDs = [
   { id: 'participantId', name: 'ID' },
   { id: 'participantName', name: 'Name' },
   { id: 'hiredDate', name: 'Hire Date' },
@@ -50,6 +50,55 @@ const fetchDetails = async (id) => {
   }
 };
 
+const fetchParticipants = async (siteId) => {
+  const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
+    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    method: 'GET',
+  });
+
+  if (response.ok) {
+    const { hired, withdrawn } = await response.json();
+    const hiredRowsData = mapDataToRow(hired);
+    const withdrawnRowsData = mapDataToRow(withdrawn);
+    return { hiredRowsData, withdrawnRowsData };
+  } else {
+    return { hiredRowsData: [], withdrawnRowsData: [] };
+  }
+};
+
+/**
+ * Takes the data from the db and formats it for the table
+ * @param {*} response: raw data from API call
+ * @returns
+ */
+const mapDataToRow = (response) => {
+  return response.map((row) => {
+    // Pull all relevant props from row based on columns constant
+    const values = {
+      participantId: row.participant_id,
+      participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
+      hiredDate: row.data.hiredDate,
+      startDate: row.data.startDate,
+      withdrawnDate: row.data.endDate,
+      reason: row.data.reason,
+      nonHCAP: row.data.nonHcapOpportunity ? 'Non-HCAP' : 'HCAP',
+    };
+
+    const mappedRow = columnIDs.reduce(
+      (accumulator, column) => ({
+        ...accumulator,
+        [column.id]: values[column.id],
+      }),
+      {}
+    );
+    // Add additional props (user ID, button) to row
+    return {
+      ...mappedRow,
+      id: row.id,
+    };
+  });
+};
+
 export default ({ id, siteId }) => {
   const history = useHistory();
   const [order, setOrder] = useState('asc');
@@ -57,7 +106,7 @@ export default ({ id, siteId }) => {
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [rows, setRows] = useState([]);
-  const [fetchedRows, setFetchedRows] = useState([]);
+  const [fetchedHiredRows, setFetchedHiredRows] = useState([]);
   const [fetchedWithdrawnRows, setFetchedWithdrawnRows] = useState([]);
   const { auth } = AuthContext.useAuth();
   const { openToast } = useToast();
@@ -67,10 +116,45 @@ export default ({ id, siteId }) => {
     setActionMenuParticipant(null);
   };
 
+  const isEmployer = roles.includes('health_authority') || roles.includes('employer');
+
   const {
     state: { columns, selectedTab, site },
     dispatch,
   } = SiteDetailTabContext.useTabContext();
+
+  const [orderBy, setOrderBy] = useState(columns[4]?.id || 'participantName');
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
+
+  const participantOnClick = (participantId) => {
+    const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
+      id: participantId,
+      page: 'site-details',
+      pageId: id,
+    });
+    history.push(participantDetailsPath);
+  };
+
+  const archiveOnClick = async (participantId) => {
+    // Get data from row.participantId
+    const response = await fetch(`${API_URL}/api/v1/participant?id=${participantId}`, {
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+    const participant = await response.json();
+    setActionMenuParticipant(participant[0]);
+    setActiveModalForm('archive');
+  };
 
   useEffect(() => {
     dispatch({
@@ -92,67 +176,18 @@ export default ({ id, siteId }) => {
     });
   }, [dispatch, roles, siteId]);
 
-  const [orderBy, setOrderBy] = useState(columns[4]?.id || 'participantName');
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
-
-  const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
+  useEffect(() => {
+    setRows(selectedTab === 'Hired Participants' ? fetchedHiredRows : fetchedWithdrawnRows);
+  }, [fetchedHiredRows, fetchedWithdrawnRows, selectedTab]);
 
   useEffect(() => {
-    const fetchParticipants = async () => {
-      setLoadingData(true);
-      const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
-        headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-        method: 'GET',
-      });
-
-      if (response.ok) {
-        const { hired, withdrawn } = await response.json();
-
-        const mapToData = (response) => {
-          return response.map((row) => {
-            // Pull all relevant props from row based on columns constant
-            const values = {
-              participantId: row.participant_id,
-              participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
-              hiredDate: row.data.hiredDate,
-              startDate: row.data.startDate,
-              withdrawnDate: row.data.endDate,
-              reason: row.data.reason,
-              nonHCAP: row.data.nonHcapOpportunity,
-            };
-
-            const mappedRow = columnIDs.reduce(
-              (accumulator, column) => ({
-                ...accumulator,
-                [column.id]: values[column.id],
-              }),
-              {}
-            );
-            // Add additional props (user ID, button) to row
-            return {
-              ...mappedRow,
-              id: row.id,
-            };
-          });
-        };
-        const rowsData = mapToData(hired);
-        const withdrawnRowsData = mapToData(withdrawn);
-        setFetchedRows(rowsData);
-        setFetchedWithdrawnRows(withdrawnRowsData);
-      } else {
-        setRows([]);
-        setFetchedRows([]);
-        setFetchedWithdrawnRows([]);
-      }
+    setLoadingData(true);
+    fetchParticipants(siteId).then(({ hiredRowsData, withdrawnRowsData }) => {
+      setFetchedHiredRows(hiredRowsData);
+      setFetchedWithdrawnRows(withdrawnRowsData);
       setLoadingData(false);
-    };
-
-    fetchParticipants();
-  }, [siteId, setRows, setFetchedRows, setFetchedWithdrawnRows, setLoadingData]);
+    });
+  }, [siteId, setRows, setFetchedHiredRows, setFetchedWithdrawnRows, setLoadingData]);
 
   const handleArchive = async (participantId, additional = {}) => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions/archive`, {
@@ -191,9 +226,6 @@ export default ({ id, siteId }) => {
     }
   };
 
-  useEffect(() => {
-    setRows(selectedTab === 'Hired Participants' ? fetchedRows : fetchedWithdrawnRows);
-  }, [fetchedRows, fetchedWithdrawnRows, selectedTab]);
   return (
     <Grid
       container
@@ -256,68 +288,33 @@ export default ({ id, siteId }) => {
               rows={sort(rows)}
               isLoading={isLoadingData}
               renderCell={(columnId, row) => {
-                const isEmployer = roles.includes('health_authority') || roles.includes('employer');
-                if (
-                  columnId === 'participantName' &&
-                  isEmployer &&
-                  selectedTab === 'Hired Participants'
-                ) {
-                  return (
-                    <Link
-                      component='button'
-                      variant='body2'
-                      onClick={() => {
-                        const { participantId } = row;
-                        const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
-                          id: participantId,
-                          page: 'site-details',
-                          pageId: id,
-                        });
-                        history.push(participantDetailsPath);
-                      }}
-                    >
-                      {row[columnId]}
-                    </Link>
-                  );
+                switch (columnId) {
+                  case 'participantName':
+                    if (isEmployer && selectedTab === 'Hired Participants') {
+                      return (
+                        <Link
+                          component='button'
+                          variant='body2'
+                          onClick={() => participantOnClick(row.participantId)}
+                        >
+                          {row[columnId]}
+                        </Link>
+                      );
+                    } else {
+                      return row[columnId];
+                    }
+                  case 'archive':
+                    return (
+                      <Button
+                        onClick={() => archiveOnClick(row.participantId)}
+                        variant='outlined'
+                        size='small'
+                        text='Archive'
+                      />
+                    );
+                  default:
+                    return row[columnId];
                 }
-                if (columnId === 'phoneNumber') {
-                  const num = String(row['phoneNumber']);
-                  return `(${num.substr(0, 3)}) ${num.substr(3, 3)}-${num.substr(6, 4)}`;
-                }
-                if (columnId === 'status') {
-                  const status = String(row['status']);
-                  return `${status.substring(0, 1).toUpperCase()}${status.substring(1)}`;
-                }
-                if (columnId === 'nonHCAP') {
-                  return row[columnId] ? 'Non-HCAP' : 'HCAP';
-                }
-                if (columnId === 'archive') {
-                  return (
-                    <Button
-                      onClick={async () => {
-                        // Get data from row.participantId
-                        const response = await fetch(
-                          `${API_URL}/api/v1/participant?id=${row.participantId}`,
-                          {
-                            headers: {
-                              Accept: 'application/json',
-                              'Content-type': 'application/json',
-                              Authorization: `Bearer ${store.get('TOKEN')}`,
-                            },
-                            method: 'GET',
-                          }
-                        );
-                        const participant = await response.json();
-                        setActionMenuParticipant(participant[0]);
-                        setActiveModalForm('archive');
-                      }}
-                      variant='outlined'
-                      size='small'
-                      text='Archive'
-                    />
-                  );
-                }
-                return row[columnId];
               }}
             />
           )}

@@ -247,7 +247,6 @@ const ParticipantTable = () => {
       }
       setLoadingData(true);
       // Adding site from exiting statuses
-      console.dir(actionMenuParticipant);
       const participant =
         actionMenuParticipant || rows.find((row) => row.id === participantId)?.engage || {};
       const statusInfo =

@@ -44,7 +44,7 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participant }) 
   if (!participant) {
     return null;
   }
-  const isROSStarted = participant.rosStatuses ? true : false;
+  const isROSStarted = participant.rosStatuses && participant.rosStatuses.length > 0 ? true : false;
 
   const typeOptions = isROSStarted
     ? [ROSCompletedType, ...archiveTypeOptions]

@@ -30,13 +30,14 @@ export const prettifyStatus = (
   tabValue,
   handleEngage,
   handleAcknowledge,
-  isMoH = false
+  isMoH = false,
+  participantInfo = {}
 ) => {
   if (!status) return;
 
   const statusValue = status[0];
   let firstStatus = getParticipantStatus(isMoH, statusValue);
-  let toolTip = 'This candidate was hired by another employer.';
+  let toolTip = 'This candidate was hired by another site.';
   let isWithdrawn = false;
   const isHiredByPeer = status[1] === 'hired_by_peer';
 
@@ -52,7 +53,8 @@ export const prettifyStatus = (
   }
 
   if (isHiredByPeer) {
-    toolTip = 'This candidate was hired by same site. And available in "Hired Participants" tab.';
+    toolTip =
+      'This candidate was hired to another site and is visible under the "Hired Candidates" tab.';
   }
 
   const hideAcknowledgeButton =
@@ -97,10 +99,15 @@ export const prettifyStatus = (
                 >
                   <Button
                     onClick={() => {
-                      handleEngage(id, 'rejected', {
-                        final_status: isWithdrawn ? 'withdrawn' : 'hired by other',
-                        previous: statusValue,
-                      });
+                      handleEngage(
+                        id,
+                        'rejected',
+                        {
+                          final_status: isWithdrawn ? 'withdrawn' : 'hired by other',
+                          previous: statusValue,
+                        },
+                        participantInfo
+                      );
                     }}
                     size='small'
                     fullWidth={false}
@@ -111,7 +118,7 @@ export const prettifyStatus = (
               {!hideAcknowledgeButton && (
                 <Button
                   onClick={async () => {
-                    handleAcknowledge(id, status.includes('hired_by_peer'));
+                    handleAcknowledge(id, status.includes('hired_by_peer'), participantInfo);
                   }}
                   size='small'
                   fullWidth={false}

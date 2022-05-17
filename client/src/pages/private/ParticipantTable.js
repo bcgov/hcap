@@ -102,7 +102,7 @@ const filterData = (data, columns, isMoH = false) => {
     const row = mapItemToColumns(item, columns);
 
     row.engage = item;
-    row.siteName = item?.statusInfos?.[0].data?.siteName;
+    row.siteName = item?.statusInfos?.[0].data?.siteName || 'Not Available';
 
     if (
       item.rosStatuses &&
@@ -239,17 +239,37 @@ const ParticipantTable = () => {
     setActiveModalForm(participantEngageStatus.MULTI_SELECT_SITE);
   };
 
-  const handleEngage = async (participantId, status, additional = {}) => {
+  const handleEngage = async (participantId, status, additional = {}, participantInfo = null) => {
+    let closeModal = true;
     try {
       if (isLoadingData) {
         return;
       }
       setLoadingData(true);
-      const { data } = await addParticipantStatus({ participantId, status, additional });
+      // Adding site from exiting statuses
+      const participant =
+        actionMenuParticipant || rows.find((row) => row.id === participantId)?.engage || {};
+      const statusInfo =
+        participant.statusInfos && participant.statusInfos.length > 0
+          ? participant.statusInfos[0]
+          : {};
+      const site = statusInfo.data?.site;
+      const currentStatusId = statusInfo?.id;
+      const additionalParma = {
+        ...(site && { sites: [site] }),
+        ...(currentStatusId && { currentStatusId }),
+        ...additional,
+      };
+      const { data } = await addParticipantStatus({
+        participantId,
+        status,
+        additional: additionalParma,
+      });
       setLoadingData(false);
       if (status === participantStatus.PROSPECTING) {
         // Modal appears after submitting
         setActiveModalForm(participantStatus.PROSPECTING);
+        closeModal = false;
       } else {
         const index = rows.findIndex((row) => row.id === participantId);
         const { firstName, lastName } = rows[index];
@@ -261,17 +281,22 @@ const ParticipantTable = () => {
               : status
           ]
         );
-        setActionMenuParticipant(null);
-        setSelectedParticipants([]);
-        setActiveModalForm(null);
-        fetchParticipants();
       }
     } catch (err) {
+      setLoadingData(false);
       openToast({
         status: ToastStatus.Error,
         message: err.message || 'Server error',
       });
     }
+
+    // Reload
+    if (closeModal) {
+      setActionMenuParticipant(null);
+      setActiveModalForm(null);
+    }
+    setSelectedParticipants([]);
+    fetchParticipants();
   };
 
   const handleRosUpdate = (success) => {
@@ -284,11 +309,19 @@ const ParticipantTable = () => {
     }
   };
 
-  const handleAcknowledge = async (id, multiOrgHire) => {
+  const handleAcknowledge = async (id, multiOrgHire, participantInfoData = null) => {
     try {
+      // Need to find status for participant
+      const participantInfo =
+        participantInfoData || rows.find((row) => row.id === id)?.engage || {};
+      const statusInfo =
+        participantInfo.statusInfos && participantInfo.statusInfos.length > 0
+          ? participantInfo.statusInfos[0]
+          : {};
       const { message, success } = await acknowledgeParticipant({
         participantId: id,
         multiOrgHire,
+        currentStatusId: statusInfo?.id,
       });
 
       openToast({
@@ -308,6 +341,7 @@ const ParticipantTable = () => {
     }
   };
 
+  // TODO: There will ba merge conflict with Tara
   const openFormForParticipant = async (participantId, formKey) => {
     if (formKey === 'edit-participant') {
       const participant = await fetchParticipant({ id: participantId });
@@ -372,7 +406,8 @@ const ParticipantTable = () => {
           selectedTab,
           handleEngage,
           handleAcknowledge,
-          isMoH
+          isMoH,
+          row.engage || null
         );
       case 'distance':
         if (row[columnId] !== null && row[columnId] !== undefined) {

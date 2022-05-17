@@ -50,6 +50,7 @@ export default () => {
   };
 
   const handleSubmit = async (values) => {
+    setLoadingData(true);
     const isUserAccessRequest = location.pathname === Routes.UserPending;
     const response = await fetch(
       `${API_URL}/api/v1/${isUserAccessRequest ? 'approve-user' : 'user-details'}`,
@@ -62,6 +63,7 @@ export default () => {
         body: JSON.stringify({ ...values, userId: selectedUserId, username: selectedUserName }),
       }
     );
+    setLoadingData(false);
     if (response.ok) {
       setModalOpen(false);
       fetchUsers({ pending: isUserAccessRequest });
@@ -105,11 +107,12 @@ export default () => {
                 setSelectedUserId(row.id);
                 setSelectedUserName(row.username);
                 if (!pending) {
+                  setLoadingData(true);
                   const response = await fetch(`${API_URL}/api/v1/user-details?id=${row.id}`, {
                     headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
                     method: 'GET',
                   });
-
+                  setLoadingData(false);
                   if (response.ok) {
                     const details = await response.json();
                     setSelectedUserDetails(details);
@@ -282,6 +285,7 @@ export default () => {
                       variant='contained'
                       color='primary'
                       text='Submit'
+                      disabled={isLoadingData}
                     />
                   </Grid>
                 </Grid>

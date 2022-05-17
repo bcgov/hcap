@@ -11,6 +11,8 @@ const participantStatus = {
   INVALID_STATUS_TRANSITION: 'invalid_status_transition',
   INVALID_ARCHIVE: 'invalid_archive',
   INVALID_STATUS: 'invalid_status',
+  UNAVAILABLE: 'unavailable',
+  ROS: 'ros',
 };
 
 module.exports = {

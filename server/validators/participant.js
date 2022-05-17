@@ -247,8 +247,13 @@ const ParticipantStatusChange = yup
     site: yup.number().when(['status'], (status, schema) => {
       if (['interviewing', 'prospecting', 'prospecting', 'rejected'].includes(status)) {
         // TODO: Change validation to required
-        return schema.optional('Sites is required');
+        return schema.optional('Please specify valid site');
       }
+      return schema.optional().nullable();
+    }),
+    currentStatusId: yup.number().when(['status'], (status, schema) => {
+      if (['interviewing', 'prospecting', 'prospecting', 'rejected'].includes(status))
+        return schema.optional('Please specify valid current status');
       return schema.optional().nullable();
     }),
   });

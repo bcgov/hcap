@@ -65,7 +65,7 @@ export const SelectProspectingSiteForm = ({
       {({ submitForm }) => (
         <FormikForm>
           <Typography className={classes.formLabel} variant='subtitle2'>
-            {`Please select the site(s) ${
+            {`Please select the site ${
               canSeeMultiSelect
                 ? `for ${selected?.length} participants`
                 : 'this participant is prospecting for'

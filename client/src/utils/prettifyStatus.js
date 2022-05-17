@@ -54,7 +54,7 @@ export const prettifyStatus = (
 
   if (isHiredByPeer) {
     toolTip =
-      'This candidate was hired by other associated site. And available in "Hired Participants" tab.';
+      'This candidate was hired to another site and is visible under the "Hired Candidates" tab.';
   }
 
   const hideAcknowledgeButton =

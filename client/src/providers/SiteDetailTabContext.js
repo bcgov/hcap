@@ -56,7 +56,7 @@ const participantsReducer = (state, action) => {
  * For more: https://kentcdodds.com/blog/how-to-use-react-context-effectively
  */
 
-const TabProvider = ({ selectedTab, siteId, children }) => {
+const TabProvider = ({ selectedTab, site, children }) => {
   const [state, dispatch] = useReducer(participantsReducer, {
     columns: [],
     selectedTab: null,
@@ -69,6 +69,13 @@ const TabProvider = ({ selectedTab, siteId, children }) => {
       payload: { tab: selectedTab },
     });
   }, [selectedTab]);
+
+  useEffect(() => {
+    dispatch({
+      type: types.UPDATE_SITE,
+      payload: { site: site },
+    });
+  }, [site]);
 
   const value = { state, dispatch };
 

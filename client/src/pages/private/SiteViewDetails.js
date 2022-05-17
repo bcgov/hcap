@@ -137,7 +137,7 @@ export default ({ match }) => {
           permittedRoles={['health_authority', 'ministry_of_health']}
           renderErrorMessage={true}
         >
-          <SiteDetailTabContext.TabProvider>
+          <SiteDetailTabContext.TabProvider site={site}>
             <Card>
               <Box pt={4} pb={2} pl={4} pr={4}>
                 <Box pb={4} pl={2}>

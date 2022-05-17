@@ -431,7 +431,7 @@ employerActionsRouter.delete(
     }
 
     if (multiOrgHire) {
-      await invalidateStatus({ participantId, currentStatusId });
+      await invalidateStatus({ currentStatusId });
       logger.info({
         action: 'acknowledgment_update',
         performed_by: {
@@ -442,7 +442,7 @@ employerActionsRouter.delete(
       });
       return res.status(201).json({ message: 'Participant status acknowledged and closed' });
     }
-    const { success, message } = await deleteAcknowledgement(req.body.participantId);
+    const { success, message } = await deleteAcknowledgement(participantId);
     if (!success) {
       return res.status(400).json({ message });
     }

@@ -56,18 +56,28 @@ export const TrackGraduation = (props) => {
     <>
       <Grid container>
         <Grid item xs={4}>
-          <Typography>Cohort start date</Typography>
-          <Typography>
+          <Typography variant='body1'>
+            <b>Cohort start date</b>
+          </Typography>
+          <Typography variant='body1'>
             {cohort?.start_date ? formatCohortDate(cohort.start_date) : 'N/A'}
           </Typography>
         </Grid>
         <Grid item xs={4}>
-          <Typography>Cohort end date</Typography>
-          <Typography>{cohort?.end_date ? formatCohortDate(cohort.end_date) : 'N/A'}</Typography>
+          <Typography variant='body1'>
+            <b>Cohort end date</b>
+          </Typography>
+          <Typography variant='body1'>
+            {cohort?.end_date ? formatCohortDate(cohort.end_date) : 'N/A'}
+          </Typography>
         </Grid>
         <Grid item xs={4}>
           <Typography variant='subtitle2'>Graduation Status</Typography>
-          <Typography>{props?.participant?.postHireStatusLabel || 'N/A'}</Typography>
+          <Box my={1}>
+            <Typography variant='body1'>
+              {props?.participant?.postHireStatusLabel || 'N/A'}
+            </Typography>
+          </Box>
           <Grid item xs={6}>
             <Button
               color='default'
@@ -137,10 +147,10 @@ export const TrackGraduation = (props) => {
             />
           </Dialog>
         )}
-        <Dialog title={'Archive Participant'} open={showArchiveModel}>
-          {showArchiveModel && (
-            <Box spacing={10} p={5}>
-              <Typography color={'primary'} variant={'h4'}>
+        {showArchiveModel && (
+          <Dialog title='Archive Participant' open={showArchiveModel}>
+            <Box p={4}>
+              <Typography color='primary' variant='subtitle1'>
                 Archive Participant
               </Typography>
               <hr />
@@ -165,8 +175,8 @@ export const TrackGraduation = (props) => {
                 participant={props?.participant}
               />
             </Box>
-          )}
-        </Dialog>
+          </Dialog>
+        )}
       </>
       <>
         {showEditModel && !cohort?.id && (

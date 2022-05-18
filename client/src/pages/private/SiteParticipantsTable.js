@@ -124,6 +124,7 @@ export default ({ id, siteId }) => {
   } = SiteDetailTabContext.useTabContext();
 
   const [orderBy, setOrderBy] = useState(columns[4]?.id || 'participantName');
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -209,18 +210,21 @@ export default ({ id, siteId }) => {
       const index = rows.findIndex((row) => row.participantId === participantId);
       const { participantName } = rows[index];
       const toasts = makeToasts(participantName, '');
-      let newRows = [...rows];
-      newRows.splice(index, 1);
-      setFetchedHiredRows(newRows);
 
       openToast(toasts[participantStatus.ARCHIVED]);
       setActionMenuParticipant(null);
       setActiveModalForm(null);
+      // this is to make sure site's HCAP hires get updated on archiving as duplicate
       fetchDetails(id).then((resp) => {
         dispatch({
           type: SiteDetailTabContext.types.UPDATE_SITE,
           payload: { site: resp },
         });
+      });
+      // and this is to update both lists of participants
+      fetchParticipants(siteId).then(({ hiredRowsData, withdrawnRowsData }) => {
+        setFetchedHiredRows(hiredRowsData);
+        setFetchedWithdrawnRows(withdrawnRowsData);
       });
     } else {
       openToast({

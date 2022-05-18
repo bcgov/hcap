@@ -209,13 +209,17 @@ export default ({ id, siteId }) => {
       const index = rows.findIndex((row) => row.participantId === participantId);
       const { participantName } = rows[index];
       const toasts = makeToasts(participantName, '');
+      let newRows = [...rows];
+      newRows.splice(index, 1);
+      setFetchedHiredRows(newRows);
+
       openToast(toasts[participantStatus.ARCHIVED]);
       setActionMenuParticipant(null);
       setActiveModalForm(null);
-      fetchDetails(id).then((response) => {
+      fetchDetails(id).then((resp) => {
         dispatch({
           type: SiteDetailTabContext.types.UPDATE_SITE,
-          payload: { site: response },
+          payload: { site: resp },
         });
       });
     } else {

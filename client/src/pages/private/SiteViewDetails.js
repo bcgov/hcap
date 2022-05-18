@@ -17,6 +17,7 @@ export default ({ match }) => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const id = match.params.id;
+
   const handleSiteEdit = async (site) => {
     const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
       method: 'PATCH',
@@ -30,7 +31,7 @@ export default ({ match }) => {
     setIsLoading(false);
     if (response.ok) {
       setActiveModalForm(null);
-      fetchDetails(id);
+      fetchDetails();
     } else {
       openToast({
         status: ToastStatus.Error,
@@ -39,24 +40,21 @@ export default ({ match }) => {
     }
   };
 
-  const fetchDetails = useCallback(
-    async (id) => {
-      const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
-        headers: {
-          Authorization: `Bearer ${store.get('TOKEN')}`,
-        },
-        method: 'GET',
-      });
+  const fetchDetails = useCallback(async () => {
+    const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
 
-      if (response.ok) {
-        setSite(await response.json());
-      }
-    },
-    [setSite]
-  );
+    if (response.ok) {
+      setSite(await response.json());
+    }
+  }, [id, setSite]);
 
   useEffect(() => {
-    fetchDetails(id);
+    fetchDetails();
   }, [id, fetchDetails]);
 
   const defaultOnClose = () => {

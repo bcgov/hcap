@@ -187,7 +187,7 @@ const MultiSelectAction = (props) => {
         size='small'
         variant='outlined'
         text='Bulk Engage'
-        disabled={selected.length === 0}
+        disabled={selected.length <= 1}
         onClick={multiSelectAction}
       />
     </Box>

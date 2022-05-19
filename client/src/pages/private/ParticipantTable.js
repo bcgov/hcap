@@ -295,7 +295,6 @@ const ParticipantTable = () => {
       setActionMenuParticipant(null);
       setActiveModalForm(null);
     }
-    setSelectedParticipants([]);
     fetchParticipants();
   };
 

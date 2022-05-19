@@ -263,7 +263,7 @@ export const Table = ({
                 <Checkbox
                   color='primary'
                   disabled={isLoading || rowsCount === 0}
-                  indeterminate={selectedRows.length > 0 && selectedRows.length < rows.length} //
+                  indeterminate={selectedRows.length > 0 && selectedRows.length < rows.length}
                   checked={rowsCount > 0 && selectedRows.length === rows.length}
                   onChange={handleSelectAllRows}
                 />

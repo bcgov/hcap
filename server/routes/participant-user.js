@@ -163,7 +163,7 @@ router.post(
         res.status(422).send('Already Hired or Withdrawn');
       }
     } else {
-      res.status(422).send(`No expression of interest with id: ${id}`);
+      res.status(422).send(`No expression of interest with participant id`);
     }
   })
 );

@@ -260,6 +260,11 @@ class Keycloak {
     }
   }
 
+  getUserUrl(userId = '') {
+    if (!userId) throw new Error('keycloak: User ID is required');
+    return `${this.authUrl}/admin/realms/${this.realm}/users/${userId}`;
+  }
+
   async setUserRoles(userId, role, regions) {
     try {
       if (!Object.keys(this.roleIdMap).includes(role)) throw Error(`Invalid role: ${role}`);
@@ -270,9 +275,9 @@ class Keycloak {
       };
       await this.authenticateIfNeeded();
       const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-      const url = `${this.authUrl}/admin/realms/${
-        this.realm
-      }/users/${userId}/role-mappings/clients/${this.clientIdMap[this.clientNameFrontend]}`;
+      const url = `${this.getUserUrl(userId)}/role-mappings/clients/${
+        this.clientIdMap[this.clientNameFrontend]
+      }`;
       {
         const data = (await this.getUserRoles(userId)).map((item) => ({
           name: item,
@@ -300,7 +305,7 @@ class Keycloak {
     try {
       await this.authenticateIfNeeded();
       const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-      const url = `${this.authUrl}/admin/realms/${this.realm}/users/${userId}/role-mappings`;
+      const url = `${this.getUserUrl(userId)}/role-mappings`;
       const response = await axios.get(url, config);
       return response.data.clientMappings[this.clientNameFrontend].mappings.map(
         (item) => item.name

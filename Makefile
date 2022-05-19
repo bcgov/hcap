@@ -134,6 +134,7 @@ ifdef ticket
 else
 	@echo -e '\nTicket name missing - Example :: make tag-test ticket=HCAP-ABC \n'
 	@echo -e 'Falling Back to using branch name\n'
+	@git tag -fa test -m "Deploy $(git rev-parse --abbrev-ref HEAD) to TEST env"
 endif
 	@git push --force origin refs/tags/test:refs/tags/test
 
@@ -143,6 +144,7 @@ ifdef ticket
 else
 	@echo -e '\nTicket name missing - Example :: make tag-test ticket=HCAP-ABC \n'
 	@echo -e 'Falling Back to using branch name\n'
+	@git tag -fa prod -m "Deploy $(git rev-parse --abbrev-ref HEAD) to PROD env"
 endif
 	@git push --force origin refs/tags/prod:refs/tags/prod
 

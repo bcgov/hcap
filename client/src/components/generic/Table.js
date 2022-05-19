@@ -217,6 +217,7 @@ export const Table = ({
   };
 
   const handlePageChange = (_, newPage) => {
+    updateSelectedRows([]);
     onChangePage(currentPage, newPage);
   };
 
@@ -262,8 +263,8 @@ export const Table = ({
                 <Checkbox
                   color='primary'
                   disabled={isLoading || rowsCount === 0}
-                  indeterminate={selectedRows.length > 0 && selectedRows.length < rowsCount}
-                  checked={rowsCount > 0 && selectedRows.length === rowsCount}
+                  indeterminate={selectedRows.length > 0 && selectedRows.length < rows.length} //
+                  checked={rowsCount > 0 && selectedRows.length === rows.length}
                   onChange={handleSelectAllRows}
                 />
               </StyledHeaderTableCell>

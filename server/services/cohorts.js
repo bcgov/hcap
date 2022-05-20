@@ -99,7 +99,19 @@ const getAssignCohort = async ({ participantId }) => {
         },
       },
     })
-    .find();
+    .find(
+      {},
+      {
+        order: [
+          {
+            field: `${collections.COHORT_PARTICIPANTS}.date_assigned`,
+            direction: 'DESC',
+            nulls: 'LAST',
+          },
+        ],
+      }
+    );
+
   return cohorts;
 };
 

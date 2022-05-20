@@ -206,12 +206,13 @@ export const Table = ({
   currentPage = 0,
   rowsPerPage,
   onChangePage,
-  rowsCount,
+  totalRowsCount,
   isMultiSelect = false,
   selectedRows = [],
   updateSelectedRows,
   multiSelectAction,
 }) => {
+  const rowsOnPage = rows.length;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -262,9 +263,9 @@ export const Table = ({
               <StyledHeaderTableCell padding='checkbox'>
                 <Checkbox
                   color='primary'
-                  disabled={isLoading || rowsCount === 0}
-                  indeterminate={selectedRows.length > 0 && selectedRows.length < rows.length}
-                  checked={rowsCount > 0 && selectedRows.length === rows.length}
+                  disabled={isLoading || rowsOnPage === 0}
+                  indeterminate={selectedRows.length > 0 && selectedRows.length < rowsOnPage}
+                  checked={rowsOnPage > 0 && selectedRows.length === rowsOnPage}
                   onChange={handleSelectAllRows}
                 />
               </StyledHeaderTableCell>
@@ -330,7 +331,7 @@ export const Table = ({
         <TablePagination
           rowsPerPageOptions={[]}
           component='div'
-          count={rowsCount || rows.length}
+          count={totalRowsCount || rowsOnPage}
           rowsPerPage={rowsPerPage}
           page={currentPage}
           onChangePage={handlePageChange}

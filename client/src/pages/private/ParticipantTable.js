@@ -543,7 +543,7 @@ const ParticipantTable = () => {
               columns={columns}
               order={order.direction}
               orderBy={order.field}
-              rowsCount={pagination.total}
+              totalRowsCount={pagination.total}
               onChangePage={(_, newPage) => {
                 participantsDispatch({
                   type: ParticipantsContext.types.UPDATE_PAGINATION,

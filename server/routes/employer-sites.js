@@ -159,16 +159,16 @@ router.get(
 // Read: Get all participant for site
 // TODO: Check user authenticity to get all participant
 router.get(
-  '/:id/participants',
+  '/:siteId/participants',
   [
     keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
     keycloak.getUserInfoMiddleware(),
   ],
   asyncMiddleware(async (req, res) => {
     const { hcapUserInfo: user, params } = req;
-    const { id } = params;
-    const hired = await getHiredParticipantsBySite(id);
-    const withdrawn = await getWithdrawnParticipantsBySite(id);
+    const { siteId } = params;
+    const hired = await getHiredParticipantsBySite(siteId);
+    const withdrawn = await getWithdrawnParticipantsBySite(siteId);
 
     logger.info({
       action: 'site-participants_get',
@@ -177,7 +177,7 @@ router.get(
         id: user.id,
       },
       on: {
-        site: id,
+        site: siteId,
       },
       for: {
         hiredParticipants: hired.map((ppt) => ppt.participantJoin.id),

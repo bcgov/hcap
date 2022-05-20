@@ -9,7 +9,11 @@ const types = {
   UPDATE_SITE: 'UPDATE_SITE',
 };
 
-const tabs = ['Site Details', 'Hired Participants', 'Withdrawn Participants'];
+const tabs = {
+  SITE_DETAILS: 'Site Details',
+  HIRED_PARTICIPANTS: 'Hired Participants',
+  WITHDRAWN_PARTICIPANTS: 'Withdrawn Participants',
+};
 
 const participantsReducer = (state, action) => {
   const {
@@ -56,7 +60,7 @@ const participantsReducer = (state, action) => {
  * For more: https://kentcdodds.com/blog/how-to-use-react-context-effectively
  */
 
-const TabProvider = ({ selectedTab, siteId, children }) => {
+const TabProvider = ({ selectedTab, site, children }) => {
   const [state, dispatch] = useReducer(participantsReducer, {
     columns: [],
     selectedTab: null,
@@ -69,6 +73,13 @@ const TabProvider = ({ selectedTab, siteId, children }) => {
       payload: { tab: selectedTab },
     });
   }, [selectedTab]);
+
+  useEffect(() => {
+    dispatch({
+      type: types.UPDATE_SITE,
+      payload: { site: site },
+    });
+  }, [site]);
 
   const value = { state, dispatch };
 

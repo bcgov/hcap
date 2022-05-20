@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useState } from 'react';
+import React, { lazy, useEffect, useState, useCallback } from 'react';
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
 import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 import { scrollUp } from '../../utils';
@@ -14,10 +14,10 @@ const SiteParticipantsTable = lazy(() => import('./SiteParticipantsTable'));
 export default ({ match }) => {
   const { openToast } = useToast();
   const [site, setSite] = useState({});
-  const [stale, setStale] = useState(false);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const id = match.params.id;
+
   const handleSiteEdit = async (site) => {
     const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
       method: 'PATCH',
@@ -31,8 +31,7 @@ export default ({ match }) => {
     setIsLoading(false);
     if (response.ok) {
       setActiveModalForm(null);
-      fetchDetails(id);
-      setStale(true);
+      fetchDetails();
     } else {
       openToast({
         status: ToastStatus.Error,
@@ -41,7 +40,7 @@ export default ({ match }) => {
     }
   };
 
-  const fetchDetails = async (id) => {
+  const fetchDetails = useCallback(async () => {
     const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
       headers: {
         Authorization: `Bearer ${store.get('TOKEN')}`,
@@ -52,11 +51,11 @@ export default ({ match }) => {
     if (response.ok) {
       setSite(await response.json());
     }
-  };
+  }, [id, setSite]);
 
   useEffect(() => {
-    fetchDetails(id);
-  }, [id]);
+    fetchDetails();
+  }, [id, fetchDetails]);
 
   const defaultOnClose = () => {
     setActiveModalForm(null);
@@ -136,7 +135,7 @@ export default ({ match }) => {
           permittedRoles={['health_authority', 'ministry_of_health']}
           renderErrorMessage={true}
         >
-          <SiteDetailTabContext.TabProvider>
+          <SiteDetailTabContext.TabProvider site={site}>
             <Card>
               <Box pt={4} pb={2} pl={4} pr={4}>
                 <Box pb={4} pl={2}>
@@ -170,16 +169,7 @@ export default ({ match }) => {
                   ) : null}
                 </Box>
               </Box>
-              <SiteParticipantsTable
-                id={id}
-                siteId={site.siteId}
-                stale={stale}
-                setStale={setStale}
-                onArchiveParticipantAction={() => {
-                  setSite({});
-                  fetchDetails(id);
-                }}
-              />
+              <SiteParticipantsTable id={id} siteId={site.siteId} />
             </Card>
           </SiteDetailTabContext.TabProvider>
         </CheckPermissions>

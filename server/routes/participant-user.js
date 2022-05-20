@@ -106,7 +106,7 @@ router.patch(
       });
       res.status(200).json(updateResults);
     } else {
-      res.status(422).send(`No expression of interest with for user`);
+      res.status(422).send(`No expression of interest found for this participant`);
     }
   })
 );

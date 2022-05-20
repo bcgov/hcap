@@ -1,3 +1,20 @@
+const dayjs = require('dayjs');
+const relativeTime = require('dayjs/plugin/relativeTime');
+const utc = require('dayjs/plugin/utc');
+const isLeapYear = require('dayjs/plugin/isLeapYear');
+
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
+dayjs.extend(isLeapYear);
+
+const addYearToDate = (dateObj) => {
+  let newDate = dayjs(dateObj).add(1, 'y');
+  if (dayjs(dateObj).isLeapYear()) {
+    newDate = newDate.add(1, 'd');
+  }
+  return newDate;
+};
+
 const verifyHeaders = (dataRows, columnMap) => {
   const headers = dataRows[0];
   Object.keys(columnMap).forEach((columName) => {
@@ -16,6 +33,7 @@ const createRows = (dataRows, columnMap) => {
     const row = {};
     headers.forEach((header, index) => {
       if (!columnMap[header]) return;
+
       row[columnMap[header]] = dataRow[index];
     });
     rows.push(row);
@@ -31,4 +49,4 @@ const patchObject = (source, patchableFields) =>
 
 const sanitize = (input) => encodeURIComponent(input.toString().trim());
 
-module.exports = { createRows, verifyHeaders, patchObject, sanitize };
+module.exports = { createRows, verifyHeaders, patchObject, sanitize, addYearToDate, dayjs };

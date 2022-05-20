@@ -60,12 +60,11 @@ const TabContentTrackGraduation = ({ participant, fetchData }) => {
 };
 
 const canAssignCohort = (participant) => {
-  if (!participant) return false;
-  if (participant.cohort !== undefined) {
-    return !(participant.postHireStatus?.status === postHireStatuses.cohortUnsuccessful);
-  }
+  if (!participant || !participant.cohort) return false;
 
-  return Object.keys(participant.cohort).length > 0;
+  const hasUnsuccessfulCohort =
+    participant.postHireStatus?.status === postHireStatuses.cohortUnsuccessful;
+  return hasUnsuccessfulCohort ? true : Object.keys(participant.cohort).length > 0;
 };
 
 const PSIRouteTabs = ({

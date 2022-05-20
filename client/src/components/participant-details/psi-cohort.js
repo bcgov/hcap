@@ -9,6 +9,7 @@ import {
   BrowserRouter as Router,
   Redirect,
 } from 'react-router-dom';
+import { postHireStatuses } from '../../constants';
 
 import { TrackGraduation } from './track-graduation';
 
@@ -40,7 +41,7 @@ const TabContentAssignCohort = ({ disabled, psiList, assignAction, fetchData }) 
   return disabled ? (
     <Box>
       <Box mb={2}>
-        <Typography variant='subtitle1'> Assigning Cohort</Typography>
+        <Typography variant='subtitle1'>Assigning Cohort</Typography>
       </Box>
       <Typography variant='body1'>This participant has already been assigned a cohort.</Typography>
     </Box>
@@ -58,6 +59,15 @@ const TabContentTrackGraduation = ({ participant, fetchData }) => {
   return <TrackGraduation participant={participant} fetchData={fetchData} />;
 };
 
+const canAssignCohort = (participant) => {
+  if (!participant) return false;
+  if (participant.cohort !== undefined) {
+    return !(participant.postHireStatus?.status === postHireStatuses.cohortUnsuccessful);
+  }
+
+  return Object.keys(participant.cohort).length > 0;
+};
+
 const PSIRouteTabs = ({
   selectedTab = 'assignCohort',
   psiList = [],
@@ -68,10 +78,7 @@ const PSIRouteTabs = ({
   const history = useHistory();
   const [isLoadingData] = useState(false);
   const [tab, setTab] = useState(selectedTab);
-  const disabled =
-    participant !== null &&
-    participant.cohort !== undefined &&
-    Object.keys(participant.cohort).length > 0;
+  const disabled = canAssignCohort(participant);
 
   useEffect(() => {
     let unsubscribe = history.listen((location) => {

@@ -9,7 +9,11 @@ const types = {
   UPDATE_SITE: 'UPDATE_SITE',
 };
 
-const tabs = ['Site Details', 'Hired Participants', 'Withdrawn Participants'];
+const tabs = {
+  SITE_DETAILS: 'Site Details',
+  HIRED_PARTICIPANTS: 'Hired Participants',
+  WITHDRAWN_PARTICIPANTS: 'Withdrawn Participants',
+};
 
 const participantsReducer = (state, action) => {
   const {

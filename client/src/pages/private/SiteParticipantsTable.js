@@ -173,12 +173,21 @@ export default ({ id, siteId }) => {
   useEffect(() => {
     dispatch({
       type: SiteDetailTabContext.types.SELECT_TAB,
-      payload: { tab: tabs[0], roles },
+      payload: { tab: tabs.SITE_DETAILS, roles },
     });
   }, [dispatch, roles, siteId]);
 
   useEffect(() => {
-    setRows(selectedTab === 'Hired Participants' ? fetchedHiredRows : fetchedWithdrawnRows);
+    switch (selectedTab) {
+      case tabs.HIRED_PARTICIPANTS:
+        setRows(fetchedHiredRows);
+        return;
+      case tabs.WITHDRAWN_PARTICIPANTS:
+        setRows(fetchedWithdrawnRows);
+        return;
+      default:
+        return;
+    }
   }, [fetchedHiredRows, fetchedWithdrawnRows, selectedTab]);
 
   useEffect(() => {
@@ -254,12 +263,12 @@ export default ({ id, siteId }) => {
             }
           >
             {
-              tabs.map((key) => (
-                <CustomTab key={key} label={key} value={key} disabled={isLoadingData} />
+              Object.values(tabs).map((title) => (
+                <CustomTab key={title} label={title} value={title} disabled={isLoadingData} />
               )) // Tab component with tab name as value
             }
           </CustomTabs>
-          {selectedTab === 'Site Details' ? (
+          {selectedTab === tabs.SITE_DETAILS ? (
             <Grid container>
               {Object.keys(fieldsLabelMap).map((title) => (
                 <Grid key={title} item xs={12} sm={6} xl={3} style={{ marginBottom: 40 }}>
@@ -298,7 +307,7 @@ export default ({ id, siteId }) => {
               renderCell={(columnId, row) => {
                 switch (columnId) {
                   case 'participantName':
-                    if (isEmployer && selectedTab === 'Hired Participants') {
+                    if (isEmployer && selectedTab === tabs.HIRED_PARTICIPANTS) {
                       return (
                         <Link
                           component='button'
@@ -308,9 +317,8 @@ export default ({ id, siteId }) => {
                           {row[columnId]}
                         </Link>
                       );
-                    } else {
-                      return row[columnId];
                     }
+                    return row[columnId];
                   case 'archive':
                     return (
                       <Button

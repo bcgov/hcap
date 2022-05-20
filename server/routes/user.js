@@ -25,7 +25,7 @@ userDetailsRouter.get(
   asyncMiddleware(async (req, res) => {
     const { query: { id: userId } = {} } = req;
     if (!userId) return res.status(400).send('No user id');
-    const roles = await keycloak.getUserRoles(userId);
+    const roles = await keycloak.getUserRoles(sanitize(userId));
     const sites = await getUserSites(sanitize(userId));
     return res.status(200).json({
       roles,
@@ -45,18 +45,18 @@ userDetailsRouter.patch(
   asyncMiddleware(async (req, res) => {
     const { hcapUserInfo: user, body: { userId, role, regions, sites, username } = {} } = req;
     const { id } = user;
-    await keycloak.setUserRoles(userId, role, regions);
+    await keycloak.setUserRoles(sanitize(userId), role, regions);
     let action;
     // Get user details from keycloak
-    const userInfo = await keycloak.getUser(username);
+    const userInfo = await keycloak.getUser(sanitize(username));
     // Check doc exits or not
     const existing = await dbClient.db[collections.USERS].findDoc({
-      keycloakId: userId,
+      keycloakId: sanitize(userId),
     });
     if (existing && existing.length > 0) {
       await dbClient.db[collections.USERS].updateDoc(
         {
-          keycloakId: userId,
+          keycloakId: sanitize(userId),
         },
         {
           sites,

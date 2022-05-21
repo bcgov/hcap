@@ -64,7 +64,7 @@ const canAssignCohort = (participant) => {
 
   const hasUnsuccessfulCohort =
     participant.postHireStatus?.status === postHireStatuses.cohortUnsuccessful;
-  return hasUnsuccessfulCohort ? true : Object.keys(participant.cohort).length > 0;
+  return hasUnsuccessfulCohort || Object.keys(participant.cohort).length === 0;
 };
 
 const PSIRouteTabs = ({
@@ -77,7 +77,7 @@ const PSIRouteTabs = ({
   const history = useHistory();
   const [isLoadingData] = useState(false);
   const [tab, setTab] = useState(selectedTab);
-  const disabled = canAssignCohort(participant);
+  const disabled = !canAssignCohort(participant);
 
   useEffect(() => {
     let unsubscribe = history.listen((location) => {

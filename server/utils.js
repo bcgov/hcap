@@ -1,15 +1,15 @@
 const dayjs = require('dayjs');
 const relativeTime = require('dayjs/plugin/relativeTime');
 const utc = require('dayjs/plugin/utc');
-const isLeapYear = require('dayjs/plugin/isLeapYear');
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
-dayjs.extend(isLeapYear);
 
 const addYearToDate = (dateObj) => {
   let newDate = dayjs(dateObj).add(1, 'y');
-  if (dayjs(dateObj).isLeapYear()) {
+  const oldDate = dayjs(dateObj);
+  // check specifically for Feb 29- always a leapyear
+  if (oldDate.month() === 1 && oldDate.date() === 29) {
     newDate = newDate.add(1, 'd');
   }
   return newDate;

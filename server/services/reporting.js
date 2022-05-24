@@ -1,4 +1,5 @@
 const dayjs = require('dayjs');
+const { addYearToDate } = require('../utils');
 const { dbClient, collections } = require('../db');
 const keycloak = require('../keycloak');
 const { DEFAULT_REGION_NAME } = require('../constants');
@@ -317,7 +318,7 @@ const getRosParticipantsReport = async () => {
     participantId: entry.participant_id,
     isHCA: true, // TODO: confirm if we need to track this information in our db
     startDate: dayjs(entry.data?.date).format('YYYY-MM-DD'),
-    endDate: dayjs(entry.data?.date).add(1, 'y').format('YYYY-MM-DD'),
+    endDate: addYearToDate(entry.data?.date).format('YYYY-MM-DD'), // TODO: This is the spot here
     siteStartDate: dayjs(entry.data?.date).format('YYYY-MM-DD'), // TODO: update once the support for multiple sites is enabled
     site: entry.siteJoin?.body?.siteName,
     healthRegion: entry.siteJoin?.body?.healthAuthority,

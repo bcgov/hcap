@@ -104,7 +104,7 @@ const getAssignCohort = async ({ participantId }) => {
       {
         order: [
           {
-            field: `${collections.COHORT_PARTICIPANTS}.date_assigned`,
+            field: `${collections.COHORT_PARTICIPANTS}.created_at`,
             direction: 'DESC',
             nulls: 'LAST',
           },

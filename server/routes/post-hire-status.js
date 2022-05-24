@@ -1,11 +1,7 @@
 const express = require('express');
 const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
 const { ParticipantPostHireStatusSchema, validate } = require('../validation');
-const {
-  createPostHireStatus,
-  getPostHireStatusesForParticipant,
-  getPostHireStatusesForCohortParticipant,
-} = require('../services/post-hire-flow');
+const { createPostHireStatus, getPostHireStatus } = require('../services/post-hire-flow');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { getParticipantByID } = require('../services/participants.js');
@@ -66,16 +62,6 @@ router.post(
     }
   })
 );
-
-// Get the post-hire-status for the participant
-const getPostHireStatus = async (participantId, cohortId = -1) => {
-  if (cohortId === -1) {
-    const cohortStatuses = await getPostHireStatusesForCohortParticipant(participantId, cohortId);
-    return cohortStatuses;
-  }
-  const statuses = await getPostHireStatusesForParticipant({ participantId });
-  return statuses;
-};
 
 router.get(
   '/participant/:participantId',

@@ -25,13 +25,14 @@ const getPostHireStatusesForCohortParticipant = async (participantId, cohortId) 
         type: 'LEFT OUTER',
         on: {
           participant_id: 'participant_id',
+          cohort_id: cohortId,
         },
       },
     })
     .find(
       {
         participant_id: participantId,
-        'cohortJoin.cohort_id': cohortId,
+        'cohortJoin.id <>': null,
       },
       {
         order: [
@@ -42,8 +43,18 @@ const getPostHireStatusesForCohortParticipant = async (participantId, cohortId) 
   return statuses;
 };
 
+// Get the post-hire-status for the participant
+const getPostHireStatus = async (participantId, cohortId = -1) => {
+  const statuses =
+    cohortId !== -1
+      ? await getPostHireStatusesForCohortParticipant(participantId, cohortId)
+      : await getPostHireStatusesForParticipant({ participantId });
+  return statuses;
+};
+
 module.exports = {
   createPostHireStatus,
   getPostHireStatusesForParticipant,
   getPostHireStatusesForCohortParticipant,
+  getPostHireStatus,
 };

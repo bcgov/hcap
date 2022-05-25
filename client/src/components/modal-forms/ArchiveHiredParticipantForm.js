@@ -2,6 +2,7 @@ import React from 'react';
 import { Box } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import dayjs from 'dayjs';
+import { addYearToDate, getTodayDate } from '../../utils';
 import { Button } from '../generic';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderSelectField, RenderDateField, RenderCheckbox, RenderRadioGroup } from '../fields';
@@ -18,7 +19,6 @@ import {
   ROSUnderwayStatus,
   ROSCompleteStatus,
 } from '../../constants';
-import { getTodayDate } from '../../utils';
 
 /**
  * Formats for RenderSelectField
@@ -51,7 +51,7 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participant }) 
     : [...archiveTypeOptions];
 
   const endDate = isROSStarted
-    ? dayjs(participant.rosStatuses[0].data.date).add(1, 'years').format('YYYY/MM/DD')
+    ? addYearToDate(participant.rosStatuses[0].data.date).format('YYYY/MM/DD')
     : dayjs().subtract(1, 'days').format('YYYY/MM/DD');
 
   const getStatusOptions = (selectedReason) => {

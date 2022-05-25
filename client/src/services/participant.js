@@ -190,8 +190,20 @@ export const addParticipantStatus = async ({ participantId, status, additional }
   }
 
   if (response.status === 400) {
-    const error = await response.json();
-    throw new Error(error.message);
+    // Try
+    try {
+      let errorMessage = '';
+      if (response.headers.get('content-type').includes('application/json')) {
+        const error = (await response.json()) || { message: 'Unknown error' };
+        errorMessage = error.message;
+      } else {
+        errorMessage = `Failed to add participant status due to server error: ${await response.text()}`;
+      }
+      throw new Error(errorMessage);
+    } catch (error) {
+      // Non json response from server
+      throw new Error(`Failed to add participant status: ${error.message}`);
+    }
   }
 
   throw new Error('Failed to add participant status', response.error || response.statusText);

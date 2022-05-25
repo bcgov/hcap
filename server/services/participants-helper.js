@@ -14,6 +14,7 @@ const {
   REJECTED: rejected,
   PENDING_ACKNOWLEDGEMENT: pendingAcknowledgement,
   ROS: ros,
+  REJECT_ACKNOWLEDGEMENT: rejectAcknowledgement,
 } = participantStatus;
 
 /**
@@ -307,6 +308,7 @@ class FieldsFilteredParticipantsFinder {
         on: {
           participant_id: 'id',
           status: participantStatus.HIRED,
+          current: true,
         },
       },
     };
@@ -464,7 +466,7 @@ class FieldsFilteredParticipantsFinder {
 
       // Inprogress statuses: only user specific
       const inProgressStatusQuery = {
-        [`${employerSpecificJoin}.status IN`]: inProgressStatuses,
+        [`${employerSpecificJoin}.status IN`]: [...inProgressStatuses, rejectAcknowledgement],
         and: [
           {
             ...employerFilteringCriteria,

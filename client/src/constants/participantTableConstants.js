@@ -165,6 +165,7 @@ const columns = {
   rosSiteName: { id: 'rosSiteName', name: 'Site Name', sortOrder: 23 },
   employerName: { id: 'employerName', name: 'Hired By', sortOrder: 24 },
   engagedBy: { id: 'engagedBy', name: 'Last Engaged By', sortOrder: 16 },
+  archiveReason: { id: 'archiveReason', name: 'Archive Reason', sortOrder: 25, sortable: false },
 };
 
 const {
@@ -192,6 +193,7 @@ const {
   rosSiteName,
   employerName,
   engagedBy,
+  archiveReason,
 } = columns;
 
 export const columnsByRole = {
@@ -272,6 +274,8 @@ export const columnsByRole = {
       distance,
       nonHCAP,
       userUpdatedAt,
+      siteName,
+      archiveReason,
       engage,
     ],
     'Hired Candidates': [
@@ -344,6 +348,8 @@ export const columnsByRole = {
       distance,
       nonHCAP,
       userUpdatedAt,
+      siteName,
+      archiveReason,
       engage,
     ],
     'Hired Candidates': [

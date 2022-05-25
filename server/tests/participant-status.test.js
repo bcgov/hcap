@@ -18,6 +18,8 @@ const {
   ARCHIVED,
   INVALID_STATUS_TRANSITION,
   INVALID_ARCHIVE,
+  REJECTED,
+  REJECT_ACKNOWLEDGEMENT,
 } = participantStatus;
 
 const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
@@ -308,6 +310,86 @@ describe('Test Participant status data model and service', () => {
     );
     const dualStatuses = resultDual.data.filter((p) => p.id === participant.id);
     expect(dualStatuses.length).toBe(2);
+  });
+
+  it('should reject participant', async () => {
+    const participant = await makeTestParticipant({
+      emailAddress: 'test.site.participant.4@hcap.io',
+    });
+
+    const site1 = await makeTestSite({
+      siteId: 202205252325,
+      siteName: 'Test Site 1040',
+      city: 'Test City 1040',
+    });
+
+    const emp1 = {
+      id: v4(),
+      isEmployer: true,
+      regions,
+      sites: [site1.siteId],
+    };
+
+    const emp2 = {
+      id: v4(),
+      isEmployer: true,
+      regions,
+      sites: [site1.siteId],
+    };
+
+    const ps1 = await setParticipantStatus(
+      emp1.id,
+      participant.id,
+      'prospecting',
+      {
+        site: site1.siteId,
+      },
+      emp1
+    );
+    expect(ps1.status).toBe('prospecting');
+
+    const ps2 = await setParticipantStatus(
+      emp1.id,
+      participant.id,
+      REJECTED,
+      {
+        site: site1.siteId,
+        final_status: 'withdrawn',
+      },
+      emp1,
+      ps1.id
+    );
+    expect(ps2.status).toBe(REJECTED);
+
+    const statuses = await getParticipants(emp2, null, null, null, null, null, null, null, [
+      'prospecting',
+      'interviewing',
+    ]);
+    expect(statuses.data.length).toBeGreaterThanOrEqual(1);
+    const subject = statuses.data.find((p) => p.id === participant.id);
+    expect(subject).toBeDefined();
+    const { statusInfos = [] } = subject;
+    expect(statusInfos.length).toBeGreaterThanOrEqual(1);
+    const statusInfo = statusInfos[0];
+    expect(statusInfo.status).toBe(REJECT_ACKNOWLEDGEMENT);
+    expect(statusInfo.data?.final_status).toBe('withdrawn');
+
+    // Check reject status for employer1
+    const resultReject = await getParticipants(emp1, null, null, null, null, null, null, null, [
+      REJECTED,
+    ]);
+    expect(resultReject.data.length).toBeGreaterThanOrEqual(1);
+    const filteredReject = resultReject.data.find((p) => p.id === participant.id);
+    expect(filteredReject).toBeDefined();
+    expect(filteredReject.statusInfos.length).toBeGreaterThanOrEqual(1);
+    const rejectStatusInfo = filteredReject.statusInfos[0];
+    expect(rejectStatusInfo.data?.final_status).toBe('withdrawn');
+
+    // No reject for emp2
+    const resultNoReject = await getParticipants(emp2, null, null, null, null, null, null, null, [
+      REJECTED,
+    ]);
+    expect(resultNoReject.data.length).toBe(0);
   });
 
   it.skip('should bulk engage participants', async () => {

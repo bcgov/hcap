@@ -260,6 +260,7 @@ class FieldsFilteredParticipantsFinder {
           participant_id: 'id',
           current: true,
           ...(isOpen && { employer_id: user.id }),
+          ...(isInProgress && { [`data.hiddenUserIds.${user.id}`]: null }),
         },
         ...(!isOpen && {
           employerInfo: {

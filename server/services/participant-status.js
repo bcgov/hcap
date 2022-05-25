@@ -1,6 +1,6 @@
 const { dbClient, collections } = require('../db');
 const { participantStatus } = require('../constants');
-const { withdrawParticipant, getParticipantByID } = require('./participants');
+const { withdrawParticipant, getParticipantByID, invalidateStatus } = require('./participants');
 
 const {
   PROSPECTING,
@@ -127,6 +127,8 @@ const setParticipantStatus = async (
       id: participantId,
     });
 
+    // Ignore existingStatus invalidation
+    let ignoreStatusInvalidation = false;
     // Handle individual status transitions
     switch (status) {
       case ARCHIVED: {
@@ -181,6 +183,7 @@ const setParticipantStatus = async (
         // If no previous status with site or previous status site mismatch
         if (!existingCurrentStatus.data?.site || existingCurrentStatus.data?.site !== site) {
           additional = { previousStatus: existingCurrentStatus.id };
+          ignoreStatusInvalidation = true;
         }
         // Invalidate all current statuses for site
         await invalidateAllStatusForSite(tx, { site, participantId });
@@ -213,7 +216,11 @@ const setParticipantStatus = async (
     }
 
     // Invalidating current status for all cases except REJECTED
-    if (existingCurrentStatus && currentStatus.status !== REJECT_ACKNOWLEDGEMENT) {
+    if (
+      existingCurrentStatus &&
+      !ignoreStatusInvalidation &&
+      currentStatus.status !== REJECT_ACKNOWLEDGEMENT
+    ) {
       tx[collections.PARTICIPANTS_STATUS].update(
         {
           id: existingCurrentStatus.id,
@@ -273,7 +280,40 @@ const bulkEngageParticipants = async ({ participants, user }) =>
     })
   );
 
+const hideStatusForUser = async ({ userId, statusId }) => {
+  // Load status
+  const status = await dbClient.db[collections.PARTICIPANTS_STATUS].findOne({ id: statusId });
+  if (!status || !status.current) {
+    return;
+  }
+
+  // Status without site mean legacy status
+  if (!status.data?.site) {
+    // Invalidate
+    await invalidateStatus({ currentStatusId: statusId });
+    return;
+  }
+
+  // Status with site: hide status for user
+  const hiddenUserIds = {
+    ...(status.data?.hiddenUserIds || {}),
+    [userId]: true,
+  };
+  await dbClient.db[collections.PARTICIPANTS_STATUS].update(
+    {
+      id: statusId,
+    },
+    {
+      data: {
+        ...status.data,
+        hiddenUserIds,
+      },
+    }
+  );
+};
+
 module.exports = {
   setParticipantStatus,
   bulkEngageParticipants,
+  hideStatusForUser,
 };

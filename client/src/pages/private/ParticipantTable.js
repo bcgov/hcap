@@ -29,6 +29,7 @@ import {
   featureFlag,
   FEATURE_MULTI_ORG_PROSPECTING,
 } from '../../services';
+import { capitalizedString } from '../../utils';
 
 const mapRosData = (data) => ({
   rosSiteName: data?.rosStatuses?.[0]?.rosSite?.body.siteName,
@@ -103,10 +104,11 @@ const filterData = (data, columns, isMoH = false) => {
 
     row.engage = item;
     row.siteName = item?.statusInfos?.[0].data?.siteName || 'Not Available';
-    row.archiveReason =
+    row.archiveReason = capitalizedString(
       item?.statusInfos?.[0].data?.final_status ||
-      item?.statusInfos?.[0].data?.reason ||
-      'Not Available';
+        item?.statusInfos?.[0].data?.reason ||
+        'Not Available'
+    );
 
     if (
       item.rosStatuses &&

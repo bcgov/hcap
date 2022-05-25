@@ -295,8 +295,8 @@ const hideStatusForUser = async ({ userId, statusId }) => {
   }
 
   // Status with site: hide status for user
-  const hiddenUserIds = {
-    ...(status.data?.hiddenUserIds || {}),
+  const hiddenForUserIds = {
+    ...(status.data?.hiddenForUserIds || {}),
     [userId]: true,
   };
   await dbClient.db[collections.PARTICIPANTS_STATUS].update(
@@ -306,7 +306,7 @@ const hideStatusForUser = async ({ userId, statusId }) => {
     {
       data: {
         ...status.data,
-        hiddenUserIds,
+        hiddenForUserIds,
       },
     }
   );

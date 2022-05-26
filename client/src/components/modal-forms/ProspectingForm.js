@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ProspectingForm = ({ name, participantsCount, onClose, onSubmit }) => {
   const classes = useStyles();
-  const hasMultipleParticipants = participantsCount !== -1;
+  const hasMultipleParticipants = participantsCount > 1;
 
   return (
     <Fragment>

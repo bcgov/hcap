@@ -33,6 +33,10 @@ export const ParticipantTableDialogues = ({
   const { auth } = AuthContext.useAuth();
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
 
+  const getParticipantName = (participant) => {
+    return participant ? `${participant?.firstName} ${participant?.lastName}` : '';
+  };
+
   const handleSingleSelectProspectingSites = (values) => {
     handleEngage(actionMenuParticipant.id, participantStatus.PROSPECTING, {
       sites: [values.prospectingSite],
@@ -80,7 +84,7 @@ export const ParticipantTableDialogues = ({
 
       {activeModalForm === 'prospecting' && (
         <ProspectingForm
-          name={`${actionMenuParticipant?.firstName} ${actionMenuParticipant?.lastName}`}
+          name={getParticipantName(actionMenuParticipant || bulkParticipants[0])}
           participantsCount={
             !actionMenuParticipant && bulkParticipants?.length > 0 ? bulkParticipants.length : -1
           }

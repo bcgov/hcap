@@ -103,7 +103,9 @@
           "Preferred Region(s)",
           "Site Distance",
           "Non-HCAP",
-          "Last Updated"
+          "Last Updated",
+          "Site Name",
+          "Archive Reason"
         ],
         "Hired Candidates": [
           "ID",
@@ -189,7 +191,9 @@
           "Preferred Region(s)",
           "Site Distance",
           "Non-HCAP",
-          "Last Updated"
+          "Last Updated",
+          "Site Name",
+          "Archive Reason"
         ],
         "Hired Candidates": [
           "ID",

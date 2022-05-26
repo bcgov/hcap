@@ -2,6 +2,7 @@ import React from 'react';
 import InfoIcon from '@material-ui/icons/Info';
 import { ComponentTooltip } from '../components/generic/ComponentTooltip';
 import { Button } from '../components/generic';
+import { capitalizedString } from './gen-util';
 
 /**
  * Returns participant stats message based on the first status provided
@@ -13,6 +14,7 @@ import { Button } from '../components/generic';
 const getParticipantStatus = (isMoH, status) => {
   if (status === 'rejected') return 'Archived';
   if (status === 'ros') return 'Return of Service';
+  if (status === 'reject_ack') return 'Archived for site';
 
   if (isMoH && status.startsWith('inprogress')) {
     const count = status.split('_');
@@ -21,7 +23,7 @@ const getParticipantStatus = (isMoH, status) => {
 
   if (status === 'offer_made') return 'Offer Made';
 
-  return status.charAt(0).toUpperCase() + status.slice(1);
+  return capitalizedString(status);
 };
 
 export const prettifyStatus = (
@@ -31,15 +33,18 @@ export const prettifyStatus = (
   handleEngage,
   handleAcknowledge,
   isMoH = false,
-  participantInfo = {}
+  participantInfo = { statusInfos: [] }
 ) => {
   if (!status) return;
 
   const statusValue = status[0];
+  const { statusInfos = [] } = participantInfo;
+  const statusInfo = statusInfos.length > 0 ? statusInfos[0] : {};
   let firstStatus = getParticipantStatus(isMoH, statusValue);
   let toolTip = 'This candidate was hired by another site.';
   let isWithdrawn = false;
   const isHiredByPeer = status[1] === 'hired_by_peer';
+  const isRejectedByPeer = statusValue === 'reject_ack';
 
   if (status.includes('withdrawn')) {
     firstStatus = 'Withdrawn';
@@ -52,10 +57,24 @@ export const prettifyStatus = (
     firstStatus = 'Archived';
   }
 
+  if (statusValue === 'reject_ack') {
+    firstStatus = statusInfo.data?.refStatus
+      ? getParticipantStatus(isMoH, statusInfo.data.refStatus)
+      : firstStatus;
+    toolTip = statusInfo.data?.final_status
+      ? `Participant not available. ${capitalizedString(statusInfo.data.final_status)}`
+      : 'Participant is no longer available. ';
+  }
+
   if (isHiredByPeer) {
     toolTip =
       'This candidate was hired to another site and is visible under the "Hired Candidates" tab.';
   }
+
+  const rejectData = {
+    final_status: statusInfo.data?.final_status || (isWithdrawn ? 'withdrawn' : 'hired by other'),
+    previous: isRejectedByPeer ? statusInfo.data?.previous : statusValue,
+  };
 
   const hideAcknowledgeButton =
     !(tabValue === 'Hired Candidates' && status.includes('pending_acknowledgement')) &&
@@ -73,7 +92,7 @@ export const prettifyStatus = (
       }}
     >
       {firstStatus}{' '}
-      {status[1] && firstStatus !== 'Archived' && (
+      {(status[1] || isRejectedByPeer) && firstStatus !== 'Archived' && (
         <ComponentTooltip
           arrow
           title={
@@ -99,15 +118,7 @@ export const prettifyStatus = (
                 >
                   <Button
                     onClick={() => {
-                      handleEngage(
-                        id,
-                        'rejected',
-                        {
-                          final_status: isWithdrawn ? 'withdrawn' : 'hired by other',
-                          previous: statusValue,
-                        },
-                        participantInfo
-                      );
+                      handleEngage(id, 'rejected', rejectData, participantInfo);
                     }}
                     size='small'
                     fullWidth={false}

@@ -16,7 +16,13 @@ import {
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
-import { dayUtils, addEllipsisMask, prettifyStatus, keyedString } from '../../utils';
+import {
+  dayUtils,
+  addEllipsisMask,
+  prettifyStatus,
+  keyedString,
+  capitalizedString,
+} from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
 import { ParticipantTableDialogues } from './ParticipantTableDialogues';
@@ -103,6 +109,11 @@ const filterData = (data, columns, isMoH = false) => {
 
     row.engage = item;
     row.siteName = item?.statusInfos?.[0].data?.siteName || 'Not Available';
+    row.archiveReason = capitalizedString(
+      item?.statusInfos?.[0].data?.final_status ||
+        item?.statusInfos?.[0].data?.reason ||
+        'Not Available'
+    );
 
     if (
       item.rosStatuses &&
@@ -414,9 +425,13 @@ const ParticipantTable = () => {
         }
         return 'N/A';
       case 'engage':
-        const engage = !['hired_by_peer', 'already_hired', 'withdrawn', 'archived'].find((status) =>
-          row.status.includes(status)
-        );
+        const engage = ![
+          'hired_by_peer',
+          'already_hired',
+          'withdrawn',
+          'archived',
+          'reject_ack',
+        ].find((status) => row.status.includes(status));
 
         return (
           engage && (

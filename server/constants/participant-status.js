@@ -13,6 +13,7 @@ const participantStatus = {
   INVALID_STATUS: 'invalid_status',
   UNAVAILABLE: 'unavailable',
   ROS: 'ros',
+  REJECT_ACKNOWLEDGEMENT: 'reject_ack',
 };
 
 module.exports = {

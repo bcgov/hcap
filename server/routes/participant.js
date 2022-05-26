@@ -11,11 +11,14 @@ const {
   confirmParticipantInterest,
   validateConfirmationId,
   deleteAcknowledgement,
-  invalidateStatus,
   archiveParticipantBySite,
   deleteParticipant,
 } = require('../services/participants.js');
-const { setParticipantStatus, bulkEngageParticipants } = require('../services/participant-status');
+const {
+  setParticipantStatus,
+  bulkEngageParticipants,
+  hideStatusForUser,
+} = require('../services/participant-status');
 const { addParticipantToWaitlist } = require('../services/waitlist');
 const {
   validate,
@@ -431,7 +434,7 @@ employerActionsRouter.delete(
     }
 
     if (multiOrgHire) {
-      await invalidateStatus({ currentStatusId });
+      await hideStatusForUser({ userId: user.id, statusId: currentStatusId });
       logger.info({
         action: 'acknowledgment_update',
         performed_by: {

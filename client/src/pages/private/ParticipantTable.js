@@ -16,7 +16,13 @@ import {
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
-import { dayUtils, addEllipsisMask, prettifyStatus, keyedString } from '../../utils';
+import {
+  dayUtils,
+  addEllipsisMask,
+  prettifyStatus,
+  keyedString,
+  capitalizedString,
+} from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
 import { ParticipantTableDialogues } from './ParticipantTableDialogues';
@@ -29,7 +35,6 @@ import {
   featureFlag,
   FEATURE_MULTI_ORG_PROSPECTING,
 } from '../../services';
-import { capitalizedString } from '../../utils';
 
 const mapRosData = (data) => ({
   rosSiteName: data?.rosStatuses?.[0]?.rosSite?.body.siteName,

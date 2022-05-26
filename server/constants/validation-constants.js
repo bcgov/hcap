@@ -72,7 +72,6 @@ const postHireStatuses = {
   postSecondaryEducationUnderway: 'post_secondary_education_underway',
   postSecondaryEducationCompleted: 'post_secondary_education_completed',
   cohortUnsuccessful: 'cohort_unsuccessful',
-  cohortReassigned: 'cohort_reassigned',
 };
 
 const postHireStatusesValues = Object.values(postHireStatuses).sort();

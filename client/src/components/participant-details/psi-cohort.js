@@ -61,7 +61,6 @@ const TabContentTrackGraduation = ({ participant, fetchData }) => {
 
 const canAssignCohort = (participant) => {
   if (!participant || !participant.cohort) return false;
-  if (participant.postHireStatus?.status === postHireStatuses.cohortReassigned) return false;
 
   const hasUnsuccessfulCohort =
     participant.postHireStatus?.status === postHireStatuses.cohortUnsuccessful;

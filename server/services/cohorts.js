@@ -3,7 +3,7 @@ const utc = require('dayjs/plugin/utc');
 
 const { dbClient, collections } = require('../db');
 const { validate, CreateCohortSchema } = require('../validation');
-const { createPostHireStatus, getPostHireStatusesForParticipant } = require('./post-hire-flow');
+const { getPostHireStatusesForParticipant } = require('./post-hire-flow');
 const { postHireStatuses } = require('../constants');
 
 // Setup dayjs utc
@@ -92,7 +92,9 @@ const getAssignCohort = async ({ participantId }) => {
       },
     })
     .find(
-      {},
+      {
+        'cohortParticipant.is_current': true,
+      },
       {
         order: [
           {
@@ -108,15 +110,15 @@ const getAssignCohort = async ({ participantId }) => {
 };
 
 const assignCohort = async ({ id, participantId }) => {
-  const participantCohorts = await getAssignCohort({ participantId });
-  if (participantCohorts?.length > 0) {
-    await createPostHireStatus({
-      participant_id: participantId,
-      status: postHireStatuses.cohortReassigned,
-      data: { dateAssigned: dayjs().format('YYYY/MM/DD') },
-    });
-  }
+  // unassign pervious cohorts
+  await dbClient.db[collections.COHORT_PARTICIPANTS].update(
+    { participant_id: participantId },
+    {
+      is_current: false,
+    }
+  );
 
+  // assign a new cohort
   const newParticipantCohort = await dbClient.db[collections.COHORT_PARTICIPANTS].insert({
     cohort_id: id,
     participant_id: participantId,

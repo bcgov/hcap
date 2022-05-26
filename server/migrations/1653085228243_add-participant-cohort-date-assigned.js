@@ -11,11 +11,16 @@ exports.up = (pgm) => {
         notNull: true,
         default: pgm.func('current_timestamp'),
       },
+      is_current: {
+        type: 'boolean',
+        notNull: true,
+        default: true,
+      },
     },
     { ifNotExists: true }
   );
 };
 
 exports.down = (pgm) => {
-  pgm.dropColumns('cohort_participants', ['created_at'], { ifExists: true });
+  pgm.dropColumns('cohort_participants', ['created_at', 'is_current'], { ifExists: true });
 };

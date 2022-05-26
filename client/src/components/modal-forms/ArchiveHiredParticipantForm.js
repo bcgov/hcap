@@ -69,8 +69,6 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participant }) 
     <Formik
       initialValues={archiveHiredParticipantInitialValues}
       validationSchema={ArchiveHiredParticipantSchema}
-      // validateOnBlur={true}
-      // validateOnChange={false}
       onSubmit={onSubmit}
     >
       {({ values, setFieldValue, setTouched, touched, submitForm }) => {

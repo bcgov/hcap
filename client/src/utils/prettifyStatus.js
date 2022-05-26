@@ -2,6 +2,7 @@ import React from 'react';
 import InfoIcon from '@material-ui/icons/Info';
 import { ComponentTooltip } from '../components/generic/ComponentTooltip';
 import { Button } from '../components/generic';
+import { capitalizedString } from './gen-util';
 
 /**
  * Returns participant stats message based on the first status provided
@@ -22,7 +23,7 @@ const getParticipantStatus = (isMoH, status) => {
 
   if (status === 'offer_made') return 'Offer Made';
 
-  return status.charAt(0).toUpperCase() + status.slice(1);
+  return capitalizedString(status);
 };
 
 export const prettifyStatus = (
@@ -60,7 +61,9 @@ export const prettifyStatus = (
     firstStatus = statusInfo.data?.refStatus
       ? getParticipantStatus(isMoH, statusInfo.data.refStatus)
       : firstStatus;
-    toolTip = 'This candidate is no longer available.';
+    toolTip = statusInfo.data?.final_status
+      ? `Participant not available. ${capitalizedString(statusInfo.data.final_status)}`
+      : 'Participant is no longer available. ';
   }
 
   if (isHiredByPeer) {

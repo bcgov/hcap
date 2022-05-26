@@ -181,7 +181,7 @@ const setParticipantStatus = async (
       }
       case HIRED: {
         // If no previous status with site or previous status site mismatch
-        if (!existingCurrentStatus.data?.site || existingCurrentStatus.data?.site !== site) {
+        if (existingCurrentStatus.data?.site && existingCurrentStatus.data?.site !== site) {
           additional = { previousStatus: existingCurrentStatus.id };
           ignoreStatusInvalidation = true;
         }
@@ -219,7 +219,7 @@ const setParticipantStatus = async (
     if (
       existingCurrentStatus &&
       !ignoreStatusInvalidation &&
-      currentStatus.status !== REJECT_ACKNOWLEDGEMENT
+      existingCurrentStatus.status !== REJECT_ACKNOWLEDGEMENT
     ) {
       tx[collections.PARTICIPANTS_STATUS].update(
         {

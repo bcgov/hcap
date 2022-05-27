@@ -71,7 +71,7 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participant }) 
       validationSchema={ArchiveHiredParticipantSchema}
       onSubmit={onSubmit}
     >
-      {({ values, setFieldValue, submitForm }) => {
+      {({ values, setFieldValue, setTouched, touched, submitForm }) => {
         return (
           <FormikForm>
             <Field
@@ -82,6 +82,11 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participant }) 
               onChange={(event) => {
                 const newValue = event.target.value;
                 setFieldValue('type', newValue);
+                if (touched) {
+                  // set other fields to untouched to not trigger extra validation errors
+                  const untouched = { reason: false, status: false, endDate: false };
+                  setTouched(untouched);
+                }
 
                 if (isROSStarted) {
                   if (newValue === ROSCompletedType.value) {

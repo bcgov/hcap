@@ -376,6 +376,7 @@ const ParticipantTable = () => {
   }, [isMoH, isSuperUser, roles]);
 
   useEffect(() => {
+    setSelectedParticipants([]);
     fetchParticipants();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, pagination.page, order, selectedTabStatuses, siteSelector]);

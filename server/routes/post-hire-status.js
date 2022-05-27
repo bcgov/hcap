@@ -1,7 +1,11 @@
 const express = require('express');
 const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
 const { ParticipantPostHireStatusSchema, validate } = require('../validation');
-const { createPostHireStatus, getPostHireStatus } = require('../services/post-hire-flow');
+const {
+  createPostHireStatus,
+  updatePostHireStatus,
+  getPostHireStatus,
+} = require('../services/post-hire-flow');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { getParticipantByID } = require('../services/participants.js');
@@ -48,6 +52,7 @@ router.post(
 
     // Save the record
     try {
+      await updatePostHireStatus(body);
       const result = await createPostHireStatus(body);
 
       logger.info({

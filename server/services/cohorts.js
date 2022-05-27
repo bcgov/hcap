@@ -110,8 +110,14 @@ const getAssignCohort = async ({ participantId }) => {
 };
 
 const assignCohort = async ({ id, participantId }) => {
-  // unassign pervious cohorts
+  // unassign pervious cohorts and update status
   await dbClient.db[collections.COHORT_PARTICIPANTS].update(
+    { participant_id: participantId },
+    {
+      is_current: false,
+    }
+  );
+  await dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS].update(
     { participant_id: participantId },
     {
       is_current: false,

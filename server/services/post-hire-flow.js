@@ -1,5 +1,13 @@
 const { dbClient, collections } = require('../db');
 
+const updatePostHireStatus = async ({ participantId }) =>
+  dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS].update(
+    { participant_id: participantId },
+    {
+      is_current: false,
+    }
+  );
+
 const createPostHireStatus = async ({ participantId, status, data }) =>
   dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS].insert({
     participant_id: participantId,
@@ -33,6 +41,7 @@ const getPostHireStatusesForCohortParticipant = async (participantId, cohortId) 
       {
         participant_id: participantId,
         'cohortJoin.id <>': null,
+        is_current: true,
       },
       {
         order: [
@@ -54,6 +63,7 @@ const getPostHireStatus = async (participantId, cohortId = -1) => {
 
 module.exports = {
   createPostHireStatus,
+  updatePostHireStatus,
   getPostHireStatusesForParticipant,
   getPostHireStatusesForCohortParticipant,
   getPostHireStatus,

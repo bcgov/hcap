@@ -2,17 +2,12 @@
 
 const { collections } = require('../db');
 
-exports.shorthands = 'add_created_at_date_for_cohort';
+exports.shorthands = 'add_is_current_post_hire_status';
 
 exports.up = (pgm) => {
   pgm.addColumns(
-    collections.COHORT_PARTICIPANTS,
+    collections.PARTICIPANT_POST_HIRE_STATUS,
     {
-      created_at: {
-        type: 'timestamp with time zone',
-        notNull: true,
-        default: pgm.func('current_timestamp'),
-      },
       is_current: {
         type: 'boolean',
         notNull: true,
@@ -24,7 +19,7 @@ exports.up = (pgm) => {
 };
 
 exports.down = (pgm) => {
-  pgm.dropColumns(collections.COHORT_PARTICIPANTS, ['created_at', 'is_current'], {
+  pgm.dropColumns(collections.PARTICIPANT_POST_HIRE_STATUS, ['is_current'], {
     ifExists: true,
   });
 };

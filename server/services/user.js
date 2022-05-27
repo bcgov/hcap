@@ -13,6 +13,25 @@ const getUser = async (id) => {
   return dbClient.db[collections.USERS].findDoc(query, options);
 };
 
+/**
+ *
+ * @param {*} hcapUserInfo
+ * @returns
+ */
+const getUserNotifications = async (hcapUserInfo) => {
+  const notifications = [];
+  if (hcapUserInfo.isEmployer || hcapUserInfo.isHA) {
+    const rosEndedNotifications = [
+      {
+        type: 'rosEnded',
+        message: '2 of your Return of Service Participants have finished their term.',
+      },
+    ];
+    notifications.push(rosEndedNotifications);
+  }
+  return notifications;
+};
+
 const getUserSites = async (id) => {
   const user = await getUser(id);
   if (!user || !user.sites) return [];
@@ -39,4 +58,5 @@ module.exports = {
   userRegionQuery,
   makeUser,
   getUserSiteIds,
+  getUserNotifications,
 };

@@ -1,7 +1,7 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-
+import { AuthContext } from '../../providers';
 import { Header } from './Header';
 
 const useStyles = makeStyles(() => ({
@@ -17,6 +17,11 @@ const useStyles = makeStyles(() => ({
 // hideEmployers set to true for participant-facing pages
 export const Page = ({ children, hideEmployers = false, centered, isAutoHeight = false }) => {
   const classes = useStyles({ centered, isAutoHeight });
+
+  const { auth } = AuthContext.useAuth();
+  const notifications = useMemo(() => auth.user?.notifications || [], [auth.user?.notifications]);
+  console.log(notifications);
+
   return (
     <Fragment>
       <Header hideEmployers={hideEmployers} />

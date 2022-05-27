@@ -7,6 +7,7 @@ const CreateReturnOfServiceSchema = yup
   .noUnknown('Unknown field in form')
   .shape({
     status: yup.string().optional(),
+    siteId: yup.number().optional(),
     data: yup
       .object()
       .required('Data object is required')

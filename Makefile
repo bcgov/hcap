@@ -116,6 +116,9 @@ app: ## Bash into App container
 	@echo "Make: Shelling into local application container"
 	@docker-compose -f docker-compose.dev.yml exec server /bin/bash
 
+run-local-db: local-build
+	@docker-compose -f docker-compose.dev.yml up postgres
+
 # Git Tagging Aliases
 
 tag-dev:

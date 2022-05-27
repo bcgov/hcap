@@ -70,5 +70,6 @@ describe('Test return of service', () => {
     expect(ros.participant_id).toBe(testParticipant.id);
     expect(ros.site).toBeDefined();
     expect(ros.site.id).toBe(testSite.id);
+    expect(ros.is_current).toBe(true);
   });
 });

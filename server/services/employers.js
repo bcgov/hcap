@@ -92,6 +92,21 @@ const getSiteByID = async (id) => {
   return site;
 };
 
+const getAllSites = async () =>
+  (
+    await dbClient.db[collections.EMPLOYER_SITES].findDoc(
+      {},
+      {
+        order: [{ field: `body.siteName`, direction: 'asc' }],
+      }
+    )
+  ).map((site) => ({
+    id: site.id,
+    siteId: site.siteId,
+    siteName: site.siteName,
+    healthAuthority: site.healthAuthority,
+  }));
+
 module.exports = {
   getEmployers,
   getEmployerByID,
@@ -100,4 +115,5 @@ module.exports = {
   updateSite,
   getSites,
   getSiteByID,
+  getAllSites,
 };

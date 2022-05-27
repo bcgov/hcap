@@ -13,11 +13,7 @@ const { createRows, verifyHeaders } = require('../utils');
 const { ParticipantsFinder } = require('./participants-helper');
 const logger = require('../logger.js');
 const { getAssignCohort } = require('./cohorts');
-const {
-  createPostHireStatus,
-  getPostHireStatusesForParticipant,
-  updatePostHireStatus,
-} = require('./post-hire-flow');
+const { createPostHireStatus, getPostHireStatusesForParticipant } = require('./post-hire-flow');
 
 const deleteParticipant = async ({ email }) => {
   await dbClient.db.withTransaction(async (tnx) => {
@@ -181,7 +177,6 @@ const updateParticipant = async (participantInfo) => {
       );
       // ensure that a participant has a cohort before adding post hire status
       if (cohort && cohort.length > 0 && graduationStatuses.length === 0) {
-        await updatePostHireStatus({ participantId: participantInfo.id });
         await createPostHireStatus({
           participantId: participantInfo.id,
           status: postHireStatuses.cohortUnsuccessful,

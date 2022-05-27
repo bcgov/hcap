@@ -3,7 +3,7 @@ const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
 const { ParticipantPostHireStatusSchema, validate } = require('../validation');
 const {
   createPostHireStatus,
-  updatePostHireStatus,
+  invalidatePostHireStatus,
   getPostHireStatus,
 } = require('../services/post-hire-flow');
 const keycloak = require('../keycloak');
@@ -52,7 +52,7 @@ router.post(
 
     // Save the record
     try {
-      await updatePostHireStatus(body);
+      await invalidatePostHireStatus(body);
       const result = await createPostHireStatus(body);
 
       logger.info({

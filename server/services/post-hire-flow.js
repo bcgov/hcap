@@ -1,6 +1,6 @@
 const { dbClient, collections } = require('../db');
 
-const updatePostHireStatus = async ({ participantId }) =>
+const invalidatePostHireStatus = async ({ participantId }) =>
   dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS].update(
     { participant_id: participantId },
     {
@@ -63,7 +63,7 @@ const getPostHireStatus = async (participantId, cohortId = -1) => {
 
 module.exports = {
   createPostHireStatus,
-  updatePostHireStatus,
+  invalidatePostHireStatus,
   getPostHireStatusesForParticipant,
   getPostHireStatusesForCohortParticipant,
   getPostHireStatus,

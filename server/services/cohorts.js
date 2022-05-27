@@ -71,14 +71,6 @@ const makeCohort = async (cohortData) => {
 const updateCohort = async (id, updateData) =>
   dbClient.db[collections.COHORTS].update(id, { ...mapDataToCohort(updateData) });
 
-const assignCohort = async ({ id, participantId }) => {
-  const participantCohort = await dbClient.db[collections.COHORT_PARTICIPANTS].insert({
-    cohort_id: id,
-    participant_id: participantId,
-  });
-  return participantCohort;
-};
-
 const getAssignCohort = async ({ participantId }) => {
   const cohorts = await dbClient.db[collections.COHORTS]
     .join({
@@ -99,8 +91,45 @@ const getAssignCohort = async ({ participantId }) => {
         },
       },
     })
-    .find();
+    .find(
+      {
+        'cohortParticipant.is_current': true,
+      },
+      {
+        order: [
+          {
+            field: `${collections.COHORT_PARTICIPANTS}.created_at`,
+            direction: 'DESC',
+            nulls: 'LAST',
+          },
+        ],
+      }
+    );
+
   return cohorts;
+};
+
+const assignCohort = async ({ id, participantId }) => {
+  // unassign pervious cohorts and update status
+  await dbClient.db[collections.COHORT_PARTICIPANTS].update(
+    { participant_id: participantId },
+    {
+      is_current: false,
+    }
+  );
+  await dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS].update(
+    { participant_id: participantId },
+    {
+      is_current: false,
+    }
+  );
+
+  // assign a new cohort
+  const newParticipantCohort = await dbClient.db[collections.COHORT_PARTICIPANTS].insert({
+    cohort_id: id,
+    participant_id: participantId,
+  });
+  return newParticipantCohort;
 };
 
 const getCountOfAllocation = async ({ cohortId } = {}) =>

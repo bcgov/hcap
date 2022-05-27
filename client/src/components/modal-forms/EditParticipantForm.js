@@ -98,7 +98,7 @@ export const EditParticipantForm = ({ initialValues, onClose, submissionCallback
               ]}
             />
           </Box>
-          <Box mt={3}>
+          <Box my={2}>
             <Grid container spacing={2} justify='flex-end'>
               <Grid item>
                 <Button onClick={onClose} color='default' text='Cancel' />

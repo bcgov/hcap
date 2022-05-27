@@ -253,20 +253,15 @@ export default () => {
               </Dialog>
             )}
             <Box pt={4} pb={2} pl={4} pr={4}>
-              <Box pb={4} pl={2}>
-                <Box pb={2}>
-                  <Typography variant='body1'>
-                    <Link onClick={navigateBackOnLink}>{linkName}</Link> /{participant.fullName}
-                  </Typography>
-                </Box>
-                <Grid container>
-                  <Typography variant='h2'>
-                    <b>Participant Details</b>
-                  </Typography>
-                </Grid>
+              <Box pb={1}>
+                <Typography variant='body1'>
+                  <Link onClick={navigateBackOnLink}>{linkName}</Link> /{participant.fullName}
+                </Typography>
               </Box>
+              <Typography variant='h2'>Participant Details</Typography>
             </Box>
-            <Box pt={4} pb={2} pl={4} pr={4} width='100%'>
+
+            <Box py={2} px={4}>
               <Grid className={classes.rootContainer} container spacing={2}>
                 {Object.keys(keyLabelMap).map((key) => (
                   <Grid key={key} item xs={12} sm={6} xl={3}>
@@ -284,18 +279,18 @@ export default () => {
                 ))}
               </Grid>
             </Box>
-            <Grid container style={{ marginBottom: '10px', marginLeft: '10px' }}>
-              <Grid item xs={4}>
-                <Button
-                  test-id='editInfoButton'
-                  variant='outlined'
-                  disabled={!enableEdit}
-                  onClick={showEditInfoModal}
-                >
-                  Edit Info
-                </Button>
-              </Grid>
-            </Grid>
+
+            <Box px={4}>
+              <Button
+                test-id='editInfoButton'
+                variant='outlined'
+                disabled={!enableEdit}
+                onClick={showEditInfoModal}
+              >
+                Edit Info
+              </Button>
+            </Box>
+
             <CheckPermissions permittedRoles={['health_authority']}>
               {!disableAssign && (
                 <PSICohortView

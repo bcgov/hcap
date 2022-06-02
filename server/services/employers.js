@@ -51,10 +51,19 @@ const updateSite = async (id, site) => {
 };
 
 const getSites = async () => dbClient.db[collections.EMPLOYER_SITES].findDoc({});
+
+const getSiteDetailsById = async (id) => {
+  const site = await dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
+  if (site.length === 0) {
+    return [{ error: `No site found with id` }];
+  }
+  return site;
+};
+
 const getSiteByID = async (id) => {
   const site = await dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
   if (site.length === 0) {
-    return [{ error: `No site found with id ${id}` }];
+    return [{ error: `No site found with id` }];
   }
 
   // Counting hire
@@ -116,4 +125,5 @@ module.exports = {
   getSites,
   getSiteByID,
   getAllSites,
+  getSiteDetailsById,
 };

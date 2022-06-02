@@ -9,7 +9,7 @@ const {
   makeReturnOfServiceStatus,
   getReturnOfServiceStatuses,
 } = require('../services/return-of-service');
-const { getSiteByID } = require('../services/employers');
+const { getSiteDetailsById } = require('../services/employers');
 
 const router = express.Router();
 
@@ -42,7 +42,7 @@ router.post(
 
     if (siteId) {
       // Validate siteId
-      const [site] = await getSiteByID({ id: siteId });
+      const [site] = await getSiteDetailsById(siteId);
       if (site.error) {
         return res.status(404).send('Site not found');
       }

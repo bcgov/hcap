@@ -79,6 +79,7 @@ const getReturnOfServiceStatuses = async ({ participantId }) =>
     .find(
       {
         participant_id: participantId,
+        is_current: true,
       },
       {
         order: [{ field: 'created_at', direction: 'desc' }],

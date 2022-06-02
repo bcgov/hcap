@@ -24,12 +24,7 @@ export const ReturnOfServiceSchema = yup
     sameSite: yup
       .boolean()
       .typeError('Same site is boolean')
-      .required('Please select if participant is returning to the same site')
-      .test(
-        'is-true',
-        'This feature is currently in development, if you have a participant starting at a different site, please hold off on tracking Return of Service.',
-        (v) => v === true
-      ),
+      .required('Please select if participant is returning to the same site'),
     confirm: yup
       .boolean()
       .typeError('Confirmation is boolean')

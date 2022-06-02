@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import MuiAlert from '@material-ui/lab/Alert';
 import { Button } from '../generic';
 import { Box, Typography } from '@material-ui/core';
-import { RenderDateField, RenderRadioGroup, RenderCheckbox } from '../fields';
+import {
+  RenderDateField,
+  RenderRadioGroup,
+  RenderCheckbox,
+  RenderSelectField,
+  RenderTextField,
+} from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { ReturnOfServiceSchema, rosPositionType, rosEmploymentType } from '../../constants';
 import { getTodayDate } from '../../utils';
-import { createReturnOfServiceStatus } from '../../services';
+import { createReturnOfServiceStatus, getAllSites } from '../../services';
 
 // Helpers
 const rosPositionTypeOptions = Object.values(rosPositionType);
@@ -17,9 +23,10 @@ const rosEmploymentTypeOptions = Object.values(rosEmploymentType);
 // API caller
 const postRoS = async ({ values, participantId, setError }) => {
   try {
-    const { date, employmentType, positionType, sameSite } = values;
+    const { date, employmentType, positionType, sameSite, site } = values;
     await createReturnOfServiceStatus({
       participantId,
+      siteId: site || null,
       data: {
         date,
         employmentType,
@@ -32,6 +39,24 @@ const postRoS = async ({ values, participantId, setError }) => {
     setError(error.message);
     return false;
   }
+};
+
+// Fetch sites
+const fetchSites = async ({ setSites, setError }) => {
+  try {
+    const { data = [] } = await getAllSites();
+    setSites(data);
+  } catch (error) {
+    setError(error.message);
+  }
+};
+
+const mapToOptions = (sites) => {
+  const options = sites.map((site) => ({
+    value: site.id,
+    label: `${site.siteName} - ${site.siteId} (${site.healthAuthority})`,
+  }));
+  return options;
 };
 
 // Styles
@@ -50,6 +75,8 @@ export const ReturnOfServiceForm = ({
     employmentType: '',
     sameSite: true,
     confirm: '',
+    site: null,
+    ha: null,
   },
   onClose,
   participantId,
@@ -59,6 +86,22 @@ export const ReturnOfServiceForm = ({
   const classes = useStyles();
   // Show Error
   const [error, setError] = useState(null);
+  // All sites
+  const [sites, setSites] = useState([]);
+
+  // Handle UI events
+  const handleSiteSelection = ({ target }, setFieldValue) => {
+    const { value } = target;
+    setFieldValue('site', value);
+    // Get site details
+    const site = sites.find((s) => s.id === value);
+    setFieldValue('ha', site.healthAuthority);
+  };
+
+  // Hooks
+  useEffect(() => {
+    fetchSites({ setSites, setError });
+  }, [setSites, setError]);
 
   return (
     <Box spacing={2} p={0.2}>
@@ -73,7 +116,7 @@ export const ReturnOfServiceForm = ({
           }
         }}
       >
-        {({ submitForm }) => (
+        {({ submitForm, values, setFieldValue }) => (
           <FormikForm>
             <Typography color={'primary'} variant={'h4'}>
               {' '}
@@ -126,6 +169,25 @@ export const ReturnOfServiceForm = ({
                 ]}
                 boldLabel={true}
               />
+              {values.sameSite === false && (
+                <Box mt={3} mb={2}>
+                  <Field
+                    name='site'
+                    component={RenderSelectField}
+                    label='Select Site'
+                    options={mapToOptions(sites)}
+                    onChange={(event) => handleSiteSelection(event, setFieldValue)}
+                  />
+                  <br />
+                  <Field
+                    name='ha'
+                    component={RenderTextField}
+                    label='Health Authority'
+                    disabled={true}
+                  />
+                </Box>
+              )}
+              <br />
               <Box className={classes.bg}>
                 <Box p={1}>
                   <Field

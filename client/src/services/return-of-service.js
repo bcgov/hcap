@@ -2,7 +2,7 @@ import store from 'store';
 import dayjs from 'dayjs';
 import { API_URL } from '../constants';
 
-export const createReturnOfServiceStatus = async ({ participantId, data }) => {
+export const createReturnOfServiceStatus = async ({ participantId, data, siteId }) => {
   // Covert data into date obj
   const dateObj = dayjs(data.date, 'YYYY/MM/DD').toDate();
   const finalBody = {
@@ -20,6 +20,7 @@ export const createReturnOfServiceStatus = async ({ participantId, data }) => {
     },
     body: JSON.stringify({
       data: finalBody,
+      ...(siteId && { siteId }),
     }),
   });
   if (response.ok) {
@@ -29,4 +30,22 @@ export const createReturnOfServiceStatus = async ({ participantId, data }) => {
   const message = (await response.text()) || 'Failed to create post-hire status';
 
   throw new Error(message, response.error || response.statusText);
+};
+
+export const getAllSites = async () => {
+  const url = `${API_URL}/api/v1/employer-sites?all=true`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+  });
+
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error('Failed to fetch all sites');
+  }
 };

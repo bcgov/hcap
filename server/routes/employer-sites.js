@@ -87,9 +87,10 @@ router.get(
     routeRedirect({ redirect: '/api/v1/employer-sites/details', match: 'employer-sites-detail' }),
   ],
   asyncMiddleware(async (req, res) => {
-    const { hcapUserInfo: user, params } = req;
-    const { all } = params;
+    const { hcapUserInfo: user, query } = req;
+    const { all } = query;
     let result;
+    console.dir(query);
     if (all === 'true') {
       result = await getAllSites();
     } else {

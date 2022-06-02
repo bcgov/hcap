@@ -277,7 +277,7 @@ const ParticipantTable = () => {
         additional: additionalParma,
       });
       setLoadingData(false);
-      if (status === participantStatus.PROSPECTING) {
+      if (status === participantStatus.PROSPECTING && data.status === status) {
         // Modal appears after submitting
         setActiveModalForm(participantStatus.PROSPECTING);
         closeModal = false;

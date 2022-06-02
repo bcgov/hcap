@@ -3,7 +3,11 @@ const { v4 } = require('uuid');
 const { dbClient, collections } = require('../db');
 const { getParticipants } = require('../services/participants');
 
-const { setParticipantStatus, bulkEngageParticipants } = require('../services/participant-status');
+const {
+  setParticipantStatus,
+  bulkEngageParticipants,
+  hideStatusForUser,
+} = require('../services/participant-status');
 
 const { startDB, closeDB } = require('./util/db');
 const { makeTestParticipant, makeTestSite } = require('./util/integrationTestData');
@@ -390,6 +394,66 @@ describe('Test Participant status data model and service', () => {
       REJECTED,
     ]);
     expect(resultNoReject.data.length).toBe(0);
+  });
+
+  it('should hide status for user', async () => {
+    const participant = await makeTestParticipant({
+      emailAddress: 'test.site.participant.5@hcap.io',
+    });
+
+    const site1 = await makeTestSite({
+      siteId: 202205270022,
+      siteName: 'Test Site 1050',
+      city: 'Test City 1050',
+    });
+
+    const emp1 = {
+      id: v4(),
+      isEmployer: true,
+      regions,
+      sites: [site1.siteId],
+    };
+
+    const ps1 = await setParticipantStatus(
+      emp1.id,
+      participant.id,
+      'prospecting',
+      {
+        site: site1.siteId,
+      },
+      emp1
+    );
+    expect(ps1.status).toBe('prospecting');
+
+    // Hide status for user
+    await hideStatusForUser({ userId: emp1.id, statusId: ps1.id });
+
+    // Get status and check
+    const statuses = await getParticipants(emp1, null, null, null, null, null, null, null, [
+      'prospecting',
+    ]);
+
+    expect(statuses.data.length).toBe(0);
+
+    // Check for employer2
+    const emp2 = {
+      id: v4(),
+      isEmployer: true,
+      regions,
+      sites: [site1.siteId],
+    };
+
+    const statuses2 = await getParticipants(emp2, null, null, null, null, null, null, null, [
+      'prospecting',
+    ]);
+
+    expect(statuses2.data.length).toBeGreaterThanOrEqual(1);
+    const subject = statuses2.data.find((p) => p.id === participant.id);
+    expect(subject).toBeDefined();
+    const { statusInfos = [] } = subject;
+    expect(statusInfos.length).toBeGreaterThanOrEqual(1);
+    const statusInfo = statusInfos[0];
+    expect(statusInfo.status).toBe('prospecting');
   });
 
   it.skip('should bulk engage participants', async () => {

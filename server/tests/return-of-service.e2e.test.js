@@ -5,7 +5,7 @@ const app = require('../server');
 const { startDB, closeDB } = require('./util/db');
 const { getKeycloakToken, healthAuthority } = require('./util/keycloak');
 const { rosData, participantData, siteData } = require('./util/testData');
-const { createTestParticipantStatus } = require('./util/integrationTestData');
+const { createTestParticipantStatus, makeTestSite } = require('./util/integrationTestData');
 
 describe('api e2e tests for /ros routes', () => {
   let server;
@@ -38,6 +38,33 @@ describe('api e2e tests for /ros routes', () => {
       .post(`/api/v1/ros/participant/${testParticipant.id}`)
       .send({
         data: rosDataObj,
+      })
+      .set(header);
+    expect(res.status).toEqual(201);
+    expect(res.body).toHaveProperty('id');
+  });
+
+  it('should create RoS status with different site', async () => {
+    const { participant } = await createTestParticipantStatus({
+      participantData: participantData({ emailAddress: 'test.e2e.ros1@hcap.io' }),
+      siteData: siteData({
+        siteId: 202206022000,
+        siteName: 'Test E2E ROS Service Global - 1',
+        operatorEmail: 'test.e2e.ros.ops1@hcap.io',
+      }),
+    });
+
+    const siteOther = await makeTestSite({
+      siteId: 202206022001,
+      siteName: 'Test E2E ROS Service Global - 2',
+      operatorEmail: 'test.e2e.ros.ops2@hcap.io',
+    });
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app)
+      .post(`/api/v1/ros/participant/${participant.id}`)
+      .send({
+        siteId: siteOther.id,
+        data: rosData({}),
       })
       .set(header);
     expect(res.status).toEqual(201);

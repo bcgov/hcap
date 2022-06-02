@@ -51,10 +51,19 @@ const updateSite = async (id, site) => {
 };
 
 const getSites = async () => dbClient.db[collections.EMPLOYER_SITES].findDoc({});
+
+const getSiteDetailsById = async (id) => {
+  const site = await dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
+  if (site.length === 0) {
+    return [{ error: `No site found with id` }];
+  }
+  return site;
+};
+
 const getSiteByID = async (id) => {
   const site = await dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
   if (site.length === 0) {
-    return [{ error: `No site found with id ${id}` }];
+    return [{ error: `No site found with id` }];
   }
 
   // Counting hire
@@ -92,6 +101,21 @@ const getSiteByID = async (id) => {
   return site;
 };
 
+const getAllSites = async () =>
+  (
+    await dbClient.db[collections.EMPLOYER_SITES].findDoc(
+      {},
+      {
+        order: [{ field: `body.siteName`, direction: 'asc' }],
+      }
+    )
+  ).map((site) => ({
+    id: site.id,
+    siteId: site.siteId,
+    siteName: site.siteName,
+    healthAuthority: site.healthAuthority,
+  }));
+
 module.exports = {
   getEmployers,
   getEmployerByID,
@@ -100,4 +124,6 @@ module.exports = {
   updateSite,
   getSites,
   getSiteByID,
+  getAllSites,
+  getSiteDetailsById,
 };

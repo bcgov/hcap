@@ -4,7 +4,13 @@ const logger = require('../logger.js');
 const { asyncMiddleware } = require('../error-handler.js');
 const { CreateSiteSchema, EditSiteSchema } = require('../validation');
 const { expressRequestBodyValidator, routeRedirect } = require('../middleware');
-const { saveSingleSite, updateSite, getSites, getSiteByID } = require('../services/employers');
+const {
+  saveSingleSite,
+  updateSite,
+  getSites,
+  getSiteByID,
+  getAllSites,
+} = require('../services/employers');
 const {
   getHiredParticipantsBySite,
   getWithdrawnParticipantsBySite,
@@ -81,10 +87,16 @@ router.get(
     routeRedirect({ redirect: '/api/v1/employer-sites/details', match: 'employer-sites-detail' }),
   ],
   asyncMiddleware(async (req, res) => {
-    const { hcapUserInfo: user } = req;
-    let result = await getSites();
-    if (user.isHA) {
-      result = result.filter((site) => user.regions.includes(site.healthAuthority));
+    const { hcapUserInfo: user, params } = req;
+    const { all } = params;
+    let result;
+    if (all === 'true') {
+      result = await getAllSites();
+    } else {
+      result = await getSites();
+      if (user.isHA) {
+        result = result.filter((site) => user.regions.includes(site.healthAuthority));
+      }
     }
 
     logger.info({

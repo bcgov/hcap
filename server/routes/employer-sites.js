@@ -90,7 +90,6 @@ router.get(
     const { hcapUserInfo: user, query } = req;
     const { all } = query;
     let result;
-    console.dir(query);
     if (all === 'true') {
       result = await getAllSites();
     } else {

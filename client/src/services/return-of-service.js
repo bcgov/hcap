@@ -24,7 +24,7 @@ export const createReturnOfServiceStatus = async ({ participantId, data, siteId 
     }),
   });
   if (response.ok) {
-    return await response.json();
+    return response.json();
   }
 
   const message = (await response.text()) || 'Failed to create post-hire status';
@@ -44,7 +44,7 @@ export const getAllSites = async () => {
   });
 
   if (response.ok) {
-    return await response.json();
+    return response.json();
   } else {
     throw new Error('Failed to fetch all sites');
   }

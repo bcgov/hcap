@@ -16,6 +16,10 @@ import { ReturnOfServiceSchema, rosPositionType, rosEmploymentType } from '../..
 import { getTodayDate } from '../../utils';
 import { createReturnOfServiceStatus, getAllSites } from '../../services';
 
+// Static message
+const siteNotFoundMessage =
+  'If you cannot find the site in this list, please contact your Ministry of Health contact to add it to the portal. Please hold off on tracking Return of Service in the meantime.';
+
 // Helpers
 const rosPositionTypeOptions = Object.values(rosPositionType);
 const rosEmploymentTypeOptions = Object.values(rosEmploymentType);
@@ -54,7 +58,7 @@ const fetchSites = async ({ setSites, setError }) => {
 const mapToOptions = (sites) => {
   const options = sites.map((site) => ({
     value: site.id,
-    label: `${site.siteName} - ${site.siteId} (${site.healthAuthority})`,
+    label: `${site.siteName} - ${site.siteId}`,
   }));
   return options;
 };
@@ -75,8 +79,8 @@ export const ReturnOfServiceForm = ({
     employmentType: '',
     sameSite: true,
     confirm: '',
-    site: null,
-    ha: null,
+    site: '',
+    ha: '',
   },
   onClose,
   participantId,
@@ -168,25 +172,41 @@ export const ReturnOfServiceForm = ({
                   },
                 ]}
                 boldLabel={true}
+                onChange={({ target }) => {
+                  const { value } = target;
+                  setFieldValue('sameSite', value);
+                  if (value) {
+                    setFieldValue('site', '');
+                    setFieldValue('ha', '');
+                  }
+                }}
               />
               {values.sameSite === false && (
                 <Box mt={3} mb={2}>
                   <Field
                     name='site'
                     component={RenderSelectField}
-                    label='Select Site'
+                    label='New Site'
                     options={mapToOptions(sites)}
                     onChange={(event) => handleSiteSelection(event, setFieldValue)}
+                    boldLabel={true}
                   />
-                  <br />
-                  <Field
-                    name='ha'
-                    component={RenderTextField}
-                    label='Health Authority'
-                    disabled={true}
-                  />
+                  <Box mt={3}>
+                    <Field
+                      name='ha'
+                      component={RenderTextField}
+                      label='Health Authority'
+                      disabled={true}
+                      boldLabel={true}
+                    />
+                  </Box>
                 </Box>
               )}
+              <>
+                {values.sameSite === false && (
+                  <MuiAlert severity='info'>{siteNotFoundMessage}</MuiAlert>
+                )}
+              </>
               <br />
               <Box className={classes.bg}>
                 <Box p={1}>

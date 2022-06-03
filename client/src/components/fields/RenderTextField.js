@@ -8,6 +8,7 @@ export const RenderTextField = ({
   field: { value, name, ...fieldRest },
   form,
   label,
+  boldLabel,
   type,
   ...props
 }) => {
@@ -21,7 +22,9 @@ export const RenderTextField = ({
 
   return (
     <Fragment>
-      <label htmlFor={name}>{label && <InputFieldLabel label={label} />}</label>
+      <label htmlFor={name}>
+        {label && <InputFieldLabel label={label} boldLabel={boldLabel} />}
+      </label>
       <TextField
         id={name}
         name={name}

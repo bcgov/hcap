@@ -30,4 +30,7 @@ export const ReturnOfServiceSchema = yup
       .typeError('Confirmation is boolean')
       .required('Please confirm')
       .test('is-true', 'Please confirm', (v) => v === true),
+    site: yup.number('Site should be number').when(['sameSite'], (sameSite, schema) => {
+      return !sameSite ? schema.required('Site is required') : schema.optional().nullable();
+    }),
   });

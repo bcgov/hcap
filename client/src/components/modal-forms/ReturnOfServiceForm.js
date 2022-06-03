@@ -55,13 +55,11 @@ const fetchSites = async ({ setSites, setError }) => {
   }
 };
 
-const mapToOptions = (sites) => {
-  const options = sites.map((site) => ({
+const mapToOptions = (sites) =>
+  sites.map((site) => ({
     value: site.id,
     label: `${site.siteName} - ${site.siteId}`,
   }));
-  return options;
-};
 
 // Styles
 const useStyles = makeStyles({

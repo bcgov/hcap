@@ -120,11 +120,6 @@ export const ReturnOfServiceForm = ({
       >
         {({ submitForm, values, setFieldValue }) => (
           <FormikForm>
-            <Typography color={'primary'} variant={'h4'}>
-              {' '}
-              Return of Service
-            </Typography>
-            <hr />
             <>{error !== null && <MuiAlert severity='error'>{error}</MuiAlert>}</>
             <br />
             <Box>

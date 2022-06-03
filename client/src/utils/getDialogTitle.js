@@ -8,6 +8,6 @@ export const getDialogTitle = (activeModalForm) => {
   if (activeModalForm === 'archive') return 'Archive Participant';
   if (activeModalForm === 'single-select-site') return 'Select Site';
   if (activeModalForm === 'multi-select-site') return 'Select Site';
-  if (activeModalForm === 'return-of-service') return '';
+  if (activeModalForm === 'return-of-service') return 'Return of Service';
   return 'Change Participant Status';
 };

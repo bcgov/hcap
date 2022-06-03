@@ -641,6 +641,13 @@ const ParticipantTable = () => {
                 Archive
               </MenuItem>
             )}
+            {actionMenuParticipant?.status === 'ros' && (
+              <MenuItem
+                onClick={() => openFormForParticipant(actionMenuParticipant?.id, 'change-site')}
+              >
+                Change Site
+              </MenuItem>
+            )}
             {actionMenuParticipant?.status === 'hired' &&
               actionMenuParticipant?.rosStatuses.length === 0 &&
               getGraduationStatus(actionMenuParticipant.postHireStatuses) !== 'No' && (

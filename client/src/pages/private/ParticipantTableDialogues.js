@@ -16,6 +16,7 @@ import {
   ArchiveHiredParticipantForm,
   ReturnOfServiceForm,
   SelectProspectingSiteForm,
+  ChangeSiteForm,
 } from '../../components/modal-forms';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
@@ -173,6 +174,17 @@ export const ParticipantTableDialogues = ({
           participantId={actionMenuParticipant.id}
           onClose={onClose}
           completionHandler={handleRosUpdate}
+        />
+      )}
+
+      {activeModalForm === 'change-site' && (
+        <ChangeSiteForm
+          initialValues={{ prospectingSite: undefined }}
+          validationSchema={ProspectingSiteSchema}
+          onSubmit={(values) => {
+            handleSingleSelectProspectingSites(values);
+          }}
+          onClose={onClose}
         />
       )}
     </Dialog>

@@ -148,7 +148,7 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participant }) 
                   <Button onClick={onClose} color='default' text='Cancel' />
                 </Grid>
                 <Grid item>
-                  <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />
+                  <Button onClick={submitForm} variant='contained' color='primary' text='Confirm' />
                 </Grid>
               </Grid>
             </Box>

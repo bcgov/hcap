@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 const { dbClient, collections } = require('../db');
 
 const userRegionQuery = (regions, target) => {
@@ -21,13 +22,32 @@ const getUser = async (id) => {
 const getUserNotifications = async (hcapUserInfo) => {
   const notifications = [];
   if (hcapUserInfo.isEmployer || hcapUserInfo.isHA) {
-    const rosEndedNotifications = [
-      {
-        type: 'rosEnded',
-        message: '2 of your Return of Service Participants have finished their term.',
+    const date = dayjs(new Date('2022-05-15')).format('YYYY-MM-DD');
+    const criteria = {
+      and: [
+        { site_id: hcapUserInfo.sites },
+        { 'data.date::timestamp <': date },
+        { 'participantStatus.current': true },
+        { 'participantStatus.status': 'hired' },
+      ],
+    };
+    const join = {
+      participantStatus: {
+        relation: collections.PARTICIPANTS_STATUS,
+        type: 'LEFT OUTER',
+        on: {
+          participant_id: 'participant_id',
+        },
       },
-    ];
-    notifications.push(rosEndedNotifications);
+    };
+    try {
+      const rosEndedNotifications = await dbClient.db[collections.ROS_STATUS]
+        .join(join)
+        .find(criteria);
+      notifications.push(rosEndedNotifications);
+    } catch (err) {
+      console.log(err);
+    }
   }
   return notifications;
 };

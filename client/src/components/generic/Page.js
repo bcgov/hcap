@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { AuthContext } from '../../providers';
 import { Header } from './Header';
+import { Notifications } from './Notifications';
 
 const useStyles = makeStyles(() => ({
   root: (props) => ({
@@ -20,11 +21,11 @@ export const Page = ({ children, hideEmployers = false, centered, isAutoHeight =
 
   const { auth } = AuthContext.useAuth();
   const notifications = useMemo(() => auth.user?.notifications || [], [auth.user?.notifications]);
-  console.log(notifications);
 
   return (
     <Fragment>
       <Header hideEmployers={hideEmployers} />
+      <Notifications notifications={notifications} />
       <Grid className={classes.root} container>
         {children}
       </Grid>

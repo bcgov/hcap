@@ -33,10 +33,10 @@ const getROSEndedNotifications = async (sites) => {
     })
     .find({
       and: [
-        { site_id: sites },
         { 'data.date::timestamp <': todayDate },
         { 'participantStatus.current': true },
         { 'participantStatus.status': 'hired' },
+        { 'participantStatus.data.site': sites },
       ],
     });
 };

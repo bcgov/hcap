@@ -15,23 +15,14 @@ const getUser = async (id) => {
 };
 
 /**
- *
- * @param {*} hcapUserInfo
- * @returns
+ * Returns all ROS statuses for given sites that are currently 'hired' (not archived) that started a year ago or more
+ * @param {[id: number]} sites
+ * @returns [ROS_STATUS join to PARTICIPANTS_STATUS]
  */
-const getUserNotifications = async (hcapUserInfo) => {
-  const notifications = [];
-  if (hcapUserInfo.isEmployer || hcapUserInfo.isHA) {
-    const date = dayjs(new Date('2022-05-15')).format('YYYY-MM-DD');
-    const criteria = {
-      and: [
-        { site_id: hcapUserInfo.sites },
-        { 'data.date::timestamp <': date },
-        { 'participantStatus.current': true },
-        { 'participantStatus.status': 'hired' },
-      ],
-    };
-    const join = {
+const getROSEndedNotifications = async (sites) => {
+  const todayDate = dayjs(new Date()).subtract(1, 'y').format('YYYY-MM-DD');
+  return dbClient.db[collections.ROS_STATUS]
+    .join({
       participantStatus: {
         relation: collections.PARTICIPANTS_STATUS,
         type: 'LEFT OUTER',
@@ -39,15 +30,26 @@ const getUserNotifications = async (hcapUserInfo) => {
           participant_id: 'participant_id',
         },
       },
-    };
-    try {
-      const rosEndedNotifications = await dbClient.db[collections.ROS_STATUS]
-        .join(join)
-        .find(criteria);
-      notifications.push(rosEndedNotifications);
-    } catch (err) {
-      console.log(err);
-    }
+    })
+    .find({
+      and: [
+        { site_id: sites },
+        { 'data.date::timestamp <': todayDate },
+        { 'participantStatus.current': true },
+        { 'participantStatus.status': 'hired' },
+      ],
+    });
+};
+
+/**
+ * Returns an object of user notifications with keys being the type of notification
+ * @param {*} hcapUserInfo
+ * @returns
+ */
+const getUserNotifications = async (hcapUserInfo) => {
+  const notifications = {};
+  if (hcapUserInfo.isEmployer || hcapUserInfo.isHA) {
+    notifications.rosEndedNotifications = await getROSEndedNotifications(hcapUserInfo.sites);
   }
   return notifications;
 };

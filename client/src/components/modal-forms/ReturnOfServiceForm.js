@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import MuiAlert from '@material-ui/lab/Alert';
 import { Button } from '../generic';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import {
   RenderDateField,
   RenderRadioGroup,

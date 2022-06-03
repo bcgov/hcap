@@ -10,13 +10,14 @@ export const RenderSelectField = ({
   form,
   label,
   options,
+  boldLabel,
   ...props
 }) => {
   const touched = form.touched[fieldRest.name];
   const error = form.errors[fieldRest.name];
   return (
     <Fragment>
-      {label && <InputFieldLabel label={label} />}
+      {label && <InputFieldLabel label={label} boldLabel={boldLabel} />}
       <TextField
         select
         fullWidth

@@ -128,7 +128,7 @@ export const ReturnOfServiceForm = ({
                 component={RenderDateField}
                 label='Return of Service Start Date'
                 maxDate={getTodayDate()}
-                boldLabel={true}
+                boldLabel
               />
               <br />
               <Box className={classes.bg}>
@@ -138,14 +138,14 @@ export const ReturnOfServiceForm = ({
                     component={RenderRadioGroup}
                     label='Position Type'
                     options={rosPositionTypeOptions}
-                    boldLabel={true}
+                    boldLabel
                   />
                   <Field
                     name='employmentType'
                     component={RenderRadioGroup}
                     label='Specific position type (optional)'
                     options={rosEmploymentTypeOptions}
-                    boldLabel={true}
+                    boldLabel
                   />
                 </Box>
               </Box>
@@ -164,7 +164,7 @@ export const ReturnOfServiceForm = ({
                     label: 'No',
                   },
                 ]}
-                boldLabel={true}
+                boldLabel
                 onChange={({ target }) => {
                   const { value } = target;
                   setFieldValue('sameSite', value);
@@ -182,15 +182,15 @@ export const ReturnOfServiceForm = ({
                     label='New Site'
                     options={mapToOptions(sites)}
                     onChange={(event) => handleSiteSelection(event, setFieldValue)}
-                    boldLabel={true}
+                    boldLabel
                   />
                   <Box mt={3}>
                     <Field
                       name='ha'
                       component={RenderTextField}
                       label='Health Authority'
-                      disabled={true}
-                      boldLabel={true}
+                      disabled
+                      boldLabel
                     />
                   </Box>
                 </Box>

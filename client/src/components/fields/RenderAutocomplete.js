@@ -18,7 +18,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const RenderAutocomplete = ({ field: { value, name }, form, label, options }) => {
+export const RenderAutocomplete = ({ field: { value, name }, form, label, options, boldLabel }) => {
   const classes = useStyles();
   const touched = form.touched[name];
   const error = form.errors[name];
@@ -26,7 +26,7 @@ export const RenderAutocomplete = ({ field: { value, name }, form, label, option
 
   return (
     <Fragment>
-      {label && <InputFieldLabel label={label} />}
+      {label && <InputFieldLabel label={label} boldLabel={boldLabel} />}
       <Autocomplete
         classes={classes}
         options={options}

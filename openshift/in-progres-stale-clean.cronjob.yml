@@ -16,58 +16,56 @@ parameters:
   - name: CONFIG_VERSION
     description: The github repository version of Config (Commit SHA)
     value: default
-  - name: SERVICE_CONFIG
-    description: The service configuration json string
-    required: true
 objects:
   - kind: CronJob
     apiVersion: batch/v1
     metadata:
       name: ${APP_NAME}-clean-stale-cronjob
-    schedule: '5 * * * *'
-    concurrencyPolicy: 'Replace'
-    startingDeadlineSeconds: 200
-    suspend: true
-    successfulJobsHistoryLimit: 3
-    failedJobsHistoryLimit: 1
-    jobTemplate:
-      spec:
-        template:
-          metadata:
-            labels:
-              parent: 'cronjobpi'
-          spec:
-            containers:
-              - name: ${APP_NAME}-crone-runner
-                image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
-                imagePullPolicy: IfNotPresent
-                command:
-                  - container-entrypoint
-                  - bash
-                  - '-c'
-                  - 'node scripts/clean-up.js'
-                env:
-                  - name: APP_ENV
-                    value: ${IMAGE_TAG}
-                  - name: POSTGRES_HOST
-                    value: ${APP_NAME}-patroni
-                  - name: POSTGRES_DB
-                    valueFrom:
-                      secretKeyRef:
-                        key: db-name
-                        name: ${APP_NAME}-patroni
-                  - name: POSTGRES_USER
-                    valueFrom:
-                      secretKeyRef:
-                        key: db-username
-                        name: ${APP_NAME}-patroni
-                  - name: POSTGRES_PASSWORD
-                    valueFrom:
-                      secretKeyRef:
-                        key: db-password
-                        name: ${APP_NAME}-patroni
-                  - name: KEYCLOAK_REALM
-                    valueFrom:
-                      secretKeyRef:
-                        key: realm
-                        name: ${APP_NAME}-keycloak
+    spec:
+      schedule: '*/5 * * * *'
+      concurrencyPolicy: 'Replace'
+      startingDeadlineSeconds: 10
+      successfulJobsHistoryLimit: 3
+      failedJobsHistoryLimit: 1
+      jobTemplate:
+        spec:
+          template:
+            metadata:
+              labels:
+                parent: 'cronjobpi'
+            spec:
+              containers:
+                - name: ${APP_NAME}-crone-runner
+                  image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
+                  imagePullPolicy: IfNotPresent
+                  command:
+                    - container-entrypoint
+                    - bash
+                    - '-c'
+                    - 'node scripts/clean-up.js'
+                  env:
+                    - name: APP_ENV
+                      value: ${IMAGE_TAG}
+                    - name: POSTGRES_HOST
+                      value: ${APP_NAME}-patroni
+                    - name: POSTGRES_DB
+                      valueFrom:
+                        secretKeyRef:
+                          key: db-name
+                          name: ${APP_NAME}-patroni
+                    - name: POSTGRES_USER
+                      valueFrom:
+                        secretKeyRef:
+                          key: db-username
+                          name: ${APP_NAME}-patroni
+                    - name: POSTGRES_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          key: db-password
+                          name: ${APP_NAME}-patroni
+                    - name: KEYCLOAK_REALM
+                      valueFrom:
+                        secretKeyRef:
+                          key: realm
+                          name: ${APP_NAME}-keycloak
+              restartPolicy: OnFailure

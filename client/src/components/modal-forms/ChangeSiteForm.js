@@ -2,21 +2,22 @@ import React, { useMemo } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { AuthContext } from '../../providers';
 
-import { Box, Divider, Typography } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { FastField, Formik, Form as FormikForm } from 'formik';
 
-import { RenderSelectField } from '../fields';
+import { RenderAutocomplete, RenderSelectField, RenderDateField } from '../fields';
 import { Button } from '../generic';
-import { addEllipsisMask } from '../../utils';
+import { rosPositionType, rosEmploymentType, healthAuthorities } from '../../constants';
+import { addEllipsisMask, getTodayDate } from '../../utils';
 
 const useStyles = makeStyles((theme) => ({
   formButton: {
     maxWidth: '200px',
   },
   formDivider: {
-    marginBottom: theme.spacing(2),
-    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(3),
+    marginTop: theme.spacing(3),
   },
   formLabel: {
     marginBottom: theme.spacing(1),
@@ -25,41 +26,75 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ChangeSiteForm = ({
-  isMultiSelect,
-  selected,
-  initialValues,
-  validationSchema,
-  onSubmit,
-  onClose,
-}) => {
+export const ChangeSiteForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
   const { auth } = AuthContext.useAuth();
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const classes = useStyles();
 
   const MAX_LABEL_LENGTH = 50;
-  const canSeeMultiSelect = isMultiSelect && selected?.length > 1;
 
   return (
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
       {({ submitForm }) => (
         <FormikForm>
-          <Typography className={classes.formLabel} variant='subtitle2'>
-            {`Please select the site ${
-              canSeeMultiSelect
-                ? `for ${selected?.length} participants`
-                : 'this participant is prospecting for'
-            }`}
-          </Typography>
-          <FastField
-            name='prospectingSite'
-            component={RenderSelectField}
-            placeholder='Select Site'
-            options={_orderBy(sites, ['siteName']).map((item) => ({
-              value: item.siteId,
-              label: addEllipsisMask(item.siteName, MAX_LABEL_LENGTH),
-            }))}
-          />
+          <Box my={1}>
+            <FastField
+              name='startDate'
+              component={RenderDateField}
+              minDate={getTodayDate()}
+              label='Start Date at a New Site'
+              boldLabel
+            />
+          </Box>
+
+          <Box my={2}>
+            <FastField
+              name='positionType'
+              component={RenderSelectField}
+              label='Position Type'
+              boldLabel
+              options={Object.keys(rosPositionType).map((item) => ({
+                value: rosPositionType[item].value,
+                label: rosPositionType[item].label,
+              }))}
+            />
+          </Box>
+
+          <Box my={2}>
+            <FastField
+              name='employmentType'
+              component={RenderSelectField}
+              label='Employment Type'
+              boldLabel
+              options={Object.keys(rosEmploymentType).map((item) => ({
+                value: rosEmploymentType[item].value,
+                label: rosEmploymentType[item].label,
+              }))}
+            />
+          </Box>
+
+          <Box my={2}>
+            <FastField
+              name='site'
+              component={RenderAutocomplete}
+              label='New Site Name'
+              boldLabel
+              options={_orderBy(sites, ['siteName']).map((item) => ({
+                value: item.siteId,
+                label: addEllipsisMask(item.siteName, MAX_LABEL_LENGTH),
+              }))}
+            />
+          </Box>
+
+          <Box my={2}>
+            <FastField
+              name='healthAuthority'
+              component={RenderSelectField}
+              label='Health Authority'
+              boldLabel
+              options={healthAuthorities}
+            />
+          </Box>
 
           <Divider className={classes.formDivider} />
 

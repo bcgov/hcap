@@ -1,34 +1,51 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
+import MuiAlert from '@material-ui/lab/Alert';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(() => ({
+  alertWarning: {
+    fontSize: '16px',
+    color: '#6c4a00',
+    backgroundColor: '#f9f1c6',
+    border: '1px solid #faebcc',
+  },
+}));
 
 export const Notifications = ({ notifications }) => {
+  const classes = useStyles();
   const formatNotifications = (notifications) => {
     return Object.entries(notifications).map(([type, contents]) => {
       switch (type) {
         case 'rosEndedNotifications':
           return {
-            icon: 'warning',
-            className: 'warning',
+            severity: 'warning',
+            type: type,
+            className: classes.alertWarning,
             message: (
               <>
-                You have a pending action: <b>{contents.length}</b> of your Return of Service
-                Participants have finished their term. Please mark their outcomes.
+                You have a pending action: <strong>{contents.length}</strong> of your Return of
+                Service Participants have finished their term. Please mark their outcomes.
               </>
             ),
           };
         default:
-          return { message: <></>, className: '' };
+          return { message: <></>, severity: '' };
       }
     });
   };
 
   return (
-    <Box>
+    <Box m={1}>
       {formatNotifications(notifications).map((notification) => {
         return (
-          <div key={notification.icon}>
-            <div className={notification.className}>{notification.message}</div>
-          </div>
+          <MuiAlert
+            className={notification.className}
+            severity={notification.severity}
+            key={notification.type}
+          >
+            {notification.message}
+          </MuiAlert>
         );
       })}
     </Box>

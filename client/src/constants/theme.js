@@ -38,10 +38,11 @@ export default createMuiTheme({
       secondary: '#1890FF',
     },
     warning: {
-      main: '#F5A623',
+      main: '#6c4a00',
+      light: '#f9f1c6',
     },
     background: {
-      default: '#F5F6FA',
+      default: '#FFFFFF',
       light: '#F2F2F2',
     },
     text: {

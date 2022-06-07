@@ -14,6 +14,9 @@ export TOOLS_NAMESPACE=$(OS_NAMESPACE_PREFIX)-tools
 export DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}
 
 export BUILD_REF?=dev
+# Aliases 
+prod-test: prod-checkout-internal
+
 # Status Output
 
 print-status:
@@ -257,3 +260,18 @@ loadtest:
 		-e OS_NAMESPACE_SUFFIX=$(OS_NAMESPACE_SUFFIX) \
 		-e KEYCLOAK_REALM=$(KEYCLOAK_REALM) \
 		/load/$(script)
+
+# Deploy Prod to test/dev
+PROD_TEST_TARGET?=test
+prod-checkout-internal:
+ifndef key
+	@echo "Please specify a deployment-key. Example: make prod-test key=HCAP-1 PROD_TEST_TARGET=test"
+	@exit 1
+else
+	@echo "Deploying latest prod tag to '$(PROD_TEST_TARGET)' with key: $(key)\n"
+	@git fetch --all --tags
+	@git checkout tags/prod -b prod-$(PROD_TEST_TARGET)-$(key)
+	@git tag -fa $(PROD_TEST_TARGET) -m "Deploy prod-tag ( $(git rev-parse --abbrev-ref HEAD)) to $(PROD_TEST_TARGET) env with key: $(key)"
+	@git push --force origin refs/tags/$(PROD_TEST_TARGET):refs/tags/$(PROD_TEST_TARGET)
+endif
+

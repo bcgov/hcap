@@ -130,7 +130,7 @@
           "Phone Number",
           "Email Address",
           "Return of Service Start Date",
-          "Site Name",
+          "RoS Site Name",
           "Hired By"
         ]
       }
@@ -218,7 +218,7 @@
           "Phone Number",
           "Email Address",
           "Return of Service Start Date",
-          "Site Name",
+          "RoS Site Name",
           "Hired By"
         ]
       }

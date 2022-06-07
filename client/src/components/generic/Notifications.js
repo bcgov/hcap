@@ -14,40 +14,18 @@ const useStyles = makeStyles(() => ({
 
 export const Notifications = ({ notifications }) => {
   const classes = useStyles();
-  const formatNotifications = (notifications) => {
-    return Object.entries(notifications).map(([type, contents]) => {
-      switch (type) {
-        case 'rosEndedNotifications':
-          return {
-            severity: 'warning',
-            type: type,
-            className: classes.alertWarning,
-            message: (
-              <>
-                You have a pending action: <strong>{contents.length}</strong> of your Return of
-                Service Participants have finished their term. Please mark their outcomes.
-              </>
-            ),
-          };
-        default:
-          return { message: <></>, severity: '' };
-      }
-    });
-  };
 
   return (
-    <Box m={1}>
-      {formatNotifications(notifications).map((notification) => {
-        return (
-          <MuiAlert
-            className={notification.className}
-            severity={notification.severity}
-            key={notification.type}
-          >
-            {notification.message}
+    Object.keys(notifications).length > 0 && (
+      <Box m={1}>
+        {notifications.rosEndedNotifications && (
+          <MuiAlert className={classes.alertWarning} severity='warning'>
+            You have a pending action: <strong>{notifications.rosEndedNotifications.length}</strong>{' '}
+            of your Return of Service Participants have finished their term. Please mark their
+            outcomes.
           </MuiAlert>
-        );
-      })}
-    </Box>
+        )}
+      </Box>
+    )
   );
 };

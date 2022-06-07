@@ -3,6 +3,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import { ComponentTooltip } from '../components/generic/ComponentTooltip';
 import { Button } from '../components/generic';
 import { capitalizedString } from './gen-util';
+import { addYearToDate } from './date';
 
 /**
  * Returns participant stats message based on the first status provided
@@ -45,6 +46,17 @@ export const prettifyStatus = (
   let isWithdrawn = false;
   const isHiredByPeer = status[1] === 'hired_by_peer';
   const isRejectedByPeer = statusValue === 'reject_ack';
+  const isROS = statusValue === 'ros';
+
+  //show if participant needs to be archived
+  if (isROS && !status.includes('archived')) {
+    const rosStartDate = participantInfo.rosStatuses[0].data.date;
+    const isTimeToArchive = addYearToDate(rosStartDate).isBefore(new Date());
+    if (isTimeToArchive) {
+      toolTip =
+        'Please action and archive this participant to record their outcomes as they have met their one year mark of Return of Service';
+    }
+  }
 
   if (status.includes('withdrawn')) {
     firstStatus = 'Withdrawn';
@@ -83,6 +95,11 @@ export const prettifyStatus = (
     ['Archived Candidates', 'Participants'].includes(tabValue) ||
     !hideAcknowledgeButton ||
     isHiredByPeer;
+
+  if (status[1] || isRejectedByPeer) {
+    toolTip = 'This candidate was hired by another site.';
+  }
+  const showToolTip = toolTip !== '' && firstStatus !== 'Archived';
   return (
     <div
       style={{
@@ -92,7 +109,7 @@ export const prettifyStatus = (
       }}
     >
       {firstStatus}{' '}
-      {(status[1] || isRejectedByPeer) && firstStatus !== 'Archived' && (
+      {showToolTip && (
         <ComponentTooltip
           arrow
           title={

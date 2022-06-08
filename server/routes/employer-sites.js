@@ -82,7 +82,7 @@ router.patch(
 router.get(
   '/',
   [
-    keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+    keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
     keycloak.getUserInfoMiddleware(),
     routeRedirect({ redirect: '/api/v1/employer-sites/details', match: 'employer-sites-detail' }),
   ],

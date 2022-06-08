@@ -42,14 +42,20 @@ export const prettifyStatus = (
   const { statusInfos = [] } = participantInfo;
   const statusInfo = statusInfos.length > 0 ? statusInfos[0] : {};
   let firstStatus = getParticipantStatus(isMoH, statusValue);
-  let toolTip = 'This candidate was hired by another site.';
-  let isWithdrawn = false;
+  let toolTip = '';
+  const isWithdrawn = status.includes('withdrawn');
   const isHiredByPeer = status[1] === 'hired_by_peer';
+  const isHiredByOther = status.includes('already_hired');
   const isRejectedByPeer = statusValue === 'reject_ack';
   const isROS = statusValue === 'ros';
+  const isArchived = status.includes('archived');
+  const isPendingAcknowledgement = status.includes('pending_acknowledgement');
 
-  //show if participant needs to be archived
-  if (isROS && !status.includes('archived')) {
+  if (isHiredByOther) {
+    toolTip = 'This candidate was hired by another site.';
+  }
+
+  if (isROS && !isArchived) {
     const rosStartDate = participantInfo.rosStatuses[0].data.date;
     const isTimeToArchive = addYearToDate(rosStartDate).isBefore(new Date());
     if (isTimeToArchive) {
@@ -58,18 +64,18 @@ export const prettifyStatus = (
     }
   }
 
-  if (status.includes('withdrawn')) {
+  if (isWithdrawn) {
+    console.log(participantInfo);
     firstStatus = 'Withdrawn';
-    isWithdrawn = true;
-    toolTip = status.includes('pending_acknowledgement')
+    toolTip = isPendingAcknowledgement
       ? 'This candidate was archived.'
       : 'Participant is no longer available.';
   }
-  if (status.includes('archived')) {
+  if (isArchived) {
     firstStatus = 'Archived';
   }
 
-  if (statusValue === 'reject_ack') {
+  if (isRejectedByPeer) {
     firstStatus = statusInfo.data?.refStatus
       ? getParticipantStatus(isMoH, statusInfo.data.refStatus)
       : firstStatus;
@@ -88,17 +94,16 @@ export const prettifyStatus = (
     previous: isRejectedByPeer ? statusInfo.data?.previous : statusValue,
   };
 
-  const hideAcknowledgeButton =
-    !(tabValue === 'Hired Candidates' && status.includes('pending_acknowledgement')) &&
-    !(tabValue === 'My Candidates' && status.includes('hired_by_peer'));
-  const hideArchiveButton =
-    ['Archived Candidates', 'Participants'].includes(tabValue) ||
-    !hideAcknowledgeButton ||
-    isHiredByPeer;
+  const showAcknowledgeButton =
+    (tabValue === 'Hired Candidates' && isPendingAcknowledgement) ||
+    (tabValue === 'My Candidates' && status.includes('hired_by_peer'));
 
-  if (status[1] || isRejectedByPeer) {
-    toolTip = 'This candidate was hired by another site.';
-  }
+  const showArchiveButton =
+    !['Archived Candidates', 'Participants'].includes(tabValue) &&
+    !isHiredByPeer &&
+    !isROS &&
+    !showAcknowledgeButton;
+
   const showToolTip = toolTip !== '' && firstStatus !== 'Archived';
   return (
     <div
@@ -125,7 +130,7 @@ export const prettifyStatus = (
                 <InfoIcon color='secondary' style={{ marginRight: 10 }} fontSize='small' />
                 {toolTip}
               </div>
-              {!hideArchiveButton && (
+              {showArchiveButton && (
                 <div
                   style={{
                     display: 'flex',
@@ -143,7 +148,7 @@ export const prettifyStatus = (
                   />
                 </div>
               )}
-              {!hideAcknowledgeButton && (
+              {showAcknowledgeButton && (
                 <Button
                   onClick={async () => {
                     handleAcknowledge(id, status.includes('hired_by_peer'), participantInfo);

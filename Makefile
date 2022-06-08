@@ -247,6 +247,10 @@ service-pod:
 	@node .pipeline/service-config.js | xargs -I{} oc process -f openshift/service.pod.yml -p APP_NAME=$(APP_NAME) -p SERVICE_CONFIG={} -p IMAGE_TAG=$(tag) -p IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f - --dry-run=client
 	@node .pipeline/service-config.js | xargs -I{} oc process -f openshift/service.pod.yml -p APP_NAME=$(APP_NAME) -p SERVICE_CONFIG={} -p IMAGE_TAG=$(tag) -p IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f -
 
+# Cron Job
+cron-job:
+	@oc process -f openshift/in-progres-stale-clean.cronjob.yml -p APP_NAME=$(APP_NAME) -p IMAGE_TAG=$(COMMIT_SHA) -p IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f -
+
 # Load Testing
 loadtest:
 	@docker run --rm \

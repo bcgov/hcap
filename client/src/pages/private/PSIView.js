@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useMemo, lazy } from 'react';
-import { Box, Typography, Grid } from '@material-ui/core';
+import {
+  Box,
+  ClickAwayListener,
+  Grow,
+  MenuList,
+  MenuItem,
+  Typography,
+  Paper,
+} from '@material-ui/core';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { Page, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { NewPSIForm, CohortForm } from '../../components/modal-forms';
@@ -20,6 +30,7 @@ export default () => {
 
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
+  const [isDownloadMenuOpen, setDownloadMenuOpen] = useState(false);
 
   // Functions
   const defaultOnClose = () => {
@@ -170,24 +181,66 @@ export default () => {
             />
           )}
         </Dialog>
-        <Box pt={4} pb={4} pl={2} pr={2} width={1}>
+        <Box width='100%' pt={4} px={2}>
           <Typography variant='subtitle1' align='center' gutterBottom>
-            Manage Post-Secondary Institutes
+            Manage Post Secondary Institutes
           </Typography>
-          <CheckPermissions
-            roles={roles}
-            permittedRoles={['ministry_of_health', 'health_authority']}
-          >
-            <Grid container item xs={6} md={3} style={{ marginLeft: 'auto', marginRight: 20 }}>
-              <Button
-                onClick={async () => {
-                  setActiveModalForm('new-psi');
-                }}
-                size='large'
-                text='+ Add Post-Secondary Institute'
-              />
-            </Grid>
-          </CheckPermissions>
+          <Box display='flex' flexDirection='column'>
+            <CheckPermissions
+              roles={roles}
+              permittedRoles={['ministry_of_health', 'health_authority']}
+            >
+              <Box alignSelf='flex-end' py={1}>
+                <Button
+                  onClick={() => {
+                    setActiveModalForm('new-psi');
+                  }}
+                  startIcon={<AddCircleOutlineIcon />}
+                  text='Add Post Secondary Institution'
+                />
+              </Box>
+            </CheckPermissions>
+
+            <CheckPermissions
+              roles={roles}
+              permittedRoles={['ministry_of_health', 'health_authority']}
+            >
+              <Box alignSelf='flex-end' py={1}>
+                <ClickAwayListener onClickAway={() => setDownloadMenuOpen(false)}>
+                  <Box>
+                    <Button
+                      onClick={() => setDownloadMenuOpen(!isDownloadMenuOpen)}
+                      variant='outlined'
+                      endIcon={<ExpandMoreIcon />}
+                      text='Download CSV'
+                    />
+
+                    <Grow in={isDownloadMenuOpen}>
+                      <Paper>
+                        <MenuList>
+                          <MenuItem
+                            onClick={(event) => {
+                              // ...
+                            }}
+                          >
+                            Download PSI and Cohort Information
+                          </MenuItem>
+
+                          <MenuItem
+                            onClick={(event) => {
+                              // ...
+                            }}
+                          >
+                            Download Participants attending PSI
+                          </MenuItem>
+                        </MenuList>
+                      </Paper>
+                    </Grow>
+                  </Box>
+                </ClickAwayListener>
+              </Box>
+            </CheckPermissions>
+          </Box>
         </Box>
         <PSITable PSIs={PSIs} handleAddCohortClick={handleAddCohortClick} />
       </CheckPermissions>

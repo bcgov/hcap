@@ -9,7 +9,7 @@ const { dbClient } = require('../db');
  */
 const staleInProgressParticipants = async () => {
   // Get all in-progress participant statuses
-  const queryString = `select id, participant_id, status, employer_id, created_at::date as last_updated from participants_status ps where status in ('prospecting', 'interviewing', 'offer_made', 'rejected') and current = true and created_at < (NOW() - interval '30 day') order by participant_id, id;`;
+  const queryString = `select id, participant_id, status, employer_id, created_at::date as last_updated from participants_status ps where status in ('prospecting', 'interviewing', 'offer_made') and current = true and created_at < (NOW() - interval '30 day') order by participant_id, id;`;
   return dbClient.db.query(queryString);
 };
 
@@ -25,7 +25,7 @@ const staleParticipantsStatusInvalidation = async () => {
       current_time TIMESTAMP;
     BEGIN
     current_time = NOW();
-    FOR status_rec IN SELECT * FROM participants_status WHERE status IN ('prospecting', 'interviewing', 'offer_made', 'rejected') AND current = true AND created_at < (NOW() - interval '30 day') 
+    FOR status_rec IN SELECT * FROM participants_status WHERE status IN ('prospecting', 'interviewing', 'offer_made') AND current = true AND created_at < (NOW() - interval '30 day') 
     LOOP
       IF status_rec.data IS NULL THEN
         data_obj = JSONB_SET('{}'::JSONB, '{cleanupDate}', to_jsonb(current_time));

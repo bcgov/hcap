@@ -22,11 +22,11 @@ objects:
     metadata:
       name: ${APP_NAME}-clean-stale-cronjob
     spec:
-      schedule: '*/5 * * * *'
+      schedule: '*/35 * * * *'
       concurrencyPolicy: 'Replace'
       startingDeadlineSeconds: 10
       successfulJobsHistoryLimit: 3
-      failedJobsHistoryLimit: 1
+      failedJobsHistoryLimit: 3
       jobTemplate:
         spec:
           template:

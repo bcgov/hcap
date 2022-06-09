@@ -31,7 +31,7 @@ export const getGraduationStatus = (statuses = []) => {
 
 // Fetch Participant
 export const fetchParticipant = async ({ id }) => {
-  const url = `${API_URL}/api/v1/participant?id=${id}`;
+  const url = `${API_URL}/api/v1/participant/details/${id}`;
   const resp = await fetch(url, {
     method: 'GET',
     headers: {
@@ -41,7 +41,7 @@ export const fetchParticipant = async ({ id }) => {
     },
   });
   if (resp.ok) {
-    const [participant] = await resp.json();
+    const { participant } = await resp.json();
     const cohort = await fetchParticipantCohort({ id });
     const postHireStatus = await fetchParticipantPostHireStatus({ id });
     return {

@@ -27,49 +27,59 @@ const getParticipantStatus = (isMoH, status) => {
   return capitalizedString(status);
 };
 
-export const prettifyStatus = (
-  status,
-  id,
-  tabValue,
-  handleEngage,
-  handleAcknowledge,
-  isMoH = false,
-  participantInfo = { statusInfos: [] }
+const getToolTipText = (
+  isHiredByOther,
+  isROS,
+  isArchived,
+  isWithdrawn,
+  isPendingAcknowledgement,
+  isRejectedByPeer,
+  isHiredByPeer,
+  participantInfo,
+  statusInfo
 ) => {
-  if (!status) return;
-
-  const statusValue = status[0];
-  const { statusInfos = [] } = participantInfo;
-  const statusInfo = statusInfos.length > 0 ? statusInfos[0] : {};
-  let firstStatus = getParticipantStatus(isMoH, statusValue);
-  let toolTip = '';
-  const isWithdrawn = status.includes('withdrawn');
-  const isHiredByPeer = status[1] === 'hired_by_peer';
-  const isHiredByOther = status.includes('already_hired');
-  const isRejectedByPeer = statusValue === 'reject_ack';
-  const isROS = statusValue === 'ros';
-  const isArchived = status.includes('archived');
-  const isPendingAcknowledgement = status.includes('pending_acknowledgement');
-
-  if (isHiredByOther) {
-    toolTip = 'This candidate was hired by another site.';
-  }
-
   if (isROS && !isArchived) {
     const rosStartDate = participantInfo.rosStatuses[0].data.date;
     const isTimeToArchive = addYearToDate(rosStartDate).isBefore(new Date());
     if (isTimeToArchive) {
-      toolTip =
-        'Please action and archive this participant to record their outcomes as they have met their one year mark of Return of Service';
+      return 'Please action and archive this participant to record their outcomes as they have met their one year mark of Return of Service';
     }
   }
 
+  if (isRejectedByPeer) {
+    return statusInfo.data?.final_status
+      ? `Participant not available. ${capitalizedString(statusInfo.data.final_status)}`
+      : 'Participant is no longer available. ';
+  }
+
   if (isWithdrawn) {
-    console.log(participantInfo);
-    firstStatus = 'Withdrawn';
-    toolTip = isPendingAcknowledgement
+    return isPendingAcknowledgement
       ? 'This candidate was archived.'
       : 'Participant is no longer available.';
+  }
+
+  if (isHiredByPeer) {
+    return 'This candidate was hired to another site and is visible under the "Hired Candidates" tab.';
+  }
+
+  if (isHiredByOther) {
+    return 'This candidate was hired by another site.';
+  }
+  return '';
+};
+
+//returns the text that is displayed as the status
+const getStatusText = (
+  isMoH,
+  statusValue,
+  isWithdrawn,
+  isArchived,
+  isRejectedByPeer,
+  statusInfo
+) => {
+  let firstStatus = getParticipantStatus(isMoH, statusValue);
+  if (isWithdrawn) {
+    firstStatus = 'Withdrawn';
   }
   if (isArchived) {
     firstStatus = 'Archived';
@@ -79,15 +89,51 @@ export const prettifyStatus = (
     firstStatus = statusInfo.data?.refStatus
       ? getParticipantStatus(isMoH, statusInfo.data.refStatus)
       : firstStatus;
-    toolTip = statusInfo.data?.final_status
-      ? `Participant not available. ${capitalizedString(statusInfo.data.final_status)}`
-      : 'Participant is no longer available. ';
   }
+  return firstStatus;
+};
 
-  if (isHiredByPeer) {
-    toolTip =
-      'This candidate was hired to another site and is visible under the "Hired Candidates" tab.';
-  }
+// TODO: make this a proper function or get rid of it
+const getButtonData = () => {};
+
+// returns all of the combined data used to generate the status component
+// (basically replacing prettifyStatus() with this to get the front-end out of the back-end)
+const getStatusData = (status, tabValue, isMoH = false, participantInfo) => {
+  //TODO: this is not going to fly
+  if (!status) return;
+
+  const statusValue = status[0];
+  const { statusInfos = [] } = participantInfo;
+  const statusInfo = statusInfos.length > 0 ? statusInfos[0] : {};
+
+  const isWithdrawn = status.includes('withdrawn');
+  const isHiredByPeer = status[1] === 'hired_by_peer';
+  const isHiredByOther = status.includes('already_hired');
+  const isRejectedByPeer = statusValue === 'reject_ack';
+  const isROS = statusValue === 'ros';
+  const isArchived = status.includes('archived');
+  const isPendingAcknowledgement = status.includes('pending_acknowledgement');
+
+  const toolTipText = getToolTipText(
+    isHiredByOther,
+    isROS,
+    isArchived,
+    isWithdrawn,
+    isPendingAcknowledgement,
+    isRejectedByPeer,
+    isHiredByPeer,
+    participantInfo,
+    statusInfo
+  );
+
+  const firstStatus = getStatusText(
+    isMoH,
+    statusValue,
+    isWithdrawn,
+    isArchived,
+    isRejectedByPeer,
+    statusInfo
+  );
 
   const rejectData = {
     final_status: statusInfo.data?.final_status || (isWithdrawn ? 'withdrawn' : 'hired by other'),
@@ -104,7 +150,41 @@ export const prettifyStatus = (
     !isROS &&
     !showAcknowledgeButton;
 
-  const showToolTip = toolTip !== '' && firstStatus !== 'Archived';
+  return {
+    toolTipText,
+    firstStatus,
+    buttonData: {
+      showAcknowledgeButton,
+      showArchiveButton,
+      additional: rejectData,
+    },
+  };
+};
+
+//TODO: this is getting its logic moved ELSEWHERE (in functions in this file)
+// and what remains will become the ParticipantStatus component
+export const prettifyStatus = (
+  status,
+  id,
+  tabValue,
+  handleEngage,
+  handleAcknowledge,
+  isMoH = false,
+  participantInfo = { statusInfos: [] }
+) => {
+  const { toolTipText, firstStatus, buttonData } = getStatusData(
+    status,
+    id,
+    tabValue,
+    handleEngage,
+    handleAcknowledge,
+    isMoH,
+    participantInfo
+  );
+
+  const { showAcknowledgeButton, showArchiveButton, additional } = buttonData;
+
+  const showToolTip = toolTipText !== '' && firstStatus !== 'Archived'; //ParticipantStatus
   return (
     <div
       style={{
@@ -128,7 +208,7 @@ export const prettifyStatus = (
                 }}
               >
                 <InfoIcon color='secondary' style={{ marginRight: 10 }} fontSize='small' />
-                {toolTip}
+                {toolTipText}
               </div>
               {showArchiveButton && (
                 <div
@@ -140,7 +220,7 @@ export const prettifyStatus = (
                 >
                   <Button
                     onClick={() => {
-                      handleEngage(id, 'rejected', rejectData, participantInfo);
+                      handleEngage(id, 'rejected', additional, participantInfo);
                     }}
                     size='small'
                     fullWidth={false}

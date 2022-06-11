@@ -161,6 +161,18 @@ apiRouter.get(
   })
 );
 
+apiRouter.get(
+  `/user-notifications`,
+  keycloak.allowRolesMiddleware('*'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const notifications = await getUserNotifications(req.hcapUserInfo);
+    return res.json({
+      notifications,
+    });
+  })
+);
+
 // Version number
 apiRouter.get(`/version`, (req, res) => res.json({ version: process.env.VERSION }));
 

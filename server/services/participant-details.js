@@ -1,6 +1,39 @@
 const { dbClient, collections } = require('../db');
 
+// Verify user to view participant details
+const checkUserHasAccessToParticipant = async (id, user) => {
+  if (user.isMoH || user.isSuperUser) {
+    return true;
+  }
+  // Get statuses connected with user
+  if (user.isHA || user.isEmployer) {
+    const statuses =
+      (await dbClient.db[collections.PARTICIPANTS_STATUS].find({
+        participant_id: id,
+        current: true,
+        or: [
+          {
+            and: [
+              {
+                employer_id: user.id,
+                'data.site': null,
+              },
+            ],
+          },
+          {
+            'data.site IN': user.sites,
+          },
+        ],
+      })) || [];
+
+    return statuses.length > 0;
+  }
+
+  return false;
+};
+
 const participantDetails = async (id) => {
+  // Verify user
   // Get participant object from database
   const [participant] =
     (await dbClient.db[collections.PARTICIPANTS].findDoc({
@@ -46,4 +79,5 @@ const participantDetails = async (id) => {
 
 module.exports = {
   participantDetails,
+  checkUserHasAccessToParticipant,
 };

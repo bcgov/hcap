@@ -15,7 +15,10 @@ const {
   deleteParticipant,
 } = require('../services/participants.js');
 
-const { participantDetails } = require('../services/participant-details.js');
+const {
+  participantDetails,
+  checkUserHasAccessToParticipant,
+} = require('../services/participant-details.js');
 
 const {
   setParticipantStatus,
@@ -54,6 +57,11 @@ participantRouter.get(
   asyncMiddleware(async (req, res) => {
     const { id } = req.params;
     const { hcapUserInfo: user } = req;
+    // Check permissions of user
+    const hasAccess = await checkUserHasAccessToParticipant(id, user);
+    if (!hasAccess) {
+      return res.status(403).send('Use has no access to this participant');
+    }
     const participant = await participantDetails(id);
     if (!participant) {
       return res.status(404).send('Participant not found');

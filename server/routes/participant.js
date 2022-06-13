@@ -54,7 +54,6 @@ participantRouter.get(
   asyncMiddleware(async (req, res) => {
     const { id } = req.params;
     const { hcapUserInfo: user } = req;
-    console.log('id', id);
     const participant = await participantDetails(id);
     if (!participant) {
       return res.status(404).send('Participant not found');

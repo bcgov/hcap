@@ -12,16 +12,17 @@ import { capitalizedString } from './gen-util';
  * @returns {string} specific status message based on value / capitalized status
  */
 const getParticipantStatus = (isMoH, status) => {
-  if (status === 'rejected') return 'Archived';
-  if (status === 'ros') return 'Return of Service';
-  if (status === 'reject_ack') return 'Archived for site';
+  const lStatus = status.toLowerCase();
+  if (lStatus === 'rejected') return 'Archived';
+  if (lStatus === 'ros') return 'Return of Service';
+  if (lStatus === 'reject_ack') return 'Archived for site';
 
-  if (isMoH && status.startsWith('inprogress')) {
+  if (isMoH && (lStatus.startsWith('inprogress') || lStatus === 'in progress')) {
     const count = status.split('_');
-    return `In Progress (${count[1]})`;
+    return `In Progress (${count[1] || 1})`;
   }
 
-  if (status === 'offer_made') return 'Offer Made';
+  if (lStatus === 'offer_made') return 'Offer Made';
 
   return capitalizedString(status);
 };

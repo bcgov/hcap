@@ -1,4 +1,7 @@
 const { dbClient, collections } = require('../db');
+const { participantStatus } = require('../constants');
+
+const { HIRED, ARCHIVED } = participantStatus;
 
 // Verify user to view participant details
 const checkUserHasAccessToParticipant = async (id, user) => {
@@ -11,6 +14,7 @@ const checkUserHasAccessToParticipant = async (id, user) => {
       (await dbClient.db[collections.PARTICIPANTS_STATUS].find({
         participant_id: id,
         current: true,
+        'status IN': [HIRED, ARCHIVED],
         or: [
           {
             and: [
@@ -61,17 +65,17 @@ const participantDetails = async (id) => {
     const { body: rosSiteDetails } = rosStatusDbObj?.rosSite || { body: {} };
     return {
       ...participant,
-      rosStatus: {
-        ...rosStatusDbObj,
-        ...(rosStatusDbObj && {
+      ...(rosStatusDbObj && {
+        rosStatus: {
+          ...rosStatusDbObj,
           rosSite: {
             siteName: rosSiteDetails.siteName,
             siteId: rosSiteDetails.siteId,
             healthAuthority: rosSiteDetails.healthAuthority,
             id: rosSiteDetails.id,
           },
-        }),
-      },
+        },
+      }),
     };
   }
   return participant;

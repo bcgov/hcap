@@ -25,17 +25,19 @@ const participantDetails = async (id) => {
         is_current: true,
       });
 
-    const { body: rosSiteDetails } = rosStatusDbObj.rosSite;
+    const { body: rosSiteDetails } = rosStatusDbObj?.rosSite || { body: {} };
     return {
       ...participant,
       rosStatus: {
         ...rosStatusDbObj,
-        rosSite: {
-          siteName: rosSiteDetails.siteName,
-          siteId: rosSiteDetails.siteId,
-          healthAuthority: rosSiteDetails.healthAuthority,
-          id: rosSiteDetails.id,
-        },
+        ...(rosStatusDbObj && {
+          rosSite: {
+            siteName: rosSiteDetails.siteName,
+            siteId: rosSiteDetails.siteId,
+            healthAuthority: rosSiteDetails.healthAuthority,
+            id: rosSiteDetails.id,
+          },
+        }),
       },
     };
   }

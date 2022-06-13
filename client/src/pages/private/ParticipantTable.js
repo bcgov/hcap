@@ -34,6 +34,7 @@ import {
   getGraduationStatus,
   featureFlag,
   FEATURE_MULTI_ORG_PROSPECTING,
+  fetchUserNotifications,
 } from '../../services';
 
 const mapRosData = (data) => ({
@@ -201,7 +202,7 @@ const ParticipantTable = () => {
     },
     dispatch: participantsDispatch,
   } = ParticipantsContext.useParticipantsContext();
-  const { auth } = AuthContext.useAuth();
+  const { auth, dispatch } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
 
   const isMoH = roles.includes('ministry_of_health');
@@ -276,6 +277,9 @@ const ParticipantTable = () => {
         status,
         additional: additionalParma,
       });
+      const dispatchFunction = (notifications) =>
+        dispatch({ type: AuthContext.USER_NOTIFICATIONS_UPDATED, payload: notifications });
+      fetchUserNotifications(dispatchFunction);
       setLoadingData(false);
       if (status === participantStatus.PROSPECTING) {
         // Modal appears after submitting

@@ -17,7 +17,6 @@ import {
   ReturnOfServiceForm,
   SelectProspectingSiteForm,
 } from '../../components/modal-forms';
-import { fetchUserNotifications } from '../../services';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
 
@@ -31,7 +30,7 @@ export const ParticipantTableDialogues = ({
   handleRosUpdate,
 }) => {
   const { dispatch: participantsDispatch } = ParticipantsContext.useParticipantsContext();
-  const { auth, dispatch } = AuthContext.useAuth();
+  const { auth } = AuthContext.useAuth();
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
 
   const getParticipantName = (participant) => {
@@ -164,10 +163,6 @@ export const ParticipantTableDialogues = ({
         <ArchiveHiredParticipantForm
           onSubmit={(values) => {
             handleEngage(actionMenuParticipant.id, 'archived', values);
-
-            const dispatchFunction = (notifications) =>
-              dispatch({ type: AuthContext.USER_NOTIFICATIONS_UPDATED, payload: notifications });
-            fetchUserNotifications(dispatchFunction);
           }}
           onClose={onClose}
           participant={actionMenuParticipant}

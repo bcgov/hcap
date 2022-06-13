@@ -98,7 +98,15 @@ const getButtonData = () => {};
 
 // returns all of the combined data used to generate the status component
 // (basically replacing prettifyStatus() with this to get the front-end out of the back-end)
-const getStatusData = (status, tabValue, isMoH = false, participantInfo) => {
+const getStatusData = (
+  status,
+  id,
+  tabValue,
+  handleEngage,
+  handleAcknowledge,
+  isMoH,
+  participantInfo
+) => {
   //TODO: this is not going to fly
   if (!status) return;
 

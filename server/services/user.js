@@ -43,13 +43,17 @@ const getROSEndedNotifications = async (sites) => {
 
 /**
  * Returns an object of user notifications with keys being the type of notification
+ * Empty object for no notifications, keys correspond to notification type they have
  * @param {*} hcapUserInfo
- * @returns
+ * @returns {}
  */
 const getUserNotifications = async (hcapUserInfo) => {
   const notifications = {};
   if (hcapUserInfo.isEmployer || hcapUserInfo.isHA) {
-    notifications.rosEndedNotifications = await getROSEndedNotifications(hcapUserInfo.sites);
+    const rosEndedNotifications = await getROSEndedNotifications(hcapUserInfo.sites);
+    if (rosEndedNotifications.length > 0) {
+      notifications.rosEndedNotifications = rosEndedNotifications;
+    }
   }
   return notifications;
 };

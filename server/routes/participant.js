@@ -60,7 +60,7 @@ participantRouter.get(
     // Check permissions of user
     const hasAccess = await checkUserHasAccessToParticipant(id, user);
     if (!hasAccess) {
-      return res.status(403).send('Use has no access to this participant');
+      return res.status(403).send('User has no access to this participant');
     }
     const participant = await participantDetails(id);
     if (!participant) {

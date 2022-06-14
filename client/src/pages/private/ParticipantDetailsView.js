@@ -350,25 +350,29 @@ export default () => {
               </Button>
             </Box>
 
-            <CheckPermissions permittedRoles={['health_authority']}>
-              {!disableAssign && (
-                <PSICohortView
-                  psiList={psiList}
-                  assignAction={(cohort) => setSelectedCohort(cohort)}
-                  participant={actualParticipant}
-                  fetchData={() =>
-                    fetchData({
-                      setParticipant,
-                      setPSIList,
-                      setActualParticipant,
-                      setDisableAssign,
-                      setError,
-                      id,
-                    })
-                  }
-                />
-              )}
-            </CheckPermissions>
+            {!participant.ros && (
+              <>
+                <CheckPermissions permittedRoles={['health_authority']}>
+                  {!disableAssign && (
+                    <PSICohortView
+                      psiList={psiList}
+                      assignAction={(cohort) => setSelectedCohort(cohort)}
+                      participant={actualParticipant}
+                      fetchData={() =>
+                        fetchData({
+                          setParticipant,
+                          setPSIList,
+                          setActualParticipant,
+                          setDisableAssign,
+                          setError,
+                          id,
+                        })
+                      }
+                    />
+                  )}
+                </CheckPermissions>
+              </>
+            )}
           </Card>
         )}
       </CheckPermissions>

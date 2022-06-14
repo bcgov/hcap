@@ -22,11 +22,11 @@ objects:
     metadata:
       name: ${APP_NAME}-clean-stale-cronjob
     spec:
-      schedule: '*/5 * * * *'
+      schedule: '* 8 * * *'
       concurrencyPolicy: 'Replace'
       startingDeadlineSeconds: 10
       successfulJobsHistoryLimit: 3
-      failedJobsHistoryLimit: 1
+      failedJobsHistoryLimit: 3
       jobTemplate:
         spec:
           template:
@@ -35,9 +35,9 @@ objects:
                 parent: 'cronjobpi'
             spec:
               containers:
-                - name: ${APP_NAME}-crone-runner
+                - name: ${APP_NAME}-cron-runner
                   image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
-                  imagePullPolicy: IfNotPresent
+                  imagePullPolicy: Always
                   command:
                     - container-entrypoint
                     - bash

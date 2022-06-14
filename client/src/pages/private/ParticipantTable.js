@@ -16,13 +16,7 @@ import {
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
-import {
-  dayUtils,
-  addEllipsisMask,
-  prettifyStatus,
-  keyedString,
-  capitalizedString,
-} from '../../utils';
+import { dayUtils, addEllipsisMask, keyedString, capitalizedString } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
 import { ParticipantTableDialogues } from './ParticipantTableDialogues';
@@ -36,6 +30,7 @@ import {
   FEATURE_MULTI_ORG_PROSPECTING,
   fetchUserNotifications,
 } from '../../services';
+import { ParticipantStatus } from '../../components/generic/ParticipantStatus';
 
 const mapRosData = (data) => ({
   rosSiteName: data?.rosStatuses?.[0]?.rosSite?.body.siteName,
@@ -414,14 +409,17 @@ const ParticipantTable = () => {
         return row[columnId] ? 'Primed' : 'Available';
       case 'status':
       case 'mohStatus':
-        return prettifyStatus(
-          row[columnId] || row['status'],
-          row.id,
-          selectedTab,
-          handleEngage,
-          handleAcknowledge,
-          isMoH,
-          row.engage || null
+        const status = row[columnId] || row['status'];
+        return (
+          <ParticipantStatus
+            status={status}
+            id={row.id}
+            tabValue={selectedTab}
+            handleEngage={handleEngage}
+            handleAcknowledge={handleAcknowledge}
+            isMoH={isMoH}
+            participantInfo={row.engage || null}
+          />
         );
       case 'distance':
         if (row[columnId] !== null && row[columnId] !== undefined) {

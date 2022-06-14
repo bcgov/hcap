@@ -1,45 +1,135 @@
-import React from 'react';
-import InfoIcon from '@material-ui/icons/Info';
-import { ComponentTooltip } from '../components/generic/ComponentTooltip';
-import { Button } from '../components/generic';
 import { capitalizedString } from './gen-util';
 import { addYearToDate } from './date';
 
 /**
- * Returns participant stats message based on the first status provided
- *
- * @param {boolean} isMoH - is this view displayed for MoH user
- * @param {string} status - first status defined in row.status
- * @returns {string} specific status message based on value / capitalized status
+ * Data required to render the Participant Status,
+ * Text for tooltip, status text, indications of whether to show buttons, data to pass to buttons
+ * @param {[string]} status
+ * @param {string} tabValue
+ * @param {boolean} isMoH
+ * @param {object} participantInfo
+ * @returns { {toolTipText, statusText, buttonData} || null }
  */
-const getParticipantStatus = (isMoH, status) => {
-  if (status === 'rejected') return 'Archived';
-  if (status === 'ros') return 'Return of Service';
-  if (status === 'reject_ack') return 'Archived for site';
+export const getParticipantStatusData = (status, tabValue, isMoH, participantInfo) => {
+  if (!status) return;
 
-  if (isMoH && status.startsWith('inprogress')) {
-    const count = status.split('_');
-    return `In Progress (${count[1]})`;
-  }
+  const statusValue = status[0];
+  const { statusInfos = [] } = participantInfo;
+  const statusInfo = statusInfos.length > 0 ? statusInfos[0] : {};
 
-  if (status === 'offer_made') return 'Offer Made';
+  const isRejectedByPeer = statusValue === 'reject_ack';
+  const isROS = statusValue === 'ros';
+  const isHiredByPeer = status[1] === 'hired_by_peer';
+  const isHiredByOther = status.includes('already_hired');
+  const isPendingAcknowledgement = status.includes('pending_acknowledgement');
+  const isWithdrawn = status.includes('withdrawn');
+  const isArchived = status.includes('archived');
+  const rosStartDate = isROS ? participantInfo.rosStatuses[0].data.date : null;
+  const finalStatus = statusInfo.data?.final_status ?? null;
 
-  return capitalizedString(status);
+  const toolTipText = getToolTipText(
+    isWithdrawn,
+    isRejectedByPeer,
+    isHiredByPeer,
+    isHiredByOther,
+    isArchived,
+    isPendingAcknowledgement,
+    rosStartDate,
+    finalStatus
+  );
+
+  const statusText = getStatusText(
+    isMoH,
+    statusValue,
+    isWithdrawn,
+    isArchived,
+    isRejectedByPeer,
+    statusInfo
+  );
+
+  const rejectData = {
+    final_status: finalStatus || (isWithdrawn ? 'withdrawn' : 'hired by other'),
+    previous: isRejectedByPeer ? statusInfo.data?.previous : statusValue,
+  };
+
+  const showAcknowledgeButton =
+    (tabValue === 'Hired Candidates' && isPendingAcknowledgement) ||
+    (tabValue === 'My Candidates' && status.includes('hired_by_peer'));
+
+  const showArchiveButton =
+    !['Archived Candidates', 'Participants'].includes(tabValue) &&
+    !isHiredByPeer &&
+    !isROS &&
+    !showAcknowledgeButton;
+
+  return {
+    toolTipText,
+    statusText,
+    buttonData: {
+      showAcknowledgeButton,
+      showArchiveButton,
+      additional: rejectData,
+    },
+  };
 };
 
-const getToolTipText = (
-  isHiredByOther,
-  isROS,
-  isArchived,
+/**
+ * Text to display for status
+ * @param {boolean} isMoH
+ * @param {string} statusValue
+ * @param {boolean} isWithdrawn
+ * @param {boolean} isArchived
+ * @param {boolean} isRejectedByPeer
+ * @param {object} statusInfo
+ * @returns {string}
+ */
+const getStatusText = (
+  isMoH,
+  statusValue,
   isWithdrawn,
-  isPendingAcknowledgement,
+  isArchived,
   isRejectedByPeer,
-  isHiredByPeer,
-  participantInfo,
   statusInfo
 ) => {
-  if (isROS && !isArchived) {
-    const rosStartDate = participantInfo.rosStatuses[0].data.date;
+  let statusText = getParticipantStatus(isMoH, statusValue);
+  if (isWithdrawn) {
+    statusText = 'Withdrawn';
+  }
+  if (isArchived) {
+    statusText = 'Archived';
+  }
+
+  if (isRejectedByPeer) {
+    statusText = statusInfo.data?.refStatus
+      ? getParticipantStatus(isMoH, statusInfo.data.refStatus)
+      : statusText;
+  }
+  return statusText;
+};
+
+/**
+ * Text to display in tooltip. Empty string if nothing to display
+ * @param {boolean} isWithdrawn
+ * @param {boolean} isRejectedByPeer
+ * @param {boolean} isHiredByPeer
+ * @param {boolean} isHiredByOther
+ * @param {boolean} isArchived
+ * @param {boolean} isPendingAcknowledgement
+ * @param {Date} rosStartDate
+ * @param {string} finalStatus
+ * @returns {string}
+ */
+const getToolTipText = (
+  isWithdrawn,
+  isRejectedByPeer,
+  isHiredByPeer,
+  isHiredByOther,
+  isArchived,
+  isPendingAcknowledgement,
+  rosStartDate,
+  finalStatus
+) => {
+  if (rosStartDate && !isArchived) {
     const isTimeToArchive = addYearToDate(rosStartDate).isBefore(new Date());
     if (isTimeToArchive) {
       return 'Please action and archive this participant to record their outcomes as they have met their one year mark of Return of Service';
@@ -47,8 +137,8 @@ const getToolTipText = (
   }
 
   if (isRejectedByPeer) {
-    return statusInfo.data?.final_status
-      ? `Participant not available. ${capitalizedString(statusInfo.data.final_status)}`
+    return finalStatus
+      ? `Participant not available. ${capitalizedString(finalStatus)}`
       : 'Participant is no longer available. ';
   }
 
@@ -68,190 +158,28 @@ const getToolTipText = (
   return '';
 };
 
-//returns the text that is displayed as the status
-const getStatusText = (
-  isMoH,
-  statusValue,
-  isWithdrawn,
-  isArchived,
-  isRejectedByPeer,
-  statusInfo
-) => {
-  let firstStatus = getParticipantStatus(isMoH, statusValue);
-  if (isWithdrawn) {
-    firstStatus = 'Withdrawn';
-  }
-  if (isArchived) {
-    firstStatus = 'Archived';
+/**
+ * Returns participant status message based on the first status provided
+ * @param {boolean} isMoH - is this view displayed for MoH user
+ * @param {string} status - first status defined in row.status
+ * @returns {string} specific status message based on value / capitalized status
+ */
+const getParticipantStatus = (isMoH, status) => {
+  if (isMoH && status.startsWith('inprogress')) {
+    const count = status.split('_');
+    return `In Progress (${count[1]})`;
   }
 
-  if (isRejectedByPeer) {
-    firstStatus = statusInfo.data?.refStatus
-      ? getParticipantStatus(isMoH, statusInfo.data.refStatus)
-      : firstStatus;
+  switch (status) {
+    case 'rejected':
+      return 'Archived';
+    case 'ros':
+      return 'Return of Service';
+    case 'reject_ack':
+      return 'Archived for site';
+    case 'offer_made':
+      return 'Offer Made';
+    default:
+      return capitalizedString(status);
   }
-  return firstStatus;
-};
-
-// TODO: make this a proper function or get rid of it
-const getButtonData = () => {};
-
-// returns all of the combined data used to generate the status component
-// (basically replacing prettifyStatus() with this to get the front-end out of the back-end)
-const getStatusData = (
-  status,
-  id,
-  tabValue,
-  handleEngage,
-  handleAcknowledge,
-  isMoH,
-  participantInfo
-) => {
-  //TODO: this is not going to fly
-  if (!status) return;
-
-  const statusValue = status[0];
-  const { statusInfos = [] } = participantInfo;
-  const statusInfo = statusInfos.length > 0 ? statusInfos[0] : {};
-
-  const isWithdrawn = status.includes('withdrawn');
-  const isHiredByPeer = status[1] === 'hired_by_peer';
-  const isHiredByOther = status.includes('already_hired');
-  const isRejectedByPeer = statusValue === 'reject_ack';
-  const isROS = statusValue === 'ros';
-  const isArchived = status.includes('archived');
-  const isPendingAcknowledgement = status.includes('pending_acknowledgement');
-
-  const toolTipText = getToolTipText(
-    isHiredByOther,
-    isROS,
-    isArchived,
-    isWithdrawn,
-    isPendingAcknowledgement,
-    isRejectedByPeer,
-    isHiredByPeer,
-    participantInfo,
-    statusInfo
-  );
-
-  const firstStatus = getStatusText(
-    isMoH,
-    statusValue,
-    isWithdrawn,
-    isArchived,
-    isRejectedByPeer,
-    statusInfo
-  );
-
-  const rejectData = {
-    final_status: statusInfo.data?.final_status || (isWithdrawn ? 'withdrawn' : 'hired by other'),
-    previous: isRejectedByPeer ? statusInfo.data?.previous : statusValue,
-  };
-
-  const showAcknowledgeButton =
-    (tabValue === 'Hired Candidates' && isPendingAcknowledgement) ||
-    (tabValue === 'My Candidates' && status.includes('hired_by_peer'));
-
-  const showArchiveButton =
-    !['Archived Candidates', 'Participants'].includes(tabValue) &&
-    !isHiredByPeer &&
-    !isROS &&
-    !showAcknowledgeButton;
-
-  return {
-    toolTipText,
-    firstStatus,
-    buttonData: {
-      showAcknowledgeButton,
-      showArchiveButton,
-      additional: rejectData,
-    },
-  };
-};
-
-//TODO: this is getting its logic moved ELSEWHERE (in functions in this file)
-// and what remains will become the ParticipantStatus component
-export const prettifyStatus = (
-  status,
-  id,
-  tabValue,
-  handleEngage,
-  handleAcknowledge,
-  isMoH = false,
-  participantInfo = { statusInfos: [] }
-) => {
-  const { toolTipText, firstStatus, buttonData } = getStatusData(
-    status,
-    id,
-    tabValue,
-    handleEngage,
-    handleAcknowledge,
-    isMoH,
-    participantInfo
-  );
-
-  const { showAcknowledgeButton, showArchiveButton, additional } = buttonData;
-
-  const showToolTip = toolTipText !== '' && firstStatus !== 'Archived'; //ParticipantStatus
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}
-    >
-      {firstStatus}{' '}
-      {showToolTip && (
-        <ComponentTooltip
-          arrow
-          title={
-            <div style={{ margin: 10 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginBottom: 10,
-                }}
-              >
-                <InfoIcon color='secondary' style={{ marginRight: 10 }} fontSize='small' />
-                {toolTipText}
-              </div>
-              {showArchiveButton && (
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'flex-end',
-                  }}
-                >
-                  <Button
-                    onClick={() => {
-                      handleEngage(id, 'rejected', additional, participantInfo);
-                    }}
-                    size='small'
-                    fullWidth={false}
-                    text='Move to Archived Candidates'
-                  />
-                </div>
-              )}
-              {showAcknowledgeButton && (
-                <Button
-                  onClick={async () => {
-                    handleAcknowledge(id, status.includes('hired_by_peer'), participantInfo);
-                  }}
-                  size='small'
-                  fullWidth={false}
-                  text='Acknowledge'
-                />
-              )}
-            </div>
-          }
-        >
-          <InfoIcon style={{ marginLeft: 5 }} color='secondary' />
-        </ComponentTooltip>
-      )}
-    </div>
-  );
 };

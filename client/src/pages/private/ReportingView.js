@@ -140,7 +140,7 @@ export default () => {
               <Button
                 fullWidth={false}
                 loading={isLoadingHiringReport}
-                onClick={() => handleDownloadHiringReportClick()}
+                onClick={handleDownloadHiringReportClick}
                 text='Download hiring report'
               />
             </Box>
@@ -148,7 +148,7 @@ export default () => {
               <Button
                 fullWidth={false}
                 loading={isLoadingRosReport}
-                onClick={() => handleDownloadRosReportClick()}
+                onClick={handleDownloadRosReportClick}
                 text='Download return of service milestones report'
               />
             </Box>

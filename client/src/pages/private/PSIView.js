@@ -1,19 +1,17 @@
 import React, { useState, useEffect, useMemo, lazy } from 'react';
-import {
-  Box,
-  ClickAwayListener,
-  Grow,
-  MenuList,
-  MenuItem,
-  Typography,
-  Paper,
-} from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { saveAs } from 'file-saver';
 
 import { Page, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { NewPSIForm, CohortForm } from '../../components/modal-forms';
-import { ToastStatus, API_URL, NewCohortSchema } from '../../constants';
+import {
+  ToastStatus,
+  API_URL,
+  NewCohortSchema,
+  DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
+  DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+} from '../../constants';
 import store from 'store';
 import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
@@ -30,7 +28,9 @@ export default () => {
 
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
-  const [isDownloadMenuOpen, setDownloadMenuOpen] = useState(false);
+  // TODO: add in a dropdown once we have multiple download options
+  // const [isDownloadMenuOpen, setDownloadMenuOpen] = useState(false);
+  const [isLoadingPSIParticipantsReport, setLoadingPSIParticipantsReport] = useState(false);
 
   // Functions
   const defaultOnClose = () => {
@@ -85,6 +85,33 @@ export default () => {
         message: response.error || response.statusText || 'Server error',
       });
     }
+  };
+
+  const handleDownloadPSIParticipantsReport = async () => {
+    setLoadingPSIParticipantsReport(true);
+
+    const response = await fetch(`${API_URL}/api/v1/psi-report/csv/participants`, {
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      saveAs(blob, `participants-attending-psi-${new Date().toJSON()}.csv`);
+      openToast({
+        status: ToastStatus.Success,
+        message: response.message || DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
+      });
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+      });
+    }
+
+    setLoadingPSIParticipantsReport(false);
   };
 
   // Hooks
@@ -206,38 +233,35 @@ export default () => {
               permittedRoles={['ministry_of_health', 'health_authority']}
             >
               <Box alignSelf='flex-end' py={1}>
-                <ClickAwayListener onClickAway={() => setDownloadMenuOpen(false)}>
-                  <Box>
-                    <Button
-                      onClick={() => setDownloadMenuOpen(!isDownloadMenuOpen)}
-                      variant='outlined'
-                      endIcon={<ExpandMoreIcon />}
-                      text='Download CSV'
-                    />
+                {/** TODO: add in a dropdown once we have multiple download options
+                  <ClickAwayListener onClickAway={() => setDownloadMenuOpen(false)}> */}
+                <Button
+                  /** TODO: add in a dropdown once we have multiple download options
+                    onClick={() => setDownloadMenuOpen(!isDownloadMenuOpen)}
+                    endIcon={<ExpandMoreIcon />}
+                    text='Download CSV' 
+                  */
+                  text='Download participants attending PSI Report'
+                  onClick={handleDownloadPSIParticipantsReport}
+                  variant='outlined'
+                  loading={isLoadingPSIParticipantsReport}
+                />
 
-                    <Grow in={isDownloadMenuOpen}>
-                      <Paper>
-                        <MenuList>
-                          <MenuItem
-                            onClick={(event) => {
-                              // ...
-                            }}
-                          >
-                            Download PSI and Cohort Information
-                          </MenuItem>
+                {/** TODO: add in a dropdown once we have multiple download options
+                  <Grow in={isDownloadMenuOpen}>
+                    <Paper>
+                      <MenuList>
+                        <MenuItem onClick={}>
+                          Download PSI and Cohort Information
+                        </MenuItem>
 
-                          <MenuItem
-                            onClick={(event) => {
-                              // ...
-                            }}
-                          >
-                            Download Participants attending PSI
-                          </MenuItem>
-                        </MenuList>
-                      </Paper>
-                    </Grow>
-                  </Box>
-                </ClickAwayListener>
+                        <MenuItem onClick={}>
+                          Download Participants attending PSI
+                        </MenuItem>
+                      </MenuList>
+                    </Paper>
+                  </Grow>
+                */}
               </Box>
             </CheckPermissions>
           </Box>

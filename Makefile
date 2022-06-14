@@ -14,6 +14,9 @@ export TOOLS_NAMESPACE=$(OS_NAMESPACE_PREFIX)-tools
 export DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}
 
 export BUILD_REF?=dev
+# Aliases 
+prod-test: prod-checkout-internal
+
 # Status Output
 
 print-status:
@@ -115,6 +118,9 @@ database: ## <Helper> :: Executes into database container.
 app: ## Bash into App container
 	@echo "Make: Shelling into local application container"
 	@docker-compose -f docker-compose.dev.yml exec server /bin/bash
+
+run-local-db: local-build
+	@docker-compose -f docker-compose.dev.yml up postgres
 
 # Git Tagging Aliases
 
@@ -241,6 +247,10 @@ service-pod:
 	@node .pipeline/service-config.js | xargs -I{} oc process -f openshift/service.pod.yml -p APP_NAME=$(APP_NAME) -p SERVICE_CONFIG={} -p IMAGE_TAG=$(tag) -p IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f - --dry-run=client
 	@node .pipeline/service-config.js | xargs -I{} oc process -f openshift/service.pod.yml -p APP_NAME=$(APP_NAME) -p SERVICE_CONFIG={} -p IMAGE_TAG=$(tag) -p IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f -
 
+# Cron Job
+cron-job:
+	@oc -n $(TARGET_NAMESPACE) process -f openshift/in-progres-stale-clean.cronjob.yml -p APP_NAME=$(APP_NAME) -p IMAGE_TAG=$(OS_NAMESPACE_SUFFIX) -p IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f -
+
 # Load Testing
 loadtest:
 	@docker run --rm \
@@ -254,3 +264,18 @@ loadtest:
 		-e OS_NAMESPACE_SUFFIX=$(OS_NAMESPACE_SUFFIX) \
 		-e KEYCLOAK_REALM=$(KEYCLOAK_REALM) \
 		/load/$(script)
+
+# Deploy Prod to test/dev
+PROD_TEST_TARGET?=test
+prod-checkout-internal:
+ifndef key
+	@echo "Please specify a deployment-key. Example: make prod-test key=HCAP-1 PROD_TEST_TARGET=test"
+	@exit 1
+else
+	@echo "Deploying latest prod tag to '$(PROD_TEST_TARGET)' with key: $(key)\n"
+	@git fetch --all --tags
+	@git checkout tags/prod -b prod-$(PROD_TEST_TARGET)-$(key)
+	@git tag -fa $(PROD_TEST_TARGET) -m "Deploy prod-tag ( $(git rev-parse --abbrev-ref HEAD)) to $(PROD_TEST_TARGET) env with key: $(key)"
+	@git push --force origin refs/tags/$(PROD_TEST_TARGET):refs/tags/$(PROD_TEST_TARGET)
+endif
+

@@ -276,7 +276,7 @@ const ParticipantTable = () => {
         dispatch({ type: AuthContext.USER_NOTIFICATIONS_UPDATED, payload: notifications });
       fetchUserNotifications(dispatchFunction);
       setLoadingData(false);
-      if (status === participantStatus.PROSPECTING) {
+      if (status === participantStatus.PROSPECTING && data.status === status) {
         // Modal appears after submitting
         setActiveModalForm(participantStatus.PROSPECTING);
         closeModal = false;
@@ -375,6 +375,7 @@ const ParticipantTable = () => {
   }, [isMoH, isSuperUser, roles]);
 
   useEffect(() => {
+    setSelectedParticipants([]);
     fetchParticipants();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, pagination.page, order, selectedTabStatuses, siteSelector]);

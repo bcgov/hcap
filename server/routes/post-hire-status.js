@@ -3,7 +3,8 @@ const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
 const { ParticipantPostHireStatusSchema, validate } = require('../validation');
 const {
   createPostHireStatus,
-  getPostHireStatusesForParticipant,
+  invalidatePostHireStatus,
+  getPostHireStatus,
 } = require('../services/post-hire-flow');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
@@ -51,6 +52,7 @@ router.post(
 
     // Save the record
     try {
+      await invalidatePostHireStatus(body);
       const result = await createPostHireStatus(body);
 
       logger.info({
@@ -77,11 +79,13 @@ router.get(
     const { participantId } = req.params;
     // Check if the participant exists
     const participant = await getParticipantByID(participantId);
+    const cohorts = await getAssignCohort({ participantId });
     if (!participant) {
       return res.status(404).send('Participant not found');
     }
-    // Get the post-hire-status for the participant
-    const result = await getPostHireStatusesForParticipant({ participantId });
+
+    const cohortId = !cohorts || cohorts.length < 1 ? -1 : cohorts[0].id;
+    const result = await getPostHireStatus(participantId, cohortId);
     logger.info({
       action: 'post-hire-status_get',
       performed_by: user,

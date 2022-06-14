@@ -10,6 +10,7 @@ import { addYearToDate } from './date';
  * @param {object} participantInfo
  * @returns { {toolTipText, statusText, buttonData} || null }
  */
+
 export const getParticipantStatusData = (status, tabValue, isMoH, participantInfo) => {
   if (!status) return;
 
@@ -165,12 +166,13 @@ const getToolTipText = (
  * @returns {string} specific status message based on value / capitalized status
  */
 const getParticipantStatus = (isMoH, status) => {
-  if (isMoH && status.startsWith('inprogress')) {
-    const count = status.split('_');
+  const lStatus = status.toLowerCase();
+  if (isMoH && (lStatus.startsWith('inprogress') || lStatus === 'in progress')) {
+    const count = lStatus.split('_');
     return `In Progress (${count[1]})`;
   }
 
-  switch (status) {
+  switch (lStatus) {
     case 'rejected':
       return 'Archived';
     case 'ros':

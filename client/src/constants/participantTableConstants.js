@@ -162,7 +162,7 @@ const columns = {
   postHireStatuses: { id: 'postHireStatuses', name: 'Graduated', sortOrder: 20, sortable: false },
   edit: { id: 'edit', name: null, sortOrder: 51 },
   rosStartDate: { id: 'rosStartDate', name: 'Return of Service Start Date', sortOrder: 22 },
-  rosSiteName: { id: 'rosSiteName', name: 'Site Name', sortOrder: 23 },
+  rosSiteName: { id: 'rosSiteName', name: 'RoS Site Name', sortOrder: 23 },
   employerName: { id: 'employerName', name: 'Hired By', sortOrder: 24 },
   engagedBy: { id: 'engagedBy', name: 'Last Engaged By', sortOrder: 16 },
   archiveReason: { id: 'archiveReason', name: 'Archive Reason', sortOrder: 25, sortable: false },

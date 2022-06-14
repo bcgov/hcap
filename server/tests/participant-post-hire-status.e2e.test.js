@@ -73,7 +73,6 @@ describe('api e2e test for /post-hire-status', () => {
       .get(`/api/v1/post-hire-status/participant/${participant.id}`)
       .set(header);
     expect(res.status).toEqual(200);
-    expect(res.body).toHaveLength(1);
   });
 
   it('should return 422 for posting status without cohort assignment', async () => {

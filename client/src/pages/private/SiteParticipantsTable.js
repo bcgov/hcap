@@ -109,7 +109,7 @@ export default ({ id, siteId }) => {
   const [rows, setRows] = useState([]);
   const [fetchedHiredRows, setFetchedHiredRows] = useState([]);
   const [fetchedWithdrawnRows, setFetchedWithdrawnRows] = useState([]);
-  const { auth } = AuthContext.useAuth();
+  const { auth, dispatch: authDispatch } = AuthContext.useAuth();
   const { openToast } = useToast();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
   const defaultOnClose = () => {
@@ -218,7 +218,7 @@ export default ({ id, siteId }) => {
 
     if (response.ok) {
       const dispatchFunction = (notifications) =>
-        dispatch({ type: AuthContext.USER_NOTIFICATIONS_UPDATED, payload: notifications });
+        authDispatch({ type: AuthContext.USER_NOTIFICATIONS_UPDATED, payload: notifications });
       fetchUserNotifications(dispatchFunction);
 
       const index = rows.findIndex((row) => row.participantId === participantId);

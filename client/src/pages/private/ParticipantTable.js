@@ -434,7 +434,7 @@ const ParticipantTable = () => {
           'withdrawn',
           'archived',
           'reject_ack',
-        ].find((status) => row.status.includes(status));
+        ].find((s) => row.status.includes(s));
 
         return (
           engage && (

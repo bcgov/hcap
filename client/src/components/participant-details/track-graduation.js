@@ -14,7 +14,7 @@ import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
 import { formatCohortDate } from '../../utils';
 // Helper function to call archive participant service
-const handleArchive = async (participantId, additional = {}, openToast, dispatchFunction) => {
+const handleArchive = async (participantId, openToast, dispatchFunction, additional = {}) => {
   const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
     method: 'POST',
     headers: {
@@ -176,7 +176,7 @@ export const TrackGraduation = (props) => {
                 }}
                 onSubmit={async (values) => {
                   setShowArchiveModal(false);
-                  await handleArchive(props?.participant?.id, values, openToast, dispatchFunction);
+                  await handleArchive(props?.participant?.id, openToast, dispatchFunction, values);
                   fetchData();
                 }}
                 participant={props?.participant}

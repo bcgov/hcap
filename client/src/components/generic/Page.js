@@ -20,7 +20,7 @@ export const Page = ({ children, hideEmployers = false, centered, isAutoHeight =
   const classes = useStyles({ centered, isAutoHeight });
 
   const { auth } = AuthContext.useAuth();
-  const notifications = useMemo(() => auth.notifications || {}, [auth.notifications]);
+  const notifications = useMemo(() => auth.notifications || [], [auth.notifications]);
 
   return (
     <Fragment>

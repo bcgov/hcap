@@ -40,6 +40,7 @@ export default createMuiTheme({
     warning: {
       main: '#6c4a00',
       light: '#f9f1c6',
+      border: '#faebcc',
     },
     background: {
       default: '#FFFFFF',

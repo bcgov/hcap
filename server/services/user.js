@@ -32,27 +32,31 @@ const getROSEndedNotifications = async (sites) => {
       },
     })
     .find({
-      and: [
-        { 'data.date::timestamp <': todayDate },
-        { 'participantStatus.current': true },
-        { 'participantStatus.status': 'hired' },
-        { 'participantStatus.data.site': sites },
-      ],
+      'data.date::timestamp <': todayDate,
+      'participantStatus.current': true,
+      'participantStatus.status': 'hired',
+      'participantStatus.data.site': sites,
     });
 };
 
 /**
- * Returns an object of user notifications with keys being the type of notification
- * Empty object for no notifications, keys correspond to notification type they have
+ * Returns an array of user notification objects
+ * Where each notification has a message, severity, and type
+ * Empty array for no notifications
  * @param {*} hcapUserInfo
- * @returns {}
+ * @returns {[]}
  */
 const getUserNotifications = async (hcapUserInfo) => {
-  const notifications = {};
+  const notifications = [];
   if (hcapUserInfo.isEmployer || hcapUserInfo.isHA) {
     const rosEndedNotifications = await getROSEndedNotifications(hcapUserInfo.sites);
     if (rosEndedNotifications.length > 0) {
-      notifications.rosEndedNotifications = rosEndedNotifications;
+      notifications.push({
+        message: `You have a pending action: ${rosEndedNotifications.length} of your Return
+        of Service Participants have finished their term. Please mark their outcomes.`,
+        severity: 'warning',
+        type: 'rosEnded',
+      });
     }
   }
   return notifications;

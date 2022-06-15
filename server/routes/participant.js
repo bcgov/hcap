@@ -14,6 +14,12 @@ const {
   archiveParticipantBySite,
   deleteParticipant,
 } = require('../services/participants.js');
+
+const {
+  participantDetails,
+  checkUserHasAccessToParticipant,
+} = require('../services/participant-details.js');
+
 const {
   setParticipantStatus,
   bulkEngageParticipants,
@@ -42,6 +48,37 @@ const participantRouter = express.Router();
 const participantsRouter = express.Router();
 const newHiredParticipantRouter = express.Router();
 const employerActionsRouter = express.Router();
+
+// Get details of a participant by ID
+participantRouter.get(
+  '/details/:id',
+  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const { id } = req.params;
+    const { hcapUserInfo: user } = req;
+    // Check permissions of user
+    const hasAccess = await checkUserHasAccessToParticipant(id, user);
+    if (!hasAccess) {
+      return res.status(403).send('User has no access to this participant');
+    }
+    const participant = await participantDetails(id);
+    if (!participant) {
+      return res.status(404).send('Participant not found');
+    }
+    logger.info({
+      action: 'participant_details_get',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      on: {
+        id,
+      },
+    });
+    return res.status(200).json({ participant });
+  })
+);
 
 // GET participant/
 participantRouter.get(

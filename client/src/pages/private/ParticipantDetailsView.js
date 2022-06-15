@@ -21,6 +21,8 @@ import {
   assignParticipantWithCohort,
 } from '../../services';
 
+import { addYearToDate, dayUtils } from '../../utils';
+
 // Sub component
 import { PSICohortView } from '../../components/participant-details';
 
@@ -36,6 +38,25 @@ const keyLabelMap = {
   postHireStatusLabel: 'Graduation Status',
 };
 
+const rOSKeyMap = {
+  rosSite: 'Current Site',
+  healthAuthority: 'Health Authority (current site)',
+  date: 'RoS Start Date',
+  endDate: 'RoS End Date',
+};
+
+// Map Ros Data
+const mapRosData = ({ data = {}, rosSite = {} }) => {
+  const { date } = data;
+  const { siteName, healthAuthority } = rosSite;
+  return {
+    date: dayUtils(date).format('MMM DD, YYYY'),
+    endDate: addYearToDate(date).format('MMM DD, YYYY'),
+    rosSite: siteName,
+    healthAuthority,
+  };
+};
+
 // Display Data
 const displayData = (inputData) => ({
   ...pick(inputData, Object.keys(keyLabelMap)),
@@ -46,6 +67,10 @@ const displayData = (inputData) => ({
       : inputData.interested === 'no'
       ? 'Withdrawn'
       : inputData.interested,
+  ros:
+    inputData.rosStatus && Object.keys(inputData.rosStatus).length
+      ? mapRosData(inputData.rosStatus)
+      : null,
 });
 
 // Custom style
@@ -252,6 +277,8 @@ export default () => {
                 </DialogActions>
               </Dialog>
             )}
+
+            {/* Participant Info */}
             <Box pt={4} pb={2} pl={4} pr={4}>
               <Box pb={1}>
                 <Typography variant='body1'>
@@ -280,6 +307,38 @@ export default () => {
               </Grid>
             </Box>
 
+            {/* Participant RoS Info */}
+            <CheckPermissions
+              permittedRoles={['health_authority', 'employer', 'ministry_of_health']}
+            >
+              {participant.ros && (
+                <>
+                  <Box pt={4} pb={2} pl={4} pr={4}>
+                    <Typography variant='h2'>Return of Service</Typography>
+                  </Box>
+
+                  <Box py={2} px={4}>
+                    <Grid className={classes.rootContainer} container spacing={2}>
+                      {Object.keys(rOSKeyMap).map((key) => (
+                        <Grid key={key} item xs={12} sm={6} xl={3}>
+                          <Grid item xs={6}>
+                            <Typography variant='body1'>
+                              <b>{rOSKeyMap[key]}</b>
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography test-id={'participantDetailsRosView' + key} variant='body1'>
+                              {participant.ros[key]}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Box>
+                </>
+              )}
+            </CheckPermissions>
+
             <Box px={4}>
               <Button
                 test-id='editInfoButton'
@@ -291,25 +350,29 @@ export default () => {
               </Button>
             </Box>
 
-            <CheckPermissions permittedRoles={['health_authority']}>
-              {!disableAssign && (
-                <PSICohortView
-                  psiList={psiList}
-                  assignAction={(cohort) => setSelectedCohort(cohort)}
-                  participant={actualParticipant}
-                  fetchData={() =>
-                    fetchData({
-                      setParticipant,
-                      setPSIList,
-                      setActualParticipant,
-                      setDisableAssign,
-                      setError,
-                      id,
-                    })
-                  }
-                />
-              )}
-            </CheckPermissions>
+            {!participant.ros && (
+              <>
+                <CheckPermissions permittedRoles={['health_authority']}>
+                  {!disableAssign && (
+                    <PSICohortView
+                      psiList={psiList}
+                      assignAction={(cohort) => setSelectedCohort(cohort)}
+                      participant={actualParticipant}
+                      fetchData={() =>
+                        fetchData({
+                          setParticipant,
+                          setPSIList,
+                          setActualParticipant,
+                          setDisableAssign,
+                          setError,
+                          id,
+                        })
+                      }
+                    />
+                  )}
+                </CheckPermissions>
+              </>
+            )}
           </Card>
         )}
       </CheckPermissions>

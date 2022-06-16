@@ -28,7 +28,7 @@ export const getParticipantStatusData = (status, tabValue, isMoH, participantInf
   const rosStartDate = isROS ? participantInfo.rosStatuses[0].data.date : null;
   const finalStatus = statusInfo.data?.final_status ?? null;
 
-  const toolTipText = getToolTipText(
+  const toolTipText = getToolTipText({
     isWithdrawn,
     isRejectedByPeer,
     isHiredByPeer,
@@ -36,8 +36,8 @@ export const getParticipantStatusData = (status, tabValue, isMoH, participantInf
     isArchived,
     isPendingAcknowledgement,
     rosStartDate,
-    finalStatus
-  );
+    finalStatus,
+  });
 
   const statusText = getStatusText(
     isMoH,
@@ -120,7 +120,7 @@ const getStatusText = (
  * @param {string} finalStatus
  * @returns {string}
  */
-const getToolTipText = (
+const getToolTipText = ({
   isWithdrawn,
   isRejectedByPeer,
   isHiredByPeer,
@@ -128,8 +128,8 @@ const getToolTipText = (
   isArchived,
   isPendingAcknowledgement,
   rosStartDate,
-  finalStatus
-) => {
+  finalStatus,
+}) => {
   if (rosStartDate && !isArchived) {
     const isTimeToArchive = addYearToDate(rosStartDate).isBefore(new Date());
     if (isTimeToArchive) {

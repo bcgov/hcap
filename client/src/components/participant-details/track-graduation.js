@@ -7,13 +7,14 @@ import { AssignCohortForm } from '../modal-forms/AssignCohort';
 import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { createPostHireStatus } from '../../services/participant';
+import { fetchUserNotifications } from '../../services';
 import { ToastStatus, API_URL, ArchiveHiredParticipantSchema } from '../../constants';
 import { postHireStatuses } from '../../constants';
-
+import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
 import { formatCohortDate } from '../../utils';
 // Helper function to call archive participant service
-const handleArchive = async (participantId, additional = {}, openToast) => {
+const handleArchive = async (participantId, openToast, dispatchFunction, additional = {}) => {
   const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
     method: 'POST',
     headers: {
@@ -24,6 +25,8 @@ const handleArchive = async (participantId, additional = {}, openToast) => {
     body: JSON.stringify({ participantId, status: 'archived', data: additional }),
   });
   if (response.ok) {
+    fetchUserNotifications(dispatchFunction);
+
     openToast({
       status: ToastStatus.Info,
       message: 'Participant Archived',
@@ -37,6 +40,7 @@ const handleArchive = async (participantId, additional = {}, openToast) => {
 };
 
 export const TrackGraduation = (props) => {
+  const { dispatch } = AuthContext.useAuth();
   const [cohort, setCohort] = useState(null);
   const { fetchData } = props;
   const [showEditModel, setShowEditModal] = useState(false);
@@ -48,6 +52,9 @@ export const TrackGraduation = (props) => {
   const cohortEndDate = props.participant?.cohort
     ? formatCohortDate(props.participant.cohort.end_date, { isForm: true })
     : null;
+
+  const dispatchFunction = (notifications) =>
+    dispatch({ type: AuthContext.USER_NOTIFICATIONS_UPDATED, payload: notifications });
 
   useEffect(() => {
     setCohort(props.participant?.cohort);
@@ -169,7 +176,7 @@ export const TrackGraduation = (props) => {
                 }}
                 onSubmit={async (values) => {
                   setShowArchiveModal(false);
-                  await handleArchive(props?.participant?.id, values, openToast);
+                  await handleArchive(props?.participant?.id, openToast, dispatchFunction, values);
                   fetchData();
                 }}
                 participant={props?.participant}

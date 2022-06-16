@@ -6,6 +6,7 @@ const AuthContext = React.createContext();
 
 const USER_LOADING = 'USER_LOADING';
 const USER_LOADED = 'USER_LOADED';
+const USER_NOTIFICATIONS_UPDATED = 'USER_NOTIFICATIONS_UPDATED';
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -19,9 +20,16 @@ const authReducer = (state, action) => {
       return {
         ...state,
         user: action.payload,
+        notifications: action.payload.notifications ?? state.notifications,
         isLoading: false,
         // find first role in above array that is included in the user object (highest permission role)
         permissionRole: rolePriority.find((role) => action.payload?.roles.includes(role)),
+      };
+
+    case USER_NOTIFICATIONS_UPDATED:
+      return {
+        ...state,
+        notifications: action.payload.notifications,
       };
     default:
       return state;
@@ -35,6 +43,7 @@ const authReducer = (state, action) => {
 const AuthProvider = ({ children }) => {
   const [auth, dispatch] = useReducer(authReducer, {
     user: null,
+    notifications: null,
     isLoading: true,
     permissionRole: null,
   });
@@ -52,4 +61,4 @@ function useAuth() {
   return context;
 }
 
-export { AuthProvider, useAuth, USER_LOADING, USER_LOADED };
+export { AuthProvider, useAuth, USER_LOADING, USER_LOADED, USER_NOTIFICATIONS_UPDATED };

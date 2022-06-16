@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 const { dbClient, collections } = require('../db');
 
 const userRegionQuery = (regions, target) => {
@@ -11,6 +12,54 @@ const getUser = async (id) => {
   const query = { keycloakId: id };
   const options = { single: true };
   return dbClient.db[collections.USERS].findDoc(query, options);
+};
+
+/**
+ * Returns all ROS statuses for given sites that are currently 'hired' (not archived) that started a year ago or more
+ * @param {[id: number]} sites
+ * @returns [ROS_STATUS join to PARTICIPANTS_STATUS]
+ */
+const getROSEndedNotifications = async (sites) => {
+  const todayDate = dayjs(new Date()).subtract(1, 'y').format('YYYY-MM-DD');
+  return dbClient.db[collections.ROS_STATUS]
+    .join({
+      participantStatus: {
+        relation: collections.PARTICIPANTS_STATUS,
+        type: 'LEFT OUTER',
+        on: {
+          participant_id: 'participant_id',
+        },
+      },
+    })
+    .find({
+      'data.date::timestamp <': todayDate,
+      'participantStatus.current': true,
+      'participantStatus.status': 'hired',
+      'participantStatus.data.site': sites,
+    });
+};
+
+/**
+ * Returns an array of user notification objects
+ * Where each notification has a message, severity, and type
+ * Empty array for no notifications
+ * @param {*} hcapUserInfo
+ * @returns {[]}
+ */
+const getUserNotifications = async (hcapUserInfo) => {
+  const notifications = [];
+  if (hcapUserInfo.isEmployer || hcapUserInfo.isHA) {
+    const rosEndedNotifications = await getROSEndedNotifications(hcapUserInfo.sites);
+    if (rosEndedNotifications.length > 0) {
+      notifications.push({
+        message: `You have a pending action: ${rosEndedNotifications.length} of your Return
+        of Service Participants have finished their term. Please mark their outcomes.`,
+        severity: 'warning',
+        type: 'rosEnded',
+      });
+    }
+  }
+  return notifications;
 };
 
 const getUserSites = async (id) => {
@@ -39,4 +88,5 @@ module.exports = {
   userRegionQuery,
   makeUser,
   getUserSiteIds,
+  getUserNotifications,
 };

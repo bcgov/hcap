@@ -7,6 +7,7 @@ import store from 'store';
 import { Table, Button, Dialog, CustomTab, CustomTabs } from '../../components/generic';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, SiteDetailTabContext } from '../../providers';
+import { fetchUserNotifications } from '../../services';
 import { fieldsLabelMap } from '../../constants';
 import {
   ToastStatus,
@@ -108,7 +109,7 @@ export default ({ id, siteId }) => {
   const [rows, setRows] = useState([]);
   const [fetchedHiredRows, setFetchedHiredRows] = useState([]);
   const [fetchedWithdrawnRows, setFetchedWithdrawnRows] = useState([]);
-  const { auth } = AuthContext.useAuth();
+  const { auth, dispatch: authDispatch } = AuthContext.useAuth();
   const { openToast } = useToast();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
   const defaultOnClose = () => {
@@ -216,6 +217,10 @@ export default ({ id, siteId }) => {
     });
 
     if (response.ok) {
+      const dispatchFunction = (notifications) =>
+        authDispatch({ type: AuthContext.USER_NOTIFICATIONS_UPDATED, payload: notifications });
+      fetchUserNotifications(dispatchFunction);
+
       const index = rows.findIndex((row) => row.participantId === participantId);
       const { participantName } = rows[index];
       const toasts = makeToasts(participantName, '');

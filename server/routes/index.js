@@ -2,6 +2,7 @@
 const dayjs = require('dayjs');
 const express = require('express');
 const { getSites } = require('../services/employers.js');
+const { getUserNotifications } = require('../services/user.js');
 const { validate, AccessRequestApproval } = require('../validation.js');
 const logger = require('../logger.js');
 const { dbClient, collections } = require('../db');
@@ -150,10 +151,24 @@ apiRouter.get(
   asyncMiddleware(async (req, res) => {
     let sites = await getSites();
     sites = sites.filter((i) => req.hcapUserInfo.sites.includes(i.siteId));
+    const notifications = await getUserNotifications(req.hcapUserInfo);
     return res.json({
       roles: req.hcapUserInfo.roles,
       name: req.hcapUserInfo.name,
       sites,
+      notifications,
+    });
+  })
+);
+
+apiRouter.get(
+  `/user-notifications`,
+  keycloak.allowRolesMiddleware('*'),
+  keycloak.getUserInfoMiddleware(),
+  asyncMiddleware(async (req, res) => {
+    const notifications = await getUserNotifications(req.hcapUserInfo);
+    return res.json({
+      notifications,
     });
   })
 );

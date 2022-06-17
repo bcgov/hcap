@@ -9,6 +9,7 @@ const { asyncMiddleware } = require('../error-handler.js');
 
 // Service
 const {
+  checkUserRegion,
   getReport,
   getHiredParticipantsReport,
   getRosParticipantsReport,
@@ -106,14 +107,6 @@ const generateReport = async (user, res, type, region = DEFAULT_REGION_NAME) => 
   });
   csvStream.end();
 };
-
-/**
- * Validation layer to see if the user has access to requested health region
- * @param user data of a user who accesses the endpoints
- * @param {string} regionId health region
- * @return {boolean} true if the user has access
- */
-const checkUserRegion = (user, regionId) => user && user.regions?.includes(regionId);
 
 router.get(
   '/',

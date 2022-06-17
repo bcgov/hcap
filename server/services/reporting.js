@@ -4,6 +4,53 @@ const { dbClient, collections } = require('../db');
 const keycloak = require('../keycloak');
 const { DEFAULT_REGION_NAME } = require('../constants');
 
+const mapGraduationStatus = (status) => {
+  switch (status) {
+    case 'cohort_unsuccessful':
+      return 'Unsuccessful cohort';
+    case 'graduation_complete':
+      return 'Graduated';
+    default:
+      return status;
+  }
+};
+
+const mapIntendToReturn = (value) => {
+  switch (value) {
+    case 'continue_yes':
+      return 'Yes';
+    case 'continue_no':
+      return 'No';
+    default:
+      return value;
+  }
+};
+
+const getParticipantCohortStatus = (entries) => {
+  const arr = [];
+
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < entries.length; i++) {
+    arr.push({
+      participantId: entries[i].participant_id,
+      firstName: entries[i].participantJoin?.[0]?.body?.firstName,
+      lastName: entries[i].participantJoin?.[0]?.body?.lastName,
+      psi: entries[i].psiJoin?.[0]?.institute_name,
+      cohort: entries[i].cohortJoin?.[0]?.cohort_name,
+      startDate: dayjs(entries[i].cohortJoin?.[0]?.start_date).format('YYYY-MM-DD'),
+      endDate: dayjs(entries[i].cohortJoin?.[0]?.end_date).format('YYYY-MM-DD'),
+      graduation: mapGraduationStatus(entries[i].postHireJoin?.[0]?.status) || 'N/A',
+      isReturning: mapIntendToReturn(entries[i].postHireJoin?.[0]?.data?.continue) || 'N/A',
+      graduationDate:
+        entries[i].postHireJoin?.[0]?.graduationDate ||
+        entries[i].postHireJoin?.[0]?.unsuccessfulCohortDate ||
+        'N/A',
+    });
+  }
+
+  return arr;
+};
+
 const getReport = async () => {
   const total = await dbClient.db[collections.PARTICIPANTS].countDoc({});
   const qualified = await dbClient.db[collections.PARTICIPANTS].countDoc({ interested: 'yes' });
@@ -325,6 +372,77 @@ const getRosParticipantsReport = async () => {
   }));
 };
 
+const getPSIPaticipantsReport = async (region) => {
+  const searchOptions = {
+    status: ['hired'],
+  };
+
+  if (region !== DEFAULT_REGION_NAME) {
+    searchOptions['employerSiteJoin.body.healthAuthority'] = region;
+  }
+
+  const participantEntries = await dbClient.db[collections.PARTICIPANTS_STATUS]
+    .join({
+      participantJoin: {
+        type: 'INNER',
+        relation: collections.PARTICIPANTS,
+        on: {
+          id: 'participant_id',
+        },
+      },
+      employerSiteJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.EMPLOYER_SITES,
+        on: {
+          'body.siteId': 'data.site',
+        },
+      },
+      postHireJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANT_POST_HIRE_STATUS,
+        on: {
+          participant_id: 'participant_id',
+        },
+      },
+      cohortParticipantsJoin: {
+        type: 'INNER',
+        relation: collections.COHORT_PARTICIPANTS,
+        on: {
+          participant_id: 'participant_id',
+        },
+      },
+      cohortJoin: {
+        type: 'INNER',
+        relation: collections.COHORTS,
+        on: {
+          id: 'cohortParticipantsJoin.cohort_id',
+        },
+      },
+      psiJoin: {
+        type: 'INNER',
+        relation: collections.POST_SECONDARY_INSTITUTIONS,
+        on: {
+          id: 'cohortJoin.psi_id',
+        },
+      },
+    })
+    .find(searchOptions);
+
+  console.log('====================');
+  console.log(participantEntries[3].psiJoin);
+  console.log('====================');
+
+  return getParticipantCohortStatus(participantEntries);
+};
+
+/**
+ * Validation layer to see if the user has access to requested health region
+ * @param user data of a user who accesses the endpoints
+ * @param {string} regionId health region
+ * @return {boolean} true if the user has access
+ */
+const checkUserRegion = (user, regionId) => user && user.regions?.includes(regionId);
+
 module.exports = {
   getReport,
   getParticipantsReport,
@@ -332,5 +450,7 @@ module.exports = {
   getRejectedParticipantsReport,
   getNoOfferParticipantsReport,
   getRosParticipantsReport,
+  getPSIPaticipantsReport,
+  checkUserRegion,
   DEFAULT_REGION_NAME,
 };

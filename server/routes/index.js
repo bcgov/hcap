@@ -23,6 +23,7 @@ const employerSitesRouter = require('./employer-sites');
 const employerFormRouter = require('./employer-form');
 const psiRouter = require('./post-secondary-institutes');
 const cohortRouter = require('./cohorts');
+const psiReportRouter = require('./psi-report');
 const milestoneReportRouter = require('./milestone-report');
 const postHireStatusRouter = require('./post-hire-status');
 const rosRouter = require('./return-of-service');
@@ -47,6 +48,7 @@ apiRouter.use('/employer-sites-detail', employerSitesRouter);
 // PSI Routes
 apiRouter.use(`/psi`, psiRouter);
 apiRouter.use(`/cohorts`, cohortRouter);
+apiRouter.use(`/psi-report`, psiReportRouter);
 
 // Employer-form
 apiRouter.use('/employer-form', employerFormRouter);

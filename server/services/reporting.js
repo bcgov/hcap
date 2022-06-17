@@ -428,10 +428,6 @@ const getPSIPaticipantsReport = async (region) => {
     })
     .find(searchOptions);
 
-  console.log('====================');
-  console.log(participantEntries[3].psiJoin);
-  console.log('====================');
-
   return getParticipantCohortStatus(participantEntries);
 };
 

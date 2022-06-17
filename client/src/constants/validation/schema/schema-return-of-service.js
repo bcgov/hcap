@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { validateDateIsInThePast, validateDateIsReasonable } from '../functions';
+import { validateDateIsReasonable } from '../functions';
 import { rosEmploymentTypeValues, rosPositionTypeValues } from '../../return-of-service';
 
 export const ReturnOfServiceSchema = yup
@@ -9,10 +9,9 @@ export const ReturnOfServiceSchema = yup
     date: yup
       .date()
       .required('Return of service date is required')
-      .test('is-present', 'Invalid entry. Date must be in the past.', validateDateIsInThePast)
       .test(
         'is-reasonable',
-        'Invalid entry. Date must be after December 31st 1899.',
+        'Invalid entry. Date must be after December 31st 1899 and before January 1st 2100.',
         validateDateIsReasonable
       )
       .typeError('Invalid Date, must be in the format YYYY/MM/DD'),

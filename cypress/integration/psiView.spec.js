@@ -27,7 +27,7 @@ describe('Tests the PSI View', () => {
   it('Adds a PSI, checks for correct data', () => {
     cy.kcLogin('test-moh');
     cy.visit('/psi-view');
-    cy.contains('Add Post-Secondary Institute').click();
+    cy.contains('Add Post Secondary Institution').click();
 
     // Submit without entering data, check for errors
     cy.get('span.MuiButton-label').contains('Submit').click();

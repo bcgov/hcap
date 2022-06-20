@@ -14,10 +14,7 @@ export const ParticipantPostHireStatusSchema = yup
       switch (status) {
         case postHireStatuses.postSecondaryEducationCompleted:
           return schema.noUnknown('Unknown field in data form').shape({
-            date: yup
-              .string()
-              .required('Graduation date is required')
-              .test('is-date', 'Invalid date', validateDateString),
+            date: yup.string().optional(),
           });
 
         case postHireStatuses.cohortUnsuccessful:

@@ -1,5 +1,5 @@
-const dayjs = require('dayjs');
 const { dbClient, collections } = require('../db');
+const { dayjs } = require('../utils');
 
 const userRegionQuery = (regions, target) => {
   if (regions.length === 0) return null;
@@ -20,7 +20,7 @@ const getUser = async (id) => {
  * @returns [ROS_STATUS join to PARTICIPANTS_STATUS]
  */
 const getROSEndedNotifications = async (sites) => {
-  const todayDate = dayjs(new Date()).subtract(1, 'y').format('YYYY-MM-DD');
+  const todayDate = dayjs().utc().subtract(1, 'y').toDate().toUTCString();
   return dbClient.db[collections.ROS_STATUS]
     .join({
       participantStatus: {
@@ -32,7 +32,7 @@ const getROSEndedNotifications = async (sites) => {
       },
     })
     .find({
-      'data.date::timestamp <': todayDate,
+      'data.date::timestamp <=': todayDate,
       'participantStatus.current': true,
       'participantStatus.status': 'hired',
       'participantStatus.data.site': sites,

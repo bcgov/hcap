@@ -21,7 +21,12 @@ const getAllPSIWithCohorts = async () => {
         },
       },
     })
-    .find();
+    .find(
+      {},
+      {
+        order: [{ field: 'institute_name', direction: 'asc' }],
+      }
+    );
   return results;
 };
 

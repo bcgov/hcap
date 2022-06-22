@@ -314,6 +314,11 @@ const ParticipantTable = () => {
         status: ToastStatus.Success,
         message: 'Return of Service status updated',
       });
+
+      const dispatchFunction = (notifications) =>
+        dispatch({ type: AuthContext.USER_NOTIFICATIONS_UPDATED, payload: notifications });
+      fetchUserNotifications(dispatchFunction);
+
       fetchParticipants();
     }
   };

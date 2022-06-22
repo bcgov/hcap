@@ -22,9 +22,9 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
           const handleStatusChange = ({ target }) => {
             const { value } = target;
             setFieldValue('status', value);
-            setFieldValue('continue', '');
             if (value === postHireStatuses.postSecondaryEducationCompleted) {
               setFieldValue('data.date', cohortEndDate);
+              setFieldValue('continue', 'continue_yes');
             } else {
               setFieldValue('data.date', '');
             }

@@ -30,22 +30,21 @@ const mapCohortPsiStatusJoin = (cohortData, psiData, postHireStatus, participant
   const arr = [];
   if (!cohortData || !psiData || !postHireStatus) return arr;
 
-  // eslint-disable-next-line no-plusplus
-  for (let i = 0; i < cohortData.length; i++) {
-    const psiId = cohortData[i].psi_id;
+  cohortData.forEach((cohort) => {
+    const psiId = cohort.psi_id;
     const postHireInfo = postHireStatus.find((status) => status.participant_id === participantId);
 
     arr.push({
       psi: psiData.find((psi) => psi.id === psiId)?.institute_name || 'N/A',
-      cohort: cohortData[i]?.cohort_name,
-      startDate: dayjs(cohortData[i]?.start_date).format('YYYY-MM-DD'),
-      endDate: dayjs(cohortData[i]?.end_date).format('YYYY-MM-DD'),
+      cohort: cohort.cohort_name,
+      startDate: dayjs(cohort.start_date).format('YYYY-MM-DD'),
+      endDate: dayjs(cohort.end_date).format('YYYY-MM-DD'),
       graduation: mapGraduationStatus(postHireInfo?.status) || 'N/A',
       graduationDate:
         postHireInfo?.data?.graduationDate || postHireInfo?.data?.unsuccessfulCohortDate || 'N/A',
       isReturning: mapIntendToReturn(postHireInfo?.data?.continue) || 'N/A',
     });
-  }
+  });
 
   return arr;
 };
@@ -53,12 +52,11 @@ const mapCohortPsiStatusJoin = (cohortData, psiData, postHireStatus, participant
 const getParticipantCohortStatus = (entries) => {
   const arr = [];
 
-  // eslint-disable-next-line no-plusplus
-  for (let i = 0; i < entries.length; i++) {
+  entries.forEach((entry) => {
     const item = {
-      participantId: entries[i].participant_id,
-      firstName: entries[i].participantJoin?.[0]?.body?.firstName,
-      lastName: entries[i].participantJoin?.[0]?.body?.lastName,
+      participantId: entry.participant_id,
+      firstName: entry.participantJoin?.[0]?.body?.firstName,
+      lastName: entry.participantJoin?.[0]?.body?.lastName,
       psi: '',
       cohort: '',
       startDate: '',
@@ -69,24 +67,23 @@ const getParticipantCohortStatus = (entries) => {
     };
 
     const cohortPsiData = mapCohortPsiStatusJoin(
-      entries[i].cohortJoin,
-      entries[i].psiJoin,
-      entries[i].postHireJoin,
-      entries[i].participant_id
+      entry.cohortJoin,
+      entry.psiJoin,
+      entry.postHireJoin,
+      entry.participant_id
     );
 
-    // eslint-disable-next-line no-plusplus
-    for (let j = 0; j < cohortPsiData.length; j++) {
-      item.psi = cohortPsiData[j].psi;
-      item.cohort = cohortPsiData[j].cohort;
-      item.startDate = cohortPsiData[j].startDate;
-      item.endDate = cohortPsiData[j].endDate;
-      item.graduation = cohortPsiData[j].graduation;
-      item.isReturning = cohortPsiData[j].isReturning;
-      item.graduationDate = cohortPsiData[j].graduationDate;
+    cohortPsiData.forEach((cohortPsi) => {
+      item.psi = cohortPsi.psi;
+      item.cohort = cohortPsi.cohort;
+      item.startDate = cohortPsi.startDate;
+      item.endDate = cohortPsi.endDate;
+      item.graduation = cohortPsi.graduation;
+      item.isReturning = cohortPsi.isReturning;
+      item.graduationDate = cohortPsi.graduationDate;
       arr.push(item);
-    }
-  }
+    });
+  });
 
   return arr;
 };

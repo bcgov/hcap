@@ -8,7 +8,7 @@ const mapGraduationStatus = (status) => {
   switch (status) {
     case 'cohort_unsuccessful':
       return 'Unsuccessful cohort';
-    case 'graduation_complete':
+    case 'post_secondary_education_completed':
       return 'Graduated';
     default:
       return status;
@@ -41,7 +41,8 @@ const mapCohortPsiStatusJoin = (cohortData, psiData, postHireStatus, participant
       startDate: dayjs(cohortData[i]?.start_date).format('YYYY-MM-DD'),
       endDate: dayjs(cohortData[i]?.end_date).format('YYYY-MM-DD'),
       graduation: mapGraduationStatus(postHireInfo?.status) || 'N/A',
-      graduationDate: postHireInfo?.graduationDate || postHireInfo?.unsuccessfulCohortDate || 'N/A',
+      graduationDate:
+        postHireInfo?.data?.graduationDate || postHireInfo?.data?.unsuccessfulCohortDate || 'N/A',
       isReturning: mapIntendToReturn(postHireInfo?.data?.continue) || 'N/A',
     });
   }

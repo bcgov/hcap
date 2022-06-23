@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
+import AddIcon from '@material-ui/icons/Add';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography, Link } from '@material-ui/core';
 import { Table, Button } from '../../components/generic';
@@ -104,7 +105,8 @@ export default ({ PSIs, handleAddCohortClick }) => {
                     onClick={() => handleAddCohortClick(row.id)}
                     variant='outlined'
                     size='small'
-                    text='+ Add Cohort'
+                    startIcon={<AddIcon />}
+                    text='Add Cohort'
                   />
                 );
               return row[columnId];

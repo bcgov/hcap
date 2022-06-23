@@ -4,6 +4,90 @@ const { dbClient, collections } = require('../db');
 const keycloak = require('../keycloak');
 const { DEFAULT_REGION_NAME } = require('../constants');
 
+const mapGraduationStatus = (status) => {
+  switch (status) {
+    case 'cohort_unsuccessful':
+      return 'Unsuccessful cohort';
+    case 'post_secondary_education_completed':
+      return 'Graduated';
+    default:
+      return status;
+  }
+};
+
+const mapIntendToReturn = (value) => {
+  switch (value) {
+    case 'continue_yes':
+      return 'Yes';
+    case 'continue_no':
+      return 'No';
+    default:
+      return value;
+  }
+};
+
+const mapCohortPsiStatusJoin = (cohortData, psiData, postHireStatus, participantId) => {
+  const arr = [];
+  if (!cohortData || !psiData || !postHireStatus) return arr;
+
+  cohortData.forEach((cohort) => {
+    const psiId = cohort.psi_id;
+    const postHireInfo = postHireStatus.find((status) => status.participant_id === participantId);
+
+    arr.push({
+      psi: psiData.find((psi) => psi.id === psiId)?.institute_name || 'N/A',
+      cohort: cohort.cohort_name,
+      startDate: dayjs(cohort.start_date).format('YYYY-MM-DD'),
+      endDate: dayjs(cohort.end_date).format('YYYY-MM-DD'),
+      graduation: mapGraduationStatus(postHireInfo?.status) || 'N/A',
+      graduationDate:
+        postHireInfo?.data?.graduationDate || postHireInfo?.data?.unsuccessfulCohortDate || 'N/A',
+      isReturning: mapIntendToReturn(postHireInfo?.data?.continue) || 'N/A',
+    });
+  });
+
+  return arr;
+};
+
+const getParticipantCohortStatus = (entries) => {
+  const arr = [];
+
+  entries.forEach((entry) => {
+    const item = {
+      participantId: entry.participant_id,
+      firstName: entry.participantJoin?.[0]?.body?.firstName,
+      lastName: entry.participantJoin?.[0]?.body?.lastName,
+      psi: '',
+      cohort: '',
+      startDate: '',
+      endDate: '',
+      graduation: '',
+      isReturning: '',
+      graduationDate: '',
+    };
+
+    const cohortPsiData = mapCohortPsiStatusJoin(
+      entry.cohortJoin,
+      entry.psiJoin,
+      entry.postHireJoin,
+      entry.participant_id
+    );
+
+    cohortPsiData.forEach((cohortPsi) => {
+      item.psi = cohortPsi.psi;
+      item.cohort = cohortPsi.cohort;
+      item.startDate = cohortPsi.startDate;
+      item.endDate = cohortPsi.endDate;
+      item.graduation = cohortPsi.graduation;
+      item.isReturning = cohortPsi.isReturning;
+      item.graduationDate = cohortPsi.graduationDate;
+      arr.push(item);
+    });
+  });
+
+  return arr;
+};
+
 const getReport = async () => {
   const total = await dbClient.db[collections.PARTICIPANTS].countDoc({});
   const qualified = await dbClient.db[collections.PARTICIPANTS].countDoc({ interested: 'yes' });
@@ -325,6 +409,80 @@ const getRosParticipantsReport = async () => {
   }));
 };
 
+const getPSIPaticipantsReport = async (region) => {
+  const searchOptions = {
+    status: ['hired'],
+  };
+
+  if (region !== DEFAULT_REGION_NAME) {
+    searchOptions['employerSiteJoin.body.healthAuthority'] = region;
+  }
+
+  const participantEntries = await dbClient.db[collections.PARTICIPANTS_STATUS]
+    .join({
+      participantJoin: {
+        type: 'INNER',
+        relation: collections.PARTICIPANTS,
+        on: {
+          id: 'participant_id',
+        },
+      },
+      employerSiteJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.EMPLOYER_SITES,
+        on: {
+          'body.siteId': 'data.site',
+        },
+      },
+      postHireJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANT_POST_HIRE_STATUS,
+        on: {
+          participant_id: 'participant_id',
+        },
+      },
+      cohortParticipantsJoin: {
+        type: 'INNER',
+        relation: collections.COHORT_PARTICIPANTS,
+        on: {
+          participant_id: 'participant_id',
+        },
+      },
+      cohortJoin: {
+        type: 'INNER',
+        relation: collections.COHORTS,
+        on: {
+          id: 'cohortParticipantsJoin.cohort_id',
+        },
+      },
+      psiJoin: {
+        type: 'INNER',
+        relation: collections.POST_SECONDARY_INSTITUTIONS,
+        on: {
+          id: 'cohortJoin.psi_id',
+        },
+      },
+    })
+    .find(searchOptions, {
+      order: [
+        {
+          field: `${collections.PARTICIPANTS}.id`,
+          direction: 'DESC',
+        },
+      ],
+    });
+
+  return getParticipantCohortStatus(participantEntries);
+};
+
+/**
+ * Validation layer to see if the user has access to requested health region
+ * @param user data of a user who accesses the endpoints
+ * @param {string} regionId health region
+ * @return {boolean} true if the user has access
+ */
+const checkUserRegion = (user, regionId) => user && user.regions?.includes(regionId);
+
 module.exports = {
   getReport,
   getParticipantsReport,
@@ -332,5 +490,7 @@ module.exports = {
   getRejectedParticipantsReport,
   getNoOfferParticipantsReport,
   getRosParticipantsReport,
+  getPSIPaticipantsReport,
+  checkUserRegion,
   DEFAULT_REGION_NAME,
 };

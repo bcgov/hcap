@@ -1,9 +1,17 @@
 import React, { useState, useEffect, useMemo, lazy } from 'react';
-import { Box, Typography, Grid } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import { saveAs } from 'file-saver';
 
 import { Page, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { NewPSIForm, CohortForm } from '../../components/modal-forms';
-import { ToastStatus, API_URL, NewCohortSchema } from '../../constants';
+import {
+  ToastStatus,
+  API_URL,
+  NewCohortSchema,
+  DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
+  DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+} from '../../constants';
 import store from 'store';
 import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
@@ -20,6 +28,9 @@ export default () => {
 
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
+  // TODO: add in a dropdown once we have multiple download options
+  // const [isDownloadMenuOpen, setDownloadMenuOpen] = useState(false);
+  const [isLoadingPSIParticipantsReport, setLoadingPSIParticipantsReport] = useState(false);
 
   // Functions
   const defaultOnClose = () => {
@@ -74,6 +85,33 @@ export default () => {
         message: response.error || response.statusText || 'Server error',
       });
     }
+  };
+
+  const handleDownloadPSIParticipantsReport = async () => {
+    setLoadingPSIParticipantsReport(true);
+
+    const response = await fetch(`${API_URL}/api/v1/psi-report/csv/participants`, {
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      saveAs(blob, `participants-attending-psi-${new Date().toJSON()}.csv`);
+      openToast({
+        status: ToastStatus.Success,
+        message: response.message || DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
+      });
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+      });
+    }
+
+    setLoadingPSIParticipantsReport(false);
   };
 
   // Hooks
@@ -170,24 +208,63 @@ export default () => {
             />
           )}
         </Dialog>
-        <Box pt={4} pb={4} pl={2} pr={2} width={1}>
+        <Box width='100%' pt={4} px={2}>
           <Typography variant='subtitle1' align='center' gutterBottom>
-            Manage Post-Secondary Institutes
+            Manage Post Secondary Institutes
           </Typography>
-          <CheckPermissions
-            roles={roles}
-            permittedRoles={['ministry_of_health', 'health_authority']}
-          >
-            <Grid container item xs={6} md={3} style={{ marginLeft: 'auto', marginRight: 20 }}>
-              <Button
-                onClick={async () => {
-                  setActiveModalForm('new-psi');
-                }}
-                size='large'
-                text='+ Add Post-Secondary Institute'
-              />
-            </Grid>
-          </CheckPermissions>
+          <Box display='flex' flexDirection='column'>
+            <CheckPermissions
+              roles={roles}
+              permittedRoles={['ministry_of_health', 'health_authority']}
+            >
+              <Box alignSelf='flex-end' py={1}>
+                <Button
+                  onClick={() => {
+                    setActiveModalForm('new-psi');
+                  }}
+                  startIcon={<AddCircleOutlineIcon />}
+                  text='Add Post Secondary Institution'
+                />
+              </Box>
+            </CheckPermissions>
+
+            <CheckPermissions
+              roles={roles}
+              permittedRoles={['ministry_of_health', 'health_authority']}
+            >
+              <Box alignSelf='flex-end' py={1}>
+                {/** TODO: add in a dropdown once we have multiple download options
+                  <ClickAwayListener onClickAway={() => setDownloadMenuOpen(false)}> */}
+                <Button
+                  /** TODO: add in a dropdown once we have multiple download options
+                    onClick={() => setDownloadMenuOpen(!isDownloadMenuOpen)}
+                    endIcon={<ExpandMoreIcon />}
+                    text='Download CSV' 
+                  */
+                  text='Download participants attending PSI Report'
+                  onClick={handleDownloadPSIParticipantsReport}
+                  variant='outlined'
+                  loading={isLoadingPSIParticipantsReport}
+                />
+
+                {/** TODO: add in a dropdown once we have multiple download options
+                  <Grow in={isDownloadMenuOpen}>
+                    <Paper>
+                      <MenuList>
+                        <MenuItem onClick={}>
+                          Download PSI and Cohort Information
+                        </MenuItem>
+
+                        <MenuItem onClick={}>
+                          Download Participants attending PSI
+                        </MenuItem>
+                      </MenuList>
+                    </Paper>
+                  </Grow>
+                */}
+              </Box>
+            </CheckPermissions>
+          </Box>
         </Box>
         <PSITable PSIs={PSIs} handleAddCohortClick={handleAddCohortClick} />
       </CheckPermissions>

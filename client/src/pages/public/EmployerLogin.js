@@ -49,7 +49,7 @@ export default () => {
             display='flex'
             flexDirection='row'
             p={2}
-            mt={1}
+            mt={3}
             className={classes.blueBox}
           >
             <Box p={1} mt={1} mr={1}>

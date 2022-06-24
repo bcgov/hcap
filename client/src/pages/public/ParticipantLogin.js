@@ -3,40 +3,11 @@ import Typography from '@material-ui/core/Typography';
 import { Page, Button } from '../../components/generic';
 import { useKeycloak } from '@react-keycloak/web';
 import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
 import { Routes } from '../../constants';
 import { useHistory } from 'react-router-dom';
+import { loginPageStyle } from '../../utils';
 
-const useStyles = makeStyles((theme) => ({
-  blueText: {
-    color: theme.palette.primary.light,
-  },
-  blueBox: {
-    backgroundColor: '#EDF6FF',
-    maxWidth: 554,
-  },
-  pageContainer: {
-    [theme.breakpoints.down('md')]: {
-      flexDirection: 'column',
-    },
-    [theme.breakpoints.up('md')]: {
-      flexDirection: 'row',
-    },
-  },
-  rightContainer: {
-    padding: '10%',
-    [theme.breakpoints.up('md')]: {
-      width: '50%',
-    },
-    backgroundColor: '#FFFFFF',
-  },
-  leftContainer: {
-    padding: '10%',
-    [theme.breakpoints.up('md')]: {
-      width: '50%',
-    },
-  },
-}));
+const useStyles = loginPageStyle();
 
 export default () => {
   const classes = useStyles();

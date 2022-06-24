@@ -44,14 +44,25 @@ export default () => {
             <Typography variant='subtitle2'>Learn more about the program</Typography>
           </Link>
 
-          <Box p={2} mt={1} className={classes.blueBox}>
-            <Typography className={classes.blueText}>
+          <Box
+            container
+            display='flex'
+            flexDirection='row'
+            p={2}
+            mt={1}
+            className={classes.blueBox}
+          >
+            <Box p={1}>
               <InfoIcon className={classes.info} color='inherit' fontSize='small' />
-              If you have any questions, please contact the Health Career Access Program at:
-            </Typography>
-            <Typography className={classes.blueText}>
-              <b>HCAPInfoQuery@gov.bc.ca</b>
-            </Typography>
+            </Box>
+            <Box>
+              <Typography className={classes.blueText}>
+                If you have any questions, please contact the Health Career Access Program at:
+              </Typography>
+              <Typography className={classes.blueText}>
+                <b>HCAPInfoQuery@gov.bc.ca</b>
+              </Typography>
+            </Box>
           </Box>
         </Box>
         <Box className={classes.rightContainer}>

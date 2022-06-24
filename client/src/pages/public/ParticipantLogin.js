@@ -5,9 +5,9 @@ import { useKeycloak } from '@react-keycloak/web';
 import Box from '@material-ui/core/Box';
 import { Routes } from '../../constants';
 import { useHistory } from 'react-router-dom';
-import { loginPageStyle } from '../../utils';
+import { participantLoginPageStyle } from '../../utils';
 
-const useStyles = loginPageStyle();
+const useStyles = participantLoginPageStyle();
 
 export default () => {
   const classes = useStyles();

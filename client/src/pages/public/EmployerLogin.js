@@ -5,9 +5,13 @@ import Box from '@material-ui/core/Box';
 import { Routes } from '../../constants';
 import { useHistory } from 'react-router-dom';
 import InfoIcon from '@material-ui/icons/Info';
-import { loginPageStyle } from '../../utils';
+import Link from '@material-ui/core/Link';
+import { employerLoginPageStyle } from '../../utils';
 
-const useStyles = loginPageStyle({ withRightContainerBackground: true, addInfoStyle: true });
+const useStyles = employerLoginPageStyle({ withRightContainerBackground: true });
+
+const HCAP_LINK =
+  'https://www2.gov.bc.ca/gov/content/employment-business/job-seekers-employees/find-a-job/health-care';
 
 export default () => {
   const classes = useStyles();
@@ -35,6 +39,10 @@ export default () => {
             HCAP has many benefits for employers who will have the opportunity to access new
             provincially funded staffing and training resource.
           </Typography>
+          <br />
+          <Link href={HCAP_LINK}>
+            <Typography variant='subtitle2'>Learn more about the program</Typography>
+          </Link>
 
           <Box p={2} mt={1} className={classes.blueBox}>
             <Typography className={classes.blueText}>
@@ -68,6 +76,21 @@ export default () => {
               style={{ 'text-transform': 'none' }}
               text={'Login'}
             />
+          </Box>
+          <Box container display='flex' className={classes.bottomBox}>
+            <Box p={1}>
+              <InfoIcon className={classes.info} />
+            </Box>
+            <Box pt={2}>
+              <Typography>
+                If you are participant{' '}
+                <Link href='#' onClick={redirectToLogin}>
+                  {' '}
+                  click here
+                </Link>{' '}
+                to login
+              </Typography>
+            </Box>
           </Box>
         </Box>
       </Box>

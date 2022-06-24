@@ -43,8 +43,6 @@ export const employerLoginPageStyle = (option = {}) =>
   makeStyles((theme) => ({
     ...loginPageBaseStyleConfig(theme, option),
     info: {
-      marginRight: '8px',
-      marginTop: '5px',
       color: theme.palette.primary.light,
     },
     bottomBox: {

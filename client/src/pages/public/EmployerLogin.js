@@ -52,8 +52,8 @@ export default () => {
             mt={1}
             className={classes.blueBox}
           >
-            <Box p={1}>
-              <InfoIcon className={classes.info} color='inherit' fontSize='small' />
+            <Box p={1} mt={1} mr={1}>
+              <InfoIcon className={classes.info} />
             </Box>
             <Box>
               <Typography className={classes.blueText}>
@@ -89,7 +89,7 @@ export default () => {
             />
           </Box>
           <Box container display='flex' className={classes.bottomBox}>
-            <Box p={1}>
+            <Box p={1} mt={1}>
               <InfoIcon className={classes.info} />
             </Box>
             <Box pt={2}>

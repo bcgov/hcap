@@ -1,107 +1,135 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import { Page, Button } from '../../components/generic';
-import Box from '@material-ui/core/Box';
-import { Routes } from '../../constants';
 import { useHistory } from 'react-router-dom';
-import InfoIcon from '@material-ui/icons/Info';
-import Link from '@material-ui/core/Link';
-import { employerLoginPageStyle } from '../../utils';
 
-const useStyles = employerLoginPageStyle({ withRightContainerBackground: true });
+import Alert from '@material-ui/lab/Alert';
+import { Button as MuiButton, Box, Typography, Link } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
-const HCAP_LINK =
-  'https://www2.gov.bc.ca/gov/content/employment-business/job-seekers-employees/find-a-job/health-care';
+import { Page, Button } from '../../components/generic';
+import { Routes, HCAP_LINK } from '../../constants';
+import backgroundImage from '../../assets/images/employer_login_bg.png';
+
+const useStyles = makeStyles((theme) => ({
+  blueText: {
+    color: theme.palette.primary.light,
+  },
+  titleText: {
+    fontSize: '40px',
+    lineHeight: '56px',
+    fontWeight: 700,
+  },
+  mainText: {
+    fontSize: '17px',
+    lineHeight: '24px',
+    fontWeight: 400,
+  },
+  loginText: {
+    fontSize: '20px',
+    lineHeight: '38px',
+    fontWeight: 400,
+  },
+  buttonLink: {
+    color: theme.palette.primary.lighter,
+    textDecoration: 'underline',
+    fontSize: '17px',
+    fontWeight: 700,
+  },
+  employerLoginBox: {
+    backgroundColor: 'rgba(241, 241, 241, 0.8)',
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backdropFilter: 'blur(10px)',
+  },
+}));
 
 export default () => {
   const classes = useStyles();
-
   const history = useHistory();
 
   const redirectToLogin = () => history.push(Routes.Login);
 
   return (
-    <Page isAutoHeight={false}>
-      <Box container display='flex' minHeight='100%' className={classes.pageContainer}>
-        <Box className={classes.leftContainer}>
+    <Page>
+      <Box display='flex'>
+        <Box p={5} maxWidth='60%'>
           <Typography variant='subtitle1' className={classes.blueText}>
             Health Care Access Program
           </Typography>
-          <Box mb={3}>
-            <Typography variant='h2'>Welcome to Employer Portal</Typography>
-          </Box>
-          <Typography>
-            The Health Career Access Program (HCAP) is a paid work and training initiative for
-            individuals seeking an entry point to employment in health. New hires will start as a
-            Health Care Support Worker providing non-direct care at a long-term care or assisted
-            living site and receive paid training to become a Health Care Assistant upon successful
-            completion of the program. <br />
-            HCAP has many benefits for employers who will have the opportunity to access new
-            provincially funded staffing and training resource.
-          </Typography>
-          <br />
-          <Link href={HCAP_LINK}>
-            <Typography variant='subtitle2'>Learn more about the program</Typography>
-          </Link>
 
-          <Box
-            container
-            display='flex'
-            flexDirection='row'
-            p={2}
-            mt={3}
-            className={classes.blueBox}
-          >
-            <Box p={1} mt={1} mr={1}>
-              <InfoIcon className={classes.info} />
-            </Box>
-            <Box>
-              <Typography className={classes.blueText}>
-                If you have any questions, please contact the Health Career Access Program at:
-              </Typography>
-              <Typography className={classes.blueText}>
-                <b>HCAPInfoQuery@gov.bc.ca</b>
-              </Typography>
-            </Box>
+          <Typography className={classes.titleText}>Welcome to the Employer Portal</Typography>
+
+          <Box my={2}>
+            <Typography variant='body1' className={classes.mainText}>
+              The Health Career Access Program (HCAP) is a paid work and training initiative for
+              individuals seeking an entry point to employment in health. New hires will start as a
+              Health Care Support Worker providing non-direct care at a long-term care or assisted
+              living site and receive paid training to become a Health Care Assistant upon
+              successful completion of the program.
+            </Typography>
           </Box>
+          <Box my={2}>
+            <Typography variant='body1' className={classes.mainText}>
+              HCAP has many benefits for employers who will have the opportunity to access new
+              provincially funded staffing and training resources and play a key role in building
+              capacity in the BC health sector and economy.
+            </Typography>
+          </Box>
+          <Box my={2}>
+            <Typography variant='body1' className={classes.mainText}>
+              Participating employers will be provided with funding to cover education and salary
+              costs for hire Health Care Support Workers who will provide critical non-clinical
+              support while enrolled in a new modular Health Care Assistant training program. The
+              HCAP will roll out as a partnership between candidates and employers to work through
+              onboarding, orientation, employer-based training, and the HCA employer- sponsored
+              training program.
+            </Typography>
+          </Box>
+
+          <Box my={2}>
+            <MuiButton
+              className={classes.buttonLink}
+              href={HCAP_LINK}
+              target='_blank'
+              endIcon={<ArrowForwardIcon />}
+            >
+              Learn more about the program
+            </MuiButton>
+          </Box>
+
+          <Alert severity='info' className={classes.mainText}>
+            If you have any questions, please contact the Health Career Access Program at:&nbsp;
+            <b>
+              <Link href='mailto:HCAPInfoQuery@gov.bc.ca'>HCAPInfoQuery@gov.bc.ca</Link>
+            </b>
+          </Alert>
         </Box>
-        <Box className={classes.rightContainer}>
-          <Box mb={3}>
-            <Typography variant='h2'>
-              <b>Login</b>
+
+        <Box p={5} className={classes.employerLoginBox}>
+          <Typography variant='h2'>Login</Typography>
+          <Box my={2}>
+            <Typography variant='body1' className={classes.loginText}>
+              Log in with your IDIR or BCeID to the Health Care Access Program Employer Portal.
             </Typography>
           </Box>
-          <Box mb={3}>
-            <Typography variant='body1'>
-              You can use your IDIR or Business / Basic BCeID account to login into Health Care
-              Access Program Employer Portal.
-            </Typography>
-          </Box>
-          <Box mb={2}>
+          <Box>
             <Button
-              className={classes.button}
-              onClick={redirectToLogin}
               fullWidth={false}
               variant='contained'
               color='primary'
-              style={{ 'text-transform': 'none' }}
-              text={'Login'}
+              text='Login'
+              onClick={redirectToLogin}
             />
           </Box>
-          <Box container display='flex' className={classes.bottomBox}>
-            <Box p={1} mt={1}>
-              <InfoIcon className={classes.info} />
-            </Box>
-            <Box pt={2}>
-              <Typography>
-                If you are participant{' '}
-                <Link href='#' onClick={redirectToLogin}>
-                  {' '}
-                  click here
-                </Link>{' '}
-                to login
-              </Typography>
-            </Box>
+
+          <Box my={2}>
+            <Alert severity='info' className={classes.mainText}>
+              If you're a participant,&nbsp;
+              <b>
+                <Link href='mailto:HCAPInfoQuery@gov.bc.ca'>click here</Link>
+              </b>
+              &nbsp;to login to the participant portal
+            </Alert>
           </Box>
         </Box>
       </Box>

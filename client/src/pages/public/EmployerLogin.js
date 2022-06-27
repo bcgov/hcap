@@ -122,7 +122,7 @@ export default () => {
             />
           </Box>
 
-          <Box my={2}>
+          <Box my={2} mt={'50%'}>
             <Alert severity='info' className={classes.mainText}>
               If you're a participant,&nbsp;
               <b>

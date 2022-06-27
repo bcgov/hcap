@@ -6,4 +6,3 @@ export * from './permissions';
 export * from './getDialogTitle';
 export * from './prettifyStatus';
 export * from './gen-util';
-export * from './ui-style';

@@ -6,6 +6,7 @@ const { EmployerFormSchema } = require('../validation');
 const { getEmployers, getEmployerByID } = require('../services/employers');
 const { validate } = require('../validation');
 const { dbClient, collections } = require('../db');
+const { DISABLE_EMPLOYER_FORM } = require('../services/feature-flags');
 // Main router
 const router = express.Router();
 
@@ -13,6 +14,9 @@ const router = express.Router();
 router.post(
   `/`,
   asyncMiddleware(async (req, res) => {
+    if (DISABLE_EMPLOYER_FORM) {
+      return res.status(403).send('Employer form is disabled');
+    }
     await validate(EmployerFormSchema, req.body);
     const result = await dbClient.db.saveDoc(collections.EMPLOYER_FORMS, req.body);
     logger.info(`Form ${result.id} successfully created.`);

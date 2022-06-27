@@ -19,7 +19,7 @@ const { setParticipantStatus } = require('../services/participant-status');
 
 const { startDB, closeDB, cleanDB } = require('./util/db');
 
-describe('Server V1 Form Endpoints', () => {
+describe.skip('Server V1 Form Endpoints', () => {
   let server;
 
   beforeAll(async () => {

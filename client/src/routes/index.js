@@ -21,7 +21,6 @@ const ParticipantUpload = lazy(() => import('../pages/private/ParticipantUpload'
 const ParticipantUploadResults = lazy(() => import('../pages/private/ParticipantUploadResults'));
 const ReportingView = lazy(() => import('../pages/private/ReportingView'));
 const ParticipantForm = lazy(() => import('../pages/public/ParticipantForm'));
-const EmployerForm = lazy(() => import('../pages/public/EmployerForm'));
 const Login = lazy(() => import('../pages/public/Login'));
 const ParticipantConfirmation = lazy(() => import('../pages/public/ParticipantConfirmation'));
 const EmployerConfirmation = lazy(() => import('../pages/public/EmployerConfirmation'));
@@ -37,6 +36,8 @@ const ParticipantFullWithdraw = lazy(() => import('../pages/private/ParticipantF
 const ParticipantActionSuccess = lazy(() => import('../pages/private/ParticipantActionSuccess'));
 
 const ParticipantDetails = lazy(() => import('../pages/private/ParticipantDetailsView'));
+
+const EmployerLogin = lazy(() => import('../pages/public/EmployerLogin'));
 
 const PrivateRoute = ({ component: Component, path, ...rest }) => {
   const [keycloak] = useKeycloak();
@@ -195,7 +196,7 @@ export default () => {
               path={Routes.ParticipantDetailsTab}
               component={ParticipantDetails}
             />
-            <Route exact path={Routes.Base} component={EmployerForm} />
+            <Route exact path={Routes.Base} component={EmployerLogin} />
             <Redirect to={Routes.Base} />
           </RootUrlSwitch>
         </Suspense>

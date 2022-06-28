@@ -2,11 +2,11 @@ import React from 'react';
 import classNames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   divider: {
     height: '3px',
-    backgroundColor: '#E2A014',
-    color: '#E2A014',
+    backgroundColor: theme.palette.secondary.light,
+    color: theme.palette.secondary.light,
     borderStyle: 'solid',
   },
   light: {

@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
 import { Page, Button } from '../../components/generic';
+import LoginFooter from './LoginFooter';
 import { Routes, HCAP_LINK, PARTICIPANT_LINK } from '../../constants';
 import backgroundImage from '../../assets/images/emp_login_bg.png';
 
@@ -59,7 +60,7 @@ export default () => {
   return (
     <Page>
       <Box display='flex'>
-        <Box px={10} pt={12} pb={5} maxWidth='60%'>
+        <Box px={10} pt={12} pb={7} maxWidth='60%'>
           <Typography variant='subtitle1' className={classes.blueText}>
             Health Care Access Program
           </Typography>
@@ -131,7 +132,7 @@ export default () => {
             </Box>
           </Box>
 
-          <Box mt='30%'>
+          <Box mt='35%'>
             <Alert severity='info' className={classes.employerAlert}>
               If you're a participant,&nbsp;
               <b>
@@ -144,6 +145,7 @@ export default () => {
           </Box>
         </Box>
       </Box>
+      <LoginFooter />
     </Page>
   );
 };

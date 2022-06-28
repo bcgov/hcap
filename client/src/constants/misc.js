@@ -7,4 +7,4 @@ export const HCAP_LINK =
   'https://www2.gov.bc.ca/gov/content/employment-business/job-seekers-employees/find-a-job/health-care';
 
 // TODO: confirm the link
-export const PEOI_LINK = '';
+export const PEOI_LINK = 'https://hcapparticipants.gov.bc.ca/';

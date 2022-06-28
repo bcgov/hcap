@@ -6,8 +6,11 @@ const {
   getPSI,
   getPSIs,
   makePSI,
+  updatePSI,
   getAllPSIWithCohorts,
 } = require('../services/post-secondary-institutes');
+
+const { CreatePSISchema, validate } = require('../validators');
 
 const cohortRoute = require('./psi-cohorts');
 
@@ -97,7 +100,7 @@ router.post(
     if (email && user) {
       const response = await makePSI(req.body);
       if (response.error) {
-        res.status(400).send(response);
+        res.status(response.status || 400).send(response);
       }
       logger.info({
         action: 'post-secondary-institutes_post',
@@ -105,6 +108,34 @@ router.post(
         id: response !== undefined ? response.id : '',
       });
       res.status(200).json(response);
+    } else {
+      res.status(401).send('Unauthorized user');
+    }
+  })
+);
+
+router.put(
+  '/:id',
+  keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority'),
+  asyncMiddleware(async (req, res) => {
+    const { email, user_id: userId, sub: localUserId } = req.user;
+    const user = userId || localUserId;
+    if (email && user) {
+      // Get PSI ID
+      const { id } = req.params;
+      // Validate request
+      await validate(req.body, CreatePSISchema);
+
+      // Save
+      const response = await updatePSI(id, req.body);
+      if (response.status === 200) {
+        logger.info({
+          action: 'post-secondary-institutes_put',
+          performed_by: user,
+          id,
+        });
+      }
+      res.status(response.status).json(response);
     } else {
       res.status(401).send('Unauthorized user');
     }

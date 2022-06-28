@@ -1,15 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box } from '@material-ui/core';
 import { RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { CreatePSISchema } from '../../constants';
+import { createPSI } from '../../services';
 
-export const NewPSIForm = ({ initialValues, onSubmit, onClose }) => {
+const PSI_INITIAL_VALUES = {
+  instituteName: '',
+  streetAddress: '',
+  city: '',
+  postalCode: '',
+  healthAuthority: '',
+};
+
+export const PSIForm = ({
+  initialValues = PSI_INITIAL_VALUES,
+  onSubmit,
+  onClose,
+  isEditing = false,
+}) => {
+  // Loading State
+  const [isLoading, setIsLoading] = useState(false);
+  // Helper
+  const handlePSICreate = async (values) => {
+    setIsLoading(true);
+    const result = await createPSI({ psi: values });
+    setIsLoading(false);
+    onSubmit(result);
+  };
   return (
-    <Formik initialValues={initialValues} validationSchema={CreatePSISchema} onSubmit={onSubmit}>
-      {({ submitForm, values }) => (
+    <Formik
+      initialValues={initialValues}
+      validationSchema={CreatePSISchema}
+      onSubmit={(values) => handlePSICreate(values)}
+    >
+      {({ submitForm }) => (
         <FormikForm>
           <Box>
             <Field name='instituteName' component={RenderTextField} label='* Institute Name' />
@@ -35,7 +62,14 @@ export const NewPSIForm = ({ initialValues, onSubmit, onClose }) => {
                 <Button onClick={onClose} color='default' text='Cancel' />
               </Grid>
               <Grid item>
-                <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />
+                <Button
+                  disabled={isLoading}
+                  loading={isLoading}
+                  onClick={submitForm}
+                  variant='contained'
+                  color='primary'
+                  text='Submit'
+                />
               </Grid>
             </Grid>
           </Box>

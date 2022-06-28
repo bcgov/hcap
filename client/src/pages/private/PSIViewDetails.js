@@ -4,9 +4,9 @@ import Button from '@material-ui/core/Button';
 import { Box, Grid, Link, Typography, makeStyles } from '@material-ui/core';
 import { scrollUp } from '../../utils';
 import routes from '../../constants/routes';
-import { EditPSIForm, CohortForm } from '../../components/modal-forms';
+import { PSIForm, CohortForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
-import { ToastStatus, EditPSISchema, NewCohortSchema } from '../../constants';
+import { ToastStatus, NewCohortSchema } from '../../constants';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -150,9 +150,8 @@ export default ({ match }) => {
         onClose={closeModal}
       >
         {activeModalForm === 'edit-psi' && (
-          <EditPSIForm
+          <PSIForm
             initialValues={psi}
-            validationSchema={EditPSISchema}
             onSubmit={(values) => {
               handlePSIEdit({
                 ...values,
@@ -216,6 +215,14 @@ export default ({ match }) => {
                       open={Boolean(anchorEl)}
                       onClose={handleClose}
                     >
+                      <MenuItem
+                        onClick={() => {
+                          setActiveModalForm('edit-psi');
+                          handleClose();
+                        }}
+                      >
+                        Edit
+                      </MenuItem>
                       <MenuItem
                         onClick={() => {
                           setActiveModalForm('show-cohort');

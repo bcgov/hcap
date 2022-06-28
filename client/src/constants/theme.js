@@ -25,6 +25,10 @@ const latoBold = {
 export default createMuiTheme({
   // Colors
   palette: {
+    default: {
+      white: '#FFFFFF',
+      black: '#000000',
+    },
     primary: {
       lighter: '#1A5A96',
       light: '#003366',

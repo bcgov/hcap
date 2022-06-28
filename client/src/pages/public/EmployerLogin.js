@@ -7,8 +7,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
 import { Page, Button } from '../../components/generic';
-import { Routes, HCAP_LINK } from '../../constants';
-import backgroundImage from '../../assets/images/employer_login_bg.png';
+import { Routes, HCAP_LINK, PARTICIPANT_LINK } from '../../constants';
+import backgroundImage from '../../assets/images/emp_login_bg.png';
 
 const useStyles = makeStyles((theme) => ({
   blueText: {
@@ -36,10 +36,17 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 700,
   },
   employerLoginBox: {
-    backgroundColor: 'rgba(241, 241, 241, 0.8)',
     backgroundImage: `url(${backgroundImage})`,
     backgroundSize: 'cover',
-    backdropFilter: 'blur(10px)',
+    backgroundPosition: '55% 50%',
+  },
+  employerAlert: {
+    fontSize: '17px',
+    lineHeight: '24px',
+    fontWeight: 400,
+    backgroundColor: theme.palette.default.white,
+    boxShadow: '0px 4px 7px rgba(0, 0, 0, 0.15)',
+    borderRadius: '4px',
   },
 }));
 
@@ -52,7 +59,7 @@ export default () => {
   return (
     <Page>
       <Box display='flex'>
-        <Box p={5} maxWidth='60%'>
+        <Box px={10} pt={12} pb={5} maxWidth='60%'>
           <Typography variant='subtitle1' className={classes.blueText}>
             Health Care Access Program
           </Typography>
@@ -105,28 +112,32 @@ export default () => {
           </Alert>
         </Box>
 
-        <Box p={5} className={classes.employerLoginBox}>
-          <Typography variant='h2'>Login</Typography>
-          <Box my={2}>
-            <Typography variant='body1' className={classes.loginText}>
-              Log in with your IDIR or BCeID to the Health Care Access Program Employer Portal.
-            </Typography>
-          </Box>
-          <Box>
-            <Button
-              fullWidth={false}
-              variant='contained'
-              color='primary'
-              text='Login'
-              onClick={redirectToLogin}
-            />
+        <Box px={10} pt={12} pb={5} className={classes.employerLoginBox}>
+          <Box mt={'30%'}>
+            <Typography variant='h2'>Login</Typography>
+            <Box my={2}>
+              <Typography variant='body1' className={classes.loginText}>
+                Log in with your IDIR or BCeID to the Health Care Access Program Employer Portal.
+              </Typography>
+            </Box>
+            <Box>
+              <Button
+                fullWidth={false}
+                variant='contained'
+                color='primary'
+                text='Login'
+                onClick={redirectToLogin}
+              />
+            </Box>
           </Box>
 
-          <Box my={2} mt={'50%'}>
-            <Alert severity='info' className={classes.mainText}>
+          <Box mt='30%'>
+            <Alert severity='info' className={classes.employerAlert}>
               If you're a participant,&nbsp;
               <b>
-                <Link href='mailto:HCAPInfoQuery@gov.bc.ca'>click here</Link>
+                <Link href={PARTICIPANT_LINK} target='_blank'>
+                  click here
+                </Link>
               </b>
               &nbsp;to login to the participant portal
             </Alert>

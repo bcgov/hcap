@@ -8,7 +8,7 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
 import { Page, Button } from '../../components/generic';
 import LoginFooter from './LoginFooter';
-import { Routes, HCAP_LINK, PARTICIPANT_LINK } from '../../constants';
+import { Routes, HCAP_LINK, PEOI_LINK } from '../../constants';
 import backgroundImage from '../../assets/images/emp_login_bg.png';
 
 const useStyles = makeStyles((theme) => ({
@@ -136,7 +136,7 @@ export default () => {
             <Alert severity='info' className={classes.employerAlert}>
               If you're a participant,&nbsp;
               <b>
-                <Link href={PARTICIPANT_LINK} target='_blank'>
+                <Link href={PEOI_LINK} target='_blank'>
                   click here
                 </Link>
               </b>

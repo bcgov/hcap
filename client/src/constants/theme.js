@@ -25,12 +25,17 @@ const latoBold = {
 export default createMuiTheme({
   // Colors
   palette: {
+    default: {
+      white: '#FFFFFF',
+      black: '#000000',
+    },
     primary: {
       lighter: '#1A5A96',
       light: '#003366',
       main: '#002C71',
     },
     secondary: {
+      light: '#E2A014',
       main: '#FDB913',
     },
     highlight: {
@@ -38,9 +43,9 @@ export default createMuiTheme({
       secondary: '#1890FF',
     },
     warning: {
-      main: '#6c4a00',
-      light: '#f9f1c6',
-      border: '#faebcc',
+      main: '#6C4A00',
+      light: '#F9F1C6',
+      border: '#FAEBCC',
     },
     background: {
       default: '#FFFFFF',

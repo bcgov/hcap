@@ -59,8 +59,8 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1.5),
     marginRight: theme.spacing(1.5),
     height: '48px',
-    backgroundColor: '#E2A014',
-    color: '#E2A014',
+    backgroundColor: theme.palette.secondary.light,
+    color: theme.palette.secondary.light,
     borderStyle: 'solid',
   },
   button: {

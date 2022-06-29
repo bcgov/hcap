@@ -4,7 +4,7 @@ describe('Tests the PSI View', () => {
     cy.kcLogin('test-moh');
     cy.visit('/psi-view');
     cy.contains('Add Post Secondary Institution').click({ force: true });
-    cy.wait(1000);
+    cy.wait(2000);
     cy.get('input#instituteName').type('Testitute', { force: true });
     cy.get('input#streetAddress').type('314 Pi Ct.');
     cy.get('input#city').type('Port Renfrew');
@@ -14,7 +14,7 @@ describe('Tests the PSI View', () => {
     cy.get('span.MuiButton-label').contains('Submit').click({ force: true });
 
     cy.contains('Add Post Secondary Institution').click({ force: true });
-    cy.wait(1000);
+    cy.wait(2000);
     cy.get('input#instituteName').type('Pythagorean Academy', { force: true });
     cy.get('input#streetAddress').type('144 Numeral Ave.');
     cy.get('input#city').type('Sooke');

@@ -14,7 +14,8 @@ describe('Tests the PSI View', () => {
     cy.get('span.MuiButton-label').contains('Submit').click({ force: true });
 
     cy.contains('Add Post Secondary Institution').click({ force: true });
-    cy.get('input#instituteName').type('Pythagorean Academy');
+    cy.wait(1000);
+    cy.get('input#instituteName').type('Pythagorean Academy', { force: true });
     cy.get('input#streetAddress').type('144 Numeral Ave.');
     cy.get('input#city').type('Sooke');
     cy.get('input#postalCode').clear().type('V3V 5V4');

@@ -2,13 +2,19 @@ import React, { useMemo } from 'react';
 import _orderBy from 'lodash/orderBy';
 import { AuthContext } from '../../providers';
 
+import Alert from '@material-ui/lab/Alert';
 import { Box, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { FastField, Formik, Form as FormikForm } from 'formik';
 
 import { RenderAutocomplete, RenderSelectField, RenderDateField } from '../fields';
 import { Button } from '../generic';
-import { rosPositionType, rosEmploymentType, healthAuthorities } from '../../constants';
+import {
+  rosPositionType,
+  rosEmploymentType,
+  healthAuthorities,
+  ROS_SITE_INFO_MESSAGE,
+} from '../../constants';
 import { addEllipsisMask, getTodayDate } from '../../utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -84,6 +90,9 @@ export const ChangeSiteForm = ({ initialValues, validationSchema, onSubmit, onCl
                 label: addEllipsisMask(item.siteName, MAX_LABEL_LENGTH),
               }))}
             />
+            <Box mt={1}>
+              <Alert severity='info'>{ROS_SITE_INFO_MESSAGE}</Alert>
+            </Box>
           </Box>
 
           <Box my={2}>
@@ -92,6 +101,7 @@ export const ChangeSiteForm = ({ initialValues, validationSchema, onSubmit, onCl
               component={RenderSelectField}
               label='Health Authority'
               boldLabel
+              disabled
               options={healthAuthorities}
             />
           </Box>

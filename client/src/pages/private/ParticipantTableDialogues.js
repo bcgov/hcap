@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import {
   InterviewingFormSchema,
+  ChangeRosSiteSchema,
   RejectedFormSchema,
   ProspectingSiteSchema,
   participantStatus,
@@ -179,8 +180,14 @@ export const ParticipantTableDialogues = ({
 
       {activeModalForm === 'change-site' && (
         <ChangeSiteForm
-          initialValues={{ prospectingSite: undefined }}
-          validationSchema={ProspectingSiteSchema}
+          initialValues={{
+            startDate: undefined,
+            positionType: '',
+            employmentType: '',
+            site: undefined,
+            healthAuthority: undefined,
+          }}
+          validationSchema={ChangeRosSiteSchema}
           onSubmit={(values) => {
             handleSingleSelectProspectingSites(values);
           }}

@@ -12,13 +12,14 @@ import {
   RenderTextField,
 } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { ReturnOfServiceSchema, rosPositionType, rosEmploymentType } from '../../constants';
+import {
+  ReturnOfServiceSchema,
+  rosPositionType,
+  rosEmploymentType,
+  ROS_SITE_INFO_MESSAGE,
+} from '../../constants';
 import { getTodayDate } from '../../utils';
 import { createReturnOfServiceStatus, getAllSites } from '../../services';
-
-// Static message
-const siteNotFoundMessage =
-  'If you cannot find the site in this list, please contact your Ministry of Health contact to add it to the portal. Please hold off on tracking Return of Service in the meantime.';
 
 // Helpers
 const rosPositionTypeOptions = Object.values(rosPositionType);
@@ -197,7 +198,7 @@ export const ReturnOfServiceForm = ({
               )}
               <>
                 {values.sameSite === false && (
-                  <MuiAlert severity='info'>{siteNotFoundMessage}</MuiAlert>
+                  <MuiAlert severity='info'>{ROS_SITE_INFO_MESSAGE}</MuiAlert>
                 )}
               </>
               <br />

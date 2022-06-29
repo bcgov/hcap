@@ -37,6 +37,19 @@ describe('Tests the PSI View', () => {
     cy.contains('No Cohorts Added').should('exist');
   });
 
+  it('Should Update PSI Details', () => {
+    cy.kcLogin('test-moh');
+    cy.visit('/admin');
+    cy.contains('Manage PSI').click();
+    cy.contains('Pythagorean Academy').click();
+    cy.get('button').contains('Manage').click();
+    cy.get('li').contains('Edit').should('be.visible').click();
+    cy.get('input#streetAddress').clear().type('146 Numeral Ave');
+    cy.get('span.MuiButton-label').contains('Submit').click({ force: true });
+    cy.wait(1000);
+    cy.get('[test-id=psi-details-view-addr]').should('have.text', '146 Numeral Ave');
+  });
+
   it('Visits a PSI details page, adds a cohort', () => {
     cy.kcLogin('test-moh');
     cy.visit('/admin');

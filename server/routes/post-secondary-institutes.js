@@ -10,7 +10,7 @@ const {
   getAllPSIWithCohorts,
 } = require('../services/post-secondary-institutes');
 
-const { CreatePSISchema, validate } = require('../validators');
+const { CreatePSISchema, validate } = require('../validation');
 
 const cohortRoute = require('./psi-cohorts');
 
@@ -107,7 +107,7 @@ router.post(
         performed_by: user,
         id: response !== undefined ? response.id : '',
       });
-      res.status(200).json(response);
+      res.status(201).json(response);
     } else {
       res.status(401).send('Unauthorized user');
     }
@@ -124,7 +124,7 @@ router.put(
       // Get PSI ID
       const { id } = req.params;
       // Validate request
-      await validate(req.body, CreatePSISchema);
+      await validate(CreatePSISchema, req.body);
 
       // Save
       const response = await updatePSI(id, req.body);
@@ -135,7 +135,7 @@ router.put(
           id,
         });
       }
-      res.status(response.status).json(response);
+      res.status(response.status).send(response.message);
     } else {
       res.status(401).send('Unauthorized user');
     }

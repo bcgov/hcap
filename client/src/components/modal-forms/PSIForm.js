@@ -5,7 +5,7 @@ import { Box } from '@material-ui/core';
 import { RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { CreatePSISchema } from '../../constants';
-import { createPSI } from '../../services';
+import { createPSI, updatePSI } from '../../services';
 
 const PSI_INITIAL_VALUES = {
   instituteName: '',
@@ -15,18 +15,26 @@ const PSI_INITIAL_VALUES = {
   healthAuthority: '',
 };
 
-export const PSIForm = ({
-  initialValues = PSI_INITIAL_VALUES,
-  onSubmit,
-  onClose,
-  isEditing = false,
-}) => {
+const HEALTH_AUTHORITIES = [
+  { value: 'Interior', label: 'Interior Health' },
+  { value: 'Fraser', label: 'Fraser Health' },
+  { value: 'Vancouver Coastal', label: 'Vancouver Coastal Health' },
+  { value: 'Vancouver Island', label: 'Vancouver Island Health' },
+  { value: 'Northern', label: 'Northern Health' },
+];
+
+export const PSIForm = ({ initialValues = PSI_INITIAL_VALUES, onSubmit, onClose, id = null }) => {
   // Loading State
   const [isLoading, setIsLoading] = useState(false);
   // Helper
-  const handlePSICreate = async (values) => {
+  const handleFormSubmit = async (values) => {
     setIsLoading(true);
-    const result = await createPSI({ psi: values });
+    let result;
+    if (id) {
+      result = await updatePSI({ id, psi: values });
+    } else {
+      result = await createPSI({ psi: values });
+    }
     setIsLoading(false);
     onSubmit(result);
   };
@@ -34,7 +42,7 @@ export const PSIForm = ({
     <Formik
       initialValues={initialValues}
       validationSchema={CreatePSISchema}
-      onSubmit={(values) => handlePSICreate(values)}
+      onSubmit={(values) => handleFormSubmit(values)}
     >
       {({ submitForm }) => (
         <FormikForm>
@@ -47,13 +55,7 @@ export const PSIForm = ({
               name='healthAuthority'
               component={RenderSelectField}
               label='* Health Authority'
-              options={[
-                { value: 'Interior', label: 'Interior Health' },
-                { value: 'Fraser', label: 'Fraser Health' },
-                { value: 'Vancouver Coastal', label: 'Vancouver Coastal Health' },
-                { value: 'Vancouver Island', label: 'Vancouver Island Health' },
-                { value: 'Northern', label: 'Northern Health' },
-              ]}
+              options={HEALTH_AUTHORITIES}
             />
           </Box>
           <Box mt={3}>

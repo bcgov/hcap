@@ -187,3 +187,22 @@ export const createPSI = async ({ psi }) => {
     return [false, `Unable to create PSI due to error: ${error}`];
   }
 };
+
+export const updatePSI = async ({ id, psi }) => {
+  const resp = await fetch(`${API_URL}/api/v1/psi/${id}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(psi),
+  });
+
+  // Decode response
+  const responseMessage = await resp.text();
+  if (resp.ok) {
+    return [true, null];
+  }
+  return [false, responseMessage];
+};

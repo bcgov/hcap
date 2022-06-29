@@ -40,6 +40,12 @@ export default ({ match }) => {
   // Style classes
   const classes = customStyle();
 
+  // Tiny internal hook
+  const usePSIDetails = () => {
+    const { id, ...rest } = psi;
+    return rest;
+  };
+
   // Memo stats
   const openCohorts = useMemo(
     () =>
@@ -67,11 +73,21 @@ export default ({ match }) => {
     setActiveModalForm(null);
   };
 
-  const handlePSIEdit = async (psi) => {
-    openToast({
-      status: ToastStatus.Error,
-      message: 'TODO: Handle PSI Edit',
-    });
+  const handlePSIEdit = async ([success, errorText]) => {
+    if (success) {
+      closeModal();
+      openToast({
+        status: ToastStatus.SUCCESS,
+        message: 'PSI updated successfully',
+      });
+      const updatedPSI = await fetchPSI({ psiId: psiID });
+      setPSI(updatedPSI);
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: errorText,
+      });
+    }
   };
 
   const handleAddCohort = async (cohort) => {
@@ -151,13 +167,12 @@ export default ({ match }) => {
       >
         {activeModalForm === 'edit-psi' && (
           <PSIForm
-            initialValues={psi}
-            onSubmit={(values) => {
-              handlePSIEdit({
-                ...values,
-              });
+            initialValues={usePSIDetails()}
+            onSubmit={(result) => {
+              handlePSIEdit(result);
             }}
             onClose={closeModal}
+            id={psiID}
           />
         )}
         {activeModalForm === 'show-cohort' && (

@@ -4,7 +4,8 @@ describe('Tests the PSI View', () => {
     cy.kcLogin('test-moh');
     cy.visit('/psi-view');
     cy.contains('Add Post Secondary Institution').click({ force: true });
-    cy.get('input#instituteName').type('Testitute');
+    cy.wait(1000);
+    cy.get('input#instituteName').type('Testitute', { force: true });
     cy.get('input#streetAddress').type('314 Pi Ct.');
     cy.get('input#city').type('Port Renfrew');
     cy.get('input#postalCode').clear().type('V2V 3V4');
@@ -13,7 +14,8 @@ describe('Tests the PSI View', () => {
     cy.get('span.MuiButton-label').contains('Submit').click({ force: true });
 
     cy.contains('Add Post Secondary Institution').click({ force: true });
-    cy.get('input#instituteName').type('Pythagorean Academy');
+    cy.wait(1000);
+    cy.get('input#instituteName').type('Pythagorean Academy', { force: true });
     cy.get('input#streetAddress').type('144 Numeral Ave.');
     cy.get('input#city').type('Sooke');
     cy.get('input#postalCode').clear().type('V3V 5V4');
@@ -35,6 +37,19 @@ describe('Tests the PSI View', () => {
     cy.get('[test-id=psi-details-view-city]').should('have.text', 'Port Renfrew');
     cy.get('[test-id=psi-details-view-postal]').should('have.text', 'V2V 3V4');
     cy.contains('No Cohorts Added').should('exist');
+  });
+
+  it('Should Update PSI Details', () => {
+    cy.kcLogin('test-moh');
+    cy.visit('/admin');
+    cy.contains('Manage PSI').click();
+    cy.contains('Pythagorean Academy').click();
+    cy.get('button').contains('Manage').click();
+    cy.get('li').contains('Edit').should('be.visible').click();
+    cy.get('input#streetAddress').clear().type('146 Numeral Ave');
+    cy.get('span.MuiButton-label').contains('Submit').click({ force: true });
+    cy.wait(1000);
+    cy.get('[test-id=psi-details-view-addr]').should('have.text', '146 Numeral Ave');
   });
 
   it('Visits a PSI details page, adds a cohort', () => {

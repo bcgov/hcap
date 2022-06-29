@@ -147,3 +147,62 @@ export const mapCohortToFormData = (cohort) =>
         cohortSize: cohort.cohort_size,
       }
     : null;
+
+/**
+ * createPSI: Creating psi object in remote db
+ * @param {*} object psi details object
+ * @returns [Boolean, string] tuple Boolean indicates success and string is error message
+ */
+export const createPSI = async ({ psi }) => {
+  try {
+    const response = await fetch(`${API_URL}/api/v1/psi`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(psi),
+    });
+
+    if (response.ok) {
+      return [true, null];
+    } else {
+      if (response.status === 409) {
+        try {
+          const errorDetails = await response.json();
+          return [
+            false,
+            errorDetails.error ||
+              errorDetails.message ||
+              'Unable to create psi due to server error',
+          ];
+        } catch {
+          return [false, 'Unable to create psi due to server error'];
+        }
+      }
+      return [false, (await response.text()) || 'Unable to create post secondary institute'];
+    }
+  } catch (error) {
+    return [false, `Unable to create PSI due to error: ${error}`];
+  }
+};
+
+export const updatePSI = async ({ id, psi }) => {
+  const resp = await fetch(`${API_URL}/api/v1/psi/${id}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(psi),
+  });
+
+  // Decode response
+  const responseMessage = await resp.text();
+  if (resp.ok) {
+    return [true, null];
+  }
+  return [false, responseMessage];
+};

@@ -8,6 +8,7 @@ const { startDB, closeDB } = require('./util/db');
 const { getKeycloakToken, superuser } = require('./util/keycloak');
 const { makePSI } = require('../services/post-secondary-institutes');
 const { makeCohort } = require('../services/cohorts');
+const { makeTestPSI } = require('./util/integrationTestData');
 
 const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
 
@@ -59,5 +60,28 @@ describe('api-e2e tests for for /psi routes', () => {
     expect(results.length).toBeGreaterThan(0);
     const item = results[0];
     expect(item.cohorts).toBeDefined();
+  });
+
+  it('should update psi', async () => {
+    const psiDbObj = await makeTestPSI(psi({ instituteName: 'Test Institute 202206290756' }));
+    const { id, ...rest } = psiDbObj;
+    const updateObj = {
+      instituteName: rest.institute_name,
+      healthAuthority: rest.health_authority,
+      streetAddress: rest.street_address,
+      postalCode: rest.postal_code,
+    };
+    const header = await getKeycloakToken(superuser);
+    const resSuccess = await request(app)
+      .put(`/api/v1/psi/${id}`)
+      .set(header)
+      .send({ ...updateObj, streetAddress: '1815 Mac St' });
+    expect(resSuccess.status).toEqual(200);
+
+    const resFail = await request(app)
+      .put(`/api/v1/psi/${id}`)
+      .set(header)
+      .send({ ...updateObj, instituteName: 'Test Institute' });
+    expect(resFail.status).toEqual(409);
   });
 });

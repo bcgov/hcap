@@ -4,9 +4,9 @@ import Button from '@material-ui/core/Button';
 import { Box, Grid, Link, Typography, makeStyles } from '@material-ui/core';
 import { scrollUp } from '../../utils';
 import routes from '../../constants/routes';
-import { EditPSIForm, CohortForm } from '../../components/modal-forms';
+import { PSIForm, CohortForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
-import { ToastStatus, EditPSISchema, NewCohortSchema } from '../../constants';
+import { ToastStatus, NewCohortSchema } from '../../constants';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -40,6 +40,12 @@ export default ({ match }) => {
   // Style classes
   const classes = customStyle();
 
+  // Tiny internal hook
+  const usePSIDetails = () => {
+    const { id, ...rest } = psi;
+    return rest;
+  };
+
   // Memo stats
   const openCohorts = useMemo(
     () =>
@@ -67,11 +73,21 @@ export default ({ match }) => {
     setActiveModalForm(null);
   };
 
-  const handlePSIEdit = async (psi) => {
-    openToast({
-      status: ToastStatus.Error,
-      message: 'TODO: Handle PSI Edit',
-    });
+  const handlePSIEdit = async ([success, errorText]) => {
+    if (success) {
+      closeModal();
+      openToast({
+        status: ToastStatus.SUCCESS,
+        message: 'PSI updated successfully',
+      });
+      const updatedPSI = await fetchPSI({ psiId: psiID });
+      setPSI(updatedPSI);
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: errorText,
+      });
+    }
   };
 
   const handleAddCohort = async (cohort) => {
@@ -150,15 +166,13 @@ export default ({ match }) => {
         onClose={closeModal}
       >
         {activeModalForm === 'edit-psi' && (
-          <EditPSIForm
-            initialValues={psi}
-            validationSchema={EditPSISchema}
-            onSubmit={(values) => {
-              handlePSIEdit({
-                ...values,
-              });
+          <PSIForm
+            initialValues={usePSIDetails()}
+            onSubmit={(result) => {
+              handlePSIEdit(result);
             }}
             onClose={closeModal}
+            id={psiID}
           />
         )}
         {activeModalForm === 'show-cohort' && (
@@ -216,6 +230,14 @@ export default ({ match }) => {
                       open={Boolean(anchorEl)}
                       onClose={handleClose}
                     >
+                      <MenuItem
+                        onClick={() => {
+                          setActiveModalForm('edit-psi');
+                          handleClose();
+                        }}
+                      >
+                        Edit
+                      </MenuItem>
                       <MenuItem
                         onClick={() => {
                           setActiveModalForm('show-cohort');

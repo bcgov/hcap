@@ -69,6 +69,8 @@ const makeTestSite = async ({ siteId, city, siteName, ...rest } = {}) => {
   });
 };
 
+const makeTestPSI = async (psiDataObj) => makePSI(psiDataObj);
+
 const makeTestParticipantStatus = async ({
   participantId,
   employerId,
@@ -114,4 +116,5 @@ module.exports = {
   makeTestParticipantStatus,
   createTestParticipantStatus,
   makeTestCohort,
+  makeTestPSI,
 };

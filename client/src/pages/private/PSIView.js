@@ -4,7 +4,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { saveAs } from 'file-saver';
 
 import { Page, CheckPermissions, Button, Dialog } from '../../components/generic';
-import { NewPSIForm, CohortForm } from '../../components/modal-forms';
+import { PSIForm, CohortForm } from '../../components/modal-forms';
 import {
   ToastStatus,
   API_URL,
@@ -37,27 +37,19 @@ export default () => {
     setActiveModalForm(null);
   };
 
-  const handlePSICreate = async (psi) => {
-    const response = await fetch(`${API_URL}/api/v1/psi`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(psi),
-    });
-
-    if (response.ok) {
+  const handlePSICreate = async (result) => {
+    const [success, errorText] = result;
+    if (success) {
       setActiveModalForm(null);
+      openToast({
+        status: ToastStatus.SUCCESS,
+        message: 'PSI created successfully',
+      });
     } else {
-      const error = await response.json();
-      if (error.code) {
-        openToast({
-          status: ToastStatus.Error,
-          message: error.error || response.error || response.statusText || 'Server error',
-        });
-      }
+      openToast({
+        status: ToastStatus.Error,
+        message: errorText,
+      });
     }
   };
 
@@ -175,22 +167,9 @@ export default () => {
           onClose={defaultOnClose}
         >
           {activeModalForm === 'new-psi' && (
-            <NewPSIForm
-              initialValues={{
-                instituteName: '',
-                healthAuthority: '',
-                streetAddress: '',
-                city: '',
-                postalCode: '',
-              }}
-              onSubmit={(values) => {
-                handlePSICreate({
-                  instituteName: values.instituteName,
-                  healthAuthority: values.healthAuthority,
-                  streetAddress: values.streetAddress,
-                  city: values.city,
-                  postalCode: values.postalCode,
-                });
+            <PSIForm
+              onSubmit={(result) => {
+                handlePSICreate(result);
               }}
               onClose={defaultOnClose}
             />

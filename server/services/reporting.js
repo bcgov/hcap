@@ -2,7 +2,7 @@ const dayjs = require('dayjs');
 const { addYearToDate } = require('../utils');
 const { dbClient, collections } = require('../db');
 const keycloak = require('../keycloak');
-const { DEFAULT_REGION_NAME } = require('../constants');
+const { DEFAULT_REGION_NAME, DEFAULT_STATUS } = require('../constants');
 
 const mapGraduationStatus = (status) => {
   switch (status) {
@@ -26,66 +26,45 @@ const mapIntendToReturn = (value) => {
   }
 };
 
-const mapCohortPsiStatusJoin = (cohortData, psiData, postHireStatus, participantId) => {
-  const arr = [];
-  if (!cohortData || !psiData || !postHireStatus) return arr;
+const getPostHireStatusForParticipant = (postHireStatuses) => {
+  const graduationStatus = {
+    isReturning: DEFAULT_STATUS,
+    status: DEFAULT_STATUS,
+    date: DEFAULT_STATUS,
+  };
+  if (!postHireStatuses) return graduationStatus;
+  const currentStatus = postHireStatuses.find((status) => status.is_current);
+  if (!currentStatus) return graduationStatus;
 
-  cohortData.forEach((cohort) => {
-    const psiId = cohort.psi_id;
-    const postHireInfo = postHireStatus.find((status) => status.participant_id === participantId);
-
-    arr.push({
-      psi: psiData.find((psi) => psi.id === psiId)?.institute_name || 'N/A',
-      cohort: cohort.cohort_name,
-      startDate: dayjs(cohort.start_date).format('YYYY-MM-DD'),
-      endDate: dayjs(cohort.end_date).format('YYYY-MM-DD'),
-      graduation: mapGraduationStatus(postHireInfo?.status) || 'N/A',
-      graduationDate:
-        postHireInfo?.data?.graduationDate || postHireInfo?.data?.unsuccessfulCohortDate || 'N/A',
-      isReturning: mapIntendToReturn(postHireInfo?.data?.continue) || 'N/A',
-    });
-  });
-
-  return arr;
+  return {
+    isReturning: mapIntendToReturn(currentStatus.data?.continue) || DEFAULT_STATUS,
+    status: mapGraduationStatus(currentStatus.status) || DEFAULT_STATUS,
+    date:
+      currentStatus.data?.unsuccessfulCohortDate ||
+      currentStatus.data?.graduationDate ||
+      DEFAULT_STATUS,
+  };
 };
 
-const getParticipantCohortStatus = (entries) => {
-  const arr = [];
+const getCohortForParticipant = (cohorts, cohortParticipants) => {
+  const cohortData = {
+    psiId: DEFAULT_STATUS,
+    name: DEFAULT_STATUS,
+    startDate: DEFAULT_STATUS,
+    endDate: DEFAULT_STATUS,
+  };
+  if (!cohorts || !cohortParticipants) return cohortData;
 
-  entries.forEach((entry) => {
-    const item = {
-      participantId: entry.participant_id,
-      firstName: entry.participantJoin?.[0]?.body?.firstName,
-      lastName: entry.participantJoin?.[0]?.body?.lastName,
-      psi: '',
-      cohort: '',
-      startDate: '',
-      endDate: '',
-      graduation: '',
-      isReturning: '',
-      graduationDate: '',
-    };
+  const cohortId = cohortParticipants.find((cohortMap) => cohortMap.is_current)?.cohort_id;
+  if (!cohortId) return cohortData;
+  const currentCohort = cohorts.find((cohort) => cohort.id === cohortId);
 
-    const cohortPsiData = mapCohortPsiStatusJoin(
-      entry.cohortJoin,
-      entry.psiJoin,
-      entry.postHireJoin,
-      entry.participant_id
-    );
-
-    cohortPsiData.forEach((cohortPsi) => {
-      item.psi = cohortPsi.psi;
-      item.cohort = cohortPsi.cohort;
-      item.startDate = cohortPsi.startDate;
-      item.endDate = cohortPsi.endDate;
-      item.graduation = cohortPsi.graduation;
-      item.isReturning = cohortPsi.isReturning;
-      item.graduationDate = cohortPsi.graduationDate;
-      arr.push(item);
-    });
-  });
-
-  return arr;
+  return {
+    psiId: currentCohort.psi_id || DEFAULT_STATUS,
+    name: currentCohort.cohort_name || DEFAULT_STATUS,
+    startDate: dayjs(currentCohort.start_date).format('YYYY/MM/DD') || DEFAULT_STATUS,
+    endDate: dayjs(currentCohort.end_date).format('YYYY/MM/DD') || DEFAULT_STATUS,
+  };
 };
 
 const getReport = async () => {
@@ -411,7 +390,8 @@ const getRosParticipantsReport = async () => {
 
 const getPSIPaticipantsReport = async (region) => {
   const searchOptions = {
-    status: ['hired'],
+    status: ['hired', 'archived'],
+    current: true,
   };
 
   if (region !== DEFAULT_REGION_NAME) {
@@ -449,14 +429,14 @@ const getPSIPaticipantsReport = async (region) => {
         },
       },
       cohortJoin: {
-        type: 'INNER',
+        type: 'LEFT OUTER',
         relation: collections.COHORTS,
         on: {
           id: 'cohortParticipantsJoin.cohort_id',
         },
       },
       psiJoin: {
-        type: 'INNER',
+        type: 'LEFT OUTER',
         relation: collections.POST_SECONDARY_INSTITUTIONS,
         on: {
           id: 'cohortJoin.psi_id',
@@ -466,13 +446,30 @@ const getPSIPaticipantsReport = async (region) => {
     .find(searchOptions, {
       order: [
         {
-          field: `${collections.PARTICIPANTS}.id`,
-          direction: 'DESC',
+          field: 'participant_id',
         },
       ],
     });
 
-  return getParticipantCohortStatus(participantEntries);
+  return participantEntries.map((entry) => {
+    const participantData = entry.participantJoin?.[0]?.body;
+    const graduationData = getPostHireStatusForParticipant(entry.postHireJoin);
+    const cohortData = getCohortForParticipant(entry.cohortJoin, entry.cohortParticipantsJoin);
+
+    return {
+      participantId: entry.participant_id,
+      firstName: participantData?.firstName,
+      lastName: participantData?.lastName,
+      psi:
+        entry.psiJoin?.find((psi) => psi.id === cohortData.psiId)?.institute_name || DEFAULT_STATUS,
+      cohort: cohortData.name,
+      startDate: cohortData.startDate,
+      endDate: cohortData.endDate,
+      graduation: graduationData.status,
+      isReturning: graduationData.isReturning,
+      graduationDate: graduationData.date,
+    };
+  });
 };
 
 /**

@@ -5,8 +5,10 @@ const reportType = {
 };
 
 const DEFAULT_REGION_NAME = '';
+const DEFAULT_STATUS = 'N/A';
 
 module.exports = {
   reportType,
   DEFAULT_REGION_NAME,
+  DEFAULT_STATUS,
 };

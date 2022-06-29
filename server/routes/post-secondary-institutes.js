@@ -124,7 +124,7 @@ router.put(
       // Get PSI ID
       const { id } = req.params;
       // Validate request
-      await validate(CreatePSISchema, req.body);
+      await validate(CreatePSISchema, req.body || {});
 
       // Save
       const response = await updatePSI(id, req.body);

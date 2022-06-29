@@ -62,7 +62,7 @@ export default () => {
       <Box display='flex'>
         <Box px={10} pt={12} pb={7} maxWidth='60%'>
           <Typography variant='subtitle1' className={classes.blueText}>
-            Health Care Access Program
+            Health Career Access Program
           </Typography>
 
           <Typography className={classes.titleText}>Welcome to the Employer Portal</Typography>
@@ -118,7 +118,7 @@ export default () => {
             <Typography variant='h2'>Login</Typography>
             <Box my={2}>
               <Typography variant='body1' className={classes.loginText}>
-                Log in with your IDIR or BCeID to the Health Care Access Program Employer Portal.
+                Log in with your IDIR or BCeID to the Health Career Access Program Employer Portal.
               </Typography>
             </Box>
             <Box>

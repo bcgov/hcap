@@ -203,6 +203,7 @@ export default () => {
                   }}
                   startIcon={<AddCircleOutlineIcon />}
                   text='Add Post Secondary Institution'
+                  test-id='add-psi-button'
                 />
               </Box>
             </CheckPermissions>

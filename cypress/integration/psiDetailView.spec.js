@@ -3,7 +3,7 @@ describe('Tests the PSI View', () => {
   before(() => {
     cy.kcLogin('test-moh');
     cy.visit('/psi-view');
-    cy.contains('Add Post Secondary Institution').click({ force: true });
+    cy.get('[test-id=add-psi-button]').click({ force: true });
     cy.wait(2000);
     cy.get('input#instituteName').type('Testitute', { force: true });
     cy.get('input#streetAddress').type('314 Pi Ct.');
@@ -13,7 +13,7 @@ describe('Tests the PSI View', () => {
     cy.get('li').contains('Island').click({ force: true });
     cy.get('span.MuiButton-label').contains('Submit').click({ force: true });
 
-    cy.contains('Add Post Secondary Institution').click({ force: true });
+    cy.get('[test-id=add-psi-button]').click({ force: true });
     cy.wait(2000);
     cy.get('input#instituteName').type('Pythagorean Academy', { force: true });
     cy.get('input#streetAddress').type('144 Numeral Ave.');

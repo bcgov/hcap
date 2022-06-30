@@ -3,6 +3,16 @@ import React from 'react';
 import { Box, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
+import {
+  HCAP_INFO_EMAIL,
+  ACCESSABILITY_LINK,
+  HOME_LINK,
+  ABOUT_GOV_BC_LINK,
+  DISCLAIMER_LINK,
+  PRIVACY_LINK,
+  COPYRIGHT_LINK,
+} from '../../constants';
+
 const useStyles = makeStyles((theme) => ({
   toolbar: {
     backgroundColor: theme.palette.primary.light,
@@ -25,27 +35,31 @@ export default () => {
   const links = [
     {
       name: 'Home',
-      href: '#',
+      href: HOME_LINK,
     },
     {
       name: 'About gov.bc.ca',
-      href: '#',
+      href: ABOUT_GOV_BC_LINK,
     },
     {
       name: 'Disclaimer',
-      href: '#',
+      href: DISCLAIMER_LINK,
+    },
+    {
+      name: 'Privacy',
+      href: PRIVACY_LINK,
     },
     {
       name: 'Accessibility',
-      href: '#',
+      href: ACCESSABILITY_LINK,
     },
     {
       name: 'Copyright',
-      href: '#',
+      href: COPYRIGHT_LINK,
     },
     {
       name: 'Contact Us',
-      href: '#',
+      href: `mailto:${HCAP_INFO_EMAIL}`,
     },
   ];
 

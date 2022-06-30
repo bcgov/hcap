@@ -4,7 +4,7 @@ import { Page, Button } from '../../components/generic';
 import { useKeycloak } from '@react-keycloak/web';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
-import { Routes } from '../../constants';
+import { Routes, BC_SERVICES_CARD_LINK } from '../../constants';
 import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
@@ -81,8 +81,8 @@ export default () => {
             />
           </Box>
           <Typography variant={'body2'}>
-            A <a href='https://gov.bc.ca/bcservicescard'>BC Services Card</a> provides secure access
-            to government services.
+            A <a href={BC_SERVICES_CARD_LINK}>BC Services Card</a> provides secure access to
+            government services.
           </Typography>
         </Box>
         <Box className={classes.rightContainer}>

@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { Field } from 'formik';
 import { RenderCheckbox } from '../fields';
 import { useLocation } from 'react-router-dom';
-import { Routes } from '../../constants';
+import { Routes, BC_LAWS_LINK, HCAP_INFO_EMAIL } from '../../constants';
 
 const CollectionNotice = ({ isDisabled }) => {
   const location = useLocation();
@@ -30,11 +30,7 @@ const CollectionNotice = ({ isDisabled }) => {
           </Typography>
           <Typography variant='body2' paragraph>
             Personal information is collected via this form under&nbsp;
-            <Link
-              href='https://www.bclaws.ca/civix/document/id/complete/statreg/96165_03#section26'
-              target='__blank'
-              rel='noreferrer noopener'
-            >
+            <Link href={BC_LAWS_LINK} target='__blank' rel='noreferrer noopener'>
               sections 26(c) and (e) of the Freedom of Information and Protection of Privacy Act
             </Link>
             &nbsp;(FOIPPA) for the purposes of administering the Health Career Access Program.
@@ -58,7 +54,7 @@ const CollectionNotice = ({ isDisabled }) => {
             <Link href='tel:+2364783520'>236-478-3520</Link>
             <br />
             Email:&nbsp;
-            <Link href='mailto:HCAPInfoQuery@gov.bc.ca'>HCAPInfoQuery@gov.bc.ca</Link>
+            <Link href={`mailto:${HCAP_INFO_EMAIL}`}>{HCAP_INFO_EMAIL}</Link>
           </Typography>
         </Grid>
       </Grid>

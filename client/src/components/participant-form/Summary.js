@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+import { HEALTH_CAREERS_LINK } from '../../constants';
 
 const Summary = () => {
   return (
@@ -10,7 +11,7 @@ const Summary = () => {
       </Typography>
       <Typography variant='body1'>
         Complete this expression of interest form if you want to join the&nbsp;
-        <Link href='https://gov.bc.ca/careersinhealth' target='__blank' rel='noreferrer noopener'>
+        <Link href={HEALTH_CAREERS_LINK} target='__blank' rel='noreferrer noopener'>
           Health Career Access Program
         </Link>
       </Typography>

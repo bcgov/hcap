@@ -8,7 +8,7 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
 import { Page, Button } from '../../components/generic';
 import LoginFooter from './LoginFooter';
-import { Routes, HCAP_LINK, PEOI_LINK } from '../../constants';
+import { Routes, HCAP_LINK, PEOI_LINK, HCAP_INFO_EMAIL } from '../../constants';
 import backgroundImage from '../../assets/images/emp_login_bg.png';
 
 const useStyles = makeStyles((theme) => ({
@@ -60,7 +60,7 @@ export default () => {
   return (
     <Page>
       <Box display='flex'>
-        <Box px={10} pt={12} pb={7} maxWidth='60%'>
+        <Box p={12} maxWidth='60%'>
           <Typography variant='subtitle1' className={classes.blueText}>
             Health Career Access Program
           </Typography>
@@ -108,12 +108,12 @@ export default () => {
           <Alert severity='info' className={classes.mainText}>
             If you have any questions, please contact the Health Career Access Program at:&nbsp;
             <b>
-              <Link href='mailto:HCAPInfoQuery@gov.bc.ca'>HCAPInfoQuery@gov.bc.ca</Link>
+              <Link href={`mailto:${HCAP_INFO_EMAIL}`}>{HCAP_INFO_EMAIL}</Link>
             </b>
           </Alert>
         </Box>
 
-        <Box px={10} pt={12} pb={5} className={classes.employerLoginBox}>
+        <Box p={12} className={classes.employerLoginBox}>
           <Box mt={'30%'}>
             <Typography variant='h2'>Login</Typography>
             <Box my={2}>
@@ -132,7 +132,7 @@ export default () => {
             </Box>
           </Box>
 
-          <Box mt='35%'>
+          <Box mt='40%'>
             <Alert severity='info' className={classes.employerAlert}>
               If you're a participant,&nbsp;
               <b>

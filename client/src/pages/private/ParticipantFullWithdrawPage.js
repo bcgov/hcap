@@ -5,7 +5,8 @@ import { Page } from '../../components/generic';
 import { makeStyles } from '@material-ui/core/styles';
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import { useHistory } from 'react-router-dom';
-import { Routes } from '../../constants';
+import { Routes, HCAP_INFO_EMAIL } from '../../constants';
+
 const useStyles = makeStyles((theme) => ({
   rootContainer: {
     flexGrow: 1,
@@ -74,7 +75,7 @@ export default () => {
             <Typography variant={'h5'}>Need Help?</Typography>
             <Typography>
               Contact a Health Career Access Program agent. <br />
-              <Link href='mailto:HCAPInfoQuery@gov.bc.ca'>HCAPInfoQuery@gov.bc.ca</Link>
+              <Link href={`mailto:${HCAP_INFO_EMAIL}`}>{HCAP_INFO_EMAIL}</Link>
             </Typography>
           </Grid>
         </Grid>

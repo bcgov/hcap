@@ -5,6 +5,7 @@ import {
   RejectedFormSchema,
   ProspectingSiteSchema,
   participantStatus,
+  regionLabelsMap,
 } from '../../constants';
 import { Dialog } from '../../components/generic';
 import {
@@ -34,6 +35,7 @@ export const ParticipantTableDialogues = ({
   const { dispatch: participantsDispatch } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
+  const mappedHA = regionLabelsMap[auth.user?.roles.find((role) => role.includes('region_'))];
 
   const getParticipantName = (participant) => {
     return participant ? `${participant?.firstName} ${participant?.lastName}` : '';
@@ -182,10 +184,10 @@ export const ParticipantTableDialogues = ({
         <ChangeSiteForm
           initialValues={{
             startDate: undefined,
-            positionType: '',
-            employmentType: '',
+            positionType: undefined,
+            employmentType: undefined,
             site: undefined,
-            healthAuthority: undefined,
+            healthAuthority: mappedHA,
           }}
           validationSchema={ChangeRosSiteSchema}
           onSubmit={(values) => {

@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import heroBackground from '../../assets/images/disabled-peoi-hero.png';
 import { EmailSubmissionForm, EmailSubmissionHeader } from './EmailSubmissionForm';
+import { HEALTH_CAREERS_LINK, HCAP_INFO_EMAIL } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -102,7 +103,7 @@ export const DisabledLanding = () => {
           The participant expression of interest for the HCAP program is now closed and may reopen
           as more opportunities become available. Thank you for your interest in the program. To
           learn more, visit the{' '}
-          <a href='https://gov.bc.ca/careersinhealth' target='_blank' rel='noreferrer'>
+          <a href={HEALTH_CAREERS_LINK} target='_blank' rel='noreferrer'>
             Health Career Access Program
           </a>
           .
@@ -110,8 +111,8 @@ export const DisabledLanding = () => {
         <Typography variant='body1' className={classes.infoBoxParagraph}>
           Eligible employers will continue to reach out to those who are currently in the system. If
           you have any questions, please email{' '}
-          <a href='mailto:HCAPInfoQuery@gov.bc.ca' target='_blank' rel='noreferrer'>
-            HCAPInfoQuery@gov.bc.ca
+          <a href={`mailto:${HCAP_INFO_EMAIL}`} target='_blank' rel='noreferrer'>
+            {HCAP_INFO_EMAIL}
           </a>
           .
         </Typography>

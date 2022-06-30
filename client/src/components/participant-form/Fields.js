@@ -14,6 +14,15 @@ import {
   indigenousIdentities,
   indigenousIdentityLabels,
 } from '../modal-forms/IndigenousDeclarationForm';
+import {
+  BC_LAWS_LINK,
+  VANCOUVER_COASTAL_GOV_LINK,
+  NORTHERN_GOV_LINK,
+  FRASER_GOV_LINK,
+  INTERIOR_GOV_LINK,
+  VANCOUVER_ISLAND_GOV_LINK,
+  HCAP_INFO_EMAIL,
+} from '../../constants';
 import { Checkbox, FormControl, FormControlLabel } from '@material-ui/core';
 import { isNil } from 'lodash';
 
@@ -69,8 +78,8 @@ export const Fields = ({
             </Typography>
             <Typography variant='body2'>
               Contact a Health Career Access Program agent at{' '}
-              <a rel='noreferrer' target='_blank' href='mailto:HCAPInfoQuery@gov.bc.ca'>
-                HCAPInfoQuery@gov.bc.ca
+              <a rel='noreferrer' target='_blank' href={`mailto:${HCAP_INFO_EMAIL}`}>
+                {HCAP_INFO_EMAIL}
               </a>
             </Typography>
             <Typography variant='body2'>
@@ -242,11 +251,7 @@ export const Fields = ({
                   label: (
                     <span>
                       Interior (
-                      <Link
-                        href='https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/1_interior_health_authority.pdf'
-                        target='__blank'
-                        rel='noreferrer noopener'
-                      >
+                      <Link href={INTERIOR_GOV_LINK} target='__blank' rel='noreferrer noopener'>
                         PDF map
                       </Link>
                       )
@@ -258,11 +263,7 @@ export const Fields = ({
                   label: (
                     <span>
                       Fraser (
-                      <Link
-                        href='https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/2_fraser_health_authority.pdf'
-                        target='__blank'
-                        rel='noreferrer noopener'
-                      >
+                      <Link href={FRASER_GOV_LINK} target='__blank' rel='noreferrer noopener'>
                         PDF map
                       </Link>
                       )
@@ -275,7 +276,7 @@ export const Fields = ({
                     <span>
                       Vancouver Coastal (
                       <Link
-                        href='https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/3_vancouver_coastal_health_authority.pdf'
+                        href={VANCOUVER_COASTAL_GOV_LINK}
                         target='__blank'
                         rel='noreferrer noopener'
                       >
@@ -291,7 +292,7 @@ export const Fields = ({
                     <span>
                       Vancouver Island (
                       <Link
-                        href='https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/4_vancouver_island_health_authority.pdf'
+                        href={VANCOUVER_ISLAND_GOV_LINK}
                         target='__blank'
                         rel='noreferrer noopener'
                       >
@@ -306,11 +307,7 @@ export const Fields = ({
                   label: (
                     <span>
                       Northern (
-                      <Link
-                        href='https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/5_northern_health_authority.pdf'
-                        target='__blank'
-                        rel='noreferrer noopener'
-                      >
+                      <Link href={NORTHERN_GOV_LINK} target='__blank' rel='noreferrer noopener'>
                         PDF map
                       </Link>
                       )
@@ -398,11 +395,7 @@ export const Fields = ({
             </Typography>
             <Typography variant='body2' paragraph>
               Personal information is collected via this form under&nbsp;
-              <Link
-                href='https://www.bclaws.ca/civix/document/id/complete/statreg/96165_03#section26'
-                target='__blank'
-                rel='noreferrer noopener'
-              >
+              <Link href={BC_LAWS_LINK} target='__blank' rel='noreferrer noopener'>
                 sections 26(c) and (e) of the Freedom of Information and Protection of Privacy Act
               </Link>
               &nbsp;(FOIPPA) for the purposes of administering the Health Career Access Program.
@@ -419,7 +412,7 @@ export const Fields = ({
                 please direct your inquiries to the Director, Planning, Integration and
                 Partnerships, 1515 Blanshard Street, Victoria, British Columbia, V8W 3C8. Telephone:{' '}
                 <Link href='tel:+12364783520'>236-478-3520</Link>, Email:{' '}
-                <Link href='mailto:HCAPInfoQuery@gov.bc.ca'>HCAPInfoQuery@gov.bc.ca</Link>.
+                <Link href={`mailto:${HCAP_INFO_EMAIL}`}>{HCAP_INFO_EMAIL}</Link>.
               </Typography>
             </Collapse>
             {!isDisabled && (

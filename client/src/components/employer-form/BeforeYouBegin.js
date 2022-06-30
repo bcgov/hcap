@@ -5,6 +5,7 @@ import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 
 import { Card, Divider } from '../generic';
+import { HCAP_INFO_EMAIL } from '../../constants';
 
 const BeforeYouBegin = () => {
   return (
@@ -14,7 +15,7 @@ const BeforeYouBegin = () => {
           <Typography variant='body2' gutterBottom>
             <b>
               If you have any questions, please contact the Health Career Access Program at:&nbsp;
-              <Link href='mailto:HCAPInfoQuery@gov.bc.ca'>HCAPInfoQuery@gov.bc.ca</Link>
+              <Link href={`mailto:${HCAP_INFO_EMAIL}`}>{HCAP_INFO_EMAIL}</Link>
             </b>
           </Typography>
         </Alert>
@@ -85,7 +86,7 @@ const BeforeYouBegin = () => {
           <Typography variant='body1' paragraph>
             We appreciate your interest in participating and we encourage you to reach out with any
             questions to:&nbsp;
-            <Link href='mailto:HCAPInfoQuery@gov.bc.ca'>HCAPInfoQuery@gov.bc.ca</Link>
+            <Link href={`mailto:${HCAP_INFO_EMAIL}`}>{HCAP_INFO_EMAIL}</Link>
           </Typography>
         </Card>
       </Box>

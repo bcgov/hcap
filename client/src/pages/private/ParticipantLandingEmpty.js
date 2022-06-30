@@ -3,8 +3,9 @@ import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Paper, Grid, Icon, Link } from '@material-ui/core';
 import { Button } from '../../components/generic';
-import { Routes } from '../../constants';
+import { Routes, HCAP_ACCESS_LINK, HCAP_INFO_EMAIL } from '../../constants';
 import FindInPageOutlinedIcon from '@material-ui/icons/FindInPageOutlined';
+
 const useStyles = makeStyles(() => ({
   card: {
     maxWidth: '70%',
@@ -41,12 +42,10 @@ export default () => {
           </Typography>
           <Typography align={'center'} className={classes.text_block}>
             If you think this is a mistake please contact us at{' '}
-            <Link href='mailto:HCAPInfoQuery@gov.bc.ca'>HCAPInfoQuery@gov.bc.ca</Link>. If you
-            haven't submitted an Expression of Interest form, please click on the button below to
-            submit one. For more information, please visit the{' '}
-            <Link href='https://www2.gov.bc.ca/gov/content/covid-19/economic-recovery/work-in-health-care'>
-              Health Career Access Program website.
-            </Link>
+            <Link href={`mailto:${HCAP_INFO_EMAIL}`}>{HCAP_INFO_EMAIL}</Link>. If you haven't
+            submitted an Expression of Interest form, please click on the button below to submit
+            one. For more information, please visit the{' '}
+            <Link href={HCAP_ACCESS_LINK}>Health Career Access Program website.</Link>
           </Typography>
         </Grid>
 

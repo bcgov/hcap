@@ -28,7 +28,7 @@ export const ABOUT_GOV_BC_LINK = 'https://www2.gov.bc.ca/gov/content/about-gov-b
 export const DISCLAIMER_LINK = 'https://www2.gov.bc.ca/gov/content/home/disclaimer';
 export const PRIVACY_LINK = 'https://www2.gov.bc.ca/gov/content/home/privacy';
 export const ACCESSABILITY_LINK = 'https://www2.gov.bc.ca/gov/content/home/accessible-government';
-export const COPYRIGHT_LINK = 'https://www2.gov.bc.ca/gov/content/home/accessible-government';
+export const COPYRIGHT_LINK = 'https://www2.gov.bc.ca/gov/content/home/copyright';
 
 // email
 export const HCAP_INFO_EMAIL = 'HCAPInfoQuery@gov.bc.ca';

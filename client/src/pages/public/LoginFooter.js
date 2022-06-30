@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default () => {
   const classes = useStyles();
-  // TODO: update footer links
   const links = [
     {
       name: 'Home',
@@ -68,7 +67,7 @@ export default () => {
       <Box px={5} py={2} className={classes.toolbar} display='flex'>
         {links.map((link, ind) => (
           <Box key={ind} px={2} className={ind === links.length - 1 ? '' : classes.linkBox}>
-            <Link className={classes.linkText} href={link.href}>
+            <Link className={classes.linkText} href={link.href} target='_blank'>
               {link.name}
             </Link>
           </Box>

@@ -9,7 +9,7 @@ import { CreatePSISchema, healthAuthorities } from '../../constants';
 export const EditPSIForm = ({ initialValues, onSubmit, onClose }) => {
   return (
     <Formik initialValues={initialValues} validationSchema={CreatePSISchema} onSubmit={onSubmit}>
-      {({ submitForm, values }) => (
+      {({ submitForm }) => (
         <FormikForm>
           <Box>
             <Field name='instituteName' component={RenderTextField} label='* Institute Name' />

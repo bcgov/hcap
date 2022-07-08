@@ -2,9 +2,15 @@ import store from 'store';
 import dayjs from 'dayjs';
 import { API_URL } from '../constants';
 
-export const createReturnOfServiceStatus = async ({ participantId, data, siteId }) => {
+export const createReturnOfServiceStatus = async ({
+  participantId,
+  data,
+  siteId,
+  isUpdating = false,
+}) => {
   // Covert data into date obj
-  const dateObj = dayjs(data.date, 'YYYY/MM/DD').toDate();
+  const siteDate = data.date || data.startDate;
+  const dateObj = dayjs(siteDate, 'YYYY/MM/DD').toDate();
   const finalBody = {
     ...data,
     date: dateObj,
@@ -20,6 +26,7 @@ export const createReturnOfServiceStatus = async ({ participantId, data, siteId 
     },
     body: JSON.stringify({
       data: finalBody,
+      status: isUpdating ? 'assigned-new-site' : 'assigned-same-site',
       ...(siteId && { siteId }),
     }),
   });

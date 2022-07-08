@@ -15,7 +15,7 @@ import {
   healthAuthorities,
   ROS_SITE_INFO_MESSAGE,
 } from '../../constants';
-import { addEllipsisMask, getTodayDate } from '../../utils';
+import { addEllipsisMask } from '../../utils';
 
 const useStyles = makeStyles((theme) => ({
   formButton: {
@@ -47,7 +47,6 @@ export const ChangeSiteForm = ({ initialValues, validationSchema, onSubmit, onCl
             <FastField
               name='startDate'
               component={RenderDateField}
-              minDate={getTodayDate()}
               label='Start Date at a New Site'
               boldLabel
             />

@@ -22,6 +22,7 @@ import {
 } from '../../components/modal-forms';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
+import { createReturnOfServiceStatus } from '../../services';
 
 export const ParticipantTableDialogues = ({
   fetchParticipants,
@@ -30,7 +31,7 @@ export const ParticipantTableDialogues = ({
   bulkParticipants,
   onClose,
   handleEngage,
-  handleRosUpdate,
+  handleUpdate,
 }) => {
   const { dispatch: participantsDispatch } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
@@ -53,6 +54,29 @@ export const ParticipantTableDialogues = ({
         sites: [values.prospectingSite],
       });
     });
+  };
+
+  const handleChangeSite = async (values) => {
+    try {
+      const { employmentType, healthAuthority, positionType, site, startDate } = values;
+      await createReturnOfServiceStatus({
+        participantId: actionMenuParticipant.id,
+        siteId: site,
+        data: {
+          startDate,
+          employmentType,
+          positionType,
+          healthAuthority,
+          sameSite: false,
+        },
+        isUpdating: true,
+      });
+      handleUpdate(true, 'Return of Service site updated!');
+    } catch (error) {
+      handleUpdate(false, error.message);
+    } finally {
+      onClose();
+    }
   };
 
   return (
@@ -176,7 +200,7 @@ export const ParticipantTableDialogues = ({
         <ReturnOfServiceForm
           participantId={actionMenuParticipant.id}
           onClose={onClose}
-          completionHandler={handleRosUpdate}
+          completionHandler={handleUpdate}
         />
       )}
 
@@ -190,8 +214,8 @@ export const ParticipantTableDialogues = ({
             healthAuthority: mappedHA,
           }}
           validationSchema={ChangeRosSiteSchema}
-          onSubmit={(values) => {
-            handleSingleSelectProspectingSites(values);
+          onSubmit={async (values) => {
+            await handleChangeSite(values);
           }}
           onClose={onClose}
         />

@@ -115,7 +115,7 @@ export const ReturnOfServiceForm = ({
           const success = await postRoS({ values, participantId, setError });
           if (success) {
             onClose();
-            completionHandler(true);
+            completionHandler(true, 'Successfully updated Return of Service status!');
           }
         }}
       >

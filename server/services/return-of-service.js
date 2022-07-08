@@ -25,6 +25,7 @@ const makeReturnOfServiceStatus = async ({
   data,
   status = 'assigned-same-site',
   siteId,
+  newSiteId,
 }) => {
   // Get Site id from participant status
   const statuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
@@ -56,7 +57,7 @@ const makeReturnOfServiceStatus = async ({
     await invalidateReturnOfServiceStatus({ db: tx, participantId });
     return tx[collections.ROS_STATUS].insert({
       participant_id: participantId,
-      site_id,
+      site_id: newSiteId || site_id,
       data,
       status,
       is_current: true,

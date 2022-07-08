@@ -61,7 +61,7 @@ export const ParticipantTableDialogues = ({
       const { employmentType, healthAuthority, positionType, site, startDate } = values;
       await createReturnOfServiceStatus({
         participantId: actionMenuParticipant.id,
-        siteId: site,
+        newSiteId: site,
         data: {
           startDate,
           employmentType,

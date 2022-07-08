@@ -9,7 +9,7 @@ const {
   makeReturnOfServiceStatus,
   getReturnOfServiceStatuses,
 } = require('../services/return-of-service');
-const { getSiteDetailsById } = require('../services/employers');
+const { getSiteDetailsById, getDetailsBySiteId } = require('../services/employers');
 
 const router = express.Router();
 
@@ -38,13 +38,20 @@ router.post(
       });
       return res.status(404).send('Participant not found');
     }
-    const { data, status, siteId } = req.body;
+    const { data, status, siteId, newSiteId } = req.body;
 
     if (siteId) {
       // Validate siteId
       const [site] = await getSiteDetailsById(siteId);
       if (site.error) {
-        return res.status(404).send('Site not found');
+        return res.status(404).send(`Site not found: ${site.error}`);
+      }
+    }
+
+    const [newSite] = await getDetailsBySiteId(newSiteId);
+    if (newSiteId) {
+      if (newSite.error) {
+        return res.status(404).send(`Site not found: ${newSite.error}`);
       }
     }
 
@@ -54,6 +61,7 @@ router.post(
         data,
         status,
         siteId,
+        newSiteId: newSite?.id,
       });
       logger.info({
         action: 'ros-status-create',

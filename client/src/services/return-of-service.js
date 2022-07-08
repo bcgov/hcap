@@ -6,6 +6,7 @@ export const createReturnOfServiceStatus = async ({
   participantId,
   data,
   siteId,
+  newSiteId,
   isUpdating = false,
 }) => {
   // Covert data into date obj
@@ -28,6 +29,7 @@ export const createReturnOfServiceStatus = async ({
       data: finalBody,
       status: isUpdating ? 'assigned-new-site' : 'assigned-same-site',
       ...(siteId && { siteId }),
+      newSiteId,
     }),
   });
   if (response.ok) {

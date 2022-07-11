@@ -4,12 +4,12 @@ import { Button } from '../generic';
 import { Box } from '@material-ui/core';
 import { RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { CreatePSISchema } from '../../constants';
+import { CreatePSISchema, healthAuthorities } from '../../constants';
 
 export const EditPSIForm = ({ initialValues, onSubmit, onClose }) => {
   return (
     <Formik initialValues={initialValues} validationSchema={CreatePSISchema} onSubmit={onSubmit}>
-      {({ submitForm, values }) => (
+      {({ submitForm }) => (
         <FormikForm>
           <Box>
             <Field name='instituteName' component={RenderTextField} label='* Institute Name' />
@@ -20,13 +20,7 @@ export const EditPSIForm = ({ initialValues, onSubmit, onClose }) => {
               name='healthAuthority'
               component={RenderSelectField}
               label='* Health Authority'
-              options={[
-                { value: 'Interior', label: 'Interior Health' },
-                { value: 'Fraser', label: 'Fraser Health' },
-                { value: 'Vancouver Coastal', label: 'Vancouver Coastal Health' },
-                { value: 'Vancouver Island', label: 'Vancouver Island Health' },
-                { value: 'Northern', label: 'Northern Health' },
-              ]}
+              options={healthAuthorities}
             />
           </Box>
           <Box mt={3}>

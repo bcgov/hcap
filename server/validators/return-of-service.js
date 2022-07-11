@@ -8,6 +8,7 @@ const CreateReturnOfServiceSchema = yup
   .shape({
     status: yup.string().optional(),
     siteId: yup.number().optional('SiteId should be a number and specify an employer side id'),
+    newSiteId: yup.number().optional(),
     data: yup
       .object()
       .required('Data object is required')

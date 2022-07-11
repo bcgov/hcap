@@ -122,7 +122,7 @@ export const SelectProspectingSiteForm = ({
               type='submit'
               className={classes.formButton}
               onClick={submitForm}
-              text='Submit'
+              text='Confirm'
             />
           </Box>
         </FormikForm>

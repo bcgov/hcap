@@ -308,11 +308,11 @@ const ParticipantTable = () => {
     fetchParticipants();
   };
 
-  const handleRosUpdate = (success) => {
-    if (success) {
+  const handleUpdate = (isSuccess, resMessage) => {
+    if (isSuccess) {
       openToast({
         status: ToastStatus.Success,
-        message: 'Return of Service status updated',
+        message: resMessage,
       });
 
       const dispatchFunction = (notifications) =>
@@ -320,6 +320,11 @@ const ParticipantTable = () => {
       fetchUserNotifications(dispatchFunction);
 
       fetchParticipants();
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: resMessage,
+      });
     }
   };
 
@@ -506,7 +511,7 @@ const ParticipantTable = () => {
         bulkParticipants={selectedParticipants}
         handleEngage={handleEngage}
         onClose={handleDialogueClose}
-        handleRosUpdate={handleRosUpdate}
+        handleUpdate={handleUpdate}
       />
       <CheckPermissions
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
@@ -639,6 +644,13 @@ const ParticipantTable = () => {
                 onClick={() => openFormForParticipant(actionMenuParticipant?.id, 'archive')}
               >
                 Archive
+              </MenuItem>
+            )}
+            {actionMenuParticipant?.status === 'ros' && (
+              <MenuItem
+                onClick={() => openFormForParticipant(actionMenuParticipant?.id, 'change-site')}
+              >
+                Change Site
               </MenuItem>
             )}
             {actionMenuParticipant?.status === 'hired' &&

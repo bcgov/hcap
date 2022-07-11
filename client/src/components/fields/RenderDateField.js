@@ -6,7 +6,7 @@ import { dateToString, stringToDate } from '../../utils';
 
 import { InputFieldError, InputFieldLabel } from '../generic';
 
-export const RenderDateField = ({ field, form, label, boldLabel, ...props }) => {
+export const RenderDateField = ({ field, form, label, boldLabel, placeholder, ...props }) => {
   const [, , helpers] = useField(field.name);
   const { setValue, setTouched } = helpers;
   return (
@@ -21,6 +21,7 @@ export const RenderDateField = ({ field, form, label, boldLabel, ...props }) => 
         invalidDateMessage={null}
         minDateMessage={null}
         maxDateMessage={null}
+        placeholder={placeholder || 'Please Select'}
         openTo='date'
         variant='dialog'
         inputVariant='filled'

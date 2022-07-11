@@ -12,13 +12,14 @@ import {
   RenderTextField,
 } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { ReturnOfServiceSchema, rosPositionType, rosEmploymentType } from '../../constants';
+import {
+  ReturnOfServiceSchema,
+  rosPositionType,
+  rosEmploymentType,
+  ROS_SITE_INFO_MESSAGE,
+} from '../../constants';
 import { getTodayDate } from '../../utils';
 import { createReturnOfServiceStatus, getAllSites } from '../../services';
-
-// Static message
-const siteNotFoundMessage =
-  'If you cannot find the site in this list, please contact your Ministry of Health contact to add it to the portal. Please hold off on tracking Return of Service in the meantime.';
 
 // Helpers
 const rosPositionTypeOptions = Object.values(rosPositionType);
@@ -114,7 +115,7 @@ export const ReturnOfServiceForm = ({
           const success = await postRoS({ values, participantId, setError });
           if (success) {
             onClose();
-            completionHandler(true);
+            completionHandler(true, 'Successfully updated Return of Service status!');
           }
         }}
       >
@@ -128,7 +129,7 @@ export const ReturnOfServiceForm = ({
                 component={RenderDateField}
                 label='Return of Service Start Date'
                 maxDate={getTodayDate()}
-                boldLabel={true}
+                boldLabel
               />
               <br />
               <Box className={classes.bg}>
@@ -138,14 +139,14 @@ export const ReturnOfServiceForm = ({
                     component={RenderRadioGroup}
                     label='Position Type'
                     options={rosPositionTypeOptions}
-                    boldLabel={true}
+                    boldLabel
                   />
                   <Field
                     name='employmentType'
                     component={RenderRadioGroup}
                     label='Specific position type (optional)'
                     options={rosEmploymentTypeOptions}
-                    boldLabel={true}
+                    boldLabel
                   />
                 </Box>
               </Box>
@@ -164,7 +165,7 @@ export const ReturnOfServiceForm = ({
                     label: 'No',
                   },
                 ]}
-                boldLabel={true}
+                boldLabel
                 onChange={({ target }) => {
                   const { value } = target;
                   setFieldValue('sameSite', value);
@@ -182,22 +183,22 @@ export const ReturnOfServiceForm = ({
                     label='New Site'
                     options={mapToOptions(sites)}
                     onChange={(event) => handleSiteSelection(event, setFieldValue)}
-                    boldLabel={true}
+                    boldLabel
                   />
                   <Box mt={3}>
                     <Field
                       name='ha'
                       component={RenderTextField}
                       label='Health Authority'
-                      disabled={true}
-                      boldLabel={true}
+                      disabled
+                      boldLabel
                     />
                   </Box>
                 </Box>
               )}
               <>
                 {values.sameSite === false && (
-                  <MuiAlert severity='info'>{siteNotFoundMessage}</MuiAlert>
+                  <MuiAlert severity='info'>{ROS_SITE_INFO_MESSAGE}</MuiAlert>
                 )}
               </>
               <br />

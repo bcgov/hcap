@@ -11,3 +11,4 @@ export * from './archiveParticipantsConstants';
 export * from './authConstants';
 export * from './postHireConstants';
 export * from './return-of-service';
+export * from './healthAuthorities';

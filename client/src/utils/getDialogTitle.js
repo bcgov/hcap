@@ -9,5 +9,6 @@ export const getDialogTitle = (activeModalForm) => {
   if (activeModalForm === 'single-select-site') return 'Select Site';
   if (activeModalForm === 'multi-select-site') return 'Select Site';
   if (activeModalForm === 'return-of-service') return 'Return of Service';
+  if (activeModalForm === 'change-site') return 'Change Site';
   return 'Change Participant Status';
 };

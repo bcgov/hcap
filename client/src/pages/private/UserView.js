@@ -12,6 +12,7 @@ import {
   ToastStatus,
   regionLabelsMap,
   API_URL,
+  healthAuthorities,
 } from '../../constants';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../../components/fields';
@@ -215,13 +216,7 @@ export default () => {
                     name='regions'
                     component={RenderSelectField}
                     label='* Health Region'
-                    options={[
-                      { value: 'Interior', label: 'Interior Health' },
-                      { value: 'Fraser', label: 'Fraser Health' },
-                      { value: 'Vancouver Coastal', label: 'Vancouver Coastal Health' },
-                      { value: 'Vancouver Island', label: 'Vancouver Island Health' },
-                      { value: 'Northern', label: 'Northern Health' },
-                    ]}
+                    options={healthAuthorities}
                     onChange={(e) => {
                       setFieldValue('sites', []);
                       // Wrap single region value in array

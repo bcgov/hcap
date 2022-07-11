@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
 import {
   InterviewingFormSchema,
+  ChangeRosSiteSchema,
   RejectedFormSchema,
   ProspectingSiteSchema,
   participantStatus,
+  regionLabelsMap,
 } from '../../constants';
 import { Dialog } from '../../components/generic';
 import {
@@ -16,9 +18,11 @@ import {
   ArchiveHiredParticipantForm,
   ReturnOfServiceForm,
   SelectProspectingSiteForm,
+  ChangeSiteForm,
 } from '../../components/modal-forms';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
+import { createReturnOfServiceStatus } from '../../services';
 
 export const ParticipantTableDialogues = ({
   fetchParticipants,
@@ -27,11 +31,12 @@ export const ParticipantTableDialogues = ({
   bulkParticipants,
   onClose,
   handleEngage,
-  handleRosUpdate,
+  handleUpdate,
 }) => {
   const { dispatch: participantsDispatch } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
+  const mappedHA = regionLabelsMap[auth.user?.roles.find((role) => role.includes('region_'))];
 
   const getParticipantName = (participant) => {
     return participant ? `${participant?.firstName} ${participant?.lastName}` : '';
@@ -49,6 +54,29 @@ export const ParticipantTableDialogues = ({
         sites: [values.prospectingSite],
       });
     });
+  };
+
+  const handleChangeSite = async (values) => {
+    try {
+      const { employmentType, healthAuthority, positionType, site, startDate } = values;
+      await createReturnOfServiceStatus({
+        participantId: actionMenuParticipant.id,
+        newSiteId: site,
+        data: {
+          startDate,
+          employmentType,
+          positionType,
+          healthAuthority,
+          sameSite: false,
+        },
+        isUpdating: true,
+      });
+      handleUpdate(true, 'Return of Service site updated!');
+    } catch (error) {
+      handleUpdate(false, error.message);
+    } finally {
+      onClose();
+    }
   };
 
   return (
@@ -172,7 +200,24 @@ export const ParticipantTableDialogues = ({
         <ReturnOfServiceForm
           participantId={actionMenuParticipant.id}
           onClose={onClose}
-          completionHandler={handleRosUpdate}
+          completionHandler={handleUpdate}
+        />
+      )}
+
+      {activeModalForm === 'change-site' && (
+        <ChangeSiteForm
+          initialValues={{
+            startDate: undefined,
+            positionType: undefined,
+            employmentType: undefined,
+            site: undefined,
+            healthAuthority: mappedHA,
+          }}
+          validationSchema={ChangeRosSiteSchema}
+          onSubmit={async (values) => {
+            await handleChangeSite(values);
+          }}
+          onClose={onClose}
         />
       )}
     </Dialog>

@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { FastField, useFormikContext } from 'formik';
 
 import { Card, Divider } from '../generic';
+import { healthAuthorities } from '../../constants';
 import { RenderSelectField, RenderTextField, RenderRadioGroup } from '../fields';
 
 export const SiteInfo = ({ isDisabled }) => {
@@ -45,13 +46,7 @@ export const SiteInfo = ({ isDisabled }) => {
             component={RenderSelectField}
             label='* Health authority'
             disabled={isDisabled}
-            options={[
-              { value: 'Interior', label: 'Interior Health' },
-              { value: 'Fraser', label: 'Fraser Health' },
-              { value: 'Vancouver Coastal', label: 'Vancouver Coastal Health' },
-              { value: 'Vancouver Island', label: 'Vancouver Island Health' },
-              { value: 'Northern', label: 'Northern Health' },
-            ]}
+            options={healthAuthorities}
           />
         </Grid>
         <Grid item xs={12} sm={6}>

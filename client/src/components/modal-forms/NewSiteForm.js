@@ -3,6 +3,7 @@ import { Button } from '../generic';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { RenderTextField, RenderSelectField, RenderRadioGroup } from '../fields';
+import { healthAuthorities } from '../../constants';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import Typography from '@material-ui/core/Typography';
 
@@ -33,13 +34,7 @@ export const NewSiteForm = ({ initialValues, validationSchema, onSubmit, onClose
               name='healthAuthority'
               component={RenderSelectField}
               label='* Health Authority'
-              options={[
-                { value: 'Interior', label: 'Interior Health' },
-                { value: 'Fraser', label: 'Fraser Health' },
-                { value: 'Vancouver Coastal', label: 'Vancouver Coastal Health' },
-                { value: 'Vancouver Island', label: 'Vancouver Island Health' },
-                { value: 'Northern', label: 'Northern Health' },
-              ]}
+              options={healthAuthorities}
             />
             <Field name='allocation' type='number' component={RenderTextField} label='Allocation' />
             <Box pt={2} pb={1}>

@@ -164,7 +164,8 @@ const columns = {
   rosStartDate: { id: 'rosStartDate', name: 'Return of Service Start Date', sortOrder: 22 },
   rosSiteName: { id: 'rosSiteName', name: 'RoS Site Name', sortOrder: 23 },
   employerName: { id: 'employerName', name: 'Hired By', sortOrder: 24 },
-  engagedBy: { id: 'engagedBy', name: 'Last Engaged By', sortOrder: 16 },
+  lastEngagedBy: { id: 'lastEngagedBy', name: 'Last Engaged By', sortOrder: 16 },
+  lastEngagedDate: { id: 'lastEngagedDate', name: 'Last Engaged Date', sortOrder: 17 },
   archiveReason: { id: 'archiveReason', name: 'Archive Reason', sortOrder: 25, sortable: false },
 };
 
@@ -192,7 +193,8 @@ const {
   rosStartDate,
   rosSiteName,
   employerName,
-  engagedBy,
+  lastEngagedBy,
+  lastEngagedDate,
   archiveReason,
 } = columns;
 
@@ -262,7 +264,8 @@ export const columnsByRole = {
       userUpdatedAt,
       engage,
       siteName,
-      engagedBy,
+      lastEngagedBy,
+      lastEngagedDate,
     ],
     'Archived Candidates': [
       id,
@@ -336,7 +339,8 @@ export const columnsByRole = {
       userUpdatedAt,
       engage,
       siteName,
-      engagedBy,
+      lastEngagedBy,
+      lastEngagedDate,
     ],
     'Archived Candidates': [
       id,

@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom';
 
 import Grid from '@material-ui/core/Grid';
 import { Box, Menu, MenuItem, Link } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 
 import {
   ToastStatus,
@@ -204,13 +203,6 @@ const ParticipantTable = () => {
   const isSuperUser = roles.includes('superuser');
   const isAdmin = isMoH || isSuperUser;
   const isEmployer = roles.includes('health_authority') || roles.includes('employer');
-
-  const useStyles = makeStyles((theme) => ({
-    cellTextGray: {
-      color: theme.palette.gray.dark,
-    },
-  }));
-  const classes = useStyles();
 
   const fetchParticipants = async () => {
     if (!columns) return;

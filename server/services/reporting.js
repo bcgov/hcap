@@ -255,6 +255,8 @@ const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
 
   return hiredEntries.map((entry) => ({
     participantId: entry.participant_id,
+    firstName: entry.participantJoin?.[0]?.body?.firstName,
+    lastName: entry.participantJoin?.[0]?.body?.lastName,
     participantFsa: entry.participantJoin?.[0]?.body?.postalCodeFsa,
     employerId: entry.employer_id,
     employerEmail: users.find((user) => user.id === entry.employer_id)?.email,
@@ -379,6 +381,8 @@ const getRosParticipantsReport = async () => {
 
   return rosEntries.map((entry) => ({
     participantId: entry.participant_id,
+    firstName: entry.participantJoin?.[0]?.body?.firstName,
+    lastName: entry.participantJoin?.[0]?.body?.lastName,
     isHCA: true, // TODO: confirm if we need to track this information in our db
     startDate: dayjs(entry.data?.date).format('YYYY-MM-DD'),
     endDate: addYearToDate(entry.data?.date).format('YYYY-MM-DD'),

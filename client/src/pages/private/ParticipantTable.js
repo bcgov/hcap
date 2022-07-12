@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom';
 
 import Grid from '@material-ui/core/Grid';
 import { Box, Menu, MenuItem, Link } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 
 import {
   ToastStatus,
@@ -163,8 +162,8 @@ const filterData = (data, columns, isMoH = false) => {
       const createdAtFormatted = dayUtils(statusWithEmployerDetails[0].createdAt).format(
         'MMM DD, YYYY'
       );
-      row.engagedLast = createdAtFormatted;
-      row.engagedBy = row.employerName;
+      row.lastEngagedDate = createdAtFormatted;
+      row.lastEngagedBy = row.employerName;
     }
 
     row.engage.status = row.status[0];
@@ -204,16 +203,6 @@ const ParticipantTable = () => {
   const isSuperUser = roles.includes('superuser');
   const isAdmin = isMoH || isSuperUser;
   const isEmployer = roles.includes('health_authority') || roles.includes('employer');
-
-  const useStyles = makeStyles((theme) => ({
-    cellTextStrong: {
-      fontWeight: 'bold',
-    },
-    cellTextGray: {
-      color: theme.palette.gray.dark,
-    },
-  }));
-  const classes = useStyles();
 
   const fetchParticipants = async () => {
     if (!columns) return;
@@ -488,13 +477,6 @@ const ParticipantTable = () => {
         );
       case 'postHireStatuses':
         return getGraduationStatus(row[columnId] || []);
-      case 'engagedBy':
-        return (
-          <>
-            <Box className={classes.cellTextStrong}>{row.engagedBy}</Box>
-            <Box className={classes.cellTextGray}>{row.engagedLast}</Box>
-          </>
-        );
       default:
         return row[columnId];
     }

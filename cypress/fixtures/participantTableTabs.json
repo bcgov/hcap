@@ -92,6 +92,7 @@
           "Site Distance",
           "Last Updated",
           "Last Engaged By",
+          "Last Engaged Date",
           "Site Name"
         ],
         "Archived Candidates": [
@@ -180,6 +181,7 @@
           "Site Distance",
           "Last Updated",
           "Last Engaged By",
+          "Last Engaged Date",
           "Site Name"
         ],
         "Archived Candidates": [

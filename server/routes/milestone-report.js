@@ -32,6 +32,8 @@ const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
     csvStream.write({
       'Participant ID': result.participantId,
       FSA: result.participantFsa,
+      'First Name': result.firstName,
+      'Last Name': result.lastName,
       'Employer ID': result.employerId,
       'Employer Email': result.employerEmail,
       'HCAP Position': result.hcapPosition,
@@ -57,6 +59,8 @@ const generateRosReport = async (csvStream) => {
   results.forEach((result) => {
     csvStream.write({
       'Participant ID': result.participantId,
+      'First Name': result.firstName,
+      'Last Name': result.lastName,
       'Confirm HCA': result.isHCA,
       'ROS Start Date': result.startDate,
       'ROS End Date': result.endDate,

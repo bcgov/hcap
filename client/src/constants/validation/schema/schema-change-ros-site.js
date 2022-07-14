@@ -5,7 +5,7 @@ export const ChangeRosSiteSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
-    startDate: yup.date().required('Start Date is required'),
+    startDateAtNewSite: yup.date().required('Start Date at a New Site is required'),
     positionType: yup.string().required('Position Type is required').oneOf(rosPositionTypeValues),
     employmentType: yup.string().optional().oneOf(rosEmploymentTypeValues),
     site: yup.number('Invalid type for New Site').required('New Site is required'),

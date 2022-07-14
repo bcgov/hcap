@@ -46,6 +46,14 @@ export const ParticipantTableDialogues = ({
     return participant ? `${participant?.firstName} ${participant?.lastName}` : '';
   };
 
+  const getRosStartDate = async (participantId) => {
+    const details = await getRosDetails(participantId);
+    if (!details || details.length === 0) {
+      throw new Error('Failed to fetch Return of Service details!');
+    }
+    return details[0].data?.date;
+  };
+
   const handleSingleSelectProspectingSites = (values) => {
     handleEngage(actionMenuParticipant.id, participantStatus.PROSPECTING, {
       sites: [values.prospectingSite],
@@ -62,12 +70,14 @@ export const ParticipantTableDialogues = ({
 
   const handleChangeSite = async (values) => {
     try {
-      const { employmentType, healthAuthority, positionType, site, startDate } = values;
+      const { employmentType, healthAuthority, positionType, site, startDateAtNewSite } = values;
+      const date = await getRosStartDate(actionMenuParticipant.id);
       await createReturnOfServiceStatus({
         participantId: actionMenuParticipant.id,
         newSiteId: site,
         data: {
-          startDate,
+          date,
+          startDateAtNewSite,
           employmentType,
           positionType,
           healthAuthority,
@@ -229,7 +239,7 @@ export const ParticipantTableDialogues = ({
       {activeModalForm === 'change-site' && (
         <ChangeSiteForm
           initialValues={{
-            startDate: undefined,
+            startDateAtNewSite: undefined,
             positionType: undefined,
             employmentType: undefined,
             site: undefined,

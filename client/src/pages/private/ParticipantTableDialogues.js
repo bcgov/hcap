@@ -23,7 +23,7 @@ import {
 } from '../../components/modal-forms';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
-import { createReturnOfServiceStatus, getAllSites } from '../../services';
+import { createReturnOfServiceStatus, getAllSites, getRosDetails } from '../../services';
 import { useToast } from '../../hooks';
 
 export const ParticipantTableDialogues = ({

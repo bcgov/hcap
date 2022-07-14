@@ -83,7 +83,7 @@ export const ParticipantTableDialogues = ({
     }
   };
 
-  const fetchSites = async () => {
+  const fetchAllSites = async () => {
     try {
       const { data = [] } = await getAllSites();
       setAllSites(data);
@@ -96,7 +96,9 @@ export const ParticipantTableDialogues = ({
   };
 
   useEffect(() => {
-    fetchSites();
+    if (allSites.length === 0) {
+      fetchAllSites();
+    }
   });
 
   return (

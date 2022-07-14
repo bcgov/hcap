@@ -1,6 +1,5 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import _orderBy from 'lodash/orderBy';
-import { AuthContext } from '../../providers';
 
 import Alert from '@material-ui/lab/Alert';
 import { Box, Divider } from '@material-ui/core';
@@ -32,9 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ChangeSiteForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
-  const { auth } = AuthContext.useAuth();
-  const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
+export const ChangeSiteForm = ({ initialValues, sites, validationSchema, onSubmit, onClose }) => {
   const classes = useStyles();
 
   const MAX_LABEL_LENGTH = 50;

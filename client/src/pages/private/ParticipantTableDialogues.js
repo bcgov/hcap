@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   InterviewingFormSchema,
   ChangeRosSiteSchema,
@@ -6,6 +6,7 @@ import {
   ProspectingSiteSchema,
   participantStatus,
   regionLabelsMap,
+  ToastStatus,
 } from '../../constants';
 import { Dialog } from '../../components/generic';
 import {
@@ -22,7 +23,8 @@ import {
 } from '../../components/modal-forms';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
-import { createReturnOfServiceStatus } from '../../services';
+import { createReturnOfServiceStatus, getAllSites } from '../../services';
+import { useToast } from '../../hooks';
 
 export const ParticipantTableDialogues = ({
   fetchParticipants,
@@ -36,6 +38,8 @@ export const ParticipantTableDialogues = ({
   const { dispatch: participantsDispatch } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
+  const { openToast } = useToast();
+  const [allSites, setAllSites] = useState([]);
   const mappedHA = regionLabelsMap[auth.user?.roles.find((role) => role.includes('region_'))];
 
   const getParticipantName = (participant) => {
@@ -78,6 +82,22 @@ export const ParticipantTableDialogues = ({
       onClose();
     }
   };
+
+  const fetchSites = async () => {
+    try {
+      const { data = [] } = await getAllSites();
+      setAllSites(data);
+    } catch (err) {
+      openToast({
+        status: ToastStatus.Error,
+        message: err.message,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchSites();
+  });
 
   return (
     <Dialog
@@ -213,6 +233,7 @@ export const ParticipantTableDialogues = ({
             site: undefined,
             healthAuthority: mappedHA,
           }}
+          sites={allSites}
           validationSchema={ChangeRosSiteSchema}
           onSubmit={async (values) => {
             await handleChangeSite(values);

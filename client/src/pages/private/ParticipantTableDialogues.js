@@ -65,7 +65,6 @@ export const ParticipantTableDialogues = ({
     try {
       if (!isLoading) {
         setIsLoading(true);
-        console.log('call1');
         const { employmentType, healthAuthority, positionType, site, startDateAtNewSite } = values;
         await createReturnOfServiceStatus({
           participantId: actionMenuParticipant.id,

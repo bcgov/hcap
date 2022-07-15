@@ -9,16 +9,16 @@ export const createReturnOfServiceStatus = async ({
   newSiteId,
   isUpdating = false,
 }) => {
-  // Covert data into date obj
-  const initialDateObj = dayjs(data.date, 'YYYY/MM/DD').toDate();
   const finalBody = {
     ...data,
-    date: initialDateObj,
     employmentType: data.employmentType || undefined,
   };
   if (isUpdating) {
     finalBody.startDateAtNewSite = dayjs(data.startDateAtNewSite, 'YYYY/MM/DD').toDate();
+  } else {
+    finalBody.date = dayjs(data.date, 'YYYY/MM/DD').toDate();
   }
+
   const url = `${API_URL}/api/v1/ros/participant/${participantId}`;
   const response = await fetch(url, {
     method: 'POST',
@@ -32,6 +32,7 @@ export const createReturnOfServiceStatus = async ({
       status: isUpdating ? 'assigned-new-site' : 'assigned-same-site',
       ...(siteId && { siteId }),
       newSiteId,
+      isUpdating,
     }),
   });
   if (response.ok) {
@@ -59,21 +60,4 @@ export const getAllSites = async () => {
   } else {
     throw new Error('Failed to fetch all sites');
   }
-};
-
-export const getRosDetails = async (participantId) => {
-  const url = `${API_URL}/api/v1/ros/participant/${participantId}`;
-  const res = await fetch(url, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-  });
-  if (res.ok) {
-    return res.json();
-  }
-
-  throw new Error('Failed to fetch Return of Service details', res.error || res.statusText);
 };

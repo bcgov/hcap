@@ -38,7 +38,7 @@ router.post(
       });
       return res.status(404).send('Participant not found');
     }
-    const { data, status, siteId, newSiteId } = req.body;
+    const { data, status, siteId, newSiteId, isUpdating } = req.body;
 
     if (siteId) {
       // Validate siteId
@@ -62,6 +62,7 @@ router.post(
         status,
         siteId,
         newSiteId: newSite?.id,
+        isUpdating,
       });
       logger.info({
         action: 'ros-status-create',

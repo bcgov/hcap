@@ -23,7 +23,7 @@ import {
 } from '../../components/modal-forms';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
-import { createReturnOfServiceStatus, getAllSites, getRosDetails } from '../../services';
+import { createReturnOfServiceStatus, getAllSites } from '../../services';
 import { useToast } from '../../hooks';
 
 export const ParticipantTableDialogues = ({
@@ -40,18 +40,11 @@ export const ParticipantTableDialogues = ({
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const { openToast } = useToast();
   const [allSites, setAllSites] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const mappedHA = regionLabelsMap[auth.user?.roles.find((role) => role.includes('region_'))];
 
   const getParticipantName = (participant) => {
     return participant ? `${participant?.firstName} ${participant?.lastName}` : '';
-  };
-
-  const getRosStartDate = async (participantId) => {
-    const details = await getRosDetails(participantId);
-    if (!details || details.length === 0) {
-      throw new Error('Failed to fetch Return of Service details!');
-    }
-    return details[0].data?.date;
   };
 
   const handleSingleSelectProspectingSites = (values) => {
@@ -70,26 +63,29 @@ export const ParticipantTableDialogues = ({
 
   const handleChangeSite = async (values) => {
     try {
-      const { employmentType, healthAuthority, positionType, site, startDateAtNewSite } = values;
-      const date = await getRosStartDate(actionMenuParticipant.id);
-      await createReturnOfServiceStatus({
-        participantId: actionMenuParticipant.id,
-        newSiteId: site,
-        data: {
-          date,
-          startDateAtNewSite,
-          employmentType,
-          positionType,
-          healthAuthority,
-          sameSite: false,
-        },
-        isUpdating: true,
-      });
-      handleUpdate(true, 'Return of Service site updated!');
+      if (!isLoading) {
+        setIsLoading(true);
+        console.log('call1');
+        const { employmentType, healthAuthority, positionType, site, startDateAtNewSite } = values;
+        await createReturnOfServiceStatus({
+          participantId: actionMenuParticipant.id,
+          newSiteId: site,
+          data: {
+            startDateAtNewSite,
+            employmentType,
+            positionType,
+            healthAuthority,
+            sameSite: false,
+          },
+          isUpdating: true,
+        });
+        handleUpdate(true, 'Return of Service site updated!');
+      }
     } catch (error) {
       handleUpdate(false, error.message);
     } finally {
       onClose();
+      setIsLoading(false);
     }
   };
 
@@ -247,8 +243,8 @@ export const ParticipantTableDialogues = ({
           }}
           sites={allSites}
           validationSchema={ChangeRosSiteSchema}
-          onSubmit={async (values) => {
-            await handleChangeSite(values);
+          onSubmit={(values) => {
+            handleChangeSite(values);
           }}
           onClose={onClose}
         />

@@ -34,7 +34,7 @@ const CreateReturnOfServiceSchema = yup
             is: true,
             then: yup
               .string()
-              .required('Return of service date (data.startDate) is required')
+              .required('Start date at a new site (data.startDate) is required')
               .test('is-date', 'Not a valid date', validISODateString),
           },
           {

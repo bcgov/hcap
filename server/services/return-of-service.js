@@ -26,6 +26,7 @@ const makeReturnOfServiceStatus = async ({
   status = 'assigned-same-site',
   siteId,
   newSiteId,
+  isUpdating = false,
 }) => {
   // Get Site id from participant status
   const statuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
@@ -50,6 +51,17 @@ const makeReturnOfServiceStatus = async ({
       throw new Error(rosError.noSiteAttached);
     }
     site_id = sites[0].id;
+  }
+
+  if (isUpdating) {
+    const rosStatuses = await dbClient.db[collections.ROS_STATUS].find({
+      participant_id: participantId,
+      is_current: true,
+    });
+
+    const initialStartDate = rosStatuses?.[0]?.data?.date || data.startDate;
+    // eslint-disable-next-line no-param-reassign
+    data.date = initialStartDate;
   }
 
   return dbClient.db.withTransaction(async (tx) => {

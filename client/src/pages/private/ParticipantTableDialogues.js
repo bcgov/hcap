@@ -40,6 +40,7 @@ export const ParticipantTableDialogues = ({
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const { openToast } = useToast();
   const [allSites, setAllSites] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const mappedHA = regionLabelsMap[auth.user?.roles.find((role) => role.includes('region_'))];
 
   const getParticipantName = (participant) => {
@@ -62,24 +63,28 @@ export const ParticipantTableDialogues = ({
 
   const handleChangeSite = async (values) => {
     try {
-      const { employmentType, healthAuthority, positionType, site, startDate } = values;
-      await createReturnOfServiceStatus({
-        participantId: actionMenuParticipant.id,
-        newSiteId: site,
-        data: {
-          startDate,
-          employmentType,
-          positionType,
-          healthAuthority,
-          sameSite: false,
-        },
-        isUpdating: true,
-      });
-      handleUpdate(true, 'Return of Service site updated!');
+      if (!isLoading) {
+        setIsLoading(true);
+        const { employmentType, healthAuthority, positionType, site, startDate } = values;
+        await createReturnOfServiceStatus({
+          participantId: actionMenuParticipant.id,
+          newSiteId: site,
+          data: {
+            startDate,
+            employmentType,
+            positionType,
+            healthAuthority,
+            sameSite: false,
+          },
+          isUpdating: true,
+        });
+        handleUpdate(true, 'Return of Service site updated!');
+      }
     } catch (error) {
       handleUpdate(false, error.message);
     } finally {
       onClose();
+      setIsLoading(false);
     }
   };
 
@@ -237,8 +242,8 @@ export const ParticipantTableDialogues = ({
           }}
           sites={allSites}
           validationSchema={ChangeRosSiteSchema}
-          onSubmit={async (values) => {
-            await handleChangeSite(values);
+          onSubmit={(values) => {
+            handleChangeSite(values);
           }}
           onClose={onClose}
         />

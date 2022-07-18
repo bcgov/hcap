@@ -9,14 +9,16 @@ export const createReturnOfServiceStatus = async ({
   newSiteId,
   isUpdating = false,
 }) => {
-  // Covert data into date obj
-  const siteDate = data.date || data.startDate;
-  const dateObj = dayjs(siteDate, 'YYYY/MM/DD').toDate();
   const finalBody = {
     ...data,
-    date: dateObj,
     employmentType: data.employmentType || undefined,
   };
+  if (isUpdating) {
+    finalBody.startDate = dayjs(data.startDate, 'YYYY/MM/DD').toDate();
+  } else {
+    finalBody.date = dayjs(data.date, 'YYYY/MM/DD').toDate();
+  }
+
   const url = `${API_URL}/api/v1/ros/participant/${participantId}`;
   const response = await fetch(url, {
     method: 'POST',
@@ -30,6 +32,7 @@ export const createReturnOfServiceStatus = async ({
       status: isUpdating ? 'assigned-new-site' : 'assigned-same-site',
       ...(siteId && { siteId }),
       newSiteId,
+      isUpdating,
     }),
   });
   if (response.ok) {

@@ -42,7 +42,7 @@ export const ChangeSiteForm = ({ initialValues, sites, validationSchema, onSubmi
         <FormikForm>
           <Box my={1}>
             <FastField
-              name='startDateAtNewSite'
+              name='startDate'
               component={RenderDateField}
               label='Start Date at a New Site'
               maxDate={getTodayDate()}

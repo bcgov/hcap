@@ -14,7 +14,7 @@ export const createReturnOfServiceStatus = async ({
     employmentType: data.employmentType || undefined,
   };
   if (isUpdating) {
-    finalBody.startDateAtNewSite = dayjs(data.startDateAtNewSite, 'YYYY/MM/DD').toDate();
+    finalBody.startDate = dayjs(data.startDate, 'YYYY/MM/DD').toDate();
   } else {
     finalBody.date = dayjs(data.date, 'YYYY/MM/DD').toDate();
   }

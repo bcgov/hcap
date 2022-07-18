@@ -65,12 +65,12 @@ export const ParticipantTableDialogues = ({
     try {
       if (!isLoading) {
         setIsLoading(true);
-        const { employmentType, healthAuthority, positionType, site, startDateAtNewSite } = values;
+        const { employmentType, healthAuthority, positionType, site, startDate } = values;
         await createReturnOfServiceStatus({
           participantId: actionMenuParticipant.id,
           newSiteId: site,
           data: {
-            startDateAtNewSite,
+            startDate,
             employmentType,
             positionType,
             healthAuthority,
@@ -234,7 +234,7 @@ export const ParticipantTableDialogues = ({
       {activeModalForm === 'change-site' && (
         <ChangeSiteForm
           initialValues={{
-            startDateAtNewSite: undefined,
+            startDate: undefined,
             positionType: undefined,
             employmentType: undefined,
             site: undefined,

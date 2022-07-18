@@ -59,7 +59,7 @@ const makeReturnOfServiceStatus = async ({
       is_current: true,
     });
 
-    const initialStartDate = rosStatuses?.[0]?.data?.date || data.startDateAtNewSite;
+    const initialStartDate = rosStatuses?.[0]?.data?.date || data.startDate;
     // eslint-disable-next-line no-param-reassign
     data.date = initialStartDate;
   }

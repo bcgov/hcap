@@ -28,7 +28,7 @@ const CreateReturnOfServiceSchema = yup
             then: yup.string().optional(),
           }
         ),
-        startDateAtNewSite: yup.string().when(
+        startDate: yup.string().when(
           'isUpdating',
           {
             is: true,

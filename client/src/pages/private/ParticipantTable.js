@@ -349,7 +349,6 @@ const ParticipantTable = () => {
     }
   };
 
-  // TODO: There will ba merge conflict with Tara
   const openFormForParticipant = async (participantId, formKey) => {
     if (formKey === 'edit-participant') {
       const participant = await fetchParticipant({ id: participantId });

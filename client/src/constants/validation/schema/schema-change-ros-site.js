@@ -8,6 +8,6 @@ export const ChangeRosSiteSchema = yup
     startDate: yup.date().required('Start Date at a New Site is required'),
     positionType: yup.string().required('Position Type is required').oneOf(rosPositionTypeValues),
     employmentType: yup.string().optional().oneOf(rosEmploymentTypeValues),
-    site: yup.number('Invalid type for New Site').required('New Site is required'),
+    site: yup.number('Invalid type for New Site').required('New Site Name is required'),
     healthAuthority: yup.string().required('Health Authority is required'),
   });

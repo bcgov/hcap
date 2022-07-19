@@ -38,7 +38,7 @@ export const ChangeSiteForm = ({ initialValues, sites, validationSchema, onSubmi
 
   return (
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-      {({ submitForm }) => (
+      {({ submitForm, setFieldValue, validateField }) => (
         <FormikForm>
           <Box my={1}>
             <FastField
@@ -86,6 +86,13 @@ export const ChangeSiteForm = ({ initialValues, sites, validationSchema, onSubmi
                 value: item.siteId,
                 label: addEllipsisMask(item.siteName, MAX_LABEL_LENGTH),
               }))}
+              onItemChange={(_, item) => {
+                const siteId = item?.value;
+                const siteHA = sites.find((site) => site.siteId === siteId)?.healthAuthority;
+                const healthAuthority = healthAuthorities.find((ha) => ha.value === siteHA)?.value;
+                setFieldValue('healthAuthority', healthAuthority || '');
+                validateField('healthAuthority');
+              }}
             />
             <Box mt={1}>
               <Alert severity='info'>{ROS_SITE_INFO_MESSAGE}</Alert>

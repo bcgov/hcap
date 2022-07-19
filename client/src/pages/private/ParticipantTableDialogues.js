@@ -5,7 +5,6 @@ import {
   RejectedFormSchema,
   ProspectingSiteSchema,
   participantStatus,
-  regionLabelsMap,
   ToastStatus,
 } from '../../constants';
 import { Dialog } from '../../components/generic';
@@ -41,7 +40,6 @@ export const ParticipantTableDialogues = ({
   const { openToast } = useToast();
   const [allSites, setAllSites] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const mappedHA = regionLabelsMap[auth.user?.roles.find((role) => role.includes('region_'))];
 
   const getParticipantName = (participant) => {
     return participant ? `${participant?.firstName} ${participant?.lastName}` : '';
@@ -238,7 +236,7 @@ export const ParticipantTableDialogues = ({
             positionType: undefined,
             employmentType: undefined,
             site: undefined,
-            healthAuthority: mappedHA,
+            healthAuthority: undefined,
           }}
           sites={allSites}
           validationSchema={ChangeRosSiteSchema}

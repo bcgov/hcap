@@ -187,6 +187,10 @@ class FilteredParticipantsFinder {
         joinFieldName = `rosSite.body.siteName`;
       }
 
+      if (sortField === 'lastEngagedDate') {
+        joinFieldName = `${employerSpecificJoin}.created_at`;
+      }
+
       // If a field to sort is provided we put that as first priority
       this.context.options.order.unshift({
         field: joinFieldName,

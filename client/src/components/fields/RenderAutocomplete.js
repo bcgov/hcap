@@ -18,7 +18,14 @@ const useStyles = makeStyles({
   },
 });
 
-export const RenderAutocomplete = ({ field: { value, name }, form, label, options, boldLabel }) => {
+export const RenderAutocomplete = ({
+  field: { value, name },
+  form,
+  label,
+  options,
+  boldLabel,
+  onItemChange,
+}) => {
   const classes = useStyles();
   const touched = form.touched[name];
   const error = form.errors[name];
@@ -33,7 +40,10 @@ export const RenderAutocomplete = ({ field: { value, name }, form, label, option
         getOptionLabel={(option) => option?.label || ''}
         getOptionSelected={(option, value) => value === '' || option.value === value.value}
         value={options.find((option) => option.value === value) || ''}
-        onChange={(_, value) => setFieldValue(name, value?.value || '')}
+        onChange={(e, val) => {
+          setFieldValue(name, val?.value || '');
+          if (onItemChange) onItemChange(e, val);
+        }}
         renderInput={(params) => (
           <TextField
             {...params}

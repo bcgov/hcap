@@ -383,10 +383,10 @@ const getRosParticipantsReport = async () => {
     participantId: entry.participant_id,
     firstName: entry.participantJoin?.[0]?.body?.firstName,
     lastName: entry.participantJoin?.[0]?.body?.lastName,
-    isHCA: true, // TODO: confirm if we need to track this information in our db
+    isHCA: true,
     startDate: dayjs(entry.data?.date).format('YYYY-MM-DD'),
     endDate: addYearToDate(entry.data?.date).format('YYYY-MM-DD'),
-    siteStartDate: dayjs(entry.data?.date).format('YYYY-MM-DD'), // TODO: update once the support for multiple sites is enabled
+    siteStartDate: dayjs(entry.data?.startDate || entry.data?.date).format('YYYY-MM-DD'),
     site: entry.siteJoin?.body?.siteName,
     healthRegion: entry.siteJoin?.body?.healthAuthority,
   }));

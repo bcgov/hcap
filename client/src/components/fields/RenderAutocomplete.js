@@ -40,9 +40,9 @@ export const RenderAutocomplete = ({
         getOptionLabel={(option) => option?.label || ''}
         getOptionSelected={(option, value) => value === '' || option.value === value.value}
         value={options.find((option) => option.value === value) || ''}
-        onChange={(e, value) => {
-          setFieldValue(name, value?.value || '');
-          if (onItemChange) onItemChange(e, value);
+        onChange={(e, val) => {
+          setFieldValue(name, val?.value || '');
+          if (onItemChange) onItemChange(e, val);
         }}
         renderInput={(params) => (
           <TextField

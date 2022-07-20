@@ -10,7 +10,7 @@ import store from 'store';
 import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
 import { NewSiteForm } from '../../components/modal-forms';
 import { useLocation } from 'react-router-dom';
-import { Routes, regionLabelsMap, API_URL } from '../../constants';
+import { Routes, regionLabelsMap, API_URL, healthAuthoritiesFilter } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import {
@@ -117,7 +117,7 @@ const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
   );
 };
 
-export default () => {
+export default ({ sites, viewOnly }) => {
   const classes = useStyles();
   const { openToast } = useToast();
   const [activeModalForm, setActiveModalForm] = useState(null);
@@ -129,21 +129,15 @@ export default () => {
   const [isLoadingReport, setLoadingReport] = useState(false);
 
   const [orderBy, setOrderBy] = useState('siteName');
-  const [healthAuthorities, setHealthAuthorities] = useState([
-    'Interior',
-    'Fraser',
-    'Vancouver Coastal',
-    'Vancouver Island',
-    'Northern',
-    'None',
-  ]);
+  const [healthAuthorities, setHealthAuthorities] = useState(healthAuthoritiesFilter);
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
+  console.log(healthAuthoritiesFilter);
 
   const history = useHistory();
   const location = useLocation();
 
-  const handleRequestSort = (event, property) => {
+  const handleRequestSort = (_, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
@@ -231,7 +225,11 @@ export default () => {
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
 
   useEffect(() => {
-    fetchSites();
+    if (sites) {
+      setRows(sites);
+    } else {
+      fetchSites();
+    }
     // This fetch sites is a dependency of this function. This needs to be reworked, but it is outside of the scope of the ticket
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history, location]);
@@ -281,16 +279,19 @@ export default () => {
         </CheckPermissions>
 
         {roles.includes('superuser') && <Grid item xs={8} />}
-        <Grid className={classes.rootItem} item xs={4}>
-          <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
-            <Button
-              onClick={downloadHiringReport}
-              variant='outlined'
-              text='Download Hiring Milestones Report'
-              loading={isLoadingReport}
-            />
-          </CheckPermissions>
-        </Grid>
+
+        {!viewOnly && (
+          <Grid className={classes.rootItem} item xs={4}>
+            <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
+              <Button
+                onClick={downloadHiringReport}
+                variant='outlined'
+                text='Download Hiring Milestones Report'
+                loading={isLoadingReport}
+              />
+            </CheckPermissions>
+          </Grid>
+        )}
 
         {isPendingRequests && (
           <Grid className={classes.tableItem} item xs={12}>

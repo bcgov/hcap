@@ -7,7 +7,7 @@ import { AuthContext, ParticipantsContext } from '../../providers';
 const ParticipantTable = lazy(() => import('./ParticipantTable'));
 const SiteTable = lazy(() => import('./SiteTable'));
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   tableContainer: {
     overflowX: 'scroll',
   },
@@ -19,8 +19,9 @@ export default () => {
   const sites = auth.user?.sites || [];
   const roles = auth.user?.roles || [];
   const classes = useStyles();
+  console.log(sites);
 
-  const handleTabChange = (event, newTabValue) => {
+  const handleTabChange = (_, newTabValue) => {
     setTabValue(newTabValue);
   };
 
@@ -33,11 +34,12 @@ export default () => {
         <Grid container justify='flex-start' alignItems='flex-start' direction='row'>
           <CustomTabs value={tabValue} onChange={handleTabChange} aria-label='tabs'>
             <CustomTab label='Participants' id='participantsTab' key='participants' />
-            {roles.includes('superuser') && (
+            {(roles.includes('employer') || roles.includes('health_authority')) && (
               <CustomTab label='My Sites' id='sitesTab' key='sites' />
             )}
           </CustomTabs>
         </Grid>
+
         <Grid
           container
           alignItems='center'
@@ -51,7 +53,7 @@ export default () => {
             </ParticipantsContext.ParticipantsProvider>
           )}
 
-          {tabValue === 1 && <SiteTable sites={sites} />}
+          {tabValue === 1 && <SiteTable sites={sites} viewOnly />}
         </Grid>
       </CheckPermissions>
     </Page>

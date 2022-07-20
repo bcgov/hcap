@@ -571,9 +571,7 @@ const ParticipantTable = () => {
               }}
               rows={rows}
               isLoading={isLoadingData}
-              isMultiSelect={
-                selectedTab === 'Available Participants'
-              }
+              isMultiSelect={selectedTab === 'Available Participants'}
               selectedRows={selectedParticipants}
               updateSelectedRows={setSelectedParticipants}
               multiSelectAction={bulkEngage}
@@ -589,11 +587,7 @@ const ParticipantTable = () => {
             onClose={() => setActionMenuParticipant(null)}
           >
             {actionMenuParticipant?.status === 'open' && (
-              <MenuItem
-                onClick={() => openParticipantSelectSite()}
-              >
-                Engage
-              </MenuItem>
+              <MenuItem onClick={() => openParticipantSelectSite()}>Engage</MenuItem>
             )}
             {actionMenuParticipant?.status === 'prospecting' && (
               <MenuItem onClick={() => setActiveModalForm('interviewing')}>Interviewing</MenuItem>

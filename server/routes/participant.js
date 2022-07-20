@@ -42,7 +42,6 @@ const keycloak = require('../keycloak.js');
 const logger = require('../logger.js');
 const { asyncMiddleware } = require('../error-handler.js');
 const { expressRequestBodyValidator } = require('../middleware/index.js');
-const FEATURE_FLAGS = require('../services/feature-flags');
 
 const participantRouter = express.Router();
 const participantsRouter = express.Router();
@@ -506,9 +505,6 @@ employerActionsRouter.post(
   keycloak.allowRolesMiddleware('employer', 'health_authority'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    if (!FEATURE_FLAGS.FEATURE_MULTI_ORG_PROSPECTING) {
-      return res.status(405).send('Feature not enabled');
-    }
     // Validate Body
     const { body, hcapUserInfo: user } = req;
     await validate(BulkEngageParticipantSchema, body);

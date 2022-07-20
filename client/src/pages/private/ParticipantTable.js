@@ -25,8 +25,6 @@ import {
   fetchParticipant,
   getParticipants,
   getGraduationStatus,
-  featureFlag,
-  FEATURE_MULTI_ORG_PROSPECTING,
   fetchUserNotifications,
 } from '../../services';
 import { ParticipantStatus } from '../../components/generic/ParticipantStatus';
@@ -574,7 +572,6 @@ const ParticipantTable = () => {
               rows={rows}
               isLoading={isLoadingData}
               isMultiSelect={
-                featureFlag(FEATURE_MULTI_ORG_PROSPECTING) &&
                 selectedTab === 'Available Participants'
               }
               selectedRows={selectedParticipants}
@@ -593,11 +590,7 @@ const ParticipantTable = () => {
           >
             {actionMenuParticipant?.status === 'open' && (
               <MenuItem
-                onClick={() =>
-                  featureFlag(FEATURE_MULTI_ORG_PROSPECTING)
-                    ? openParticipantSelectSite()
-                    : handleEngage(actionMenuParticipant.id, 'prospecting')
-                }
+                onClick={() => openParticipantSelectSite()}
               >
                 Engage
               </MenuItem>

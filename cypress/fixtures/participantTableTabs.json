@@ -5,7 +5,7 @@
       "fixture": "test-superuser",
       "tabsWithMultiselect": [],
       "tabsWithActions": ["Participants"],
-      "allTabs": ["Participants", "My Sites", "Participants"],
+      "allTabs": ["Participants", "Participants"],
       "tableTabs": {
         "Participants": [
           "ID",
@@ -60,6 +60,7 @@
       ],
       "allTabs": [
         "Participants",
+        "My Sites",
         "Available Participants",
         "My Candidates",
         "Archived Candidates",
@@ -149,6 +150,7 @@
       ],
       "allTabs": [
         "Participants",
+        "My Sites",
         "Available Participants",
         "My Candidates",
         "Archived Candidates",

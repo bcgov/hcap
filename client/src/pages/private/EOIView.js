@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
-import { Routes, regionLabelsMap, API_URL } from '../../constants';
+import { Routes, regionLabelsMap, API_URL, healthAuthoritiesFilter } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { AuthContext } from '../../providers';
 
@@ -24,14 +24,7 @@ export default () => {
     { id: 'operatorName', name: 'Operator Name' },
     { id: 'details' },
   ]);
-  const [healthAuthorities, setHealthAuthorities] = useState([
-    'Interior',
-    'Fraser',
-    'Vancouver Coastal',
-    'Vancouver Island',
-    'Northern',
-    'None',
-  ]);
+  const [healthAuthorities, setHealthAuthorities] = useState(healthAuthoritiesFilter);
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
 

@@ -25,7 +25,7 @@ describe('Participant View', () => {
     // });
 
     // Testing Tabs
-    cy.contains('My Sites').should('not.exist');
+    cy.contains('My Sites').should('exist');
   });
 
   it('Visits Participant View as a single-region employer', () => {
@@ -35,7 +35,7 @@ describe('Participant View', () => {
     cy.get('ul.MuiMenu-list').should('not.be.visible');
 
     // Testing Tabs
-    cy.contains('My Sites').should('not.exist');
+    cy.contains('My Sites').should('exist');
   });
 
   it('Visits Participant View as a superuser', () => {
@@ -47,9 +47,7 @@ describe('Participant View', () => {
     cy.get('ul.MuiMenu-list[role=listbox] > li').should('have.length', 6);
 
     // Testing Tabs
-    cy.get('ul.MuiMenu-list[role=listbox]').first().click();
-    cy.get('button#sitesTab').click();
-    cy.contains('My Sites').should('exist');
+    cy.contains('My Sites').should('not.exist');
   });
 
   it('Visits Participant View as a MoH user', () => {

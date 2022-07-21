@@ -47,8 +47,6 @@ describe('Participant View', () => {
     cy.get('ul.MuiMenu-list[role=listbox] > li').should('have.length', 6);
 
     // Testing Tabs
-    cy.get('ul.MuiMenu-list[role=listbox]').first().click();
-    cy.get('button#sitesTab').click();
     cy.contains('My Sites').should('not.exist');
   });
 

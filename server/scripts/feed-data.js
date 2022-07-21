@@ -14,7 +14,13 @@ const { createRows } = require('../utils');
      * the id will be substituted for the real one after it has been created
      */
     // tables IN ORDER they should be inserted (for foreign key relations)
-    const tableNames = ['post_secondary_institutions', 'cohorts'];
+    const tableNames = [
+      'post_secondary_institutions',
+      'cohorts',
+      'cohort_participants',
+      'participants_status',
+      'participant_post_hire_status',
+    ];
     // all data created in process
     const testingData = {};
 
@@ -45,17 +51,20 @@ const { createRows } = require('../utils');
 
         foreignKeys.forEach((foreignKey) => {
           const foreignTable = foreignKey.origin_name;
-          const keyNameInThisTable = foreignKey.dependent_columns[0];
-          const keyNameInOtherTable = foreignKey.origin_columns[0];
 
-          tableData = tableData.map((tableRow) => {
-            const placeHolderKey = tableRow[keyNameInThisTable];
-            const realKey = testingData[foreignTable][placeHolderKey][keyNameInOtherTable];
+          if (foreignTable in testingData) {
+            const keyNameInThisTable = foreignKey.dependent_columns[0];
+            const keyNameInOtherTable = foreignKey.origin_columns[0];
 
-            const updatedTableRow = tableRow;
-            updatedTableRow[keyNameInThisTable] = realKey;
-            return updatedTableRow;
-          });
+            tableData = tableData.map((tableRow) => {
+              const placeHolderKey = tableRow[keyNameInThisTable];
+              const realKey = testingData[foreignTable][placeHolderKey][keyNameInOtherTable];
+
+              const updatedTableRow = tableRow;
+              updatedTableRow[keyNameInThisTable] = realKey;
+              return updatedTableRow;
+            });
+          }
         });
 
         const promises = tableData.map((entryData) => {

@@ -19,7 +19,6 @@ export default () => {
   const sites = auth.user?.sites || [];
   const roles = auth.user?.roles || [];
   const classes = useStyles();
-  console.log(sites);
 
   const handleTabChange = (_, newTabValue) => {
     setTabValue(newTabValue);

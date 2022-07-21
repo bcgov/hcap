@@ -132,7 +132,6 @@ export default ({ sites, viewOnly }) => {
   const [healthAuthorities, setHealthAuthorities] = useState(healthAuthoritiesFilter);
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
-  console.log(healthAuthoritiesFilter);
 
   const history = useHistory();
   const location = useLocation();

@@ -1,4 +1,4 @@
-/* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
+/* eslint-disable no-console, no-restricted-syntax, no-await-in-loop, no-loop-func */
 require('dotenv').config({ path: '../.env' });
 const readXlsxFile = require('node-xlsx').default;
 const path = require('path');
@@ -15,20 +15,24 @@ const { createRows } = require('../utils');
      */
     // tables IN ORDER they should be inserted (for foreign key relations)
     const tableNames = [
+      'users',
       'post_secondary_institutions',
       'cohorts',
       'cohort_participants',
       'participants_status',
       'participant_post_hire_status',
     ];
-    // all data created in process
+    // all data successfully created in process
     const testingData = {};
+    // all responses to inserts, including duplicates and errors
+    const response = [];
+    // for debugging: the last record attempted to process before error
+    let lastInsert = '';
 
     try {
       const rootDirectory = 'xlsx/';
 
       await dbClient.connect();
-      const response = [];
 
       for (const tableName of tableNames) {
         testingData[tableName] = {};
@@ -57,6 +61,8 @@ const { createRows } = require('../utils');
             const keyNameInOtherTable = foreignKey.origin_columns[0];
 
             tableData = tableData.map((tableRow) => {
+              lastInsert = { ...tableRow };
+              lastInsert.tableName = tableName;
               const placeHolderKey = tableRow[keyNameInThisTable];
               const realKey = testingData[foreignTable][placeHolderKey][keyNameInOtherTable];
 
@@ -86,8 +92,8 @@ const { createRows } = require('../utils');
               if (result.reason.code === '23505') {
                 response.push({ table: tableName, id, status: 'Duplicate' });
               } else {
-                console.log(result);
                 response.push({ table: tableName, id, status: 'Error', message: result.reason });
+                throw new Error(result.reason);
               }
           }
         });
@@ -95,8 +101,28 @@ const { createRows } = require('../utils');
       console.table(response);
       process.exit(0);
     } catch (error) {
+      // clean up all inserted data on failure,
+      // and display all attempted inserts to user to assist debugging
+      try {
+        console.error(`Failed to feed entity, ${error}`);
+        console.log('There may be a problem with the following data or mapped records:');
+        console.dir(lastInsert);
+        console.table(response);
+        // reverse direction of array to delete dependent records first
+        for (const tableName of tableNames.reverse()) {
+          const tableData = testingData[tableName] ?? {};
+          const ids = Object.values(tableData).map((entry) => entry.id);
+          if (ids.length > 0) {
+            console.log('Deleting data from table', tableName);
+            await dbClient.db[tableName].destroy({ id: ids });
+            console.log(`Deleted records with ids [ ${ids.join(', ')} ]`);
+          }
+        }
+      } catch (e) {
+        console.log('Error deleting data - manual cleanup required.', e);
+      }
+
       await dbClient.disconnect();
-      console.error(`Failed to feed entity, ${error}`);
       process.exit(1);
     }
   }

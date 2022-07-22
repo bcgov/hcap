@@ -77,8 +77,6 @@
           "Email Address",
           "Preferred Region(s)",
           "Site Distance",
-          "Non-HCAP",
-          "Callback Status",
           "Last Updated"
         ],
         "My Candidates": [
@@ -114,10 +112,8 @@
           "Last Name",
           "First Name",
           "Status",
-          "FSA",
           "Phone Number",
           "Email Address",
-          "Site Distance",
           "Site Name",
           "Non-HCAP",
           "Last Updated",

@@ -325,6 +325,7 @@ class FieldsFilteredParticipantsFinder {
         relation: collections.ROS_STATUS,
         on: {
           participant_id: 'id',
+          is_current: true,
         },
         rosSite: {
           type: 'LEFT OUTER',

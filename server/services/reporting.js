@@ -357,8 +357,13 @@ const getNoOfferParticipantsReport = async () => {
   }));
 };
 
-const getRosParticipantsReport = async () => {
+const getRosParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
   const searchOptions = {};
+
+  if (region !== DEFAULT_REGION_NAME) {
+    searchOptions['siteJoin.body.healthAuthority'] = region;
+  }
+
   const rosEntries = await dbClient.db[collections.ROS_STATUS]
     .join({
       participantJoin: {

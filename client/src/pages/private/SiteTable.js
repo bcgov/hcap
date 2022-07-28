@@ -9,10 +9,17 @@ import store from 'store';
 import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
 import { NewSiteForm } from '../../components/modal-forms';
 import { useLocation } from 'react-router-dom';
-import { Routes, regionLabelsMap, API_URL, healthAuthoritiesFilter } from '../../constants';
+import {
+  Routes,
+  regionLabelsMap,
+  API_URL,
+  healthAuthoritiesFilter,
+  ToastStatus,
+  CreateSiteSchema,
+  onReportDownloadResult,
+} from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
-import { ToastStatus, CreateSiteSchema, onReportDownloadResult } from '../../constants';
 import { AuthContext } from '../../providers';
 
 const useStyles = makeStyles((theme) => ({

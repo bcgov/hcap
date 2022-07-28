@@ -202,10 +202,19 @@ export default ({ sites, viewOnly }) => {
     setLoadingReport(false);
   };
 
-  const downloadRosReport = async () => {
-    setLoadingRosReport(true);
+  const downloadRosReport = async (regionIds) => {
+    if (!regionIds || regionIds.length === 0) {
+      openToast({
+        status: ToastStatus.Error,
+        message: 'Download error: No health region found!',
+      });
+      return;
+    }
 
-    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/ros`, {
+    setLoadingRosReport(true);
+    const healthRegion = regionIds[0];
+
+    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/ros/${healthRegion}`, {
       headers: {
         Authorization: `Bearer ${store.get('TOKEN')}`,
       },
@@ -304,7 +313,7 @@ export default ({ sites, viewOnly }) => {
               <Grid className={classes.rootItem} item xs={12}>
                 <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
                   <Button
-                    onClick={downloadRosReport}
+                    onClick={() => downloadRosReport(healthAuthorities)}
                     variant='outlined'
                     text='Download Return of Service Milestones report'
                     loading={isLoadingRosReport}

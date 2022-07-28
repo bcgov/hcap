@@ -362,6 +362,7 @@ const getRosParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
 
   if (region !== DEFAULT_REGION_NAME) {
     searchOptions['siteJoin.body.healthAuthority'] = region;
+    searchOptions.status = 'assigned-same-site';
   }
 
   const rosEntries = await dbClient.db[collections.ROS_STATUS]
@@ -383,6 +384,38 @@ const getRosParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
       },
     })
     .find(searchOptions);
+
+  if (region !== DEFAULT_REGION_NAME) {
+    const additionalEntries = await dbClient.db[collections.ROS_STATUS]
+      .join({
+        participantJoin: {
+          type: 'LEFT OUTER',
+          relation: collections.PARTICIPANTS,
+          on: {
+            id: 'participant_id',
+          },
+        },
+        siteJoin: {
+          type: 'LEFT OUTER',
+          decomposeTo: 'object',
+          relation: collections.EMPLOYER_SITES,
+          on: {
+            id: 'site_id',
+          },
+        },
+      })
+      .find({
+        status: 'assigned-new-site',
+      });
+
+    additionalEntries.forEach((entry) => {
+      if (rosEntries.find((ros) => ros.participant_id === entry.participant_id)) {
+        rosEntries.push(entry);
+      }
+    });
+
+    rosEntries.sort((a, b) => a.participant_id - b.participant_id);
+  }
 
   return rosEntries.map((entry) => ({
     participantId: entry.participant_id,

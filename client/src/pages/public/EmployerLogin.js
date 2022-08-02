@@ -9,7 +9,7 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { Page, Button } from '../../components/generic';
 import LoginFooter from './LoginFooter';
 import { Routes, HCAP_LINK, PEOI_LINK, HCAP_INFO_EMAIL } from '../../constants';
-import backgroundImage from '../../assets/images/emp_login_bg.png';
+import backgroundImage from '../../assets/images/emp_login_bg.jpg';
 
 const useStyles = makeStyles((theme) => ({
   blueText: {

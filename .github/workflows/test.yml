@@ -54,6 +54,9 @@ jobs:
       - name: Add Participants
         run: cd server && POSTGRES_HOST=localhost npm run feed-participants participants.xlsx
 
+      - name: Add Test Data
+        run: npm run feed-data
+
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:

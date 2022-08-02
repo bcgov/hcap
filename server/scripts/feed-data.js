@@ -1,9 +1,29 @@
 /* eslint-disable no-console, no-restricted-syntax, no-await-in-loop, no-loop-func */
 require('dotenv').config({ path: '../.env' });
-const readXlsxFile = require('node-xlsx').default;
 const path = require('path');
+const { parseFile } = require('fast-csv');
 const { dbClient } = require('../db');
-const { createRows } = require('../utils');
+
+// TEST PSEUDOCODE
+// we need a psi and a cohort
+// let psi = {...}; cohort = {...}
+// rawTestData = {post_secondary_instution: psi, cohort: cohort}
+// const testData = feedData(rawTestData)
+
+// one file actually doing the db saves --> export callable function
+// have script file --> calls db file w/ params based on inputs from command line, call from npm
+// parsing data, call db
+
+// what kind of data do we want to have ready for new onboarders?
+
+// make feed-data <== Github doesn't do this part
+// cypress run
+// PASSES
+
+// csv conversion
+// github actions <-- to run it
+
+// FUTURE....
 
 (async () => {
   if (require.main === module) {
@@ -34,21 +54,29 @@ const { createRows } = require('../utils');
 
       await dbClient.connect();
 
-      for (const tableName of tableNames) {
-        testingData[tableName] = {};
-        const fileName = `${rootDirectory + tableName}.xlsx`;
-        const xlsx = readXlsxFile.parse(path.resolve(__dirname, fileName), {
-          raw: true,
+      const readCSV = async (tableName) => {
+        const options = { objectMode: true, headers: true, renameHeaders: false };
+
+        return new Promise((resolve, reject) => {
+          const results = [];
+          const fileName = path.resolve(__dirname, `${rootDirectory + tableName}.csv`);
+          parseFile(fileName, options)
+            .on('error', (error) => {
+              reject(error);
+            })
+            .on('data', (row) => {
+              results.push(row);
+            })
+            .on('end', () => {
+              resolve(results);
+            });
         });
+      };
 
-        const rawTableData = xlsx[0].data;
+      for (const tableName of tableNames) {
+        let tableData = await readCSV(tableName);
 
-        // create 1:1 header mapping so that we can use the createRows function
-        const headerMap = rawTableData[0].reduce(
-          (accumulator, headerValue) => ({ ...accumulator, [headerValue]: headerValue }),
-          {}
-        );
-        let tableData = createRows(rawTableData, headerMap);
+        testingData[tableName] = {};
 
         // replace placeholder foreign keys with actual values
         const foreignKeys = dbClient.db[tableName].fks;

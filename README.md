@@ -53,24 +53,24 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 
 ### How-To
 
-To set up and run database, backend (server), and frontend (client) applications:
+#### To set up and run database, backend (server), and frontend (client) applications:
 - Run `make local-build` within the root folder of the project to build the application
 - Run `make local-run` within the root folder of the project to run the application
 - You should see the application running at `localhost:4000`
 
-To seed the database with data in an Excel sheet:
+#### To seed the database with data in an Excel sheet:
 
 - `make seed-sites SHEET=my_spreadsheet.xlsx`
 - `make seed-participants SHEET=my_spreadsheet.xlsx`
 
 **Note:** The Excel file should be placed in `server/scripts/xlsx`.
 
-To tear down your environment:
+#### To tear down your environment:
 
 - Run `make local-close`
 - Run `make local-clean`
 
-To create KC test users as well as assign roles:
+#### To create KC test users as well as assign roles:
 
 - Run `make local-kc-build`
 - Run `make local-kc-run`
@@ -79,7 +79,7 @@ Go to `http://keycloak.local.freshworks.club:8080/auth` console and add users/as
 - Run `make kc-export-users` to save your changes
 `409 Conflict` errors are ok if the user already exists, only the role change will be applied
 
-To run server tests:
+#### To run server unit tests:
 
 - Make sure containers are running
   - `make local-kc-run`
@@ -88,7 +88,13 @@ To run server tests:
   - `npm test`
 - or by running
   - `make local-server-tests`
-- Cypress tests may be run with
+
+#### To run e2e tests:
+- Make sure containers are running
+  - `make local-kc-run`
+- Make sure you've imported KC users into your local environment
+  - `make kc-import-users`
+- Tests can be run with
   - `make local-cypress-tests`
 
 ### Using the application

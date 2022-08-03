@@ -5,7 +5,7 @@ import store from 'store';
 import { Page, Card, CheckPermissions, Button } from '../../components/generic';
 import { API_URL } from '../../constants';
 import { useToast } from '../../hooks';
-import { onReportDownloadResult } from '../../utils';
+import { handleReportDownloadResult } from '../../utils';
 
 export default () => {
   const { openToast } = useToast();
@@ -55,7 +55,7 @@ export default () => {
       method: 'GET',
     });
 
-    const downloadRes = await onReportDownloadResult(
+    const downloadRes = await handleReportDownloadResult(
       response,
       `participant-stats-hired-${new Date().toJSON()}.csv`
     );
@@ -73,7 +73,7 @@ export default () => {
       method: 'GET',
     });
 
-    const downloadRes = await onReportDownloadResult(
+    const downloadRes = await handleReportDownloadResult(
       response,
       `return-of-service-milestones-${new Date().toJSON()}.csv`
     );

@@ -19,7 +19,7 @@ import {
 } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
-import { onReportDownloadResult } from '../../utils';
+import { handleReportDownloadResult } from '../../utils';
 import { AuthContext } from '../../providers';
 
 const useStyles = makeStyles((theme) => ({
@@ -192,7 +192,7 @@ export default ({ sites, viewOnly }) => {
       method: 'GET',
     });
 
-    const downloadRes = await onReportDownloadResult(
+    const downloadRes = await handleReportDownloadResult(
       response,
       `report-hired-${regionId}-${new Date().toJSON()}.csv`
     );
@@ -228,7 +228,7 @@ export default ({ sites, viewOnly }) => {
       method: 'GET',
     });
 
-    const downloadRes = await onReportDownloadResult(
+    const downloadRes = await handleReportDownloadResult(
       response,
       `return-of-service-milestones-${new Date().toJSON()}.csv`
     );

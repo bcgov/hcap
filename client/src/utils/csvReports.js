@@ -5,7 +5,7 @@ import {
   DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
 } from '../constants';
 
-export const onReportDownloadResult = async (response, reportFileName) => {
+export const handleReportDownloadResult = async (response, reportFileName) => {
   if (response.ok) {
     const blob = await response.blob();
     saveAs(blob, reportFileName);

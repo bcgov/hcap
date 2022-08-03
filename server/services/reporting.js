@@ -365,7 +365,7 @@ const getRosParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
     searchOptions.status = 'assigned-same-site';
   }
 
-  const rosEntries = await dbClient.db[collections.ROS_STATUS]
+  let rosEntries = await dbClient.db[collections.ROS_STATUS]
     .join({
       participantJoin: {
         type: 'LEFT OUTER',
@@ -408,17 +408,15 @@ const getRosParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
       })
       .find({
         status: 'assigned-new-site',
+        participant_id: rosEntries.map((entry) => entry.participant_id),
       });
 
     // see if we need to display this information for HA based on what participants are included
-    additionalEntries.forEach((entry) => {
-      // if participants are already visible to HA - include information about their previous sites
-      if (rosEntries.find((ros) => ros.participant_id === entry.participant_id)) {
-        rosEntries.push(entry);
-      }
-    });
-
-    rosEntries.sort((a, b) => a.participant_id - b.participant_id);
+    // if participants are already visible to HA - include information about their previous sites
+    if (additionalEntries.length > 0) {
+      rosEntries = rosEntries.concat(additionalEntries);
+      rosEntries.sort((a, b) => a.participant_id - b.participant_id);
+    }
   }
 
   return rosEntries.map((entry) => ({

@@ -187,7 +187,7 @@ This will generate a couple of pem files (your new certificate)
 
 ### Adding certificates to Openshift Routes
 
-Add the contents of `dev.freshworks.club/fullchain.pem` to the routes `hcap-participants` and `hcap-employers` at `spec.tls.certificate` and do the same for `dev.freshworks.club/privkey.pem` to at `spec.tls.key`.
+Add the contents of `dev.freshworks.club/fullchain.pem` to the routes `hcap-participants` and `hcap-employers` at `spec.tls.certificate` and do the same for the contents of `dev.freshworks.club/privkey.pem` at `spec.tls.key`.
 
 Click save and the certificates should be updated.
 

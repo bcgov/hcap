@@ -40,11 +40,11 @@ const keyLabelMap = {
 };
 
 const rosKeyMap = {
-  rosSite: 'Current Site',
-  healthAuthority: 'Health Authority (current site)',
-  date: 'RoS Start Date',
-  startDate: 'RoS Change Site Date',
-  endDate: 'RoS End Date',
+  siteName: { label: 'Current Site', editable: true },
+  healthAuthority: { label: 'Health Authority (current site)', editable: false },
+  date: { label: 'RoS Start Date', editable: true },
+  startDate: { label: 'RoS Start Date at Current Site', editable: true },
+  endDate: { label: 'RoS End Date', editable: false },
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -66,7 +66,7 @@ const mapRosData = ({ data = {}, rosSite = {} }) => {
     date: dayUtils(date).format('MMM DD, YYYY'),
     endDate: addYearToDate(date).format('MMM DD, YYYY'),
     startDate: startDate ? dayUtils(startDate).format('MMM DD, YYYY') : undefined,
-    rosSite: siteName,
+    siteName,
     healthAuthority,
   };
 };
@@ -171,7 +171,7 @@ export default () => {
     }
   };
 
-  const callAssignCohort = async (cohort) => {
+  const handleCallAssignCohort = async (cohort) => {
     try {
       await assignParticipantWithCohort({ participantId: id, cohortId: cohort.id });
       openToast({
@@ -200,7 +200,7 @@ export default () => {
   };
 
   // Navigate on link
-  const navigateBackOnLink = () => {
+  const handleNavigateBackLink = () => {
     switch (linkName) {
       case 'Participant':
         history.push(Routes.ParticipantView);
@@ -213,8 +213,8 @@ export default () => {
     }
   };
 
-  const editRosOnClick = (key) => {
-    // ...
+  const handleEditRos = (key) => {
+    console.log(key);
   };
 
   // Rendering Hook
@@ -283,7 +283,7 @@ export default () => {
                   <Button
                     variant='contained'
                     onClick={() => {
-                      callAssignCohort({ ...selectedCohort });
+                      handleCallAssignCohort({ ...selectedCohort });
                       onClose();
                     }}
                     fullWidth={false}
@@ -297,7 +297,7 @@ export default () => {
             {/* Participant Info */}
             <Box pb={1}>
               <Typography variant='body1'>
-                <Link onClick={navigateBackOnLink}>{linkName}</Link> /{participant.fullName}
+                <Link onClick={handleNavigateBackLink}>{linkName}</Link> /{participant.fullName}
               </Typography>
             </Box>
             <Typography variant='h2'>Participant Details</Typography>
@@ -325,21 +325,24 @@ export default () => {
 
                   <Grid container spacing={2} className={classes.gridSection}>
                     {Object.keys(rosKeyMap).map((key) => {
+                      const participantRos = participant.ros[key];
+                      const rosKey = rosKeyMap[key];
+
                       const gridItem = (
                         <Grid key={key} item xs={12} sm={6} xl={3}>
                           <Box display='flex'>
                             <Box>
                               <Typography variant='body1'>
-                                <b>{rosKeyMap[key]}</b>
+                                <b>{rosKey?.label}</b>
                               </Typography>
                               <Typography
                                 test-id={'participantDetailsRosView' + key}
                                 variant='body1'
                               >
-                                {participant.ros[key]}
+                                {participantRos}
                               </Typography>
                             </Box>
-                            {isMoH && (
+                            {isMoH && rosKey?.editable && (
                               <Box pl={4}>
                                 <Button
                                   text='Edit'
@@ -348,14 +351,14 @@ export default () => {
                                   startIcon={<EditIcon />}
                                   fullWidth={false}
                                   size='small'
-                                  onClick={() => editRosOnClick(key)}
+                                  onClick={() => handleEditRos(key)}
                                 />
                               </Box>
                             )}
                           </Box>
                         </Grid>
                       );
-                      return participant.ros[key] ? gridItem : null;
+                      return participantRos ? gridItem : null;
                     })}
                   </Grid>
                 </>

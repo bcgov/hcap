@@ -213,6 +213,10 @@ export default () => {
     }
   };
 
+  const editRosOnClick = (key) => {
+    // ...
+  };
+
   // Rendering Hook
   useEffect(() => {
     fetchData({ setParticipant, setPSIList, setActualParticipant, setDisableAssign, setError, id });
@@ -344,6 +348,7 @@ export default () => {
                                   startIcon={<EditIcon />}
                                   fullWidth={false}
                                   size='small'
+                                  onClick={() => editRosOnClick(key)}
                                 />
                               </Box>
                             )}

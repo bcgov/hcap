@@ -14,7 +14,7 @@ import { useToast } from '../../hooks';
 import { AuthContext } from '../../providers';
 import { Page, CheckPermissions, Alert, Dialog, Button } from '../../components/generic';
 import { EditParticipantFormSchema, ToastStatus, Routes } from '../../constants';
-import { EditParticipantForm } from '../../components/modal-forms';
+import { EditParticipantForm, EditParticipantField } from '../../components/modal-forms';
 import {
   updateParticipant,
   fetchParticipant,
@@ -43,7 +43,7 @@ const rosKeyMap = {
   siteName: { label: 'Current Site', editable: true },
   healthAuthority: { label: 'Health Authority (current site)', editable: false },
   date: { label: 'RoS Start Date', editable: true },
-  startDate: { label: 'RoS Start Date at Current Site', editable: true },
+  startDate: { label: 'RoS Start Date at a Current Site', editable: true },
   endDate: { label: 'RoS End Date', editable: false },
 };
 
@@ -135,6 +135,8 @@ export default () => {
   const [psiList, setPSIList] = useState([]);
   const [disableAssign, setDisableAssign] = useState(false);
   const [selectedCohort, setSelectedCohort] = useState(null);
+  const [isEditFormVisible, setIsEditFormVisible] = useState(false);
+  const [editField, setEditField] = useState(null);
   // Hook: Toast
   const { openToast } = useToast();
   // Auth context
@@ -214,7 +216,13 @@ export default () => {
   };
 
   const handleEditRos = (key) => {
-    console.log(key);
+    setIsEditFormVisible(true);
+    setEditField(key);
+  };
+
+  const onEditClose = () => {
+    setIsEditFormVisible(false);
+    setEditField(null);
   };
 
   // Rendering Hook
@@ -401,32 +409,45 @@ export default () => {
           </Card>
         )}
       </CheckPermissions>
-      <>
-        {showEditModal && actualParticipant && (
-          <Dialog
-            title='Edit Participant Info'
-            open={showEditModal}
-            onClose={() => setShowEditModal(false)}
-          >
-            <EditParticipantForm
-              initialValues={actualParticipant}
-              validationSchema={EditParticipantFormSchema}
-              onSubmit={onUpdateInfo}
-              onClose={() => {
-                setShowEditModal(false);
-                fetchData({
-                  setParticipant,
-                  setPSIList,
-                  setActualParticipant,
-                  setDisableAssign,
-                  setError,
-                  id,
-                });
-              }}
-            />
-          </Dialog>
-        )}
-      </>
+
+      {/** Modals */}
+      {showEditModal && actualParticipant && (
+        <Dialog
+          title='Edit Participant Info'
+          open={showEditModal}
+          onClose={() => setShowEditModal(false)}
+        >
+          <EditParticipantForm
+            initialValues={actualParticipant}
+            validationSchema={EditParticipantFormSchema}
+            onSubmit={onUpdateInfo}
+            onClose={() => {
+              setShowEditModal(false);
+              fetchData({
+                setParticipant,
+                setPSIList,
+                setActualParticipant,
+                setDisableAssign,
+                setError,
+                id,
+              });
+            }}
+          />
+        </Dialog>
+      )}
+
+      <Dialog
+        title={`Edit ${rosKeyMap[editField]?.label}`}
+        open={isEditFormVisible}
+        onClose={onEditClose}
+      >
+        <EditParticipantField
+          initialValues={actualParticipant}
+          validationSchema={EditParticipantFormSchema}
+          onSubmit={onUpdateInfo}
+          onClose={onEditClose}
+        />
+      </Dialog>
     </Page>
   );
 };

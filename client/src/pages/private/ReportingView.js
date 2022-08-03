@@ -3,8 +3,9 @@ import { Box, Container, Typography, List, ListItem, ListItemText } from '@mater
 import store from 'store';
 
 import { Page, Card, CheckPermissions, Button } from '../../components/generic';
-import { API_URL, onReportDownloadResult } from '../../constants';
+import { API_URL } from '../../constants';
 import { useToast } from '../../hooks';
+import { onReportDownloadResult } from '../../utils';
 
 export default () => {
   const { openToast } = useToast();
@@ -54,11 +55,11 @@ export default () => {
       method: 'GET',
     });
 
-    await onReportDownloadResult(
+    const downloadRes = await onReportDownloadResult(
       response,
-      `participant-stats-hired-${new Date().toJSON()}.csv`,
-      openToast
+      `participant-stats-hired-${new Date().toJSON()}.csv`
     );
+    openToast(downloadRes);
 
     setLoadingHiringReport(false);
   };
@@ -72,11 +73,11 @@ export default () => {
       method: 'GET',
     });
 
-    await onReportDownloadResult(
+    const downloadRes = await onReportDownloadResult(
       response,
-      `return-of-service-milestones-${new Date().toJSON()}.csv`,
-      openToast
+      `return-of-service-milestones-${new Date().toJSON()}.csv`
     );
+    openToast(downloadRes);
 
     setLoadingRosReport(false);
   };

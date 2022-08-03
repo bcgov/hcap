@@ -16,10 +16,10 @@ import {
   healthAuthoritiesFilter,
   ToastStatus,
   CreateSiteSchema,
-  onReportDownloadResult,
 } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
+import { onReportDownloadResult } from '../../utils';
 import { AuthContext } from '../../providers';
 
 const useStyles = makeStyles((theme) => ({
@@ -192,11 +192,11 @@ export default ({ sites, viewOnly }) => {
       method: 'GET',
     });
 
-    await onReportDownloadResult(
+    const downloadRes = await onReportDownloadResult(
       response,
-      `report-hired-${regionId}-${new Date().toJSON()}.csv`,
-      openToast
+      `report-hired-${regionId}-${new Date().toJSON()}.csv`
     );
+    openToast(downloadRes);
   };
 
   const downloadHiringReport = async () => {
@@ -228,11 +228,11 @@ export default ({ sites, viewOnly }) => {
       method: 'GET',
     });
 
-    await onReportDownloadResult(
+    const downloadRes = await onReportDownloadResult(
       response,
-      `return-of-service-milestones-${new Date().toJSON()}.csv`,
-      openToast
+      `return-of-service-milestones-${new Date().toJSON()}.csv`
     );
+    openToast(downloadRes);
 
     setLoadingRosReport(false);
   };

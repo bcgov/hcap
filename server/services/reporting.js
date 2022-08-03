@@ -385,7 +385,9 @@ const getRosParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
     })
     .find(searchOptions);
 
+  // HAs need only see the participants in their health region + participants who changed their health region and now assigned to a site withing HAs view
   if (region !== DEFAULT_REGION_NAME) {
+    // select participants outside HAs region for changed sites
     const additionalEntries = await dbClient.db[collections.ROS_STATUS]
       .join({
         participantJoin: {
@@ -408,7 +410,9 @@ const getRosParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
         status: 'assigned-new-site',
       });
 
+    // see if we need to display this information for HA based on what participants are included
     additionalEntries.forEach((entry) => {
+      // if participants are already visible to HA - include information about their previous sites
       if (rosEntries.find((ros) => ros.participant_id === entry.participant_id)) {
         rosEntries.push(entry);
       }

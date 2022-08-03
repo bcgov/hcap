@@ -3,15 +3,16 @@
 import pick from 'lodash/pick';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { Box, Card, Grid, Link, Typography, Button } from '@material-ui/core';
+import { Box, Card, Grid, Link, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import EditIcon from '@material-ui/icons/Edit';
 
 // Libs
 import { useToast } from '../../hooks';
 import { AuthContext } from '../../providers';
-import { Page, CheckPermissions, Alert, Dialog } from '../../components/generic';
+import { Page, CheckPermissions, Alert, Dialog, Button } from '../../components/generic';
 import { EditParticipantFormSchema, ToastStatus, Routes } from '../../constants';
 import { EditParticipantForm } from '../../components/modal-forms';
 import {
@@ -148,6 +149,7 @@ export default () => {
   const linkName = page === 'participant' ? 'Participant' : 'Site View';
   // Edit Button flag
   const enableEdit = roles.some((role) => ['ministry_of_health', 'superuser'].includes(role));
+  const isMoH = roles.includes('ministry_of_health');
 
   // UI Actions
   // 1. Show edit
@@ -267,19 +269,23 @@ export default () => {
                   </Box>
                 </DialogContent>
                 <DialogActions>
-                  <Button variant='outlined' onClick={onClose} color='primary'>
-                    Cancel
-                  </Button>
+                  <Button
+                    variant='outlined'
+                    fullWidth={false}
+                    onClick={onClose}
+                    color='primary'
+                    text='Cancel'
+                  />
                   <Button
                     variant='contained'
                     onClick={() => {
                       callAssignCohort({ ...selectedCohort });
                       onClose();
                     }}
+                    fullWidth={false}
                     color='primary'
-                  >
-                    Assign
-                  </Button>
+                    text='Assign'
+                  />
                 </DialogActions>
               </Dialog>
             )}
@@ -295,16 +301,12 @@ export default () => {
             <Grid container spacing={2} className={classes.gridSection}>
               {Object.keys(keyLabelMap).map((key) => (
                 <Grid key={key} item xs={12} sm={6} xl={3}>
-                  <Grid item xs={6}>
-                    <Typography variant='body1'>
-                      <b>{keyLabelMap[key]}</b>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography test-id={'participantDetailsView' + key} variant='body1'>
-                      {participant[key]}
-                    </Typography>
-                  </Grid>
+                  <Typography variant='body1'>
+                    <b>{keyLabelMap[key]}</b>
+                  </Typography>
+                  <Typography test-id={'participantDetailsView' + key} variant='body1'>
+                    {participant[key]}
+                  </Typography>
                 </Grid>
               ))}
             </Grid>
@@ -321,16 +323,31 @@ export default () => {
                     {Object.keys(rosKeyMap).map((key) => {
                       const gridItem = (
                         <Grid key={key} item xs={12} sm={6} xl={3}>
-                          <Grid item xs={6}>
-                            <Typography variant='body1'>
-                              <b>{rosKeyMap[key]}</b>
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography test-id={'participantDetailsRosView' + key} variant='body1'>
-                              {participant.ros[key]}
-                            </Typography>
-                          </Grid>
+                          <Box display='flex'>
+                            <Box>
+                              <Typography variant='body1'>
+                                <b>{rosKeyMap[key]}</b>
+                              </Typography>
+                              <Typography
+                                test-id={'participantDetailsRosView' + key}
+                                variant='body1'
+                              >
+                                {participant.ros[key]}
+                              </Typography>
+                            </Box>
+                            {isMoH && (
+                              <Box pl={4}>
+                                <Button
+                                  text='Edit'
+                                  variant='outlined'
+                                  color='primary'
+                                  startIcon={<EditIcon />}
+                                  fullWidth={false}
+                                  size='small'
+                                />
+                              </Box>
+                            )}
+                          </Box>
                         </Grid>
                       );
                       return participant.ros[key] ? gridItem : null;
@@ -342,12 +359,13 @@ export default () => {
 
             <Button
               test-id='editInfoButton'
+              text='Edit Info'
               variant='outlined'
+              color='primary'
               disabled={!enableEdit}
               onClick={showEditInfoModal}
-            >
-              Edit Info
-            </Button>
+              fullWidth={false}
+            />
 
             {!participant.ros && (
               <>

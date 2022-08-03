@@ -18,6 +18,7 @@ import { FastField, Formik, Form as FormikForm } from 'formik';
 import { RenderSelectField } from '../fields';
 import { Button } from '../generic';
 import { addEllipsisMask } from '../../utils';
+import { MAX_LABEL_LENGTH } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   formButton: {
@@ -53,7 +54,6 @@ export const SelectProspectingSiteForm = ({
   const classes = useStyles();
   const [areParticipantsVisible, setParticipantsVisible] = useState(false);
 
-  const MAX_LABEL_LENGTH = 50;
   const canSeeMultiSelect = isMultiSelect && selected?.length > 1;
 
   const showSelectedParticipants = (_event) => {

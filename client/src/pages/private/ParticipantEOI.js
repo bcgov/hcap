@@ -125,7 +125,7 @@ export default () => {
   const [loadingError, setLoadingError] = useState(false);
   const [openWithdraw, setOpenWithdraw] = useState(false);
   const [openConfirmInterest, setOpenConfirmInterest] = useState(false);
-  const enableEdit = pathName.includes('edit');
+  const isEditing = pathName.includes('edit');
 
   // Hooks
   useEffect(() => {
@@ -159,7 +159,7 @@ export default () => {
     }
   };
   const onEdit = () => {
-    const pathToPush = enableEdit ? pathName.split('/edit')[0] : `${pathName}/edit`;
+    const pathToPush = isEditing ? pathName.split('/edit')[0] : `${pathName}/edit`;
     history.push(pathToPush);
   };
 
@@ -277,8 +277,8 @@ export default () => {
               padding={2}
             >
               <Box display='flex' gridGap={20}>
-                <Button variant='contained' onClick={onEdit}>
-                  {!enableEdit ? 'Edit Info' : 'Done Edit'}
+                <Button variant='contained' disabled={isWithdrawn(participant)} onClick={onEdit}>
+                  {!isEditing ? 'Edit Info' : 'Done Edit'}
                 </Button>
                 <Button
                   disabled={disableWithdraw}
@@ -302,7 +302,7 @@ export default () => {
             {/** Form */}
             <Form
               initialValues={participant.body}
-              isDisabled={!enableEdit}
+              isDisabled={!isEditing}
               hideSummary={true}
               showIdentityQuestions
               enableFields={['phoneNumber', 'postalCode']}

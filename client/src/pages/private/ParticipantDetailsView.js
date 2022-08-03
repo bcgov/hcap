@@ -38,20 +38,33 @@ const keyLabelMap = {
   postHireStatusLabel: 'Graduation Status',
 };
 
-const rOSKeyMap = {
+const rosKeyMap = {
   rosSite: 'Current Site',
   healthAuthority: 'Health Authority (current site)',
   date: 'RoS Start Date',
+  startDate: 'RoS Change Site Date',
   endDate: 'RoS End Date',
 };
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    marginBottom: theme.spacing(2),
+    padding: theme.spacing(4),
+  },
+  gridSection: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+  },
+}));
+
 // Map Ros Data
 const mapRosData = ({ data = {}, rosSite = {} }) => {
-  const { date } = data;
+  const { date, startDate } = data;
   const { siteName, healthAuthority } = rosSite;
   return {
     date: dayUtils(date).format('MMM DD, YYYY'),
     endDate: addYearToDate(date).format('MMM DD, YYYY'),
+    startDate: startDate ? dayUtils(startDate).format('MMM DD, YYYY') : undefined,
     rosSite: siteName,
     healthAuthority,
   };
@@ -71,16 +84,6 @@ const displayData = (inputData) => ({
     inputData.rosStatus && Object.keys(inputData.rosStatus).length
       ? mapRosData(inputData.rosStatus)
       : null,
-});
-
-// Custom style
-const customStyle = makeStyles({
-  rootContainer: {
-    flexGrow: 1,
-  },
-  cardRoot: {
-    minWidth: '1020px',
-  },
 });
 
 // Helper
@@ -138,7 +141,7 @@ export default () => {
   // Memo roles
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   // Style classes
-  const classes = customStyle();
+  const classes = useStyles();
   // Get param
   const { id, page, pageId } = useParams();
   // Breadcrumb name
@@ -223,7 +226,7 @@ export default () => {
         {error && <Alert severity='error'>{error}</Alert>}
         {!participant && !error && <Alert severity='info'>Loading participant details</Alert>}
         {participant && (
-          <Card className={classes.cardRoot}>
+          <Card className={classes.root}>
             {selectedCohort !== null && (
               <Dialog
                 showDivider={true}
@@ -282,33 +285,29 @@ export default () => {
             )}
 
             {/* Participant Info */}
-            <Box pt={4} pb={2} pl={4} pr={4}>
-              <Box pb={1}>
-                <Typography variant='body1'>
-                  <Link onClick={navigateBackOnLink}>{linkName}</Link> /{participant.fullName}
-                </Typography>
-              </Box>
-              <Typography variant='h2'>Participant Details</Typography>
+            <Box pb={1}>
+              <Typography variant='body1'>
+                <Link onClick={navigateBackOnLink}>{linkName}</Link> /{participant.fullName}
+              </Typography>
             </Box>
+            <Typography variant='h2'>Participant Details</Typography>
 
-            <Box py={2} px={4}>
-              <Grid className={classes.rootContainer} container spacing={2}>
-                {Object.keys(keyLabelMap).map((key) => (
-                  <Grid key={key} item xs={12} sm={6} xl={3}>
-                    <Grid item xs={6}>
-                      <Typography variant='body1'>
-                        <b>{keyLabelMap[key]}</b>
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography test-id={'participantDetailsView' + key} variant='body1'>
-                        {participant[key]}
-                      </Typography>
-                    </Grid>
+            <Grid container spacing={2} className={classes.gridSection}>
+              {Object.keys(keyLabelMap).map((key) => (
+                <Grid key={key} item xs={12} sm={6} xl={3}>
+                  <Grid item xs={6}>
+                    <Typography variant='body1'>
+                      <b>{keyLabelMap[key]}</b>
+                    </Typography>
                   </Grid>
-                ))}
-              </Grid>
-            </Box>
+                  <Grid item xs={6}>
+                    <Typography test-id={'participantDetailsView' + key} variant='body1'>
+                      {participant[key]}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              ))}
+            </Grid>
 
             {/* Participant RoS Info */}
             <CheckPermissions
@@ -316,17 +315,15 @@ export default () => {
             >
               {participant.ros && (
                 <>
-                  <Box pt={4} pb={2} pl={4} pr={4}>
-                    <Typography variant='h2'>Return of Service</Typography>
-                  </Box>
+                  <Typography variant='h2'>Return of Service</Typography>
 
-                  <Box py={2} px={4}>
-                    <Grid className={classes.rootContainer} container spacing={2}>
-                      {Object.keys(rOSKeyMap).map((key) => (
+                  <Grid container spacing={2} className={classes.gridSection}>
+                    {Object.keys(rosKeyMap).map((key) => {
+                      const gridItem = (
                         <Grid key={key} item xs={12} sm={6} xl={3}>
                           <Grid item xs={6}>
                             <Typography variant='body1'>
-                              <b>{rOSKeyMap[key]}</b>
+                              <b>{rosKeyMap[key]}</b>
                             </Typography>
                           </Grid>
                           <Grid item xs={6}>
@@ -335,23 +332,22 @@ export default () => {
                             </Typography>
                           </Grid>
                         </Grid>
-                      ))}
-                    </Grid>
-                  </Box>
+                      );
+                      return participant.ros[key] ? gridItem : null;
+                    })}
+                  </Grid>
                 </>
               )}
             </CheckPermissions>
 
-            <Box px={4}>
-              <Button
-                test-id='editInfoButton'
-                variant='outlined'
-                disabled={!enableEdit}
-                onClick={showEditInfoModal}
-              >
-                Edit Info
-              </Button>
-            </Box>
+            <Button
+              test-id='editInfoButton'
+              variant='outlined'
+              disabled={!enableEdit}
+              onClick={showEditInfoModal}
+            >
+              Edit Info
+            </Button>
 
             {!participant.ros && (
               <>

@@ -74,6 +74,7 @@ const { collections } = require('../db/schema');
       };
 
       for (const tableName of tableNames) {
+        lastInsert = `${tableName} table`;
         let tableData = await readCSV(tableName);
 
         testingData[tableName] = {};

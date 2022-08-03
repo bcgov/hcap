@@ -3,7 +3,7 @@ require('dotenv').config({ path: '../.env' });
 const path = require('path');
 const { parseFile } = require('fast-csv');
 const { dbClient } = require('../db');
-
+const { collections } = require('../db/schema');
 // TEST PSEUDOCODE
 // we need a psi and a cohort
 // let psi = {...}; cohort = {...}
@@ -35,12 +35,12 @@ const { dbClient } = require('../db');
      */
     // tables IN ORDER they should be inserted (for foreign key relations)
     const tableNames = [
-      'users',
-      'post_secondary_institutions',
-      'cohorts',
-      'cohort_participants',
-      'participants_status',
-      'participant_post_hire_status',
+      collections.USERS,
+      collections.POST_SECONDARY_INSTITUTIONS,
+      collections.COHORTS,
+      collections.COHORT_PARTICIPANTS,
+      collections.PARTICIPANTS_STATUS,
+      collections.PARTICIPANT_POST_HIRE_STATUS,
     ];
     // all data successfully created in process
     const testingData = {};

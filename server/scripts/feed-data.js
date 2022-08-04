@@ -78,6 +78,12 @@ const { collections } = require('../db/schema');
         let tableData = await readCSV(tableName);
 
         testingData[tableName] = {};
+        console.log('the client');
+        console.log(dbClient);
+        console.log('the db');
+        console.log(dbClient.db);
+        console.log('the table');
+        console.log(dbClient.db[tableName]);
 
         // replace placeholder foreign keys with actual values
         const foreignKeys = dbClient.db[tableName].fks;

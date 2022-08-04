@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import _orderBy from 'lodash/orderBy';
-import { saveAs } from 'file-saver';
 import { useHistory } from 'react-router-dom';
 import { Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -10,21 +9,25 @@ import store from 'store';
 import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
 import { NewSiteForm } from '../../components/modal-forms';
 import { useLocation } from 'react-router-dom';
-import { Routes, regionLabelsMap, API_URL, healthAuthoritiesFilter } from '../../constants';
-import { TableFilter } from '../../components/generic/TableFilter';
-import { useToast } from '../../hooks';
 import {
+  Routes,
+  regionLabelsMap,
+  API_URL,
+  healthAuthoritiesFilter,
   ToastStatus,
   CreateSiteSchema,
-  DOWNLOAD_DEFAULT_ERROR_MESSAGE,
-  DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
 } from '../../constants';
+import { TableFilter } from '../../components/generic/TableFilter';
+import { useToast } from '../../hooks';
+import { handleReportDownloadResult } from '../../utils';
 import { AuthContext } from '../../providers';
 
 const useStyles = makeStyles((theme) => ({
   rootItem: {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
   },
   tableItem: {
     paddingTop: theme.spacing(4),
@@ -127,6 +130,7 @@ export default ({ sites, viewOnly }) => {
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
   const [isLoadingReport, setLoadingReport] = useState(false);
+  const [isLoadingRosReport, setLoadingRosReport] = useState(false);
 
   const [orderBy, setOrderBy] = useState('siteName');
   const [healthAuthorities, setHealthAuthorities] = useState(healthAuthoritiesFilter);
@@ -188,19 +192,11 @@ export default ({ sites, viewOnly }) => {
       method: 'GET',
     });
 
-    if (response.ok) {
-      openToast({
-        status: ToastStatus.Success,
-        message: response.message || DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
-      });
-      const blob = await response.blob();
-      saveAs(blob, `report-hired-${regionId}-${new Date().toJSON()}.csv`);
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
-      });
-    }
+    const downloadRes = await handleReportDownloadResult(
+      response,
+      `report-hired-${regionId}-${new Date().toJSON()}.csv`
+    );
+    openToast(downloadRes);
   };
 
   const downloadHiringReport = async () => {
@@ -211,6 +207,34 @@ export default ({ sites, viewOnly }) => {
       }
     }
     setLoadingReport(false);
+  };
+
+  const downloadRosReport = async (regionIds) => {
+    if (!regionIds || regionIds.length === 0) {
+      openToast({
+        status: ToastStatus.Error,
+        message: 'Download error: No health region found!',
+      });
+      return;
+    }
+
+    setLoadingRosReport(true);
+    const healthRegion = regionIds[0];
+
+    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/ros/${healthRegion}`, {
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+      },
+      method: 'GET',
+    });
+
+    const downloadRes = await handleReportDownloadResult(
+      response,
+      `return-of-service-milestones-${new Date().toJSON()}.csv`
+    );
+    openToast(downloadRes);
+
+    setLoadingRosReport(false);
   };
 
   useEffect(() => {
@@ -261,8 +285,6 @@ export default ({ sites, viewOnly }) => {
           />
         </Grid>
 
-        <Grid item xs={6} />
-
         <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
           <Grid item xs={2} />
           <Grid className={classes.rootItem} item xs={2}>
@@ -280,16 +302,33 @@ export default ({ sites, viewOnly }) => {
         {roles.includes('superuser') && <Grid item xs={8} />}
 
         {!viewOnly && (
-          <Grid className={classes.rootItem} item xs={4}>
-            <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
-              <Button
-                onClick={downloadHiringReport}
-                variant='outlined'
-                text='Download Hiring Milestones Report'
-                loading={isLoadingReport}
-              />
-            </CheckPermissions>
-          </Grid>
+          <>
+            <Grid item xs={6} />
+
+            <Grid container item xs={4}>
+              <Grid className={classes.rootItem} item xs={12}>
+                <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
+                  <Button
+                    onClick={downloadHiringReport}
+                    variant='outlined'
+                    text='Download Hiring Milestones Report'
+                    loading={isLoadingReport}
+                  />
+                </CheckPermissions>
+              </Grid>
+
+              <Grid className={classes.rootItem} item xs={12}>
+                <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
+                  <Button
+                    onClick={() => downloadRosReport(healthAuthorities)}
+                    variant='outlined'
+                    text='Download Return of Service Milestones report'
+                    loading={isLoadingRosReport}
+                  />
+                </CheckPermissions>
+              </Grid>
+            </Grid>
+          </>
         )}
 
         {isPendingRequests && (

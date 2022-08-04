@@ -357,9 +357,15 @@ const getNoOfferParticipantsReport = async () => {
   }));
 };
 
-const getRosParticipantsReport = async () => {
+const getRosParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
   const searchOptions = {};
-  const rosEntries = await dbClient.db[collections.ROS_STATUS]
+
+  if (region !== DEFAULT_REGION_NAME) {
+    searchOptions['siteJoin.body.healthAuthority'] = region;
+    searchOptions.status = 'assigned-same-site';
+  }
+
+  let rosEntries = await dbClient.db[collections.ROS_STATUS]
     .join({
       participantJoin: {
         type: 'LEFT OUTER',
@@ -378,6 +384,40 @@ const getRosParticipantsReport = async () => {
       },
     })
     .find(searchOptions);
+
+  // HAs need only see the participants in their health region + participants who changed their health region and now assigned to a site withing HAs view
+  if (region !== DEFAULT_REGION_NAME) {
+    // select participants outside HAs region for changed sites
+    const additionalEntries = await dbClient.db[collections.ROS_STATUS]
+      .join({
+        participantJoin: {
+          type: 'LEFT OUTER',
+          relation: collections.PARTICIPANTS,
+          on: {
+            id: 'participant_id',
+          },
+        },
+        siteJoin: {
+          type: 'LEFT OUTER',
+          decomposeTo: 'object',
+          relation: collections.EMPLOYER_SITES,
+          on: {
+            id: 'site_id',
+          },
+        },
+      })
+      .find({
+        status: 'assigned-new-site',
+        participant_id: rosEntries.map((entry) => entry.participant_id),
+      });
+
+    // see if we need to display this information for HA based on what participants are included
+    // if participants are already visible to HA - include information about their previous sites
+    if (additionalEntries.length > 0) {
+      rosEntries = rosEntries.concat(additionalEntries);
+      rosEntries.sort((a, b) => a.participant_id - b.participant_id);
+    }
+  }
 
   return rosEntries.map((entry) => ({
     participantId: entry.participant_id,

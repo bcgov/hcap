@@ -54,8 +54,8 @@ const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
  * Generate ROS milestone report
  * @param csvStream output stream
  */
-const generateRosReport = async (csvStream) => {
-  const results = await getRosParticipantsReport();
+const generateRosReport = async (csvStream, region) => {
+  const results = await getRosParticipantsReport(region);
   results.forEach((result) => {
     csvStream.write({
       'Participant ID': result.participantId,
@@ -88,7 +88,7 @@ const generateReport = async (user, res, type, region = DEFAULT_REGION_NAME) => 
       break;
 
     case reportType.ROS:
-      await generateRosReport(csvStream);
+      await generateRosReport(csvStream, region);
       break;
 
     default:
@@ -152,6 +152,23 @@ router.get(
     const { hcapUserInfo: user } = req;
     res.attachment('report.csv');
     await generateReport(user, res, reportType.ROS);
+  })
+);
+
+router.get(
+  '/csv/ros/:regionId',
+  [keycloak.allowRolesMiddleware('health_authority')],
+  asyncMiddleware(async (req, res) => {
+    const { hcapUserInfo: user, params } = req;
+    const { regionId } = params;
+
+    if (!checkUserRegion(user, regionId)) {
+      return res.status(403).json({ error: 'User is not permitted to access this region.' });
+    }
+
+    res.attachment('report.csv');
+    await generateReport(user, res, reportType.ROS, regionId);
+    return res.status(200);
   })
 );
 

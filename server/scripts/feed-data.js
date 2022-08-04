@@ -53,12 +53,19 @@ const { collections } = require('../db/schema');
       const rootDirectory = 'xlsx/';
 
       await dbClient.connect();
-      await dbClient.runMigration();
-      const dbtables = Object.keys(dbClient.db).filter((table) =>
-        Object.values(collections).includes(table)
-      );
-      console.log('tables in database:');
-      console.log(dbtables);
+      let dbTables;
+      const collectionValues = Object.values(collections);
+      while (true) {
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+        dbTables = Object.keys(dbClient.db).filter((table) => collectionValues.includes(table));
+        console.log('tables in database:');
+        console.log(dbTables);
+        if (dbTables.length >= collectionValues.length - 2) {
+          break;
+        } else {
+          console.log(collectionValues.length);
+        }
+      }
 
       const readCSV = async (tableName) => {
         const options = { objectMode: true, headers: true, renameHeaders: false };

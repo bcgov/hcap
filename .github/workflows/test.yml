@@ -54,17 +54,14 @@ jobs:
       - name: Add Participants
         run: cd server && POSTGRES_HOST=localhost npm run feed-participants participants.xlsx
 
-      - name: Add Test Data
-        with:
-          wait-on-timeout: 120
-          wait-on: 'http://localhost:4000'
-        run: cd server && POSTGRES_HOST=localhost npm run feed-data
-
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
           wait-on-timeout: 120
           wait-on: 'http://localhost:4000'
+
+      - name: Add Test Data
+        run: cd server && POSTGRES_HOST=localhost npm run feed-data
 
       - name: Sleep for 30 seconds
         run: sleep 30s

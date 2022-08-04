@@ -9,7 +9,7 @@ describe('Return of Service Form', () => {
     cy.kcLogout();
   });
 
-  it.skip('Should be able to add ROS date in the future', () => {
+  it('Should be able to add ROS date in the future', () => {
     const participantId = 26;
     const maxValidDate = '2099/12/31';
 

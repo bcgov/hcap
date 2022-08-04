@@ -53,6 +53,12 @@ const { collections } = require('../db/schema');
       const rootDirectory = 'xlsx/';
 
       await dbClient.connect();
+      await dbClient.runMigration();
+      const dbtables = Object.keys(dbClient.db).filter((table) =>
+        Object.values(collections).includes(table)
+      );
+      console.log('tables in database:');
+      console.log(dbtables);
 
       const readCSV = async (tableName) => {
         const options = { objectMode: true, headers: true, renameHeaders: false };
@@ -78,12 +84,6 @@ const { collections } = require('../db/schema');
         let tableData = await readCSV(tableName);
 
         testingData[tableName] = {};
-        console.log('the client');
-        console.log(dbClient);
-        console.log('the db');
-        console.log(dbClient.db);
-        console.log('the table');
-        console.log(dbClient.db[tableName]);
 
         // replace placeholder foreign keys with actual values
         const foreignKeys = dbClient.db[tableName].fks;

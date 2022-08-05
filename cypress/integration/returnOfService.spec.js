@@ -1,5 +1,8 @@
 describe('Return of Service Form', () => {
-  before(() => {});
+  before(() => {
+    // assign site to test-ha as moh
+    cy.assignSitesToHealthAuthorityUser('test-ha', [1]);
+  });
 
   beforeEach(() => {
     cy.kcLogin('test-ha');
@@ -44,7 +47,7 @@ describe('Return of Service Form', () => {
     // submit form
     cy.contains('button', 'Confirm').click();
 
-    // SHOULD get success toast response
+    // should get success toast response
     cy.get('.MuiAlert-message').contains('Return of Service status updated');
   });
 });

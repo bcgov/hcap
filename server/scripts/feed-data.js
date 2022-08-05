@@ -4,38 +4,17 @@ const path = require('path');
 const { parseFile } = require('fast-csv');
 const { dbClient } = require('../db');
 const { collections } = require('../db/schema');
-// TEST PSEUDOCODE
-// we need a psi and a cohort
-// let psi = {...}; cohort = {...}
-// rawTestData = {post_secondary_instution: psi, cohort: cohort}
-// const testData = feedData(rawTestData)
-
-// one file actually doing the db saves --> export callable function
-// have script file --> calls db file w/ params based on inputs from command line, call from npm
-// parsing data, call db
-
-// what kind of data do we want to have ready for new onboarders?
-
-// make feed-data <== Github doesn't do this part
-// cypress run
-// PASSES
-
-// csv conversion
-// github actions <-- to run it
-
-// FUTURE....
 
 (async () => {
   if (require.main === module) {
     /**
-     * mapping records in xlsx example:
+     * mapping records in csv example:
      * in post_secondary_institutions, have a line where id is 'hello'
      * for foreign key relation to that record in cohorts table, set psi_id to 'hello'
      * the id will be substituted for the real one after it has been created
      */
     // tables IN ORDER they should be inserted (for foreign key relations)
     const tableNames = [
-      collections.USERS,
       collections.POST_SECONDARY_INSTITUTIONS,
       collections.COHORTS,
       collections.COHORT_PARTICIPANTS,
@@ -50,12 +29,9 @@ const { collections } = require('../db/schema');
     let lastInsert = '';
 
     try {
-      const rootDirectory = 'xlsx/';
+      const rootDirectory = 'csv/';
 
       await dbClient.connect();
-      const collectionValues = Object.values(collections);
-      const dbTables = Object.keys(dbClient.db).filter((table) => collectionValues.includes(table));
-      console.log(dbTables);
 
       const readCSV = async (tableName) => {
         const options = { objectMode: true, headers: true, renameHeaders: false };

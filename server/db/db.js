@@ -24,7 +24,7 @@ class DBClient {
     logger.info('Running db migrations');
     try {
       const results = await migrationRunner.default({
-        // log: () => {}, // Silence migrations for test suites
+        log: () => {}, // Silence migrations for test suites
         databaseUrl: `postgres://${user}:${password}@${host}:${port}/${database}`,
         direction: 'up',
         migrationsTable: 'pgmigrations', // default, do not change

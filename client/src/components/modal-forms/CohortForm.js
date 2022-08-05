@@ -29,7 +29,7 @@ export const CohortForm = ({ cohort, onSubmit, onClose, schema }) => {
         }
       }}
     >
-      {({ submitForm, values, setFieldError, setFieldValue }) => (
+      {({ submitForm }) => (
         <FormikForm>
           <Box>
             <Field name='cohortName' component={RenderTextField} label='* Cohort Name' />

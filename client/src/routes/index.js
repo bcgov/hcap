@@ -35,7 +35,9 @@ const ParticipantWithdrawConfirm = lazy(() =>
 const ParticipantFullWithdraw = lazy(() => import('../pages/private/ParticipantFullWithdrawPage'));
 const ParticipantActionSuccess = lazy(() => import('../pages/private/ParticipantActionSuccess'));
 
-const ParticipantDetails = lazy(() => import('../pages/private/ParticipantDetailsView'));
+const ParticipantDetails = lazy(() =>
+  import('../pages/private/participant-details/ParticipantDetailsView')
+);
 
 const EmployerLogin = lazy(() => import('../pages/public/EmployerLogin'));
 

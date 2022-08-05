@@ -1,14 +1,12 @@
 import React from 'react';
-import _orderBy from 'lodash/orderBy';
 
 import { Box, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { FastField, Formik, Form as FormikForm } from 'formik';
 
-import { RenderAutocomplete, RenderSelectField, RenderDateField } from '../fields';
+import { RenderAutocomplete, RenderDateField } from '../fields';
 import { Button } from '../generic';
-import { rosPositionType, rosEmploymentType, MAX_LABEL_LENGTH } from '../../constants';
-import { addEllipsisMask, getTodayDate } from '../../utils';
+import { mohEditType } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   formButton: {
@@ -18,21 +16,17 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(3),
     marginTop: theme.spacing(3),
   },
-  formLabel: {
-    marginBottom: theme.spacing(1),
-    fontWeight: 700,
-    color: theme.palette.headerText.secondary,
-  },
 }));
 
 export const EditParticipantField = ({
   initialValues,
-  sites,
   onSubmit,
   onClose,
   validationSchema,
-  labelName,
+  type,
   fieldName,
+  fieldLabel,
+  fieldOptions,
 }) => {
   const classes = useStyles();
 
@@ -40,44 +34,46 @@ export const EditParticipantField = ({
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
       {({ submitForm }) => (
         <FormikForm>
-          <Box my={1}>
-            <FastField
-              name={fieldName}
-              component={RenderDateField}
-              label={labelName}
-              maxDate={getTodayDate()}
-              boldLabel
-            />
-          </Box>
+          <Box mb={2}>
+            {type === mohEditType.DATE && (
+              <Box my={1}>
+                <FastField
+                  name={fieldName}
+                  component={RenderDateField}
+                  label={fieldLabel}
+                  boldLabel
+                />
+              </Box>
+            )}
 
-          <Box my={2}>
-            <FastField
-              name={fieldName}
-              component={RenderAutocomplete}
-              label={labelName}
-              boldLabel
-              options={_orderBy(sites, ['siteName']).map((item) => ({
-                value: item.siteId,
-                label: addEllipsisMask(item.siteName, MAX_LABEL_LENGTH),
-              }))}
-            />
-          </Box>
+            {type === mohEditType.AUTOCOMPLETE && (
+              <Box my={1}>
+                <FastField
+                  name={fieldName}
+                  component={RenderAutocomplete}
+                  label={fieldLabel}
+                  boldLabel
+                  options={fieldOptions || []}
+                />
+              </Box>
+            )}
 
-          <Divider className={classes.formDivider} />
+            <Divider className={classes.formDivider} />
 
-          <Box display='flex' justifyContent='space-between'>
-            <Button
-              className={classes.formButton}
-              onClick={onClose}
-              variant='outlined'
-              text='Cancel'
-            />
-            <Button
-              type='submit'
-              className={classes.formButton}
-              onClick={submitForm}
-              text='Confirm'
-            />
+            <Box display='flex' justifyContent='space-between'>
+              <Button
+                className={classes.formButton}
+                onClick={onClose}
+                variant='outlined'
+                text='Cancel'
+              />
+              <Button
+                type='submit'
+                className={classes.formButton}
+                onClick={submitForm}
+                text='Confirm'
+              />
+            </Box>
           </Box>
         </FormikForm>
       )}

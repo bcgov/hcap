@@ -127,6 +127,7 @@ export const ReturnOfServiceForm = ({
                 name='date'
                 component={RenderDateField}
                 label='Return of Service Start Date'
+                maxDate={'2100-01-01'}
                 boldLabel
               />
               <br />

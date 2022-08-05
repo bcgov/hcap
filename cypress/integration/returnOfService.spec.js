@@ -12,10 +12,34 @@ describe('Return of Service Form', () => {
     cy.kcLogout();
   });
 
+  const maxValidDate = '2099/12/31';
+  const futureInvalidDate = '2100/01/01';
+
+  it('Should produce error when ROS date is past max valid date', () => {
+    const participantId = 27;
+    completeROSForm(participantId, futureInvalidDate);
+
+    cy.get('.Mui-error').contains(
+      'Invalid entry. Date must be after December 31st 1899 and before January 1st 2100.'
+    );
+  });
+
   it('Should be able to add ROS date in the future', () => {
     const participantId = 26;
-    const maxValidDate = '2099/12/31';
 
+    completeROSForm(participantId, maxValidDate);
+
+    // SHOULD be valid
+    cy.contains('#Mui-error').should('not.exist');
+
+    // submit form
+    cy.contains('button', 'Confirm').click();
+
+    // should get success toast response
+    cy.get('.MuiAlert-message').contains('Successfully updated Return of Service status!');
+  });
+
+  const completeROSForm = (participantId, startDateString) => {
     // go to participant view
     cy.visit('participant-view');
 
@@ -33,21 +57,12 @@ describe('Return of Service Form', () => {
     // click Return of Service
     cy.contains('li', 'Return Of Service').click();
 
-    // set date to max future date: 2099/12/31
-    cy.get('[name=ReturnofServiceStartDate]').clear().type(maxValidDate);
+    // set date to given date
+    cy.get('[name=ReturnofServiceStartDate]').clear().type(startDateString);
 
     // fill out rest of form in valid way, then blur focus
     cy.get('[value=casual]').click();
     cy.get('[value=full-time]').click();
     cy.get('[name=confirm]').click().blur();
-
-    // SHOULD be valid
-    cy.contains('#Mui-error').should('not.exist');
-
-    // submit form
-    cy.contains('button', 'Confirm').click();
-
-    // should get success toast response
-    cy.get('.MuiAlert-message').contains('Successfully updated Return of Service status!');
-  });
+  };
 });

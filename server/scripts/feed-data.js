@@ -90,19 +90,15 @@ const { collections } = require('../db/schema');
 
         results.forEach((result, index) => {
           let { id } = tableData[index];
-          switch (result.status) {
-            case 'fulfilled':
-              testingData[tableName][id] = result.value;
-              id = result.value.id;
-              response.push({ table: tableName, id, status: 'Success' });
-              break;
-            default:
-              if (result.reason.code === '23505') {
-                response.push({ table: tableName, id, status: 'Duplicate' });
-              } else {
-                response.push({ table: tableName, id, status: 'Error', message: result.reason });
-                throw new Error(result.reason);
-              }
+          if (result.status === 'fulfilled') {
+            testingData[tableName][id] = result.value;
+            id = result.value.id;
+            response.push({ table: tableName, id, status: 'Success' });
+          } else if (result.reason.code === '23505') {
+            response.push({ table: tableName, id, status: 'Duplicate' });
+          } else {
+            response.push({ table: tableName, id, status: 'Error', message: result.reason });
+            throw new Error(result.reason);
           }
         });
       }
@@ -117,7 +113,7 @@ const { collections } = require('../db/schema');
         console.dir(lastInsert);
         console.table(response);
         // reverse direction of array to delete dependent records first
-        for (const tableName of tableNames.reverse()) {
+        for (const tableName of [...tableNames].reverse()) {
           const tableData = testingData[tableName] ?? {};
           const ids = Object.values(tableData).map((entry) => entry.id);
           if (ids.length > 0) {

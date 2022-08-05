@@ -48,6 +48,6 @@ describe('Return of Service Form', () => {
     cy.contains('button', 'Confirm').click();
 
     // should get success toast response
-    cy.get('.MuiAlert-message').contains('Return of Service status updated');
+    cy.get('.MuiAlert-message').contains('Successfully updated Return of Service status!');
   });
 });

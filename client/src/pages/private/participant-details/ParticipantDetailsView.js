@@ -199,7 +199,6 @@ export default () => {
     handleEditRosFieldClose();
   };
 
-  // fetch sitesArg
   const fetchAllSites = async () => {
     try {
       const { data = [] } = await getAllSites();
@@ -215,10 +214,13 @@ export default () => {
   // Rendering Hook
   useEffect(() => {
     fetchData({ setParticipant, setPSIList, setActualParticipant, setDisableAssign, setError, id });
+  }, [setParticipant, setPSIList, setActualParticipant, setError, setDisableAssign, openToast, id]);
+
+  useEffect(() => {
     if (allSites.length === 0) {
       fetchAllSites();
     }
-  }, [setParticipant, setPSIList, setActualParticipant, setError, setDisableAssign, id, allSites]);
+  });
 
   // Render
   return (

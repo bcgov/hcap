@@ -31,8 +31,8 @@ export const EditParticipantField = ({
   const classes = useStyles();
 
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-      {({ submitForm }) => (
+    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={() => {}}>
+      {({ validateForm, values, errors }) => (
         <FormikForm>
           <Box mb={2}>
             {type === mohEditType.DATE && (
@@ -70,7 +70,12 @@ export const EditParticipantField = ({
               <Button
                 type='submit'
                 className={classes.formButton}
-                onClick={submitForm}
+                onClick={async () => {
+                  const res = await validateForm();
+                  if (Object.entries(res)?.length === 0) {
+                    onSubmit(values);
+                  }
+                }}
                 text='Confirm'
               />
             </Box>

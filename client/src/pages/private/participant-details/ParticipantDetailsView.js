@@ -124,6 +124,7 @@ export default () => {
       setActualParticipant,
       setDisableAssign,
       setError,
+      setAllSites,
       id,
     });
   };
@@ -142,6 +143,7 @@ export default () => {
         setActualParticipant,
         setError,
         setDisableAssign,
+        setAllSites,
         id,
       });
     } catch (error) {
@@ -199,28 +201,26 @@ export default () => {
     handleEditRosFieldClose();
   };
 
-  const fetchAllSites = async () => {
-    try {
-      const { data = [] } = await getAllSites();
-      setAllSites(data);
-    } catch (err) {
-      openToast({
-        status: ToastStatus.Error,
-        message: err.message,
-      });
-    }
-  };
-
   // Rendering Hook
   useEffect(() => {
-    fetchData({ setParticipant, setPSIList, setActualParticipant, setDisableAssign, setError, id });
-  }, [setParticipant, setPSIList, setActualParticipant, setError, setDisableAssign, openToast, id]);
-
-  useEffect(() => {
-    if (allSites.length === 0) {
-      fetchAllSites();
-    }
-  });
+    fetchData({
+      setParticipant,
+      setPSIList,
+      setActualParticipant,
+      setDisableAssign,
+      setError,
+      setAllSites,
+      id,
+    });
+  }, [
+    setParticipant,
+    setPSIList,
+    setActualParticipant,
+    setError,
+    setDisableAssign,
+    setAllSites,
+    id,
+  ]);
 
   // Render
   return (
@@ -338,6 +338,7 @@ export default () => {
                         setActualParticipant,
                         setDisableAssign,
                         setError,
+                        setAllSites,
                         id,
                       })
                     }

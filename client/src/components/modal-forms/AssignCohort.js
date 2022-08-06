@@ -93,7 +93,7 @@ export const AssignCohortForm = ({
           })
         }
       >
-        {({ submitForm, values, setFieldValue }) => (
+        {({ submitForm, setFieldValue }) => (
           <FormikForm>
             <Typography color={'primary'} variant={'h4'}>
               {' '}

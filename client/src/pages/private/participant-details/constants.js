@@ -1,6 +1,6 @@
 import pick from 'lodash/pick';
 
-import { fetchParticipant, psi } from '../../../services';
+import { fetchParticipant, psi, getAllSites } from '../../../services';
 import { addYearToDate, dayUtils } from '../../../utils';
 
 // Key Map
@@ -53,6 +53,7 @@ export const fetchData = ({
   id,
   setError,
   setDisableAssign,
+  setAllSites,
 }) => {
   fetchParticipant({ id })
     .then((resp) => {
@@ -73,6 +74,14 @@ export const fetchData = ({
         .catch((err) => {
           setError(`${err}`);
         });
+    })
+    .catch((err) => {
+      setError(`${err}`);
+    });
+
+  getAllSites()
+    .then((res) => {
+      setAllSites(res?.data);
     })
     .catch((err) => {
       setError(`${err}`);

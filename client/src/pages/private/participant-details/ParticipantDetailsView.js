@@ -23,7 +23,7 @@ import {
   mohEditType,
   MAX_LABEL_LENGTH,
 } from '../../../constants';
-import { updateParticipant, assignParticipantWithCohort, getAllSites } from '../../../services';
+import { updateParticipant, assignParticipantWithCohort } from '../../../services';
 import { addEllipsisMask } from '../../../utils';
 
 // Sub component
@@ -146,10 +146,10 @@ export default () => {
         setAllSites,
         id,
       });
-    } catch (error) {
+    } catch (err) {
       openToast({
         status: ToastStatus.Error,
-        message: `${error}`,
+        message: `${err}`,
       });
     } finally {
       onAssignCohortClose();

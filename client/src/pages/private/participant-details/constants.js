@@ -29,16 +29,17 @@ const mapRosData = ({ data = {}, rosSite = {} }) => {
   };
 };
 
+const getInterestLabel = (isInterested) => {
+  if (isInterested === 'yes') return 'Interested';
+  if (isInterested === 'no') return 'Withdrawn';
+  return isInterested;
+};
+
 // Display Data
 export const displayData = (inputData) => ({
   ...pick(inputData, Object.keys(keyLabelMap)),
   fullName: `${inputData.firstName} ${inputData.lastName}`,
-  interested:
-    inputData.interested === 'yes'
-      ? 'Interested'
-      : inputData.interested === 'no'
-      ? 'Withdrawn'
-      : inputData.interested,
+  interested: getInterestLabel(inputData.interested),
   ros:
     inputData.rosStatus && Object.keys(inputData.rosStatus).length
       ? mapRosData(inputData.rosStatus)

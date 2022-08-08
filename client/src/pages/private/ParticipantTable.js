@@ -7,7 +7,6 @@ import { Box, Menu, MenuItem, Link } from '@material-ui/core';
 import {
   ToastStatus,
   regionLabelsMap,
-  pageSize,
   makeToasts,
   Routes,
   participantStatus,
@@ -556,7 +555,7 @@ const ParticipantTable = () => {
                   payload: { page: newPage },
                 });
               }}
-              rowsPerPage={pageSize}
+              rowsPerPage={pagination.pageSize}
               currentPage={pagination.page}
               renderCell={renderCell}
               onRequestSort={(event, property) => {

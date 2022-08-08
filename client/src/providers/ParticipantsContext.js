@@ -120,6 +120,7 @@ const ParticipantsProvider = ({ role, children }) => {
     siteSelector: '',
     pagination: {
       page: 0,
+      pageSize: 5,
       total: 0,
       offset: 0,
     },

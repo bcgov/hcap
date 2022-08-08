@@ -7,7 +7,7 @@ import { FILTERABLE_FIELDS } from '../../constants';
 
 export const ParticipantTableFilters = ({ loading, locations }) => {
   const {
-    state: { columns, selectedTab, filter, siteSelector },
+    state: { columns, selectedTab, filter, siteSelector, pagination },
     dispatch,
   } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
@@ -37,6 +37,7 @@ export const ParticipantTableFilters = ({ loading, locations }) => {
           </Typography>
         </Box>
       </Grid>
+
       <Grid item>
         <Box>
           <TextField

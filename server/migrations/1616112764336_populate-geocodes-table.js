@@ -24,7 +24,7 @@ exports.up = async () => {
   }
   await dbClient.reload();
   let filename = 'BC_postal_codes.txt';
-  if (process.env.NODE_ENV === 'test') {
+  if (true) {
     filename = '100_postal_codes.txt';
   }
   console.log({ filename, env: process.env });

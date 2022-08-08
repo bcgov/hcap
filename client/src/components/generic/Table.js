@@ -205,7 +205,9 @@ export const Table = ({
   isLoading,
   currentPage = 0,
   rowsPerPage,
+  rowsPerPageOptions = [],
   onChangePage,
+  onChangePageSize,
   totalRowsCount,
   isMultiSelect = false,
   selectedRows = [],
@@ -220,6 +222,11 @@ export const Table = ({
   const handlePageChange = (_, newPage) => {
     updateSelectedRows([]);
     onChangePage(currentPage, newPage);
+  };
+
+  const handlePageSizeChange = (event) => {
+    updateSelectedRows([]);
+    onChangePageSize(event.target.value);
   };
 
   const handleSelectAllRows = (event) => {
@@ -329,12 +336,14 @@ export const Table = ({
       </MuiTable>
       {usePagination && (
         <TablePagination
-          rowsPerPageOptions={[]}
+          rowsPerPageOptions={rowsPerPageOptions}
           component='div'
           count={totalRowsCount || rowsOnPage}
           rowsPerPage={rowsPerPage}
           page={currentPage}
+          SelectProps={{ 'test-id': 'pageSizeSelect' }}
           onChangePage={handlePageChange}
+          onChangeRowsPerPage={handlePageSizeChange}
           ActionsComponent={isLoading ? () => null : TablePaginationActions}
         />
       )}

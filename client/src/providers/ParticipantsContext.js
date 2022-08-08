@@ -1,4 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
+import { pageSizeOptions } from '../constants';
 
 import { columnsByRole, tabStatuses, tabsByRole } from '../constants/participantTableConstants';
 
@@ -8,6 +9,7 @@ const types = {
   UPDATE_ROLE: 'UPDATE_ROLE',
   SELECT_TAB: 'SELECT_TAB',
   UPDATE_PAGINATION: 'UPDATE_PAGINATION',
+  UPDATE_PAGE_SIZE: 'UPDATE_PAGE_SIZE',
   UPDATE_FILTER: 'UPDATE_FILTER',
   UPDATE_SITE_SELECTOR: 'UPDATE_SITE_SELECTOR',
   UPDATE_TABLE_ORDER: 'UPDATE_TABLE_ORDER',
@@ -21,6 +23,7 @@ const participantsReducer = (state, action) => {
     UPDATE_ROLE,
     SELECT_TAB,
     UPDATE_PAGINATION,
+    UPDATE_PAGE_SIZE,
     UPDATE_FILTER,
     UPDATE_SITE_SELECTOR,
     UPDATE_TABLE_ORDER,
@@ -52,11 +55,22 @@ const participantsReducer = (state, action) => {
         selectedTabStatuses: tabStatuses[payload],
         currentPage: 0,
         pagination: {
+          ...state.pagination, // keep previous state pageSize
           page: 0,
           total: 0,
           offset: 0,
         },
         order: { ...DEFAULT_SORT_ORDER }, // Clearing the sort order when changing tabs
+      };
+    }
+    case UPDATE_PAGE_SIZE: {
+      return {
+        ...state,
+        pagination: {
+          ...state.pagination,
+          ...payload,
+          page: 0, // reset the page back to first
+        },
       };
     }
     case UPDATE_PAGINATION: {
@@ -120,6 +134,7 @@ const ParticipantsProvider = ({ role, children }) => {
     siteSelector: '',
     pagination: {
       page: 0,
+      pageSize: pageSizeOptions[0], // default to shortest page size
       total: 0,
       offset: 0,
     },

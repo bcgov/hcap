@@ -7,11 +7,11 @@ import { Box, Menu, MenuItem, Link } from '@material-ui/core';
 import {
   ToastStatus,
   regionLabelsMap,
-  pageSize,
   makeToasts,
   Routes,
   participantStatus,
   participantEngageStatus,
+  pageSizeOptions,
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
@@ -374,7 +374,7 @@ const ParticipantTable = () => {
     setSelectedParticipants([]);
     fetchParticipants();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, pagination.page, order, selectedTabStatuses, siteSelector]);
+  }, [filter, pagination.page, pagination.pageSize, order, selectedTabStatuses, siteSelector]);
 
   const renderCell = (columnId, row) => {
     switch (columnId) {
@@ -556,7 +556,14 @@ const ParticipantTable = () => {
                   payload: { page: newPage },
                 });
               }}
-              rowsPerPage={pageSize}
+              onChangePageSize={(newPageSize) => {
+                participantsDispatch({
+                  type: ParticipantsContext.types.UPDATE_PAGE_SIZE,
+                  payload: { pageSize: newPageSize },
+                });
+              }}
+              rowsPerPage={pagination.pageSize}
+              rowsPerPageOptions={pageSizeOptions}
               currentPage={pagination.page}
               renderCell={renderCell}
               onRequestSort={(event, property) => {

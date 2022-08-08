@@ -37,5 +37,35 @@ describe('Participant Table', () => {
         );
       });
     });
+
+    it(`Allows ${role.name} user to change rows per page`, () => {
+      // go to the participant table
+      cy.kcLogin(role.fixture);
+      cy.visit('/participant-view');
+
+      // for each possible pagination value:
+      const pageSizes = [10, 30];
+      pageSizes.forEach((size) => {
+        // change to that value
+        cy.get('[test-id=pageSizeSelect]').click();
+        cy.get(`li[data-value='${size}']`).click();
+
+        // verify # of participants on page
+        cy.get('table.MuiTable-root')
+          .find('tr')
+          .should('have.length', size + 1);
+        // try going to page #2 (if participants > pagination)
+        cy.get('button[aria-label="next page"]');
+
+        if (role.allTabs.includes('My Candidates')) {
+          // try going to a different tab
+          cy.contains('button.MuiButtonBase-root', 'My Candidates').click();
+          // make sure page size gets brought over to new tab
+          cy.get('[test-id=pageSizeSelect]').contains(size);
+          // return to default tab for next test
+          cy.contains('button.MuiButtonBase-root', 'Available Participants').click();
+        }
+      });
+    });
   });
 });

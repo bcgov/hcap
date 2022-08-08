@@ -190,6 +190,7 @@ participantsRouter.get(
     const user = req.hcapUserInfo;
     const {
       offset,
+      pageSize,
       regionFilter,
       sortField,
       sortDirection,
@@ -203,7 +204,7 @@ participantsRouter.get(
     const result = await getParticipants(
       user,
       {
-        pageSize: 10,
+        pageSize,
         offset,
         direction: sortDirection,
       },

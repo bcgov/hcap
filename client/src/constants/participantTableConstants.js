@@ -1,5 +1,5 @@
 import ToastStatus from './toast';
-export const pageSize = 10;
+export const pageSizeOptions = [10, 30, 50, 100];
 
 export const participantStatus = {
   OPEN: 'open',

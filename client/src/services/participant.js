@@ -1,5 +1,5 @@
 import store from 'store';
-import { API_URL, pageSize, postHireStatuses } from '../constants';
+import { API_URL, postHireStatuses } from '../constants';
 
 const getCohortName = (cohort = {}) =>
   cohort.cohort_name && cohort.psi?.institute_name
@@ -142,7 +142,8 @@ export const getParticipants = async ({
   selectedTabStatuses,
 }) => {
   const params = new URLSearchParams();
-  params.append('offset', pagination.page * pageSize);
+  params.append('offset', pagination.page * pagination.pageSize);
+  params.append('pageSize', pagination.pageSize);
   params.append('sortField', order.field);
   params.append('sortDirection', order.direction);
 

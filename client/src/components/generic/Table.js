@@ -341,6 +341,7 @@ export const Table = ({
           count={totalRowsCount || rowsOnPage}
           rowsPerPage={rowsPerPage}
           page={currentPage}
+          SelectProps={{ 'test-id': 'pageSizeSelect' }}
           onChangePage={handlePageChange}
           onChangeRowsPerPage={handlePageSizeChange}
           ActionsComponent={isLoading ? () => null : TablePaginationActions}

@@ -54,11 +54,11 @@ jobs:
       - name: Add Participants
         run: cd server && POSTGRES_HOST=localhost npm run feed-participants participants.xlsx
 
-      - name: sleep until webapp is up
+      - name: sleep until server is up
         run: |
           until $(curl --output /dev/null --silent --fail http://localhost:4000); do
               echo '.'
-              ((c++)) && ((c==10)) && c=0 && break # don't run more than 12 times
+              ((c++)) && ((c==12)) && c=0 && break # don't run more than 12 times
               sleep 5
           done
 

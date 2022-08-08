@@ -224,30 +224,26 @@ export default () => {
 
   // Render
   return (
-    <Page isAutoHeight={true}>
+    <Page isAutoHeight>
       <CheckPermissions
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
-        renderErrorMessage={true}
+        renderErrorMessage
       >
         {error && <Alert severity='error'>{error}</Alert>}
         {!participant && !error && <Alert severity='info'>Loading participant details</Alert>}
         {participant && (
           <Card className={classes.root}>
-            {selectedCohort !== null && (
-              <AssignCohortDialog
-                isOpen={selectedCohort !== null}
-                participant={participant}
-                selectedCohort={selectedCohort}
-                onSubmit={handleCallAssignCohort}
-                onClose={onAssignCohortClose}
-              />
-            )}
+            <AssignCohortDialog
+              isOpen={selectedCohort !== null}
+              participant={participant}
+              selectedCohort={selectedCohort}
+              onSubmit={handleCallAssignCohort}
+              onClose={onAssignCohortClose}
+            />
 
             {/* Participant Info */}
             <Box pb={1}>
-              <Typography variant='body1'>
-                <Link onClick={handleNavigateBackLink}>{linkName}</Link> /{participant.fullName}
-              </Typography>
+              <Link onClick={handleNavigateBackLink}>{linkName}</Link> /{participant.fullName}
             </Box>
             <Typography variant='h2'>Participant Details</Typography>
 
@@ -265,54 +261,48 @@ export default () => {
             </Grid>
 
             {/* Participant RoS Info */}
-            <CheckPermissions
-              permittedRoles={['health_authority', 'employer', 'ministry_of_health']}
-            >
-              {participant.ros && (
-                <>
-                  <Typography variant='h2'>Return of Service</Typography>
+            {participant.ros && (
+              <CheckPermissions
+                permittedRoles={['health_authority', 'employer', 'ministry_of_health']}
+              >
+                <Typography variant='h2'>Return of Service</Typography>
+                <Grid container spacing={2} className={classes.gridSection}>
+                  {Object.keys(rosKeyMap).map((key) => {
+                    const participantRos = participant.ros[key];
+                    const rosKey = rosKeyMap[key];
 
-                  <Grid container spacing={2} className={classes.gridSection}>
-                    {Object.keys(rosKeyMap).map((key) => {
-                      const participantRos = participant.ros[key];
-                      const rosKey = rosKeyMap[key];
-
-                      const gridItem = (
-                        <Grid key={key} item xs={12} sm={6} xl={3}>
-                          <Box display='flex'>
-                            <Box>
-                              <Typography variant='body1'>
-                                <b>{rosKey?.label}</b>
-                              </Typography>
-                              <Typography
-                                test-id={'participantDetailsRosView' + key}
-                                variant='body1'
-                              >
-                                {participantRos}
-                              </Typography>
-                            </Box>
-                            {isMoH && rosKey?.editable && (
-                              <Box pl={4}>
-                                <Button
-                                  text='Edit'
-                                  variant='outlined'
-                                  color='primary'
-                                  startIcon={<EditIcon />}
-                                  fullWidth={false}
-                                  size='small'
-                                  onClick={() => handleSetEditRosField(key)}
-                                />
-                              </Box>
-                            )}
+                    const gridItem = (
+                      <Grid key={key} item xs={12} sm={6} xl={3}>
+                        <Box display='flex'>
+                          <Box>
+                            <Typography variant='body1'>
+                              <b>{rosKey?.label}</b>
+                            </Typography>
+                            <Typography test-id={'participantDetailsRosView' + key} variant='body1'>
+                              {participantRos}
+                            </Typography>
                           </Box>
-                        </Grid>
-                      );
-                      return participantRos ? gridItem : null;
-                    })}
-                  </Grid>
-                </>
-              )}
-            </CheckPermissions>
+                          {isMoH && rosKey?.editable && (
+                            <Box pl={4}>
+                              <Button
+                                text='Edit'
+                                variant='outlined'
+                                color='primary'
+                                startIcon={<EditIcon />}
+                                fullWidth={false}
+                                size='small'
+                                onClick={() => handleSetEditRosField(key)}
+                              />
+                            </Box>
+                          )}
+                        </Box>
+                      </Grid>
+                    );
+                    return participantRos ? gridItem : null;
+                  })}
+                </Grid>
+              </CheckPermissions>
+            )}
 
             <Button
               test-id='editInfoButton'
@@ -324,26 +314,24 @@ export default () => {
               fullWidth={false}
             />
 
-            {!participant.ros && (
+            {!disableAssign && !participant.ros && (
               <CheckPermissions permittedRoles={['health_authority']}>
-                {!disableAssign && (
-                  <PSICohortView
-                    psiList={psiList}
-                    assignAction={(cohort) => setSelectedCohort(cohort)}
-                    participant={actualParticipant}
-                    fetchData={() =>
-                      fetchData({
-                        setParticipant,
-                        setPSIList,
-                        setActualParticipant,
-                        setDisableAssign,
-                        setError,
-                        setAllSites,
-                        id,
-                      })
-                    }
-                  />
-                )}
+                <PSICohortView
+                  psiList={psiList}
+                  assignAction={(cohort) => setSelectedCohort(cohort)}
+                  participant={actualParticipant}
+                  fetchData={() =>
+                    fetchData({
+                      setParticipant,
+                      setPSIList,
+                      setActualParticipant,
+                      setDisableAssign,
+                      setError,
+                      setAllSites,
+                      id,
+                    })
+                  }
+                />
               </CheckPermissions>
             )}
           </Card>
@@ -351,24 +339,22 @@ export default () => {
       </CheckPermissions>
 
       {/** Modals */}
-      {showEditModal && actualParticipant && (
-        <EditParticipantDialog
-          participant={actualParticipant}
-          isOpen={showEditModal}
-          onSubmit={onUpdateInfo}
-          onClose={handleEditParticipantClose}
-        />
-      )}
+      <EditParticipantDialog
+        participant={actualParticipant}
+        isOpen={showEditModal && actualParticipant}
+        onSubmit={onUpdateInfo}
+        onClose={handleEditParticipantClose}
+      />
 
       <EditRosFieldDialog
-        title={`Edit ${rosKeyMap[editFormField]?.label}`}
+        title={`Edit ${rosKeyMap[editFormField]?.label || ''}`}
         isOpen={Boolean(editFormField)}
         onClose={handleEditRosFieldClose}
         onSubmit={handleEditRosSubmit}
         validation={rosKeyMap[editFormField]?.validation}
         rosFieldType={rosKeyMap[editFormField]?.type}
         fieldName={editFormField}
-        fieldLabel={rosKeyMap[editFormField]?.label}
+        fieldLabel={rosKeyMap[editFormField]?.label || ''}
         fieldOptions={rosKeyMap[editFormField]?.options}
       />
     </Page>

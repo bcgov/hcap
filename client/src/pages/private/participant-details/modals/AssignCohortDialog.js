@@ -3,7 +3,7 @@ import { Box, Grid, Typography } from '@material-ui/core';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 
-import { cohortName } from '../constants';
+import { getCohortName } from '../constants';
 import { Dialog, Button } from '../../../../components/generic';
 
 export const AssignCohortDialog = ({ isOpen, onClose, onSubmit, participant, selectedCohort }) => {
@@ -27,7 +27,7 @@ export const AssignCohortDialog = ({ isOpen, onClose, onSubmit, participant, sel
                 <Typography variant='body1'>Assign Cohort</Typography>
               </Grid>
               <Grid item xs={4}>
-                <Typography variant='body2'>{cohortName(selectedCohort)}</Typography>
+                <Typography variant='body2'>{getCohortName(selectedCohort)}</Typography>
               </Grid>
             </Grid>
           </Grid>
@@ -36,7 +36,7 @@ export const AssignCohortDialog = ({ isOpen, onClose, onSubmit, participant, sel
         <Box>
           <Typography variant='body2'>
             Are you sure that you would like to assign this participant to{' '}
-            <b>{cohortName(selectedCohort)}</b>? Please review the above information before
+            <b>{getCohortName(selectedCohort)}</b>? Please review the above information before
             proceeding.
           </Typography>
         </Box>

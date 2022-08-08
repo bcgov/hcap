@@ -90,4 +90,7 @@ export const fetchData = ({
 };
 
 // Get Cohort name
-export const cohortName = (cohort) => `${cohort.cohort_name} / ${cohort.psi?.institute_name}`;
+export const getCohortName = (cohort) => {
+  if (!cohort) return '';
+  return `${cohort.cohort_name} / ${cohort.psi?.institute_name}`;
+};

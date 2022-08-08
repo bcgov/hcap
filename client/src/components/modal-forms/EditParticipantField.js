@@ -31,8 +31,8 @@ export const EditParticipantField = ({
   const classes = useStyles();
 
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={() => {}}>
-      {({ validateForm, values, errors }) => (
+    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onClose}>
+      {({ validateForm, values }) => (
         <FormikForm>
           <Box mb={2}>
             {type === mohEditType.DATE && (

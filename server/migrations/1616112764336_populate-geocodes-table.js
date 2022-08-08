@@ -27,6 +27,7 @@ exports.up = async () => {
   if (process.env.NODE_ENV === 'test') {
     filename = '100_postal_codes.txt';
   }
+  console.log({ filename, env: process.env });
   const file = join(__dirname, 'assets', filename);
 
   const readInterface = readline.createInterface({

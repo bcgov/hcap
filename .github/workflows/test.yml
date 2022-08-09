@@ -85,6 +85,9 @@ jobs:
       - name: Add Participants
         run: cd server && POSTGRES_HOST=localhost npm run feed-participants participants.xlsx
 
+      - name: Jest run
+        run: make local-server-tests
+
       - name: Sleep until server is up
         run: |
           until $(curl --output /dev/null --silent --fail http://localhost:4000); do
@@ -101,10 +104,3 @@ jobs:
         with:
           wait-on-timeout: 120
           wait-on: 'http://localhost:4000'
-
-      - name: Sleep for 30 seconds
-        run: sleep 30s
-        shell: bash
-
-      - name: Jest run
-        run: make local-server-tests

@@ -74,12 +74,7 @@ jobs:
           restore-keys: ${{ runner.os }}-npm
 
       - name: Install dependencies
-        run: |
-          mkdir ~/.npm-global
-          npm config set prefix '~/.npm-global'
-          export PATH=~/.npm-global/bin:$PATH
-          source ~/.profile
-          npm i --prefix server
+        run: npm i --unsafe-perm=true --prefix server
 
       - name: Import Users
         run: make kc-import-users

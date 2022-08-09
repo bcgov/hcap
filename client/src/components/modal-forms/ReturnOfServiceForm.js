@@ -17,6 +17,7 @@ import {
   rosPositionType,
   rosEmploymentType,
   ROS_SITE_INFO_MESSAGE,
+  rosMaxStartDate,
 } from '../../constants';
 import { createReturnOfServiceStatus, getAllSites } from '../../services';
 
@@ -127,7 +128,7 @@ export const ReturnOfServiceForm = ({
                 name='date'
                 component={RenderDateField}
                 label='Return of Service Start Date'
-                maxDate={'2100-01-01'}
+                maxDate={rosMaxStartDate}
                 boldLabel
               />
               <br />

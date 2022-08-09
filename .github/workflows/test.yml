@@ -80,9 +80,6 @@ jobs:
       - name: Add Participants
         run: cd server && POSTGRES_HOST=localhost npm run feed-participants participants.xlsx
 
-      - name: Jest run
-        run: make local-server-tests
-
       - name: Sleep until server is up
         run: |
           until $(curl --output /dev/null --silent --fail http://localhost:4000); do
@@ -93,6 +90,9 @@ jobs:
 
       - name: Add Test Data
         run: cd server && POSTGRES_HOST=localhost npm run feed-data
+
+      - name: Jest run
+        run: make local-server-tests
 
       - name: Cypress run
         uses: cypress-io/github-action@v2

@@ -46,8 +46,8 @@ jobs:
           KEYCLOAK_LOCAL_SECRET=${{ secrets.KEYCLOAK_LOCAL_SECRET }}
           EOF
 
-      - name: Build Locally
-        run: make local-kc-run
+      # - name: Build Locally
+      #   run: make local-kc-run
 
       - name: Cache node modules
         id: cache-npm
@@ -58,7 +58,7 @@ jobs:
           path: |
             ~/.npm
             **/node_modules
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('/server/package-lock.json') }}
           restore-keys: ${{ runner.os }}-npm
 
       - name: Install dependencies

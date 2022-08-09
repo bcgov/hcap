@@ -53,7 +53,7 @@ jobs:
         # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
 
-      - name: Build Locally
+      - name: Build and Run the Application
         run: make local-kc-run
 
       - name: Cache node modules

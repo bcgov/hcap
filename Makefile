@@ -57,6 +57,10 @@ seed-sites:
 	@echo "Seeding sites from server/scripts/xlsx"
 	@docker-compose -f docker-compose.dev.yml exec server npm run feed-sites $$SHEET
 
+seed-data:
+	@echo "Seeding additional data from server/scripts/xlsx"
+	@docker-compose -f docker-compose.dev.yml exec server npm run feed-data
+
 # Local Development
 
 local-build:

@@ -200,3 +200,39 @@ Cypress.Commands.add('callAPI', ({ api, method = 'POST', body, followRedirect = 
     });
   });
 });
+
+// assigns the site_ids to the username, assuming the region is already correct
+// does not un-assign previous sites
+Cypress.Commands.add('assignSitesToHealthAuthorityUser', (username, site_ids) => {
+  Cypress.log({ name: `assign site ${site_ids.join(',')} to ${username}` });
+  cy.kcLogin('test-moh');
+
+  cy.visit('/user-edit');
+
+  // get tr containing our user
+  cy.contains('td', username)
+    .parent()
+    .within(() => {
+      // options button within parent tr
+      cy.get('td:last-child button').click();
+    });
+
+  // click the input to bring up the ul
+  cy.get('#mui-component-select-sites').click();
+
+  site_ids.forEach((id) => {
+    cy.get(`li[data-value='${id}']`).then(($li) => {
+      const isAssigned = $li.attr('aria-selected');
+      if (!isAssigned) {
+        $li.click();
+      }
+    });
+  });
+
+  // blur the select component
+  cy.get('#menu-sites').click();
+
+  cy.contains('button', 'Submit').click();
+
+  cy.kcLogout();
+});

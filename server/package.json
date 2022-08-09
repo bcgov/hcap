@@ -13,6 +13,7 @@
     "migrate": "node-pg-migrate",
     "feed-participants": "node scripts/feed-participants.js",
     "feed-sites": "node scripts/feed-sites.js",
+    "feed-data": "node scripts/feed-data.js",
     "stats": "node scripts/stats.js",
     "sendMassEmail": "node scripts/sendEmailBlast.js",
     "participant-stats-hired": "node scripts/participant-stats-hired.js",

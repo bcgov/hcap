@@ -23,3 +23,5 @@ export const rosEmploymentType = {
 };
 
 export const rosEmploymentTypeValues = Object.values(rosEmploymentType).map(({ value }) => value);
+
+export const rosMaxStartDate = '2100-01-01'; // first future date that is *invalid*

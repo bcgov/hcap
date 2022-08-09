@@ -73,11 +73,13 @@ jobs:
           key: ${{ runner.os }}-npm-${{ hashFiles('server/package-lock.json') }}
           restore-keys: ${{ runner.os }}-npm
 
-      - name: Reclaim cache directory
-        run: chown -R 1001:1001 /github/home/.cache
-
       - name: Install dependencies
-        run: npm i --prefix server
+        run: |
+          mkdir ~/.npm-global
+          npm config set prefix '~/.npm-global'
+          export PATH=~/.npm-global/bin:$PATH
+          source ~/.profile
+          npm i --prefix server
 
       - name: Import Users
         run: make kc-import-users

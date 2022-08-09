@@ -41,12 +41,7 @@ const getInterestLabel = (isInterested) => {
 };
 
 export const getLinkLabel = (pageName) => {
-  switch (pageName) {
-    case 'participant':
-      return 'Participant';
-    default:
-      return 'Site View';
-  }
+  return pageName === 'participant' ? 'Participant' : 'Site View';
 };
 
 // Display Data

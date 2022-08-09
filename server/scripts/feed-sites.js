@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-require('dotenv').config({ path: '../.env' });
 const readXlsxFile = require('node-xlsx').default;
 const path = require('path');
 const { dbClient } = require('../db');

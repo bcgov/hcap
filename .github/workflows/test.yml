@@ -13,6 +13,11 @@ env:
   KEYCLOAK_LOCAL_PASSWORD: ${{ secrets.KEYCLOAK_LOCAL_PASSWORD}}
   KEYCLOAK_LOCAL_AUTH_URL: 'http://keycloak.local.freshworks.club:8080/auth'
   KEYCLOAK_LOCAL_SECRET: ${{ secrets.KEYCLOAK_LOCAL_SECRET }}
+  POSTGRES_HOST: 'postgres'
+  POSTGRES_PORT: '5433'
+  POSTGRES_DB: 'db_dev'
+  POSTGRES_USER: 'admin'
+  POSTGRES_PASSWORD: 'freshworks'
   APP_ENV: local
 jobs:
   tests:

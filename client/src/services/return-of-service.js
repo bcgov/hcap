@@ -61,3 +61,23 @@ export const getAllSites = async () => {
     throw new Error('Failed to fetch all sites');
   }
 };
+
+export const onRosSiteUpdate = async (participantId, newSiteId) => {
+  if (!participantId || !newSiteId) {
+    throw new Error('Unable  to update the field - invalid data');
+  }
+};
+
+export const onRosDateUpdate = async (participantId, newDate) => {
+  if (!participantId || !newDate) {
+    throw new Error('Unable  to update the field - invalid data');
+  }
+  const dateTimestamp = dayjs(newDate, 'YYYY/MM/DD').toDate();
+};
+
+export const onRosStartDateUpdate = async (participantId, newStartDate) => {
+  if (!participantId || !newStartDate) {
+    throw new Error('Unable  to update the field - invalid data');
+  }
+  const dateTimestamp = dayjs(newStartDate, 'YYYY/MM/DD').toDate();
+};

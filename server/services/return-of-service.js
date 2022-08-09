@@ -2,6 +2,16 @@
 const { dbClient, collections } = require('../db');
 const { rosError } = require('../constants');
 
+const validateRosParticipant = async (participantId) => {
+  const res = await dbClient.db[collections.ROS_STATUS].find({
+    participant_id: participantId,
+    is_current: true,
+  });
+  if (res.length === 0) {
+    throw new Error(rosError.participantNotFound);
+  }
+};
+
 /**
  * Invalidate all ros statuses for participant
  * @param {*} param.db db transaction | optional database object
@@ -99,8 +109,70 @@ const getReturnOfServiceStatuses = async ({ participantId }) =>
       }
     );
 
+const updateReturnOfServiceSite = async ({ participantId, newSiteId }) => {
+  await validateRosParticipant(participantId);
+  if (!newSiteId) {
+    throw new Error(rosError.fieldNotFound);
+  }
+  // Validate Site Id
+  const sites = await dbClient.db[collections.EMPLOYER_SITES].find({
+    'body.siteId': newSiteId,
+  });
+  if (sites.length === 0) {
+    throw new Error(rosError.noSiteAttached);
+  }
+
+  dbClient.db[collections.ROS_STATUS].update(
+    { participant_id: participantId, current: true },
+    {
+      site_id: newSiteId,
+    }
+  );
+};
+
+const updateReturnOfServiceDate = async ({ participantId, newDate }) => {
+  await validateRosParticipant(participantId);
+  if (!newDate) {
+    throw new Error(rosError.fieldNotFound);
+  }
+
+  dbClient.db[collections.ROS_STATUS].update(
+    { participant_id: participantId, current: true },
+    {
+      'data.date': newDate,
+    }
+  );
+};
+
+const updateReturnOfServiceStartDate = async ({ participantId, newStartDate }) => {
+  await validateRosParticipant(participantId);
+  if (!newStartDate) {
+    throw new Error(rosError.fieldNotFound);
+  }
+
+  // validate start date
+  const res = await dbClient.db[collections.ROS_STATUS].find({
+    participant_id: participantId,
+    is_current: true,
+    status: 'assigned-new-site',
+  });
+  if (res.length === 0) {
+    throw new Error(rosError.fieldNotFound);
+  }
+
+  dbClient.db[collections.ROS_STATUS].update(
+    { participant_id: participantId, current: true },
+    {
+      'data.startDate': newStartDate,
+    }
+  );
+};
+
 module.exports = {
   makeReturnOfServiceStatus,
   getReturnOfServiceStatuses,
   invalidateReturnOfServiceStatus,
+  updateReturnOfServiceSite,
+  updateReturnOfServiceDate,
+  updateReturnOfServiceStartDate,
 };

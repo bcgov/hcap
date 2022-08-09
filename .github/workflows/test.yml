@@ -69,7 +69,7 @@ jobs:
           restore-keys: ${{ runner.os }}-npm
 
       - name: Install dependencies
-        run: npm i --unsafe-perm=true --prefix server
+        run: sudo npm i --unsafe-perm=true --prefix server
 
       - name: Import Users
         run: make kc-import-users

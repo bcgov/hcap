@@ -44,6 +44,13 @@ jobs:
           KEYCLOAK_LOCAL_SECRET=${{ secrets.KEYCLOAK_LOCAL_SECRET }}
           EOF
 
+      - name: Pull images
+        run: make ci-docker-pull
+
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        # Ignore the failure of a step and avoid terminating the job.
+        continue-on-error: true
+
       - name: Build Locally
         run: make local-kc-run
 

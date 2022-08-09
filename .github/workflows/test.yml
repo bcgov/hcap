@@ -70,7 +70,7 @@ jobs:
           path: |
             ~/.npm
             **/node_modules
-          key: ${{ runner.os }}-npm-${{ hashFiles('/server/package-lock.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('server/package-lock.json') }}
           restore-keys: ${{ runner.os }}-npm
 
       - name: Install dependencies

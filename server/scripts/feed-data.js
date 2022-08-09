@@ -32,6 +32,7 @@ const { collections } = require('../db/schema');
       const rootDirectory = 'csv/';
 
       await dbClient.connect();
+      dbClient.db.listTables();
 
       const readCSV = async (tableName) => {
         const options = { objectMode: true, headers: true, renameHeaders: false };

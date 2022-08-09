@@ -1,7 +1,7 @@
 name: Check format of code base
-on:
-  pull_request:
-    types: [opened, synchronize]
+# on:
+#   pull_request:
+#     types: [opened, synchronize]
 
 jobs:
   premerge:

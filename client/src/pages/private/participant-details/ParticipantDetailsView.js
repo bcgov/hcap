@@ -186,14 +186,24 @@ export default () => {
   };
 
   // Update selected RoS field
-  const handleEditRosSubmit = (values) => {
+  const handleEditRosSubmit = async (values) => {
+    const EDIT_ERROR_MESSAGE = 'Unable to update the field';
     try {
-      openToast({
-        status: ToastStatus.Success,
-        message: `${rosKeyMap[editFormField]?.label} is successfully updated`,
-      });
+      if (!rosKeyMap[editFormField]?.onSubmit) throw new Error(EDIT_ERROR_MESSAGE);
+      const res = await rosKeyMap[editFormField].onSubmit(values);
+      if (res.ok) {
+        openToast({
+          status: ToastStatus.Success,
+          message: `${rosKeyMap[editFormField]?.label} is successfully updated`,
+        });
+      } else {
+        throw new Error(res.error || res.statusText || EDIT_ERROR_MESSAGE);
+      }
     } catch (err) {
-      setError(`${err}`);
+      openToast({
+        status: ToastStatus.Error,
+        message: err?.message || EDIT_ERROR_MESSAGE,
+      });
     }
 
     handleEditRosFieldClose();

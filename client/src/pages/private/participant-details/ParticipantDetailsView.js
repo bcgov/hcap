@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import EditIcon from '@material-ui/icons/Edit';
 
 // Libs
-import { keyLabelMap, displayData, fetchData } from './constants';
+import { getLinkLabel, keyLabelMap, displayData, fetchData } from './constants';
 import { AssignCohortDialog, EditParticipantDialog, EditRosFieldDialog } from './modals';
 import { useToast } from '../../../hooks';
 import { AuthContext } from '../../../providers';
@@ -64,7 +64,7 @@ export default () => {
   // Get param
   const { id, page, pageId } = useParams();
   // Breadcrumb name
-  const linkName = page === 'participant' ? 'Participant' : 'Site View';
+  const linkName = getLinkLabel(page);
   // Edit Button flag
   const enableEdit = roles.some((role) => ['ministry_of_health', 'superuser'].includes(role));
   const isMoH = roles.includes('ministry_of_health');
@@ -187,8 +187,6 @@ export default () => {
 
   // Update selected RoS field
   const handleEditRosSubmit = (values) => {
-    console.log(values);
-
     try {
       openToast({
         status: ToastStatus.Success,
@@ -344,20 +342,20 @@ export default () => {
       {/** Modals */}
       <EditParticipantDialog
         participant={actualParticipant}
-        isOpen={showEditModal && actualParticipant}
+        isOpen={showEditModal}
         onSubmit={onUpdateInfo}
         onClose={handleEditParticipantClose}
       />
 
       <EditRosFieldDialog
-        title={`Edit ${rosKeyMap[editFormField]?.label || ''}`}
+        title={`Edit ${rosKeyMap[editFormField]?.label}`}
         isOpen={Boolean(editFormField)}
         onClose={handleEditRosFieldClose}
         onSubmit={handleEditRosSubmit}
         validation={rosKeyMap[editFormField]?.validation}
         rosFieldType={rosKeyMap[editFormField]?.type}
         fieldName={editFormField}
-        fieldLabel={rosKeyMap[editFormField]?.label || ''}
+        fieldLabel={rosKeyMap[editFormField]?.label}
         fieldOptions={rosKeyMap[editFormField]?.options}
       />
     </Page>

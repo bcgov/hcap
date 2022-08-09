@@ -30,9 +30,23 @@ const mapRosData = ({ data = {}, rosSite = {} }) => {
 };
 
 const getInterestLabel = (isInterested) => {
-  if (isInterested === 'yes') return 'Interested';
-  if (isInterested === 'no') return 'Withdrawn';
-  return isInterested;
+  switch (isInterested) {
+    case 'yes':
+      return 'Interested';
+    case 'no':
+      return 'Withdrawn';
+    default:
+      return isInterested;
+  }
+};
+
+export const getLinkLabel = (pageName) => {
+  switch (pageName) {
+    case 'participant':
+      return 'Participant';
+    default:
+      return 'Site View';
+  }
 };
 
 // Display Data

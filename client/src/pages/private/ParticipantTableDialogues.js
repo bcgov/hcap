@@ -63,7 +63,7 @@ export const ParticipantTableDialogues = ({
     try {
       if (!isLoading) {
         setIsLoading(true);
-        const { employmentType, healthAuthority, positionType, site, startDate } = values;
+        const { employmentType, positionType, site, startDate } = values;
         await createReturnOfServiceStatus({
           participantId: actionMenuParticipant.id,
           newSiteId: site,
@@ -71,7 +71,6 @@ export const ParticipantTableDialogues = ({
             startDate,
             employmentType,
             positionType,
-            healthAuthority,
             sameSite: false,
           },
           isUpdating: true,

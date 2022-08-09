@@ -23,7 +23,13 @@ import {
   mohEditType,
   MAX_LABEL_LENGTH,
 } from '../../../constants';
-import { updateParticipant, assignParticipantWithCohort } from '../../../services';
+import {
+  assignParticipantWithCohort,
+  updateParticipant,
+  onRosDateUpdate,
+  onRosSiteUpdate,
+  onRosStartDateUpdate,
+} from '../../../services';
 import { addEllipsisMask } from '../../../utils';
 
 // Sub component
@@ -79,6 +85,8 @@ export default () => {
         value: item.siteId,
         label: addEllipsisMask(item.siteName, MAX_LABEL_LENGTH),
       })),
+      onUpdate: onRosSiteUpdate,
+      serverFieldName: 'site',
     },
     healthAuthority: { label: 'Health Authority (current site)', editable: false },
     date: {
@@ -86,12 +94,16 @@ export default () => {
       editable: true,
       type: mohEditType.DATE,
       validation: EditRosDateSchema,
+      onUpdate: onRosDateUpdate,
+      serverFieldName: 'date',
     },
     startDate: {
       label: 'RoS Start Date at a Current Site',
       editable: true,
       type: mohEditType.DATE,
       validation: EditRosStartDateSchema,
+      onUpdate: onRosStartDateUpdate,
+      serverFieldName: 'start-date',
     },
     endDate: { label: 'RoS End Date', editable: false },
   };
@@ -189,8 +201,11 @@ export default () => {
   const handleEditRosSubmit = async (values) => {
     const EDIT_ERROR_MESSAGE = 'Unable to update the field';
     try {
-      if (!rosKeyMap[editFormField]?.onSubmit) throw new Error(EDIT_ERROR_MESSAGE);
-      const res = await rosKeyMap[editFormField].onSubmit(values);
+      if (!rosKeyMap[editFormField]?.onUpdate) throw new Error(EDIT_ERROR_MESSAGE);
+      const res = await rosKeyMap[editFormField].onUpdate(
+        actualParticipant?.id,
+        values[editFormField]
+      );
       if (res.ok) {
         openToast({
           status: ToastStatus.Success,

@@ -14,7 +14,15 @@ const rosEmploymentTypeValues = Object.values(rosEmploymentType);
 
 const rosError = {
   participantNotHired: 'participant-is-not-hired',
+  participantNotFound: 'participant-not-found',
+  fieldNotFound: 'ros-field-not-found',
   noSiteAttached: 'no-site-attached',
+};
+
+const rosFieldUpdate = {
+  siteId: 'site',
+  date: 'date',
+  startDate: 'start-date',
 };
 
 module.exports = {
@@ -23,4 +31,5 @@ module.exports = {
   rosEmploymentType,
   rosEmploymentTypeValues,
   rosError,
+  rosFieldUpdate,
 };

@@ -15,8 +15,8 @@ env:
   KEYCLOAK_LOCAL_SECRET: ${{ secrets.KEYCLOAK_LOCAL_SECRET }}
   APP_ENV: local
 jobs:
-  cypress-test:
-    name: Cypress
+  build:
+    name: Build
     runs-on: ubuntu-20.04
     timeout-minutes: 20
     steps:
@@ -98,6 +98,12 @@ jobs:
       - name: Add Test Data
         run: cd server && POSTGRES_HOST=localhost npm run feed-data
 
+  cypress-test:
+    name: Cypress
+    runs-on: ubuntu-20.04
+    needs: [build]
+    timeout-minutes: 20
+    steps:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:

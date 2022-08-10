@@ -62,37 +62,18 @@ export const getAllSites = async () => {
   }
 };
 
-export const onRosSiteUpdate = async (participantId, newSiteId) => {
-  if (!participantId || !newSiteId) {
+export const onRosUpdate = async (participantId, newValues) => {
+  const url = `${API_URL}/api/v1/ros/participant/${participantId}`;
+  const { siteName, startDate, date } = newValues;
+
+  if (!siteName && !startDate && !date) {
+    throw new Error('Unable  to update the field - no changes found');
+  }
+  if (!participantId) {
     throw new Error('Unable  to update the field - invalid data');
   }
-
-  const url = `${API_URL}/api/v1/ros/participant/${participantId}`;
-  const res = await fetch(url, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      newValue: newSiteId,
-      fieldType: 'site',
-    }),
-  });
-  if (res.ok) {
-    return res.json();
-  }
-
-  throw new Error(res.error || res.statusText || 'Unable  to update the field');
-};
-
-export const onRosDateUpdate = async (participantId, newDate) => {
-  if (!participantId || !newDate) {
-    throw new Error('Unable  to update the field - invalid data');
-  }
-  const dateTimestamp = dayjs(newDate, 'YYYY/MM/DD').toDate();
-  const url = `${API_URL}/api/v1/ros/participant/${participantId}`;
+  const dateTimestamp = date ? dayjs(date, 'YYYY/MM/DD').toDate() : undefined;
+  const startDateTimestamp = startDate ? dayjs(startDate, 'YYYY/MM/DD').toDate() : undefined;
 
   const res = await fetch(url, {
     method: 'PATCH',
@@ -102,39 +83,11 @@ export const onRosDateUpdate = async (participantId, newDate) => {
       'Content-type': 'application/json',
     },
     body: JSON.stringify({
-      newValue: dateTimestamp,
-      fieldType: 'date',
+      site: siteName,
+      date: dateTimestamp,
+      startDate: startDateTimestamp,
     }),
   });
-  if (res.ok) {
-    return res.json();
-  }
 
-  throw new Error(res.error || res.statusText || 'Unable  to update the field');
-};
-
-export const onRosStartDateUpdate = async (participantId, newStartDate) => {
-  if (!participantId || !newStartDate) {
-    throw new Error('Unable  to update the field - invalid data');
-  }
-  const dateTimestamp = dayjs(newStartDate, 'YYYY/MM/DD').toDate();
-  const url = `${API_URL}/api/v1/ros/participant/${participantId}`;
-
-  const res = await fetch(url, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      newValue: dateTimestamp,
-      fieldType: 'start-date',
-    }),
-  });
-  if (res.ok) {
-    return res.json();
-  }
-
-  throw new Error(res.error || res.statusText || 'Unable  to update the field');
+  return res;
 };

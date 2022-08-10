@@ -19,6 +19,7 @@ import {
   getPsi,
   displayParticipantData,
   getParticipantPageLabel,
+  onRosUpdate,
 } from '../../services';
 
 // Sub components
@@ -195,18 +196,24 @@ export default () => {
   const handleEditRosField = async (values) => {
     const EDIT_ERROR_MESSAGE = 'Unable to update the field';
     try {
-      if (!rosKeyMap[editFormField]?.onUpdate) throw new Error(EDIT_ERROR_MESSAGE);
-      const response = await rosKeyMap[editFormField].onUpdate(
-        actualParticipant?.id,
-        values[editFormField]
-      );
+      const response = await onRosUpdate(actualParticipant?.id, values);
       if (response.ok) {
         openToast({
           status: ToastStatus.Success,
           message: `${rosKeyMap[editFormField]?.label} is successfully updated`,
         });
+        fetchData({
+          setParticipant,
+          setPSIList,
+          setActualParticipant,
+          setDisableAssign,
+          setError,
+          id,
+        });
       } else {
-        throw new Error(response.error || response.statusText || EDIT_ERROR_MESSAGE);
+        throw new Error(
+          response.message || response.error || response.statusText || EDIT_ERROR_MESSAGE
+        );
       }
     } catch (err) {
       openToast({

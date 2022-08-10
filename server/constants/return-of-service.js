@@ -17,12 +17,9 @@ const rosError = {
   participantNotFound: 'participant-not-found',
   fieldNotFound: 'ros-field-not-found',
   noSiteAttached: 'no-site-attached',
-};
-
-const rosFieldUpdate = {
-  siteId: 'site',
-  date: 'date',
-  startDate: 'start-date',
+  noDate: 'no-date',
+  noStartDate: 'no-start-date',
+  noFieldsToUpdate: 'no-fields-to-update',
 };
 
 module.exports = {
@@ -31,5 +28,4 @@ module.exports = {
   rosEmploymentType,
   rosEmploymentTypeValues,
   rosError,
-  rosFieldUpdate,
 };

@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // Helper
-export const fetchData = ({
+const fetchData = ({
   setParticipant,
   setActualParticipant,
   setPSIList,

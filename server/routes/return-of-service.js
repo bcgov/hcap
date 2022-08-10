@@ -2,15 +2,13 @@ const express = require('express');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
-const { rosError, rosFieldUpdate } = require('../constants');
+const { rosError } = require('../constants');
 const { CreateReturnOfServiceSchema, validate } = require('../validators');
 const { getParticipantByID } = require('../services/participants');
 const {
   makeReturnOfServiceStatus,
   getReturnOfServiceStatuses,
-  updateReturnOfServiceSite,
-  updateReturnOfServiceDate,
-  updateReturnOfServiceStartDate,
+  updateReturnOfServiceStatus,
 } = require('../services/return-of-service');
 const { getSiteDetailsById, getDetailsBySiteId } = require('../services/employers');
 
@@ -33,11 +31,17 @@ const getRosErrorMessage = (messageType) => {
     case rosError.participantNotHired:
       return { label: 'Participant is not hired', statusCode: 400 };
     case rosError.noSiteAttached:
-      return { label: 'Participant is not attached to a site', statusCode: 400 };
+      return { label: 'Return of service site is not recorded', statusCode: 400 };
     case rosError.participantNotFound:
       return { label: 'Participant does not have a return of service record', statusCode: 400 };
     case rosError.fieldNotFound:
       return { label: 'Unable to parse field value to update', statusCode: 400 };
+    case rosError.noFieldsToUpdate:
+      return { label: 'Unable to update: no changes found', statusCode: 400 };
+    case rosError.noDate:
+      return { label: 'Start date is not recorded', statusCode: 400 };
+    case rosError.noStartDate:
+      return { label: 'Start date at a new site is not recorded', statusCode: 400 };
     default:
       return {
         text: 'Internal server error: unable to create return of service status',
@@ -66,7 +70,7 @@ router.post(
     // Validate Participant
     const participant = await validateParticipant(participantId, actionName);
     if (!participant) {
-      return res.status(404).send('Participant not found');
+      return res.status(422).send('Participant not found');
     }
     const { data, status, siteId, newSiteId, isUpdating } = req.body;
 
@@ -155,40 +159,19 @@ router.patch(
     if (!participant) {
       return res.status(404).send('Participant not found');
     }
-    const { newValue, fieldType } = req.body;
+    const { startDate, date, site } = req.body;
 
     try {
-      let response;
-      switch (fieldType) {
-        case rosFieldUpdate.siteId:
-          response = await updateReturnOfServiceSite({
-            participantId: participant.id,
-            newSiteId: newValue,
-          });
-          break;
-
-        case rosFieldUpdate.date:
-          response = await updateReturnOfServiceDate({
-            participantId: participant.id,
-            newDate: newValue,
-          });
-          break;
-
-        case rosFieldUpdate.startDate:
-          response = await updateReturnOfServiceStartDate({
-            participantId: participant.id,
-            newStartDate: newValue,
-          });
-          break;
-
-        default:
-          throw new Error(rosError.fieldNotFound);
-      }
-
+      const response = await updateReturnOfServiceStatus({
+        participantId,
+        newSite: site,
+        newDate: date,
+        newStartDate: startDate,
+      });
       logger.info({
         action: actionName,
         performed_by: user,
-        id: response.id,
+        id: response?.id,
       });
       return res.status(200).json(response);
     } catch (error) {

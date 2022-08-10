@@ -15,18 +15,15 @@ export const rosKeyMap = {
   siteName: {
     label: 'Current Site',
     editable: true,
-    onUpdate: onRosSiteUpdate,
   },
   healthAuthority: { label: 'Health Authority (current site)', editable: false },
   date: {
     label: 'RoS Start Date',
     editable: true,
-    onUpdate: onRosDateUpdate,
   },
   startDate: {
     label: 'RoS Start Date at a Current Site',
     editable: true,
-    onUpdate: onRosStartDateUpdate,
   },
   endDate: { label: 'RoS End Date', editable: false },
 };

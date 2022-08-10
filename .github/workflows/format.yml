@@ -16,8 +16,20 @@ jobs:
         with:
           node-version: '16'
 
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            **/node_modules
+          key: ${{ runner.os }}-npm
+          restore-keys: ${{ runner.os }}-npm
+
       - name: install dev dependencies
-        run: npm i
+        run: npm run update-all
 
       - name: run format checking scripts
         run: npm run check-format

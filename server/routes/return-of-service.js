@@ -28,8 +28,8 @@ const validateParticipant = async (participantId, actionType) => {
   return participant;
 };
 
-const getRosErrorMessage = (message) => {
-  switch (message) {
+const getRosErrorMessage = (messageType) => {
+  switch (messageType) {
     case rosError.participantNotHired:
       return { label: 'Participant is not hired', statusCode: 400 };
     case rosError.noSiteAttached:
@@ -40,7 +40,7 @@ const getRosErrorMessage = (message) => {
       return { label: 'Unable to parse field value to update', statusCode: 400 };
     default:
       return {
-        text: `Internal server error: unable to create return of service status (${message})`,
+        text: 'Internal server error: unable to create return of service status',
         statusCode: 500,
       };
   }
@@ -190,7 +190,7 @@ router.patch(
         performed_by: user,
         id: response.id,
       });
-      return res.status(201).json(response);
+      return res.status(200).json(response);
     } catch (error) {
       logger.error({
         action: actionName,

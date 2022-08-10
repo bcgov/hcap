@@ -5,11 +5,10 @@ import { Box, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { FastField, Formik, Form as FormikForm } from 'formik';
 
-import { ConfirmationForm } from './form-components';
+import { ConfirmationForm, FormButtons } from './form-components';
 import { RenderAutocomplete } from '../fields';
 import { MAX_LABEL_LENGTH } from '../../constants';
 import { addEllipsisMask } from '../../utils';
-import { FormButtons } from './form-components';
 
 const useStyles = makeStyles((theme) => ({
   formDivider: {

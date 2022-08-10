@@ -6,11 +6,11 @@ import { Box, Typography } from '@material-ui/core';
 import { RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { ParticipantAssignCohortSchema } from '../../constants';
-import { psi, assignParticipantWithCohort } from '../../services';
+import { getPsi, assignParticipantWithCohort } from '../../services';
 
 // Helpers
 const fetchPSIData = async () => {
-  const psiData = (await psi()) || [];
+  const psiData = (await getPsi()) || [];
   const cohortMap = {};
   const psiMappedData = psiData.map((psi) => {
     const mappedData = {

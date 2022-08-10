@@ -3,10 +3,16 @@ import { Box, Grid, Typography } from '@material-ui/core';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 
-import { getCohortName } from '../constants';
-import { Dialog, Button } from '../../../../components/generic';
+import { Dialog, Button } from '../../generic';
+import { getCohortPsiName } from '../../../services';
 
-export const AssignCohortDialog = ({ isOpen, onClose, onSubmit, participant, selectedCohort }) => {
+export const AssignCohortSiteDialog = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  participant,
+  selectedCohort,
+}) => {
   return (
     <Dialog showDivider title='Assign Cohort' open={isOpen} onClose={onClose}>
       <DialogContent>
@@ -27,7 +33,7 @@ export const AssignCohortDialog = ({ isOpen, onClose, onSubmit, participant, sel
                 <Typography variant='body1'>Assign Cohort</Typography>
               </Grid>
               <Grid item xs={4}>
-                <Typography variant='body2'>{getCohortName(selectedCohort)}</Typography>
+                <Typography variant='body2'>{getCohortPsiName(selectedCohort)}</Typography>
               </Grid>
             </Grid>
           </Grid>
@@ -36,7 +42,7 @@ export const AssignCohortDialog = ({ isOpen, onClose, onSubmit, participant, sel
         <Box>
           <Typography variant='body2'>
             Are you sure that you would like to assign this participant to{' '}
-            <b>{getCohortName(selectedCohort)}</b>? Please review the above information before
+            <b>{getCohortPsiName(selectedCohort)}</b>? Please review the above information before
             proceeding.
           </Typography>
         </Box>

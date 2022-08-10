@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { Dialog } from '../../../../components/generic';
-import { EditParticipantFormSchema } from '../../../../constants';
-import { EditParticipantForm } from '../../../../components/modal-forms';
+import { Dialog } from '../../generic';
+import { EditParticipantFormSchema } from '../../../constants';
+import { EditParticipantForm } from '../../modal-forms';
 
 export const EditParticipantDialog = ({ isOpen, onClose, onSubmit, participant }) => {
   return (

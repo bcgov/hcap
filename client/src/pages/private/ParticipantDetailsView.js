@@ -2,38 +2,34 @@
 // Dependency
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import _orderBy from 'lodash/orderBy';
 
 import { Box, Card, Grid, Link, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import EditIcon from '@material-ui/icons/Edit';
 
 // Libs
-import { getLinkLabel, keyLabelMap, displayData, fetchData } from './constants';
-import { AssignCohortDialog, EditParticipantDialog, EditRosFieldDialog } from './modals';
-import { useToast } from '../../../hooks';
-import { AuthContext } from '../../../providers';
-import { Page, CheckPermissions, Alert, Button } from '../../../components/generic';
-import {
-  ToastStatus,
-  Routes,
-  EditRosDateSchema,
-  EditRosSiteSchema,
-  EditRosStartDateSchema,
-  mohEditType,
-  MAX_LABEL_LENGTH,
-} from '../../../constants';
+import { useToast } from '../../hooks';
+import { AuthContext } from '../../providers';
+import { Page, CheckPermissions, Alert, Button } from '../../components/generic';
+import { ToastStatus, Routes, keyLabelMap, rosKeyMap } from '../../constants';
 import {
   assignParticipantWithCohort,
   updateParticipant,
-  onRosDateUpdate,
-  onRosSiteUpdate,
-  onRosStartDateUpdate,
-} from '../../../services';
-import { addEllipsisMask } from '../../../utils';
+  fetchParticipant,
+  getPsi,
+  displayParticipantData,
+  getParticipantPageLabel,
+} from '../../services';
 
-// Sub component
-import { PSICohortView } from '../../../components/participant-details';
+// Sub components
+import {
+  AssignCohortSiteDialog,
+  EditParticipantDialog,
+  PSICohortView,
+  EditRosDateDialog,
+  EditRosStartDateDialog,
+  EditRosSiteDialog,
+} from '../../components/participant-details';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,6 +41,40 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(4),
   },
 }));
+
+// Helper
+export const fetchData = ({
+  setParticipant,
+  setActualParticipant,
+  setPSIList,
+  id,
+  setError,
+  setDisableAssign,
+}) => {
+  fetchParticipant({ id })
+    .then((resp) => {
+      setParticipant(displayParticipantData(resp));
+      setActualParticipant(resp);
+      if (
+        resp.interested?.toLowerCase() === 'withdrawn' ||
+        resp.interested?.toLowerCase() === 'no'
+      ) {
+        setDisableAssign(true);
+        return;
+      }
+
+      getPsi()
+        .then((list) => {
+          setPSIList(list);
+        })
+        .catch((err) => {
+          setError(`${err}`);
+        });
+    })
+    .catch((err) => {
+      setError(`${err}`);
+    });
+};
 
 export default () => {
   // History
@@ -58,7 +88,6 @@ export default () => {
   const [disableAssign, setDisableAssign] = useState(false);
   const [selectedCohort, setSelectedCohort] = useState(null);
   const [editFormField, setEditFormField] = useState(null);
-  const [allSites, setAllSites] = useState([]);
   // Hook: Toast
   const { openToast } = useToast();
   // Auth context
@@ -70,43 +99,10 @@ export default () => {
   // Get param
   const { id, page, pageId } = useParams();
   // Breadcrumb name
-  const linkName = getLinkLabel(page);
+  const linkName = getParticipantPageLabel(page);
   // Edit Button flag
   const enableEdit = roles.some((role) => ['ministry_of_health', 'superuser'].includes(role));
   const isMoH = roles.includes('ministry_of_health');
-
-  const rosKeyMap = {
-    siteName: {
-      label: 'Current Site',
-      editable: true,
-      type: mohEditType.AUTOCOMPLETE,
-      validation: EditRosSiteSchema,
-      options: _orderBy(allSites, ['siteName']).map((item) => ({
-        value: item.siteId,
-        label: addEllipsisMask(item.siteName, MAX_LABEL_LENGTH),
-      })),
-      onUpdate: onRosSiteUpdate,
-      serverFieldName: 'site',
-    },
-    healthAuthority: { label: 'Health Authority (current site)', editable: false },
-    date: {
-      label: 'RoS Start Date',
-      editable: true,
-      type: mohEditType.DATE,
-      validation: EditRosDateSchema,
-      onUpdate: onRosDateUpdate,
-      serverFieldName: 'date',
-    },
-    startDate: {
-      label: 'RoS Start Date at a Current Site',
-      editable: true,
-      type: mohEditType.DATE,
-      validation: EditRosStartDateSchema,
-      onUpdate: onRosStartDateUpdate,
-      serverFieldName: 'start-date',
-    },
-    endDate: { label: 'RoS End Date', editable: false },
-  };
 
   // UI Actions
   // 1. Show edit
@@ -117,7 +113,7 @@ export default () => {
     try {
       const [updatedParticipant] = await updateParticipant(values, { ...actualParticipant });
       const mergedParticipant = { ...actualParticipant, ...updatedParticipant };
-      setParticipant(displayData(mergedParticipant));
+      setParticipant(displayParticipantData(mergedParticipant));
       setActualParticipant(mergedParticipant);
       openToast({
         status: ToastStatus.Success,
@@ -136,7 +132,6 @@ export default () => {
       setActualParticipant,
       setDisableAssign,
       setError,
-      setAllSites,
       id,
     });
   };
@@ -155,7 +150,6 @@ export default () => {
         setActualParticipant,
         setError,
         setDisableAssign,
-        setAllSites,
         id,
       });
     } catch (err) {
@@ -197,22 +191,22 @@ export default () => {
     setEditFormField(null);
   };
 
-  // Update selected RoS field
-  const handleEditRosSubmit = async (values) => {
+  // Update selected RoS fields
+  const handleEditRosField = async (values) => {
     const EDIT_ERROR_MESSAGE = 'Unable to update the field';
     try {
       if (!rosKeyMap[editFormField]?.onUpdate) throw new Error(EDIT_ERROR_MESSAGE);
-      const res = await rosKeyMap[editFormField].onUpdate(
+      const response = await rosKeyMap[editFormField].onUpdate(
         actualParticipant?.id,
         values[editFormField]
       );
-      if (res.ok) {
+      if (response.ok) {
         openToast({
           status: ToastStatus.Success,
           message: `${rosKeyMap[editFormField]?.label} is successfully updated`,
         });
       } else {
-        throw new Error(res.error || res.statusText || EDIT_ERROR_MESSAGE);
+        throw new Error(response.error || response.statusText || EDIT_ERROR_MESSAGE);
       }
     } catch (err) {
       openToast({
@@ -232,18 +226,9 @@ export default () => {
       setActualParticipant,
       setDisableAssign,
       setError,
-      setAllSites,
       id,
     });
-  }, [
-    setParticipant,
-    setPSIList,
-    setActualParticipant,
-    setError,
-    setDisableAssign,
-    setAllSites,
-    id,
-  ]);
+  }, [setParticipant, setPSIList, setActualParticipant, setError, setDisableAssign, id]);
 
   // Render
   return (
@@ -256,7 +241,7 @@ export default () => {
         {!participant && !error && <Alert severity='info'>Loading participant details</Alert>}
         {participant && (
           <Card className={classes.root}>
-            <AssignCohortDialog
+            <AssignCohortSiteDialog
               isOpen={selectedCohort !== null}
               participant={participant}
               selectedCohort={selectedCohort}
@@ -372,16 +357,22 @@ export default () => {
         onClose={handleEditParticipantClose}
       />
 
-      <EditRosFieldDialog
-        title={`Edit ${rosKeyMap[editFormField]?.label}`}
-        isOpen={Boolean(editFormField)}
+      <EditRosStartDateDialog
+        isOpen={editFormField === 'startDate'}
         onClose={handleEditRosFieldClose}
-        onSubmit={handleEditRosSubmit}
-        validation={rosKeyMap[editFormField]?.validation}
-        rosFieldType={rosKeyMap[editFormField]?.type}
-        fieldName={editFormField}
-        fieldLabel={rosKeyMap[editFormField]?.label}
-        fieldOptions={rosKeyMap[editFormField]?.options}
+        onSubmit={handleEditRosField}
+      />
+
+      <EditRosDateDialog
+        isOpen={editFormField === 'date'}
+        onClose={handleEditRosFieldClose}
+        onSubmit={handleEditRosField}
+      />
+
+      <EditRosSiteDialog
+        isOpen={editFormField === 'siteName'}
+        onClose={handleEditRosFieldClose}
+        onSubmit={handleEditRosField}
       />
     </Page>
   );

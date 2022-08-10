@@ -150,7 +150,6 @@ const updateReturnOfServiceStartDate = async ({ participantId, newStartDate }) =
     throw new Error(rosError.fieldNotFound);
   }
 
-  // validate start date
   const res = await dbClient.db[collections.ROS_STATUS].find({
     participant_id: participantId,
     is_current: true,

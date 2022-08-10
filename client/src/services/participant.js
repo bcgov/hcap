@@ -1,8 +1,8 @@
 import store from 'store';
 import { API_URL, pageSize, postHireStatuses } from '../constants';
 
-const getCohortName = (cohort = {}) =>
-  cohort.cohort_name && cohort.psi?.institute_name
+export const getCohortPsiName = (cohort = {}) =>
+  cohort && cohort.cohort_name && cohort.psi?.institute_name
     ? `${cohort.cohort_name} / ${cohort.psi?.institute_name}`
     : 'Not Assigned';
 
@@ -47,7 +47,7 @@ export const fetchParticipant = async ({ id }) => {
     return {
       ...participant,
       cohort,
-      cohortName: getCohortName(cohort),
+      cohortName: getCohortPsiName(cohort),
       postHireStatus,
       postHireStatusLabel: getPostHireStatusLabel(postHireStatus),
     };

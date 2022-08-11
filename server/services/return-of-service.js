@@ -2,6 +2,16 @@
 const { dbClient, collections } = require('../db');
 const { rosError } = require('../constants');
 
+const getRosSiteId = async (siteId) => {
+  const sites = await dbClient.db[collections.EMPLOYER_SITES].find({
+    'body.siteId': siteId,
+  });
+  if (sites?.length === 0) {
+    throw new Error(rosError.noSiteAttached);
+  }
+  return sites[0]?.id;
+};
+
 /**
  * Invalidate all ros statuses for participant
  * @param {*} param.db db transaction | optional database object
@@ -118,8 +128,12 @@ const updateReturnOfServiceStatus = async ({
     throw new Error(rosError.fieldNotFound);
   }
 
-  if (newSite && !rosParticipant.site_id) {
-    throw new Error(rosError.noSiteAttached);
+  let newSiteId;
+  if (newSite) {
+    if (!rosParticipant.site_id) {
+      throw new Error(rosError.noSiteAttached);
+    }
+    newSiteId = await getRosSiteId(newSite);
   }
   if (newDate && !rosParticipant.data.date) {
     throw new Error(rosError.noDate);
@@ -129,7 +143,7 @@ const updateReturnOfServiceStatus = async ({
   }
 
   const updatedData = {
-    site_id: newSite || rosParticipant.site_id,
+    site_id: newSiteId || rosParticipant.site_id,
     data: {
       ...rosParticipant.data,
       date: newDate || rosParticipant.data.date,

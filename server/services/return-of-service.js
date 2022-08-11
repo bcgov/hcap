@@ -99,7 +99,13 @@ const getReturnOfServiceStatuses = async ({ participantId }) =>
       }
     );
 
-const updateReturnOfServiceStatus = async ({ participantId, newSite, newDate, newStartDate }) => {
+const updateReturnOfServiceStatus = async ({
+  participantId,
+  newSite,
+  newDate,
+  newStartDate,
+  user,
+}) => {
   const rosParticipants = await dbClient.db[collections.ROS_STATUS].find({
     participant_id: participantId,
     is_current: true,
@@ -122,17 +128,26 @@ const updateReturnOfServiceStatus = async ({ participantId, newSite, newDate, ne
     throw new Error(rosError.noStartDate);
   }
 
+  const updatedData = {
+    site_id: newSite || rosParticipant.site_id,
+    data: {
+      ...rosParticipant.data,
+      date: newDate || rosParticipant.data.date,
+      startDate: newStartDate || rosParticipant.data.startDate,
+    },
+  };
   dbClient.db[collections.ROS_STATUS].update(
     { participant_id: participantId, is_current: true },
-    {
-      site_id: newSite || rosParticipant.site_id,
-      data: {
-        ...rosParticipant.data,
-        date: newDate || rosParticipant.data.date,
-        startDate: newStartDate || rosParticipant.data.startDate,
-      },
-    }
+    updatedData
   );
+  dbClient.db[collections.MOH_EDIT_AUDIT].insert({
+    user: user || 'system',
+    data: {
+      participantId,
+      oldData: { ...rosParticipant },
+      updatedData,
+    },
+  });
 };
 
 module.exports = {

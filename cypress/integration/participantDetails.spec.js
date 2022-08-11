@@ -1,6 +1,7 @@
 describe('Participant details view', () => {
   before(() => {
     cy.assignSitesToUser('test-employer', [1]);
+    cy.assignSitesToUser('test-ha', [1]);
   });
   describe('Health Authority', () => {
     beforeEach(() => {

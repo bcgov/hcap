@@ -203,7 +203,7 @@ Cypress.Commands.add('callAPI', ({ api, method = 'POST', body, followRedirect = 
 
 // assigns the site_ids to the username, assuming the region is already correct
 // does not un-assign previous sites
-Cypress.Commands.add('assignSitesToHealthAuthorityUser', (username, site_ids) => {
+Cypress.Commands.add('assignSitesToUser', (username, site_ids) => {
   Cypress.log({ name: `assign site ${site_ids.join(',')} to ${username}` });
   cy.kcLogin('test-moh');
 

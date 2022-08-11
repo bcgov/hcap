@@ -8,8 +8,8 @@ describe('Participant details view', () => {
     });
     it('Should be able to assign cohort and track graduation', () => {
       cy.visit('participant-details/participant/none/27');
-      cy.get('button.MuiTab-root>span').contains('Track Graduation');
-      cy.get('button.MuiTab-root>span').contains('Assign Cohort');
+      cy.get('button.MuiTab-root').contains('Track Graduation');
+      cy.get('button.MuiTab-root').contains('Assign Cohort');
     });
   });
 

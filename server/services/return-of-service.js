@@ -2,14 +2,6 @@
 const { dbClient, collections } = require('../db');
 const { rosError } = require('../constants');
 
-const getRosParticipant = async (participantId) => {
-  const res = await dbClient.db[collections.ROS_STATUS].find({
-    participant_id: participantId,
-    is_current: true,
-  });
-  return res;
-};
-
 /**
  * Invalidate all ros statuses for participant
  * @param {*} param.db db transaction | optional database object
@@ -108,12 +100,11 @@ const getReturnOfServiceStatuses = async ({ participantId }) =>
     );
 
 const updateReturnOfServiceStatus = async ({ participantId, newSite, newDate, newStartDate }) => {
-  if (!newSite && !newDate && !newStartDate) {
-    throw new Error(rosError.noFieldsToUpdate);
-  }
-
-  const rosParticipants = await getRosParticipant(participantId);
-  if (!rosParticipants || rosParticipants.length === 0) {
+  const rosParticipants = await dbClient.db[collections.ROS_STATUS].find({
+    participant_id: participantId,
+    is_current: true,
+  });
+  if (rosParticipants.length === 0) {
     throw new Error(rosError.participantNotFound);
   }
   const rosParticipant = rosParticipants[0];
@@ -121,22 +112,14 @@ const updateReturnOfServiceStatus = async ({ participantId, newSite, newDate, ne
     throw new Error(rosError.fieldNotFound);
   }
 
-  if (newSite) {
-    if (!rosParticipant.site_id) {
-      throw new Error(rosError.noSiteAttached);
-    }
+  if (newSite && !rosParticipant.site_id) {
+    throw new Error(rosError.noSiteAttached);
   }
-
-  if (newDate) {
-    if (!rosParticipant.data.date) {
-      throw new Error(rosError.noDate);
-    }
+  if (newDate && !rosParticipant.data.date) {
+    throw new Error(rosError.noDate);
   }
-
-  if (newStartDate) {
-    if (!rosParticipant.data.startDate) {
-      throw new Error(rosError.noStartDate);
-    }
+  if (newStartDate && !rosParticipant.data.startDate) {
+    throw new Error(rosError.noStartDate);
   }
 
   dbClient.db[collections.ROS_STATUS].update(

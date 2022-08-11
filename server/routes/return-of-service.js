@@ -21,9 +21,42 @@ const validateParticipant = async (participantId, actionType) => {
       action: actionType,
       message: `Participant ${participantId} not found`,
     });
-    return null;
+    return undefined;
   }
   return participant;
+};
+
+const validateUser = async (user, actionType) => {
+  const { email, user_id: userId, sub: localUserId } = user;
+  const userData = userId || localUserId;
+
+  if (!(email && userData)) {
+    logger.error({
+      action: actionType,
+      message: `Unauthorized access`,
+    });
+    return undefined;
+  }
+
+  return userData;
+};
+
+const validateCredentials = async (reqUser, participantId, actionType) => {
+  const validUser = validateUser(reqUser);
+  if (!validUser) {
+    return { isValid: false, status: 401, message: 'Unauthorized user', user: validUser };
+  }
+  const validParticipant = await validateParticipant(participantId, actionType);
+  if (!validParticipant) {
+    return {
+      isValid: false,
+      status: 404,
+      message: 'Participant not found',
+      user: validUser,
+      participant: validParticipant,
+    };
+  }
+  return { isValid: true, user: validUser, participant: validParticipant };
 };
 
 const getRosErrorMessage = (messageType) => {
@@ -60,18 +93,12 @@ router.post(
   asyncMiddleware(async (req, res) => {
     const actionName = 'ros-status-create';
     const { participantId } = req.params;
-    const { email, user_id: userId, sub: localUserId } = req.user;
-    const user = userId || localUserId;
-    if (!(email && user)) {
-      return res.status(401).send('Unauthorized user');
+    const validationRes = await validateCredentials(req.user, participantId, actionName);
+    if (!validationRes.isValid) {
+      return res.status(validationRes.status).send(validationRes.message);
     }
     // Validate body
     await validate(CreateReturnOfServiceSchema, req.body);
-    // Validate Participant
-    const participant = await validateParticipant(participantId, actionName);
-    if (!participant) {
-      return res.status(422).send('Participant not found');
-    }
     const { data, status, siteId, newSiteId, isUpdating } = req.body;
 
     if (siteId) {
@@ -91,7 +118,7 @@ router.post(
 
     try {
       const response = await makeReturnOfServiceStatus({
-        participantId: participant.id,
+        participantId: validationRes.participant?.id,
         data,
         status,
         siteId,
@@ -100,7 +127,7 @@ router.post(
       });
       logger.info({
         action: actionName,
-        performed_by: user,
+        performed_by: validationRes.user,
         id: response.id,
       });
       return res.status(201).json(response);
@@ -124,19 +151,14 @@ router.get(
   asyncMiddleware(async (req, res) => {
     const actionName = 'ros-status-get';
     const { participantId } = req.params;
-    const { email, user_id: userId, sub: localUserId } = req.user;
-    const user = userId || localUserId;
-    if (!(email && user)) {
-      return res.status(401).send('Unauthorized user');
-    }
-    const participant = await validateParticipant(participantId, actionName);
-    if (!participant) {
-      return res.status(404).send('Participant not found');
+    const validationRes = await validateCredentials(req.user, participantId, actionName);
+    if (!validationRes.isValid) {
+      return res.status(validationRes.status).send(validationRes.message);
     }
     const resp = await getReturnOfServiceStatuses({ participantId });
     logger.info({
       action: actionName,
-      performed_by: user,
+      performed_by: validationRes.user,
       ids: resp.map((r) => r.id),
     });
     return res.status(200).json(resp);
@@ -150,16 +172,14 @@ router.patch(
   asyncMiddleware(async (req, res) => {
     const actionName = 'ros-status-update';
     const { participantId } = req.params;
-    const { email, user_id: userId, sub: localUserId } = req.user;
-    const user = userId || localUserId;
-    if (!(email && user)) {
-      return res.status(401).send('Unauthorized user');
-    }
-    const participant = await validateParticipant(participantId, actionName);
-    if (!participant) {
-      return res.status(404).send('Participant not found');
+    const validationRes = await validateCredentials(req.user, participantId, actionName);
+    if (!validationRes.isValid) {
+      return res.status(validationRes.status).send(validationRes.message);
     }
     const { startDate, date, site } = req.body;
+    if (!startDate && !date && !site) {
+      throw new Error(rosError.noFieldsToUpdate);
+    }
 
     try {
       const response = await updateReturnOfServiceStatus({
@@ -170,7 +190,7 @@ router.patch(
       });
       logger.info({
         action: actionName,
-        performed_by: user,
+        performed_by: validationRes.user,
         id: response?.id,
       });
       return res.status(200).json(response);

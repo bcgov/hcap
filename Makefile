@@ -112,7 +112,7 @@ local-server-tests:
 
 local-cypress-tests:
 	@echo "Running all available Cypress tests"
-	@npx cypress run --spec **/participantDetails.spec.js --headless
+	@npx cypress run --headless
 
 database: ## <Helper> :: Executes into database container.
 	@echo "Make: Shelling into local database container ..."

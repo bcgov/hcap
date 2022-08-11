@@ -2,7 +2,7 @@ import store from 'store';
 import { API_URL, postHireStatuses } from '../constants';
 
 export const getCohortPsiName = (cohort = {}) =>
-  cohort && cohort.cohort_name && cohort.psi?.institute_name
+  cohort?.cohort_name && cohort.psi?.institute_name
     ? `${cohort.cohort_name} / ${cohort.psi?.institute_name}`
     : 'Not Assigned';
 

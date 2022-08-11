@@ -75,7 +75,7 @@ export const onRosUpdate = async (participantId, newValues) => {
   const dateTimestamp = date ? dayjs(date, 'YYYY/MM/DD').toDate() : undefined;
   const startDateTimestamp = startDate ? dayjs(startDate, 'YYYY/MM/DD').toDate() : undefined;
 
-  const res = await fetch(url, {
+  return await fetch(url, {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${store.get('TOKEN')}`,
@@ -88,6 +88,4 @@ export const onRosUpdate = async (participantId, newValues) => {
       startDate: startDateTimestamp,
     }),
   });
-
-  return res;
 };

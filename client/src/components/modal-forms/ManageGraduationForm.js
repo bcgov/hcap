@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderDateField, RenderRadioGroup } from '../fields';
 import React from 'react';
@@ -5,10 +6,13 @@ import { Box, Grid, Typography } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
 import { getTodayDate } from '../../utils';
 import { Button } from '../../components/generic/Button';
+import { AuthContext } from '../../providers';
 import { ParticipantPostHireStatusSchema } from '../../constants/validation';
 import { postHireStatuses } from '../../constants';
 import dayjs from 'dayjs';
 export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortEndDate }) => {
+  const { auth } = AuthContext.useAuth();
+  const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const cohortEndDateObj = dayjs(cohortEndDate, 'YYYY/MM/DD');
   const today = new Date();
   return (
@@ -99,6 +103,17 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
                       <MuiAlert severity='warning'>
                         {
                           'Participants who no longer wish to continue in HCAP will need to be archived, please use the archive function provided after you submit.'
+                        }
+                      </MuiAlert>
+                    </Box>
+                  )}
+                {values?.continue === 'continue_yes' &&
+                  values.status === postHireStatuses.cohortUnsuccessful &&
+                  !roles.includes('health_authority') && (
+                    <Box>
+                      <MuiAlert severity='warning'>
+                        {
+                          'Please notify your Health Authority contact to assign a new Cohort to the participant.'
                         }
                       </MuiAlert>
                     </Box>

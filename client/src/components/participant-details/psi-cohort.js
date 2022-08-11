@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Typography, Box } from '@material-ui/core';
 import {
   Route,
@@ -9,32 +9,27 @@ import {
   BrowserRouter as Router,
   Redirect,
 } from 'react-router-dom';
-import { postHireStatuses } from '../../constants';
+import { AuthContext } from '../../providers';
 
-import { TrackGraduation } from './track-graduation';
+import { postHireStatuses } from '../../constants';
 
 // Service
 import { sortPSI } from '../../services';
 
 // Component
 import { PSICohortTable } from './psi-cohort-table';
+import { TrackGraduation } from './track-graduation';
 import { CustomTab, CustomTabs } from '../generic';
 
-const TabDetails = {
-  assignCohort: {
-    label: 'Assign Cohort',
-    path: '/',
-  },
-  trackGraduation: {
-    label: 'Track Graduation',
-    path: '/track-graduation',
-  },
+const tabKeyForPath = (tabDetails, path) => {
+  const tabKey = Object.keys(tabDetails).find((key) => tabDetails[key].path === path);
+  return { tabKey, tabInfo: tabDetails[tabKey] };
 };
 
-const tabKeyForPath = (path) => {
-  const tabKey = Object.keys(TabDetails).find((key) => TabDetails[key].path === path);
-  return { tabKey, tabInfo: TabDetails[tabKey] };
-};
+const defaultPath = (tabDetails) => {
+  const tabKey = Object.keys(tabDetails).find((key) => tabDetails[key].default) || Object.keys(tabDetails)[0]; 
+  return tabDetails[tabKey].path;
+}
 
 // Smaller standalone components
 const TabContentAssignCohort = ({ disabled, psiList, assignAction, fetchData }) => {
@@ -68,10 +63,11 @@ const canAssignCohort = (participant) => {
 };
 
 const PSIRouteTabs = ({
-  selectedTab = 'assignCohort',
+  selectedTab,
   psiList = [],
   assignAction,
   participant = {},
+  tabDetails,
   fetchData,
 }) => {
   const history = useHistory();
@@ -82,7 +78,7 @@ const PSIRouteTabs = ({
   useEffect(() => {
     let unsubscribe = history.listen((location) => {
       const { pathname: path } = location;
-      const { tabKey } = tabKeyForPath(path);
+      const { tabKey } = tabKeyForPath(tabDetails, path);
       if (tabKey !== tab) {
         setTab(tabKey);
       }
@@ -97,39 +93,43 @@ const PSIRouteTabs = ({
         value={tab}
         onChange={(_, prop) => {
           setTab(prop);
-          history.push(TabDetails[prop]?.path);
+          history.push(tabDetails[prop]?.path);
         }}
       >
-        {Object.keys(TabDetails).map((key) => (
+        {Object.keys(tabDetails).map((key) => (
           <CustomTab
             key={key}
-            label={TabDetails[key].label}
+            label={tabDetails[key].label}
             value={key}
             disabled={isLoadingData}
           ></CustomTab>
         ))}
       </CustomTabs>
       <Switch>
-        <Route exact path={TabDetails.trackGraduation.path}>
-          <TabContentTrackGraduation
-            tab={tab}
-            setTab={setTab}
-            participant={participant}
-            fetchData={fetchData}
-          />
-        </Route>
+        {tabDetails.trackGraduation &&
+          <Route exact path={tabDetails.trackGraduation.path}>
+            <TabContentTrackGraduation
+              tab={tab}
+              setTab={setTab}
+              participant={participant}
+              fetchData={fetchData}
+            />
+          </Route>
+        }
 
-        <Route exact path={TabDetails.assignCohort.path}>
-          <TabContentAssignCohort
-            tab={tab}
-            setTab={setTab}
-            fetchData={fetchData}
-            assignAction={assignAction}
-            disabled={disabled}
-            psiList={psiList}
-          />
-        </Route>
-        <Redirect to='/' />
+        {tabDetails.assignCohort &&
+          <Route exact path={tabDetails.assignCohort.path}>
+            <TabContentAssignCohort
+              tab={tab}
+              setTab={setTab}
+              fetchData={fetchData}
+              assignAction={assignAction}
+              disabled={disabled}
+              psiList={psiList}
+            />
+          </Route>
+        }
+        <Redirect to={defaultPath(tabDetails)} />
       </Switch>
     </>
   );
@@ -138,11 +138,29 @@ const PSIRouteTabs = ({
 export const PSICohortView = ({ psiList = [], assignAction, participant, fetchData }) => {
   const match = useRouteMatch();
   const { tab } = useParams();
-  const tabKey = Object.keys(TabDetails).reduce((incoming, key) =>
-    TabDetails[key]?.path === `/${tab}` ? key : incoming
-  );
+  const { auth } = AuthContext.useAuth();
+  const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const baseUrl = match.url.split(tab)[0];
   const sortedList = sortPSI({ psiList, cohort: participant ? participant.cohort : {} });
+
+  // Determine the tags depending on user role
+  const assignCohort = {
+    label: 'Assign Cohort',
+    path: '/assign-cohort',
+    default: true,
+  };
+  const trackGraduation = {
+    label: 'Track Graduation',
+    path: '/track-graduation',
+    default: true,
+  };
+  let tabDetails = { trackGraduation };
+  if (roles.includes('health_authority')) {
+    trackGraduation.default = false;
+    tabDetails = { assignCohort, trackGraduation };
+  }
+  const tabKey = Object.keys(tabDetails).find((key) => tabDetails[key].default === true);
+
   return (
     <Box p={4}>
       <Router basename={baseUrl}>
@@ -152,6 +170,7 @@ export const PSICohortView = ({ psiList = [], assignAction, participant, fetchDa
           assignAction={assignAction}
           participant={participant}
           fetchData={fetchData}
+          tabDetails={tabDetails}
         ></PSIRouteTabs>
       </Router>
     </Box>

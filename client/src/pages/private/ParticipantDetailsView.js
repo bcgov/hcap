@@ -352,7 +352,7 @@ export default () => {
 
             {!participant.ros && (
               <>
-                <CheckPermissions permittedRoles={['health_authority']}>
+                <CheckPermissions permittedRoles={['employer', 'health_authority']}>
                   {!disableAssign && (
                     <PSICohortView
                       psiList={psiList}

@@ -27,9 +27,10 @@ const tabKeyForPath = (tabDetails, path) => {
 };
 
 const defaultPath = (tabDetails) => {
-  const tabKey = Object.keys(tabDetails).find((key) => tabDetails[key].default) || Object.keys(tabDetails)[0]; 
+  const tabKey =
+    Object.keys(tabDetails).find((key) => tabDetails[key].default) || Object.keys(tabDetails)[0];
   return tabDetails[tabKey].path;
-}
+};
 
 // Smaller standalone components
 const TabContentAssignCohort = ({ disabled, psiList, assignAction, fetchData }) => {
@@ -85,7 +86,7 @@ const PSIRouteTabs = ({
     });
 
     return () => unsubscribe();
-  }, [tab, setTab, history]);
+  }, [tab, setTab, tabDetails, history]);
 
   return (
     <>
@@ -106,7 +107,7 @@ const PSIRouteTabs = ({
         ))}
       </CustomTabs>
       <Switch>
-        {tabDetails.trackGraduation &&
+        {tabDetails.trackGraduation && (
           <Route exact path={tabDetails.trackGraduation.path}>
             <TabContentTrackGraduation
               tab={tab}
@@ -115,9 +116,9 @@ const PSIRouteTabs = ({
               fetchData={fetchData}
             />
           </Route>
-        }
+        )}
 
-        {tabDetails.assignCohort &&
+        {tabDetails.assignCohort && (
           <Route exact path={tabDetails.assignCohort.path}>
             <TabContentAssignCohort
               tab={tab}
@@ -128,7 +129,7 @@ const PSIRouteTabs = ({
               psiList={psiList}
             />
           </Route>
-        }
+        )}
         <Redirect to={defaultPath(tabDetails)} />
       </Switch>
     </>

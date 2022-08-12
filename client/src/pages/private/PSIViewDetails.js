@@ -22,6 +22,9 @@ const customStyle = makeStyles({
   rootContainer: {
     flexGrow: 1,
   },
+  cardRoot: {
+    minWidth: '950px',
+  },
 });
 
 // Service layer
@@ -200,7 +203,7 @@ export default ({ match }) => {
         renderErrorMessage={true}
       >
         {error && <MuiAlert severity='error'>{error}</MuiAlert>}
-        <Card>
+        <Card className={classes.cardRoot}>
           <Box pt={4} pb={2} pl={4} pr={4}>
             <Box pb={4} pl={2}>
               <Box pb={2}>

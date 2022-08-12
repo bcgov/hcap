@@ -233,7 +233,7 @@ const ParticipantTable = () => {
     setActiveModalForm(participantEngageStatus.MULTI_SELECT_SITE);
   };
 
-  const handleEngage = async (participantId, status, additional = {}, participantInfo = null) => {
+  const handleEngage = async (participantId, status, additional = {}, _participantInfo = null) => {
     let closeModal = true;
     try {
       if (isLoadingData) {

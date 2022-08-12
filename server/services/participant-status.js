@@ -23,7 +23,7 @@ const previousStatusesMap = {
   [OFFER_MADE]: [INTERVIEWING],
   [HIRED]: [OFFER_MADE],
   [ARCHIVED]: [HIRED],
-  [REJECTED]: [OFFER_MADE, INTERVIEWING, PROSPECTING, REJECT_ACKNOWLEDGEMENT],
+  [REJECTED]: [OFFER_MADE, INTERVIEWING, PROSPECTING, REJECT_ACKNOWLEDGEMENT, HIRED],
 };
 
 // Helper
@@ -113,6 +113,7 @@ const setParticipantStatus = async (
     // Check validity of status transition
     const currentStatus = existingCurrentStatus?.status || null;
     const validPreviousStatuses = previousStatusesMap[status] || [];
+
     if (!validPreviousStatuses.includes(currentStatus)) {
       return {
         status: INVALID_STATUS_TRANSITION,

@@ -44,6 +44,7 @@ const flattenParticipants = (participants) => {
 const scrubParticipantData = (raw, joinNames, sites) =>
   raw.map((participant) => {
     const statusInfos = [];
+    let rosStatuses = participant.rosStatuses ?? [];
 
     const decomposeStatusInfo = (statusInfo) => ({
       id: statusInfo.id,
@@ -73,15 +74,11 @@ const scrubParticipantData = (raw, joinNames, sites) =>
       });
     }
 
-    let rosStatuses = participant.rosStatuses
-      ? participant.rosStatuses.sort((ros1, ros2) => ros2.id - ros1.id)
-      : [];
-    rosStatuses = rosStatuses.filter((rosStatus) => sites.includes(rosStatus.rosSite.body.siteId));
     return {
       ...participant.body,
       id: participant.id,
       statusInfos,
-      rosStatuses,
+      rosStatuses: rosStatuses.sort((ros1, ros2) => ros2.id - ros1.id),
     };
   });
 

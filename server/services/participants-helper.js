@@ -44,6 +44,7 @@ const flattenParticipants = (participants) => {
 const scrubParticipantData = (raw, joinNames, sites) =>
   raw.map((participant) => {
     const statusInfos = [];
+    let rosStatuses = participant.rosStatuses ?? [];
 
     const decomposeStatusInfo = (statusInfo) => ({
       id: statusInfo.id,
@@ -68,20 +69,23 @@ const scrubParticipantData = (raw, joinNames, sites) =>
         statusInfos.push(...participant[joinName].map(decomposeStatusInfo));
       });
     } else {
+      rosStatuses = participant.ros_infos ?? [];
       participant.status_infos?.forEach((statusInfo) => {
         statusInfos.push(decomposeStatusInfo(statusInfo));
       });
     }
+    // filter by sites for HA/PE, not for MoH/SU. HA/PE will have sites = [] if none assigned
+    if (sites) {
+      rosStatuses = rosStatuses.filter((rosStatus) =>
+        sites.includes(rosStatus.rosSite.body.siteId)
+      );
+    }
 
-    let rosStatuses = participant.rosStatuses
-      ? participant.rosStatuses.sort((ros1, ros2) => ros2.id - ros1.id)
-      : [];
-    rosStatuses = rosStatuses.filter((rosStatus) => sites.includes(rosStatus.rosSite.body.siteId));
     return {
       ...participant.body,
       id: participant.id,
       statusInfos,
-      rosStatuses,
+      rosStatuses: rosStatuses.sort((ros1, ros2) => ros2.id - ros1.id),
     };
   });
 
@@ -126,7 +130,7 @@ const run = async (context) => {
     participants = scrubParticipantData(
       participants,
       (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin],
-      user.sites
+      (user.isEmployer || user.isHA) && user.sites
     );
     return participants;
   } catch (error) {

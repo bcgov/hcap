@@ -24,6 +24,7 @@ const collections = {
 
 const views = {
   PARTICIPANTS_STATUS_INFOS: 'participants_status_infos',
+  TARA_PARTICIPANTS_STATUS_INFOS: 'tara_participants_status_infos',
 };
 
 // Relational tables should contain a `definition` property

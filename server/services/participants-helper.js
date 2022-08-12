@@ -44,6 +44,7 @@ const flattenParticipants = (participants) => {
 const scrubParticipantData = (raw, joinNames) =>
   raw.map((participant) => {
     const statusInfos = [];
+    let rosStatuses = participant.rosStatuses ?? [];
 
     const decomposeStatusInfo = (statusInfo) => ({
       id: statusInfo.id,
@@ -68,6 +69,7 @@ const scrubParticipantData = (raw, joinNames) =>
         statusInfos.push(...participant[joinName].map(decomposeStatusInfo));
       });
     } else {
+      rosStatuses = participant.ros_infos ?? [];
       participant.status_infos?.forEach((statusInfo) => {
         statusInfos.push(decomposeStatusInfo(statusInfo));
       });
@@ -77,9 +79,7 @@ const scrubParticipantData = (raw, joinNames) =>
       ...participant.body,
       id: participant.id,
       statusInfos,
-      rosStatuses: participant.rosStatuses
-        ? participant.rosStatuses.sort((ros1, ros2) => ros2.id - ros1.id)
-        : [],
+      rosStatuses: rosStatuses.sort((ros1, ros2) => ros2.id - ros1.id),
     };
   });
 
@@ -487,7 +487,7 @@ class FieldsFilteredParticipantsFinder {
     } else {
       // PARTICIPANTS_STATUS_INFOS is a view with a join that
       // brings all current statuses of each participant
-      this.context.table = this.context.dbClient.db[views.PARTICIPANTS_STATUS_INFOS];
+      this.context.table = this.context.dbClient.db[views.TARA_PARTICIPANTS_STATUS_INFOS];
 
       if (statusFilters && statusFilters.length > 0) {
         const statuses = statusFilters.includes('open')

@@ -50,6 +50,7 @@ export const tabs = {
       'archived',
       'rejected',
       'hired',
+      'ros',
     ],
   },
 };
@@ -117,6 +118,7 @@ export const tabStatuses = {
     'rejected',
     'hired',
     'archived',
+    'ros',
   ],
 };
 
@@ -214,6 +216,7 @@ export const columnsByRole = {
       crcClear,
       userUpdatedAt,
       postHireStatuses,
+      rosStartDate,
       edit,
     ],
   },
@@ -231,6 +234,7 @@ export const columnsByRole = {
       crcClear,
       userUpdatedAt,
       postHireStatuses,
+      rosStartDate,
       edit,
     ],
   },

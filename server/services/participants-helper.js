@@ -487,7 +487,7 @@ class FieldsFilteredParticipantsFinder {
     } else {
       // PARTICIPANTS_STATUS_INFOS is a view with a join that
       // brings all current statuses of each participant
-      this.context.table = this.context.dbClient.db[views.TARA_PARTICIPANTS_STATUS_INFOS];
+      this.context.table = this.context.dbClient.db[views.PARTICIPANTS_STATUS_INFOS];
 
       if (statusFilters && statusFilters.length > 0) {
         const statuses = statusFilters.includes('open')

@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     marginBottom: theme.spacing(2),
     padding: theme.spacing(4),
+    minWidth: '1020px',
   },
   gridSection: {
     paddingTop: theme.spacing(4),

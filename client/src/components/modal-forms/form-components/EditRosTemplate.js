@@ -4,7 +4,7 @@ import { Box, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Formik, Form as FormikForm } from 'formik';
 
-import { ConfirmationForm, FormButtons } from './';
+import { ConfirmationDialog, FormButtons } from './';
 
 const useStyles = makeStyles((theme) => ({
   formDivider: {
@@ -60,13 +60,14 @@ export const EditRosTemplate = ({
         )}
       </Formik>
 
-      <ConfirmationForm
+      <ConfirmationDialog
         isOpen={isConfirmationOpen}
         onClose={closeConfirmationDialog}
         onSubmit={async () => {
           await onSubmit(formValues);
           closeConfirmationDialog();
         }}
+        warningMessage='You are making changes to this record, please ensure that all data inputted is accurate'
       />
     </>
   );

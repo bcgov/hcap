@@ -62,7 +62,7 @@ export const getAllSites = async () => {
   }
 };
 
-export const onRosUpdate = async (participantId, newValues) => {
+export const updateRosStatus = async (participantId, newValues) => {
   const url = `${API_URL}/api/v1/ros/participant/${participantId}`;
   const { siteName, startDate, date } = newValues;
 

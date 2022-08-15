@@ -19,7 +19,7 @@ import {
   getPsi,
   displayParticipantData,
   getParticipantPageLabel,
-  onRosUpdate,
+  updateRosStatus,
 } from '../../services';
 
 // Sub components
@@ -197,7 +197,7 @@ export default () => {
   const handleEditRosField = async (values) => {
     const EDIT_ERROR_MESSAGE = 'Unable to update the field';
     try {
-      const response = await onRosUpdate(actualParticipant?.id, values);
+      const response = await updateRosStatus(actualParticipant?.id, values);
       if (response.ok) {
         openToast({
           status: ToastStatus.Success,

@@ -1,6 +1,4 @@
 export const BC_SERVICES_CARD_LINK = 'https://gov.bc.ca/bcservicescard';
-export const HCAP_ACCESS_LINK =
-  'https://www2.gov.bc.ca/gov/content/covid-19/economic-recovery/work-in-health-care';
 export const HEALTH_CAREERS_LINK = 'https://gov.bc.ca/careersinhealth';
 
 // Gov laws

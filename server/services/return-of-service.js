@@ -2,7 +2,7 @@
 const { dbClient, collections } = require('../db');
 const { rosError } = require('../constants');
 
-const getRosSiteId = async (siteId) => {
+const getRosDbId = async (siteId) => {
   const sites = await dbClient.db[collections.EMPLOYER_SITES].find({
     'body.siteId': siteId,
   });
@@ -133,7 +133,7 @@ const updateReturnOfServiceStatus = async ({
     if (!rosParticipant.site_id) {
       throw new Error(rosError.noSiteAttached);
     }
-    newSiteId = await getRosSiteId(newSite);
+    newSiteId = await getRosDbId(newSite);
   }
   if (newDate && !rosParticipant.data.date) {
     throw new Error(rosError.noDate);
@@ -158,8 +158,8 @@ const updateReturnOfServiceStatus = async ({
     user: user || 'system',
     data: {
       participantId,
-      oldData: { ...rosParticipant },
-      updatedData,
+      from: { ...rosParticipant },
+      to: updatedData,
     },
   });
 };

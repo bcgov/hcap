@@ -78,6 +78,9 @@ const customStyle = makeStyles({
   rootContainer: {
     flexGrow: 1,
   },
+  cardRoot: {
+    minWidth: '1020px',
+  },
 });
 
 // Helper
@@ -220,7 +223,7 @@ export default () => {
         {error && <Alert severity='error'>{error}</Alert>}
         {!participant && !error && <Alert severity='info'>Loading participant details</Alert>}
         {participant && (
-          <Card>
+          <Card className={classes.cardRoot}>
             {selectedCohort !== null && (
               <Dialog
                 showDivider={true}

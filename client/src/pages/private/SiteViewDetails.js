@@ -1,6 +1,8 @@
 import React, { lazy, useEffect, useState, useCallback } from 'react';
-import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
+import { makeStyles } from '@material-ui/core/styles';
 import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
+
+import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
 import { scrollUp } from '../../utils';
 import store from 'store';
 import routes from '../../constants/routes';
@@ -11,8 +13,15 @@ import { SiteDetailTabContext } from '../../providers';
 
 const SiteParticipantsTable = lazy(() => import('./SiteParticipantsTable'));
 
+const useStyles = makeStyles(() => ({
+  cardRoot: {
+    minWidth: '1020px',
+  },
+}));
+
 export default ({ match }) => {
   const { openToast } = useToast();
+  const classes = useStyles();
   const [site, setSite] = useState({});
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -136,7 +145,7 @@ export default ({ match }) => {
           renderErrorMessage={true}
         >
           <SiteDetailTabContext.TabProvider site={site}>
-            <Card>
+            <Card className={classes.cardRoot}>
               <Box pt={4} pb={2} pl={4} pr={4}>
                 <Box pb={4} pl={2}>
                   <Box pb={2}>

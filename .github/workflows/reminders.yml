@@ -15,3 +15,4 @@ jobs:
         with:
           webhook-url: ${{ secrets.SLACK_WEBHOOK }}
           provider: slack
+          github-provider-map: 'fw-noel:UUWMCRU4Q,taraepp:U0373NCPMPH,arranfw:U01ADH9FUET,alva-fresh:U012X7BJV0T'

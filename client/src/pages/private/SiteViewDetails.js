@@ -15,7 +15,7 @@ const SiteParticipantsTable = lazy(() => import('./SiteParticipantsTable'));
 
 const useStyles = makeStyles(() => ({
   cardRoot: {
-    minWidth: '950px',
+    minWidth: '1020px',
   },
 }));
 

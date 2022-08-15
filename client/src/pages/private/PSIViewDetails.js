@@ -23,7 +23,7 @@ const customStyle = makeStyles({
     flexGrow: 1,
   },
   cardRoot: {
-    minWidth: '950px',
+    minWidth: '1020px',
   },
 });
 

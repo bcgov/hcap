@@ -48,7 +48,25 @@ const participantsRouter = express.Router();
 const newHiredParticipantRouter = express.Router();
 const employerActionsRouter = express.Router();
 
-// Get details of a participant by ID
+/**
+ * @swagger
+ * /participant/details/{id}:
+ *  get:
+ *    summary: Gets details of a participant with id
+ *    description: Returns the details of a participant
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        description: Participant's ID
+ *        schema:
+ *          type: integer
+ *    responses:
+ *      200:
+ *        description: OK
+ *      302:
+ *        description: Swagger issue. Please ensure there is an auth token added.
+ */
 participantRouter.get(
   '/details/:id',
   keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),

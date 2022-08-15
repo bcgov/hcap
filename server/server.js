@@ -5,6 +5,8 @@ const helmet = require('helmet');
 const uuid = require('uuid');
 const bodyParser = require('body-parser');
 const path = require('path');
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 const apiRouter = require('./routes');
 const { errorHandler } = require('./error-handler.js');
 const { expressAccessLogger } = require('./middleware');
@@ -99,5 +101,43 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.use(errorHandler);
+
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'API Spec',
+    version: '1.0.0',
+  },
+  components: {
+    securitySchemes: {
+      bearer: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+    },
+  },
+  security: [
+    {
+      bearer: [],
+    },
+  ],
+  openapi: '3.0.0',
+  servers: [
+    {
+      url: 'http://hcapemployers.local.freshworks.club:8081/api/v1',
+      description: 'Local Server',
+    },
+  ],
+};
+
+const options = {
+  swaggerDefinition,
+  apis: ['./routes/*.js'],
+};
+
+const swaggerSpec = swaggerJSDoc(options);
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 module.exports = app;

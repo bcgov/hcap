@@ -17,9 +17,13 @@ const { getUserSites } = require('../services/user.js');
  */
 const userDetailsRouter = express.Router();
 userDetailsRouter.use(keycloak.allowRolesMiddleware('ministry_of_health'));
-// Index: Get
-// Get user details - Different from /user, this returns the
-// full user sites and role specified in the query id
+/**
+ * @swagger
+ * /user-details:
+ *  get:
+ *    summary: Get user details for a user id
+ *    description: Returns the full user sites and role specified in the query id
+ */
 userDetailsRouter.get(
   '/',
   asyncMiddleware(async (req, res) => {

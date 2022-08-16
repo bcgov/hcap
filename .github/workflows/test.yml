@@ -1,4 +1,4 @@
-name: Test application (e2e)
+name: Run Tests
 
 on:
   push:

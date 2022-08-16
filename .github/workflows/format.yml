@@ -7,17 +7,31 @@ jobs:
   premerge:
     name: format-check
     runs-on: ubuntu-20.04
-    concurrency: ci-format
     timeout-minutes: 5
     steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+
       - uses: actions/checkout@v2
 
       - uses: actions/setup-node@v2
         with:
-          node-version: '15'
+          node-version: '16'
+
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            **/node_modules
+          key: ${{ runner.os }}-npm
+          restore-keys: ${{ runner.os }}-npm
 
       - name: install dev dependencies
-        run: npm i -D && npm i -D --prefix client && npm i -D --prefix server
+        run: npm run update-all
 
       - name: run format checking scripts
         run: npm run check-format

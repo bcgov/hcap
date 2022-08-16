@@ -1,4 +1,4 @@
-name: Test application (e2e)
+name: Run Tests
 
 on:
   push:
@@ -15,22 +15,41 @@ env:
   KEYCLOAK_LOCAL_SECRET: ${{ secrets.KEYCLOAK_LOCAL_SECRET }}
   APP_ENV: local
 jobs:
-  tests:
-    name: Cypress / Jest
+  cypress-test:
+    name: Cypress
     runs-on: ubuntu-20.04
-    concurrency: ci-test
     timeout-minutes: 20
     steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+
       - name: Checkout
         uses: actions/checkout@v1
 
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14'
 
-      - name: Install Dotenv
-        run: cd server && sudo npm install --no-cache dotenv
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            **/node_modules
+          key: ${{ runner.os }}-npm
+          restore-keys: ${{ runner.os }}-npm
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit == 'false' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: npm list
+
+      - name: Install Server Dependencies
+        run: npm install --prefix server
 
       - name: Copy sample site and participant to exact location
         run: make copy-sample-data
@@ -42,8 +61,22 @@ jobs:
           KEYCLOAK_LOCAL_SECRET=${{ secrets.KEYCLOAK_LOCAL_SECRET }}
           EOF
 
-      - name: Build Locally
-        run: make local-kc-run
+      - uses: docker/setup-buildx-action@v1
+
+      - name: Build
+        uses: docker/bake-action@v2.0.0
+        env:
+          APP_NAME: hcap
+        with:
+          push: false
+          load: true
+          files: docker-compose.test.yml
+          set: |
+            "*.cache-from=type=gha"
+            "*.cache-to=type=gha,mode=max"
+
+      - name: Run
+        run: make local-kc-run-only
 
       - name: Import Users
         run: make kc-import-users
@@ -54,13 +87,13 @@ jobs:
       - name: Add Participants
         run: cd server && POSTGRES_HOST=localhost npm run feed-participants participants.xlsx
 
-      - name: Sleep until server is up
-        run: |
-          until $(curl --output /dev/null --silent --fail http://localhost:4000); do
-              echo '.'
-              ((c++)) && ((c==12)) && c=0 && break # don't run more than 12 times
-              sleep 5
-          done
+      - name: Check the deployed service URL
+        uses: jtalk/url-health-check-action@v2
+        with:
+          url: localhost:4000
+          max-attempts: 12
+          retry-delay: 5s
+          retry-all: false
 
       - name: Add Test Data
         run: cd server && POSTGRES_HOST=localhost npm run feed-data
@@ -71,9 +104,74 @@ jobs:
           wait-on-timeout: 120
           wait-on: 'http://localhost:4000'
 
-      - name: Sleep for 30 seconds
-        run: sleep 30s
-        shell: bash
+  jest-test:
+    name: Jest
+    runs-on: ubuntu-20.04
+    timeout-minutes: 20
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            **/node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('server/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-npm
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit == 'false' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: npm list
+
+      - name: Install Server Dependencies
+        run: npm install --prefix server
+
+      - name: Copy sample site and participant to exact location
+        run: make copy-sample-data
+
+      - name: Make env
+        run: |
+          cat > .env << EOF
+          ${{ secrets.ENVFILE }}
+          KEYCLOAK_LOCAL_SECRET=${{ secrets.KEYCLOAK_LOCAL_SECRET }}
+          EOF
+
+      - uses: docker/setup-buildx-action@v1
+
+      - name: Build
+        uses: docker/bake-action@v2.0.0
+        env:
+          APP_NAME: hcap
+        with:
+          push: false
+          load: true
+          files: docker-compose.test.yml
+          set: |
+            "*.cache-from=type=gha"
+            "*.cache-to=type=gha,mode=max"
+
+      - name: Run
+        run: make local-kc-run-only
+
+      - name: Add Sites
+        run: cd server && POSTGRES_HOST=localhost npm run feed-sites sites.xlsx
+
+      - name: Add Participants
+        run: cd server && POSTGRES_HOST=localhost npm run feed-participants participants.xlsx
 
       - name: Jest run
         run: make local-server-tests

@@ -117,6 +117,7 @@ const filterData = (data, columns, isMoH = false) => {
         (statusInfo) =>
           statusInfo.status === 'withdrawn' ||
           statusInfo.status === 'pending_acknowledgement' ||
+          statusInfo.status === 'already_hired' ||
           statusInfo.status === 'hired_by_peer'
       );
       const otherStatuses = archivedStatuses.map((statusInfo) => statusInfo.status);

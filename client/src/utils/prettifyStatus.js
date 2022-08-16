@@ -12,6 +12,8 @@ import { addYearToDate } from './date';
  */
 
 export const getParticipantStatusData = (status, tabValue, isMoH, participantInfo) => {
+  console.log(status);
+  console.log(participantInfo);
   if (!status) return;
 
   const statusValue = status[0];
@@ -22,6 +24,7 @@ export const getParticipantStatusData = (status, tabValue, isMoH, participantInf
   const isROS = statusValue === 'ros';
   const isHiredByPeer = status[1] === 'hired_by_peer';
   const isHiredByOther = status.includes('already_hired');
+  console.log(isHiredByOther)
   const isPendingAcknowledgement = status.includes('pending_acknowledgement');
   const isWithdrawn = status.includes('withdrawn');
   const isArchived = status.includes('archived');
@@ -60,7 +63,7 @@ export const getParticipantStatusData = (status, tabValue, isMoH, participantInf
   const showArchiveButton =
     !['Archived Candidates', 'Participants'].includes(tabValue) &&
     !isHiredByPeer &&
-    !isROS &&
+    // !isROS &&
     !showAcknowledgeButton;
 
   return {
@@ -130,13 +133,6 @@ const getToolTipText = ({
   rosStartDate,
   finalStatus,
 }) => {
-  if (rosStartDate && !isArchived) {
-    const isTimeToArchive = addYearToDate(rosStartDate).isBefore(new Date());
-    if (isTimeToArchive) {
-      return 'Please action and archive this participant to record their outcomes as they have met their one year mark of Return of Service';
-    }
-  }
-
   if (isRejectedByPeer) {
     return finalStatus
       ? `Participant not available. ${capitalizedString(finalStatus)}`
@@ -155,6 +151,13 @@ const getToolTipText = ({
 
   if (isHiredByOther) {
     return 'This candidate was hired by another site.';
+  }
+
+  if (rosStartDate && !isArchived) {
+    const isTimeToArchive = addYearToDate(rosStartDate).isBefore(new Date());
+    if (isTimeToArchive) {
+      return 'Please action and archive this participant to record their outcomes as they have met their one year mark of Return of Service';
+    }
   }
   return '';
 };

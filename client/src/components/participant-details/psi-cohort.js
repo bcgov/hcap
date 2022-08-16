@@ -27,8 +27,7 @@ const tabKeyForPath = (tabDetails, path) => {
 };
 
 const defaultPath = (tabDetails) => {
-  const tabKey =
-    Object.keys(tabDetails).find((key) => tabDetails[key].default) || Object.keys(tabDetails)[0];
+  const tabKey = Object.keys(tabDetails)[0];
   return tabDetails[tabKey].path;
 };
 
@@ -148,19 +147,16 @@ export const PSICohortView = ({ psiList = [], assignAction, participant, fetchDa
   const assignCohort = {
     label: 'Assign Cohort',
     path: '/assign-cohort',
-    default: true,
   };
   const trackGraduation = {
     label: 'Track Graduation',
     path: '/track-graduation',
-    default: true,
   };
   let tabDetails = { trackGraduation };
   if (roles.includes('health_authority')) {
-    trackGraduation.default = false;
     tabDetails = { assignCohort, trackGraduation };
   }
-  const tabKey = Object.keys(tabDetails).find((key) => tabDetails[key].default === true);
+  const tabKey = Object.keys(tabDetails)[0];
 
   return (
     <Box p={4}>

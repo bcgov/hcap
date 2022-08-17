@@ -73,7 +73,7 @@ export const ParticipantTableDialogues = ({
             positionType,
             sameSite: false,
           },
-          isUpdating: true,
+          assignNewSite: true,
         });
         handleUpdate(true, 'Return of Service site updated!');
       }

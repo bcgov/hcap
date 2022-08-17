@@ -7,13 +7,13 @@ export const createReturnOfServiceStatus = async ({
   data,
   siteId,
   newSiteId,
-  isUpdating = false,
+  assignNewSite = false,
 }) => {
   const finalBody = {
     ...data,
     employmentType: data.employmentType || undefined,
   };
-  if (isUpdating) {
+  if (assignNewSite) {
     finalBody.startDate = dayjs(data.startDate, 'YYYY/MM/DD').toDate();
   } else {
     finalBody.date = dayjs(data.date, 'YYYY/MM/DD').toDate();
@@ -29,10 +29,10 @@ export const createReturnOfServiceStatus = async ({
     },
     body: JSON.stringify({
       data: finalBody,
-      status: isUpdating ? 'assigned-new-site' : 'assigned-same-site',
+      status: assignNewSite ? 'assigned-new-site' : 'assigned-same-site',
       ...(siteId && { siteId }),
       newSiteId,
-      isUpdating,
+      assignNewSite,
     }),
   });
   if (response.ok) {
@@ -76,16 +76,19 @@ export const updateRosStatus = async (participantId, newValues) => {
   const startDateTimestamp = startDate ? dayjs(startDate, 'YYYY/MM/DD').toDate() : undefined;
 
   return fetch(url, {
-    method: 'PATCH',
+    method: 'POST',
     headers: {
       Authorization: `Bearer ${store.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
     body: JSON.stringify({
-      site: siteName,
-      date: dateTimestamp,
-      startDate: startDateTimestamp,
+      data: {
+        site: siteName,
+        date: dateTimestamp,
+        startDate: startDateTimestamp,
+      },
+      isUpdating: true,
     }),
   });
 };

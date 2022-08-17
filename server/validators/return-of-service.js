@@ -9,13 +9,14 @@ const CreateReturnOfServiceSchema = yup
     status: yup.string().optional(),
     siteId: yup.number().optional('SiteId should be a number and specify an employer side id'),
     newSiteId: yup.number().optional(),
+    assignNewSite: yup.boolean().optional(),
     isUpdating: yup.boolean().optional(),
     data: yup
       .object()
       .required('Data object is required')
       .shape({
         date: yup.string().when(
-          'isUpdating',
+          'assignNewSite',
           {
             is: false,
             then: yup
@@ -29,7 +30,7 @@ const CreateReturnOfServiceSchema = yup
           }
         ),
         startDate: yup.string().when(
-          'isUpdating',
+          'assignNewSite',
           {
             is: true,
             then: yup
@@ -54,6 +55,19 @@ const CreateReturnOfServiceSchema = yup
       }),
   });
 
+const UpdateReturnOfServiceSchema = yup
+  .object()
+  .noUnknown('Unknown field in form')
+  .shape({
+    isUpdating: yup.boolean().optional(),
+    data: yup.object().required('Data object is required').shape({
+      date: yup.string().optional(),
+      startDate: yup.string().optional(),
+      site: yup.number().optional(),
+    }),
+  });
+
 module.exports = {
   CreateReturnOfServiceSchema,
+  UpdateReturnOfServiceSchema,
 };

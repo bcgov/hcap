@@ -26,10 +26,11 @@ const { collections } = require('../db/schema');
     // all responses to inserts, including duplicates and errors
     const response = [];
     // for debugging: the last record attempted to process before error
+    let databaseErrorMessage;
     let lastInsert = '';
 
     try {
-      const rootDirectory = 'csv/';
+      const rootDirectory = 'csv/HCAP-1303/';
 
       await dbClient.connect();
 
@@ -97,6 +98,8 @@ const { collections } = require('../db/schema');
           } else if (result.reason.code === '23505') {
             response.push({ table: tableName, id, status: 'Duplicate' });
           } else {
+            databaseErrorMessage = result.reason.message;
+            console.log('crashing on ', result);
             response.push({ table: tableName, id, status: 'Error', message: result.reason });
             throw new Error(result.reason);
           }
@@ -112,6 +115,8 @@ const { collections } = require('../db/schema');
         console.log('There may be a problem with the following data or mapped records:');
         console.dir(lastInsert);
         console.table(response);
+        console.log(`Database Error: ${databaseErrorMessage}`);
+
         // reverse direction of array to delete dependent records first
         for (const tableName of [...tableNames].reverse()) {
           const tableData = testingData[tableName] ?? {};

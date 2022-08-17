@@ -38,6 +38,7 @@ class Keycloak {
     this.serviceAccountPassword = isLocal
       ? process.env.KEYCLOAK_LOCAL_PASSWORD
       : process.env.KEYCLOAK_SA_PASSWORD;
+    console.log(this);
     const config = {
       ...defaults,
       realm: this.realm,

@@ -24,6 +24,7 @@ export const ParticipantStatus = ({
 
   const showToolTip = toolTipText !== '' && statusText !== 'Archived';
 
+  console.log({ participantInfo });
   return (
     <div
       style={{
@@ -80,7 +81,11 @@ export const ParticipantStatus = ({
             </div>
           }
         >
-          <InfoIcon style={{ marginLeft: 5 }} color='secondary' />
+          <InfoIcon
+            style={{ marginLeft: 5 }}
+            test-id={`candidate-notification-${participantInfo.id}`}
+            color='secondary'
+          />
         </ComponentTooltip>
       )}
     </div>

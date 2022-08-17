@@ -41,7 +41,7 @@ const flattenParticipants = (participants) => {
   return flattenedParticipantList;
 };
 
-const scrubParticipantData = (raw, joinNames) =>
+const scrubParticipantData = (raw, joinNames, sites) =>
   raw.map((participant) => {
     const statusInfos = [];
 
@@ -73,13 +73,15 @@ const scrubParticipantData = (raw, joinNames) =>
       });
     }
 
+    let rosStatuses = participant.rosStatuses
+      ? participant.rosStatuses.sort((ros1, ros2) => ros2.id - ros1.id)
+      : [];
+    rosStatuses = rosStatuses.filter(rosStatus => sites.includes(rosStatus.rosSite.body.siteId));
     return {
       ...participant.body,
       id: participant.id,
       statusInfos,
-      rosStatuses: participant.rosStatuses
-        ? participant.rosStatuses.sort((ros1, ros2) => ros2.id - ros1.id)
-        : [],
+      rosStatuses,
     };
   });
 
@@ -123,7 +125,8 @@ const run = async (context) => {
     participants = addDistanceToParticipantFields(participants, siteDistanceJoin);
     participants = scrubParticipantData(
       participants,
-      (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin]
+      (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin],
+      user.sites,
     );
     return participants;
   } catch (error) {
@@ -328,12 +331,11 @@ class FieldsFilteredParticipantsFinder {
           is_current: true,
         },
         rosSite: {
-          type: 'INNER',
+          type: 'LEFT OUTER',
           relation: collections.EMPLOYER_SITES,
           decomposeTo: 'object',
           on: {
             id: `${collections.ROS_STATUS}.site_id`,
-            'body.siteId': user.sites.map((item) => item.toString()),
           },
         },
       },

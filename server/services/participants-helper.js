@@ -328,11 +328,12 @@ class FieldsFilteredParticipantsFinder {
           is_current: true,
         },
         rosSite: {
-          type: 'LEFT OUTER',
+          type: 'INNER',
           relation: collections.EMPLOYER_SITES,
           decomposeTo: 'object',
           on: {
             id: `${collections.ROS_STATUS}.site_id`,
+            'body.siteId': user.sites.map((item) => item.toString()),
           },
         },
       },

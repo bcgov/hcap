@@ -2,6 +2,39 @@
 const { dbClient, collections } = require('../db');
 const { rosError } = require('../constants');
 
+const getParticipantStatuses = async (participantId) => {
+  const statuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
+    participant_id: participantId,
+    status: 'hired',
+    current: true,
+  });
+  if (statuses.length === 0) {
+    throw new Error(rosError.participantNotHired);
+  }
+  return statuses;
+};
+
+const getRosParticipant = async (participantId) => {
+  const rosParticipants = await dbClient.db[collections.ROS_STATUS].find({
+    participant_id: participantId,
+    is_current: true,
+  });
+  if (rosParticipants.length === 0) {
+    throw new Error(rosError.participantNotFound);
+  }
+  return rosParticipants[0];
+};
+
+const getDbSiteId = async (site) => {
+  const sites = await dbClient.db[collections.EMPLOYER_SITES].find({
+    'body.siteId': site,
+  });
+  if (sites.length === 0) {
+    throw new Error(rosError.noSiteAttached);
+  }
+  return sites[0].id;
+};
+
 const validateRosUpdateBody = (rosParticipant, updatedSite, updatedDate, updatedStartDate) => {
   if (!rosParticipant.data) {
     throw new Error(rosError.fieldNotFound);
@@ -18,6 +51,65 @@ const validateRosUpdateBody = (rosParticipant, updatedSite, updatedDate, updated
   if (updatedStartDate && !rosParticipant.data.startDate) {
     throw new Error(rosError.noStartDate);
   }
+};
+
+const formatEditRosData = async (
+  participantId,
+  updatedSite,
+  updatedDate,
+  updatedStartDate,
+  user
+) => {
+  const rosParticipant = await getRosParticipant(participantId);
+  validateRosUpdateBody(rosParticipant, updatedSite, updatedDate, updatedStartDate);
+  let site_id;
+  if (updatedSite) {
+    site_id = await getDbSiteId(updatedSite);
+  }
+
+  return {
+    participant_id: participantId,
+    site_id: site_id || rosParticipant.site_id,
+    status: rosParticipant.status,
+    data: {
+      ...rosParticipant.data,
+      date: updatedDate || rosParticipant.data.date,
+      startDate: updatedStartDate || rosParticipant.data.startDate,
+      user,
+      isEntryEditedByMoh: true,
+    },
+    is_current: true,
+  };
+};
+
+const formatCreateRosData = async (
+  participantId,
+  siteId,
+  assignNewSite,
+  data,
+  newSiteId,
+  status
+) => {
+  const statuses = await getParticipantStatuses(participantId);
+  let site_id = siteId;
+  if (!site_id) {
+    const { site } = statuses[0].data;
+    site_id = await getDbSiteId(site);
+  }
+
+  if (assignNewSite) {
+    const rosParticipant = await getRosParticipant(participantId);
+    // eslint-disable-next-line no-param-reassign
+    data.date = rosParticipant.data?.date || data.startDate;
+  }
+
+  return {
+    participant_id: participantId,
+    site_id: newSiteId || site_id,
+    data,
+    status,
+    is_current: true,
+  };
 };
 
 /**
@@ -48,82 +140,14 @@ const makeReturnOfServiceStatus = async ({
   assignNewSite = false,
   isUpdating = false,
 }) => {
-  // Get Site id from participant status
-  const statuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
-    participant_id: participantId,
-    status: 'hired',
-    current: true,
-  });
-  if (statuses.length === 0) {
-    throw new Error(rosError.participantNotHired);
-  }
-
-  let updatedBody;
-  if (isUpdating) {
-    const rosParticipants = await dbClient.db[collections.ROS_STATUS].find({
-      participant_id: participantId,
-      is_current: true,
-    });
-    if (rosParticipants.length === 0) {
-      throw new Error(rosError.participantNotFound);
-    }
-    const rosParticipant = rosParticipants[0];
-    const updatedSite = data.site;
-    const updatedDate = data.date;
-    const updatedStartDate = data.startDate;
-    validateRosUpdateBody(rosParticipant, updatedSite, updatedDate, updatedStartDate);
-
-    updatedBody = {
-      participant_id: participantId,
-      site_id: updatedSite || rosParticipant.site_id,
-      status: rosParticipant.status,
-      data: {
-        ...rosParticipant.data,
-        date: updatedDate || rosParticipant.data.date,
-        startDate: updatedStartDate || rosParticipant.data.startDate,
-        user,
-      },
-      is_current: true,
-    };
-  } else {
-    let site_id = siteId;
-    if (!site_id) {
-      const { site } = statuses[0].data;
-
-      // Get Site Id
-      const sites = await dbClient.db[collections.EMPLOYER_SITES].find({
-        'body.siteId': site,
-      });
-      if (sites.length === 0) {
-        throw new Error(rosError.noSiteAttached);
-      }
-      site_id = sites[0].id;
-    }
-
-    if (assignNewSite) {
-      const rosStatuses = await dbClient.db[collections.ROS_STATUS].find({
-        participant_id: participantId,
-        is_current: true,
-      });
-
-      const initialStartDate = rosStatuses?.[0]?.data?.date || data.startDate;
-      // eslint-disable-next-line no-param-reassign
-      data.date = initialStartDate;
-    }
-
-    updatedBody = {
-      participant_id: participantId,
-      site_id: newSiteId || site_id,
-      data,
-      status,
-      is_current: true,
-    };
-  }
+  const rosBody = isUpdating
+    ? await formatEditRosData(participantId, data.site, data.date, data.startDate, user)
+    : await formatCreateRosData(participantId, siteId, assignNewSite, data, newSiteId, status);
 
   return dbClient.db.withTransaction(async (tx) => {
     // Invalidate previous ros status
     await invalidateReturnOfServiceStatus({ db: tx, participantId });
-    return tx[collections.ROS_STATUS].insert(updatedBody);
+    return tx[collections.ROS_STATUS].insert(rosBody);
   });
 };
 

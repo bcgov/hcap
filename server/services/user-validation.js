@@ -29,7 +29,7 @@ const validateUser = async (user, actionType) => {
 };
 
 const validateCredentials = async (reqUser, participantId, actionType) => {
-  const validUser = validateUser(reqUser);
+  const validUser = await validateUser(reqUser);
   if (!validUser) {
     return { isValid: false, status: 401, message: 'Unauthorized user', user: validUser };
   }

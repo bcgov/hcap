@@ -1,14 +1,23 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import _orderBy from 'lodash/orderBy';
-import { useHistory } from 'react-router-dom';
-import { Grid, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import { useHistory, useLocation } from 'react-router-dom';
 import store from 'store';
+import _orderBy from 'lodash/orderBy';
+
+import {
+  ClickAwayListener,
+  Grid,
+  Grow,
+  Paper,
+  Typography,
+  MenuList,
+  MenuItem,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
 import { NewSiteForm } from '../../components/modal-forms';
-import { useLocation } from 'react-router-dom';
 import {
   Routes,
   regionLabelsMap,
@@ -38,6 +47,12 @@ const useStyles = makeStyles((theme) => ({
   filterLabel: {
     color: theme.palette.gray.dark,
     fontWeight: 700,
+  },
+  menuItem: {
+    fontWeight: 400,
+    fontSize: '17px',
+    lineHeight: '24px',
+    paddingLeft: theme.spacing(4),
   },
 }));
 
@@ -131,6 +146,7 @@ export default ({ sites, viewOnly }) => {
   const [fetchedRows, setFetchedRows] = useState([]);
   const [isLoadingReport, setLoadingReport] = useState(false);
   const [isLoadingRosReport, setLoadingRosReport] = useState(false);
+  const [isActionMenuOpen, setActionMenuOpen] = useState(false);
 
   const [orderBy, setOrderBy] = useState('siteName');
   const [healthAuthorities, setHealthAuthorities] = useState(healthAuthoritiesFilter);
@@ -286,17 +302,39 @@ export default ({ sites, viewOnly }) => {
         </Grid>
 
         <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-          <Grid item xs={2} />
-          <Grid className={classes.rootItem} item xs={2}>
-            <Button
-              onClick={() => {
-                setActiveModalForm('new-site');
-              }}
-              size='medium'
-              text='Create Site'
-              startIcon={<AddCircleOutlineIcon />}
-            />
-          </Grid>
+          <Grid item xs={8} />
+          <ClickAwayListener onClickAway={() => setActionMenuOpen(false)}>
+            <Grid className={classes.rootItem} item xs={2}>
+              <Button
+                onClick={() => setActionMenuOpen(!isActionMenuOpen)}
+                endIcon={isActionMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                text='Action'
+                variant='contained'
+              />
+              <Grow in={isActionMenuOpen}>
+                <Paper>
+                  <MenuList>
+                    <MenuItem
+                      onClick={() => {
+                        setActiveModalForm('new-site');
+                      }}
+                      className={classes.menuItem}
+                    >
+                      Create new site
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        // TODO: setActiveModalForm('new-phase');
+                      }}
+                      className={classes.menuItem}
+                    >
+                      Create new phase
+                    </MenuItem>
+                  </MenuList>
+                </Paper>
+              </Grow>
+            </Grid>
+          </ClickAwayListener>
         </CheckPermissions>
 
         {roles.includes('superuser') && <Grid item xs={8} />}

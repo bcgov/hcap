@@ -120,9 +120,9 @@ const getWithdrawnParticipantsBySite = async (siteID) => {
   return withdrawnParticipants;
 };
 
-const getParticipantByID = async (participantInfo) => {
+const getParticipantByID = async (id) => {
   const participant = await dbClient.db[collections.PARTICIPANTS].findDoc({
-    id: participantInfo.id,
+    id,
   });
   return participant;
 };
@@ -714,7 +714,7 @@ const getParticipantByIdWithStatus = async ({ id, userId }) =>
 
 const setParticipantLastUpdated = async (id) => {
   // Find participants
-  let [participant] = await getParticipantByID({ id });
+  let [participant] = await getParticipantByID(participantId);
   // Don't change status if participant is withdrawn
   if (participant.interested !== 'withdrawn') {
     // Only change history if the interested column isn't yes

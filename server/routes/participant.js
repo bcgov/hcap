@@ -92,7 +92,7 @@ participantRouter.get(
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantQuerySchema, req.query);
     const user = req.hcapUserInfo;
-    const id = req.query;
+    const { id } = req.query;
     const result = await getParticipantByID(id);
     logger.info({
       action: 'participant_get',

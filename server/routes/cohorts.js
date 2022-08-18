@@ -79,7 +79,7 @@ router.post(
     const user = userId || localUserId;
     const { id, participantId } = req.params;
     if (id && participantId) {
-      const [participant] = await getParticipantByID({ id: +participantId });
+      const [participant] = await getParticipantByID(participantId);
       if (!participant) {
         return res.status(400).send('Invalid participant id');
       }
@@ -112,7 +112,7 @@ router.get(
     if (!id) {
       return res.status(400).send('Participant id required');
     }
-    const [participant] = await getParticipantByID({ id: +id });
+    const [participant] = await getParticipantByID(id);
     if (!participant) {
       return res.status(400).send('Invalid participant id');
     }

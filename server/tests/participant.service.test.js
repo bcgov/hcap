@@ -863,13 +863,13 @@ describe('Participants Service', () => {
       {}
     );
 
-    const query = await getParticipantByID(reduceParticipant);
+    const query = await getParticipantByID(reduceParticipant?.id);
     expect(query[0].firstName).toEqual(reduceParticipant.firstName);
     reduceParticipant.history = [
       { timestamp: new Date(), changes: [{ field: 'firstName', from: 'Eduardo', to: 'Eddy' }] },
     ];
     await updateParticipant(reduceParticipant);
-    const query2 = await getParticipantByID(reduceParticipant);
+    const query2 = await getParticipantByID(reduceParticipant?.id);
     expect(query2[0].firstName).toEqual('Eddy');
     expect(query2[0].history.length).toEqual(1);
   });

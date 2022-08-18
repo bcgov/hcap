@@ -260,7 +260,7 @@ const setParticipantStatus = async (
 const bulkEngageParticipants = async ({ participants, user }) =>
   Promise.all(
     participants.map(async (id) => {
-      const participant = await getParticipantByID({ id });
+      const participant = await getParticipantByID(participantId);
       if (!participant) {
         return { participantId: id, status: 'not found', success: false };
       }

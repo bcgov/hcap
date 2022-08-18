@@ -8,8 +8,7 @@ const {
   validate,
 } = require('../validators');
 const {
-  makeReturnOfServiceStatus,
-  updateReturnOfServiceStatus,
+  insertReturnOfServiceStatus,
   getReturnOfServiceStatuses,
   logRosError,
 } = require('../services/return-of-service');
@@ -53,7 +52,7 @@ router.post(
     }
 
     try {
-      const response = await makeReturnOfServiceStatus({
+      const response = await insertReturnOfServiceStatus({
         participantId: validationRes.participant?.id,
         data,
         status,
@@ -89,10 +88,11 @@ router.patch(
     await validate(UpdateReturnOfServiceSchema, req.body);
 
     try {
-      const response = await updateReturnOfServiceStatus({
+      const response = await insertReturnOfServiceStatus({
         participantId: validationRes.participant?.id,
         data,
         user: validationRes.user,
+        isMohUpdate: true,
       });
       logger.info({
         action: actionName,

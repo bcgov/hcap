@@ -11,7 +11,7 @@ const {
   makeReturnOfServiceStatus,
   updateReturnOfServiceStatus,
   getReturnOfServiceStatuses,
-  getRosErrorMessage,
+  logRosError,
 } = require('../services/return-of-service');
 const { validateCredentials } = require('../services/user-validation');
 const { getSiteDetailsById, getDetailsBySiteId } = require('../services/employers');
@@ -68,12 +68,8 @@ router.post(
       });
       return res.status(201).json(response);
     } catch (error) {
-      logger.error({
-        action: actionName,
-        error: error.message,
-      });
-      const errMessage = getRosErrorMessage(error.message);
-      return res.status(errMessage.statusCode || 400).send(errMessage.label || 'Server error');
+      const errRes = logRosError(actionName, error);
+      return res.status(errRes.status).send(errRes.message);
     }
   })
 );
@@ -105,12 +101,8 @@ router.patch(
       });
       return res.status(201).json(response);
     } catch (error) {
-      logger.error({
-        action: actionName,
-        error: error.message,
-      });
-      const errMessage = getRosErrorMessage(error.message);
-      return res.status(errMessage.statusCode || 400).send(errMessage.label || 'Server error');
+      const errRes = logRosError(actionName, error);
+      return res.status(errRes.status).send(errRes.message);
     }
   })
 );

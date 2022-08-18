@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 const { dbClient, collections } = require('../db');
 const { rosError } = require('../constants');
+const logger = require('../logger.js');
 
 const getParticipantStatuses = async (participantId) => {
   const statuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
@@ -216,10 +217,22 @@ const getRosErrorMessage = (messageType) => {
   }
 };
 
+const logRosError = (actionName, err) => {
+  logger.error({
+    action: actionName,
+    error: err.message,
+  });
+  const errMessage = getRosErrorMessage(err.message);
+  return {
+    status: errMessage.statusCode || 400,
+    message: errMessage.label || 'Server error',
+  };
+};
+
 module.exports = {
   makeReturnOfServiceStatus,
   updateReturnOfServiceStatus,
   getReturnOfServiceStatuses,
   invalidateReturnOfServiceStatus,
-  getRosErrorMessage,
+  logRosError,
 };

@@ -353,6 +353,20 @@ class FieldsFilteredParticipantsFinder {
       },
     };
 
+    const userArchiveJoin = isInProgress
+      ? {
+          userArchiveStatus: {
+            type: 'LEFT OUTER',
+            relation: collections.PARTICIPANTS_STATUS,
+            on: {
+              participant_id: 'id',
+              current: true,
+              status: archived,
+            },
+          },
+        }
+      : {};
+
     const userRejectJoin = isInProgress
       ? {
           userRejectedStatus: {
@@ -376,6 +390,7 @@ class FieldsFilteredParticipantsFinder {
       ...(siteIdDistance && siteDistanceJoinJoin),
       ...(isOpen && orgJoin),
       ...(isInProgress && userRejectJoin),
+      ...(isInProgress && userArchiveJoin),
     };
   }
 
@@ -483,8 +498,16 @@ class FieldsFilteredParticipantsFinder {
           {
             [`userRejectedStatus.status`]: null,
           },
+          {
+            or: [
+              // HCAP-1303 don't return archived + ROS participants
+              { [`${rosStatuses}.participant_id`]: null },
+              { [`userArchiveStatus.status`]: null },
+            ],
+          },
         ],
       };
+
       criteria = isInProgress ? { ...criteria, ...inProgressStatusQuery } : criteria;
       this.context.criteria = { ...criteria };
     } else {

@@ -48,7 +48,8 @@ export const TrackGraduation = (props) => {
   const [showArchiveModel, setShowArchiveModal] = useState(false);
   const { openToast } = useToast();
   const disableTrackGraduation =
-    props.participant?.postHireStatus?.status === postHireStatuses.postSecondaryEducationCompleted ||
+    props.participant?.postHireStatus?.status ===
+      postHireStatuses.postSecondaryEducationCompleted ||
     (!roles.includes('health_authority') && !cohort?.id);
 
   const cohortEndDate = props.participant?.cohort
@@ -112,7 +113,7 @@ export const TrackGraduation = (props) => {
                 data: {
                   date:
                     props?.participant?.postHireStatus?.status ===
-                      postHireStatuses.cohortUnsuccessful
+                    postHireStatuses.cohortUnsuccessful
                       ? ''
                       : cohortEndDate,
                 },
@@ -128,12 +129,12 @@ export const TrackGraduation = (props) => {
                   data:
                     values.status === postHireStatuses.postSecondaryEducationCompleted
                       ? {
-                        graduationDate: values?.data?.date,
-                      }
+                          graduationDate: values?.data?.date,
+                        }
                       : {
-                        unsuccessfulCohortDate: values?.data?.date,
-                        continue: values.continue,
-                      },
+                          unsuccessfulCohortDate: values?.data?.date,
+                          continue: values.continue,
+                        },
                 };
                 try {
                   await createPostHireStatus(payload);

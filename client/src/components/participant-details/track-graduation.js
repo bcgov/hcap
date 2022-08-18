@@ -112,7 +112,7 @@ export const TrackGraduation = (props) => {
                 data: {
                   date:
                     props?.participant?.postHireStatus?.status ===
-                    postHireStatuses.cohortUnsuccessful
+                      postHireStatuses.cohortUnsuccessful
                       ? ''
                       : cohortEndDate,
                 },
@@ -128,12 +128,12 @@ export const TrackGraduation = (props) => {
                   data:
                     values.status === postHireStatuses.postSecondaryEducationCompleted
                       ? {
-                          graduationDate: values?.data?.date,
-                        }
+                        graduationDate: values?.data?.date,
+                      }
                       : {
-                          unsuccessfulCohortDate: values?.data?.date,
-                          continue: values.continue,
-                        },
+                        unsuccessfulCohortDate: values?.data?.date,
+                        continue: values.continue,
+                      },
                 };
                 try {
                   await createPostHireStatus(payload);

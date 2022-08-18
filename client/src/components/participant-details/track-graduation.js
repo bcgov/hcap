@@ -40,14 +40,16 @@ const handleArchive = async (participantId, openToast, dispatchFunction, additio
 };
 
 export const TrackGraduation = (props) => {
-  const { dispatch } = AuthContext.useAuth();
+  const { auth, dispatch } = AuthContext.useAuth();
+  const roles = auth.user?.roles || [];
   const [cohort, setCohort] = useState(null);
   const { fetchData } = props;
   const [showEditModel, setShowEditModal] = useState(false);
   const [showArchiveModel, setShowArchiveModal] = useState(false);
   const { openToast } = useToast();
   const disableTrackGraduation =
-    props.participant?.postHireStatus?.status === postHireStatuses.postSecondaryEducationCompleted;
+    props.participant?.postHireStatus?.status === postHireStatuses.postSecondaryEducationCompleted ||
+    (!roles.includes('health_authority') && !cohort?.id);
 
   const cohortEndDate = props.participant?.cohort
     ? formatCohortDate(props.participant.cohort.end_date, { isForm: true })

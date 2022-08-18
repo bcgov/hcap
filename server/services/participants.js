@@ -127,6 +127,14 @@ const getParticipantByID = async (participantInfo) => {
   return participant;
 };
 
+const getParticipantCurrentStatus = async (participantId) => {
+  const participant = await dbClient.db[collections.PARTICIPANTS_STATUS].findOne({
+    participant_id: participantId,
+    current: true,
+  });
+  return participant;
+}
+
 const createChangeHistory = (participantBody, changes) => {
   try {
     const newBody = { ...participantBody };
@@ -791,6 +799,7 @@ module.exports = {
   getHiredParticipantsBySite,
   getWithdrawnParticipantsBySite,
   getParticipantByID,
+  getParticipantCurrentStatus,
   updateParticipant,
   makeParticipant,
   validateConfirmationId,

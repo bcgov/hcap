@@ -1,7 +1,7 @@
 describe('Return of Service Form', () => {
   before(() => {
     // assign site to test-ha as moh
-    cy.assignSitesToHealthAuthorityUser('test-ha', [1]);
+    cy.assignSitesToUser('test-ha', [1]);
   });
 
   beforeEach(() => {

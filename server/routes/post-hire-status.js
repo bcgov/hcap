@@ -8,7 +8,7 @@ const {
 } = require('../services/post-hire-flow');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
-const { getParticipantByID, getParticipantCurrentStatus } = require('../services/participants.js');
+const { getParticipantByID } = require('../services/participants.js');
 const { getAssignCohort } = require('../services/cohorts.js');
 
 const router = express.Router();
@@ -18,16 +18,14 @@ router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 
 router.post(
   '/',
-  [
+  applyMiddleware(
     keycloak.allowRolesMiddleware('health_authority', 'employer'),
-    keycloak.getUserInfoMiddleware(),
-  ],
+  ),
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const { body } = req;
 
     const user = userId || localUserId;
-    const userInfo = req.hcapUserInfo;
     // Validate the request body
     await validate(ParticipantPostHireStatusSchema, body);
     const { participantId } = body;
@@ -52,13 +50,6 @@ router.post(
       return res
         .status(422)
         .send('Cohort does not exist. Please assign a cohort to the participant');
-    }
-
-    const currentStatus = await getParticipantCurrentStatus(participantId);
-    if (!userInfo.sites.includes(currentStatus.data.site)) {
-      return res
-        .status(403)
-        .send('User does not have access to this record.');
     }
 
     // Save the record

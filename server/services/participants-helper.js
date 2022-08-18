@@ -76,7 +76,7 @@ const scrubParticipantData = (raw, joinNames, sites) =>
     let rosStatuses = participant.rosStatuses
       ? participant.rosStatuses.sort((ros1, ros2) => ros2.id - ros1.id)
       : [];
-    rosStatuses = rosStatuses.filter(rosStatus => sites.includes(rosStatus.rosSite.body.siteId));
+    rosStatuses = rosStatuses.filter((rosStatus) => sites.includes(rosStatus.rosSite.body.siteId));
     return {
       ...participant.body,
       id: participant.id,
@@ -126,7 +126,7 @@ const run = async (context) => {
     participants = scrubParticipantData(
       participants,
       (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin],
-      user.sites,
+      user.sites
     );
     return participants;
   } catch (error) {

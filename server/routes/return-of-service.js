@@ -9,6 +9,7 @@ const {
 } = require('../validators');
 const {
   makeReturnOfServiceStatus,
+  updateReturnOfServiceStatus,
   getReturnOfServiceStatuses,
   getRosErrorMessage,
 } = require('../services/return-of-service');
@@ -23,9 +24,7 @@ router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 // Create a new return of service status
 router.post(
   '/participant/:participantId',
-  applyMiddleware(
-    keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority', 'employer')
-  ),
+  applyMiddleware(keycloak.allowRolesMiddleware('health_authority', 'employer')),
   asyncMiddleware(async (req, res) => {
     const actionName = 'ros-status-create';
     const { participantId } = req.params;
@@ -33,11 +32,8 @@ router.post(
     if (!validationRes.isValid) {
       return res.status(validationRes.status).send(validationRes.message);
     }
-    const { data, status, siteId, newSiteId, assignNewSite, isUpdating } = req.body;
-    await validate(
-      isUpdating ? UpdateReturnOfServiceSchema : CreateReturnOfServiceSchema,
-      req.body
-    );
+    const { data, status, siteId, newSiteId, assignNewSite } = req.body;
+    await validate(CreateReturnOfServiceSchema, req.body);
 
     if (siteId) {
       // Validate siteId
@@ -64,8 +60,43 @@ router.post(
         siteId,
         newSiteId: assignNewSiteId,
         assignNewSite,
+      });
+      logger.info({
+        action: actionName,
+        performed_by: validationRes.user,
+        id: response.id,
+      });
+      return res.status(201).json(response);
+    } catch (error) {
+      logger.error({
+        action: actionName,
+        error: error.message,
+      });
+      const errMessage = getRosErrorMessage(error.message);
+      return res.status(errMessage.statusCode || 400).send(errMessage.label || 'Server error');
+    }
+  })
+);
+
+// Update return of service status
+router.patch(
+  '/participant/:participantId',
+  applyMiddleware(keycloak.allowRolesMiddleware('ministry_of_health')),
+  asyncMiddleware(async (req, res) => {
+    const actionName = 'ros-status-update';
+    const { participantId } = req.params;
+    const validationRes = await validateCredentials(req.user, participantId, actionName);
+    if (!validationRes.isValid) {
+      return res.status(validationRes.status).send(validationRes.message);
+    }
+    const { data } = req.body;
+    await validate(UpdateReturnOfServiceSchema, req.body);
+
+    try {
+      const response = await updateReturnOfServiceStatus({
+        participantId: validationRes.participant?.id,
+        data,
         user: validationRes.user,
-        isUpdating,
       });
       logger.info({
         action: actionName,

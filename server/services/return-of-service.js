@@ -135,14 +135,33 @@ const makeReturnOfServiceStatus = async ({
   data,
   siteId,
   newSiteId,
-  user,
   status = 'assigned-same-site',
   assignNewSite = false,
-  isUpdating = false,
 }) => {
-  const rosBody = isUpdating
-    ? await formatEditRosData(participantId, data.site, data.date, data.startDate, user)
-    : await formatCreateRosData(participantId, siteId, assignNewSite, data, newSiteId, status);
+  const rosBody = await formatCreateRosData(
+    participantId,
+    siteId,
+    assignNewSite,
+    data,
+    newSiteId,
+    status
+  );
+
+  return dbClient.db.withTransaction(async (tx) => {
+    // Invalidate previous ros status
+    await invalidateReturnOfServiceStatus({ db: tx, participantId });
+    return tx[collections.ROS_STATUS].insert(rosBody);
+  });
+};
+
+const updateReturnOfServiceStatus = async ({ participantId, data, user }) => {
+  const rosBody = await formatEditRosData(
+    participantId,
+    data.site,
+    data.date,
+    data.startDate,
+    user
+  );
 
   return dbClient.db.withTransaction(async (tx) => {
     // Invalidate previous ros status
@@ -199,6 +218,7 @@ const getRosErrorMessage = (messageType) => {
 
 module.exports = {
   makeReturnOfServiceStatus,
+  updateReturnOfServiceStatus,
   getReturnOfServiceStatuses,
   invalidateReturnOfServiceStatus,
   getRosErrorMessage,

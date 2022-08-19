@@ -7,6 +7,7 @@ describe('Tests the Site Details View', () => {
     cy.kcLogin('test-moh');
     cy.visit('/site-view');
     cy.get('span.MuiButton-label', { timeout: 10000 }).should('include.text', 'Action');
+    cy.get('span.MuiButton-label').contains('Action').click();
     cy.get('li.MuiListItem-button', { timeout: 10000 }).should('include.text', 'Create new site');
     cy.get('li.MuiListItem-button').contains('Create new site').click();
     cy.get('input#siteId').focus().type('1111');

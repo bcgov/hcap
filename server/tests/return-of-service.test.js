@@ -5,7 +5,7 @@ const { participantData, siteData } = require('./util/testData');
 const { createTestParticipantStatus } = require('./util/integrationTestData');
 
 const {
-  insertReturnOfServiceStatus,
+  createReturnOfServiceStatus,
   getReturnOfServiceStatuses,
 } = require('../services/return-of-service');
 
@@ -44,7 +44,7 @@ describe('Test return of service', () => {
     expect(site).toBeDefined();
     expect(site.siteId).toBe(77);
 
-    const resp = await insertReturnOfServiceStatus({
+    const resp = await createReturnOfServiceStatus({
       participantId: participant.id,
       data: {
         testId: 'ros-1',
@@ -55,7 +55,7 @@ describe('Test return of service', () => {
   });
 
   it('should get return of service for participant', async () => {
-    await insertReturnOfServiceStatus({
+    await createReturnOfServiceStatus({
       participantId: testParticipant.id,
       data: {
         testId: 'ros-2',

@@ -16,14 +16,14 @@ const getParticipantStatuses = async (participantId) => {
 };
 
 const getRosParticipantStatus = async (participantId) => {
-  const rosParticipants = await dbClient.db[collections.ROS_STATUS].find({
+  const rosParticipantStatuses = await dbClient.db[collections.ROS_STATUS].find({
     participant_id: participantId,
     is_current: true,
   });
-  if (rosParticipants.length === 0) {
+  if (rosParticipantStatuses.length === 0) {
     throw new Error(rosError.participantNotFound);
   }
-  return rosParticipants[0];
+  return rosParticipantStatuses[0];
 };
 
 const getDbSiteId = async (site) => {

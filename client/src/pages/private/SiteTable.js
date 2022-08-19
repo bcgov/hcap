@@ -17,12 +17,14 @@ import {
   healthAuthoritiesFilter,
   ToastStatus,
   CreateSiteSchema,
+  CreatePhaseSchema,
 } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import { handleReportDownloadResult } from '../../utils';
 import { AuthContext } from '../../providers';
 import { FeatureFlag, flagKeys } from '../../services';
+import { NewPhaseForm } from '../../components/modal-forms/NewPhaseForm';
 
 const useStyles = makeStyles((theme) => ({
   rootItem: {
@@ -90,41 +92,84 @@ const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
     }
   };
 
+  const handlePhaseCreate = async (phase) => {
+    console.log('TODO: backend!');
+    console.log(phase);
+  };
+
+  const createSiteForm = () => {
+    return (
+      <NewSiteForm
+        initialValues={{
+          siteId: '',
+          siteName: '',
+          registeredBusinessName: '',
+          address: '',
+          city: '',
+          isRHO: null,
+          postalCode: '',
+          healthAuthority: '',
+          allocation: '',
+          operatorName: '',
+          operatorContactFirstName: '',
+          operatorContactLastName: '',
+          operatorPhone: '',
+          operatorEmail: '',
+          siteContactFirstName: '',
+          siteContactLastName: '',
+          siteContactPhone: '',
+          siteContactEmail: '',
+        }}
+        validationSchema={CreateSiteSchema}
+        onSubmit={(values) => {
+          handleSiteCreate({
+            ...values,
+            siteId: parseInt(values.siteId),
+            allocation: parseInt(values.allocation),
+          });
+        }}
+        onClose={onDialogClose}
+      />
+    );
+  };
+
+  const createPhaseForm = () => {
+    return (
+      <NewPhaseForm
+        initialValues={{
+          phaseName: '',
+          startDate: '',
+          endDate: '',
+        }}
+        validationSchema={CreatePhaseSchema}
+        onSubmit={(values) => {
+          handlePhaseCreate({
+            ...values,
+            name: values.phaseName,
+          });
+        }}
+        onClose={onDialogClose}
+      />
+    );
+  };
+
+  let dialogue;
+  let title = activeForm;
+  switch (activeForm) {
+    case 'new-site':
+      title = 'Create Site';
+      dialogue = createSiteForm();
+      break;
+    case 'new-phase':
+      title = 'Create Phase';
+      dialogue = createPhaseForm();
+      break;
+    default:
+  }
+
   return (
-    <Dialog title='Create Site' open={activeForm != null} onClose={onDialogClose}>
-      {activeForm === 'new-site' && (
-        <NewSiteForm
-          initialValues={{
-            siteId: '',
-            siteName: '',
-            registeredBusinessName: '',
-            address: '',
-            city: '',
-            isRHO: null,
-            postalCode: '',
-            healthAuthority: '',
-            allocation: '',
-            operatorName: '',
-            operatorContactFirstName: '',
-            operatorContactLastName: '',
-            operatorPhone: '',
-            operatorEmail: '',
-            siteContactFirstName: '',
-            siteContactLastName: '',
-            siteContactPhone: '',
-            siteContactEmail: '',
-          }}
-          validationSchema={CreateSiteSchema}
-          onSubmit={(values) => {
-            handleSiteCreate({
-              ...values,
-              siteId: parseInt(values.siteId),
-              allocation: parseInt(values.allocation),
-            });
-          }}
-          onClose={onDialogClose}
-        />
-      )}
+    <Dialog title={title} open={activeForm != null} onClose={onDialogClose}>
+      {dialogue}
     </Dialog>
   );
 };

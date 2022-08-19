@@ -4,6 +4,7 @@ export * from './schema-approve-access-request';
 export * from './schema-archive-hired-participant';
 export * from './schema-create-psi';
 export * from './schema-create-site';
+export * from './schema-create-phase';
 export * from './schema-edit-participant-form';
 export * from './schema-edit-psi';
 export * from './schema-edit-site';

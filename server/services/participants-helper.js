@@ -69,6 +69,7 @@ const scrubParticipantData = (raw, joinNames, sites) =>
         statusInfos.push(...participant[joinName].map(decomposeStatusInfo));
       });
     } else {
+      rosStatuses = participant.ros_infos ?? [];
       participant.status_infos?.forEach((statusInfo) => {
         statusInfos.push(decomposeStatusInfo(statusInfo));
       });

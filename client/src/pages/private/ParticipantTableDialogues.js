@@ -102,7 +102,8 @@ export const ParticipantTableDialogues = ({
     if (allSites.length === 0) {
       fetchAllSites();
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Dialog

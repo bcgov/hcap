@@ -74,6 +74,12 @@ const scrubParticipantData = (raw, joinNames, sites) =>
         statusInfos.push(decomposeStatusInfo(statusInfo));
       });
     }
+    // filter by sites for HA/PE, not for MoH/SU. HA/PE will have sites = [] if none assigned
+    if (sites) {
+      rosStatuses = rosStatuses.filter((rosStatus) =>
+        sites.includes(rosStatus.rosSite.body.siteId)
+      );
+    }
 
     return {
       ...participant.body,
@@ -124,7 +130,7 @@ const run = async (context) => {
     participants = scrubParticipantData(
       participants,
       (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin],
-      user.sites
+      (user.isEmployer || user.isHA) && user.sites
     );
     return participants;
   } catch (error) {

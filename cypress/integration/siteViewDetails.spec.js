@@ -6,8 +6,9 @@ describe('Tests the Site Details View', () => {
   it('creates a new site as MoH, asserts that it has default functionality', () => {
     cy.kcLogin('test-moh');
     cy.visit('/site-view');
-    cy.get('span.MuiButton-label', { timeout: 10000 }).should('include.text', 'Create Site');
-    cy.get('span.MuiButton-label').contains('Create Site').click();
+    cy.get('span.MuiButton-label', { timeout: 10000 }).should('include.text', 'Action');
+    cy.get('li.MuiListItem-button', { timeout: 10000 }).should('include.text', 'Create new site');
+    cy.get('li.MuiListItem-button').contains('Create new site').click();
     cy.get('input#siteId').focus().type('1111');
     cy.get('input#siteName').focus().type('New Site');
     cy.get('input#postalCode').focus().type('V1V1V1');

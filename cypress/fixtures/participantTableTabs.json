@@ -21,7 +21,8 @@
           "Non-HCAP",
           "CRC Clear",
           "Last Updated",
-          "Graduated"
+          "Graduated",
+          "Return of Service Start Date"
         ]
       }
     },
@@ -43,7 +44,8 @@
           "Non-HCAP",
           "CRC Clear",
           "Last Updated",
-          "Graduated"
+          "Graduated",
+          "Return of Service Start Date"
         ]
       }
     },

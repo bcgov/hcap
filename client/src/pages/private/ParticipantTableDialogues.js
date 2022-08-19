@@ -71,7 +71,6 @@ export const ParticipantTableDialogues = ({
             startDate,
             employmentType,
             positionType,
-            sameSite: false,
           },
           assignNewSite: true,
         });

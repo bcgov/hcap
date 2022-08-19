@@ -15,7 +15,7 @@ const getParticipantStatuses = async (participantId) => {
   return statuses;
 };
 
-const getRosParticipant = async (participantId) => {
+const getRosParticipantStatus = async (participantId) => {
   const rosParticipants = await dbClient.db[collections.ROS_STATUS].find({
     participant_id: participantId,
     is_current: true,
@@ -54,59 +54,6 @@ const validateRosUpdateBody = (rosParticipant, updatedSite, updatedDate, updated
   }
 };
 
-const formatRosData = async (
-  participantId,
-  data,
-  siteId,
-  newSiteId,
-  user,
-  status,
-  assignNewSite,
-  isMohUpdate
-) => {
-  const statuses = await getParticipantStatuses(participantId);
-  let rosParticipant;
-  if (isMohUpdate || assignNewSite) {
-    rosParticipant = await getRosParticipant(participantId);
-  }
-
-  let site_id;
-  if (isMohUpdate && data.site) {
-    site_id = await getDbSiteId(data.site);
-  }
-  if (!isMohUpdate) {
-    site_id = siteId;
-    if (!site_id) {
-      const { site } = statuses[0].data;
-      site_id = await getDbSiteId(site);
-    }
-  }
-  if (assignNewSite) {
-    // eslint-disable-next-line no-param-reassign
-    data.date = rosParticipant.data?.date || data.startDate;
-  }
-
-  let updatedData;
-  if (isMohUpdate) {
-    validateRosUpdateBody(rosParticipant, data.site, data.date, data.startDate);
-    updatedData = {
-      ...rosParticipant.data,
-      date: data.date || rosParticipant.data.date,
-      startDate: data.startDate || rosParticipant.data.startDate,
-      user,
-      isEntryEditedByMoh: true,
-    };
-  }
-
-  return {
-    participant_id: participantId,
-    site_id: newSiteId || site_id || rosParticipant.site_id,
-    is_current: true,
-    status: status || rosParticipant.status,
-    data: updatedData || data,
-  };
-};
-
 /**
  * Invalidate all ros statuses for participant
  * @param {*} param.db db transaction | optional database object
@@ -124,32 +71,85 @@ const invalidateReturnOfServiceStatus = async ({ db = null, participantId }) => 
   );
 };
 
-const insertReturnOfServiceStatus = async ({
-  participantId,
-  data,
-  siteId,
-  newSiteId,
-  user,
-  status = 'assigned-same-site',
-  assignNewSite = false,
-  isMohUpdate = false,
-}) => {
-  const rosBody = await formatRosData(
-    participantId,
-    data,
-    siteId,
-    newSiteId,
-    user,
-    status,
-    assignNewSite,
-    isMohUpdate
-  );
-
-  return dbClient.db.withTransaction(async (tx) => {
+const insertReturnOfServiceStatus = async ({ participantId, rosBody }) =>
+  dbClient.db.withTransaction(async (tx) => {
     // Invalidate previous ros status
     await invalidateReturnOfServiceStatus({ db: tx, participantId });
     return tx[collections.ROS_STATUS].insert(rosBody);
   });
+
+const createReturnOfServiceStatus = async ({
+  participantId,
+  data,
+  siteId,
+  status = 'assigned-same-site',
+}) => {
+  const statuses = await getParticipantStatuses(participantId);
+  let siteDbId = siteId;
+  if (!siteDbId) {
+    const { site } = statuses[0].data;
+    siteDbId = await getDbSiteId(site);
+  }
+  const rosBody = {
+    participant_id: participantId,
+    site_id: siteDbId,
+    is_current: true,
+    status,
+    data,
+  };
+  return insertReturnOfServiceStatus({ participantId, rosBody });
+};
+
+const changeReturnOfServiceSite = async ({
+  participantId,
+  data,
+  status = 'assigned-new-site',
+  newSiteId,
+}) => {
+  const rosParticipant = await getRosParticipantStatus(participantId);
+  const newSiteDbId = await getDbSiteId(newSiteId);
+
+  const updatedData = {
+    ...rosParticipant.data,
+    date: rosParticipant.data.date || data.startDate,
+    sameSite: rosParticipant.data.sameSite,
+  };
+
+  const rosBody = {
+    participant_id: participantId,
+    site_id: newSiteDbId,
+    is_current: true,
+    status,
+    data: updatedData,
+  };
+  return insertReturnOfServiceStatus({ participantId, rosBody });
+};
+
+const updateReturnOfServiceStatus = async ({ participantId, data, user }) => {
+  const rosParticipant = await getRosParticipantStatus(participantId);
+
+  let siteDbId;
+  if (data.site) {
+    siteDbId = await getDbSiteId(data.site);
+  }
+
+  validateRosUpdateBody(rosParticipant, data.site, data.date, data.startDate);
+  const updatedData = {
+    ...rosParticipant.data,
+    date: data.date || rosParticipant.data.date,
+    startDate: data.startDate || rosParticipant.data.startDate,
+    user,
+    isEntryEditedByMoh: true,
+  };
+  const rosBody = {
+    participant_id: participantId,
+    site_id: siteDbId || rosParticipant.site_id,
+    is_current: true,
+    status: rosParticipant.status,
+    data: updatedData,
+  };
+
+  return insertReturnOfServiceStatus({ participantId, rosBody });
 };
 
 const getReturnOfServiceStatuses = async ({ participantId }) =>
@@ -211,8 +211,9 @@ const logRosError = (actionName, err) => {
 };
 
 module.exports = {
-  insertReturnOfServiceStatus,
+  createReturnOfServiceStatus,
+  updateReturnOfServiceStatus,
+  changeReturnOfServiceSite,
   getReturnOfServiceStatuses,
-  invalidateReturnOfServiceStatus,
   logRosError,
 };

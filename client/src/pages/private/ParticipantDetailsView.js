@@ -330,26 +330,24 @@ export default () => {
               fullWidth={false}
             />
 
-            {!participant.ros && (
+            {!disableAssign && !participant.ros && (
               <>
                 <CheckPermissions permittedRoles={['employer', 'health_authority']}>
-                  {!disableAssign && (
-                    <PSICohortView
-                      psiList={psiList}
-                      assignAction={(cohort) => setSelectedCohort(cohort)}
-                      participant={actualParticipant}
-                      fetchData={() =>
-                        fetchData({
-                          setParticipant,
-                          setPSIList,
-                          setActualParticipant,
-                          setDisableAssign,
-                          setError,
-                          id,
-                        })
-                      }
-                    />
-                  )}
+                  <PSICohortView
+                    psiList={psiList}
+                    assignAction={(cohort) => setSelectedCohort(cohort)}
+                    participant={actualParticipant}
+                    fetchData={() =>
+                      fetchData({
+                        setParticipant,
+                        setPSIList,
+                        setActualParticipant,
+                        setDisableAssign,
+                        setError,
+                        id,
+                      })
+                    }
+                  />
                 </CheckPermissions>
               </>
             )}

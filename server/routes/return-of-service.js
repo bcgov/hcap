@@ -4,16 +4,19 @@ const logger = require('../logger.js');
 const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
 const {
   CreateReturnOfServiceSchema,
+  ChangeReturnOfServiceSiteSchema,
   UpdateReturnOfServiceSchema,
   validate,
 } = require('../validators');
 const {
-  insertReturnOfServiceStatus,
+  createReturnOfServiceStatus,
+  updateReturnOfServiceStatus,
+  changeReturnOfServiceSite,
   getReturnOfServiceStatuses,
   logRosError,
 } = require('../services/return-of-service');
 const { validateCredentials } = require('../services/user-validation');
-const { getSiteDetailsById, getDetailsBySiteId } = require('../services/employers');
+const { getSiteDetailsById } = require('../services/employers');
 
 const router = express.Router();
 
@@ -32,7 +35,10 @@ router.post(
       return res.status(validationRes.status).send(validationRes.message);
     }
     const { data, status, siteId, newSiteId, assignNewSite } = req.body;
-    await validate(CreateReturnOfServiceSchema, req.body);
+    await validate(
+      assignNewSite ? ChangeReturnOfServiceSiteSchema : CreateReturnOfServiceSchema,
+      req.body
+    );
 
     if (siteId) {
       // Validate siteId
@@ -42,24 +48,20 @@ router.post(
       }
     }
 
-    let assignNewSiteId;
-    if (newSiteId) {
-      const [newSite] = await getDetailsBySiteId(newSiteId);
-      if (newSite.error) {
-        return res.status(404).send(`Site not found: ${newSite.error}`);
-      }
-      assignNewSiteId = newSite?.id;
-    }
-
     try {
-      const response = await insertReturnOfServiceStatus({
-        participantId: validationRes.participant?.id,
-        data,
-        status,
-        siteId,
-        newSiteId: assignNewSiteId,
-        assignNewSite,
-      });
+      const response = assignNewSite
+        ? await changeReturnOfServiceSite({
+            participantId: validationRes.participant?.id,
+            data,
+            status,
+            newSiteId,
+          })
+        : await createReturnOfServiceStatus({
+            participantId: validationRes.participant?.id,
+            data,
+            status,
+            siteId,
+          });
       logger.info({
         action: actionName,
         performed_by: validationRes.user,
@@ -88,11 +90,10 @@ router.patch(
     await validate(UpdateReturnOfServiceSchema, req.body);
 
     try {
-      const response = await insertReturnOfServiceStatus({
+      const response = await updateReturnOfServiceStatus({
         participantId: validationRes.participant?.id,
         data,
         user: validationRes.user,
-        isMohUpdate: true,
       });
       logger.info({
         action: actionName,

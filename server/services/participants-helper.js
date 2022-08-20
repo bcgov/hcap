@@ -76,9 +76,9 @@ const scrubParticipantData = (raw, joinNames, sites) =>
     }
     // filter by sites for HA/PE, not for MoH/SU. HA/PE will have sites = [] if none assigned
     if (sites) {
-      rosStatuses = rosStatuses.filter((rosStatus) =>
-        sites.includes(rosStatus.rosSite.body.siteId)
-      );
+      // Use hiring site instead of ROS site to see if user has permissions
+      const hiredAt = participant.hiredGlobalJoin?.[0];
+      rosStatuses = sites.includes(hiredAt?.data.site) ? rosStatuses : [];
     }
 
     return {

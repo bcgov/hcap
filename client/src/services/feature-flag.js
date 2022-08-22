@@ -1,4 +1,11 @@
 import store from 'store';
 
 
-export const featureFlag = (key) => store.get(key) || false;
+export const isFeatureFlagOn = (key) => store.get(key) === 'true' || false;
+
+export const FeatureFlag = ({ key, children }) => {
+  if (isFeatureFlagOn(key)) {
+    return children;
+  }
+  return null;
+};

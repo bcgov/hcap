@@ -38,9 +38,6 @@ const validateRosUpdateBody = (rosParticipant, updatedSite, updatedDate, updated
   if (updatedDate && !rosParticipant.data.date) {
     throw new Error(rosError.noDate);
   }
-  if (updatedStartDate && !rosParticipant.data.startDate) {
-    throw new Error(rosError.noStartDate);
-  }
 };
 
 /**
@@ -89,32 +86,7 @@ const createReturnOfServiceStatus = async ({
   return insertReturnOfServiceStatus({ participantId, rosBody });
 };
 
-const changeReturnOfServiceSite = async ({
-  participantId,
-  data,
-  status = 'assigned-new-site',
-  newSiteId,
-}) => {
-  const rosParticipant = await getRosParticipantStatus(participantId);
-  const newSiteDbId = await getDbSiteId(newSiteId);
-
-  const updatedData = {
-    ...rosParticipant.data,
-    date: rosParticipant.data.date || data.startDate,
-    sameSite: rosParticipant.data.sameSite,
-  };
-
-  const rosBody = {
-    participant_id: participantId,
-    site_id: newSiteDbId,
-    is_current: true,
-    status,
-    data: updatedData,
-  };
-  return insertReturnOfServiceStatus({ participantId, rosBody });
-};
-
-const updateReturnOfServiceStatus = async ({ participantId, data, user }) => {
+const updateReturnOfServiceStatus = async ({ participantId, data, user, status }) => {
   const rosParticipant = await getRosParticipantStatus(participantId);
 
   let siteDbId;
@@ -125,16 +97,17 @@ const updateReturnOfServiceStatus = async ({ participantId, data, user }) => {
   validateRosUpdateBody(rosParticipant, data.site, data.date, data.startDate);
   const updatedData = {
     ...rosParticipant.data,
+    positionType: data.positionType || rosParticipant.data.positionType,
+    employmentType: data.employmentType || rosParticipant.data.employmentType,
     date: data.date || rosParticipant.data.date,
     startDate: data.startDate || rosParticipant.data.startDate,
     user,
-    isEntryEditedByMoh: true,
   };
   const rosBody = {
     participant_id: participantId,
     site_id: siteDbId || rosParticipant.site_id,
     is_current: true,
-    status: rosParticipant.status,
+    status: status || rosParticipant.status,
     data: updatedData,
   };
 
@@ -202,7 +175,6 @@ const logRosError = (actionName, err) => {
 module.exports = {
   createReturnOfServiceStatus,
   updateReturnOfServiceStatus,
-  changeReturnOfServiceSite,
   getReturnOfServiceStatuses,
   logRosError,
 };

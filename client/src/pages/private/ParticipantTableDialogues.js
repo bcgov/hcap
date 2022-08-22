@@ -22,7 +22,7 @@ import {
 } from '../../components/modal-forms';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
-import { createReturnOfServiceStatus, getAllSites } from '../../services';
+import { changeReturnOfServiceSite, getAllSites } from '../../services';
 import { useToast } from '../../hooks';
 
 export const ParticipantTableDialogues = ({
@@ -64,7 +64,7 @@ export const ParticipantTableDialogues = ({
       if (!isLoading) {
         setIsLoading(true);
         const { employmentType, positionType, site, startDate } = values;
-        await createReturnOfServiceStatus({
+        await changeReturnOfServiceSite({
           participantId: actionMenuParticipant.id,
           newSiteId: site,
           data: {
@@ -72,7 +72,6 @@ export const ParticipantTableDialogues = ({
             employmentType,
             positionType,
           },
-          assignNewSite: true,
         });
         handleUpdate(true, 'Return of Service site updated!');
       }

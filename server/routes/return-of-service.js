@@ -11,7 +11,6 @@ const {
 const {
   createReturnOfServiceStatus,
   updateReturnOfServiceStatus,
-  changeReturnOfServiceSite,
   getReturnOfServiceStatuses,
   logRosError,
 } = require('../services/return-of-service');
@@ -34,11 +33,8 @@ router.post(
     if (!validationRes.isValid) {
       return res.status(validationRes.status).send(validationRes.message);
     }
-    const { data, status, siteId, newSiteId, assignNewSite } = req.body;
-    await validate(
-      assignNewSite ? ChangeReturnOfServiceSiteSchema : CreateReturnOfServiceSchema,
-      req.body
-    );
+    const { data, status, siteId } = req.body;
+    await validate(CreateReturnOfServiceSchema, req.body);
 
     if (siteId) {
       // Validate siteId
@@ -49,19 +45,46 @@ router.post(
     }
 
     try {
-      const response = assignNewSite
-        ? await changeReturnOfServiceSite({
-            participantId: validationRes.participant?.id,
-            data,
-            status,
-            newSiteId,
-          })
-        : await createReturnOfServiceStatus({
-            participantId: validationRes.participant?.id,
-            data,
-            status,
-            siteId,
-          });
+      const response = await createReturnOfServiceStatus({
+        participantId: validationRes.participant?.id,
+        data,
+        status,
+        siteId,
+      });
+      logger.info({
+        action: actionName,
+        performed_by: validationRes.user,
+        id: response.id,
+      });
+      return res.status(201).json(response);
+    } catch (error) {
+      const errRes = logRosError(actionName, error);
+      return res.status(errRes.status).send(errRes.message);
+    }
+  })
+);
+
+// Change return of service status site
+router.patch(
+  '/participant/:participantId/change-site',
+  applyMiddleware(keycloak.allowRolesMiddleware('health_authority', 'employer')),
+  asyncMiddleware(async (req, res) => {
+    const actionName = 'ros-change-site';
+    const { participantId } = req.params;
+    const validationRes = await validateCredentials(req.user, participantId, actionName);
+    if (!validationRes.isValid) {
+      return res.status(validationRes.status).send(validationRes.message);
+    }
+    const { data, status } = req.body;
+    await validate(ChangeReturnOfServiceSiteSchema, req.body);
+
+    try {
+      const response = await updateReturnOfServiceStatus({
+        participantId: validationRes.participant?.id,
+        data,
+        user: validationRes.user,
+        status,
+      });
       logger.info({
         action: actionName,
         performed_by: validationRes.user,

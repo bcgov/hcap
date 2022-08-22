@@ -4,5 +4,3 @@ export const addEllipsisMask = (str = '', length = 0) => {
   const ellipsisSymb = '...';
   return length >= str.length ? str : str.substring(0, length) + ellipsisSymb;
 };
-
-export const stringIsTrue = (str) => str === true || str === 'true';

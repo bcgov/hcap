@@ -22,6 +22,7 @@ import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import { handleReportDownloadResult } from '../../utils';
 import { AuthContext } from '../../providers';
+import { FeatureFlag, flags } from '../../services';
 
 const useStyles = makeStyles((theme) => ({
   rootItem: {
@@ -341,9 +342,11 @@ export default ({ sites, viewOnly }) => {
                   <MenuItem onClick={openNewSiteModal} className={classes.menuItem}>
                     Create new site
                   </MenuItem>
-                  <MenuItem onClick={openNewPhaseModal} className={classes.menuItem}>
-                    Create new phase
-                  </MenuItem>
+                  <FeatureFlag key={flags.FEATURE_PHASE_ALLOCATION}>
+                    <MenuItem onClick={openNewPhaseModal} className={classes.menuItem}>
+                      Create new phase
+                    </MenuItem>
+                  </FeatureFlag>
                 </Menu>
               </Box>
             </Grid>

@@ -331,8 +331,8 @@ export default ({ sites, viewOnly }) => {
                 open={Boolean(actionMenuAnchorEl)}
                 onClose={closeActionMenu}
                 getContentAnchorEl={null}
-                anchorOrigin={{ vertical: 'bottom' }}
-                transformOrigin={{ vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+                transformOrigin={{ horizontal: 'left', vertical: 'top' }}
                 PaperProps={{
                   style: {
                     minWidth: '220px',

@@ -3,15 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import store from 'store';
 import _orderBy from 'lodash/orderBy';
 
-import {
-  ClickAwayListener,
-  Grid,
-  Grow,
-  Paper,
-  Typography,
-  MenuList,
-  MenuItem,
-} from '@material-ui/core';
+import { ClickAwayListener, Grid, Typography, MenuItem, Menu, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -49,10 +41,8 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 700,
   },
   menuItem: {
-    fontWeight: 400,
+    padding: '.75rem',
     fontSize: '17px',
-    lineHeight: '24px',
-    paddingLeft: theme.spacing(4),
   },
 }));
 
@@ -147,6 +137,7 @@ export default ({ sites, viewOnly }) => {
   const [isLoadingReport, setLoadingReport] = useState(false);
   const [isLoadingRosReport, setLoadingRosReport] = useState(false);
   const [isActionMenuOpen, setActionMenuOpen] = useState(false);
+  const [actionMenuAnchorEl, setActionMenuAnchorEl] = React.useState(null);
 
   const [orderBy, setOrderBy] = useState('siteName');
   const [healthAuthorities, setHealthAuthorities] = useState(healthAuthoritiesFilter);
@@ -273,6 +264,24 @@ export default ({ sites, viewOnly }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history, location]);
 
+  const openActionMenu = (event) => {
+    setActionMenuAnchorEl(event.currentTarget);
+  };
+
+  const closeActionMenu = () => {
+    setActionMenuAnchorEl(null);
+  };
+
+  const openNewSiteModal = () => {
+    closeActionMenu();
+    setActiveModalForm('new-site');
+  };
+
+  const openNewPhaseModal = () => {
+    closeActionMenu();
+    // TODO HCAP-1277 setActiveModalForm('new-phase');
+  };
+
   return (
     <>
       <SiteFormsDialog
@@ -305,34 +314,38 @@ export default ({ sites, viewOnly }) => {
           <Grid item xs={8} />
           <ClickAwayListener onClickAway={() => setActionMenuOpen(false)}>
             <Grid className={classes.rootItem} item xs={2}>
-              <Button
-                onClick={() => setActionMenuOpen(!isActionMenuOpen)}
-                endIcon={isActionMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                text='Action'
-                variant='contained'
-              />
-              <Grow in={isActionMenuOpen}>
-                <Paper>
-                  <MenuList>
-                    <MenuItem
-                      onClick={() => {
-                        setActiveModalForm('new-site');
-                      }}
-                      className={classes.menuItem}
-                    >
-                      Create new site
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        // TODO: setActiveModalForm('new-phase');
-                      }}
-                      className={classes.menuItem}
-                    >
-                      Create new phase
-                    </MenuItem>
-                  </MenuList>
-                </Paper>
-              </Grow>
+              <Box px={2} display='flex' justifyContent='end'>
+                <Button
+                  onClick={openActionMenu}
+                  endIcon={isActionMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  aria-controls='simple-menu'
+                  aria-haspopup='true'
+                  text='Action'
+                  variant='contained'
+                  fullWidth={false}
+                />
+                <Menu
+                  id='action-menu'
+                  anchorEl={actionMenuAnchorEl}
+                  open={Boolean(actionMenuAnchorEl)}
+                  onClose={closeActionMenu}
+                  getContentAnchorEl={null}
+                  anchorOrigin={{ vertical: 'bottom' }}
+                  transformOrigin={{ vertical: 'top' }}
+                  PaperProps={{
+                    style: {
+                      minWidth: '220px',
+                    },
+                  }}
+                >
+                  <MenuItem onClick={openNewSiteModal} className={classes.menuItem}>
+                    Create new site
+                  </MenuItem>
+                  <MenuItem onClick={openNewPhaseModal} className={classes.menuItem}>
+                    Create new phase
+                  </MenuItem>
+                </Menu>
+              </Box>
             </Grid>
           </ClickAwayListener>
         </CheckPermissions>

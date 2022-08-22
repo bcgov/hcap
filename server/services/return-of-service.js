@@ -1,19 +1,8 @@
 /* eslint-disable camelcase */
 const { dbClient, collections } = require('../db');
 const { rosError } = require('../constants');
+const { getParticipantHiredStatuses } = require('./participant-status');
 const logger = require('../logger.js');
-
-const getParticipantStatuses = async (participantId) => {
-  const statuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
-    participant_id: participantId,
-    status: 'hired',
-    current: true,
-  });
-  if (statuses.length === 0) {
-    throw new Error(rosError.participantNotHired);
-  }
-  return statuses;
-};
 
 const getRosParticipantStatus = async (participantId) => {
   const rosParticipantStatuses = await dbClient.db[collections.ROS_STATUS].find({
@@ -84,7 +73,7 @@ const createReturnOfServiceStatus = async ({
   siteId,
   status = 'assigned-same-site',
 }) => {
-  const statuses = await getParticipantStatuses(participantId);
+  const statuses = await getParticipantHiredStatuses(participantId);
   let siteDbId = siteId;
   if (!siteDbId) {
     const { site } = statuses[0].data;

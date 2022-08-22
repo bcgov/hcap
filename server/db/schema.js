@@ -20,6 +20,7 @@ const collections = {
   ROS_STATUS: 'return_of_service_status',
   ADMIN_OPS_AUDIT: 'admin_operation_audit',
   SITE_PARTICIPANTS_STATUS: 'site_participants_status',
+  GLOBAL_PHASE: 'global_phase',
 };
 
 const views = {
@@ -110,6 +111,14 @@ const schema = {
       )`,
     },
   ],
+  globalPhase: {
+    definition: `CREATE TABLE IF NOT EXISTS ${collections.GLOBAL_PHASE} (
+        id serial primary key,
+        phase_name varchar(255) not null,
+        start_date date not null,
+        end_date date not null
+      )`,
+  },
   documentTables: [
     {
       collection: collections.PARTICIPANTS,

@@ -93,6 +93,27 @@ const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
   };
 
   const handlePhaseCreate = async (phase) => {
+    const response = await fetch(`${API_URL}/api/v1/phase-allocation`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(phase),
+    });
+
+    if (response.ok) {
+      onDialogClose();
+      await onDialogSubmit();
+    } else {
+      const error = await response.json();
+      console.log(error);
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
+    }
     console.log('TODO: backend!');
     console.log(phase);
   };
@@ -143,10 +164,7 @@ const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
         }}
         validationSchema={CreatePhaseSchema}
         onSubmit={(values) => {
-          handlePhaseCreate({
-            ...values,
-            name: values.phaseName,
-          });
+          handlePhaseCreate(values);
         }}
         onClose={onDialogClose}
       />

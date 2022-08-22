@@ -1,6 +1,6 @@
 const strToBoolean = (value) => value === 'true';
 
 module.exports = {
-  EXAMPLE_USAGE: strToBoolean(process.env.EXAMPLE_USAGE) || false,
+  FEATURE_PHASE_ALLOCATION: strToBoolean(process.env.FEATURE_PHASE_ALLOCATION),
   DISABLE_EMPLOYER_FORM: true,
 };

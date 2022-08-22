@@ -93,6 +93,11 @@ const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
   };
 
   const handlePhaseCreate = async (phase) => {
+    const phaseJson = {
+      name: phase.phaseName,
+      start_date: phase.startDate,
+      end_date: phase.endDate,
+    };
     const response = await fetch(`${API_URL}/api/v1/phase-allocation`, {
       method: 'POST',
       headers: {
@@ -100,7 +105,7 @@ const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
         Accept: 'application/json',
         'Content-type': 'application/json',
       },
-      body: JSON.stringify(phase),
+      body: JSON.stringify(phaseJson),
     });
 
     if (response.ok) {
@@ -114,8 +119,6 @@ const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
         message: response.error || response.statusText || 'Server error',
       });
     }
-    console.log('TODO: backend!');
-    console.log(phase);
   };
 
   const createSiteForm = () => {

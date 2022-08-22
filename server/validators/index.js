@@ -1,5 +1,6 @@
 const helpers = require('./helpers');
 const employer = require('./employer');
+const phase = require('./phase');
 const participant = require('./participant');
 const psiCohort = require('./psi-cohort');
 const employerOperation = require('./employer-operation');
@@ -14,6 +15,7 @@ module.exports = {
   ...helpers,
   ...participant,
   ...employer,
+  ...phase,
   ...psiCohort,
   ...employerOperation,
   ...participantUser,

@@ -114,7 +114,7 @@ const schema = {
   globalPhase: {
     definition: `CREATE TABLE IF NOT EXISTS ${collections.GLOBAL_PHASE} (
         id serial primary key,
-        phase_name varchar(255) not null,
+        name varchar(255) not null,
         start_date date not null,
         end_date date not null
       )`,

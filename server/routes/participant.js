@@ -430,6 +430,12 @@ employerActionsRouter.post(
     if (!participant) {
       return res.status(400).json({ message: 'Could not find participant' });
     }
+    // Check site access
+    if (site && !user.sites.includes(site)) {
+      return res.status(400).json({
+        message: 'User does not have access to this site',
+      });
+    }
     const result = await setParticipantStatus(
       user.id,
       participantId,

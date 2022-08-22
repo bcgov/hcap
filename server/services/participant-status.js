@@ -102,7 +102,7 @@ const setParticipantStatus = async (
       : await tx[collections.PARTICIPANTS_STATUS].findOne({
           participant_id: participantId,
           current: true,
-          employer_id: employerId,
+          or: [{ employer_id: employerId }, { 'data.site IN': user.sites }],
         });
 
     // If existing status if not current, then invalid status transition

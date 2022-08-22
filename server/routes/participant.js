@@ -436,7 +436,7 @@ employerActionsRouter.post(
       status,
       { site, ...data },
       user,
-      currentStatusId || currentStatus.id
+      currentStatusId
     );
     logger.info({
       action: 'employer-actions_post',

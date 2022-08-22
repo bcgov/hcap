@@ -68,17 +68,14 @@ const scrubParticipantData = (raw, joinNames, sites) =>
         if (!participant[joinName]) return;
         statusInfos.push(...participant[joinName].map(decomposeStatusInfo));
       });
+      // Use hiring site instead of ROS site to see if user has permissions. For HA / employers only
+      const hiredAt = participant.hiredGlobalJoin?.[0];
+      rosStatuses = sites.includes(hiredAt?.data.site) ? rosStatuses : [];
     } else {
       rosStatuses = participant.ros_infos ?? [];
       participant.status_infos?.forEach((statusInfo) => {
         statusInfos.push(decomposeStatusInfo(statusInfo));
       });
-    }
-    // filter by sites for HA/PE, not for MoH/SU. HA/PE will have sites = [] if none assigned
-    if (sites) {
-      rosStatuses = rosStatuses.filter((rosStatus) =>
-        sites.includes(rosStatus.rosSite.body.siteId)
-      );
     }
 
     return {
@@ -130,7 +127,7 @@ const run = async (context) => {
     participants = scrubParticipantData(
       participants,
       (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin],
-      (user.isEmployer || user.isHA) && user.sites
+      (user.isEmployer || user.isHA) && (user.sites || [])
     );
     return participants;
   } catch (error) {

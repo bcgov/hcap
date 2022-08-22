@@ -41,7 +41,7 @@ const flattenParticipants = (participants) => {
   return flattenedParticipantList;
 };
 
-const scrubParticipantData = (raw, joinNames) =>
+const scrubParticipantData = (raw, joinNames, sites) =>
   raw.map((participant) => {
     const statusInfos = [];
     let rosStatuses = participant.rosStatuses ?? [];
@@ -126,7 +126,8 @@ const run = async (context) => {
     participants = addDistanceToParticipantFields(participants, siteDistanceJoin);
     participants = scrubParticipantData(
       participants,
-      (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin]
+      (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin],
+      (user.isEmployer || user.isHA) && (user.sites || [])
     );
     return participants;
   } catch (error) {

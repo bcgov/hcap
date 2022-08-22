@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import store from 'store';
 import _orderBy from 'lodash/orderBy';
 
-import { ClickAwayListener, Grid, Typography, MenuItem, Menu, Box } from '@material-ui/core';
+import { Grid, Typography, MenuItem, Menu, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -137,7 +137,6 @@ export default ({ sites, viewOnly }) => {
   const [fetchedRows, setFetchedRows] = useState([]);
   const [isLoadingReport, setLoadingReport] = useState(false);
   const [isLoadingRosReport, setLoadingRosReport] = useState(false);
-  const [isActionMenuOpen, setActionMenuOpen] = useState(false);
   const [actionMenuAnchorEl, setActionMenuAnchorEl] = React.useState(null);
 
   const [orderBy, setOrderBy] = useState('siteName');
@@ -147,6 +146,8 @@ export default ({ sites, viewOnly }) => {
 
   const history = useHistory();
   const location = useLocation();
+
+  const isActionMenuOpen = Boolean(actionMenuAnchorEl);
 
   const handleRequestSort = (_, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -313,44 +314,42 @@ export default ({ sites, viewOnly }) => {
 
         <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
           <Grid item xs={8} />
-          <ClickAwayListener onClickAway={() => setActionMenuOpen(false)}>
-            <Grid className={classes.rootItem} item xs={2}>
-              <Box px={2} display='flex' justifyContent='end'>
-                <Button
-                  onClick={openActionMenu}
-                  endIcon={isActionMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  aria-controls='simple-menu'
-                  aria-haspopup='true'
-                  text='Action'
-                  variant='contained'
-                  fullWidth={false}
-                />
-                <Menu
-                  id='action-menu'
-                  anchorEl={actionMenuAnchorEl}
-                  open={Boolean(actionMenuAnchorEl)}
-                  onClose={closeActionMenu}
-                  getContentAnchorEl={null}
-                  anchorOrigin={{ vertical: 'bottom' }}
-                  transformOrigin={{ vertical: 'top' }}
-                  PaperProps={{
-                    style: {
-                      minWidth: '220px',
-                    },
-                  }}
-                >
-                  <MenuItem onClick={openNewSiteModal} className={classes.menuItem}>
-                    Create new site
+          <Grid className={classes.rootItem} item xs={2}>
+            <Box px={2} display='flex' justifyContent='end'>
+              <Button
+                onClick={openActionMenu}
+                endIcon={isActionMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                aria-controls='simple-menu'
+                aria-haspopup='true'
+                text='Action'
+                variant='contained'
+                fullWidth={false}
+              />
+              <Menu
+                id='action-menu'
+                anchorEl={actionMenuAnchorEl}
+                open={Boolean(actionMenuAnchorEl)}
+                onClose={closeActionMenu}
+                getContentAnchorEl={null}
+                anchorOrigin={{ vertical: 'bottom' }}
+                transformOrigin={{ vertical: 'top' }}
+                PaperProps={{
+                  style: {
+                    minWidth: '220px',
+                  },
+                }}
+              >
+                <MenuItem onClick={openNewSiteModal} className={classes.menuItem}>
+                  Create new site
+                </MenuItem>
+                <FeatureFlag featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
+                  <MenuItem onClick={openNewPhaseModal} className={classes.menuItem}>
+                    Create new phase
                   </MenuItem>
-                  <FeatureFlag featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-                    <MenuItem onClick={openNewPhaseModal} className={classes.menuItem}>
-                      Create new phase
-                    </MenuItem>
-                  </FeatureFlag>
-                </Menu>
-              </Box>
-            </Grid>
-          </ClickAwayListener>
+                </FeatureFlag>
+              </Menu>
+            </Box>
+          </Grid>
         </CheckPermissions>
 
         {roles.includes('superuser') && <Grid item xs={8} />}

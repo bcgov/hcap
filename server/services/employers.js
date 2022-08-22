@@ -60,14 +60,6 @@ const getSiteDetailsById = async (id) => {
   return site;
 };
 
-const getDetailsBySiteId = async (siteId) => {
-  const site = await dbClient.db[collections.EMPLOYER_SITES].find({ 'body.siteId': siteId });
-  if (site.length === 0) {
-    return [{ error: `No site found with id` }];
-  }
-  return site;
-};
-
 const getSiteByID = async (id) => {
   const site = await dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
   if (site.length === 0) {
@@ -134,5 +126,4 @@ module.exports = {
   getSiteByID,
   getAllSites,
   getSiteDetailsById,
-  getDetailsBySiteId,
 };

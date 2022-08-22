@@ -13,6 +13,7 @@ import {
   rosEmploymentType,
   healthAuthorities,
   ROS_SITE_INFO_MESSAGE,
+  MAX_LABEL_LENGTH,
 } from '../../constants';
 import { addEllipsisMask, getTodayDate } from '../../utils';
 
@@ -33,8 +34,6 @@ const useStyles = makeStyles((theme) => ({
 
 export const ChangeSiteForm = ({ initialValues, sites, validationSchema, onSubmit, onClose }) => {
   const classes = useStyles();
-
-  const MAX_LABEL_LENGTH = 50;
 
   return (
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>

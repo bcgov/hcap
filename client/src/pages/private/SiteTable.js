@@ -355,30 +355,28 @@ export default ({ sites, viewOnly }) => {
         {roles.includes('superuser') && <Grid item xs={8} />}
 
         {!viewOnly && (
-          <>
-            <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
-              <Grid item xs={6} />
-              <Grid container item xs={4}>
-                <Grid className={classes.rootItem} item xs={12}>
-                  <Button
-                    onClick={downloadHiringReport}
-                    variant='outlined'
-                    text='Download Hiring Milestones Report'
-                    loading={isLoadingReport}
-                  />
-                </Grid>
-
-                <Grid className={classes.rootItem} item xs={12}>
-                  <Button
-                    onClick={() => downloadRosReport(healthAuthorities)}
-                    variant='outlined'
-                    text='Download Return of Service Milestones report'
-                    loading={isLoadingRosReport}
-                  />
-                </Grid>
+          <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
+            <Grid item xs={6} />
+            <Grid container item xs={4}>
+              <Grid className={classes.rootItem} item xs={12}>
+                <Button
+                  onClick={downloadHiringReport}
+                  variant='outlined'
+                  text='Download Hiring Milestones Report'
+                  loading={isLoadingReport}
+                />
               </Grid>
-            </CheckPermissions>
-          </>
+
+              <Grid className={classes.rootItem} item xs={12}>
+                <Button
+                  onClick={() => downloadRosReport(healthAuthorities)}
+                  variant='outlined'
+                  text='Download Return of Service Milestones report'
+                  loading={isLoadingRosReport}
+                />
+              </Grid>
+            </Grid>
+          </CheckPermissions>
         )}
 
         {isPendingRequests && (

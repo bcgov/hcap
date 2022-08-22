@@ -111,6 +111,10 @@ const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
     if (response.ok) {
       onDialogClose();
       await onDialogSubmit();
+      openToast({
+        status: ToastStatus.Success,
+        message: `Phase '${phase.phaseName}' added successfully`,
+      });
     } else {
       const error = await response.json();
       console.log(error);

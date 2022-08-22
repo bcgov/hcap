@@ -41,7 +41,7 @@ const flattenParticipants = (participants) => {
   return flattenedParticipantList;
 };
 
-const scrubParticipantData = (raw, joinNames, sites) =>
+const scrubParticipantData = (raw, joinNames) =>
   raw.map((participant) => {
     const statusInfos = [];
     let rosStatuses = participant.rosStatuses ?? [];
@@ -68,17 +68,14 @@ const scrubParticipantData = (raw, joinNames, sites) =>
         if (!participant[joinName]) return;
         statusInfos.push(...participant[joinName].map(decomposeStatusInfo));
       });
+      // Use hiring site instead of ROS site to see if user has permissions. For HA / employers only
+      const hiredAt = participant.hiredGlobalJoin?.[0];
+      rosStatuses = sites.includes(hiredAt?.data.site) ? rosStatuses : [];
     } else {
       rosStatuses = participant.ros_infos ?? [];
       participant.status_infos?.forEach((statusInfo) => {
         statusInfos.push(decomposeStatusInfo(statusInfo));
       });
-    }
-    // filter by sites for HA/PE, not for MoH/SU. HA/PE will have sites = [] if none assigned
-    if (sites) {
-      // Use hiring site instead of ROS site to see if user has permissions
-      const hiredAt = participant.hiredGlobalJoin?.[0];
-      rosStatuses = sites.includes(hiredAt?.data.site) ? rosStatuses : [];
     }
 
     return {
@@ -129,8 +126,7 @@ const run = async (context) => {
     participants = addDistanceToParticipantFields(participants, siteDistanceJoin);
     participants = scrubParticipantData(
       participants,
-      (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin],
-      (user.isEmployer || user.isHA) && user.sites
+      (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin]
     );
     return participants;
   } catch (error) {

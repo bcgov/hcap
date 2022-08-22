@@ -13,6 +13,7 @@ const {
   deleteAcknowledgement,
   archiveParticipantBySite,
   deleteParticipant,
+  getParticipantCurrentStatus,
 } = require('../services/participants.js');
 
 const {
@@ -430,8 +431,10 @@ employerActionsRouter.post(
     if (!participant) {
       return res.status(400).json({ message: 'Could not find participant' });
     }
+    const currentStatus = await getParticipantCurrentStatus(participantId);
+    let currentSite = site || currentStatus?.data?.site;
     // Check site access
-    if (site && !user.sites.includes(site)) {
+    if (currentSite && !user.sites.includes(currentSite)) {
       return res.status(400).json({
         message: 'User does not have access to this site',
       });
@@ -442,7 +445,7 @@ employerActionsRouter.post(
       status,
       { site, ...data },
       user,
-      currentStatusId
+      currentStatusId || currentStatus.id
     );
     logger.info({
       action: 'employer-actions_post',

@@ -432,7 +432,7 @@ employerActionsRouter.post(
       return res.status(400).json({ message: 'Could not find participant' });
     }
     const currentStatus = await getParticipantCurrentStatus(participantId);
-    let currentSite = site || currentStatus?.data?.site;
+    const currentSite = site || currentStatus?.data?.site;
     // Check site access
     if (currentSite && !user.sites.includes(currentSite)) {
       return res.status(400).json({

@@ -341,31 +341,28 @@ export default ({ sites, viewOnly }) => {
 
         {!viewOnly && (
           <>
-            <Grid item xs={6} />
-
-            <Grid container item xs={4}>
-              <Grid className={classes.rootItem} item xs={12}>
-                <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
+            <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
+              <Grid item xs={6} />
+              <Grid container item xs={4}>
+                <Grid className={classes.rootItem} item xs={12}>
                   <Button
                     onClick={downloadHiringReport}
                     variant='outlined'
                     text='Download Hiring Milestones Report'
                     loading={isLoadingReport}
                   />
-                </CheckPermissions>
-              </Grid>
+                </Grid>
 
-              <Grid className={classes.rootItem} item xs={12}>
-                <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
+                <Grid className={classes.rootItem} item xs={12}>
                   <Button
                     onClick={() => downloadRosReport(healthAuthorities)}
                     variant='outlined'
                     text='Download Return of Service Milestones report'
                     loading={isLoadingRosReport}
                   />
-                </CheckPermissions>
+                </Grid>
               </Grid>
-            </Grid>
+            </CheckPermissions>
           </>
         )}
 

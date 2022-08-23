@@ -41,6 +41,9 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.gray.dark,
     fontWeight: 700,
   },
+  actionMenuPaper: {
+    minWidth: '220px',
+  },
   menuItem: {
     padding: '.75rem',
     fontSize: '17px',
@@ -333,11 +336,7 @@ export default ({ sites, viewOnly }) => {
                 getContentAnchorEl={null}
                 anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
                 transformOrigin={{ horizontal: 'left', vertical: 'top' }}
-                PaperProps={{
-                  style: {
-                    minWidth: '220px',
-                  },
-                }}
+                classes={{ paper: classes.actionMenuPaper }}
               >
                 <MenuItem onClick={openNewSiteModal} className={classes.menuItem}>
                   Create new site

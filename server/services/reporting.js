@@ -26,6 +26,19 @@ const mapIntendToReturn = (value) => {
   }
 };
 
+const mapRosEntries = (rosEntries) =>
+  rosEntries.map((entry) => ({
+    participantId: entry.participant_id,
+    firstName: entry.participantJoin?.[0]?.body?.firstName,
+    lastName: entry.participantJoin?.[0]?.body?.lastName,
+    isHCA: true,
+    startDate: dayjs(entry.data?.date).format('YYYY-MM-DD'),
+    endDate: addYearToDate(entry.data?.date).format('YYYY-MM-DD'),
+    siteStartDate: dayjs(entry.data?.startDate || entry.data?.date).format('YYYY-MM-DD'),
+    site: entry.siteJoin?.body?.siteName,
+    healthRegion: entry.siteJoin?.body?.healthAuthority,
+  }));
+
 const getPostHireStatusForParticipant = (postHireStatuses) => {
   const graduationStatus = {
     isReturning: DEFAULT_STATUS,
@@ -356,19 +369,6 @@ const getNoOfferParticipantsReport = async () => {
     ...participant.body,
   }));
 };
-
-const mapRosEntries = (rosEntries) =>
-  rosEntries.map((entry) => ({
-    participantId: entry.participant_id,
-    firstName: entry.participantJoin?.[0]?.body?.firstName,
-    lastName: entry.participantJoin?.[0]?.body?.lastName,
-    isHCA: true,
-    startDate: dayjs(entry.data?.date).format('YYYY-MM-DD'),
-    endDate: addYearToDate(entry.data?.date).format('YYYY-MM-DD'),
-    siteStartDate: dayjs(entry.data?.startDate || entry.data?.date).format('YYYY-MM-DD'),
-    site: entry.siteJoin?.body?.siteName,
-    healthRegion: entry.siteJoin?.body?.healthAuthority,
-  }));
 
 const getMohRosMilestonesReport = async () => {
   const entries = await dbClient.db[collections.ROS_STATUS]

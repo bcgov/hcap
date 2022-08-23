@@ -73,6 +73,9 @@ objects:
             name: ${APP_NAME}-server
         spec:
           containers:
+            - envFrom:
+                - configMapRef:
+                    name: hcap-feature-flags
             - env:
                 - name: APP_ENV
                   value: ${IMAGE_TAG}

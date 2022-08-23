@@ -4,6 +4,7 @@ import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
+import { CreatePhaseSchema } from '../../constants';
 
 const useStyles = makeStyles(() => ({
   formButton: {
@@ -14,11 +15,16 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const NewPhaseForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
+export const NewPhaseForm = ({ onSubmit, onClose }) => {
   const classes = useStyles();
+  const initialValues = {
+    phaseName: '',
+    startDate: '',
+    endDate: '',
+  };
 
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+    <Formik initialValues={initialValues} validationSchema={CreatePhaseSchema} onSubmit={onSubmit}>
       {({ submitForm }) => (
         <FormikForm>
           <Box>

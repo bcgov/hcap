@@ -16,8 +16,6 @@ import {
   API_URL,
   healthAuthoritiesFilter,
   ToastStatus,
-  CreateSiteSchema,
-  CreatePhaseSchema,
 } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
@@ -25,6 +23,7 @@ import { handleReportDownloadResult } from '../../utils';
 import { AuthContext } from '../../providers';
 import { FeatureFlag, flagKeys } from '../../services';
 import { NewPhaseForm } from '../../components/modal-forms/NewPhaseForm';
+import { handleSiteCreate, handlePhaseCreate } from '../../services/site';
 
 const useStyles = makeStyles((theme) => ({
   rootItem: {
@@ -62,140 +61,48 @@ const columns = [
   { id: 'details' },
 ];
 
+// unabstract SiteFormsDialog (reintroduce stuff inline)
 const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
   const { openToast } = useToast();
 
-  const handleSiteCreate = async (site) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(site),
-    });
-
+  const handleFormSubmit = async (submitFunction, formData) => {
+    const response = await submitFunction(formData);
     if (response.ok) {
       onDialogClose();
       await onDialogSubmit();
-    } else {
-      const error = await response.json();
-      if (error.status && error.status === 'Duplicate') {
-        openToast({ status: ToastStatus.Error, message: 'Duplicate site ID' });
-      } else {
-        openToast({
-          status: ToastStatus.Error,
-          message: response.error || response.statusText || 'Server error',
-        });
-      }
+    }
+    if (response.toast) {
+      openToast(response.toast);
     }
   };
-
-  const handlePhaseCreate = async (phase) => {
-    const phaseJson = {
-      name: phase.phaseName,
-      start_date: phase.startDate,
-      end_date: phase.endDate,
-    };
-    const response = await fetch(`${API_URL}/api/v1/phase-allocation`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(phaseJson),
-    });
-
-    if (response.ok) {
-      onDialogClose();
-      await onDialogSubmit();
-      openToast({
-        status: ToastStatus.Success,
-        message: `Phase '${phase.phaseName}' added successfully`,
-      });
-    } else {
-      const error = await response.json();
-      console.log(error);
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
-      });
-    }
-  };
-
-  const createSiteForm = () => {
-    return (
-      <NewSiteForm
-        initialValues={{
-          siteId: '',
-          siteName: '',
-          registeredBusinessName: '',
-          address: '',
-          city: '',
-          isRHO: null,
-          postalCode: '',
-          healthAuthority: '',
-          allocation: '',
-          operatorName: '',
-          operatorContactFirstName: '',
-          operatorContactLastName: '',
-          operatorPhone: '',
-          operatorEmail: '',
-          siteContactFirstName: '',
-          siteContactLastName: '',
-          siteContactPhone: '',
-          siteContactEmail: '',
-        }}
-        validationSchema={CreateSiteSchema}
-        onSubmit={(values) => {
-          handleSiteCreate({
-            ...values,
-            siteId: parseInt(values.siteId),
-            allocation: parseInt(values.allocation),
-          });
-        }}
-        onClose={onDialogClose}
-      />
-    );
-  };
-
-  const createPhaseForm = () => {
-    return (
-      <NewPhaseForm
-        initialValues={{
-          phaseName: '',
-          startDate: '',
-          endDate: '',
-        }}
-        validationSchema={CreatePhaseSchema}
-        onSubmit={(values) => {
-          handlePhaseCreate(values);
-        }}
-        onClose={onDialogClose}
-      />
-    );
-  };
-
-  let dialogue;
-  let title = activeForm;
-  switch (activeForm) {
-    case 'new-site':
-      title = 'Create Site';
-      dialogue = createSiteForm();
-      break;
-    case 'new-phase':
-      title = 'Create Phase';
-      dialogue = createPhaseForm();
-      break;
-    default:
-  }
-
   return (
-    <Dialog title={title} open={activeForm != null} onClose={onDialogClose}>
-      {dialogue}
-    </Dialog>
+    <>
+      {activeForm === 'new-site' && (
+        <Dialog title={'Create Site'} open={activeForm != null} onClose={onDialogClose}>
+          <NewSiteForm
+            onSubmit={(values) => {
+              handleFormSubmit(handleSiteCreate, {
+                ...values,
+                siteId: parseInt(values.siteId),
+                allocation: parseInt(values.allocation),
+              });
+            }}
+            onClose={onDialogClose}
+          />
+        </Dialog>
+      )}
+
+      {activeForm === 'new-phase' && (
+        <Dialog title={'Create Phase'} open={activeForm != null} onClose={onDialogClose}>
+          <NewPhaseForm
+            onSubmit={(values) => {
+              handleFormSubmit(handlePhaseCreate, values);
+            }}
+            onClose={onDialogClose}
+          />
+        </Dialog>
+      )}
+    </>
   );
 };
 
@@ -354,7 +261,7 @@ export default ({ sites, viewOnly }) => {
 
   const openNewPhaseModal = () => {
     closeActionMenu();
-    // TODO HCAP-1277 setActiveModalForm('new-phase');
+    setActiveModalForm('new-phase');
   };
 
   return (

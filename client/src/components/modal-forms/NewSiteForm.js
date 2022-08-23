@@ -3,7 +3,7 @@ import { Button } from '../generic';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { RenderTextField, RenderSelectField, RenderRadioGroup } from '../fields';
-import { healthAuthorities } from '../../constants';
+import { CreateSiteSchema, healthAuthorities } from '../../constants';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import Typography from '@material-ui/core/Typography';
 
@@ -13,11 +13,31 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const NewSiteForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
+export const NewSiteForm = ({ onSubmit, onClose }) => {
   const classes = useStyles();
+  const initialValues = {
+    siteId: '',
+    siteName: '',
+    registeredBusinessName: '',
+    address: '',
+    city: '',
+    isRHO: null,
+    postalCode: '',
+    healthAuthority: '',
+    allocation: '',
+    operatorName: '',
+    operatorContactFirstName: '',
+    operatorContactLastName: '',
+    operatorPhone: '',
+    operatorEmail: '',
+    siteContactFirstName: '',
+    siteContactLastName: '',
+    siteContactPhone: '',
+    siteContactEmail: '',
+  };
 
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+    <Formik initialValues={initialValues} validationSchema={CreateSiteSchema} onSubmit={onSubmit}>
       {({ submitForm, values }) => (
         <FormikForm>
           <Box>

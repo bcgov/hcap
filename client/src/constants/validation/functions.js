@@ -20,6 +20,9 @@ export const validateDateIsReasonable = (d) => {
     return false;
   }
 };
+export const errorDateIsReasonable =
+  'Invalid entry. Date must be after December 31st 1899 and before January 1st 2100.';
+
 export const validateUniqueArray = (a) => Array.isArray(a) && new Set(a).size === a.length;
 
 export const validateBlankOrPositiveInteger = (n) => (!!n ? Number.isInteger(n) && n > 0 : true);
@@ -32,6 +35,8 @@ export const errorMessage = ({ path }) => {
     phoneNumber: 'Phone number is required',
     emailAddress: 'Email address is required',
     postalCode: 'Postal code is required',
+    startDate: 'Start Date is required',
+    endDate: 'End Date is required',
 
     // Employer operator contact info
     registeredBusinessName: 'Business name is required',

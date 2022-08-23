@@ -197,7 +197,7 @@ describe('Test Participant status data model and service', () => {
     const filteredOpenForEmp1 = resultOpenWithEmp1.data.filter((p) => p.id === participant.id);
     expect(filteredOpenForEmp1.length).toBe(0);
 
-    // Check with open status for emp3
+    // Check with open status for emp2
     const resultOpenWithEmp2 = await getParticipants(
       { isEmployer: true, id: emp2, regions, sites: [site1.siteId] },
       null,
@@ -240,7 +240,7 @@ describe('Test Participant status data model and service', () => {
 
     expect(resultFailure.data.length).toBe(0);
 
-    // Now set next status
+    // Now set next status, for the same site
     await setParticipantStatus(
       emp2,
       participant.id,
@@ -287,22 +287,22 @@ describe('Test Participant status data model and service', () => {
     const filteredOpen = resultOpen.data.filter((p) => p.id === participant.id);
     expect(filteredOpen.length).toBe(1);
 
-    // Now check dual statuses
+    // Now check dual statuses, prospect participant by another employer for another site
     await setParticipantStatus(
-      emp1,
+      emp3,
       participant.id,
       'prospecting',
       {
         site: site2.siteId,
       },
       {
-        sites: [site1.siteId, site2.siteId],
+        sites: [site2.siteId],
       }
     );
 
     // Get statuses with emp1 for Dual statuses for mult org employee
     const resultDual = await getParticipants(
-      { isEmployer: true, id: emp3, regions, sites: [site2.siteId, site1.siteId] },
+      { isEmployer: true, id: emp1, regions, sites: [site2.siteId, site1.siteId] },
       null,
       null,
       null,

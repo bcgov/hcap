@@ -1,6 +1,34 @@
 import store from 'store';
 import { API_URL, ToastStatus } from '../constants';
 
+export const fetchSiteRows = async (columns) => {
+  const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
+    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    method: 'GET',
+  });
+  if (response.ok) {
+    const { data } = await response.json();
+    const rowsData = data.map((row) => {
+      // Pull all relevant props from row based on columns constant
+      const mappedRow = columns.reduce(
+        (accumulator, column) => ({
+          ...accumulator,
+          [column.id]: row[column.id],
+        }),
+        {}
+      );
+      // Add additional props (user ID, button) to row
+      return {
+        ...mappedRow,
+        id: row.id,
+      };
+    });
+    return rowsData;
+  } else {
+    return [];
+  }
+};
+
 export const handlePhaseCreate = async (phase) => {
   let toast;
   const phaseJson = {

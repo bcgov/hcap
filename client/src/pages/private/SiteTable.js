@@ -23,7 +23,7 @@ import { handleReportDownloadResult } from '../../utils';
 import { AuthContext } from '../../providers';
 import { FeatureFlag, flagKeys } from '../../services';
 import { NewPhaseForm } from '../../components/modal-forms/NewPhaseForm';
-import { handleSiteCreate, handlePhaseCreate } from '../../services/site';
+import { handleSiteCreate, handlePhaseCreate, fetchSiteRows } from '../../services/site';
 
 const useStyles = makeStyles((theme) => ({
   rootItem: {
@@ -61,51 +61,6 @@ const columns = [
   { id: 'details' },
 ];
 
-// unabstract SiteFormsDialog (reintroduce stuff inline)
-const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
-  const { openToast } = useToast();
-
-  const handleFormSubmit = async (submitFunction, formData) => {
-    const response = await submitFunction(formData);
-    if (response.ok) {
-      onDialogClose();
-      await onDialogSubmit();
-    }
-    if (response.toast) {
-      openToast(response.toast);
-    }
-  };
-  return (
-    <>
-      {activeForm === 'new-site' && (
-        <Dialog title={'Create Site'} open={activeForm != null} onClose={onDialogClose}>
-          <NewSiteForm
-            onSubmit={(values) => {
-              handleFormSubmit(handleSiteCreate, {
-                ...values,
-                siteId: parseInt(values.siteId),
-                allocation: parseInt(values.allocation),
-              });
-            }}
-            onClose={onDialogClose}
-          />
-        </Dialog>
-      )}
-
-      {activeForm === 'new-phase' && (
-        <Dialog title={'Create Phase'} open={activeForm != null} onClose={onDialogClose}>
-          <NewPhaseForm
-            onSubmit={(values) => {
-              handleFormSubmit(handlePhaseCreate, values);
-            }}
-            onClose={onDialogClose}
-          />
-        </Dialog>
-      )}
-    </>
-  );
-};
-
 export default ({ sites, viewOnly }) => {
   const classes = useStyles();
   const { openToast } = useToast();
@@ -137,35 +92,11 @@ export default ({ sites, viewOnly }) => {
 
   const fetchSites = async () => {
     setLoadingData(true);
-    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
-      headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-      method: 'GET',
-    });
-    if (response.ok) {
-      const { data } = await response.json();
-      const rowsData = data.map((row) => {
-        // Pull all relevant props from row based on columns constant
-        const mappedRow = columns.reduce(
-          (accumulator, column) => ({
-            ...accumulator,
-            [column.id]: row[column.id],
-          }),
-          {}
-        );
-        // Add additional props (user ID, button) to row
-        return {
-          ...mappedRow,
-          id: row.id,
-        };
-      });
-      setFetchedRows(rowsData);
-      setIsPendingRequests(rowsData.length > 0);
-      setRows(rowsData.filter((row) => healthAuthorities.includes(row.healthAuthority)));
-    } else {
-      setRows([]);
-      setFetchedRows([]);
-      setIsPendingRequests(false);
-    }
+    const rowsData = await fetchSiteRows(columns);
+
+    setFetchedRows(rowsData);
+    setRows(rowsData.filter((row) => healthAuthorities.includes(row.healthAuthority)));
+    setIsPendingRequests(rowsData.length > 0);
     setLoadingData(false);
   };
 
@@ -264,13 +195,44 @@ export default ({ sites, viewOnly }) => {
     setActiveModalForm('new-phase');
   };
 
+  const handleFormSubmit = async (submitFunction, formData) => {
+    const response = await submitFunction(formData);
+    if (response.ok) {
+      closeDialog();
+      await fetchSites();
+    }
+    if (response.toast) {
+      openToast(response.toast);
+    }
+  };
+
   return (
     <>
-      <SiteFormsDialog
-        activeForm={activeModalForm}
-        onDialogSubmit={fetchSites}
-        onDialogClose={closeDialog}
-      />
+      {activeModalForm === 'new-site' && (
+        <Dialog title={'Create Site'} open={activeModalForm != null} onClose={closeDialog}>
+          <NewSiteForm
+            onSubmit={(values) => {
+              handleFormSubmit(handleSiteCreate, {
+                ...values,
+                siteId: parseInt(values.siteId),
+                allocation: parseInt(values.allocation),
+              });
+            }}
+            onClose={closeDialog}
+          />
+        </Dialog>
+      )}
+
+      {activeModalForm === 'new-phase' && (
+        <Dialog title={'Create Phase'} open={activeModalForm != null} onClose={closeDialog}>
+          <NewPhaseForm
+            onSubmit={(values) => {
+              handleFormSubmit(handlePhaseCreate, values);
+            }}
+            onClose={closeDialog}
+          />
+        </Dialog>
+      )}
 
       <Grid
         container

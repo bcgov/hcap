@@ -86,8 +86,6 @@ export const errorMessage = ({ path }) => {
 
     // Cohort
     cohortName: 'Cohort Name is required',
-    startDate: 'Start Date is required',
-    endDate: 'End Date is required',
     cohort: 'Cohort is required',
     institute: 'Institute is required',
   };

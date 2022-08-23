@@ -5,7 +5,6 @@ const { asyncMiddleware } = require('../error-handler.js');
 const { CreatePhaseSchema } = require('../validation');
 const { expressRequestBodyValidator } = require('../middleware');
 const { createGlobalPhase } = require('../services/phase');
-// const { sanitize } = require('../utils.js');
 
 const router = express.Router();
 

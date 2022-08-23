@@ -1,14 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import _orderBy from 'lodash/orderBy';
-import { useHistory } from 'react-router-dom';
-import { Grid, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import { useHistory, useLocation } from 'react-router-dom';
 import store from 'store';
+import _orderBy from 'lodash/orderBy';
+
+import { Grid, Typography, MenuItem, Menu, Box } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
 import { NewSiteForm } from '../../components/modal-forms';
-import { useLocation } from 'react-router-dom';
 import {
   Routes,
   regionLabelsMap,
@@ -21,6 +22,7 @@ import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import { handleReportDownloadResult } from '../../utils';
 import { AuthContext } from '../../providers';
+import { FeatureFlag, flagKeys } from '../../services';
 
 const useStyles = makeStyles((theme) => ({
   rootItem: {
@@ -38,6 +40,13 @@ const useStyles = makeStyles((theme) => ({
   filterLabel: {
     color: theme.palette.gray.dark,
     fontWeight: 700,
+  },
+  actionMenuPaper: {
+    minWidth: '220px',
+  },
+  menuItem: {
+    padding: '.75rem',
+    fontSize: '17px',
   },
 }));
 
@@ -131,6 +140,7 @@ export default ({ sites, viewOnly }) => {
   const [fetchedRows, setFetchedRows] = useState([]);
   const [isLoadingReport, setLoadingReport] = useState(false);
   const [isLoadingRosReport, setLoadingRosReport] = useState(false);
+  const [actionMenuAnchorEl, setActionMenuAnchorEl] = React.useState(null);
 
   const [orderBy, setOrderBy] = useState('siteName');
   const [healthAuthorities, setHealthAuthorities] = useState(healthAuthoritiesFilter);
@@ -139,6 +149,8 @@ export default ({ sites, viewOnly }) => {
 
   const history = useHistory();
   const location = useLocation();
+
+  const isActionMenuOpen = Boolean(actionMenuAnchorEl);
 
   const handleRequestSort = (_, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -257,6 +269,24 @@ export default ({ sites, viewOnly }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history, location]);
 
+  const openActionMenu = (event) => {
+    setActionMenuAnchorEl(event.currentTarget);
+  };
+
+  const closeActionMenu = () => {
+    setActionMenuAnchorEl(null);
+  };
+
+  const openNewSiteModal = () => {
+    closeActionMenu();
+    setActiveModalForm('new-site');
+  };
+
+  const openNewPhaseModal = () => {
+    closeActionMenu();
+    // TODO HCAP-1277 setActiveModalForm('new-phase');
+  };
+
   return (
     <>
       <SiteFormsDialog
@@ -286,49 +316,66 @@ export default ({ sites, viewOnly }) => {
         </Grid>
 
         <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-          <Grid item xs={2} />
+          <Grid item xs={8} />
           <Grid className={classes.rootItem} item xs={2}>
-            <Button
-              onClick={() => {
-                setActiveModalForm('new-site');
-              }}
-              size='medium'
-              text='Create Site'
-              startIcon={<AddCircleOutlineIcon />}
-            />
+            <Box px={2} display='flex' justifyContent='end'>
+              <Button
+                onClick={openActionMenu}
+                endIcon={isActionMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                aria-controls='simple-menu'
+                aria-haspopup='true'
+                text='Action'
+                variant='contained'
+                fullWidth={false}
+              />
+              <Menu
+                id='action-menu'
+                anchorEl={actionMenuAnchorEl}
+                open={Boolean(actionMenuAnchorEl)}
+                onClose={closeActionMenu}
+                getContentAnchorEl={null}
+                anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+                transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+                classes={{ paper: classes.actionMenuPaper }}
+              >
+                <MenuItem onClick={openNewSiteModal} className={classes.menuItem}>
+                  Create new site
+                </MenuItem>
+                <FeatureFlag featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
+                  <MenuItem onClick={openNewPhaseModal} className={classes.menuItem}>
+                    Create new phase
+                  </MenuItem>
+                </FeatureFlag>
+              </Menu>
+            </Box>
           </Grid>
         </CheckPermissions>
 
         {roles.includes('superuser') && <Grid item xs={8} />}
 
         {!viewOnly && (
-          <>
+          <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
             <Grid item xs={6} />
-
             <Grid container item xs={4}>
               <Grid className={classes.rootItem} item xs={12}>
-                <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
-                  <Button
-                    onClick={downloadHiringReport}
-                    variant='outlined'
-                    text='Download Hiring Milestones Report'
-                    loading={isLoadingReport}
-                  />
-                </CheckPermissions>
+                <Button
+                  onClick={downloadHiringReport}
+                  variant='outlined'
+                  text='Download Hiring Milestones Report'
+                  loading={isLoadingReport}
+                />
               </Grid>
 
               <Grid className={classes.rootItem} item xs={12}>
-                <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
-                  <Button
-                    onClick={() => downloadRosReport(healthAuthorities)}
-                    variant='outlined'
-                    text='Download Return of Service Milestones report'
-                    loading={isLoadingRosReport}
-                  />
-                </CheckPermissions>
+                <Button
+                  onClick={() => downloadRosReport(healthAuthorities)}
+                  variant='outlined'
+                  text='Download Return of Service Milestones report'
+                  loading={isLoadingRosReport}
+                />
               </Grid>
             </Grid>
-          </>
+          </CheckPermissions>
         )}
 
         {isPendingRequests && (

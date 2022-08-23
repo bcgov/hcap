@@ -73,7 +73,11 @@ objects:
             name: ${APP_NAME}-server
         spec:
           containers:
-            - env:
+            - name: ${APP_NAME}-server
+              envFrom:
+                - configMapRef:
+                    name: hcap-feature-flags
+              env:
                 - name: APP_ENV
                   value: ${IMAGE_TAG}
                 - name: POSTGRES_HOST
@@ -170,7 +174,6 @@ objects:
                       name: ${APP_NAME}-ches
                 - name: CONFIG_VERSION
                   value: ${CONFIG_VERSION}
-              name: ${APP_NAME}-server
               image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
               ports:
                 - containerPort: '${{SERVER_PORT}}'

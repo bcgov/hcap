@@ -357,15 +357,21 @@ const getNoOfferParticipantsReport = async () => {
   }));
 };
 
-const getRosParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
-  const searchOptions = {};
+const mapRosEntries = (rosEntries) =>
+  rosEntries.map((entry) => ({
+    participantId: entry.participant_id,
+    firstName: entry.participantJoin?.[0]?.body?.firstName,
+    lastName: entry.participantJoin?.[0]?.body?.lastName,
+    isHCA: true,
+    startDate: dayjs(entry.data?.date).format('YYYY-MM-DD'),
+    endDate: addYearToDate(entry.data?.date).format('YYYY-MM-DD'),
+    siteStartDate: dayjs(entry.data?.startDate || entry.data?.date).format('YYYY-MM-DD'),
+    site: entry.siteJoin?.body?.siteName,
+    healthRegion: entry.siteJoin?.body?.healthAuthority,
+  }));
 
-  if (region !== DEFAULT_REGION_NAME) {
-    searchOptions['siteJoin.body.healthAuthority'] = region;
-    searchOptions.status = 'assigned-same-site';
-  }
-
-  let rosEntries = await dbClient.db[collections.ROS_STATUS]
+const getMohRosMilestonesReport = async () => {
+  const entries = await dbClient.db[collections.ROS_STATUS]
     .join({
       participantJoin: {
         type: 'LEFT OUTER',
@@ -383,53 +389,87 @@ const getRosParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
         },
       },
     })
-    .find(searchOptions);
+    .find(
+      {},
+      {
+        order: [
+          {
+            field: 'participant_id',
+          },
+        ],
+      }
+    );
+
+  return mapRosEntries(entries);
+};
+
+const getHARosMilestonesReport = async (region) => {
+  const sameSiteRosEntries = await dbClient.db[collections.ROS_STATUS]
+    .join({
+      participantJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS,
+        on: {
+          id: 'participant_id',
+        },
+      },
+      siteJoin: {
+        type: 'LEFT OUTER',
+        decomposeTo: 'object',
+        relation: collections.EMPLOYER_SITES,
+        on: {
+          id: 'site_id',
+        },
+      },
+    })
+    .find(
+      {
+        'siteJoin.body.healthAuthority': region,
+        status: 'assigned-same-site',
+      },
+      {
+        order: [
+          {
+            field: 'participant_id',
+          },
+        ],
+      }
+    );
 
   // HAs need only see the participants in their health region + participants who changed their health region and now assigned to a site withing HAs view
-  if (region !== DEFAULT_REGION_NAME) {
-    // select participants outside HAs region for changed sites
-    const additionalEntries = await dbClient.db[collections.ROS_STATUS]
-      .join({
-        participantJoin: {
-          type: 'LEFT OUTER',
-          relation: collections.PARTICIPANTS,
-          on: {
-            id: 'participant_id',
-          },
+  // select participants outside HAs region for changed sites
+  const editedEntries = await dbClient.db[collections.ROS_STATUS]
+    .join({
+      participantJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS,
+        on: {
+          id: 'participant_id',
         },
-        siteJoin: {
-          type: 'LEFT OUTER',
-          decomposeTo: 'object',
-          relation: collections.EMPLOYER_SITES,
-          on: {
-            id: 'site_id',
-          },
+      },
+      siteJoin: {
+        type: 'LEFT OUTER',
+        decomposeTo: 'object',
+        relation: collections.EMPLOYER_SITES,
+        on: {
+          id: 'site_id',
         },
-      })
-      .find({
-        status: 'assigned-new-site',
-        participant_id: rosEntries.map((entry) => entry.participant_id),
-      });
+      },
+    })
+    .find({
+      participant_id: sameSiteRosEntries.map((entry) => entry.participant_id),
+      'data.user <>': 'NULL',
+    });
 
-    // see if we need to display this information for HA based on what participants are included
-    // if participants are already visible to HA - include information about their previous sites
-    if (additionalEntries.length > 0) {
-      rosEntries = rosEntries.concat(additionalEntries);
-      rosEntries.sort((a, b) => a.participant_id - b.participant_id);
-    }
+  // see if we need to display this information for HA based on what participants are included
+  // if participants are already visible to HA - include information about their previous sites
+  let rosEntries = sameSiteRosEntries;
+  if (editedEntries.length > 0) {
+    rosEntries = rosEntries.concat(editedEntries);
+    rosEntries.sort((a, b) => a.participant_id - b.participant_id);
   }
 
-  return rosEntries.map((entry) => ({
-    participantId: entry.participant_id,
-    firstName: entry.participantJoin?.[0]?.body?.firstName,
-    lastName: entry.participantJoin?.[0]?.body?.lastName,
-    isHCA: true,
-    startDate: dayjs(entry.data?.date).format('YYYY-MM-DD'),
-    endDate: addYearToDate(entry.data?.date).format('YYYY-MM-DD'),
-    siteStartDate: dayjs(entry.data?.startDate || entry.data?.date).format('YYYY-MM-DD'),
-    site: entry.siteJoin?.body?.siteName,
-    healthRegion: entry.siteJoin?.body?.healthAuthority,
-  }));
+  return mapRosEntries(rosEntries);
 };
 
 const getPSIPaticipantsReport = async (region) => {
@@ -530,7 +570,8 @@ module.exports = {
   getHiredParticipantsReport,
   getRejectedParticipantsReport,
   getNoOfferParticipantsReport,
-  getRosParticipantsReport,
+  getMohRosMilestonesReport,
+  getHARosMilestonesReport,
   getPSIPaticipantsReport,
   checkUserRegion,
   DEFAULT_REGION_NAME,

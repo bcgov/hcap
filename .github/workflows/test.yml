@@ -61,22 +61,8 @@ jobs:
           KEYCLOAK_LOCAL_SECRET=${{ secrets.KEYCLOAK_LOCAL_SECRET }}
           EOF
 
-      - uses: docker/setup-buildx-action@v1
-
-      - name: Build
-        uses: docker/bake-action@v2.0.0
-        env:
-          APP_NAME: hcap
-        with:
-          push: false
-          load: true
-          files: docker-compose.test.yml
-          set: |
-            "*.cache-from=type=gha"
-            "*.cache-to=type=gha,mode=max"
-
-      - name: Run
-        run: make local-kc-run-only
+      - name: Build and Run
+        run: make local-kc-run
 
       - name: Import Users
         run: make kc-import-users
@@ -150,22 +136,8 @@ jobs:
           KEYCLOAK_LOCAL_SECRET=${{ secrets.KEYCLOAK_LOCAL_SECRET }}
           EOF
 
-      - uses: docker/setup-buildx-action@v1
-
-      - name: Build
-        uses: docker/bake-action@v2.0.0
-        env:
-          APP_NAME: hcap
-        with:
-          push: false
-          load: true
-          files: docker-compose.test.yml
-          set: |
-            "*.cache-from=type=gha"
-            "*.cache-to=type=gha,mode=max"
-
-      - name: Run
-        run: make local-kc-run-only
+      - name: Build and Run
+        run: make local-kc-run
 
       - name: Add Sites
         run: cd server && POSTGRES_HOST=localhost npm run feed-sites sites.xlsx

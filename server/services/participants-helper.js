@@ -574,6 +574,7 @@ class ParticipantsFinder {
     this.hiredGlobalJoin = 'hiredGlobalJoin';
     this.siteJoin = 'siteJoin';
     this.siteDistanceJoin = 'siteDistanceJoin';
+    // MoH/SU users query a view with ros_infos column
     this.rosStatuses = user.isHA || user.isEmployer ? 'rosStatuses' : 'ros_infos';
   }
 

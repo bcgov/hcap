@@ -9,7 +9,7 @@ import { RenderAutocomplete } from '../fields';
 import { MAX_LABEL_LENGTH } from '../../constants';
 import { addEllipsisMask } from '../../utils';
 
-export const EditRosSite = ({ initialValues, onSubmit, onClose, validationSchema, sites }) => {
+export const EditRosSiteForm = ({ initialValues, onSubmit, onClose, validationSchema, sites }) => {
   return (
     <EditRosTemplate
       initialValues={initialValues}

@@ -4,7 +4,7 @@ import { EditRosSiteSchema, ToastStatus } from '../../../constants';
 import { useToast } from '../../../hooks';
 import { getAllSites } from '../../../services';
 import { Dialog } from '../../generic';
-import { EditRosSite } from '../../modal-forms';
+import { EditRosSiteForm } from '../../modal-forms';
 
 export const EditRosSiteDialog = ({ isOpen, onClose, onSubmit }) => {
   const [allSites, setAllSites] = useState([]);
@@ -30,7 +30,7 @@ export const EditRosSiteDialog = ({ isOpen, onClose, onSubmit }) => {
 
   return (
     <Dialog title='Edit RoS Current Site' open={isOpen}>
-      <EditRosSite
+      <EditRosSiteForm
         initialValues={{ siteName: undefined }}
         validationSchema={EditRosSiteSchema}
         onSubmit={onSubmit}

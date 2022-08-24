@@ -6,7 +6,7 @@ import { FastField } from 'formik';
 import { EditRosTemplate } from './form-components';
 import { RenderDateField } from '../fields';
 
-export const EditRosDate = ({ initialValues, onSubmit, onClose, validationSchema }) => {
+export const EditRosDateForm = ({ initialValues, onSubmit, onClose, validationSchema }) => {
   return (
     <EditRosTemplate
       initialValues={initialValues}

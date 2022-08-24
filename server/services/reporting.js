@@ -458,6 +458,7 @@ const getHARosMilestonesReport = async (region) => {
     })
     .find({
       participant_id: sameSiteRosEntries.map((entry) => entry.participant_id),
+      // data.user <> NULL - indicated that the entry was modified by another user at some point
       'data.user <>': 'NULL',
     });
 

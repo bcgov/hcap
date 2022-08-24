@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import {
   InterviewingFormSchema,
-  ChangeRosSiteSchema,
+  EditRosSiteSchema,
   RejectedFormSchema,
   ProspectingSiteSchema,
   participantStatus,
@@ -237,7 +237,7 @@ export const ParticipantTableDialogues = ({
             healthAuthority: undefined,
           }}
           sites={allSites}
-          validationSchema={ChangeRosSiteSchema}
+          validationSchema={EditRosSiteSchema}
           onSubmit={(values) => {
             handleChangeSite(values);
           }}

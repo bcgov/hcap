@@ -21,7 +21,6 @@ export * from './schema-participant-post-hire-status';
 export * from './schema-rejected-form';
 export * from './schema-return-of-service';
 export * from './schema-select-prospecting-sites';
-export * from './schema-change-ros-site';
 export * from './schema-edit-ros-date';
 export * from './schema-edit-ros-site';
 export * from './schema-edit-ros-start-date';

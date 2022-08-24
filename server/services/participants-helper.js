@@ -574,7 +574,7 @@ class ParticipantsFinder {
     this.hiredGlobalJoin = 'hiredGlobalJoin';
     this.siteJoin = 'siteJoin';
     this.siteDistanceJoin = 'siteDistanceJoin';
-    this.rosStatuses = 'rosStatuses';
+    this.rosStatuses = user.isHA || user.isEmployer ? 'rosStatuses' : 'ros_infos';
   }
 
   filterRegion(regionFilter) {

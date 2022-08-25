@@ -29,7 +29,7 @@ export const fetchSiteRows = async (columns) => {
   }
 };
 
-export const handlePhaseCreate = async (phase) => {
+export const createPhase = async (phase) => {
   let toast;
   const phaseJson = {
     name: phase.phaseName,
@@ -60,8 +60,13 @@ export const handlePhaseCreate = async (phase) => {
   return { ok: response.ok, toast };
 };
 
-export const handleSiteCreate = async (site) => {
+export const createSite = async (site) => {
   let toast;
+  const siteJson = {
+    ...site,
+    siteId: parseInt(site.siteId),
+    allocation: parseInt(site.allocation),
+  };
   const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
     method: 'POST',
     headers: {
@@ -69,7 +74,7 @@ export const handleSiteCreate = async (site) => {
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
-    body: JSON.stringify(site),
+    body: JSON.stringify(siteJson),
   });
 
   if (response.ok) {

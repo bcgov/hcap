@@ -8,8 +8,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
-import { NewSiteForm } from '../../components/modal-forms';
+import { Table, Button, CheckPermissions } from '../../components/generic';
+import { NewSiteDialog, NewPhaseDialog } from '../../components/modal-forms';
 import {
   Routes,
   regionLabelsMap,
@@ -22,8 +22,7 @@ import { useToast } from '../../hooks';
 import { handleReportDownloadResult } from '../../utils';
 import { AuthContext } from '../../providers';
 import { FeatureFlag, flagKeys } from '../../services';
-import { NewPhaseForm } from '../../components/modal-forms/NewPhaseForm';
-import { createSite, createPhase, fetchSiteRows } from '../../services/site';
+import { fetchSiteRows } from '../../services/site';
 
 const useStyles = makeStyles((theme) => ({
   rootItem: {
@@ -195,32 +194,24 @@ export default ({ sites, viewOnly }) => {
     setActiveModalForm('new-phase');
   };
 
-  const handleFormSubmit = (submitFunction) => {
-    return async (formData) => {
-      const response = await submitFunction(formData);
-      if (response.ok) {
-        closeDialog();
-        await fetchSites();
-      }
-      if (response.toast) {
-        openToast(response.toast);
-      }
-    };
+  const handleFormSubmit = async () => {
+    closeDialog();
+    await fetchSites();
   };
 
   return (
     <>
-      {activeModalForm === 'new-site' && (
-        <Dialog title={'Create Site'} open={activeModalForm != null} onClose={closeDialog}>
-          <NewSiteForm onSubmit={handleFormSubmit(createSite)} onClose={closeDialog} />
-        </Dialog>
-      )}
+      <NewSiteDialog
+        open={activeModalForm === 'new-site'}
+        onSubmit={handleFormSubmit}
+        onClose={closeDialog}
+      />
 
-      {activeModalForm === 'new-phase' && (
-        <Dialog title={'Create Phase'} open={activeModalForm != null} onClose={closeDialog}>
-          <NewPhaseForm onSubmit={handleFormSubmit(createPhase)} onClose={closeDialog} />
-        </Dialog>
-      )}
+      <NewPhaseDialog
+        open={activeModalForm === 'new-phase'}
+        onSubmit={handleFormSubmit}
+        onClose={closeDialog}
+      />
 
       <Grid
         container

@@ -1,5 +1,5 @@
 import store from 'store';
-import { API_URL, ToastStatus } from '../constants';
+import { API_URL } from '../constants';
 
 export const fetchSiteRows = async (columns) => {
   const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
@@ -29,13 +29,7 @@ export const fetchSiteRows = async (columns) => {
   }
 };
 
-export const createPhase = async (phase) => {
-  let toast;
-  const phaseJson = {
-    name: phase.phaseName,
-    start_date: phase.startDate,
-    end_date: phase.endDate,
-  };
+export const createPhase = async (phaseJson) => {
   const response = await fetch(`${API_URL}/api/v1/phase-allocation`, {
     method: 'POST',
     headers: {
@@ -45,28 +39,10 @@ export const createPhase = async (phase) => {
     },
     body: JSON.stringify(phaseJson),
   });
-
-  if (response.ok) {
-    toast = {
-      status: ToastStatus.Success,
-      message: `Phase '${phase.phaseName}' added successfully`,
-    };
-  } else {
-    toast = {
-      status: ToastStatus.Error,
-      message: response.error || response.statusText || 'Server error',
-    };
-  }
-  return { ok: response.ok, toast };
+  return response;
 };
 
-export const createSite = async (site) => {
-  let toast;
-  const siteJson = {
-    ...site,
-    siteId: parseInt(site.siteId),
-    allocation: parseInt(site.allocation),
-  };
+export const createSite = async (siteJson) => {
   const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
     method: 'POST',
     headers: {
@@ -76,22 +52,5 @@ export const createSite = async (site) => {
     },
     body: JSON.stringify(siteJson),
   });
-
-  if (response.ok) {
-    toast = {
-      status: ToastStatus.Success,
-      message: `Site '${site.siteName}' added successfully`,
-    };
-  } else {
-    const error = await response.json();
-    if (error.status && error.status === 'Duplicate') {
-      toast = { status: ToastStatus.Error, message: 'Duplicate site ID' };
-    } else {
-      toast = {
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
-      };
-    }
-  }
-  return { ok: response.ok, toast };
+  return response;
 };

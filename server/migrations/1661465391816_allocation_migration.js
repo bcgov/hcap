@@ -9,7 +9,7 @@ exports.up = async () => {
     `INSERT INTO ${collections.GLOBAL_PHASE} (
             "name", start_date, end_date, created_by, updated_by, created_at, updated_at
         ) values(
-            Initial Phase', '2020-01-01', '2022-12-31', 'system', NULL, now(), NULL)`,
+            'Initial Phase', '2020-01-01', '2022-12-31', 'system', 'system', now(), now())`,
 
     // Copy site's allocation to initial phase
     `INSERT INTO ${collections.SITE_PHASE_ALLOCATION} 
@@ -21,9 +21,9 @@ exports.up = async () => {
             NULL,
             NULL,
             'system',
-            NULL,
+            'system',
             now(),
-            NULL
+            now()
         FROM
             employer_sites`,
     // Verification: Error will be raised if migration failed and transaction will fail

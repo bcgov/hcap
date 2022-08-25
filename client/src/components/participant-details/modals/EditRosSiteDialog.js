@@ -31,11 +31,18 @@ export const EditRosSiteDialog = ({ isOpen, onClose, onSubmit }) => {
   return (
     <Dialog title='Edit RoS Current Site' open={isOpen}>
       <EditRosSiteForm
-        initialValues={{ siteName: undefined }}
+        initialValues={{
+          startDate: undefined,
+          positionType: undefined,
+          employmentType: undefined,
+          site: undefined,
+          healthAuthority: undefined,
+        }}
         validationSchema={EditRosSiteSchema}
         onSubmit={onSubmit}
         onClose={onClose}
         sites={allSites}
+        isMoH
       />
     </Dialog>
   );

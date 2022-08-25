@@ -9,5 +9,5 @@ export const EditRosSiteSchema = yup
     positionType: yup.string().required('Position Type is required').oneOf(rosPositionTypeValues),
     employmentType: yup.string().optional().oneOf(rosEmploymentTypeValues),
     site: yup.number('Invalid type for New Site').required('New Site Name is required'),
-    healthAuthority: yup.string().optional(),
+    healthAuthority: yup.string().required('Health Authority is required'),
   });

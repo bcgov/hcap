@@ -77,11 +77,11 @@ export const getAllSites = async () => {
   }
 };
 
-export const updateRosStatus = async (participantId, newValues) => {
+export const updateRosStatus = async (participantId, newValues, status) => {
   const url = `${API_URL}/api/v1/ros/participant/${participantId}`;
-  const { siteName, startDate, date } = newValues;
+  const { site, startDate, date, employmentType, positionType } = newValues;
 
-  if (!siteName && !startDate && !date) {
+  if (!site && !startDate && !date) {
     throw new Error('Unable  to update the field - no changes found');
   }
   if (!participantId) {
@@ -99,9 +99,12 @@ export const updateRosStatus = async (participantId, newValues) => {
     },
     body: JSON.stringify({
       data: {
-        site: siteName,
+        site,
         date: dateTimestamp,
         startDate: startDateTimestamp,
+        employmentType,
+        positionType,
+        status,
       },
     }),
   });

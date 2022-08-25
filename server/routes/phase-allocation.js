@@ -19,8 +19,7 @@ router.post(
   asyncMiddleware(async (req, resp) => {
     try {
       const { body, hcapUserInfo: user } = req;
-      const phaseJson = { ...body, created_by: user.id, updated_by: user.id };
-      const response = await createGlobalPhase(phaseJson);
+      const response = await createGlobalPhase(body, user);
       logger.info({
         action: 'phase-allocation_post',
         performed_by: {

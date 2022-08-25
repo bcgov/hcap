@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 import { Box, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Formik, Form as FormikForm } from 'formik';
 
 import { ConfirmationDialog, FormButtons } from './';
 
@@ -14,11 +13,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const EditRosTemplate = ({
-  initialValues,
   onSubmit,
   onClose,
-  validationSchema,
   children,
+  values,
+  getValidationResult,
+  showConfirmationDialog = true,
 }) => {
   const classes = useStyles();
   const [isConfirmationOpen, setConfirmationOpen] = useState(false);
@@ -35,30 +35,25 @@ export const EditRosTemplate = ({
 
   return (
     <>
-      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-        {({ validateForm, submitForm, values, setSubmitting }) => (
-          <FormikForm>
-            <Box mb={2}>
-              {children}
+      <Box mb={2}>
+        {children}
+        <Divider className={classes.formDivider} />
 
-              <Divider className={classes.formDivider} />
-
-              <FormButtons
-                onClose={onClose}
-                onSubmit={async () => {
-                  setSubmitting(false);
-                  const res = await validateForm();
-                  if (Object.entries(res)?.length === 0) {
-                    openConfirmationDialog(values);
-                    return;
-                  }
-                  await submitForm();
-                }}
-              />
-            </Box>
-          </FormikForm>
-        )}
-      </Formik>
+        <FormButtons
+          onClose={onClose}
+          onSubmit={async () => {
+            const isFormValid = await getValidationResult();
+            if (!isFormValid) {
+              return;
+            }
+            if (showConfirmationDialog) {
+              openConfirmationDialog(values);
+              return;
+            }
+            await onSubmit(formValues);
+          }}
+        />
+      </Box>
 
       <ConfirmationDialog
         isOpen={isConfirmationOpen}

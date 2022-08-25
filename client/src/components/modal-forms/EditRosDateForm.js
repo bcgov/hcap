@@ -1,22 +1,39 @@
 import React from 'react';
 
 import { Box } from '@material-ui/core';
-import { FastField } from 'formik';
+import { Formik, Form as FormikForm, FastField } from 'formik';
 
 import { EditRosTemplate } from './form-components';
 import { RenderDateField } from '../fields';
 
 export const EditRosDateForm = ({ initialValues, onSubmit, onClose, validationSchema }) => {
+  const fieldName = 'date';
+
   return (
-    <EditRosTemplate
-      initialValues={initialValues}
-      onSubmit={onSubmit}
-      onClose={onClose}
-      validationSchema={validationSchema}
-    >
-      <Box my={1}>
-        <FastField name='date' component={RenderDateField} label='Start Date' boldLabel />
-      </Box>
-    </EditRosTemplate>
+    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+      {({ validateForm, setFieldTouched, values }) => (
+        <FormikForm>
+          <EditRosTemplate
+            onSubmit={onSubmit}
+            onClose={onClose}
+            values={values}
+            getValidationResult={async () => {
+              await setFieldTouched(fieldName);
+              const res = await validateForm();
+              return Object.entries(res)?.length === 0;
+            }}
+          >
+            <Box my={1}>
+              <FastField
+                name={fieldName}
+                component={RenderDateField}
+                label='Start Date'
+                boldLabel
+              />
+            </Box>
+          </EditRosTemplate>
+        </FormikForm>
+      )}
+    </Formik>
   );
 };

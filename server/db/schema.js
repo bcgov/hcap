@@ -121,8 +121,8 @@ const schema = {
         end_date date not null,
         created_by varchar(255) not null,
         updated_by varchar(255) not null,
-        created_at timestamp with time zone DEFAULT now(),
-        updated_at timestamp with time zone DEFAULT now()
+        created_at timestamp with time zone DEFAULT now() not null,
+        updated_at timestamp with time zone DEFAULT now() not null
       )`,
     },
     {

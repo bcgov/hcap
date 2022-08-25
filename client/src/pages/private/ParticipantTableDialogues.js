@@ -69,7 +69,9 @@ export const ParticipantTableDialogues = ({
           'assigned-new-site'
         );
         if (response.ok) {
+          onClose();
           handleUpdate(true, 'Return of Service site updated!');
+          setIsLoading(false);
           return;
         }
         const message = (await response.text()) || 'Failed to change return of service site';
@@ -77,7 +79,6 @@ export const ParticipantTableDialogues = ({
       }
     } catch (error) {
       handleUpdate(false, error.message);
-    } finally {
       onClose();
       setIsLoading(false);
     }

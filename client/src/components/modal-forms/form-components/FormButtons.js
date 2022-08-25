@@ -17,7 +17,7 @@ export const FormButtons = ({ onSubmit, onClose }) => {
   return (
     <Box display='flex' justifyContent='space-between'>
       <Button className={classes.formButton} onClick={onClose} variant='outlined' text='Cancel' />
-      <Button className={classes.formButton} onClick={onSubmit} text='Confirm' />
+      <Button className={classes.formButton} onClick={onSubmit} text='Confirm' type='submit' />
     </Box>
   );
 };

@@ -33,21 +33,14 @@ export const EditRosSiteForm = ({
   };
 
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-      {({ validateForm, setFieldTouched, values, setFieldValue, validateField }) => (
+    <Formik initialValues={initialValues} validationSchema={validationSchema}>
+      {({ validateForm, values, setFieldValue, validateField }) => (
         <FormikForm>
           <EditRosTemplate
             onSubmit={onSubmit}
             onClose={onClose}
             values={values}
-            getValidationResult={async () => {
-              Object.values(fieldNames).forEach(async (field) => {
-                await setFieldTouched(field);
-              });
-              const res = await validateForm();
-              return Object.entries(res)?.length === 0;
-            }}
-            showConfirmationDialog={isMoH}
+            validateForm={validateForm}
           >
             <Box my={1}>
               <FastField

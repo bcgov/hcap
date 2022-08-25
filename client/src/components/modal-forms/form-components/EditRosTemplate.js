@@ -12,14 +12,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const EditRosTemplate = ({
-  onSubmit,
-  onClose,
-  children,
-  values,
-  getValidationResult,
-  showConfirmationDialog = true,
-}) => {
+export const EditRosTemplate = ({ onSubmit, onClose, children, values, validateForm }) => {
   const classes = useStyles();
   const [isConfirmationOpen, setConfirmationOpen] = useState(false);
   const [formValues, setFormValues] = useState(null);
@@ -42,15 +35,10 @@ export const EditRosTemplate = ({
         <FormButtons
           onClose={onClose}
           onSubmit={async () => {
-            const isFormValid = await getValidationResult();
-            if (!isFormValid) {
-              return;
-            }
-            if (showConfirmationDialog) {
+            const errors = await validateForm();
+            if (Object.keys(errors).length === 0) {
               openConfirmationDialog(values);
-              return;
             }
-            await onSubmit(formValues);
           }}
         />
       </Box>

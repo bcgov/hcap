@@ -18,11 +18,11 @@ import {
   ArchiveHiredParticipantForm,
   ReturnOfServiceForm,
   SelectProspectingSiteForm,
-  ChangeSiteForm,
+  EditRosSiteForm,
 } from '../../components/modal-forms';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
-import { changeReturnOfServiceSite, getAllSites } from '../../services';
+import { updateRosStatus, getAllSites } from '../../services';
 import { useToast } from '../../hooks';
 
 export const ParticipantTableDialogues = ({
@@ -63,17 +63,17 @@ export const ParticipantTableDialogues = ({
     try {
       if (!isLoading) {
         setIsLoading(true);
-        const { employmentType, positionType, site, startDate } = values;
-        await changeReturnOfServiceSite({
-          participantId: actionMenuParticipant.id,
-          newSiteId: site,
-          data: {
-            startDate,
-            employmentType,
-            positionType,
-          },
-        });
-        handleUpdate(true, 'Return of Service site updated!');
+        const response = await updateRosStatus(
+          actionMenuParticipant?.id,
+          values,
+          'assigned-new-site'
+        );
+        if (response.ok) {
+          handleUpdate(true, 'Return of Service site updated!');
+          return;
+        }
+        const message = (await response.text()) || 'Failed to change return of service site';
+        throw new Error(message, response.error || response.statusText);
       }
     } catch (error) {
       handleUpdate(false, error.message);
@@ -228,7 +228,11 @@ export const ParticipantTableDialogues = ({
       )}
 
       {activeModalForm === 'change-site' && (
-        <ChangeSiteForm
+        <EditRosSiteForm
+          validationSchema={EditRosSiteSchema}
+          onSubmit={async (values) => {
+            await handleChangeSite(values);
+          }}
           initialValues={{
             startDate: undefined,
             positionType: undefined,
@@ -237,11 +241,8 @@ export const ParticipantTableDialogues = ({
             healthAuthority: undefined,
           }}
           sites={allSites}
-          validationSchema={EditRosSiteSchema}
-          onSubmit={(values) => {
-            handleChangeSite(values);
-          }}
           onClose={onClose}
+          isMoH={false}
         />
       )}
     </Dialog>

@@ -12,7 +12,6 @@ export * from './CohortForm';
 export * from './ArchiveHiredParticipantForm';
 export * from './ReturnOfServiceForm';
 export * from './SelectProspectingSiteForm';
-export * from './ChangeSiteForm';
 export * from './EditRosDateForm';
 export * from './EditRosStartDateForm';
 export * from './EditRosSiteForm';

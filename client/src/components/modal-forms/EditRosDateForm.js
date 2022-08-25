@@ -7,29 +7,18 @@ import { EditRosTemplate } from './form-components';
 import { RenderDateField } from '../fields';
 
 export const EditRosDateForm = ({ initialValues, onSubmit, onClose, validationSchema }) => {
-  const fieldName = 'date';
-
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-      {({ validateForm, setFieldTouched, values }) => (
+    <Formik initialValues={initialValues} validationSchema={validationSchema}>
+      {({ validateForm, values }) => (
         <FormikForm>
           <EditRosTemplate
             onSubmit={onSubmit}
             onClose={onClose}
             values={values}
-            getValidationResult={async () => {
-              await setFieldTouched(fieldName);
-              const res = await validateForm();
-              return Object.entries(res)?.length === 0;
-            }}
+            validateForm={validateForm}
           >
             <Box my={1}>
-              <FastField
-                name={fieldName}
-                component={RenderDateField}
-                label='Start Date'
-                boldLabel
-              />
+              <FastField name='date' component={RenderDateField} label='Start Date' boldLabel />
             </Box>
           </EditRosTemplate>
         </FormikForm>

@@ -41,8 +41,8 @@ describe('Phase functionality', () => {
 
     // expect: required error on every field
     cy.get('#phaseNameError').contains('Phase name is required');
-    cy.contains('p.Mui-error', 'Start date is required');
-    cy.contains('p.Mui-error', 'End date is required');
+    cy.contains('p.Mui-error', 'Start Date is required');
+    cy.contains('p.Mui-error', 'End Date is required');
   });
 
   it('New phase must be within reasonable range', () => {

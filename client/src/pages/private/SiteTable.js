@@ -25,7 +25,6 @@ import { AuthContext } from '../../providers';
 import { FeatureFlag, flagKeys } from '../../services';
 import { fetchSiteRows } from '../../services/site';
 
-
 const useStyles = makeStyles((theme) => ({
   rootItem: {
     paddingLeft: theme.spacing(2),

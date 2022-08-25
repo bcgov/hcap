@@ -7,7 +7,7 @@ const baseURL = `${API_URL}/api/v1`;
 const getCohortAvailAbleSize = (cohort) =>
   cohort.cohort_size - (cohort.participantsCohorts?.length || 0);
 
-export const psi = async () => {
+export const getPsi = async () => {
   const response = await fetch(`${baseURL}/psi/with-cohorts`, {
     method: 'GET',
     headers: {

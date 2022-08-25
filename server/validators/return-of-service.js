@@ -8,52 +8,60 @@ const CreateReturnOfServiceSchema = yup
   .shape({
     status: yup.string().optional(),
     siteId: yup.number().optional('SiteId should be a number and specify an employer side id'),
-    newSiteId: yup.number().optional(),
-    isUpdating: yup.boolean().optional(),
     data: yup
       .object()
       .required('Data object is required')
       .shape({
-        date: yup.string().when(
-          'isUpdating',
-          {
-            is: false,
-            then: yup
-              .string()
-              .required('Return of service date (data.date) is required')
-              .test('is-date', 'Not a valid date', validISODateString),
-          },
-          {
-            is: true,
-            then: yup.string().optional(),
-          }
-        ),
-        startDate: yup.string().when(
-          'isUpdating',
-          {
-            is: true,
-            then: yup
-              .string()
-              .required('Start date at a new site (data.startDate) is required')
-              .test('is-date', 'Not a valid date', validISODateString),
-          },
-          {
-            is: false,
-            then: yup.string().optional(),
-          }
-        ),
+        date: yup
+          .string()
+          .required('Return of service date (data.date) is required')
+          .test('is-date', 'Not a valid date', validISODateString),
         positionType: yup
           .string()
           .required('Position Type (data.positionType) is required')
           .oneOf(rosPositionTypeValues),
-        employmentType: yup
-          .string()
-          .optional('Employment Type (data.employmentType) is required')
-          .oneOf(rosEmploymentTypeValues),
+        employmentType: yup.string().optional().oneOf(rosEmploymentTypeValues),
         sameSite: yup.boolean().required('Same Site flag (data.sameSite) is required'),
       }),
   });
 
+const ChangeReturnOfServiceSiteSchema = yup
+  .object()
+  .noUnknown('Unknown field in form')
+  .shape({
+    status: yup.string().optional(),
+    data: yup
+      .object()
+      .required('Data object is required')
+      .shape({
+        date: yup.string().optional(),
+        site: yup.number().required('New Site id is required and must specify an employer side id'),
+        startDate: yup
+          .string()
+          .required('Start date at a new site (data.startDate) is required')
+          .test('is-date', 'Not a valid date', validISODateString),
+        positionType: yup
+          .string()
+          .required('Position Type (data.positionType) is required')
+          .oneOf(rosPositionTypeValues),
+        employmentType: yup.string().optional().oneOf(rosEmploymentTypeValues),
+      }),
+  });
+
+const UpdateReturnOfServiceSchema = yup
+  .object()
+  .noUnknown('Unknown field in form')
+  .shape({
+    isUpdating: yup.boolean().optional(),
+    data: yup.object().required('Data object is required').shape({
+      date: yup.string().optional(),
+      startDate: yup.string().optional(),
+      site: yup.number().optional(),
+    }),
+  });
+
 module.exports = {
   CreateReturnOfServiceSchema,
+  ChangeReturnOfServiceSiteSchema,
+  UpdateReturnOfServiceSchema,
 };

@@ -2,14 +2,20 @@ const express = require('express');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
-const { rosError } = require('../constants');
-const { CreateReturnOfServiceSchema, validate } = require('../validators');
-const { getParticipantByID } = require('../services/participants');
 const {
-  makeReturnOfServiceStatus,
+  CreateReturnOfServiceSchema,
+  ChangeReturnOfServiceSiteSchema,
+  UpdateReturnOfServiceSchema,
+  validate,
+} = require('../validators');
+const {
+  createReturnOfServiceStatus,
+  updateReturnOfServiceStatus,
   getReturnOfServiceStatuses,
+  logRosError,
 } = require('../services/return-of-service');
-const { getSiteDetailsById, getDetailsBySiteId } = require('../services/employers');
+const { validateCredentials } = require('../services/user-validation');
+const { getSiteDetailsById } = require('../services/employers');
 
 const router = express.Router();
 
@@ -21,24 +27,14 @@ router.post(
   '/participant/:participantId',
   applyMiddleware(keycloak.allowRolesMiddleware('health_authority', 'employer')),
   asyncMiddleware(async (req, res) => {
+    const actionName = 'ros-status-create';
     const { participantId } = req.params;
-    const { email, user_id: userId, sub: localUserId } = req.user;
-    const user = userId || localUserId;
-    if (!(email && user)) {
-      return res.status(401).send('Unauthorized user');
+    const validationRes = await validateCredentials(req.user, participantId, actionName);
+    if (!validationRes.isValid) {
+      return res.status(validationRes.status).send(validationRes.message);
     }
-    // Validate body
+    const { data, status, siteId } = req.body;
     await validate(CreateReturnOfServiceSchema, req.body);
-    // Validate Participant
-    const [participant] = await getParticipantByID({ id: participantId });
-    if (!participant) {
-      logger.error({
-        action: 'ros-status-create',
-        message: `Participant ${participantId} not found`,
-      });
-      return res.status(404).send('Participant not found');
-    }
-    const { data, status, siteId, newSiteId, isUpdating } = req.body;
 
     if (siteId) {
       // Validate siteId
@@ -48,45 +44,89 @@ router.post(
       }
     }
 
-    const [newSite] = await getDetailsBySiteId(newSiteId);
-    if (newSiteId) {
-      if (newSite.error) {
-        return res.status(404).send(`Site not found: ${newSite.error}`);
-      }
-    }
-
     try {
-      const response = await makeReturnOfServiceStatus({
-        participantId: participant.id,
+      const response = await createReturnOfServiceStatus({
+        participantId: validationRes.participant?.id,
         data,
         status,
         siteId,
-        newSiteId: newSite?.id,
-        isUpdating,
       });
       logger.info({
-        action: 'ros-status-create',
-        performed_by: user,
+        action: actionName,
+        performed_by: validationRes.user,
         id: response.id,
       });
       return res.status(201).json(response);
     } catch (error) {
-      logger.error({
-        action: 'ros-status-create',
-        error: error.message,
+      const errRes = logRosError(actionName, error);
+      return res.status(errRes.status).send(errRes.message);
+    }
+  })
+);
+
+// Change return of service status site
+router.patch(
+  '/participant/:participantId/change-site',
+  applyMiddleware(keycloak.allowRolesMiddleware('health_authority', 'employer')),
+  asyncMiddleware(async (req, res) => {
+    const actionName = 'ros-change-site';
+    const { participantId } = req.params;
+    const validationRes = await validateCredentials(req.user, participantId, actionName);
+    if (!validationRes.isValid) {
+      return res.status(validationRes.status).send(validationRes.message);
+    }
+    const { data, status } = req.body;
+    await validate(ChangeReturnOfServiceSiteSchema, req.body);
+
+    try {
+      const response = await updateReturnOfServiceStatus({
+        participantId: validationRes.participant?.id,
+        data,
+        user: validationRes.user,
+        status,
       });
-      switch (error.message) {
-        case rosError.participantNotHired:
-          return res.status(400).send('Participant is not hired');
-        case rosError.noSiteAttached:
-          return res.status(400).send('Participant is not attached to a site');
-        default:
-          return res
-            .status(500)
-            .send(
-              `Internal server error: unable to create return of service status (${error.message})`
-            );
-      }
+      logger.info({
+        action: actionName,
+        performed_by: validationRes.user,
+        id: response.id,
+      });
+      return res.status(201).json(response);
+    } catch (error) {
+      const errRes = logRosError(actionName, error);
+      return res.status(errRes.status).send(errRes.message);
+    }
+  })
+);
+
+// Update return of service status
+router.patch(
+  '/participant/:participantId',
+  applyMiddleware(keycloak.allowRolesMiddleware('ministry_of_health')),
+  asyncMiddleware(async (req, res) => {
+    const actionName = 'ros-status-update';
+    const { participantId } = req.params;
+    const validationRes = await validateCredentials(req.user, participantId, actionName);
+    if (!validationRes.isValid) {
+      return res.status(validationRes.status).send(validationRes.message);
+    }
+    const { data } = req.body;
+    await validate(UpdateReturnOfServiceSchema, req.body);
+
+    try {
+      const response = await updateReturnOfServiceStatus({
+        participantId: validationRes.participant?.id,
+        data,
+        user: validationRes.user,
+      });
+      logger.info({
+        action: actionName,
+        performed_by: validationRes.user,
+        id: response.id,
+      });
+      return res.status(201).json(response);
+    } catch (error) {
+      const errRes = logRosError(actionName, error);
+      return res.status(errRes.status).send(errRes.message);
     }
   })
 );
@@ -98,25 +138,16 @@ router.get(
     keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority', 'employer')
   ),
   asyncMiddleware(async (req, res) => {
+    const actionName = 'ros-status-get';
     const { participantId } = req.params;
-    const { email, user_id: userId, sub: localUserId } = req.user;
-    const user = userId || localUserId;
-    if (!(email && user)) {
-      return res.status(401).send('Unauthorized user');
-    }
-    // Validate Participant
-    const [participant] = await getParticipantByID({ id: participantId });
-    if (!participant) {
-      logger.error({
-        action: 'ros-status-create',
-        message: `Participant ${participantId} not found`,
-      });
-      return res.status(404).send('Participant not found');
+    const validationRes = await validateCredentials(req.user, participantId, actionName);
+    if (!validationRes.isValid) {
+      return res.status(validationRes.status).send(validationRes.message);
     }
     const resp = await getReturnOfServiceStatuses({ participantId });
     logger.info({
-      action: 'ros-status-get',
-      performed_by: user,
+      action: actionName,
+      performed_by: validationRes.user,
       ids: resp.map((r) => r.id),
     });
     return res.status(200).json(resp);

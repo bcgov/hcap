@@ -10,6 +10,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { Table, Button, CheckPermissions } from '../../components/generic';
 import { NewSiteDialog, NewPhaseDialog } from '../../components/modal-forms';
+
 import {
   Routes,
   regionLabelsMap,
@@ -23,6 +24,7 @@ import { handleReportDownloadResult } from '../../utils';
 import { AuthContext } from '../../providers';
 import { FeatureFlag, flagKeys } from '../../services';
 import { fetchSiteRows } from '../../services/site';
+
 
 const useStyles = makeStyles((theme) => ({
   rootItem: {

@@ -12,7 +12,8 @@ const {
   checkUserRegion,
   getReport,
   getHiredParticipantsReport,
-  getRosParticipantsReport,
+  getHARosMilestonesReport,
+  getMohRosMilestonesReport,
 } = require('../services/reporting');
 const { reportType, DEFAULT_REGION_NAME } = require('../constants');
 
@@ -55,7 +56,10 @@ const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
  * @param csvStream output stream
  */
 const generateRosReport = async (csvStream, region) => {
-  const results = await getRosParticipantsReport(region);
+  const results =
+    region === DEFAULT_REGION_NAME
+      ? await getMohRosMilestonesReport()
+      : await getHARosMilestonesReport(region);
   results.forEach((result) => {
     csvStream.write({
       'Participant ID': result.participantId,

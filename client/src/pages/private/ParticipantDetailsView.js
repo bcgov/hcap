@@ -1,87 +1,48 @@
 // Participant Details Page
 // Dependency
-import pick from 'lodash/pick';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { Box, Card, Grid, Link, Typography, Button } from '@material-ui/core';
+
+import { Box, Card, Grid, Link, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
+import EditIcon from '@material-ui/icons/Edit';
 
 // Libs
 import { useToast } from '../../hooks';
 import { AuthContext } from '../../providers';
-import { Page, CheckPermissions, Alert, Dialog } from '../../components/generic';
-import { EditParticipantFormSchema, ToastStatus, Routes } from '../../constants';
-import { EditParticipantForm } from '../../components/modal-forms';
+import { Page, CheckPermissions, Alert, Button } from '../../components/generic';
+import { ToastStatus, Routes, keyLabelMap, rosKeyMap } from '../../constants';
 import {
+  assignParticipantWithCohort,
   updateParticipant,
   fetchParticipant,
-  psi,
-  assignParticipantWithCohort,
+  getPsi,
+  displayParticipantData,
+  getParticipantPageLabel,
+  updateRosStatus,
 } from '../../services';
 
-import { addYearToDate, dayUtils } from '../../utils';
+// Sub components
+import {
+  AssignCohortSiteDialog,
+  EditParticipantDialog,
+  PSICohortView,
+  EditRosDateDialog,
+  EditRosStartDateDialog,
+  EditRosSiteDialog,
+} from '../../components/participant-details';
 
-// Sub component
-import { PSICohortView } from '../../components/participant-details';
-
-// Key Map
-const keyLabelMap = {
-  fullName: 'Full Name',
-  phoneNumber: 'Phone Number',
-  emailAddress: 'Email Address',
-  interested: 'Program Interest',
-  preferredLocation: 'Preferred Location',
-  postalCodeFsa: 'Postal Code FSA',
-  cohortName: 'Cohort / PSI',
-  postHireStatusLabel: 'Graduation Status',
-};
-
-const rOSKeyMap = {
-  rosSite: 'Current Site',
-  healthAuthority: 'Health Authority (current site)',
-  date: 'RoS Start Date',
-  endDate: 'RoS End Date',
-};
-
-// Map Ros Data
-const mapRosData = ({ data = {}, rosSite = {} }) => {
-  const { date } = data;
-  const { siteName, healthAuthority } = rosSite;
-  return {
-    date: dayUtils(date).format('MMM DD, YYYY'),
-    endDate: addYearToDate(date).format('MMM DD, YYYY'),
-    rosSite: siteName,
-    healthAuthority,
-  };
-};
-
-// Display Data
-const displayData = (inputData) => ({
-  ...pick(inputData, Object.keys(keyLabelMap)),
-  fullName: `${inputData.firstName} ${inputData.lastName}`,
-  interested:
-    inputData.interested === 'yes'
-      ? 'Interested'
-      : inputData.interested === 'no'
-      ? 'Withdrawn'
-      : inputData.interested,
-  ros:
-    inputData.rosStatus && Object.keys(inputData.rosStatus).length
-      ? mapRosData(inputData.rosStatus)
-      : null,
-});
-
-// Custom style
-const customStyle = makeStyles({
-  rootContainer: {
-    flexGrow: 1,
-  },
-  cardRoot: {
+const useStyles = makeStyles((theme) => ({
+  root: {
+    marginBottom: theme.spacing(2),
+    padding: theme.spacing(4),
     minWidth: '1020px',
   },
-});
+  gridSection: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+  },
+}));
 
 // Helper
 const fetchData = ({
@@ -94,7 +55,7 @@ const fetchData = ({
 }) => {
   fetchParticipant({ id })
     .then((resp) => {
-      setParticipant(displayData(resp));
+      setParticipant(displayParticipantData(resp));
       setActualParticipant(resp);
       if (
         resp.interested?.toLowerCase() === 'withdrawn' ||
@@ -104,7 +65,7 @@ const fetchData = ({
         return;
       }
 
-      psi()
+      getPsi()
         .then((list) => {
           setPSIList(list);
         })
@@ -117,9 +78,6 @@ const fetchData = ({
     });
 };
 
-// Get Cohort name
-const cohortName = (cohort) => `${cohort.cohort_name} / ${cohort.psi?.institute_name}`;
-
 export default () => {
   // History
   const history = useHistory();
@@ -131,6 +89,7 @@ export default () => {
   const [psiList, setPSIList] = useState([]);
   const [disableAssign, setDisableAssign] = useState(false);
   const [selectedCohort, setSelectedCohort] = useState(null);
+  const [editFormField, setEditFormField] = useState(null);
   // Hook: Toast
   const { openToast } = useToast();
   // Auth context
@@ -138,13 +97,14 @@ export default () => {
   // Memo roles
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   // Style classes
-  const classes = customStyle();
+  const classes = useStyles();
   // Get param
   const { id, page, pageId } = useParams();
   // Breadcrumb name
-  const linkName = page === 'participant' ? 'Participant' : 'Site View';
+  const linkName = getParticipantPageLabel(page);
   // Edit Button flag
   const enableEdit = roles.some((role) => ['ministry_of_health', 'superuser'].includes(role));
+  const isMoH = roles.includes('ministry_of_health');
 
   // UI Actions
   // 1. Show edit
@@ -155,18 +115,31 @@ export default () => {
     try {
       const [updatedParticipant] = await updateParticipant(values, { ...actualParticipant });
       const mergedParticipant = { ...actualParticipant, ...updatedParticipant };
-      setParticipant(displayData(mergedParticipant));
+      setParticipant(displayParticipantData(mergedParticipant));
       setActualParticipant(mergedParticipant);
       openToast({
-        status: ToastStatus.Info,
+        status: ToastStatus.Success,
         message: `${participant.fullName} is successfully updated`,
       });
     } catch (err) {
       setError(`${err}`);
     }
   };
+  // close modal
+  const handleEditParticipantClose = () => {
+    setShowEditModal(false);
+    fetchData({
+      setParticipant,
+      setPSIList,
+      setActualParticipant,
+      setDisableAssign,
+      setError,
+      id,
+    });
+  };
 
-  const callAssignCohort = async (cohort) => {
+  // Assign a new cohort to a participant
+  const handleCallAssignCohort = async (cohort) => {
     try {
       await assignParticipantWithCohort({ participantId: id, cohortId: cohort.id });
       openToast({
@@ -181,21 +154,23 @@ export default () => {
         setDisableAssign,
         id,
       });
-    } catch (error) {
+    } catch (err) {
       openToast({
         status: ToastStatus.Error,
-        message: `${error}`,
+        message: `${err}`,
       });
+    } finally {
+      onAssignCohortClose();
     }
   };
 
-  // Confirmation Close
-  const onClose = () => {
+  // Cohort confirmation onClose
+  const onAssignCohortClose = () => {
     setSelectedCohort(null);
   };
 
   // Navigate on link
-  const navigateBackOnLink = () => {
+  const handleNavigateBackLink = () => {
     switch (linkName) {
       case 'Participant':
         history.push(Routes.ParticipantView);
@@ -208,203 +183,203 @@ export default () => {
     }
   };
 
+  // Select which RoS field to edit
+  const handleSetEditRosField = (key) => {
+    setEditFormField(key);
+  };
+
+  // Close Edit RoS window
+  const handleEditRosFieldClose = () => {
+    setEditFormField(null);
+  };
+
+  // Update selected RoS fields
+  const handleEditRosField = async (values) => {
+    const EDIT_ERROR_MESSAGE = 'Unable to update the field';
+    try {
+      const response = await updateRosStatus(actualParticipant?.id, values);
+      if (response.ok) {
+        openToast({
+          status: ToastStatus.Success,
+          message: `${rosKeyMap[editFormField]?.label} is successfully updated`,
+        });
+        fetchData({
+          setParticipant,
+          setPSIList,
+          setActualParticipant,
+          setDisableAssign,
+          setError,
+          id,
+        });
+      } else {
+        throw new Error(
+          response.message || response.error || response.statusText || EDIT_ERROR_MESSAGE
+        );
+      }
+    } catch (err) {
+      openToast({
+        status: ToastStatus.Error,
+        message: err?.message || EDIT_ERROR_MESSAGE,
+      });
+    }
+
+    handleEditRosFieldClose();
+  };
+
   // Rendering Hook
   useEffect(() => {
-    fetchData({ setParticipant, setPSIList, setActualParticipant, setDisableAssign, setError, id });
+    fetchData({
+      setParticipant,
+      setPSIList,
+      setActualParticipant,
+      setDisableAssign,
+      setError,
+      id,
+    });
   }, [setParticipant, setPSIList, setActualParticipant, setError, setDisableAssign, id]);
 
   // Render
   return (
-    <Page isAutoHeight={true}>
+    <Page isAutoHeight>
       <CheckPermissions
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
-        renderErrorMessage={true}
+        renderErrorMessage
       >
         {error && <Alert severity='error'>{error}</Alert>}
         {!participant && !error && <Alert severity='info'>Loading participant details</Alert>}
         {participant && (
-          <Card className={classes.cardRoot}>
-            {selectedCohort !== null && (
-              <Dialog
-                showDivider={true}
-                title='Assign Cohort'
-                open={selectedCohort !== null}
-                onClose={onClose}
-              >
-                <DialogContent>
-                  <Grid container spacing={4}>
-                    <Grid item xs={12}>
-                      <Grid container spacing={1}>
-                        <Grid item xs={4}>
-                          <Typography variant='body1'>Participant Name</Typography>
-                        </Grid>
-                        <Grid item xs={4}>
-                          <Typography variant='body2'>{participant.fullName}</Typography>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Grid container spacing={1}>
-                        <Grid item xs={4}>
-                          <Typography variant='body1'>Assign Cohort</Typography>
-                        </Grid>
-                        <Grid item xs={4}>
-                          <Typography variant='body2'>{cohortName(selectedCohort)}</Typography>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <br />
-                  <Box>
-                    <Typography variant='body2'>
-                      Are you sure that you would like to assign this participant to{' '}
-                      <b>{cohortName(selectedCohort)}</b>.? Please review the above information
-                      before proceeding.
-                    </Typography>
-                  </Box>
-                </DialogContent>
-                <DialogActions>
-                  <Button variant='outlined' onClick={onClose} color='primary'>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant='contained'
-                    onClick={() => {
-                      callAssignCohort({ ...selectedCohort });
-                      onClose();
-                    }}
-                    color='primary'
-                  >
-                    Assign
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            )}
+          <Card className={classes.root}>
+            <AssignCohortSiteDialog
+              isOpen={selectedCohort !== null}
+              participant={participant}
+              selectedCohort={selectedCohort}
+              onSubmit={handleCallAssignCohort}
+              onClose={onAssignCohortClose}
+            />
 
             {/* Participant Info */}
-            <Box pt={4} pb={2} pl={4} pr={4}>
-              <Box pb={1}>
-                <Typography variant='body1'>
-                  <Link onClick={navigateBackOnLink}>{linkName}</Link> /{participant.fullName}
-                </Typography>
-              </Box>
-              <Typography variant='h2'>Participant Details</Typography>
+            <Box pb={1}>
+              <Link onClick={handleNavigateBackLink}>{linkName}</Link> /{participant.fullName}
             </Box>
+            <Typography variant='h2'>Participant Details</Typography>
 
-            <Box py={2} px={4}>
-              <Grid className={classes.rootContainer} container spacing={2}>
-                {Object.keys(keyLabelMap).map((key) => (
-                  <Grid key={key} item xs={12} sm={6} xl={3}>
-                    <Grid item xs={6}>
-                      <Typography variant='body1'>
-                        <b>{keyLabelMap[key]}</b>
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography test-id={'participantDetailsView' + key} variant='body1'>
-                        {participant[key]}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
+            <Grid container spacing={2} className={classes.gridSection}>
+              {Object.keys(keyLabelMap).map((key) => (
+                <Grid key={key} item xs={12} sm={6} xl={3}>
+                  <Typography variant='body1'>
+                    <b>{keyLabelMap[key]}</b>
+                  </Typography>
+                  <Typography test-id={'participantDetailsView' + key} variant='body1'>
+                    {participant[key]}
+                  </Typography>
+                </Grid>
+              ))}
+            </Grid>
 
             {/* Participant RoS Info */}
-            <CheckPermissions
-              permittedRoles={['health_authority', 'employer', 'ministry_of_health']}
-            >
-              {participant.ros && (
-                <>
-                  <Box pt={4} pb={2} pl={4} pr={4}>
-                    <Typography variant='h2'>Return of Service</Typography>
-                  </Box>
-
-                  <Box py={2} px={4}>
-                    <Grid className={classes.rootContainer} container spacing={2}>
-                      {Object.keys(rOSKeyMap).map((key) => (
-                        <Grid key={key} item xs={12} sm={6} xl={3}>
-                          <Grid item xs={6}>
-                            <Typography variant='body1'>
-                              <b>{rOSKeyMap[key]}</b>
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography test-id={'participantDetailsRosView' + key} variant='body1'>
-                              {participant.ros[key]}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Box>
-                </>
-              )}
-            </CheckPermissions>
-
-            <Box px={4}>
-              <Button
-                test-id='editInfoButton'
-                variant='outlined'
-                disabled={!enableEdit}
-                onClick={showEditInfoModal}
+            {participant.ros && (
+              <CheckPermissions
+                permittedRoles={['health_authority', 'employer', 'ministry_of_health']}
               >
-                Edit Info
-              </Button>
-            </Box>
+                <Typography variant='h2'>Return of Service</Typography>
+                <Grid container spacing={2} className={classes.gridSection}>
+                  {Object.keys(rosKeyMap).map((key) => {
+                    const participantRos = participant.ros[key];
+                    const rosKey = rosKeyMap[key];
 
-            {!participant.ros && (
+                    const gridItem = (
+                      <Grid key={key} item xs={12} sm={6} xl={3}>
+                        <Box display='flex'>
+                          <Box>
+                            <Typography variant='body1'>
+                              <b>{rosKey?.label}</b>
+                            </Typography>
+                            <Typography test-id={'participantDetailsRosView' + key} variant='body1'>
+                              {participantRos}
+                            </Typography>
+                          </Box>
+                          {isMoH && rosKey?.editable && (
+                            <Box pl={4}>
+                              <Button
+                                text='Edit'
+                                variant='outlined'
+                                color='primary'
+                                startIcon={<EditIcon />}
+                                fullWidth={false}
+                                size='small'
+                                onClick={() => handleSetEditRosField(key)}
+                              />
+                            </Box>
+                          )}
+                        </Box>
+                      </Grid>
+                    );
+                    return participantRos ? gridItem : null;
+                  })}
+                </Grid>
+              </CheckPermissions>
+            )}
+
+            <Button
+              test-id='editInfoButton'
+              text='Edit Info'
+              variant='outlined'
+              color='primary'
+              disabled={!enableEdit}
+              onClick={showEditInfoModal}
+              fullWidth={false}
+            />
+
+            {!disableAssign && !participant.ros && (
               <>
-                <CheckPermissions permittedRoles={['health_authority']}>
-                  {!disableAssign && (
-                    <PSICohortView
-                      psiList={psiList}
-                      assignAction={(cohort) => setSelectedCohort(cohort)}
-                      participant={actualParticipant}
-                      fetchData={() =>
-                        fetchData({
-                          setParticipant,
-                          setPSIList,
-                          setActualParticipant,
-                          setDisableAssign,
-                          setError,
-                          id,
-                        })
-                      }
-                    />
-                  )}
+                <CheckPermissions permittedRoles={['employer', 'health_authority']}>
+                  <PSICohortView
+                    psiList={psiList}
+                    assignAction={(cohort) => setSelectedCohort(cohort)}
+                    participant={actualParticipant}
+                    fetchData={() =>
+                      fetchData({
+                        setParticipant,
+                        setPSIList,
+                        setActualParticipant,
+                        setDisableAssign,
+                        setError,
+                        id,
+                      })
+                    }
+                  />
                 </CheckPermissions>
               </>
             )}
           </Card>
         )}
       </CheckPermissions>
-      <>
-        {showEditModal && actualParticipant && (
-          <Dialog
-            title='Edit Participant Info'
-            open={showEditModal}
-            onClose={() => setShowEditModal(false)}
-          >
-            <EditParticipantForm
-              initialValues={actualParticipant}
-              validationSchema={EditParticipantFormSchema}
-              onSubmit={onUpdateInfo}
-              onClose={() => {
-                setShowEditModal(false);
-                fetchData({
-                  setParticipant,
-                  setPSIList,
-                  setActualParticipant,
-                  setDisableAssign,
-                  setError,
-                  id,
-                });
-              }}
-            />
-          </Dialog>
-        )}
-      </>
+
+      {/** Modals */}
+      <EditParticipantDialog
+        participant={actualParticipant}
+        isOpen={showEditModal}
+        onSubmit={onUpdateInfo}
+        onClose={handleEditParticipantClose}
+      />
+
+      <EditRosStartDateDialog
+        isOpen={editFormField === 'startDate'}
+        onClose={handleEditRosFieldClose}
+        onSubmit={handleEditRosField}
+      />
+
+      <EditRosDateDialog
+        isOpen={editFormField === 'date'}
+        onClose={handleEditRosFieldClose}
+        onSubmit={handleEditRosField}
+      />
+
+      <EditRosSiteDialog
+        isOpen={editFormField === 'siteName'}
+        onClose={handleEditRosFieldClose}
+        onSubmit={handleEditRosField}
+      />
     </Page>
   );
 };

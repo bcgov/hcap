@@ -7,9 +7,10 @@ ENV HOME_CLIENT /opt/app-root/src/app/client
 USER root
 RUN mkdir -p ${HOME_CLIENT}
 RUN chown -R 1001 ${HOME_CLIENT}
-USER 1001
 WORKDIR ${HOME_CLIENT}
 COPY client/package*.json ./
+RUN chown -R 1001 .
+USER 1001
 RUN npm set progress=false && npm ci --no-cache
 COPY client/. .
 RUN INLINE_RUNTIME_CHUNK=false npm run build

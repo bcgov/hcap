@@ -25,7 +25,7 @@ export const getParticipantStatusData = (status, tabValue, isMoH, participantInf
   const isPendingAcknowledgement = status.includes('pending_acknowledgement');
   const isWithdrawn = status.includes('withdrawn');
   const isArchived = status.includes('archived');
-  const rosStartDate = isROS ? participantInfo.rosStatuses[0].data.date : null;
+  const rosStartDate = isROS ? participantInfo?.rosStatuses[0]?.data?.date : null;
   const finalStatus = statusInfo.data?.final_status ?? null;
 
   const toolTipText = getToolTipText({

@@ -7,8 +7,9 @@
     "npm": ">=7.0.0"
   },
   "scripts": {
-    "start": "CI=true PORT=4000 react-scripts start",
+    "start": "FAST_REFRESH=false PORT=4000 react-scripts start",
     "build": "react-scripts build",
+    "preinstall": "npx npm-force-resolutions",
     "eject": "react-scripts eject"
   },
   "dependencies": {
@@ -38,6 +39,10 @@
   },
   "devDependencies": {
     "eslint-plugin-jsx-a11y": "6.4.1",
-    "react-scripts": "4.0.0"
+    "react-error-overlay": "6.0.9",
+    "react-scripts": "4.0.3"
+  },
+  "resolutions": {
+    "react-error-overlay": "6.0.9"
   }
 }

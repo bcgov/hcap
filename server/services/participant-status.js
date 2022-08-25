@@ -102,7 +102,7 @@ const setParticipantStatus = async (
       : await tx[collections.PARTICIPANTS_STATUS].findOne({
           participant_id: participantId,
           current: true,
-          employer_id: employerId,
+          or: [{ employer_id: employerId }, { 'data.site IN': user.sites || [] }],
         });
 
     // If existing status if not current, then invalid status transition
@@ -312,8 +312,21 @@ const hideStatusForUser = async ({ userId, statusId }) => {
   );
 };
 
+const getParticipantHiredStatuses = async (participantId) => {
+  const statuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
+    participant_id: participantId,
+    status: 'hired',
+    current: true,
+  });
+  if (statuses.length === 0) {
+    throw new Error('Participant is not hired');
+  }
+  return statuses;
+};
+
 module.exports = {
   setParticipantStatus,
   bulkEngageParticipants,
   hideStatusForUser,
+  getParticipantHiredStatuses,
 };

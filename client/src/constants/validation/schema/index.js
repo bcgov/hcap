@@ -23,6 +23,9 @@ export * from './schema-rejected-form';
 export * from './schema-return-of-service';
 export * from './schema-select-prospecting-sites';
 export * from './schema-change-ros-site';
+export * from './schema-edit-ros-date';
+export * from './schema-edit-ros-site';
+export * from './schema-edit-ros-start-date';
 
 export const genericConfirm = yup.object().shape({
   confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),

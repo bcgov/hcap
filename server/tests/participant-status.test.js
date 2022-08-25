@@ -168,23 +168,23 @@ describe('Test Participant status data model and service', () => {
       city: 'Test City 1030',
     });
 
-    const emp1 = v4();
-    const emp2 = v4();
-    const emp3 = v4();
+    const emp1 = { id: v4(), sites: [site1.siteId, site2.siteId] };
+    const emp2 = { id: v4(), sites: [site1.siteId] };
+    const emp3 = { id: v4(), sites: [site2.siteId] };
 
     const ps1 = await setParticipantStatus(
-      emp1,
+      emp1.id,
       participant.id,
       'prospecting',
       {
         site: site1.siteId,
       },
-      {}
+      emp1
     );
 
     // Check with open status for emp1
     const resultOpenWithEmp1 = await getParticipants(
-      { isEmployer: true, id: emp1, regions, sites: [site1.siteId] },
+      { isEmployer: true, id: emp1.id, regions, sites: emp1.sites },
       null,
       null,
       null,
@@ -197,9 +197,9 @@ describe('Test Participant status data model and service', () => {
     const filteredOpenForEmp1 = resultOpenWithEmp1.data.filter((p) => p.id === participant.id);
     expect(filteredOpenForEmp1.length).toBe(0);
 
-    // Check with open status for emp3
+    // Check with open status for emp2
     const resultOpenWithEmp2 = await getParticipants(
-      { isEmployer: true, id: emp2, regions, sites: [site1.siteId] },
+      { isEmployer: true, id: emp2.id, regions, sites: emp2.sites },
       null,
       null,
       null,
@@ -213,7 +213,7 @@ describe('Test Participant status data model and service', () => {
     expect(filteredOpenForEmp2.length).toBe(0);
 
     const resultSuccess = await getParticipants(
-      { isEmployer: true, id: emp2, regions, sites: [site1.siteId] },
+      { isEmployer: true, id: emp2.id, regions, sites: emp2.sites },
       null,
       null,
       null,
@@ -227,7 +227,7 @@ describe('Test Participant status data model and service', () => {
     expect(resultSuccess.data[0].id).toBe(participant.id);
 
     const resultFailure = await getParticipants(
-      { isEmployer: true, id: emp3, regions, sites: [site2.siteId] },
+      { isEmployer: true, id: emp3.id, regions, sites: emp3.sites },
       null,
       null,
       null,
@@ -240,23 +240,21 @@ describe('Test Participant status data model and service', () => {
 
     expect(resultFailure.data.length).toBe(0);
 
-    // Now set next status
+    // Now set next status, for the same site
     await setParticipantStatus(
-      emp2,
+      emp2.id,
       participant.id,
       'interviewing',
       {
         site: site1.siteId,
       },
-      {
-        sites: [site1.siteId],
-      },
+      emp2,
       ps1.id
     );
 
     // Read by multi org employer
     const resultSuccess2 = await getParticipants(
-      { isEmployer: true, id: emp1, regions, sites: [site1.siteId] },
+      { isEmployer: true, id: emp1.id, regions, sites: emp1.sites },
       null,
       null,
       null,
@@ -272,7 +270,7 @@ describe('Test Participant status data model and service', () => {
 
     // Test Open status
     const resultOpen = await getParticipants(
-      { isEmployer: true, id: emp3, regions, sites: [site2.siteId] },
+      { isEmployer: true, id: emp3.id, regions, sites: emp3.sites },
       null,
       null,
       null,
@@ -287,22 +285,20 @@ describe('Test Participant status data model and service', () => {
     const filteredOpen = resultOpen.data.filter((p) => p.id === participant.id);
     expect(filteredOpen.length).toBe(1);
 
-    // Now check dual statuses
+    // Now check dual statuses, prospect participant by another employer for another site
     await setParticipantStatus(
-      emp1,
+      emp3.id,
       participant.id,
       'prospecting',
       {
         site: site2.siteId,
       },
-      {
-        sites: [site1.siteId, site2.siteId],
-      }
+      emp3
     );
 
     // Get statuses with emp1 for Dual statuses for mult org employee
     const resultDual = await getParticipants(
-      { isEmployer: true, id: emp3, regions, sites: [site2.siteId, site1.siteId] },
+      { isEmployer: true, id: emp1.id, regions, sites: emp1.sites },
       null,
       null,
       null,

@@ -44,6 +44,7 @@ const flattenParticipants = (participants) => {
 const scrubParticipantData = (raw, joinNames, sites) =>
   raw.map((participant) => {
     const statusInfos = [];
+    let rosStatuses = participant.rosStatuses ?? [];
 
     const decomposeStatusInfo = (statusInfo) => ({
       id: statusInfo.id,
@@ -67,21 +68,21 @@ const scrubParticipantData = (raw, joinNames, sites) =>
         if (!participant[joinName]) return;
         statusInfos.push(...participant[joinName].map(decomposeStatusInfo));
       });
+      // Use hiring site instead of ROS site to see if user has permissions. For HA / employers only
+      const hiredAt = participant.hiredGlobalJoin?.[0];
+      rosStatuses = sites.includes(hiredAt?.data.site) ? rosStatuses : [];
     } else {
+      rosStatuses = participant.ros_infos ?? [];
       participant.status_infos?.forEach((statusInfo) => {
         statusInfos.push(decomposeStatusInfo(statusInfo));
       });
     }
 
-    let rosStatuses = participant.rosStatuses
-      ? participant.rosStatuses.sort((ros1, ros2) => ros2.id - ros1.id)
-      : [];
-    rosStatuses = rosStatuses.filter((rosStatus) => sites.includes(rosStatus.rosSite.body.siteId));
     return {
       ...participant.body,
       id: participant.id,
       statusInfos,
-      rosStatuses,
+      rosStatuses: rosStatuses.sort((ros1, ros2) => ros2.id - ros1.id),
     };
   });
 
@@ -126,7 +127,7 @@ const run = async (context) => {
     participants = scrubParticipantData(
       participants,
       (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin],
-      user.sites
+      (user.isEmployer || user.isHA) && (user.sites || [])
     );
     return participants;
   } catch (error) {
@@ -573,7 +574,8 @@ class ParticipantsFinder {
     this.hiredGlobalJoin = 'hiredGlobalJoin';
     this.siteJoin = 'siteJoin';
     this.siteDistanceJoin = 'siteDistanceJoin';
-    this.rosStatuses = 'rosStatuses';
+    // MoH/SU users query a view with ros_infos column
+    this.rosStatuses = user.isHA || user.isEmployer ? 'rosStatuses' : 'ros_infos';
   }
 
   filterRegion(regionFilter) {

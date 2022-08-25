@@ -111,14 +111,15 @@ const filterData = (data, columns, isMoH = false) => {
     if (
       item.rosStatuses &&
       item.rosStatuses.length > 0 &&
-      item.statusInfos[0].status !== 'archived'
+      item.statusInfos?.[0].status !== 'archived'
     ) {
-      const archivedStatuses = item.statusInfos.filter(
-        (statusInfo) =>
-          statusInfo.status === 'withdrawn' ||
-          statusInfo.status === 'pending_acknowledgement' ||
-          statusInfo.status === 'hired_by_peer'
-      );
+      const archivedStatuses =
+        item.statusInfos?.filter(
+          (statusInfo) =>
+            statusInfo.status === 'withdrawn' ||
+            statusInfo.status === 'pending_acknowledgement' ||
+            statusInfo.status === 'hired_by_peer'
+        ) ?? [];
       const otherStatuses = archivedStatuses.map((statusInfo) => statusInfo.status);
       row.status = ['ros', ...otherStatuses];
     } else if (item.statusInfos && item.statusInfos.length > 0) {
@@ -474,6 +475,8 @@ const ParticipantTable = () => {
         );
       case 'postHireStatuses':
         return getGraduationStatus(row[columnId] || []);
+      case 'rosStartDate':
+        return row[columnId] ?? 'N/A';
       default:
         return row[columnId];
     }

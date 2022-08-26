@@ -62,6 +62,17 @@ const participantDetails = async (id) => {
         is_current: true,
       });
 
+    const latestStatuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
+      participant_id: id,
+      current: true,
+    });
+    participant.latestStatuses = latestStatuses.map((status) => ({
+      id: status.id,
+      employerId: status.employer_id,
+      siteId: status.data.site,
+      status: status.status,
+    }));
+
     const { body: rosSiteDetails } = rosStatusDbObj?.rosSite || { body: {} };
     return {
       ...participant,

@@ -230,55 +230,8 @@ participantsRouter.get(
 
 // POST participants/batch
 // Create participant records from uploaded XLSX file
-// Commenting out as per discussion: https://freshworks.slack.com/archives/C011G18PW5S/p1661469661319249
+// Removing as per discussion: https://freshworks.slack.com/archives/C011G18PW5S/p1661469661319249
 // Legacy endpoint
-/** participantsRouter.post(
-  `/batch`,
-  keycloak.allowRolesMiddleware('maximus'),
-  keycloak.getUserInfoMiddleware(),
-  multer({
-    fileFilter: (req, file, cb) => {
-      const fileSize = parseInt(req.headers['content-length'], 10);
-      if (file.fieldname !== 'file') {
-        req.fileError = 'Invalid field name.';
-        return cb(null, false);
-      }
-      if (file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-        return cb(null, true);
-      }
-      // 5MB
-      if (fileSize >= 5116000) {
-        req.fileError = 'File too large';
-        return cb(null, false);
-      }
-      req.fileError = 'File type not allowed.';
-      return cb(null, false);
-    },
-  }).single('file'),
-  asyncMiddleware(async (req, res) => {
-    if (req.fileError) {
-      return res.json({ status: 'Error', message: req.fileError });
-    }
-
-    try {
-      const response = await parseAndSaveParticipants(req.file.buffer);
-      const user = req.hcapUserInfo;
-      logger.info({
-        action: 'participant_post',
-        performed_by: {
-          username: user.username,
-          id: user.id,
-        },
-        // Slicing to one page of results
-        ids_posted: response.slice(0, 10).map((entry) => entry.id),
-      });
-
-      return res.status(201).json(response);
-    } catch (excp) {
-      return res.status(400).send(`${excp}`);
-    }
-  })
-); */
 
 // POST participants/
 participantsRouter.post(

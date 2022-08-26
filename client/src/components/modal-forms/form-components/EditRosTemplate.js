@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 import { Box, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Formik, Form as FormikForm } from 'formik';
 
 import { ConfirmationDialog, FormButtons } from './';
 
@@ -13,13 +12,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const EditRosTemplate = ({
-  initialValues,
-  onSubmit,
-  onClose,
-  validationSchema,
-  children,
-}) => {
+export const EditRosTemplate = ({ onSubmit, onClose, children, values, validateForm }) => {
   const classes = useStyles();
   const [isConfirmationOpen, setConfirmationOpen] = useState(false);
   const [formValues, setFormValues] = useState(null);
@@ -35,30 +28,20 @@ export const EditRosTemplate = ({
 
   return (
     <>
-      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-        {({ validateForm, submitForm, values, setSubmitting }) => (
-          <FormikForm>
-            <Box mb={2}>
-              {children}
+      <Box mb={2}>
+        {children}
+        <Divider className={classes.formDivider} />
 
-              <Divider className={classes.formDivider} />
-
-              <FormButtons
-                onClose={onClose}
-                onSubmit={async () => {
-                  setSubmitting(false);
-                  const res = await validateForm();
-                  if (Object.entries(res)?.length === 0) {
-                    openConfirmationDialog(values);
-                    return;
-                  }
-                  await submitForm();
-                }}
-              />
-            </Box>
-          </FormikForm>
-        )}
-      </Formik>
+        <FormButtons
+          onClose={onClose}
+          onSubmit={async () => {
+            const errors = await validateForm();
+            if (Object.keys(errors).length === 0) {
+              openConfirmationDialog(values);
+            }
+          }}
+        />
+      </Box>
 
       <ConfirmationDialog
         isOpen={isConfirmationOpen}

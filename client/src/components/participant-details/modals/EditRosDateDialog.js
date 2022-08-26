@@ -1,13 +1,13 @@
 import React from 'react';
 
 import { Dialog } from '../../generic';
-import { EditRosDate } from '../../modal-forms';
+import { EditRosDateForm } from '../../modal-forms';
 import { EditRosDateSchema } from '../../../constants';
 
 export const EditRosDateDialog = ({ isOpen, onClose, onSubmit }) => {
   return (
     <Dialog title='Edit Start Date' open={isOpen}>
-      <EditRosDate
+      <EditRosDateForm
         initialValues={{ date: undefined }}
         validationSchema={EditRosDateSchema}
         onSubmit={onSubmit}

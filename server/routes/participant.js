@@ -48,6 +48,11 @@ const participantsRouter = express.Router();
 const newHiredParticipantRouter = express.Router();
 const employerActionsRouter = express.Router();
 
+const { participantStatus } = require('../constants');
+
+const { ALREADY_HIRED, INVALID_STATUS, INVALID_STATUS_TRANSITION, INVALID_ARCHIVE } =
+  participantStatus;
+
 // Get details of a participant by ID
 participantRouter.get(
   '/details/:id',
@@ -453,7 +458,15 @@ employerActionsRouter.post(
       participant_id: participantId,
       status,
     });
-    return res.status(201).json({ data: result });
+    let returnStatus = 201;
+    if (
+      [ALREADY_HIRED, INVALID_ARCHIVE, INVALID_STATUS, INVALID_STATUS_TRANSITION].includes(
+        result.status
+      )
+    ) {
+      returnStatus = 400;
+    }
+    return res.status(returnStatus).json({ data: result });
   })
 );
 

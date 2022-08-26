@@ -13,8 +13,16 @@ import { postHireStatuses } from '../../constants';
 import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
 import { formatCohortDate } from '../../utils';
+import { participantStatus } from '../../constants';
 // Helper function to call archive participant service
-const handleArchive = async (participantId, openToast, dispatchFunction, additional = {}) => {
+const handleArchive = async (
+  participantId,
+  openToast,
+  dispatchFunction,
+  additional = {},
+  siteId = null,
+  currentStatusId = null
+) => {
   const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
     method: 'POST',
     headers: {
@@ -22,7 +30,13 @@ const handleArchive = async (participantId, openToast, dispatchFunction, additio
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
-    body: JSON.stringify({ participantId, status: 'archived', data: additional }),
+    body: JSON.stringify({
+      participantId,
+      status: 'archived',
+      data: additional,
+      site: siteId,
+      currentStatusId,
+    }),
   });
   if (response.ok) {
     fetchUserNotifications(dispatchFunction);
@@ -179,7 +193,17 @@ export const TrackGraduation = (props) => {
                 }}
                 onSubmit={async (values) => {
                   setShowArchiveModal(false);
-                  await handleArchive(props?.participant?.id, openToast, dispatchFunction, values);
+                  const hiredStatus = props?.participant?.latestStatuses?.find(
+                    (status) => status.status === participantStatus.HIRED
+                  );
+                  await handleArchive(
+                    props?.participant?.id,
+                    openToast,
+                    dispatchFunction,
+                    values,
+                    hiredStatus?.siteId,
+                    hiredStatus?.id
+                  );
                   fetchData();
                 }}
                 participant={props?.participant}

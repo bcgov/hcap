@@ -1,13 +1,9 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 // Test: npm run test:debug participant.test.js
-const { readFileSync } = require('fs');
-const { join } = require('path');
 const request = require('supertest');
 const app = require('../server');
 const { startDB, closeDB, cleanDB } = require('./util/db');
-const { getKeycloakToken, superuser, employer } = require('./util/keycloak');
-
-const MOCK_DATA_PATH = './mock/xlsx/participants-data.xlsx';
+const { getKeycloakToken, superuser } = require('./util/keycloak');
 
 describe('Participants Endpoint', () => {
   // @TODO add seed data and test proper results
@@ -98,7 +94,8 @@ describe('Participants Endpoint', () => {
     expect(res.body).toEqual([]);
   });
 
-  it('Upload participants xlsx as superuser, receive success', async () => {
+  // no longer needed
+  /* it('Upload participants xlsx as superuser, receive success', async () => {
     const participantsXlsx = readFileSync(join(__dirname, MOCK_DATA_PATH));
 
     const res = await request
@@ -132,5 +129,5 @@ describe('Participants Endpoint', () => {
       .set(await getKeycloakToken(employer))
       .attach('file', participantsXlsx, 'participants-data.xlsx');
     expect(res.status).toEqual(403);
-  });
+  }); */
 });

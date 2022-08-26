@@ -1,5 +1,4 @@
 const { validate: uuidValidate } = require('uuid');
-const multer = require('multer');
 const express = require('express');
 
 const {
@@ -7,7 +6,6 @@ const {
   getParticipants,
   getParticipantByID,
   updateParticipant,
-  parseAndSaveParticipants,
   confirmParticipantInterest,
   validateConfirmationId,
   deleteAcknowledgement,
@@ -232,7 +230,9 @@ participantsRouter.get(
 
 // POST participants/batch
 // Create participant records from uploaded XLSX file
-participantsRouter.post(
+// Commenting out as per discussion: https://freshworks.slack.com/archives/C011G18PW5S/p1661469661319249
+// Legacy endpoint
+/** participantsRouter.post(
   `/batch`,
   keycloak.allowRolesMiddleware('maximus'),
   keycloak.getUserInfoMiddleware(),
@@ -278,7 +278,7 @@ participantsRouter.post(
       return res.status(400).send(`${excp}`);
     }
   })
-);
+); */
 
 // POST participants/
 participantsRouter.post(

@@ -34,7 +34,8 @@ export default () => {
 
   const handleSubmit = async () => {
     setLoadingData(true);
-    const data = new FormData();
+    // legacy endpoint
+    /* const data = new FormData();
     data.append('file', file);
     const response = await fetch(`${API_URL}/api/v1/participants/batch`, {
       headers: {
@@ -42,10 +43,10 @@ export default () => {
       },
       method: 'POST',
       body: data,
-    });
+    }); */
 
     setLoadingData(false);
-    if (response.ok) {
+    /* if (response.ok) {
       const result = await response.json();
       setFile(null);
       if (Array.isArray(result)) {
@@ -56,7 +57,7 @@ export default () => {
     } else {
       const message = await response.text();
       setErrors([message]);
-    }
+    } */
   };
 
   const handleChange = (files) => {

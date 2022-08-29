@@ -21,6 +21,7 @@ import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import dayjs from 'dayjs';
 import { keyedString } from '../../utils';
+import { fetchSitePhases } from '../../services/site';
 
 const columnIDs = [
   { id: 'participantId', name: 'ID' },
@@ -45,10 +46,19 @@ const fetchDetails = async (id) => {
 
   if (response.ok) {
     const site = await response.json();
+    console.log('hi tara from fetch details');
+    console.log(site);
+    fetchPhases(site.id);
     return site;
   } else {
     return {};
   }
+};
+
+const fetchPhases = async (siteId) => {
+  console.log('hi tara from fetch phases');
+  const phases = await fetchSitePhases(siteId);
+  console.log(phases);
 };
 
 const fetchParticipants = async (siteId) => {

@@ -1,6 +1,19 @@
 import store from 'store';
 import { API_URL } from '../constants';
 
+export const fetchSitePhases = async (siteId) => {
+  console.log('hi tara from fetch site phases!');
+  const response = await fetch(`${API_URL}/api/v1/phase-allocation/${siteId}`, {
+    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    method: 'GET',
+  });
+  let phases = [];
+  if (response.ok) {
+    phases = await response.json();
+  }
+  return phases;
+};
+
 export const fetchSiteRows = async (columns) => {
   const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
     headers: { Authorization: `Bearer ${store.get('TOKEN')}` },

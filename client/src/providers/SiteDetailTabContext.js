@@ -13,6 +13,7 @@ const tabs = {
   SITE_DETAILS: 'Site Details',
   HIRED_PARTICIPANTS: 'Hired Participants',
   WITHDRAWN_PARTICIPANTS: 'Withdrawn Participants',
+  ALLOCATION: 'Allocation',
 };
 
 const participantsReducer = (state, action) => {

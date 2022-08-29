@@ -24,8 +24,8 @@ exports.up = async () => {
             'system',
             now(),
             now()
-        FROM
-            employer_sites`,
+        FROM ${collections.EMPLOYER_SITES}`,
+
     // Verification: Error will be raised if migration failed and transaction will fail
     `DO $$
     DECLARE
@@ -33,19 +33,20 @@ exports.up = async () => {
         numSitePhaseAllocations integer := 0;
         errSites integer := COUNT(*)
             FROM
-                employer_sites
-                JOIN site_phase_allocation ON employer_sites.id = site_phase_allocation.site_id
+                ${collections.EMPLOYER_SITES}
+                JOIN ${collections.SITE_PHASE_ALLOCATION} ON 
+                    ${collections.EMPLOYER_SITES}.id = ${collections.SITE_PHASE_ALLOCATION}.site_id
             WHERE
                 CAST(body ->> 'allocation' AS integer) <> allocation;          
                
     BEGIN 
         SELECT
             COUNT(es.id),
-            COUNT(site_phase_allocation.id)
+            COUNT(${collections.SITE_PHASE_ALLOCATION}.id)
             INTO numSites, numSitePhaseAllocations
         FROM
-            employer_sites es
-        JOIN site_phase_allocation ON es.id = site_phase_allocation.site_id;
+            ${collections.EMPLOYER_SITES} es
+        JOIN ${collections.SITE_PHASE_ALLOCATION} ON es.id = ${collections.SITE_PHASE_ALLOCATION}.site_id;
         RAISE NOTICE 'number of sites: %, SPA sites: %, errSites: %', numSites, numSitePhaseAllocations, errSites;
         
 
@@ -57,6 +58,9 @@ exports.up = async () => {
         RAISE EXCEPTION 'Migration failed: Mismatch between number of sites & number of site allocations';
     END IF;
     END $$`,
+
+    // Drop the allocation from the sites table
+    `UPDATE ${collections.EMPLOYER_SITES} SET body = body::jsonb - 'allocation'`,
   ];
   await dbClient.db.withTransaction(async (tx) => {
     for (const query of queries) {

@@ -342,7 +342,7 @@ export default ({ id, siteId }) => {
                           variant='body2'
                           onClick={() => participantOnClick(row.participantId)}
                         >
-                          {row[columnId]}
+                          {row[columnId] ?? ''}
                         </Link>
                       );
                     }

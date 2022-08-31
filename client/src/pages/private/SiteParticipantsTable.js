@@ -47,8 +47,11 @@ const fetchDetails = async (id) => {
   if (response.ok) {
     const site = await response.json();
     const phases = await fetchPhases(site.id);
+    const currentPhase = phases.find((phase) => {
+      return dayjs().isBetween(phase.startDate, phase.endDate);
+    });
 
-    return { ...site, phases: phases };
+    return { ...site, ...currentPhase, phases: phases };
   } else {
     return {};
   }
@@ -212,7 +215,7 @@ export default ({ id, siteId }) => {
       default:
         return;
     }
-  }, [fetchedHiredRows, fetchedWithdrawnRows, selectedTab]);
+  }, [fetchedHiredRows, fetchedWithdrawnRows, site.phases, selectedTab]);
 
   useEffect(() => {
     setLoadingData(true);

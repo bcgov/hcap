@@ -87,7 +87,6 @@ const getAllSitePhases = async (siteId) => {
 const getAllGlobalPhases = async () => dbClient.db[collections.GLOBAL_PHASE].findDoc({});
 
 const createGlobalPhase = async (phase, user) => {
-  // TODO: this should create a site_phase_allocation for each site probably
   const phaseJson = { ...phase, created_by: user.id, updated_by: user.id };
   const res = await dbClient.db[collections.GLOBAL_PHASE].insert(phaseJson);
   return res;

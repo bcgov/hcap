@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
 import { makeStyles } from '@material-ui/core/styles';
 import { Page, Button, CheckPermissions } from '../../components/generic';
-import store from 'store';
 import Alert from '@material-ui/lab/Alert';
-import { API_URL, Routes } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   dropzone: {
@@ -30,33 +27,10 @@ export default () => {
   const [isLoadingData, setLoadingData] = useState(false);
   const [errors, setErrors] = useState([]);
   const classes = useStyles();
-  const history = useHistory();
 
   const handleSubmit = async () => {
     setLoadingData(true);
-    const data = new FormData();
-    data.append('file', file);
-    const response = await fetch(`${API_URL}/api/v1/participants/batch`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'POST',
-      body: data,
-    });
-
     setLoadingData(false);
-    if (response.ok) {
-      const result = await response.json();
-      setFile(null);
-      if (Array.isArray(result)) {
-        history.push(Routes.ParticipantUploadResults, { results: result });
-      } else {
-        setErrors([result.message]);
-      }
-    } else {
-      const message = await response.text();
-      setErrors([message]);
-    }
   };
 
   const handleChange = (files) => {

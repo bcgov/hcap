@@ -1,13 +1,9 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 // Test: npm run test:debug participant.test.js
-const { readFileSync } = require('fs');
-const { join } = require('path');
 const request = require('supertest');
 const app = require('../server');
 const { startDB, closeDB, cleanDB } = require('./util/db');
-const { getKeycloakToken, superuser, employer } = require('./util/keycloak');
-
-const MOCK_DATA_PATH = './mock/xlsx/participants-data.xlsx';
+const { getKeycloakToken, superuser } = require('./util/keycloak');
 
 describe('Participants Endpoint', () => {
   // @TODO add seed data and test proper results
@@ -96,41 +92,5 @@ describe('Participants Endpoint', () => {
       .set(await getKeycloakToken(superuser));
     expect(res.status).toEqual(200);
     expect(res.body).toEqual([]);
-  });
-
-  it('Upload participants xlsx as superuser, receive success', async () => {
-    const participantsXlsx = readFileSync(join(__dirname, MOCK_DATA_PATH));
-
-    const res = await request
-      .agent(app)
-      .post('/api/v1/participants/batch')
-      .set(await getKeycloakToken(superuser))
-
-      .attach('file', participantsXlsx, 'participants-data.xlsx');
-    const expectedRes = [
-      { id: 6488690, status: 'Success' },
-      { id: 6488691, status: 'Success' },
-      { id: 6488692, status: 'Success' },
-      { id: 6488693, status: 'Success' },
-      { id: 6488694, status: 'Success' },
-      { id: 6488695, status: 'Success' },
-      { id: 6488696, status: 'Success' },
-      { id: 6488697, status: 'Success' },
-      { id: 6488698, status: 'Success' },
-      { id: 6488699, status: 'Success' },
-    ];
-    expect(res.status).toEqual(201);
-    expect(res.body).toEqual(expectedRes);
-  });
-
-  it('Upload participants xlsx as employer, receive forbidden', async () => {
-    const participantsXlsx = readFileSync(join(__dirname, MOCK_DATA_PATH));
-
-    const res = await request
-      .agent(app)
-      .post('/api/v1/participants/batch')
-      .set(await getKeycloakToken(employer))
-      .attach('file', participantsXlsx, 'participants-data.xlsx');
-    expect(res.status).toEqual(403);
   });
 });

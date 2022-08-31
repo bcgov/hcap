@@ -9,6 +9,9 @@ export const keyLabelMap = {
   postHireStatusLabel: 'Graduation Status',
 };
 
+export const rosEditWarning =
+  'You are making changes to this record, please ensure that all data inputted is accurate';
+
 export const rosKeyMap = {
   siteName: {
     label: 'Current Site',

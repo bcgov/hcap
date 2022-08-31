@@ -35,16 +35,6 @@ router.post(
     }
     const { data, status, siteId } = req.body;
     await validate(CreateReturnOfServiceSchema, req.body);
-    // Validate Participant
-    const [participant] = await getParticipantByID(participantId);
-    if (!participant) {
-      logger.error({
-        action: 'ros-status-create',
-        message: `Participant ${participantId} not found`,
-      });
-      return res.status(404).send('Participant not found');
-    }
-    const { data, status, siteId, newSiteId, isUpdating } = req.body;
 
     if (siteId) {
       // Validate siteId

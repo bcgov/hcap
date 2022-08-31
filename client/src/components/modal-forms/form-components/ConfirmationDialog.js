@@ -1,9 +1,7 @@
 import React from 'react';
 
 import { Box, makeStyles, Typography } from '@material-ui/core';
-import { Button } from '../../generic';
-
-import { Dialog } from '../../generic';
+import { Button, Dialog } from '../../generic';
 
 const useStyles = makeStyles(() => ({
   confirmationButton: {

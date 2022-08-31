@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import { useState } from 'react';
 import { ConfirmationDialog } from '../components/modal-forms/form-components';
 
 /**

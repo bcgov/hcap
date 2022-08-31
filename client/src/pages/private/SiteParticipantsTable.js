@@ -46,19 +46,29 @@ const fetchDetails = async (id) => {
 
   if (response.ok) {
     const site = await response.json();
-    console.log('hi tara from fetch details');
-    console.log(site);
-    fetchPhases(site.id);
-    return site;
+    const phases = await fetchPhases(site.id);
+
+    return { ...site, phases: phases };
   } else {
     return {};
   }
 };
 
 const fetchPhases = async (siteId) => {
-  console.log('hi tara from fetch phases');
-  const phases = await fetchSitePhases(siteId);
-  console.log(phases);
+  const phaseData = await fetchSitePhases(siteId);
+  return phaseData.map((phase) => {
+    const allocation = phase.allocation ?? 0;
+    let phaseRow = {
+      phaseName: phase.name,
+      startDate: dayjs(phase.start_date).format('YYYY/MM/DD'),
+      endDate: dayjs(phase.end_date).format('YYYY/MM/DD'),
+      allocation: phase.allocation ?? 'N/A',
+      remainingHires: allocation - phase.hcapHires,
+      hcapHires: phase.hcapHires,
+      nonHcapHires: phase.nonHcapHires,
+    };
+    return phaseRow;
+  });
 };
 
 const fetchParticipants = async (siteId) => {
@@ -195,6 +205,9 @@ export default ({ id, siteId }) => {
         return;
       case tabs.WITHDRAWN_PARTICIPANTS:
         setRows(fetchedWithdrawnRows);
+        return;
+      case tabs.ALLOCATION:
+        setRows(site.phases);
         return;
       default:
         return;

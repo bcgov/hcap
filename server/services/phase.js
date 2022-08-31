@@ -71,6 +71,10 @@ const getAllSitePhases = async (siteId) => {
     sitePhase.hcapHires = phaseHires.filter((hire) => !hire.data.nonHcapOpportunity).length;
     sitePhase.nonHcapHires = phaseHires.filter((hire) => hire.data.nonHcapOpportunity).length;
 
+    // strip time/timezone from date
+    sitePhase.start_date = dayjs.utc(sitePhase.start_date).format('YYYY/MM/DD');
+    sitePhase.end_date = dayjs.utc(sitePhase.end_date).format('YYYY/MM/DD');
+
     delete sitePhase.site_phase_allocation;
     delete sitePhase.archivedJoin;
     delete sitePhase.hires;

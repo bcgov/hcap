@@ -60,8 +60,8 @@ const fetchPhases = async (siteId) => {
     const allocation = phase.allocation ?? 0;
     let phaseRow = {
       phaseName: phase.name,
-      startDate: dayjs(phase.start_date).format('YYYY/MM/DD'),
-      endDate: dayjs(phase.end_date).format('YYYY/MM/DD'),
+      startDate: phase.start_date,
+      endDate: phase.end_date,
       allocation: phase.allocation ?? 'N/A',
       remainingHires: allocation - phase.hcapHires,
       hcapHires: phase.hcapHires,

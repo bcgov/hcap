@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.light,
     width: '100%',
     borderTop: `2px solid ${theme.palette.secondary.main}`,
+    marginTop: 'auto',
   },
   linkBox: {
     borderRight: `1px solid ${theme.palette.default.white}`,

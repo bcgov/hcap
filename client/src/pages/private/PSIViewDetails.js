@@ -156,7 +156,7 @@ export default ({ match }) => {
 
   scrollUp();
   return (
-    <Page isAutoHeight={true}>
+    <Page>
       <Dialog
         title={
           activeModalForm === 'edit-psi'

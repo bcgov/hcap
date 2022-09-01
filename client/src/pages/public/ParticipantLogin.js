@@ -55,7 +55,7 @@ export default () => {
   };
 
   return (
-    <Page hideEmployers={true} isAutoHeight={false}>
+    <Page hideEmployers={true}>
       <Box container display='flex' minHeight='100%' className={classes.pageContainer}>
         <Box className={classes.leftContainer}>
           <Box mb={3}>

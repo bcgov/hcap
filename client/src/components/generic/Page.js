@@ -10,17 +10,19 @@ import { Routes } from '../../constants';
 
 const useStyles = makeStyles(() => ({
   root: (props) => ({
-    height: props.isAutoHeight ? 'auto' : 'calc(100vh - 124px)',
+    height: 'calc(100vh - 124px)',
     justifyContent: props.centered ? 'center' : 'flex-start',
     alignItems: 'center',
     flexWrap: 'nowrap',
     flexDirection: 'column',
+    display: 'flex',
+    overflow: 'scroll',
   }),
 }));
 
 // hideEmployers set to true for participant-facing pages
-export const Page = ({ children, hideEmployers = false, centered, isAutoHeight = false }) => {
-  const classes = useStyles({ centered, isAutoHeight });
+export const Page = ({ children, hideEmployers = false, centered }) => {
+  const classes = useStyles({ centered });
 
   const { auth } = AuthContext.useAuth();
   const notifications = useMemo(() => auth.notifications || [], [auth.notifications]);

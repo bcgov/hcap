@@ -240,7 +240,7 @@ export default () => {
 
   // Render
   return (
-    <Page isAutoHeight>
+    <Page>
       <CheckPermissions
         permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
         renderErrorMessage

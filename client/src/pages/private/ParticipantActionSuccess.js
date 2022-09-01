@@ -35,10 +35,7 @@ export default () => {
   };
 
   return (
-    <Page
-      hideEmployers={!window.location.hostname.includes('freshworks.club')}
-      isAutoHeight={false}
-    >
+    <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
       <Box
         container
         justifyContent='center'

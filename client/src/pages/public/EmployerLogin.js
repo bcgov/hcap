@@ -57,7 +57,7 @@ export default () => {
   const redirectToLogin = () => history.push(Routes.Login);
 
   return (
-    <Page isAutoHeight>
+    <Page>
       <Box display='flex'>
         <Box p={12} maxWidth='60%'>
           <Typography variant='subtitle1' className={classes.blueText}>

@@ -241,7 +241,7 @@ describe.skip('Server V1 Form Endpoints', () => {
     const expectedResponse = { siteId: 67, status: 'Success' };
     expect(siteResponse).toEqual(expectedResponse);
 
-    const sites = await getSites();
+    const sites = await getSites({ roles: ['ministry_of_health'] });
     const [siteData] = sites.filter((entry) => entry.siteId === siteResponse.siteId);
 
     const [res] = await getSiteByID(siteData.id);

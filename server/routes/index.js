@@ -151,8 +151,8 @@ apiRouter.get(
   keycloak.allowRolesMiddleware('*'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
-    let sites = await getSites();
-    sites = sites.filter((i) => req.hcapUserInfo.sites.includes(i.siteId));
+    const { hcapUserInfo: user } = req;
+    const sites = await getSites(user);
     const notifications = await getUserNotifications(req.hcapUserInfo);
     return res.json({
       roles: req.hcapUserInfo.roles,

@@ -132,7 +132,7 @@ describe('Employer Site Endpoints', () => {
   });
 
   it('Get sites, receive all successfully', async () => {
-    const res = await getSites();
+    const res = await getSites({ roles: ['ministry_of_health'] });
     expect(res).toEqual(
       expect.arrayContaining([site].map((item) => expect.objectContaining(item)))
     );

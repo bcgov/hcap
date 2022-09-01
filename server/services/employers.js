@@ -50,7 +50,29 @@ const updateSite = async (id, site) => {
   return dbClient.db[collections.EMPLOYER_SITES].updateDoc({ id }, changes);
 };
 
-const getSites = async () => dbClient.db[collections.EMPLOYER_SITES].findDoc({});
+/**
+ * Get all accessible sites for a user
+ * @param {*} user user with roles and sites to filter
+ * @returns list of sites which the user has access to
+ */
+
+const getSites = async (user) => {
+  const criteria = {};
+
+  if (user.isHA) {
+    criteria.siteId = user.sites.map((site) => `${site}`); // cast to string
+    criteria.healthAuthority = user.regions;
+  }
+
+  if (user.isEmployer) {
+    criteria.siteId = user.sites.map((site) => `${site}`); // cast to string
+  }
+
+  return dbClient.db[collections.EMPLOYER_SITES].findDoc(criteria, {
+    order: [{ field: `siteName`, direction: 'asc' }],
+    fields: ['siteId', 'siteName', 'operatorName', 'healthAuthority', 'postalCode', 'allocation'],
+  });
+};
 
 const getSiteDetailsById = async (id) => {
   const site = await dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
@@ -101,21 +123,6 @@ const getSiteByID = async (id) => {
   return site;
 };
 
-const getAllSites = async () =>
-  (
-    await dbClient.db[collections.EMPLOYER_SITES].findDoc(
-      {},
-      {
-        order: [{ field: `body.siteName`, direction: 'asc' }],
-      }
-    )
-  ).map((site) => ({
-    id: site.id,
-    siteId: site.siteId,
-    siteName: site.siteName,
-    healthAuthority: site.healthAuthority,
-  }));
-
 module.exports = {
   getEmployers,
   getEmployerByID,
@@ -124,6 +131,5 @@ module.exports = {
   updateSite,
   getSites,
   getSiteByID,
-  getAllSites,
   getSiteDetailsById,
 };

@@ -7,7 +7,7 @@ import store from 'store';
 import { Table, Button, Dialog, CustomTab, CustomTabs } from '../../components/generic';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, SiteDetailTabContext } from '../../providers';
-import { FeatureFlag, flagKeys, fetchUserNotifications } from '../../services';
+import { FeatureFlag, flagKeys, fetchUserNotifications, featureFlag } from '../../services';
 import { fieldsLabelMap } from '../../constants';
 import {
   ToastStatus,
@@ -46,12 +46,16 @@ const fetchDetails = async (id) => {
 
   if (response.ok) {
     const site = await response.json();
-    const phases = await fetchPhases(site.id);
-    const currentPhase = phases.find((phase) => {
-      return dayjs().isBetween(phase.startDate, phase.endDate);
-    });
+    if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
+      const phases = await fetchPhases(site.id);
+      const currentPhase = phases.find((phase) => {
+        return dayjs().isBetween(phase.startDate, phase.endDate, null, '()');
+      });
 
-    return { ...site, ...currentPhase, phases: phases };
+      return { ...site, ...currentPhase, phases: phases };
+    } else {
+      return { ...site, phases: [] };
+    }
   } else {
     return {};
   }

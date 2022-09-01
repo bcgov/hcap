@@ -14,7 +14,7 @@ export TOOLS_NAMESPACE=$(OS_NAMESPACE_PREFIX)-tools
 export DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}
 
 # Feature flags
-export FEATURE_PHASE_ALLOCATION=true
+export FEATURE_PHASE_ALLOCATION = false
 
 export BUILD_REF?=dev
 # Aliases 

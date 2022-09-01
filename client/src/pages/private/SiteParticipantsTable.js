@@ -7,7 +7,7 @@ import store from 'store';
 import { Table, Button, Dialog, CustomTab, CustomTabs } from '../../components/generic';
 import { getDialogTitle } from '../../utils';
 import { AuthContext, SiteDetailTabContext } from '../../providers';
-import { fetchUserNotifications } from '../../services';
+import { FeatureFlag, flagKeys, fetchUserNotifications } from '../../services';
 import { fieldsLabelMap } from '../../constants';
 import {
   ToastStatus,
@@ -299,7 +299,7 @@ export default ({ id, siteId }) => {
               )) // Tab component with tab name as value
             }
           </CustomTabs>
-          {selectedTab === tabs.SITE_DETAILS ? (
+          {selectedTab === tabs.SITE_DETAILS && (
             <Grid container>
               {Object.keys(fieldsLabelMap).map((title) => (
                 <Grid key={title} item xs={12} sm={6} xl={3} style={{ marginBottom: 40 }}>
@@ -327,7 +327,8 @@ export default ({ id, siteId }) => {
                 </Grid>
               ))}
             </Grid>
-          ) : (
+          )}
+          {[tabs.HIRED_PARTICIPANTS, tabs.WITHDRAWN_PARTICIPANTS].includes(selectedTab) && (
             <Table
               columns={columns}
               order={order}
@@ -364,6 +365,21 @@ export default ({ id, siteId }) => {
                 }
               }}
             />
+          )}
+          {selectedTab === tabs.ALLOCATION && (
+            <FeatureFlag featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
+              <Table
+                columns={columns}
+                order={order}
+                orderBy={orderBy}
+                onRequestSort={handleRequestSort}
+                rows={sort(rows)}
+                isLoading={isLoadingData}
+                renderCell={(columnId, row) => {
+                  return row[columnId];
+                }}
+              />
+            </FeatureFlag>
           )}
         </Box>
       }

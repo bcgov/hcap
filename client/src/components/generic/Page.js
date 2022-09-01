@@ -10,13 +10,11 @@ import { Routes } from '../../constants';
 
 const useStyles = makeStyles(() => ({
   root: (props) => ({
-    height: 'calc(100vh - 124px)',
+    minHeight: 'calc(100vh - 124px)',
     justifyContent: props.centered ? 'center' : 'flex-start',
     alignItems: 'center',
     flexWrap: 'nowrap',
     flexDirection: 'column',
-    display: 'flex',
-    overflow: 'scroll',
   }),
 }));
 

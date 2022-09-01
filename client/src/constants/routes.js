@@ -32,8 +32,6 @@ export default Object.freeze({
   PSIView: '/psi-view',
   PSIViewDetails: '/psi-view/:id',
   ParticipantView: '/participant-view',
-  ParticipantUpload: '/participant-upload',
-  ParticipantUploadResults: '/participant-upload-results',
   ReportingView: '/reporting-view',
   ParticipantDetails: '/participant-details/:page/:pageId/:id',
   ParticipantDetailsTab: '/participant-details/:page/:pageId/:id/:tab',

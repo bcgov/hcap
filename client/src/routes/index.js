@@ -17,8 +17,6 @@ const PSIView = lazy(() => import('../pages/private/PSIView'));
 const PSIViewDetails = lazy(() => import('../pages/private/PSIViewDetails'));
 const EOIView = lazy(() => import('../pages/private/EOIView'));
 const EOIViewDetails = lazy(() => import('../pages/private/EOIViewDetails'));
-const ParticipantUpload = lazy(() => import('../pages/private/ParticipantUpload'));
-const ParticipantUploadResults = lazy(() => import('../pages/private/ParticipantUploadResults'));
 const ReportingView = lazy(() => import('../pages/private/ReportingView'));
 const ParticipantForm = lazy(() => import('../pages/public/ParticipantForm'));
 const Login = lazy(() => import('../pages/public/Login'));
@@ -181,12 +179,6 @@ export default () => {
             <PrivateRoute exact path={Routes.EOIView} component={EOIView} />
             <PrivateRoute exact path={Routes.EOIViewDetails} component={EOIViewDetails} />
             <PrivateRoute exact path={Routes.ParticipantView} component={ParticipantView} />
-            <PrivateRoute exact path={Routes.ParticipantUpload} component={ParticipantUpload} />
-            <PrivateRoute
-              exact
-              path={Routes.ParticipantUploadResults}
-              component={ParticipantUploadResults}
-            />
             <PrivateRoute exact path={Routes.ParticipantDetails} component={ParticipantDetails} />
             {/**
              * Adding this to support internal tab selection in global navigation

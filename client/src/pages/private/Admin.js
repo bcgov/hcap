@@ -65,9 +65,6 @@ export default () => {
               >
                 Welcome, {name}
               </Typography>
-              <CheckPermissions permittedRoles={['maximus']}>
-                {renderAdminButton(Routes.ParticipantUpload, 'Upload Participants')}
-              </CheckPermissions>
               <CheckPermissions
                 permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
               >

@@ -16,13 +16,6 @@ export default () => {
 
     const redirect = state ? state.redirectOnLogin : Routes.Admin;
 
-    switch (redirect) {
-      case Routes.ParticipantUpload:
-        idpHint = 'bceid';
-        break;
-      default:
-        break;
-    }
     store.set('REDIRECT', redirect);
     keycloak.login({ idpHint, redirectUri: `${window.location.origin}${Routes.Keycloak}` });
   }, [keycloak, state]);

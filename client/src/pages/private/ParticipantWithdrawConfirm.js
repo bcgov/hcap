@@ -7,10 +7,7 @@ import { Routes } from '../../constants';
 export default () => {
   const history = useHistory();
   return (
-    <Page
-      hideEmployers={!window.location.hostname.includes('freshworks.club')}
-      isAutoHeight={false}
-    >
+    <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
       <Box
         container
         justifyContent='center'

@@ -5,10 +5,8 @@ import Grid from '@material-ui/core/Grid';
 import { Box, Typography, Link } from '@material-ui/core';
 import store from 'store';
 import { Table, Button, Dialog, CustomTab, CustomTabs } from '../../components/generic';
-import { getDialogTitle } from '../../utils';
 import { AuthContext, SiteDetailTabContext } from '../../providers';
 import { FeatureFlag, flagKeys, fetchUserNotifications, featureFlag } from '../../services';
-import { fieldsLabelMap } from '../../constants';
 import {
   ToastStatus,
   API_URL,
@@ -16,11 +14,12 @@ import {
   ArchiveHiredParticipantSchema,
   participantStatus,
   Routes,
+  fieldsLabelMap,
 } from '../../constants';
 import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import dayjs from 'dayjs';
-import { keyedString } from '../../utils';
+import { keyedString, getDialogTitle } from '../../utils';
 import { fetchSitePhases } from '../../services/site';
 
 const columnIDs = [

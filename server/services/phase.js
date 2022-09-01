@@ -21,6 +21,9 @@ const getAllSitePhases = async (siteId) => {
           site_id: siteId,
         },
       },
+      // TODO: What we actually want is to have it be on: filter so that hired range is between startDate and endDate
+      // could not NULL COALESCE the start/end dates, and could not use comparitive operators (<=, etc turned to =).
+      // so we get all the hires and filter afterwards.
       hires: {
         type: 'LEFT OUTER',
         relation: collections.PARTICIPANTS_STATUS,
@@ -62,8 +65,7 @@ const getAllSitePhases = async (siteId) => {
         site_phase_allocation_id,
       };
     }
-    // could not NULL COALESCE the start/end dates. :(
-    // so we get all the hires and filter here.
+
     const phaseHires = phase.hires.filter((hire) =>
       dayjs(hire.data.hiredDate).isBetween(sitePhase.start_date, sitePhase.end_date, null, '()')
     );
@@ -75,16 +77,24 @@ const getAllSitePhases = async (siteId) => {
     sitePhase.start_date = dayjs.utc(sitePhase.start_date).format('YYYY/MM/DD');
     sitePhase.end_date = dayjs.utc(sitePhase.end_date).format('YYYY/MM/DD');
 
+    // remove join attributes
     delete sitePhase.site_phase_allocation;
     delete sitePhase.archivedJoin;
     delete sitePhase.hires;
 
-    return sitePhase;
+    return {
+      id: sitePhase.id,
+      phaseName: sitePhase.name,
+      startDate: sitePhase.start_date,
+      endDate: sitePhase.end_date,
+      allocation: sitePhase.allocation,
+      remainingHires: (sitePhase.allocation ?? 0) - sitePhase.hcapHires,
+      hcapHires: sitePhase.hcapHires,
+      nonHcapHires: sitePhase.nonHcapHires,
+    };
   });
   return phaseData;
 };
-
-const getAllGlobalPhases = async () => dbClient.db[collections.GLOBAL_PHASE].findDoc({});
 
 const createGlobalPhase = async (phase, user) => {
   const phaseJson = { ...phase, created_by: user.id, updated_by: user.id };
@@ -92,4 +102,4 @@ const createGlobalPhase = async (phase, user) => {
   return res;
 };
 
-module.exports = { createGlobalPhase, getAllSitePhases, getAllGlobalPhases };
+module.exports = { createGlobalPhase, getAllSitePhases };

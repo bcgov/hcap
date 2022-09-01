@@ -47,7 +47,7 @@ const fetchDetails = async (id) => {
   if (response.ok) {
     const site = await response.json();
     if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
-      const phases = await fetchPhases(site.id);
+      const phases = await fetchSitePhases(site.id);
       const currentPhase = phases.find((phase) => {
         return dayjs().isBetween(phase.startDate, phase.endDate, null, '()');
       });
@@ -59,23 +59,6 @@ const fetchDetails = async (id) => {
   } else {
     return {};
   }
-};
-
-const fetchPhases = async (siteId) => {
-  const phaseData = await fetchSitePhases(siteId);
-  return phaseData.map((phase) => {
-    const allocation = phase.allocation ?? 0;
-    let phaseRow = {
-      phaseName: phase.name,
-      startDate: phase.start_date,
-      endDate: phase.end_date,
-      allocation: phase.allocation ?? 'N/A',
-      remainingHires: allocation - phase.hcapHires,
-      hcapHires: phase.hcapHires,
-      nonHcapHires: phase.nonHcapHires,
-    };
-    return phaseRow;
-  });
 };
 
 const fetchParticipants = async (siteId) => {
@@ -350,7 +333,7 @@ export default ({ id, siteId }) => {
                           variant='body2'
                           onClick={() => participantOnClick(row.participantId)}
                         >
-                          {row[columnId] ?? ''}
+                          {row[columnId]}
                         </Link>
                       );
                     }
@@ -365,7 +348,7 @@ export default ({ id, siteId }) => {
                       />
                     );
                   default:
-                    return row[columnId];
+                    return row[columnId] ?? 'N/A';
                 }
               }}
             />
@@ -380,7 +363,7 @@ export default ({ id, siteId }) => {
                 rows={sort(rows)}
                 isLoading={isLoadingData}
                 renderCell={(columnId, row) => {
-                  return row[columnId];
+                  return row[columnId] ?? 'N/A';
                 }}
               />
             </FeatureFlag>

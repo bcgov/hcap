@@ -31,6 +31,7 @@ router.get(
         id: user.id,
       },
       phases_accessed: result.map((phase) => phase.id),
+      for_site: siteId,
     });
     return res.json({ data: result });
   })

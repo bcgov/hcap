@@ -11,7 +11,7 @@ import { useToast } from '../../hooks';
 import { ToastStatus, EditSiteSchema, API_URL } from '../../constants';
 import { SiteDetailTabContext } from '../../providers';
 
-const SiteParticipantsTable = lazy(() => import('./SiteParticipantsTable'));
+const SiteViewDetailsTabs = lazy(() => import('./SiteViewDetailsTabs'));
 
 const useStyles = makeStyles(() => ({
   cardRoot: {
@@ -178,7 +178,7 @@ export default ({ match }) => {
                   ) : null}
                 </Box>
               </Box>
-              <SiteParticipantsTable id={id} siteId={site.siteId} />
+              <SiteViewDetailsTabs id={id} siteId={site.siteId} />
             </Card>
           </SiteDetailTabContext.TabProvider>
         </CheckPermissions>

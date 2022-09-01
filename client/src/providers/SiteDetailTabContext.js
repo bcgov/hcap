@@ -10,18 +10,12 @@ const types = {
   UPDATE_SITE: 'UPDATE_SITE',
 };
 
-const tabs = featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)
-  ? {
-      SITE_DETAILS: 'Site Details',
-      HIRED_PARTICIPANTS: 'Hired Participants',
-      WITHDRAWN_PARTICIPANTS: 'Withdrawn Participants',
-      ALLOCATION: 'Allocation',
-    }
-  : {
-      SITE_DETAILS: 'Site Details',
-      HIRED_PARTICIPANTS: 'Hired Participants',
-      WITHDRAWN_PARTICIPANTS: 'Withdrawn Participants',
-    };
+const tabs = {
+  SITE_DETAILS: 'Site Details',
+  HIRED_PARTICIPANTS: 'Hired Participants',
+  WITHDRAWN_PARTICIPANTS: 'Withdrawn Participants',
+  ...(featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION) ? { ALLOCATION: 'Allocation' } : {}),
+};
 
 const participantsReducer = (state, action) => {
   const {

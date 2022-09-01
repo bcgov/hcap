@@ -78,16 +78,24 @@ describe('api-e2e tests for /employer-sites route', () => {
     expect(res.status).toEqual(200);
   });
 
-  it('should get sites', async () => {
+  it.only('should get sites', async () => {
     const site = siteObject({ id: 105, name: 'FW Test Site' });
     await saveSingleSite(site);
     const header = await getKeycloakToken(superuser);
     const res = await request(app).get('/api/v1/employer-sites').set(header);
     expect(res.status).toEqual(200);
-    expect(res.body.data.length).toBeGreaterThan(0);
-    expect(
-      res.body.data.filter((siteObj) => site.siteId === siteObj.siteId).length
-    ).toBeGreaterThan(0);
+    expect(res.body.data.length).toEqual(1);
+    expect(res.body.data).toEqual([
+      {
+        id: 1,
+        allocation: site.allocation.toString(),
+        healthAuthority: site.healthAuthority,
+        postalCode: site.postalCode,
+        siteId: site.siteId.toString(),
+        siteName: site.siteName,
+        operatorName: site.operatorName,
+      },
+    ]);
   });
 
   it('should get site by id', async () => {

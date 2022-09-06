@@ -78,7 +78,7 @@ describe('api-e2e tests for /employer-sites route', () => {
     expect(res.status).toEqual(200);
   });
 
-  it.only('should get sites', async () => {
+  it('should get sites', async () => {
     const site = siteObject({ id: 105, name: 'FW Test Site' });
     await saveSingleSite(site);
     const header = await getKeycloakToken(superuser);

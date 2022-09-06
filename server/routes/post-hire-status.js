@@ -28,7 +28,7 @@ router.post(
     await validate(ParticipantPostHireStatusSchema, body);
     const { participantId } = body;
     // Check participant exists
-    const participant = await getParticipantByID(participantId);
+    const [participant] = await getParticipantByID(participantId);
     if (!participant) {
       logger.error({
         action: 'post-hire-status_post',
@@ -78,7 +78,7 @@ router.get(
     const user = userId || localUserId;
     const { participantId } = req.params;
     // Check if the participant exists
-    const participant = await getParticipantByID(participantId);
+    const [participant] = await getParticipantByID(participantId);
     const cohorts = await getAssignCohort({ participantId });
     if (!participant) {
       return res.status(404).send('Participant not found');

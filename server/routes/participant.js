@@ -92,7 +92,7 @@ participantRouter.get(
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantQuerySchema, req.query);
     const user = req.hcapUserInfo;
-    const id = req.query;
+    const { id } = req.query;
     const result = await getParticipantByID(id);
     logger.info({
       action: 'participant_get',
@@ -431,7 +431,7 @@ employerActionsRouter.post(
     const { site, data = {}, participantId, status, currentStatusId = null } = req.body;
     const user = req.hcapUserInfo;
     // Check participant
-    const participant = await getParticipantByID(participantId);
+    const [participant] = await getParticipantByID(participantId);
     if (!participant) {
       return res.status(400).json({ message: 'Could not find participant' });
     }

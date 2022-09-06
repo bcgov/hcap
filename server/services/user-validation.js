@@ -2,7 +2,7 @@ const { getParticipantByID } = require('./participants');
 const logger = require('../logger.js');
 
 const validateParticipant = async (participantId, actionType) => {
-  const [participant] = await getParticipantByID({ id: participantId });
+  const [participant] = await getParticipantByID(participantId);
   if (!participant) {
     logger.error({
       action: actionType,

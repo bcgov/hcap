@@ -29,7 +29,7 @@ const serviceMethod = async (options) => {
   }
   console.log(`Found new cohort ${newCohort}/${newPSI} with id ${newCohortDbObj.id}`);
 
-  const participant = await getParticipantByID({ participantId });
+  const [participant] = await getParticipantByID(participantId);
   if (!participant) {
     return {
       success: false,

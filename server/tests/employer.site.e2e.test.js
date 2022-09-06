@@ -33,13 +33,19 @@ describe('api-e2e tests for /employer-sites route', () => {
   let server;
 
   beforeAll(async () => {
-    await startDB();
     server = app.listen();
   });
 
   afterAll(async () => {
-    await closeDB();
     await server.close();
+  });
+
+  beforeEach(async () => {
+    await startDB();
+  });
+
+  afterEach(async () => {
+    await closeDB();
   });
 
   it('should save site', async () => {

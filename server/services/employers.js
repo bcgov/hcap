@@ -56,7 +56,7 @@ const updateSite = async (id, site) => {
  * @returns list of sites which the user has access to
  */
 
-const getSites = async (user) => {
+const getSitesForUser = async (user) => {
   const criteria = {};
 
   if (user.isHA) {
@@ -129,7 +129,7 @@ module.exports = {
   saveSingleSite,
   saveSites,
   updateSite,
-  getSites,
+  getSitesForUser,
   getSiteByID,
   getSiteDetailsById,
 };

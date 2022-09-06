@@ -4,7 +4,12 @@ const logger = require('../logger.js');
 const { asyncMiddleware } = require('../error-handler.js');
 const { CreateSiteSchema, EditSiteSchema } = require('../validation');
 const { expressRequestBodyValidator, routeRedirect } = require('../middleware');
-const { saveSingleSite, updateSite, getSites, getSiteByID } = require('../services/employers');
+const {
+  saveSingleSite,
+  updateSite,
+  getSitesForUser,
+  getSiteByID,
+} = require('../services/employers');
 const {
   getHiredParticipantsBySite,
   getWithdrawnParticipantsBySite,
@@ -83,7 +88,7 @@ router.get(
   asyncMiddleware(async (req, res) => {
     const { hcapUserInfo: user } = req;
 
-    const result = await getSites(user);
+    const result = await getSitesForUser(user);
 
     logger.info({
       action: 'employer-sites_get',

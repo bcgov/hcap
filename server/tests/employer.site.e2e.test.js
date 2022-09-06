@@ -6,7 +6,7 @@ const request = require('supertest');
 const app = require('../server');
 const { startDB, closeDB } = require('./util/db');
 const { getKeycloakToken, superuser } = require('./util/keycloak');
-const { saveSingleSite } = require('../services/employers.js');
+const { saveSingleSite, saveSites } = require('../services/employers.js');
 
 const siteObject = ({ id, name }) => ({
   siteId: id,
@@ -27,6 +27,15 @@ const siteObject = ({ id, name }) => ({
   siteContactLastName: 'PCP',
   siteContactPhoneNumber: '2219909091',
   siteContactEmailAddress: 'test.site@hcpa.fresh',
+});
+
+const getAllSitesExpectedFields = (site) => ({
+  allocation: site.allocation.toString(),
+  healthAuthority: site.healthAuthority,
+  postalCode: site.postalCode,
+  siteId: site.siteId.toString(),
+  siteName: site.siteName,
+  operatorName: site.operatorName,
 });
 
 describe('api-e2e tests for /employer-sites route', () => {
@@ -84,24 +93,26 @@ describe('api-e2e tests for /employer-sites route', () => {
     expect(res.status).toEqual(200);
   });
 
-  it('should get sites', async () => {
-    const site = siteObject({ id: 105, name: 'FW Test Site' });
-    await saveSingleSite(site);
+  it.only('should get sites', async () => {
+    const sites = [
+      siteObject({ id: 105, name: 'Test Site 1' }),
+      siteObject({ id: 106, name: 'Test Site 2' }),
+      siteObject({ id: 107, name: 'Test Site 3' }),
+    ];
+
+    await saveSites(sites);
+
     const header = await getKeycloakToken(superuser);
     const res = await request(app).get('/api/v1/employer-sites').set(header);
     expect(res.status).toEqual(200);
-    expect(res.body.data.length).toEqual(1);
-    expect(res.body.data).toEqual([
-      {
-        id: 1,
-        allocation: site.allocation.toString(),
-        healthAuthority: site.healthAuthority,
-        postalCode: site.postalCode,
-        siteId: site.siteId.toString(),
-        siteName: site.siteName,
-        operatorName: site.operatorName,
-      },
-    ]);
+    expect(res.body.data.length).toEqual(3);
+    expect(res.body.data).toEqual(
+      expect.arrayContaining(
+        sites.map((site, index) =>
+          expect.objectContaining(getAllSitesExpectedFields(site, index + 1))
+        )
+      )
+    );
   });
 
   it('should get site by id', async () => {

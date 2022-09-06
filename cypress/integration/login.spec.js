@@ -6,7 +6,6 @@ describe('Login', () => {
   it('logs in as superuser and tests the admin page', () => {
     cy.kcLogin('test-superuser');
     cy.visit('/admin');
-    cy.contains('Upload Participants').should('exist');
     cy.contains('View Participants').should('exist');
     cy.contains('View Employer EOIs').should('exist');
     cy.contains('View Sites').should('exist');
@@ -19,7 +18,6 @@ describe('Login', () => {
   it('logs in as a MoH user and tests the admin page', () => {
     cy.kcLogin('test-moh');
     cy.visit('/admin');
-    cy.contains('Upload Participants').should('not.exist');
     cy.contains('View Participants').should('exist');
     cy.contains('View Employer EOIs').should('exist');
     cy.contains('View Sites').should('exist');
@@ -32,7 +30,6 @@ describe('Login', () => {
   it('logs in as a health authority user and tests the admin page', () => {
     cy.kcLogin('test-ha');
     cy.visit('/admin');
-    cy.contains('Upload Participants').should('not.exist');
     cy.contains('View Participants').should('exist');
     cy.contains('View Employer EOIs').should('exist');
     cy.contains('View Sites').should('exist');

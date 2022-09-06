@@ -5,6 +5,7 @@ const { asyncMiddleware } = require('../error-handler.js');
 const { CreatePhaseSchema } = require('../validation');
 const { expressRequestBodyValidator } = require('../middleware');
 const { createGlobalPhase, getAllSitePhases } = require('../services/phase');
+const { FEATURE_PHASE_ALLOCATION } = require('../services/feature-flags');
 
 const router = express.Router();
 
@@ -47,6 +48,10 @@ router.post(
     expressRequestBodyValidator(CreatePhaseSchema),
   ],
   asyncMiddleware(async (req, resp) => {
+    console.log('FEATURE_PHASE_ALLOCATION', FEATURE_PHASE_ALLOCATION);
+    if (!FEATURE_PHASE_ALLOCATION) {
+      return resp.status(501).send('Phase allocation feature not active');
+    }
     try {
       const { body, hcapUserInfo: user } = req;
       const response = await createGlobalPhase(body, user);

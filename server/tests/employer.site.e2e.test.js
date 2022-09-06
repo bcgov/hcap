@@ -128,9 +128,9 @@ describe('api-e2e tests for /employer-sites route', () => {
     expect(res.body.data.length).toEqual(3);
     expect(res.body.data).toEqual(
       expect.arrayContaining(
-        sites.map((site, index) =>
+        sites.map((site) =>
           // using objectContaining because the API returns an ID after saving to the database
-          expect.objectContaining(getAllSitesExpectedFields(site, index + 1))
+          expect.objectContaining(getAllSitesExpectedFields(site))
         )
       )
     );

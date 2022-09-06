@@ -25,8 +25,8 @@ const siteObject = ({ id, name }) => ({
   operatorPhone: '2219909090',
   siteContactFirstName: 'NNN',
   siteContactLastName: 'PCP',
-  siteContactPhone: '2219909091',
-  siteContactEmail: 'test.site@hcpa.fresh',
+  siteContactPhoneNumber: '2219909091',
+  siteContactEmailAddress: 'test.site@hcpa.fresh',
 });
 
 describe('api-e2e tests for /employer-sites route', () => {

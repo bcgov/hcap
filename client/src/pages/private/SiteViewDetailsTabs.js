@@ -5,10 +5,13 @@ import Grid from '@material-ui/core/Grid';
 import { Box, Typography, Link } from '@material-ui/core';
 import store from 'store';
 import { Table, Button, Dialog, CustomTab, CustomTabs } from '../../components/generic';
-import { getDialogTitle } from '../../utils';
 import { AuthContext, SiteDetailTabContext } from '../../providers';
-import { fetchUserNotifications } from '../../services';
-import { fieldsLabelMap } from '../../constants';
+import {
+  FeatureFlaggedComponent,
+  flagKeys,
+  fetchUserNotifications,
+  featureFlag,
+} from '../../services';
 import {
   ToastStatus,
   API_URL,
@@ -16,11 +19,13 @@ import {
   ArchiveHiredParticipantSchema,
   participantStatus,
   Routes,
+  fieldsLabelMap,
 } from '../../constants';
 import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import dayjs from 'dayjs';
-import { keyedString } from '../../utils';
+import { keyedString, getDialogTitle } from '../../utils';
+import { fetchSitePhases } from '../../services/site';
 
 const columnIDs = [
   { id: 'participantId', name: 'ID' },
@@ -45,7 +50,16 @@ const fetchDetails = async (id) => {
 
   if (response.ok) {
     const site = await response.json();
-    return site;
+    if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
+      const phases = await fetchSitePhases(site.id);
+      const currentPhase = phases.find((phase) => {
+        return dayjs().isBetween(phase.startDate, phase.endDate, null, '()');
+      });
+
+      return { ...site, ...currentPhase, phases: phases };
+    } else {
+      return { ...site, phases: [] };
+    }
   } else {
     return {};
   }
@@ -186,10 +200,13 @@ export default ({ id, siteId }) => {
       case tabs.WITHDRAWN_PARTICIPANTS:
         setRows(fetchedWithdrawnRows);
         return;
+      case tabs.ALLOCATION:
+        setRows(site.phases);
+        return;
       default:
         return;
     }
-  }, [fetchedHiredRows, fetchedWithdrawnRows, selectedTab]);
+  }, [fetchedHiredRows, fetchedWithdrawnRows, site.phases, selectedTab]);
 
   useEffect(() => {
     setLoadingData(true);
@@ -273,7 +290,7 @@ export default ({ id, siteId }) => {
               )) // Tab component with tab name as value
             }
           </CustomTabs>
-          {selectedTab === tabs.SITE_DETAILS ? (
+          {selectedTab === tabs.SITE_DETAILS && (
             <Grid container>
               {Object.keys(fieldsLabelMap).map((title) => (
                 <Grid key={title} item xs={12} sm={6} xl={3} style={{ marginBottom: 40 }}>
@@ -301,7 +318,8 @@ export default ({ id, siteId }) => {
                 </Grid>
               ))}
             </Grid>
-          ) : (
+          )}
+          {[tabs.HIRED_PARTICIPANTS, tabs.WITHDRAWN_PARTICIPANTS].includes(selectedTab) && (
             <Table
               columns={columns}
               order={order}
@@ -334,10 +352,25 @@ export default ({ id, siteId }) => {
                       />
                     );
                   default:
-                    return row[columnId];
+                    return row[columnId] ?? 'N/A';
                 }
               }}
             />
+          )}
+          {selectedTab === tabs.ALLOCATION && (
+            <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
+              <Table
+                columns={columns}
+                order={order}
+                orderBy={orderBy}
+                onRequestSort={handleRequestSort}
+                rows={sort(rows)}
+                isLoading={isLoadingData}
+                renderCell={(columnId, row) => {
+                  return row[columnId] ?? 'N/A';
+                }}
+              />
+            </FeatureFlaggedComponent>
           )}
         </Box>
       }

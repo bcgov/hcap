@@ -4,9 +4,39 @@ const logger = require('../logger.js');
 const { asyncMiddleware } = require('../error-handler.js');
 const { CreatePhaseSchema } = require('../validation');
 const { expressRequestBodyValidator } = require('../middleware');
-const { createGlobalPhase } = require('../services/phase');
+const { createGlobalPhase, getAllSitePhases } = require('../services/phase');
 
 const router = express.Router();
+
+// Read: Get phases/allocations for site
+router.get(
+  '/:id',
+  [
+    keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+    keycloak.getUserInfoMiddleware(),
+  ],
+  asyncMiddleware(async (req, res) => {
+    const { hcapUserInfo: user } = req;
+    const siteId = parseInt(req.params.id, 10);
+
+    // TODO: check that user has access to siteId
+    if (siteId) {
+      const result = await getAllSitePhases(siteId);
+
+      logger.info({
+        action: 'phases_get',
+        performed_by: {
+          username: user.username,
+          id: user.id,
+        },
+        phases_accessed: result.map((phase) => phase.id),
+        for_site: siteId,
+      });
+      return res.json({ data: result });
+    }
+    return res.status(400).send('Invalid site id');
+  })
+);
 
 // Create Global Phase: POST
 router.post(

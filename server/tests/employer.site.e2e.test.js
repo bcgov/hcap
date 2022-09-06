@@ -25,9 +25,29 @@ const siteObject = ({ id, name }) => ({
   operatorPhone: '2219909090',
   siteContactFirstName: 'NNN',
   siteContactLastName: 'PCP',
-  siteContactPhoneNumber: '2219909091',
-  siteContactEmailAddress: 'test.site@hcpa.fresh',
+  siteContactPhone: '2219909091',
+  siteContactEmail: 'test.site@hcpa.fresh',
 });
+
+/**
+ * This method is required because different endpoints for creating/editing
+ * sites have different names for similar fields (ie: siteContactPhone vs siteContactPhoneNumber)
+ *
+ * This method wraps siteObject() and renames those fields to pass validation
+ *
+ * @param {*} object containing an id and name used to create a test site
+ * @returns an object containing the given id and name and the rest of the required fields for batch saving
+ */
+const batchSiteObject = ({ id, name }) => {
+  const batchObject = {
+    ...siteObject({ id, name }),
+    siteContactPhoneNumber: siteObject.siteContactPhone,
+    siteContactEmailAddress: siteObject.siteContactEmail,
+  };
+  delete batchObject.siteContactPhone;
+  delete batchObject.siteContactEmail;
+  return batchObject;
+};
 
 const getAllSitesExpectedFields = (site) => ({
   allocation: site.allocation.toString(),
@@ -93,11 +113,11 @@ describe('api-e2e tests for /employer-sites route', () => {
     expect(res.status).toEqual(200);
   });
 
-  it.only('should get sites', async () => {
+  it('should get sites', async () => {
     const sites = [
-      siteObject({ id: 105, name: 'Test Site 1' }),
-      siteObject({ id: 106, name: 'Test Site 2' }),
-      siteObject({ id: 107, name: 'Test Site 3' }),
+      batchSiteObject({ id: 105, name: 'Test Site 1' }),
+      batchSiteObject({ id: 106, name: 'Test Site 2' }),
+      batchSiteObject({ id: 107, name: 'Test Site 3' }),
     ];
 
     await saveSites(sites);

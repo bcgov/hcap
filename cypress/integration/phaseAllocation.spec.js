@@ -23,7 +23,7 @@ describe('Phase functionality', () => {
     cy.contains('li', 'Create new phase').click();
   };
 
-  it('MoH can create new phase', () => {
+  it.skip('MoH can create new phase', () => {
     // happy path
     navigateToForm();
     const formValues = { phaseName: 'Test phase', startDate: '2022/01/01', endDate: '2022/12/31' };
@@ -34,7 +34,7 @@ describe('Phase functionality', () => {
     cy.get('.MuiAlert-message').contains(`Phase '${formValues.phaseName}' added successfully`);
   });
 
-  it('New phase validates required fields', () => {
+  it.skip('New phase validates required fields', () => {
     // attempt to submit empty form
     navigateToForm();
     cy.contains('button', 'Create').click();
@@ -45,7 +45,7 @@ describe('Phase functionality', () => {
     cy.contains('p.Mui-error', 'End Date is required');
   });
 
-  it('New phase must be within reasonable range', () => {
+  it.skip('New phase must be within reasonable range', () => {
     // attempt to submit empty form
     navigateToForm();
     const formValues = {

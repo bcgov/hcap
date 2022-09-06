@@ -6,12 +6,11 @@ export const fetchSitePhases = async (siteId) => {
     headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
     method: 'GET',
   });
-  let phases = [];
   if (response.ok) {
-    phases = await response.json();
-    phases = phases.data;
+    const phases = await response.json();
+    return phases.data;
   }
-  return phases;
+  return [];
 };
 
 export const fetchSiteRows = async (columns) => {

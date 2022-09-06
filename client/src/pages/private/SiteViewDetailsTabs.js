@@ -6,7 +6,12 @@ import { Box, Typography, Link } from '@material-ui/core';
 import store from 'store';
 import { Table, Button, Dialog, CustomTab, CustomTabs } from '../../components/generic';
 import { AuthContext, SiteDetailTabContext } from '../../providers';
-import { FeatureFlag, flagKeys, fetchUserNotifications, featureFlag } from '../../services';
+import {
+  FeatureFlaggedComponent,
+  flagKeys,
+  fetchUserNotifications,
+  featureFlag,
+} from '../../services';
 import {
   ToastStatus,
   API_URL,
@@ -353,7 +358,7 @@ export default ({ id, siteId }) => {
             />
           )}
           {selectedTab === tabs.ALLOCATION && (
-            <FeatureFlag featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
+            <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
               <Table
                 columns={columns}
                 order={order}
@@ -365,7 +370,7 @@ export default ({ id, siteId }) => {
                   return row[columnId] ?? 'N/A';
                 }}
               />
-            </FeatureFlag>
+            </FeatureFlaggedComponent>
           )}
         </Box>
       }

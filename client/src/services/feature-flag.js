@@ -9,7 +9,7 @@ export const featureFlag = (featureKey) => {
   return store.get(featureKey);
 };
 
-export const FeatureFlag = ({ featureKey, children }) => {
+export const FeatureFlaggedComponent = ({ featureKey, children }) => {
   if (featureFlag(featureKey)) {
     return children;
   }

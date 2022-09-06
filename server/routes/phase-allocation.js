@@ -18,22 +18,23 @@ router.get(
   asyncMiddleware(async (req, res) => {
     const { hcapUserInfo: user } = req;
     const siteId = parseInt(req.params.id, 10);
-    let result;
+
     // TODO: check that user has access to siteId
     if (siteId) {
-      result = await getAllSitePhases(siteId);
-    }
+      const result = await getAllSitePhases(siteId);
 
-    logger.info({
-      action: 'phases_get',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-      phases_accessed: result.map((phase) => phase.id),
-      for_site: siteId,
-    });
-    return res.json({ data: result });
+      logger.info({
+        action: 'phases_get',
+        performed_by: {
+          username: user.username,
+          id: user.id,
+        },
+        phases_accessed: result.map((phase) => phase.id),
+        for_site: siteId,
+      });
+      return res.json({ data: result });
+    }
+    return res.status(400).send('Invalid site id');
   })
 );
 

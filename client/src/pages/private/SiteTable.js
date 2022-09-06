@@ -22,7 +22,7 @@ import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import { handleReportDownloadResult } from '../../utils';
 import { AuthContext } from '../../providers';
-import { FeatureFlag, flagKeys } from '../../services';
+import { FeatureFlaggedComponent, flagKeys } from '../../services';
 import { fetchSiteRows } from '../../services/site';
 
 const useStyles = makeStyles((theme) => ({
@@ -260,11 +260,11 @@ export default ({ sites, viewOnly }) => {
                 <MenuItem onClick={openNewSiteModal} className={classes.menuItem}>
                   Create new site
                 </MenuItem>
-                <FeatureFlag featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
+                <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
                   <MenuItem onClick={openNewPhaseModal} className={classes.menuItem}>
                     Create new phase
                   </MenuItem>
-                </FeatureFlag>
+                </FeatureFlaggedComponent>
               </Menu>
             </Box>
           </Grid>

@@ -1,9 +1,11 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import utc from 'dayjs/plugin/utc';
+import isBetween from 'dayjs/plugin/isBetween';
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
+dayjs.extend(isBetween);
 
 export const dayUtils = dayjs;
 

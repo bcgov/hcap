@@ -21,6 +21,17 @@ export const tabColumns = {
       { id: 'reason', name: 'Reason' },
     ],
   },
+  Allocation: {
+    columns: [
+      { id: 'phaseName', name: 'Phase name' },
+      { id: 'startDate', name: 'Start date' },
+      { id: 'endDate', name: 'End date' },
+      { id: 'allocation', name: 'Allocation' },
+      { id: 'remainingHires', name: 'Remaining Hires' },
+      { id: 'hcapHires', name: 'HCAP Hires' },
+      { id: 'nonHcapHires', name: 'Non-HCAP Hires' },
+    ],
+  },
 };
 
 export const fieldsLabelMap = {

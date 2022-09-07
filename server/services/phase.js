@@ -21,7 +21,7 @@ const getAllSitePhases = async (siteId) => {
           site_id: siteId,
         },
       },
-      // TODO: What we actually want is to have it be on: filter so that hired range is between startDate and endDate
+      // TODO: HCAP-1334 What we actually want is to have it be on: filter so that hired range is between startDate and endDate
       // could not NULL COALESCE the start/end dates, and could not use comparitive operators (<=, etc turned to =).
       // so we get all the hires and filter afterwards.
       hires: {

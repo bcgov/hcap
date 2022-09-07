@@ -20,7 +20,7 @@ router.get(
     const { hcapUserInfo: user } = req;
     const siteId = parseInt(req.params.id, 10);
 
-    // TODO: check that user has access to siteId
+    // TODO: HCAP-1336 check that user has access to siteId
     if (siteId) {
       const result = await getAllSitePhases(siteId);
 

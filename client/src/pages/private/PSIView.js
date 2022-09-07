@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useMemo, lazy } from 'react';
+import { saveAs } from 'file-saver';
+import store from 'store';
+
 import { Box, Typography } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import { saveAs } from 'file-saver';
+import GetAppIcon from '@material-ui/icons/GetApp';
 
 import { Page, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { PSIForm, CohortForm } from '../../components/modal-forms';
@@ -12,7 +15,6 @@ import {
   DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
   DOWNLOAD_DEFAULT_ERROR_MESSAGE,
 } from '../../constants';
-import store from 'store';
 import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
 
@@ -28,8 +30,6 @@ export default () => {
 
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
-  // TODO: add in a dropdown once we have multiple download options
-  // const [isDownloadMenuOpen, setDownloadMenuOpen] = useState(false);
   const [isLoadingPSIParticipantsReport, setLoadingPSIParticipantsReport] = useState(false);
 
   // Functions
@@ -213,35 +213,13 @@ export default () => {
               permittedRoles={['ministry_of_health', 'health_authority']}
             >
               <Box alignSelf='flex-end' py={1}>
-                {/** TODO: add in a dropdown once we have multiple download options
-                  <ClickAwayListener onClickAway={() => setDownloadMenuOpen(false)}> */}
                 <Button
-                  /** TODO: add in a dropdown once we have multiple download options
-                    onClick={() => setDownloadMenuOpen(!isDownloadMenuOpen)}
-                    endIcon={<ExpandMoreIcon />}
-                    text='Download CSV' 
-                  */
-                  text='Download participants attending PSI Report'
+                  startIcon={<GetAppIcon />}
+                  text='Download PSI list (.csv)'
                   onClick={handleDownloadPSIParticipantsReport}
                   variant='outlined'
                   loading={isLoadingPSIParticipantsReport}
                 />
-
-                {/** TODO: add in a dropdown once we have multiple download options
-                  <Grow in={isDownloadMenuOpen}>
-                    <Paper>
-                      <MenuList>
-                        <MenuItem onClick={}>
-                          Download PSI and Cohort Information
-                        </MenuItem>
-
-                        <MenuItem onClick={}>
-                          Download Participants attending PSI
-                        </MenuItem>
-                      </MenuList>
-                    </Paper>
-                  </Grow>
-                */}
               </Box>
             </CheckPermissions>
           </Box>

@@ -31,6 +31,7 @@ export default Object.freeze({
   SiteViewDetails: '/site-view/:id',
   PSIView: '/psi-view',
   PSIViewDetails: '/psi-view/:id',
+  CohortDetails: '/cohort/:id',
   ParticipantView: '/participant-view',
   ParticipantUpload: '/participant-upload',
   ParticipantUploadResults: '/participant-upload-results',

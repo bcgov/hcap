@@ -101,6 +101,22 @@ export const fetchCohorts = async ({ psiId }) => {
   throw new Error(response.error || response.statusText || 'Unable to load cohorts details');
 };
 
+export const fetchCohort = async ({ cohortId }) => {
+  const response = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}/participants`, {
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+    },
+    method: 'GET',
+  });
+
+  if (response.ok) {
+    const cohort = await response.json();
+    return cohort;
+  }
+
+  throw new Error(response.error || response.statusText || 'Unable to load cohorts details');
+};
+
 export const addCohort = async ({ psiId, cohort }) => {
   const response = await fetch(`${API_URL}/api/v1/psi/${psiId}/cohorts/`, {
     method: 'POST',

@@ -208,13 +208,11 @@ export default ({ match }) => {
             <Box pb={4} pl={2}>
               <Box pb={2}>
                 <Typography variant='body1'>
-                  <Link href={routes.PSIView}>PSI</Link> / {psi.instituteName}
+                  <Link href={routes.PSIView}>Manage PSI</Link> / PSI Details
                 </Typography>
               </Box>
               <Grid container direction='row'>
-                <Typography variant='h2'>
-                  <b>{psi.instituteName}</b>
-                </Typography>
+                <Typography variant='h2'>{psi.instituteName}</Typography>
                 <CheckPermissions permittedRoles={['ministry_of_health', 'health_authority']}>
                   <Box pl={2} pt={0.5}>
                     <Button

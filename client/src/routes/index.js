@@ -15,6 +15,7 @@ const SiteView = lazy(() => import('../pages/private/SiteView'));
 const SiteViewDetails = lazy(() => import('../pages/private/SiteViewDetails'));
 const PSIView = lazy(() => import('../pages/private/PSIView'));
 const PSIViewDetails = lazy(() => import('../pages/private/PSIViewDetails'));
+const CohortDetails = lazy(() => import('../pages/private/CohortDetails'));
 const EOIView = lazy(() => import('../pages/private/EOIView'));
 const EOIViewDetails = lazy(() => import('../pages/private/EOIViewDetails'));
 const ParticipantUpload = lazy(() => import('../pages/private/ParticipantUpload'));
@@ -178,6 +179,7 @@ export default () => {
             <PrivateRoute exact path={Routes.SiteViewDetails} component={SiteViewDetails} />
             <PrivateRoute exact path={Routes.PSIView} component={PSIView} />
             <PrivateRoute exact path={Routes.PSIViewDetails} component={PSIViewDetails} />
+            <PrivateRoute exact path={Routes.CohortDetails} component={CohortDetails} />
             <PrivateRoute exact path={Routes.EOIView} component={EOIView} />
             <PrivateRoute exact path={Routes.EOIViewDetails} component={EOIViewDetails} />
             <PrivateRoute exact path={Routes.ParticipantView} component={ParticipantView} />

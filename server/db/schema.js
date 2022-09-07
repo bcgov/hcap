@@ -20,6 +20,8 @@ const collections = {
   ROS_STATUS: 'return_of_service_status',
   ADMIN_OPS_AUDIT: 'admin_operation_audit',
   SITE_PARTICIPANTS_STATUS: 'site_participants_status',
+  GLOBAL_PHASE: 'phase',
+  SITE_PHASE_ALLOCATION: 'site_phase_allocation',
 };
 
 const views = {
@@ -107,6 +109,34 @@ const schema = {
         id serial primary key,
         cohort_id integer references ${collections.COHORTS},
         participant_id integer references ${collections.PARTICIPANTS}
+      )`,
+    },
+  ],
+  phaseTables: [
+    {
+      definition: `CREATE TABLE IF NOT EXISTS ${collections.GLOBAL_PHASE} (
+        id serial primary key,
+        name varchar(255) not null,
+        start_date date not null,
+        end_date date not null,
+        created_by varchar(255) not null,
+        updated_by varchar(255) not null,
+        created_at timestamp with time zone DEFAULT now() not null,
+        updated_at timestamp with time zone DEFAULT now() not null
+      )`,
+    },
+    {
+      definition: `CREATE TABLE IF NOT EXISTS ${collections.SITE_PHASE_ALLOCATION} (
+        id serial primary key,
+        phase_id integer references ${collections.GLOBAL_PHASE},
+        site_id integer references ${collections.EMPLOYER_SITES},
+        allocation integer not null,
+        start_date date,
+        end_date date,
+        created_by varchar(255) not null,
+        updated_by varchar(255) not null,
+        created_at timestamp with time zone DEFAULT now() not null,
+        updated_at timestamp with time zone DEFAULT now() not null
       )`,
     },
   ],

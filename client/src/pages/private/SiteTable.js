@@ -8,21 +8,22 @@ import { makeStyles } from '@material-ui/core/styles';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { Table, Button, Dialog, CheckPermissions } from '../../components/generic';
-import { NewSiteForm } from '../../components/modal-forms';
+import { Table, Button, CheckPermissions } from '../../components/generic';
+import { NewSiteDialog, NewPhaseDialog } from '../../components/modal-forms';
+
 import {
   Routes,
   regionLabelsMap,
   API_URL,
   healthAuthoritiesFilter,
   ToastStatus,
-  CreateSiteSchema,
 } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import { handleReportDownloadResult } from '../../utils';
 import { AuthContext } from '../../providers';
-import { FeatureFlag, flagKeys } from '../../services';
+import { FeatureFlaggedComponent, flagKeys } from '../../services';
+import { fetchSiteRows } from '../../services/site';
 
 const useStyles = makeStyles((theme) => ({
   rootItem: {
@@ -61,75 +62,6 @@ const columns = [
   { id: 'details' },
 ];
 
-const SiteFormsDialog = ({ activeForm, onDialogSubmit, onDialogClose }) => {
-  const { openToast } = useToast();
-
-  const handleSiteCreate = async (site) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(site),
-    });
-
-    if (response.ok) {
-      onDialogClose();
-      await onDialogSubmit();
-    } else {
-      const error = await response.json();
-      if (error.status && error.status === 'Duplicate') {
-        openToast({ status: ToastStatus.Error, message: 'Duplicate site ID' });
-      } else {
-        openToast({
-          status: ToastStatus.Error,
-          message: response.error || response.statusText || 'Server error',
-        });
-      }
-    }
-  };
-
-  return (
-    <Dialog title='Create Site' open={activeForm != null} onClose={onDialogClose}>
-      {activeForm === 'new-site' && (
-        <NewSiteForm
-          initialValues={{
-            siteId: '',
-            siteName: '',
-            registeredBusinessName: '',
-            address: '',
-            city: '',
-            isRHO: null,
-            postalCode: '',
-            healthAuthority: '',
-            allocation: '',
-            operatorName: '',
-            operatorContactFirstName: '',
-            operatorContactLastName: '',
-            operatorPhone: '',
-            operatorEmail: '',
-            siteContactFirstName: '',
-            siteContactLastName: '',
-            siteContactPhone: '',
-            siteContactEmail: '',
-          }}
-          validationSchema={CreateSiteSchema}
-          onSubmit={(values) => {
-            handleSiteCreate({
-              ...values,
-              siteId: parseInt(values.siteId),
-              allocation: parseInt(values.allocation),
-            });
-          }}
-          onClose={onDialogClose}
-        />
-      )}
-    </Dialog>
-  );
-};
-
 export default ({ sites, viewOnly }) => {
   const classes = useStyles();
   const { openToast } = useToast();
@@ -161,35 +93,11 @@ export default ({ sites, viewOnly }) => {
 
   const fetchSites = async () => {
     setLoadingData(true);
-    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
-      headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-      method: 'GET',
-    });
-    if (response.ok) {
-      const { data } = await response.json();
-      const rowsData = data.map((row) => {
-        // Pull all relevant props from row based on columns constant
-        const mappedRow = columns.reduce(
-          (accumulator, column) => ({
-            ...accumulator,
-            [column.id]: row[column.id],
-          }),
-          {}
-        );
-        // Add additional props (user ID, button) to row
-        return {
-          ...mappedRow,
-          id: row.id,
-        };
-      });
-      setFetchedRows(rowsData);
-      setIsPendingRequests(rowsData.length > 0);
-      setRows(rowsData.filter((row) => healthAuthorities.includes(row.healthAuthority)));
-    } else {
-      setRows([]);
-      setFetchedRows([]);
-      setIsPendingRequests(false);
-    }
+    const rowsData = await fetchSiteRows(columns);
+
+    setFetchedRows(rowsData);
+    setRows(rowsData.filter((row) => healthAuthorities.includes(row.healthAuthority)));
+    setIsPendingRequests(rowsData.length > 0);
     setLoadingData(false);
   };
 
@@ -285,15 +193,26 @@ export default ({ sites, viewOnly }) => {
 
   const openNewPhaseModal = () => {
     closeActionMenu();
-    // TODO HCAP-1277 setActiveModalForm('new-phase');
+    setActiveModalForm('new-phase');
+  };
+
+  const handleFormSubmit = async () => {
+    closeDialog();
+    await fetchSites();
   };
 
   return (
     <>
-      <SiteFormsDialog
-        activeForm={activeModalForm}
-        onDialogSubmit={fetchSites}
-        onDialogClose={closeDialog}
+      <NewSiteDialog
+        open={activeModalForm === 'new-site'}
+        onSubmit={handleFormSubmit}
+        onClose={closeDialog}
+      />
+
+      <NewPhaseDialog
+        open={activeModalForm === 'new-phase'}
+        onSubmit={handleFormSubmit}
+        onClose={closeDialog}
       />
 
       <Grid
@@ -342,11 +261,11 @@ export default ({ sites, viewOnly }) => {
                 <MenuItem onClick={openNewSiteModal} className={classes.menuItem}>
                   Create new site
                 </MenuItem>
-                <FeatureFlag featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
+                <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
                   <MenuItem onClick={openNewPhaseModal} className={classes.menuItem}>
                     Create new phase
                   </MenuItem>
-                </FeatureFlag>
+                </FeatureFlaggedComponent>
               </Menu>
             </Box>
           </Grid>

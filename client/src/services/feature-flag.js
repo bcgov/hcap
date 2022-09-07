@@ -4,11 +4,13 @@ export const flagKeys = {
   FEATURE_PHASE_ALLOCATION: 'FEATURE_PHASE_ALLOCATION',
 };
 
-export const FeatureFlag = ({ featureKey, children }) => {
+export const featureFlag = (featureKey) => {
   // Values come from the API as booleans, no need to check for === 'true'
-  const featureValue = store.get(featureKey);
+  return store.get(featureKey);
+};
 
-  if (featureValue) {
+export const FeatureFlaggedComponent = ({ featureKey, children }) => {
+  if (featureFlag(featureKey)) {
     return children;
   }
 

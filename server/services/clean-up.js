@@ -164,7 +164,7 @@ const invalidateStaleOpenParticipants = async () => {
         UPDATE participants_status SET data = data_obj, current = false WHERE id = status_rec.id;
       END LOOP;
       -- Withdraws participant and sets an expiration date
-      body_obj = JSONB_SET(participant_rec.body::JSONB, '{expiredDate}', to_jsonb(NOW()));
+      body_obj = JSONB_SET(participant_rec.body::JSONB, '{cleanupDate}', to_jsonb(NOW()));
       body_obj = body_obj || '{"interested" : "withdrawn"}';
       UPDATE participants SET body = body_obj, updated_at = NOW() WHERE id = participant_rec.id;
     END LOOP;

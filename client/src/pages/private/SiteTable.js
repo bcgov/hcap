@@ -55,6 +55,7 @@ const columns = [
   { id: 'siteName', name: 'Site Name' },
   { id: 'operatorName', name: 'Operator Name' },
   { id: 'healthAuthority', name: 'Health Authority' },
+  { id: 'city', name: 'City' },
   { id: 'postalCode', name: 'Postal Code' },
   { id: 'allocation', name: 'Allocation' },
   { id: 'details' },

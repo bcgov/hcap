@@ -68,18 +68,26 @@ const getSitesForUser = async (user) => {
     criteria.siteId = user.sites.map((site) => `${site}`); // cast to string
   }
 
-  return dbClient.db[collections.EMPLOYER_SITES].findDoc(criteria, {
-    order: [{ field: `siteName`, direction: 'asc' }],
-    fields: [
-      'siteId',
-      'siteName',
-      'operatorName',
-      'city',
-      'healthAuthority',
-      'postalCode',
-      'allocation',
-    ],
-  });
+  const records = (
+    await dbClient.db[collections.EMPLOYER_SITES].findDoc(criteria, {
+      order: [{ field: `siteName`, direction: 'asc' }],
+      fields: [
+        'siteId',
+        'siteName',
+        'operatorName',
+        'city',
+        'healthAuthority',
+        'postalCode',
+        'allocation',
+      ],
+    })
+  ).map((record) => ({
+    ...record,
+    siteId: parseInt(record.siteId, 10), // massiveJS casts values to strings when you use options.fields, so we need to recast to int
+    allocation: parseInt(record.allocation, 10),
+  }));
+
+  return records;
 };
 
 const getSiteDetailsById = async (id) => {

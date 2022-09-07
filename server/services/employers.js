@@ -75,6 +75,7 @@ const getSitesForUser = async (user) => {
   const records = await dbClient.db.query(
     `
       SELECT
+        employer_sites.id as "id",
         employer_sites.body -> 'siteId' as "siteId",
         employer_sites.body -> 'siteName' as "siteName",
         employer_sites.body -> 'operatorName' as "operatorName",
@@ -91,7 +92,7 @@ const getSitesForUser = async (user) => {
         AND ps.data ->> 'nonHcapOpportunity' = 'false'
         ${additionalCriteria.join(' ')}
       GROUP BY
-        employer_sites.body
+        employer_sites.id, employer_sites.body
       ORDER BY
         employer_sites.body -> 'siteName';
     `,

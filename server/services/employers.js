@@ -70,7 +70,15 @@ const getSitesForUser = async (user) => {
 
   return dbClient.db[collections.EMPLOYER_SITES].findDoc(criteria, {
     order: [{ field: `siteName`, direction: 'asc' }],
-    fields: ['siteId', 'siteName', 'operatorName', 'healthAuthority', 'postalCode', 'allocation'],
+    fields: [
+      'siteId',
+      'siteName',
+      'operatorName',
+      'city',
+      'healthAuthority',
+      'postalCode',
+      'allocation',
+    ],
   });
 };
 

@@ -61,10 +61,10 @@ const cleanStaleInProgressParticipant = async () => {
  * @description - Creates a table of all participants that should currently be Open - Never engaged, or current status = rejected / reject_ack
  * @returns {Promise<Array>}
  */
-const createOpenParticipantsTable = async () => {
+const createStaleOpenParticipantsTable = async () => {
   // Creates a temporary table, meant for removal later
   const createTable = `
-    CREATE TEMPORARY TABLE expired_participants_table (
+    CREATE TEMPORARY TABLE stale_open_participants_table (
       id integer,
       last_updated date,
       previously_engaged boolean
@@ -73,9 +73,9 @@ const createOpenParticipantsTable = async () => {
   await dbClient.db.query(createTable);
 
   const pushUnengagedParticipants = `
-    INSERT INTO expired_participants_table
+    INSERT INTO stale_open_participants_table
     SELECT
-    p.id, created_at::date AS last_updated, FALSE as perviously_engaged
+    p.id, created_at::date AS last_updated, FALSE as previously_engaged
     FROM participants p
     WHERE p.body->>'interested' = 'yes'
     AND p.updated_at < (NOW() - interval '6 month')
@@ -88,9 +88,9 @@ const createOpenParticipantsTable = async () => {
   await dbClient.db.query(pushUnengagedParticipants);
 
   const pushRejectedParticipants = `
-    INSERT INTO expired_participants_table
+    INSERT INTO stale_open_participants_table
     SELECT
-      p.id, max(ps.created_at) AS last_updated, TRUE as perviously_engaged
+      p.id, max(ps.created_at) AS last_updated, TRUE as previously_engaged
     FROM participants p
     INNER JOIN participants_status ps ON
       p.id = ps.participant_id
@@ -114,12 +114,12 @@ const createOpenParticipantsTable = async () => {
 
 /**
  * Gets all participants from temporary table who haven't been updated in 6 months
- * Relies on createOpenParticipantsTable
+ * Relies on createStaleOpenParticipantsTable
  * @returns {void}
  */
-const getExpiredParticipants = async () => {
+const getStaleOpenParticipants = async () => {
   const getQuery = `
-    SELECT * FROM expired_participants_table
+    SELECT * FROM stale_open_participants_table
     WHERE last_updated < (NOW() - interval '6 month');
   `;
   return dbClient.db.query(getQuery);
@@ -128,9 +128,9 @@ const getExpiredParticipants = async () => {
 /**
  * Drops temporary table created
  */
-const dropOpenParticipantsTable = async () => {
+const dropStaleOpenParticipantsTable = async () => {
   const dropQuery = `
-    DROP TABLE expired_participants_table;
+    DROP TABLE stale_open_participants_table;
   `;
   return dbClient.db.query(dropQuery);
 };
@@ -139,7 +139,7 @@ const dropOpenParticipantsTable = async () => {
  * For all the expired participants, invalidates their statuses and withdraws the participant
  * @returns {void}
  */
-const expiredParticipantsStatusInvalidation = async () => {
+const invalidateStaleOpenParticipants = async () => {
   const updateStatement = `DO $$
     DECLARE
       participant_rec RECORD;
@@ -149,7 +149,7 @@ const expiredParticipantsStatusInvalidation = async () => {
     BEGIN
     FOR participant_rec IN
       SELECT * FROM participants WHERE id IN (
-        SELECT id from expired_participants_table
+        SELECT id from stale_open_participants_table
         WHERE last_updated < (NOW() - interval '6 month')
       )
     LOOP
@@ -179,8 +179,8 @@ const expiredParticipantsStatusInvalidation = async () => {
  */
 module.exports = {
   cleanStaleInProgressParticipant,
-  createOpenParticipantsTable,
-  getExpiredParticipants,
-  dropOpenParticipantsTable,
-  expiredParticipantsStatusInvalidation,
+  createStaleOpenParticipantsTable,
+  getStaleOpenParticipants,
+  dropStaleOpenParticipantsTable,
+  invalidateStaleOpenParticipants,
 };

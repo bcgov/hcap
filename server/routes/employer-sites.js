@@ -7,9 +7,8 @@ const { expressRequestBodyValidator, routeRedirect } = require('../middleware');
 const {
   saveSingleSite,
   updateSite,
-  getSites,
+  getSitesForUser,
   getSiteByID,
-  getAllSites,
 } = require('../services/employers');
 const {
   getHiredParticipantsBySite,
@@ -87,17 +86,9 @@ router.get(
     routeRedirect({ redirect: '/api/v1/employer-sites/details', match: 'employer-sites-detail' }),
   ],
   asyncMiddleware(async (req, res) => {
-    const { hcapUserInfo: user, query } = req;
-    const { all } = query;
-    let result;
-    if (all === 'true') {
-      result = await getAllSites();
-    } else {
-      result = await getSites();
-      if (user.isHA) {
-        result = result.filter((site) => user.regions.includes(site.healthAuthority));
-      }
-    }
+    const { hcapUserInfo: user } = req;
+
+    const result = await getSitesForUser(user);
 
     logger.info({
       action: 'employer-sites_get',

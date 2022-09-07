@@ -4,7 +4,7 @@ const app = require('../server');
 const {
   saveSingleSite,
   saveSites,
-  getSites,
+  getSitesForUser,
   getSiteByID,
   updateSite,
 } = require('../services/employers.js');
@@ -132,9 +132,18 @@ describe('Employer Site Endpoints', () => {
   });
 
   it('Get sites, receive all successfully', async () => {
-    const res = await getSites();
+    const res = await getSitesForUser({ roles: ['ministry_of_health'] });
+    expect(res.length).toEqual(3); // dependent on previous tests
     expect(res).toEqual(
-      expect.arrayContaining([site].map((item) => expect.objectContaining(item)))
+      expect.arrayContaining([
+        expect.objectContaining({
+          allocation: site.allocation.toString(),
+          healthAuthority: site.healthAuthority,
+          postalCode: site.postalCode,
+          siteId: site.siteId.toString(),
+          siteName: site.siteName,
+        }),
+      ])
     );
   });
 

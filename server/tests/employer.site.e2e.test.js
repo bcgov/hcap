@@ -6,7 +6,7 @@ const request = require('supertest');
 const app = require('../server');
 const { startDB, closeDB } = require('./util/db');
 const { getKeycloakToken, superuser } = require('./util/keycloak');
-const { saveSingleSite } = require('../services/employers.js');
+const { saveSingleSite, saveSites } = require('../services/employers.js');
 
 const siteObject = ({ id, name }) => ({
   siteId: id,
@@ -29,17 +29,52 @@ const siteObject = ({ id, name }) => ({
   siteContactEmail: 'test.site@hcpa.fresh',
 });
 
+/**
+ * This method is required because different endpoints for creating/editing
+ * sites have different names for similar fields (ie: siteContactPhone vs siteContactPhoneNumber)
+ *
+ * This method wraps siteObject() and renames those fields to pass validation
+ *
+ * @param {*} object containing an id and name used to create a test site
+ * @returns an object containing the given id and name and the rest of the required fields for batch saving
+ */
+const batchSiteObject = ({ id, name }) => {
+  const batchObject = {
+    ...siteObject({ id, name }),
+    siteContactPhoneNumber: siteObject.siteContactPhone,
+    siteContactEmailAddress: siteObject.siteContactEmail,
+  };
+  delete batchObject.siteContactPhone;
+  delete batchObject.siteContactEmail;
+  return batchObject;
+};
+
+const getAllSitesExpectedFields = (site) => ({
+  allocation: site.allocation.toString(),
+  healthAuthority: site.healthAuthority,
+  postalCode: site.postalCode,
+  siteId: site.siteId.toString(),
+  siteName: site.siteName,
+  operatorName: site.operatorName,
+});
+
 describe('api-e2e tests for /employer-sites route', () => {
   let server;
 
   beforeAll(async () => {
-    await startDB();
     server = app.listen();
   });
 
   afterAll(async () => {
-    await closeDB();
     await server.close();
+  });
+
+  beforeEach(async () => {
+    await startDB();
+  });
+
+  afterEach(async () => {
+    await closeDB();
   });
 
   it('should save site', async () => {
@@ -79,15 +114,26 @@ describe('api-e2e tests for /employer-sites route', () => {
   });
 
   it('should get sites', async () => {
-    const site = siteObject({ id: 105, name: 'FW Test Site' });
-    await saveSingleSite(site);
+    const sites = [
+      batchSiteObject({ id: 105, name: 'Test Site 1' }),
+      batchSiteObject({ id: 106, name: 'Test Site 2' }),
+      batchSiteObject({ id: 107, name: 'Test Site 3' }),
+    ];
+
+    await saveSites(sites);
+
     const header = await getKeycloakToken(superuser);
     const res = await request(app).get('/api/v1/employer-sites').set(header);
     expect(res.status).toEqual(200);
-    expect(res.body.data.length).toBeGreaterThan(0);
-    expect(
-      res.body.data.filter((siteObj) => site.siteId === siteObj.siteId).length
-    ).toBeGreaterThan(0);
+    expect(res.body.data.length).toEqual(3);
+    expect(res.body.data).toEqual(
+      expect.arrayContaining(
+        sites.map((site) =>
+          // using objectContaining because the API returns an ID after saving to the database
+          expect.objectContaining(getAllSitesExpectedFields(site))
+        )
+      )
+    );
   });
 
   it('should get site by id', async () => {

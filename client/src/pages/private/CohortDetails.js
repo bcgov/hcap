@@ -5,8 +5,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { Page, CheckPermissions } from '../../components/generic';
 import { useToast } from '../../hooks';
-import { fetchCohort } from '../../services';
-import { Routes, ToastStatus } from '../../constants';
+import { fetchCohort, fetchParticipantPostHireStatus } from '../../services';
+import { Routes, ToastStatus, postHireStatuses } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
@@ -21,13 +21,39 @@ export default ({ match }) => {
   const cohortId = parseInt(match.params.id);
   const classes = useStyles();
   const [cohort, setCohort] = useState(null);
+  const [unsuccessfulParticipantsNumber, setUnsuccessfulParticipantsNumber] = useState(-1);
   const { openToast } = useToast();
+
+  const getTotalParticipantsNumber = () => {
+    return cohort ? cohort.cohort_size : 0;
+  };
+
+  const getAvailableParticipantsNumber = () => {
+    if (!cohort) return 0;
+    const totalNumber = cohort.cohort_size;
+    const assignedParticipantsNumber = cohort.participants?.length;
+    return totalNumber - assignedParticipantsNumber;
+  };
+
+  const fetchUnsuccessfulParticipantsNumber = async () => {
+    if (!cohort) return;
+
+    const cohortParticipantIds = cohort.participants.map(
+      (participant) => participant.participant_id
+    );
+    let participantCount = 0;
+    for (const participantId of cohortParticipantIds) {
+      const postHireData = await fetchParticipantPostHireStatus({ id: participantId });
+      const status = postHireData?.status;
+      if (status === postHireStatuses.cohortUnsuccessful) participantCount++;
+    }
+    setUnsuccessfulParticipantsNumber(participantCount);
+  };
 
   const fetchCohortDetails = async () => {
     try {
       const data = await fetchCohort({ cohortId });
       setCohort(data);
-      console.log(data);
     } catch (err) {
       openToast({
         status: ToastStatus.Error,
@@ -40,8 +66,11 @@ export default ({ match }) => {
     if (cohort === null) {
       fetchCohortDetails();
     }
+    if (unsuccessfulParticipantsNumber === -1) {
+      fetchUnsuccessfulParticipantsNumber();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cohort]);
+  }, [cohort, unsuccessfulParticipantsNumber]);
 
   return (
     <Page>
@@ -76,14 +105,17 @@ export default ({ match }) => {
 
               <Grid item xs={12} sm={6}>
                 <Typography variant='subtitle2'>Total Seats</Typography>
-                <Typography variant='body1'>{cohort?.cohort_size}</Typography>
+                <Typography variant='body1'>{getTotalParticipantsNumber()}</Typography>
               </Grid>
 
               <Grid item xs={12} sm={6}>
                 <Typography variant='subtitle2'>Total Available Seats</Typography>
-                <Typography variant='body1'>
-                  {cohort?.cohort_size - cohort?.participants.length}
-                </Typography>
+                <Typography variant='body1'>{getAvailableParticipantsNumber()}</Typography>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <Typography variant='subtitle2'>Number of Unsuccessful Participants</Typography>
+                <Typography variant='body1'>{unsuccessfulParticipantsNumber}</Typography>
               </Grid>
             </Grid>
           </Box>

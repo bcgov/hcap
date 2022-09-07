@@ -41,6 +41,7 @@ const getCohortWithParticipants = async (id) =>
     })
     .find({
       id,
+      'participants.is_current': true,
     });
 
 // Get all Cohorts associated with a specific PSI

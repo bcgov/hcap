@@ -48,7 +48,6 @@ router.post(
     expressRequestBodyValidator(CreatePhaseSchema),
   ],
   asyncMiddleware(async (req, resp) => {
-    console.log('FEATURE_PHASE_ALLOCATION', FEATURE_PHASE_ALLOCATION);
     if (!FEATURE_PHASE_ALLOCATION) {
       return resp.status(501).send('Phase allocation feature not active');
     }

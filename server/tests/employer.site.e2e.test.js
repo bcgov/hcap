@@ -50,10 +50,10 @@ const batchSiteObject = ({ id, name }) => {
 };
 
 const getAllSitesExpectedFields = (site) => ({
-  allocation: site.allocation.toString(),
+  allocation: site.allocation,
   healthAuthority: site.healthAuthority,
   postalCode: site.postalCode,
-  siteId: site.siteId.toString(),
+  siteId: site.siteId,
   siteName: site.siteName,
   operatorName: site.operatorName,
 });

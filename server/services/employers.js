@@ -57,14 +57,19 @@ const updateSite = async (id, site) => {
  */
 
 const getSitesForUser = async (user) => {
-  let additionalCriteria = '';
+  const additionalCriteria = [];
+  const additionalCriteriaParams = {};
 
   if (user.isHA || user.isEmployer) {
-    additionalCriteria += `AND (employer_sites.body ->> 'siteId')::INT IN ($1:csv) `;
+    additionalCriteria.push(`AND (employer_sites.body ->> 'siteId')::INT IN ($(userSites:csv))`);
+    additionalCriteriaParams.userSites = user.sites;
   }
 
   if (user.isHA) {
-    additionalCriteria += `AND employer_sites.body ->> 'healthAuthority' IN ($2:csv) `;
+    additionalCriteria.push(
+      `AND employer_sites.body ->> 'healthAuthority' IN ($(userRegions:csv))`
+    );
+    additionalCriteriaParams.userRegions = user.regions;
   }
 
   const records = await dbClient.db.query(
@@ -84,13 +89,13 @@ const getSitesForUser = async (user) => {
       WHERE
         ps.status = 'hired'
         AND ps.data ->> 'nonHcapOpportunity' = 'false'
-        ${additionalCriteria}
+        ${additionalCriteria.join(' ')}
       GROUP BY
         employer_sites.body
       ORDER BY
         employer_sites.body -> 'siteName';
     `,
-    [user.sites, user.regions]
+    additionalCriteriaParams
   );
 
   return records;

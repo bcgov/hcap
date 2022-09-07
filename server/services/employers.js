@@ -57,38 +57,41 @@ const updateSite = async (id, site) => {
  */
 
 const getSitesForUser = async (user) => {
-  const criteria = {};
+  let additionalCriteria = '';
+
+  if (user.isHA || user.isEmployer) {
+    additionalCriteria += `AND (employer_sites.body ->> 'siteId')::INT IN ($1:csv) `;
+  }
 
   if (user.isHA) {
-    criteria.siteId = user.sites.map((site) => `${site}`); // cast to string
-    criteria.healthAuthority = user.regions;
+    additionalCriteria += `AND employer_sites.body ->> 'healthAuthority' IN ($2:csv) `;
   }
 
-  if (user.isEmployer) {
-    criteria.siteId = user.sites.map((site) => `${site}`); // cast to string
-  }
-
-  const records = await dbClient.db.query(`
-    SELECT
-      employer_sites.body -> 'siteId' as siteId,
-      employer_sites.body -> 'siteName' as siteName,
-      employer_sites.body -> 'operatorName' as operatorName,
-      employer_sites.body -> 'city' as city,
-      employer_sites.body -> 'healthAuthority' as healthAuthority,
-      employer_sites.body -> 'postalCode' as postalCode,
-      employer_sites.body -> 'allocation' as allocation,
-      count(ps.id) :: INT as hireCount
-    FROM
-      employer_sites
-      JOIN participants_status ps on ps.data ->> 'site' = employer_sites.body ->> 'siteId'
-    WHERE
-      ps.status = 'hired'
-      AND ps.data ->> 'nonHcapOpportunity' = 'false'
-    GROUP BY
-      employer_sites.body
-    ORDER BY
-      employer_sites.body -> 'siteName';
-  `);
+  const records = await dbClient.db.query(
+    `
+      SELECT
+        employer_sites.body -> 'siteId' as "siteId",
+        employer_sites.body -> 'siteName' as "siteName",
+        employer_sites.body -> 'operatorName' as "operatorName",
+        employer_sites.body -> 'city' as "city",
+        employer_sites.body -> 'healthAuthority' as "healthAuthority",
+        employer_sites.body -> 'postalCode' as "postalCode",
+        employer_sites.body -> 'allocation' as "allocation",
+        count(ps.id) :: INT as "hireCount"
+      FROM
+        employer_sites
+        JOIN participants_status ps on ps.data ->> 'site' = employer_sites.body ->> 'siteId'
+      WHERE
+        ps.status = 'hired'
+        AND ps.data ->> 'nonHcapOpportunity' = 'false'
+        ${additionalCriteria}
+      GROUP BY
+        employer_sites.body
+      ORDER BY
+        employer_sites.body -> 'siteName';
+    `,
+    [user.sites, user.regions]
+  );
 
   return records;
 };

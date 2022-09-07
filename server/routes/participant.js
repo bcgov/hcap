@@ -1,5 +1,4 @@
 const { validate: uuidValidate } = require('uuid');
-const multer = require('multer');
 const express = require('express');
 
 const {
@@ -7,7 +6,6 @@ const {
   getParticipants,
   getParticipantByID,
   updateParticipant,
-  parseAndSaveParticipants,
   confirmParticipantInterest,
   validateConfirmationId,
   deleteAcknowledgement,
@@ -232,56 +230,6 @@ participantsRouter.get(
       ids_viewed: result.data.slice(0, 10).map((person) => person.id),
     });
     return res.json(result);
-  })
-);
-
-// POST participants/batch
-// Create participant records from uploaded XLSX file
-participantsRouter.post(
-  `/batch`,
-  keycloak.allowRolesMiddleware('maximus'),
-  keycloak.getUserInfoMiddleware(),
-  multer({
-    fileFilter: (req, file, cb) => {
-      const fileSize = parseInt(req.headers['content-length'], 10);
-      if (file.fieldname !== 'file') {
-        req.fileError = 'Invalid field name.';
-        return cb(null, false);
-      }
-      if (file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-        return cb(null, true);
-      }
-      // 5MB
-      if (fileSize >= 5116000) {
-        req.fileError = 'File too large';
-        return cb(null, false);
-      }
-      req.fileError = 'File type not allowed.';
-      return cb(null, false);
-    },
-  }).single('file'),
-  asyncMiddleware(async (req, res) => {
-    if (req.fileError) {
-      return res.json({ status: 'Error', message: req.fileError });
-    }
-
-    try {
-      const response = await parseAndSaveParticipants(req.file.buffer);
-      const user = req.hcapUserInfo;
-      logger.info({
-        action: 'participant_post',
-        performed_by: {
-          username: user.username,
-          id: user.id,
-        },
-        // Slicing to one page of results
-        ids_posted: response.slice(0, 10).map((entry) => entry.id),
-      });
-
-      return res.status(201).json(response);
-    } catch (excp) {
-      return res.status(400).send(`${excp}`);
-    }
   })
 );
 

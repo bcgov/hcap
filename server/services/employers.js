@@ -72,6 +72,7 @@ const getSitesForUser = async (user) => {
     additionalCriteriaParams.userRegions = user.regions;
   }
 
+  // Raw SQL was required here because `options.fields` wouldn't work with `join` https://github.com/bcgov/hcap/pull/834#pullrequestreview-1100927873
   const records = await dbClient.db.query(
     `
       SELECT

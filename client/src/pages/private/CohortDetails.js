@@ -31,8 +31,6 @@ export default ({ match }) => {
 
   const [cohort, setCohort] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('participant_id');
   const [rows, setRows] = useState([]);
 
   const cohortSize = cohort?.cohort_size || 0;
@@ -48,9 +46,9 @@ export default ({ match }) => {
     )?.length || 0;
 
   const columns = [
-    { id: 'lastName', name: 'Last Name' },
-    { id: 'firstName', name: 'First Name' },
-    { id: 'siteName', name: 'Site Name' },
+    { id: 'lastName', name: 'Last Name', sortable: false },
+    { id: 'firstName', name: 'First Name', sortable: false },
+    { id: 'siteName', name: 'Site Name', sortable: false },
     { id: 'graduationStatus', name: 'Graduation Status', sortable: false },
   ];
 
@@ -77,11 +75,6 @@ export default ({ match }) => {
       (postHireStatus) => postHireStatus.is_current === true
     );
     return getPostHireStatusLabel(graduationStatus);
-  };
-
-  const handleTableSort = (_event, value) => {
-    setOrder(order === 'asc' ? 'desc' : 'asc');
-    setOrderBy(value);
   };
 
   const handleOpenParticipantDetails = (participantId) => {
@@ -148,9 +141,6 @@ export default ({ match }) => {
               {rows.length > 0 ? (
                 <Table
                   columns={columns}
-                  order={order}
-                  orderBy={orderBy}
-                  onRequestSort={handleTableSort}
                   rows={rows}
                   isLoading={isLoading}
                   renderCell={(columnId, row) => {

@@ -62,19 +62,13 @@ describe('api-e2e tests for /employer-sites route', () => {
   let server;
 
   beforeAll(async () => {
+    await startDB();
     server = app.listen();
   });
 
   afterAll(async () => {
-    await server.close();
-  });
-
-  beforeEach(async () => {
-    await startDB();
-  });
-
-  afterEach(async () => {
     await closeDB();
+    await server.close();
   });
 
   it('should save site', async () => {
@@ -114,6 +108,9 @@ describe('api-e2e tests for /employer-sites route', () => {
   });
 
   it('should get sites', async () => {
+    await closeDB();
+    await startDB();
+
     const sites = [
       batchSiteObject({ id: 105, name: 'Test Site 1' }),
       batchSiteObject({ id: 106, name: 'Test Site 2' }),

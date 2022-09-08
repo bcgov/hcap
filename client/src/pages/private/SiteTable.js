@@ -59,6 +59,7 @@ const columns = [
   { id: 'city', name: 'City' },
   { id: 'postalCode', name: 'Postal Code' },
   { id: 'allocation', name: 'Allocation' },
+  { id: 'hireCount', name: 'Hires' },
   { id: 'details' },
 ];
 

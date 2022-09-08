@@ -57,35 +57,48 @@ const updateSite = async (id, site) => {
  */
 
 const getSitesForUser = async (user) => {
-  const criteria = {};
+  const additionalCriteria = [];
+  const additionalCriteriaParams = {};
+
+  if (user.isHA || user.isEmployer) {
+    additionalCriteria.push(`AND (employer_sites.body ->> 'siteId')::INT IN ($(userSites:csv))`);
+    additionalCriteriaParams.userSites = user.sites;
+  }
 
   if (user.isHA) {
-    criteria.siteId = user.sites.map((site) => `${site}`); // cast to string
-    criteria.healthAuthority = user.regions;
+    additionalCriteria.push(
+      `AND employer_sites.body ->> 'healthAuthority' IN ($(userRegions:csv))`
+    );
+    additionalCriteriaParams.userRegions = user.regions;
   }
 
-  if (user.isEmployer) {
-    criteria.siteId = user.sites.map((site) => `${site}`); // cast to string
-  }
-
-  const records = (
-    await dbClient.db[collections.EMPLOYER_SITES].findDoc(criteria, {
-      order: [{ field: `siteName`, direction: 'asc' }],
-      fields: [
-        'siteId',
-        'siteName',
-        'operatorName',
-        'city',
-        'healthAuthority',
-        'postalCode',
-        'allocation',
-      ],
-    })
-  ).map((record) => ({
-    ...record,
-    siteId: parseInt(record.siteId, 10), // massiveJS casts values to strings when you use options.fields, so we need to recast to int
-    allocation: parseInt(record.allocation, 10),
-  }));
+  // Raw SQL was required here because `options.fields` wouldn't work with `join` https://github.com/bcgov/hcap/pull/834#pullrequestreview-1100927873
+  const records = await dbClient.db.query(
+    `
+      SELECT
+        employer_sites.id as "id",
+        employer_sites.body -> 'siteId' as "siteId",
+        employer_sites.body -> 'siteName' as "siteName",
+        employer_sites.body -> 'operatorName' as "operatorName",
+        employer_sites.body -> 'city' as "city",
+        employer_sites.body -> 'healthAuthority' as "healthAuthority",
+        employer_sites.body -> 'postalCode' as "postalCode",
+        employer_sites.body -> 'allocation' as "allocation",
+        count(ps.id) :: INT as "hireCount"
+      FROM
+        employer_sites
+        JOIN participants_status ps on ps.data ->> 'site' = employer_sites.body ->> 'siteId'
+      WHERE
+        ps.status = 'hired'
+        AND ps.data ->> 'nonHcapOpportunity' = 'false'
+        ${additionalCriteria.join(' ')}
+      GROUP BY
+        employer_sites.id, employer_sites.body
+      ORDER BY
+        employer_sites.body -> 'siteName';
+    `,
+    additionalCriteriaParams
+  );
 
   return records;
 };

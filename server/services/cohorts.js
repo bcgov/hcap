@@ -45,9 +45,23 @@ const getCohortParticipants = async (cohortId) =>
           participant_id: 'id',
         },
       },
+      participantStatusJoin: {
+        type: 'INNER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'id',
+        },
+      },
+      siteJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.EMPLOYER_SITES,
+        decomposeTo: 'object',
+        on: { 'body.siteId': 'participantStatusJoin.data.site' },
+      },
     })
     .find({
       'cohortParticipantsJoin.cohort_id': cohortId,
+      'participantStatusJoin.current': true,
     });
 
 // Get all Cohorts associated with a specific PSI

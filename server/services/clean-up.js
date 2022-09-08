@@ -78,8 +78,8 @@ const createStaleOpenParticipantsTable = async () => {
     p.id, created_at::date AS last_updated, FALSE as previously_engaged
     FROM participants p
     WHERE p.body->>'interested' = 'yes'
-    AND p.updated_at < (NOW() - interval '6 month')
-    AND NOT EXISTS(
+    AND (p.updated_at < (NOW() - interval '6 month') OR p.updated_at IS NULL)
+    AND NOT EXISTS (
       SELECT ps.participant_id
       FROM participants_status ps
       WHERE p.id = ps.participant_id

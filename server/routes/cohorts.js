@@ -9,7 +9,7 @@ const {
   getAssignCohort,
   updateCohort,
   getCountOfAllocation,
-  getCohortWithParticipants,
+  getCohortParticipants,
 } = require('../services/cohorts.js');
 const { getParticipantByID } = require('../services/participants');
 const { EditCohortSchema, validate } = require('../validation');
@@ -71,25 +71,25 @@ router.get(
   })
 );
 
+// Get cohort participants with their statuses
 router.get(
   '/:id/participants',
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;
-    const id = parseInt(req.params.id, 10);
-    const [cohort] = await getCohortWithParticipants(id);
-    if (cohort === undefined) {
-      return res.status(401).send({ message: 'You do not have permission to view this record' });
+    const cohortId = parseInt(req.params.id, 10);
+    const cohortParticipants = await getCohortParticipants(cohortId);
+    if (cohortParticipants === undefined) {
+      return res.status(404).send({ message: 'No participants found for this cohort' });
     }
     logger.info({
       action: 'cohort_get',
       performed_by: {
         user,
       },
-      id: cohort.id || '',
     });
 
-    return res.status(200).json(cohort);
+    return res.status(200).json(cohortParticipants);
   })
 );
 

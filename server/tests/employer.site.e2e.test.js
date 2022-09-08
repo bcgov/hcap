@@ -134,7 +134,7 @@ describe('api-e2e tests for /employer-sites route', () => {
   });
 
   it('should get site by id', async () => {
-    const site = siteObject({ id: 106, name: 'FW Test Site 1' });
+    const site = siteObject({ id: 108, name: 'FW Test Site 1' });
     const savedSite = await saveSingleSite(site);
     const header = await getKeycloakToken(superuser);
     const res = await request(app).get(`/api/v1/employer-sites/${savedSite.id}`).set(header);
@@ -145,7 +145,7 @@ describe('api-e2e tests for /employer-sites route', () => {
 
   // TODO: Add basic smoke test on route. Need to add solid verification logic
   it('should get all participants of site by id', async () => {
-    const site = siteObject({ id: 107, name: 'FW Test Site 1' });
+    const site = siteObject({ id: 109, name: 'FW Test Site 1' });
     const savedSite = await saveSingleSite(site);
     const expected = {
       hired: [],

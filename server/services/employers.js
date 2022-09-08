@@ -61,7 +61,7 @@ const getSitesForUser = async (user) => {
   const additionalCriteriaParams = {};
 
   if (user.isHA || user.isEmployer) {
-    additionalCriteria.push(`AND (employer_sites.body ->> 'siteId')::INT IN ($(userSites:csv))`);
+    additionalCriteria.push(`(employer_sites.body ->> 'siteId')::INT IN ($(userSites:csv))`);
     additionalCriteriaParams.userSites = user.sites;
   }
 

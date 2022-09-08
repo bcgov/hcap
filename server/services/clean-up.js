@@ -78,7 +78,10 @@ const createStaleOpenParticipantsTable = async () => {
     p.id, created_at::date AS last_updated, FALSE as previously_engaged
     FROM participants p
     WHERE p.body->>'interested' = 'yes'
-    AND (p.updated_at < (NOW() - interval '6 month') OR p.updated_at IS NULL)
+    AND (
+      p.updated_at < (NOW() - interval '6 month')
+      OR (p.updated_at IS NULL AND p.created_at < (NOW() - interval '6 month'))
+    )
     AND NOT EXISTS (
       SELECT ps.participant_id
       FROM participants_status ps
@@ -143,8 +146,6 @@ const invalidateStaleOpenParticipants = async () => {
   const updateStatement = `DO $$
     DECLARE
       participant_rec RECORD;
-      status_rec RECORD;
-      data_obj JSONB;
       body_obj JSONB;
     BEGIN
     FOR participant_rec IN
@@ -154,19 +155,17 @@ const invalidateStaleOpenParticipants = async () => {
       )
     LOOP
       -- Invalidates all current statuses for an expired participant
-      FOR status_rec IN SELECT * FROM participants_status WHERE participant_id = participant_rec.id AND current = true
-      LOOP
-        IF status_rec.data IS NULL THEN
-          data_obj = JSONB_SET('{}'::JSONB, '{cleanupDate}', to_jsonb(NOW()));
-        ELSE
-          data_obj = JSONB_SET(status_rec.data::JSONB, '{cleanupDate}', to_jsonb(NOW()));
-        END IF;
-        UPDATE participants_status SET data = data_obj, current = false WHERE id = status_rec.id;
-      END LOOP;
+      UPDATE participants_status SET
+        data = JSONB_SET(coalesce(data::JSONB, '{}'), '{cleanupDate}', to_jsonb(NOW())),
+        current = false
+      WHERE participant_id = participant_rec.id AND current = true
       -- Withdraws participant and sets an expiration date
       body_obj = JSONB_SET(participant_rec.body::JSONB, '{cleanupDate}', to_jsonb(NOW()));
       body_obj = body_obj || '{"interested" : "withdrawn"}';
-      UPDATE participants SET body = body_obj, updated_at = NOW() WHERE id = participant_rec.id;
+      UPDATE participants SET
+        body = body_obj,
+        updated_at = NOW()
+      WHERE id = participant_rec.id;
     END LOOP;
     END;
   $$ LANGUAGE plpgsql;

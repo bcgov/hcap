@@ -6,6 +6,8 @@ const {
   dropStaleOpenParticipantsTable,
   invalidateStaleOpenParticipants,
 } = require('../services/clean-up');
+const logger = require('../logger.js');
+
 /**
  * Script entry method (main)
  */
@@ -17,6 +19,12 @@ const {
     await createStaleOpenParticipantsTable();
     const report = await getStaleOpenParticipants();
     if (report.length > 0) {
+      logger.info({
+        action: 'clean_stale_open_participants',
+        performed_by: 'cron',
+        length: report.length,
+        participants: report,
+      });
       console.log(`Withdrawing ${report.length} stale, open participants`);
       console.table(report);
       await invalidateStaleOpenParticipants();

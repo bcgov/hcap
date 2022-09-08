@@ -74,6 +74,7 @@ router.get(
 // Get cohort participants with their statuses
 router.get(
   '/:id/participants',
+  [applyMiddleware(keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'))],
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;

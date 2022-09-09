@@ -139,31 +139,24 @@ describe('Participants status suite', () => {
     cy.contains('button', 'Move to Archived Candidates').click();
   };
 
-  it('Flow test: available --> engaged by PE --> hired to a different site by HA --> archived & acknowledged by HA --> acknowledged by PE', () => {
+  it('Flow test: available --> engage by HA --> hired to a different site --> archived & acknowledged', () => {
     const participantId = 4;
+    const hireSite = 1;
     // this needs to be an EXACT match- no "August 10" when we want participant 10!
     const participantIdRegex = new RegExp('^' + participantId + '$', 'g');
 
-    // pre-requisites: HA & PE have 2 sites in common, A/1, and B/4
-    cy.assignSitesToUser('test-ha', [1, 4]);
-    cy.assignSitesToUser('test-employer', [1, 4]);
+    cy.assignSitesToUser('test-ha', [hireSite]);
 
-    // PE engages participant to site A
-    cy.kcLogin('test-employer');
-    progressParticipantHire(participantIdRegex, 1, 'available', 'prospecting');
-    cy.kcLogout();
-
-    // HA hires participant to site B
+    // engages participant to site A
     cy.kcLogin('test-ha');
-    progressParticipantHire(participantIdRegex, 4, 'prospecting', 'hired');
+    progressParticipantHire(participantIdRegex, hireSite, 'available', 'prospecting');
+
+    // hires participant to site B
+    progressParticipantHire(participantIdRegex, hireSite, 'prospecting', 'hired');
 
     // archive participant by HA
     archiveParticipant(participantIdRegex, 'Hired Candidates');
     acknowledgeArchive(participantIdRegex, 'My Candidates');
     cy.kcLogout();
-
-    // move to archive by PE
-    cy.kcLogin('test-employer');
-    acknowledgeArchive(participantIdRegex, 'My Candidates');
   });
 });

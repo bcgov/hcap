@@ -139,7 +139,7 @@ describe('Participants status suite', () => {
     cy.contains('button', 'Move to Archived Candidates').click();
   };
 
-  it('Flow test: available --> engage by HA --> hired to a different site --> archived & acknowledged', () => {
+  it('Flow test: available --> engage by HA --> hired --> archived & acknowledged', () => {
     const participantId = 4;
     const hireSite = 1;
     // this needs to be an EXACT match- no "August 10" when we want participant 10!
@@ -147,14 +147,11 @@ describe('Participants status suite', () => {
 
     cy.assignSitesToUser('test-ha', [hireSite]);
 
-    // engages participant to site A
+    // go from available status to hired status
     cy.kcLogin('test-ha');
-    progressParticipantHire(participantIdRegex, hireSite, 'available', 'prospecting');
+    progressParticipantHire(participantIdRegex, hireSite, 'available', 'hired');
 
-    // hires participant to site B
-    progressParticipantHire(participantIdRegex, hireSite, 'prospecting', 'hired');
-
-    // archive participant by HA
+    // archive participant
     archiveParticipant(participantIdRegex, 'Hired Candidates');
     acknowledgeArchive(participantIdRegex, 'My Candidates');
     cy.kcLogout();

@@ -14,7 +14,7 @@ export const fetchSitePhases = async (siteId) => {
 };
 
 export const fetchSiteRows = async (columns) => {
-  const response = await fetch(`${API_URL}/api/v1/employer-sites/user`, {
+  const response = await fetch(`${API_URL}/api/v1/employer-sites/user?regions=true`, {
     headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
     method: 'GET',
   });

@@ -8,6 +8,7 @@ const {
   saveSingleSite,
   updateSite,
   getSitesForUser,
+  getSitesForRegion,
   getAllSites,
   getSiteByID,
 } = require('../services/employers');
@@ -111,9 +112,15 @@ router.get(
     routeRedirect({ redirect: '/api/v1/employer-sites/details', match: 'employer-sites-detail' }),
   ],
   asyncMiddleware(async (req, res) => {
+    const { regions } = req.query;
     const { hcapUserInfo: user } = req;
 
-    const result = await getSitesForUser(user);
+    let result;
+    if (regions && user.isHA && user.regions.length > 0) {
+      result = await getSitesForRegion(user.regions);
+    } else {
+      result = await getSitesForUser(user);
+    }
 
     logger.info({
       action: 'employer-sites_get',

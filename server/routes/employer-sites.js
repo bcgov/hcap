@@ -8,6 +8,7 @@ const {
   saveSingleSite,
   updateSite,
   getSitesForUser,
+  getAllSites,
   getSiteByID,
 } = require('../services/employers');
 const {
@@ -77,7 +78,31 @@ router.patch(
   })
 );
 
-// Read: Get All
+// Read: Get *All* Sites
+router.get(
+  '/all',
+  [
+    keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+    keycloak.getUserInfoMiddleware(),
+    routeRedirect({ redirect: '/api/v1/employer-sites/details', match: 'employer-sites-detail' }),
+  ],
+  asyncMiddleware(async (req, res) => {
+    const { hcapUserInfo: user } = req;
+    const result = await getAllSites();
+
+    logger.info({
+      action: 'employer-sites_get-all',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      sites_accessed: result.map((site) => site.siteId),
+    });
+    return res.json({ data: result });
+  })
+);
+
+// Read: Get All User Sites
 router.get(
   '/',
   [

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import _orderBy from 'lodash/orderBy';
-import Grid from '@material-ui/core/Grid';
-import { Box } from '@material-ui/core';
+
+import { Box, Grid, Link } from '@material-ui/core';
 import { Table, Button } from '../../components/generic';
-import { formatCohortDate } from '../../utils';
+import { formatCohortDate, keyedString } from '../../utils';
+import { Routes } from '../../constants';
 
 const columns = [
   { id: 'cohort_name', name: 'Cohort Name' },
@@ -15,6 +17,8 @@ const columns = [
 ];
 
 export default ({ cohorts, editCohortAction }) => {
+  const history = useHistory();
+
   // States
   const [order, setOrder] = useState('asc');
   const [rows, setRows] = useState(cohorts);
@@ -32,12 +36,23 @@ export default ({ cohorts, editCohortAction }) => {
     editCohortAction(cohort);
   };
 
-  // Helpers
+  const handleCohortNav = (row) => {
+    const { id } = row;
+    const cohortDetailsPath = keyedString(Routes.CohortDetails, { id });
+    history.push(cohortDetailsPath);
+  };
 
+  // Helpers
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
 
   const renderCell = (columnId, row) => {
     switch (columnId) {
+      case 'cohort_name':
+        return (
+          <Link component='button' variant='body2' onClick={() => handleCohortNav(row)}>
+            {row[columnId]}
+          </Link>
+        );
       case 'edit':
         return (
           <Button onClick={() => handleEdit(row)} variant='outlined' size='small' text='Edit' />

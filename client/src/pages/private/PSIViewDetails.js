@@ -212,9 +212,7 @@ export default ({ match }) => {
                 </Typography>
               </Box>
               <Grid container direction='row'>
-                <Typography variant='h2'>
-                  <b>{psi.instituteName}</b>
-                </Typography>
+                <Typography variant='h2'>{psi.instituteName}</Typography>
                 <CheckPermissions permittedRoles={['ministry_of_health', 'health_authority']}>
                   <Box pl={2} pt={0.5}>
                     <Button

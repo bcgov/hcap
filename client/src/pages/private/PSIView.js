@@ -4,7 +4,6 @@ import store from 'store';
 
 import { Box, Typography } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import GetAppIcon from '@material-ui/icons/GetApp';
 
 import { Page, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { PSIForm, CohortForm } from '../../components/modal-forms';
@@ -214,8 +213,7 @@ export default () => {
             >
               <Box alignSelf='flex-end' py={1}>
                 <Button
-                  startIcon={<GetAppIcon />}
-                  text='Download PSI list (.csv)'
+                  text='Download participants attending PSI Report'
                   onClick={handleDownloadPSIParticipantsReport}
                   variant='outlined'
                   loading={isLoadingPSIParticipantsReport}

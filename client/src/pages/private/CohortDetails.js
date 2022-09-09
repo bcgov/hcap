@@ -99,7 +99,7 @@ export default ({ match }) => {
         <Card className={classes.cardRoot}>
           <Box py={8} px={10}>
             <Typography variant='body1'>
-              <Link href={Routes.PSIView}>Manage PSI</Link> / Cohort Details
+              <Link href={Routes.PSIView}>PSI</Link> / Cohorts / {cohort?.cohort_name}
             </Typography>
 
             <Box py={2}>

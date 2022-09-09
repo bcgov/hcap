@@ -208,7 +208,7 @@ export default ({ match }) => {
             <Box pb={4} pl={2}>
               <Box pb={2}>
                 <Typography variant='body1'>
-                  <Link href={routes.PSIView}>Manage PSI</Link> / PSI Details
+                  <Link href={routes.PSIView}>PSI</Link> / {psi.instituteName}
                 </Typography>
               </Box>
               <Grid container direction='row'>

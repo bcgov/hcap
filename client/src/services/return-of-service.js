@@ -32,7 +32,7 @@ export const createReturnOfServiceStatus = async ({ participantId, data, siteId 
 };
 
 export const getAllSites = async () => {
-  const url = `${API_URL}/api/v1/employer-sites/all`;
+  const url = `${API_URL}/api/v1/employer-sites`;
   const response = await fetch(url, {
     method: 'GET',
     headers: {

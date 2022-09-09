@@ -120,7 +120,7 @@ describe('api-e2e tests for /employer-sites route', () => {
     await saveSites(sites);
 
     const header = await getKeycloakToken(superuser);
-    const res = await request(app).get('/api/v1/employer-sites').set(header);
+    const res = await request(app).get('/api/v1/employer-sites/user').set(header);
     expect(res.status).toEqual(200);
     expect(res.body.data.length).toEqual(3);
     expect(res.body.data).toEqual(

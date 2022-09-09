@@ -141,7 +141,7 @@ export default () => {
 
   const fetchSites = async () => {
     setLoadingData(true);
-    const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
+    const response = await fetch(`${API_URL}/api/v1/employer-sites/user`, {
       headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
       method: 'GET',
     });

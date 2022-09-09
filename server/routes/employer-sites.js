@@ -80,7 +80,7 @@ router.patch(
 
 // Read: Get *All* Sites
 router.get(
-  '/all',
+  '/',
   [
     keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
     keycloak.getUserInfoMiddleware(),
@@ -104,7 +104,7 @@ router.get(
 
 // Read: Get All User Sites
 router.get(
-  '/',
+  '/user',
   [
     keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
     keycloak.getUserInfoMiddleware(),

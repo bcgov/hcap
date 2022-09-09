@@ -78,7 +78,7 @@ describe('Participants status suite', () => {
       startTab: 'My Candidates',
       actionItem: 'Hire',
       fillFormFunction: hireParticipantForm,
-      endTab: 'My Candidates',
+      endTab: 'Hired Candidates',
     },
   ];
 
@@ -153,7 +153,6 @@ describe('Participants status suite', () => {
 
     // archive participant
     archiveParticipant(participantIdRegex, 'Hired Candidates');
-    acknowledgeArchive(participantIdRegex, 'My Candidates');
     cy.kcLogout();
   });
 });

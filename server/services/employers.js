@@ -85,7 +85,7 @@ const getSitesForUser = async (user) => {
         count(ps.id) :: INT as "hireCount"
       FROM
         employer_sites
-        FULL JOIN participants_status ps on ps.data ->> 'site' = employer_sites.body ->> 'siteId'
+        LEFT JOIN participants_status ps on ps.data ->> 'site' = employer_sites.body ->> 'siteId'
         AND ps.status = 'hired'
         AND ps.data ->> 'nonHcapOpportunity' = 'false'
       ${additionalCriteria.length > 0 ? 'WHERE' : ''}

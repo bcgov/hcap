@@ -80,9 +80,6 @@ router.get(
     const user = userId || localUserId;
     const cohortId = parseInt(req.params.id, 10);
     const cohortParticipants = await getCohortParticipants(cohortId);
-    if (cohortParticipants === undefined) {
-      return res.status(404).send({ message: 'No participants found for this cohort' });
-    }
     logger.info({
       action: 'cohort_get',
       performed_by: {

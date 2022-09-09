@@ -36,6 +36,12 @@ export default ({ cohorts, editCohortAction }) => {
     editCohortAction(cohort);
   };
 
+  const handleCohortNav = (row) => {
+    const { id } = row;
+    const cohortDetailsPath = keyedString(Routes.CohortDetails, { id });
+    history.push(cohortDetailsPath);
+  };
+
   // Helpers
   const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
 
@@ -43,15 +49,7 @@ export default ({ cohorts, editCohortAction }) => {
     switch (columnId) {
       case 'cohort_name':
         return (
-          <Link
-            component='button'
-            variant='body2'
-            onClick={() => {
-              const { id } = row;
-              const cohortDetailsPath = keyedString(Routes.CohortDetails, { id });
-              history.push(cohortDetailsPath);
-            }}
-          >
+          <Link component='button' variant='body2' onClick={() => handleCohortNav(row)}>
             {row[columnId]}
           </Link>
         );

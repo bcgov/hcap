@@ -28,20 +28,40 @@ const getCohort = async (id) =>
     id,
   });
 
-const getCohortWithParticipants = async (id) =>
-  dbClient.db[collections.COHORTS]
+const getCohortParticipants = async (cohortId) =>
+  dbClient.db[collections.PARTICIPANTS]
     .join({
-      participants: {
+      cohortParticipantsJoin: {
+        type: 'INNER',
         relation: collections.COHORT_PARTICIPANTS,
-        type: 'LEFT OUTER',
         on: {
-          cohort_id: 'id',
+          participant_id: 'id',
         },
+      },
+      postHireJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANT_POST_HIRE_STATUS,
+        on: {
+          participant_id: 'id',
+        },
+      },
+      participantStatusJoin: {
+        type: 'INNER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'id',
+        },
+      },
+      siteJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.EMPLOYER_SITES,
+        decomposeTo: 'object',
+        on: { 'body.siteId': 'participantStatusJoin.data.site' },
       },
     })
     .find({
-      id,
-      'participants.is_current': true,
+      'cohortParticipantsJoin.cohort_id': cohortId,
+      'participantStatusJoin.current': true,
     });
 
 // Get all Cohorts associated with a specific PSI
@@ -259,7 +279,7 @@ const changeCohortParticipant = async (
 
 module.exports = {
   getCohorts,
-  getCohortWithParticipants,
+  getCohortParticipants,
   getPSICohorts,
   getCohort,
   makeCohort,

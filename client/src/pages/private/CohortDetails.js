@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { Box, Card, Grid, Typography, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { Page, CheckPermissions } from '../../components/generic';
-import { useToast } from '../../hooks';
-import { fetchCohort, fetchParticipantPostHireStatus } from '../../services';
+import { Page, CheckPermissions, Table } from '../../components/generic';
 import { Routes, ToastStatus, postHireStatuses } from '../../constants';
+import { useToast } from '../../hooks';
+import { fetchCohort, fetchCohortParticipants, getPostHireStatusLabel } from '../../services';
+import { keyedString } from '../../utils';
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
@@ -15,62 +17,78 @@ const useStyles = makeStyles((theme) => ({
   gridRoot: {
     padding: theme.spacing(2),
   },
+  notFoundBox: {
+    textAlign: 'center',
+    paddingTop: theme.spacing(6),
+  },
 }));
 
 export default ({ match }) => {
   const cohortId = parseInt(match.params.id);
   const classes = useStyles();
-  const [cohort, setCohort] = useState(null);
-  const [unsuccessfulParticipantsNumber, setUnsuccessfulParticipantsNumber] = useState(-1);
+  const history = useHistory();
   const { openToast } = useToast();
 
-  const getTotalParticipantsNumber = () => {
-    return cohort ? cohort.cohort_size : 0;
-  };
+  const [cohort, setCohort] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [rows, setRows] = useState([]);
 
-  const getAvailableParticipantsNumber = () => {
-    if (!cohort) return 0;
-    const totalNumber = cohort.cohort_size;
-    const assignedParticipantsNumber = cohort.participants?.length;
-    return totalNumber - assignedParticipantsNumber;
-  };
+  const cohortSize = cohort?.cohort_size || 0;
+  const assignedParticipants = rows?.length || 0;
+  const availableCohortSeats = cohortSize - assignedParticipants;
+  const unsuccessfulParticipants =
+    rows?.filter((participant) =>
+      participant.postHireJoin?.find(
+        (postHireStatus) =>
+          postHireStatus.status === postHireStatuses.cohortUnsuccessful &&
+          postHireStatus.is_current === true
+      )
+    )?.length || 0;
 
-  const fetchUnsuccessfulParticipantsNumber = async () => {
-    if (!cohort) return;
-
-    const cohortParticipantIds = cohort.participants.map(
-      (participant) => participant.participant_id
-    );
-    let participantCount = 0;
-    for (const participantId of cohortParticipantIds) {
-      const postHireData = await fetchParticipantPostHireStatus({ id: participantId });
-      const status = postHireData?.status;
-      if (status === postHireStatuses.cohortUnsuccessful) participantCount++;
-    }
-    setUnsuccessfulParticipantsNumber(participantCount);
-  };
+  const columns = [
+    { id: 'lastName', name: 'Last Name', sortable: false },
+    { id: 'firstName', name: 'First Name', sortable: false },
+    { id: 'siteName', name: 'Site Name', sortable: false },
+    { id: 'graduationStatus', name: 'Graduation Status', sortable: false },
+  ];
 
   const fetchCohortDetails = async () => {
     try {
-      const data = await fetchCohort({ cohortId });
-      setCohort(data);
+      setIsLoading(true);
+      const cohortData = await fetchCohort({ cohortId });
+      setCohort(cohortData);
+      const cohortParticipantsData = await fetchCohortParticipants({ cohortId });
+      setRows(cohortParticipantsData);
     } catch (err) {
       openToast({
         status: ToastStatus.Error,
-        message: err.message || 'Failed to fetch cohort',
+        message: err.message || 'Failed to fetch cohort details',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const getParticipantGraduationStatus = (participantStatuses) => {
+    if (!participantStatuses || participantStatuses.length === 0) return 'Not recorded';
+    const graduationStatus = participantStatuses.find(
+      (postHireStatus) => postHireStatus.is_current === true
+    );
+    return getPostHireStatusLabel(graduationStatus);
+  };
+
+  const handleOpenParticipantDetails = (participantId) => {
+    const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
+      id: participantId,
+      page: 'cohort-details',
+    });
+    history.push(participantDetailsPath);
+  };
+
   useEffect(() => {
-    if (cohort === null) {
-      fetchCohortDetails();
-    }
-    if (unsuccessfulParticipantsNumber === -1) {
-      fetchUnsuccessfulParticipantsNumber();
-    }
+    fetchCohortDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cohort, unsuccessfulParticipantsNumber]);
+  }, []);
 
   return (
     <Page>
@@ -105,19 +123,55 @@ export default ({ match }) => {
 
               <Grid item xs={12} sm={6}>
                 <Typography variant='subtitle2'>Total Seats</Typography>
-                <Typography variant='body1'>{getTotalParticipantsNumber()}</Typography>
+                <Typography variant='body1'>{cohortSize}</Typography>
               </Grid>
 
               <Grid item xs={12} sm={6}>
                 <Typography variant='subtitle2'>Total Available Seats</Typography>
-                <Typography variant='body1'>{getAvailableParticipantsNumber()}</Typography>
+                <Typography variant='body1'>{availableCohortSeats}</Typography>
               </Grid>
 
               <Grid item xs={12} sm={6}>
                 <Typography variant='subtitle2'>Number of Unsuccessful Participants</Typography>
-                <Typography variant='body1'>{unsuccessfulParticipantsNumber}</Typography>
+                <Typography variant='body1'>{unsuccessfulParticipants}</Typography>
               </Grid>
             </Grid>
+
+            <Box>
+              {rows.length > 0 ? (
+                <Table
+                  columns={columns}
+                  rows={rows}
+                  isLoading={isLoading}
+                  renderCell={(columnId, row) => {
+                    switch (columnId) {
+                      case 'firstName':
+                        return row.body[columnId];
+                      case 'lastName':
+                        return (
+                          <Link
+                            component='button'
+                            variant='body2'
+                            onClick={() => handleOpenParticipantDetails(row.id)}
+                          >
+                            {row.body[columnId]}
+                          </Link>
+                        );
+                      case 'siteName':
+                        return row.siteJoin.body[columnId];
+                      case 'graduationStatus':
+                        return getParticipantGraduationStatus(row.postHireJoin);
+                      default:
+                        return row[columnId];
+                    }
+                  }}
+                />
+              ) : (
+                <Typography variant='subtitle1' className={classes.notFoundBox}>
+                  No Participants in this Cohort
+                </Typography>
+              )}
+            </Box>
           </Box>
         </Card>
       </CheckPermissions>

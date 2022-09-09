@@ -102,7 +102,7 @@ export const fetchCohorts = async ({ psiId }) => {
 };
 
 export const fetchCohort = async ({ cohortId }) => {
-  const response = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}/participants`, {
+  const response = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}`, {
     headers: {
       Authorization: `Bearer ${store.get('TOKEN')}`,
     },
@@ -115,6 +115,22 @@ export const fetchCohort = async ({ cohortId }) => {
   }
 
   throw new Error(response.error || response.statusText || 'Unable to load cohorts details');
+};
+
+export const fetchCohortParticipants = async ({ cohortId }) => {
+  const res = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}/participants`, {
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+    },
+    method: 'GET',
+  });
+
+  if (res.ok) {
+    const participants = await res.json();
+    return participants;
+  }
+
+  throw new Error(res.error || res.statusText || 'Unable to load cohort participants');
 };
 
 export const addCohort = async ({ psiId, cohort }) => {

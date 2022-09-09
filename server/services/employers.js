@@ -50,6 +50,8 @@ const updateSite = async (id, site) => {
   return dbClient.db[collections.EMPLOYER_SITES].updateDoc({ id }, changes);
 };
 
+const getAllSites = async () => dbClient.db[collections.EMPLOYER_SITES].findDoc({});
+
 /**
  * Get all accessible sites for a user
  * @param {*} user user with roles and sites to filter
@@ -157,6 +159,7 @@ module.exports = {
   saveSites,
   updateSite,
   getSitesForUser,
+  getAllSites,
   getSiteByID,
   getSiteDetailsById,
 };

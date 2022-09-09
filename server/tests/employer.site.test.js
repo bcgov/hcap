@@ -137,10 +137,10 @@ describe('Employer Site Endpoints', () => {
     expect(res).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          allocation: site.allocation.toString(),
+          allocation: site.allocation,
           healthAuthority: site.healthAuthority,
           postalCode: site.postalCode,
-          siteId: site.siteId.toString(),
+          siteId: site.siteId,
           siteName: site.siteName,
         }),
       ])

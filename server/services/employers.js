@@ -57,29 +57,48 @@ const updateSite = async (id, site) => {
  */
 
 const getSitesForUser = async (user) => {
-  const criteria = {};
+  const additionalCriteria = [];
+  const additionalCriteriaParams = {};
 
-  if (user.isHA) {
-    criteria.siteId = user.sites.map((site) => `${site}`); // cast to string
-    criteria.healthAuthority = user.regions;
+  if ((user.isHA || user.isEmployer) && user.sites.length > 0) {
+    additionalCriteria.push(`(employer_sites.body ->> 'siteId')::INT IN ($(userSites:csv))`);
+    additionalCriteriaParams.userSites = user.sites;
   }
 
-  if (user.isEmployer) {
-    criteria.siteId = user.sites.map((site) => `${site}`); // cast to string
+  if (user.isHA && user.regions.length > 0) {
+    additionalCriteria.push(`employer_sites.body ->> 'healthAuthority' IN ($(userRegions:csv))`);
+    additionalCriteriaParams.userRegions = user.regions;
   }
 
-  return dbClient.db[collections.EMPLOYER_SITES].findDoc(criteria, {
-    order: [{ field: `siteName`, direction: 'asc' }],
-    fields: [
-      'siteId',
-      'siteName',
-      'operatorName',
-      'city',
-      'healthAuthority',
-      'postalCode',
-      'allocation',
-    ],
-  });
+  // Raw SQL was required here because `options.fields` wouldn't work with `join` https://github.com/bcgov/hcap/pull/834#pullrequestreview-1100927873
+  const records = await dbClient.db.query(
+    `
+      SELECT
+        employer_sites.id as "id",
+        employer_sites.body -> 'siteId' as "siteId",
+        employer_sites.body -> 'siteName' as "siteName",
+        employer_sites.body -> 'operatorName' as "operatorName",
+        employer_sites.body -> 'city' as "city",
+        employer_sites.body -> 'healthAuthority' as "healthAuthority",
+        employer_sites.body -> 'postalCode' as "postalCode",
+        employer_sites.body -> 'allocation' as "allocation",
+        count(ps.id) :: INT as "hireCount"
+      FROM
+        employer_sites
+        LEFT JOIN participants_status ps on ps.data ->> 'site' = employer_sites.body ->> 'siteId'
+        AND ps.status = 'hired'
+        AND ps.data ->> 'nonHcapOpportunity' = 'false'
+      ${additionalCriteria.length > 0 ? 'WHERE' : ''}
+        ${additionalCriteria.join(' AND ')}
+      GROUP BY
+        employer_sites.id, employer_sites.body
+      ORDER BY
+        employer_sites.body -> 'siteName';
+    `,
+    additionalCriteriaParams
+  );
+
+  return records;
 };
 
 const getSiteDetailsById = async (id) => {

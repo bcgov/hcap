@@ -227,7 +227,7 @@ export default ({ id, siteId }) => {
       },
       body: JSON.stringify({
         participantId,
-        site: parseInt(siteId),
+        site: siteId,
         data: additional,
         status: 'archived',
       }),

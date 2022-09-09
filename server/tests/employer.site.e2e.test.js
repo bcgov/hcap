@@ -50,10 +50,10 @@ const batchSiteObject = ({ id, name }) => {
 };
 
 const getAllSitesExpectedFields = (site) => ({
-  allocation: site.allocation.toString(),
+  allocation: site.allocation,
   healthAuthority: site.healthAuthority,
   postalCode: site.postalCode,
-  siteId: site.siteId.toString(),
+  siteId: site.siteId,
   siteName: site.siteName,
   operatorName: site.operatorName,
 });
@@ -62,19 +62,13 @@ describe('api-e2e tests for /employer-sites route', () => {
   let server;
 
   beforeAll(async () => {
+    await startDB();
     server = app.listen();
   });
 
   afterAll(async () => {
-    await server.close();
-  });
-
-  beforeEach(async () => {
-    await startDB();
-  });
-
-  afterEach(async () => {
     await closeDB();
+    await server.close();
   });
 
   it('should save site', async () => {
@@ -114,6 +108,9 @@ describe('api-e2e tests for /employer-sites route', () => {
   });
 
   it('should get sites', async () => {
+    await closeDB();
+    await startDB();
+
     const sites = [
       batchSiteObject({ id: 105, name: 'Test Site 1' }),
       batchSiteObject({ id: 106, name: 'Test Site 2' }),
@@ -137,7 +134,7 @@ describe('api-e2e tests for /employer-sites route', () => {
   });
 
   it('should get site by id', async () => {
-    const site = siteObject({ id: 106, name: 'FW Test Site 1' });
+    const site = siteObject({ id: 108, name: 'FW Test Site 1' });
     const savedSite = await saveSingleSite(site);
     const header = await getKeycloakToken(superuser);
     const res = await request(app).get(`/api/v1/employer-sites/${savedSite.id}`).set(header);
@@ -148,7 +145,7 @@ describe('api-e2e tests for /employer-sites route', () => {
 
   // TODO: Add basic smoke test on route. Need to add solid verification logic
   it('should get all participants of site by id', async () => {
-    const site = siteObject({ id: 107, name: 'FW Test Site 1' });
+    const site = siteObject({ id: 109, name: 'FW Test Site 1' });
     const savedSite = await saveSingleSite(site);
     const expected = {
       hired: [],

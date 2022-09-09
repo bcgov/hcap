@@ -66,9 +66,7 @@ const getSitesForUser = async (user) => {
   }
 
   if (user.isHA && user.regions.length > 0) {
-    additionalCriteria.push(
-      `AND employer_sites.body ->> 'healthAuthority' IN ($(userRegions:csv))`
-    );
+    additionalCriteria.push(`employer_sites.body ->> 'healthAuthority' IN ($(userRegions:csv))`);
     additionalCriteriaParams.userRegions = user.regions;
   }
 
@@ -91,7 +89,7 @@ const getSitesForUser = async (user) => {
         AND ps.status = 'hired'
         AND ps.data ->> 'nonHcapOpportunity' = 'false'
       ${additionalCriteria.length > 0 ? 'WHERE' : ''}
-        ${additionalCriteria.join(' ')}
+        ${additionalCriteria.join(' AND ')}
       GROUP BY
         employer_sites.id, employer_sites.body
       ORDER BY

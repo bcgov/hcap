@@ -254,6 +254,8 @@ This database is based off of the BCDevExchange Lab's Patroni image found [here]
 
 To deploy the database to OpenShift, use the Makefile target `make db-prep` followed by  `make db-create`.
 
+To tunnel into the databases, use `make db-postgres-tunnel`. In order to login to the OpenShift API, use the token in the OpenShift portal (click your name at the top right corner -> Copy login command).
+
 ### MongoDB
 
 The database used is based off of the OCIO RocketChat configuration found [here](https://github.com/BCDevOps/platform-services/blob/master/apps/rocketchat/template-mongodb.yaml). This defines a stateful set object with a default of three replicas. Database credentials are stored in a secret (HCAP uses the secret name of `hcap-mongodb`). The template also defines a persistent volume claim with the storage class `netapp-file-standard`.

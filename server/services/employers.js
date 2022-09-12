@@ -62,26 +62,7 @@ const getAllSites = async () =>
     }
   );
 
-/**
- * Get all accessible sites for a user
- * @param {*} user user with roles and sites to filter
- * @returns list of sites which the user has access to
- */
-
-const getSitesForUser = async (user) => {
-  const additionalCriteria = [];
-  const additionalCriteriaParams = {};
-
-  if ((user.isHA || user.isEmployer) && user.sites.length > 0) {
-    additionalCriteria.push(`(employer_sites.body ->> 'siteId')::INT IN ($(userSites:csv))`);
-    additionalCriteriaParams.userSites = user.sites;
-  }
-
-  if (user.isHA && user.regions.length > 0) {
-    additionalCriteria.push(`employer_sites.body ->> 'healthAuthority' IN ($(userRegions:csv))`);
-    additionalCriteriaParams.userRegions = user.regions;
-  }
-
+const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams) => {
   // Raw SQL was required here because `options.fields` wouldn't work with `join` https://github.com/bcgov/hcap/pull/834#pullrequestreview-1100927873
   const records = await dbClient.db.query(
     `
@@ -111,6 +92,44 @@ const getSitesForUser = async (user) => {
   );
 
   return records;
+};
+
+/**
+ * Get all accessible sites for a user
+ * @param {*} user user with roles and sites to filter
+ * @returns list of sites which the user has access to
+ */
+const getSitesForUser = async (user) => {
+  const additionalCriteria = [];
+  const additionalCriteriaParams = {};
+
+  if ((user.isHA || user.isEmployer) && user.sites.length > 0) {
+    additionalCriteria.push(`(employer_sites.body ->> 'siteId')::INT IN ($(userSites:csv))`);
+    additionalCriteriaParams.userSites = user.sites;
+  }
+
+  if (user.isHA && user.regions.length > 0) {
+    additionalCriteria.push(`employer_sites.body ->> 'healthAuthority' IN ($(userRegions:csv))`);
+    additionalCriteriaParams.userRegions = user.regions;
+  }
+  return getSitesWithCriteria(additionalCriteria, additionalCriteriaParams);
+};
+
+/**
+ * Get all sites for regions, returning nothing if there's no regions passed in
+ * @param {*} regions regions to get sites for
+ * @returns list of sites within a region
+ */
+const getSitesForRegion = async (regions) => {
+  if (regions.length > 0) {
+    const additionalCriteria = [];
+    const additionalCriteriaParams = {};
+
+    additionalCriteria.push(`employer_sites.body ->> 'healthAuthority' IN ($(userRegions:csv))`);
+    additionalCriteriaParams.userRegions = regions;
+    return getSitesWithCriteria(additionalCriteria, additionalCriteriaParams);
+  }
+  return [];
 };
 
 const getSiteDetailsById = async (id) => {
@@ -169,6 +188,7 @@ module.exports = {
   saveSites,
   updateSite,
   getSitesForUser,
+  getSitesForRegion,
   getAllSites,
   getSiteByID,
   getSiteDetailsById,

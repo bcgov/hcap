@@ -13,11 +13,29 @@ export const fetchSitePhases = async (siteId) => {
   return [];
 };
 
+export const fetchRegionSiteRows = async (columns) => {
+  const response = await fetch(`${API_URL}/api/v1/employer-sites/region`, {
+    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    method: 'GET',
+  });
+  return mapSiteRowsResponse(response, columns);
+};
+
 export const fetchSiteRows = async (columns) => {
   const response = await fetch(`${API_URL}/api/v1/employer-sites/user`, {
     headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
     method: 'GET',
   });
+  return mapSiteRowsResponse(response, columns);
+};
+
+/**
+ *
+ * @param {*} response API Request response
+ * @param {*} columns Which columns we're expected to map to
+ * @returns
+ */
+const mapSiteRowsResponse = async (response, columns) => {
   if (response.ok) {
     const { data } = await response.json();
     const rowsData = data.map((row) => {

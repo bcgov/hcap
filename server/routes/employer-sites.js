@@ -8,6 +8,7 @@ const {
   saveSingleSite,
   updateSite,
   getSitesForUser,
+  getSitesForRegion,
   getAllSites,
   getSiteByID,
 } = require('../services/employers');
@@ -92,6 +93,32 @@ router.get(
 
     logger.info({
       action: 'employer-sites_get-all',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      sites_accessed: result.map((site) => site.siteId),
+    });
+    return res.json({ data: result });
+  })
+);
+
+router.get(
+  '/region',
+  [
+    keycloak.allowRolesMiddleware('health_authority'),
+    keycloak.getUserInfoMiddleware(),
+    routeRedirect({ redirect: '/api/v1/employer-sites/details', match: 'employer-sites-detail' }),
+  ],
+  asyncMiddleware(async (req, res) => {
+    const { hcapUserInfo: user } = req;
+
+    if (!user.regions.length) {
+      return res.status(404).json({ error: 'Health Authority user has no assigned regions' });
+    }
+    const result = await getSitesForRegion(user.regions);
+    logger.info({
+      action: 'health-authority-sites_get',
       performed_by: {
         username: user.username,
         id: user.id,

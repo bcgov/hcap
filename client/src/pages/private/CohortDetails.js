@@ -34,10 +34,10 @@ export default ({ match }) => {
   const [rows, setRows] = useState([]);
 
   const cohortSize = cohort?.cohort_size || 0;
-  const assignedParticipants = rows?.length || 0;
+  const assignedParticipants = rows.length || 0;
   const availableCohortSeats = cohortSize - assignedParticipants;
   const unsuccessfulParticipants =
-    rows?.filter((participant) =>
+    rows.filter((participant) =>
       participant.postHireJoin?.find(
         (postHireStatus) =>
           postHireStatus.status === postHireStatuses.cohortUnsuccessful &&
@@ -57,7 +57,7 @@ export default ({ match }) => {
       setIsLoading(true);
       const cohortData = await fetchCohort({ cohortId });
       setCohort(cohortData);
-      const cohortParticipantsData = await fetchCohortParticipants({ cohortId });
+      const cohortParticipantsData = (await fetchCohortParticipants({ cohortId })) || [];
       setRows(cohortParticipantsData);
     } catch (err) {
       openToast({
@@ -144,7 +144,6 @@ export default ({ match }) => {
                   rows={rows}
                   isLoading={isLoading}
                   renderCell={(columnId, row) => {
-                    if (!row) return;
                     switch (columnId) {
                       case 'firstName':
                         return row.body[columnId];

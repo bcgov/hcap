@@ -85,7 +85,7 @@ export const EditRosSiteForm = ({
               component={RenderAutocomplete}
               label='New Site Name'
               boldLabel
-              options={_orderBy(sites, ['siteName']).map((item) => ({
+              options={sites.map((item) => ({
                 value: item.siteId,
                 label: addEllipsisMask(item.siteName, MAX_LABEL_LENGTH),
               }))}

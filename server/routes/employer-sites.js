@@ -103,6 +103,32 @@ router.get(
   })
 );
 
+router.get(
+  '/region',
+  [
+    keycloak.allowRolesMiddleware('health_authority'),
+    keycloak.getUserInfoMiddleware(),
+    routeRedirect({ redirect: '/api/v1/employer-sites/details', match: 'employer-sites-detail' }),
+  ],
+  asyncMiddleware(async (req, res) => {
+    const { hcapUserInfo: user } = req;
+
+    if (!user.regions.length) {
+      return res.status(404).json({ error: 'Health Authority user has no assigned regions' });
+    }
+    const result = await getSitesForRegion(user.regions);
+    logger.info({
+      action: 'health-authority-sites_get',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      sites_accessed: result.map((site) => site.siteId),
+    });
+    return res.json({ data: result });
+  })
+);
+
 // Read: Get All User Sites
 router.get(
   '/user',
@@ -112,15 +138,9 @@ router.get(
     routeRedirect({ redirect: '/api/v1/employer-sites/details', match: 'employer-sites-detail' }),
   ],
   asyncMiddleware(async (req, res) => {
-    const { regions } = req.query;
     const { hcapUserInfo: user } = req;
 
-    let result;
-    if (regions && user.isHA && user.regions.length > 0) {
-      result = await getSitesForRegion(user.regions);
-    } else {
-      result = await getSitesForUser(user);
-    }
+    const result = await getSitesForUser(user);
 
     logger.info({
       action: 'employer-sites_get',

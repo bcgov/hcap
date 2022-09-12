@@ -23,7 +23,7 @@ import { useToast } from '../../hooks';
 import { handleReportDownloadResult } from '../../utils';
 import { AuthContext } from '../../providers';
 import { FeatureFlaggedComponent, flagKeys } from '../../services';
-import { fetchSiteRows } from '../../services/site';
+import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
 
 const useStyles = makeStyles((theme) => ({
   rootItem: {
@@ -80,6 +80,7 @@ export default ({ sites, viewOnly }) => {
   const [healthAuthorities, setHealthAuthorities] = useState(healthAuthoritiesFilter);
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
+  const isHA = roles?.includes('health_authority') || false;
 
   const history = useHistory();
   const location = useLocation();
@@ -94,7 +95,7 @@ export default ({ sites, viewOnly }) => {
 
   const fetchSites = async () => {
     setLoadingData(true);
-    const rowsData = await fetchSiteRows(columns);
+    const rowsData = isHA ? await fetchRegionSiteRows(columns) : await fetchSiteRows(columns);
 
     setFetchedRows(rowsData);
     setRows(rowsData.filter((row) => healthAuthorities.includes(row.healthAuthority)));

@@ -144,6 +144,7 @@ export default ({ match }) => {
                   rows={rows}
                   isLoading={isLoading}
                   renderCell={(columnId, row) => {
+                    if (!row) return;
                     switch (columnId) {
                       case 'firstName':
                         return row.body[columnId];
@@ -158,7 +159,7 @@ export default ({ match }) => {
                           </Link>
                         );
                       case 'siteName':
-                        return row.siteJoin.body[columnId];
+                        return row.siteJoin?.body[columnId];
                       case 'graduationStatus':
                         return getParticipantGraduationStatus(row.postHireJoin);
                       default:

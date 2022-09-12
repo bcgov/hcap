@@ -20,7 +20,7 @@ import {
 } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
-import { handleReportDownloadResult } from '../../utils';
+import { handleReportDownloadResult, orderByCaseInsensitive } from '../../utils';
 import { AuthContext } from '../../providers';
 import { FeatureFlaggedComponent, flagKeys } from '../../services';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
@@ -168,7 +168,13 @@ export default ({ sites, viewOnly }) => {
     );
   }, [roles]);
 
-  const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
+  const sort = (array) => {
+    return _orderBy(
+      array,
+      [(item) => orderByCaseInsensitive(item, orderBy), 'operatorName'],
+      [order]
+    );
+  };
 
   useEffect(() => {
     if (sites) {

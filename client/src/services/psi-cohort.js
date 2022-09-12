@@ -2,13 +2,11 @@ import store from 'store';
 import { API_URL } from '../constants';
 import { formatCohortDate } from '../utils';
 
-const baseURL = `${API_URL}/api/v1`;
-
 const getCohortAvailAbleSize = (cohort) =>
   cohort.cohort_size - (cohort.participantsCohorts?.length || 0);
 
 export const getPsi = async () => {
-  const response = await fetch(`${baseURL}/psi/with-cohorts`, {
+  const response = await fetch(`${API_URL}/api/v1/psi/with-cohorts`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${store.get('TOKEN')}`,
@@ -35,7 +33,7 @@ export const getPsi = async () => {
 };
 
 export const assignParticipantWithCohort = async ({ participantId, cohortId }) => {
-  const response = await fetch(`${baseURL}/cohorts/${cohortId}/assign/${participantId}`, {
+  const response = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}/assign/${participantId}`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${store.get('TOKEN')}`,

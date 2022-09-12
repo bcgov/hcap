@@ -43,7 +43,7 @@ Feature flags are set as environment variables on the server which are then sent
 Add a line to your local `.env` file in the following format:
 
 ```
-<Feature_Key>:true
+<Feature_Key>=true
 ```
 
 ##### Openshift

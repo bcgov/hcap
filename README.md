@@ -30,6 +30,30 @@ This project includes the following features:
 1. Public web form for Employer Expression of Interest (EEOI) submissions
 1. HCAP Employer Portal providing secure data upload, access, and reporting
 
+### Feature Flags
+
+As a method to improve deployment frequency, this project utilizes flags on some features.
+
+Feature flags are set as environment variables on the server which are then sent to the client.
+
+#### Setting feature flags
+
+##### Local development
+
+Add a line to your local `.env` file in the following format:
+
+```
+<Feature_Key>=true
+```
+
+##### Openshift
+
+The server's deployment config references a `hcap-feature-flags` config map.
+This config map contains the environment variables used for feature flagging.
+These flags are set per-environment.
+
+*Note:* The flag will only be enabled if the environment variable's value is exactly `true` any other values will be treated as false
+
 ## Getting Help or Reporting an Issue
 
 To report bugs/issues/feature requests, please file an [issue](https://github.com/bcgov/hcap/issues).

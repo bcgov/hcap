@@ -34,10 +34,10 @@ export default ({ match }) => {
   const [rows, setRows] = useState([]);
 
   const cohortSize = cohort?.cohort_size || 0;
-  const assignedParticipants = rows?.length || 0;
+  const assignedParticipants = rows.length || 0;
   const availableCohortSeats = cohortSize - assignedParticipants;
   const unsuccessfulParticipants =
-    rows?.filter((participant) =>
+    rows.filter((participant) =>
       participant.postHireJoin?.find(
         (postHireStatus) =>
           postHireStatus.status === postHireStatuses.cohortUnsuccessful &&
@@ -57,7 +57,7 @@ export default ({ match }) => {
       setIsLoading(true);
       const cohortData = await fetchCohort({ cohortId });
       setCohort(cohortData);
-      const cohortParticipantsData = await fetchCohortParticipants({ cohortId });
+      const cohortParticipantsData = (await fetchCohortParticipants({ cohortId })) || [];
       setRows(cohortParticipantsData);
     } catch (err) {
       openToast({
@@ -158,7 +158,7 @@ export default ({ match }) => {
                           </Link>
                         );
                       case 'siteName':
-                        return row.siteJoin.body[columnId];
+                        return row.siteJoin?.body[columnId];
                       case 'graduationStatus':
                         return getParticipantGraduationStatus(row.postHireJoin);
                       default:

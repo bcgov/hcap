@@ -118,7 +118,7 @@ const createStaleOpenParticipantsTable = async () => {
 /**
  * Gets all participants from temporary table who haven't been updated in 6 months
  * Relies on createStaleOpenParticipantsTable
- * @returns {void}
+ * @returns {Promise<Array<Object>>}
  */
 const getStaleOpenParticipants = async () => {
   const getQuery = `
@@ -158,7 +158,7 @@ const invalidateStaleOpenParticipants = async () => {
       UPDATE participants_status SET
         data = JSONB_SET(coalesce(data::JSONB, '{}'), '{cleanupDate}', to_jsonb(NOW())),
         current = false
-      WHERE participant_id = participant_rec.id AND current = true
+      WHERE participant_id = participant_rec.id AND current = true;
       -- Withdraws participant and sets an expiration date
       body_obj = JSONB_SET(participant_rec.body::JSONB, '{cleanupDate}', to_jsonb(NOW()));
       body_obj = body_obj || '{"interested" : "withdrawn"}';

@@ -7,7 +7,7 @@ import { Button, Page, Table, CheckPermissions } from '../../components/generic'
 import { Routes, regionLabelsMap, API_URL, healthAuthoritiesFilter } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { AuthContext } from '../../providers';
-import { sortRows } from '../../utils';
+import { sortObjects } from '../../utils';
 
 export default () => {
   const [order, setOrder] = useState('asc');
@@ -60,7 +60,7 @@ export default () => {
     return row;
   };
 
-  const sort = (array) => sortRows(array, orderBy, order);
+  const sort = (array) => sortObjects(array, orderBy, order);
 
   useEffect(() => {
     const filterData = (data) => {

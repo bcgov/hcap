@@ -23,7 +23,7 @@ import {
 import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import dayjs from 'dayjs';
-import { keyedString, getDialogTitle, sortRows } from '../../utils';
+import { keyedString, getDialogTitle, sortObjects } from '../../utils';
 import { fetchSitePhases } from '../../services/site';
 
 const columnIDs = [
@@ -145,7 +145,7 @@ export default ({ id, siteId }) => {
     setOrderBy(property);
   };
 
-  const sort = (array) => sortRows(array, orderBy, order);
+  const sort = (array) => sortObjects(array, orderBy, order);
 
   const participantOnClick = (participantId) => {
     const participantDetailsPath = keyedString(Routes.ParticipantDetails, {

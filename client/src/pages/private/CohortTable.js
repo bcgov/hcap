@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import { Box, Grid, Link } from '@material-ui/core';
 import { Table, Button } from '../../components/generic';
-import { formatCohortDate, keyedString, sortRows } from '../../utils';
+import { formatCohortDate, keyedString, sortObjects } from '../../utils';
 import { Routes } from '../../constants';
 
 const columns = [
@@ -42,7 +42,7 @@ export default ({ cohorts, editCohortAction }) => {
   };
 
   // Helpers
-  const sort = (array) => sortRows(array, orderBy, order);
+  const sort = (array) => sortObjects(array, orderBy, order);
 
   const renderCell = (columnId, row) => {
     switch (columnId) {

@@ -13,7 +13,7 @@ export const capitalizedString = (str) => str.charAt(0).toUpperCase() + str.slic
  * @param {string} direction asc or desc, will not sort if the value is anything else
  * @returns sorted list of objects based on given key and direction
  */
-export const sortRows = (items, key, direction) => {
+export const sortObjects = (items, key, direction = 'asc') => {
   if (!items) {
     return [];
   }

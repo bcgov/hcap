@@ -6,7 +6,7 @@ import { Box, Typography, Link } from '@material-ui/core';
 import { Table, Button } from '../../components/generic';
 import { Routes } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
-import { sortRows } from '../../utils';
+import { sortObjects } from '../../utils';
 
 const columns = [
   { id: 'institute_name', name: 'Institutes' },
@@ -47,7 +47,7 @@ export default ({ PSIs, handleAddCohortClick }) => {
     );
   }, [PSIs]);
 
-  const sort = (array) => sortRows(array, orderBy, order);
+  const sort = (array) => sortObjects(array, orderBy, order);
 
   return (
     <>

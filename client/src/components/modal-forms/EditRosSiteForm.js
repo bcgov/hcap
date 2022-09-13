@@ -1,5 +1,4 @@
 import React from 'react';
-import _orderBy from 'lodash/orderBy';
 
 import Alert from '@material-ui/lab/Alert';
 import { Box } from '@material-ui/core';
@@ -85,7 +84,7 @@ export const EditRosSiteForm = ({
               component={RenderAutocomplete}
               label='New Site Name'
               boldLabel
-              options={_orderBy(sites, ['siteName']).map((item) => ({
+              options={sites.map((item) => ({
                 value: item.siteId,
                 label: addEllipsisMask(item.siteName, MAX_LABEL_LENGTH),
               }))}

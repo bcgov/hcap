@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
@@ -237,7 +236,7 @@ export default () => {
                     name='sites'
                     component={RenderMultiSelectField}
                     label='* Employer Sites (allocation number) - select one or more'
-                    options={_orderBy(sites, ['siteName'])
+                    options={sites
                       .filter((item) =>
                         values.role === 'health_authority'
                           ? values.regions.includes(item.healthAuthority)

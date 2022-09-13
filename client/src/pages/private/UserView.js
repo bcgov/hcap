@@ -237,7 +237,7 @@ export default () => {
                     name='sites'
                     component={RenderMultiSelectField}
                     label='* Employer Sites (allocation number) - select one or more'
-                    options={_orderBy(sites, ['siteName'])
+                    options={sites
                       .filter((item) =>
                         values.role === 'health_authority'
                           ? values.regions.includes(item.healthAuthority)

@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import _orderBy from 'lodash/orderBy';
 import { AuthContext } from '../../providers';
 
 import {
@@ -75,7 +74,7 @@ export const SelectProspectingSiteForm = ({
             name='prospectingSite'
             component={RenderSelectField}
             placeholder='Select Site'
-            options={_orderBy(sites, ['siteName']).map((item) => ({
+            options={sites.map((item) => ({
               value: item.siteId,
               label: addEllipsisMask(item.siteName, MAX_LABEL_LENGTH),
             }))}

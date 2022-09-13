@@ -61,7 +61,6 @@ const getCohortParticipants = async (cohortId) =>
     })
     .find({
       'cohortParticipantsJoin.cohort_id': cohortId,
-      'cohortParticipantsJoin.is_current': true,
       'participantStatusJoin.current': true,
     });
 
@@ -86,10 +85,7 @@ const getPSICohorts = async (psiID) =>
     })
     .find({
       psi_id: psiID,
-      or: [
-        { 'participants.is_current': true, 'participantStatusJoin.current': true },
-        { 'participants.is_current': null, 'participantStatusJoin.current': null },
-      ],
+      'participantStatusJoin.current !=': false,
     });
 
 const mapDataToCohort = (cohort) => {

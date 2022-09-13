@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
 import AddIcon from '@material-ui/icons/Add';
 import Grid from '@material-ui/core/Grid';
@@ -7,6 +6,7 @@ import { Box, Typography, Link } from '@material-ui/core';
 import { Table, Button } from '../../components/generic';
 import { Routes } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
+import { sortObjects } from '../../utils';
 
 const columns = [
   { id: 'institute_name', name: 'Institutes' },
@@ -47,7 +47,7 @@ export default ({ PSIs, handleAddCohortClick }) => {
     );
   }, [PSIs]);
 
-  const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
+  const sort = (array) => sortObjects(array, orderBy, order);
 
   return (
     <>

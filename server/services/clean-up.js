@@ -109,7 +109,7 @@ const createStaleOpenParticipantsTable = async () => {
       SELECT DISTINCT ON (ps.participant_id)
       ps.participant_id
       FROM participants_status ps
-      WHERE ps.created_at > (NOW() - interval '3 month')
+      WHERE ps.created_at > (NOW() - interval '6 month')
       OR (
         ps.status NOT IN ('rejected', 'reject_ack')
         AND ps.current = true
@@ -129,7 +129,7 @@ const createStaleOpenParticipantsTable = async () => {
     INNER JOIN participants_status ps ON
       p.id = ps.participant_id
       AND ps.current = 'false'
-      AND ps.created_at < (NOW() - interval '3 month')
+      AND ps.created_at < (NOW() - interval '6 month')
     WHERE p.body->>'interested' = 'yes'
     AND p.id NOT IN (
       SELECT DISTINCT ON (ps.participant_id)
@@ -170,8 +170,7 @@ const dropStaleOpenParticipantsTable = async () => {
  * @returns {void}
  */
 const invalidateStaleOpenParticipants = async () => {
-  const updateStatement = `START TRANSACTION;
-    DO $$
+  const updateStatement = `DO $$
     DECLARE
       participant_rec RECORD;
       body_obj JSONB;
@@ -197,9 +196,10 @@ const invalidateStaleOpenParticipants = async () => {
     END LOOP;
     END;
   $$ LANGUAGE plpgsql;
-  COMMIT;
   `;
-  await dbClient.db.query(updateStatement);
+  await dbClient.db.withTransaction(async (tx) => {
+    await tx.query(updateStatement);
+  });
 };
 
 /**

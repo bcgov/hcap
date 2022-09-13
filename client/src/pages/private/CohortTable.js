@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import _orderBy from 'lodash/orderBy';
 
 import { Box, Grid, Link } from '@material-ui/core';
 import { Table, Button } from '../../components/generic';
-import { formatCohortDate, keyedString } from '../../utils';
+import { formatCohortDate, keyedString, sortRows } from '../../utils';
 import { Routes } from '../../constants';
 
 const columns = [
@@ -43,7 +42,7 @@ export default ({ cohorts, editCohortAction }) => {
   };
 
   // Helpers
-  const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
+  const sort = (array) => sortRows(array, orderBy, order);
 
   const renderCell = (columnId, row) => {
     switch (columnId) {

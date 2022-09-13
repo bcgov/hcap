@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import _orderBy from 'lodash/orderBy';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography, Link } from '@material-ui/core';
 import store from 'store';
@@ -24,7 +23,7 @@ import {
 import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import dayjs from 'dayjs';
-import { keyedString, getDialogTitle } from '../../utils';
+import { keyedString, getDialogTitle, sortRows } from '../../utils';
 import { fetchSitePhases } from '../../services/site';
 
 const columnIDs = [
@@ -146,7 +145,7 @@ export default ({ id, siteId }) => {
     setOrderBy(property);
   };
 
-  const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
+  const sort = (array) => sortRows(array, orderBy, order);
 
   const participantOnClick = (participantId) => {
     const participantDetailsPath = keyedString(Routes.ParticipantDetails, {

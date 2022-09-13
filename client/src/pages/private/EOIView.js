@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import _orderBy from 'lodash/orderBy';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
@@ -8,6 +7,7 @@ import { Button, Page, Table, CheckPermissions } from '../../components/generic'
 import { Routes, regionLabelsMap, API_URL, healthAuthoritiesFilter } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { AuthContext } from '../../providers';
+import { sortRows } from '../../utils';
 
 export default () => {
   const [order, setOrder] = useState('asc');
@@ -46,15 +46,6 @@ export default () => {
     setOrderBy(property);
   };
 
-  const sortConfig = () => {
-    if (orderBy === 'siteName') {
-      return [(item) => item.siteName.toLowerCase(), 'operatorName'];
-    } else if (orderBy === 'healthAuthority') {
-      return [(item) => item.healthAuthority.toLowerCase(), 'operatorName'];
-    }
-    return [orderBy, 'operatorName'];
-  };
-
   const mapItemToColumns = (item, columns) => {
     const row = {};
     columns
@@ -69,7 +60,7 @@ export default () => {
     return row;
   };
 
-  const sort = (array) => _orderBy(array, sortConfig(), [order]);
+  const sort = (array) => sortRows(array, orderBy, order);
 
   useEffect(() => {
     const filterData = (data) => {

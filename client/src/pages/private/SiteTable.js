@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import store from 'store';
-import _orderBy from 'lodash/orderBy';
 
 import { Grid, Typography, MenuItem, Menu, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -20,7 +19,7 @@ import {
 } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
-import { handleReportDownloadResult, orderByCaseInsensitive } from '../../utils';
+import { handleReportDownloadResult, sortRows } from '../../utils';
 import { AuthContext } from '../../providers';
 import { FeatureFlaggedComponent, flagKeys } from '../../services';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
@@ -169,11 +168,7 @@ export default ({ sites, viewOnly }) => {
   }, [roles]);
 
   const sort = (array) => {
-    return _orderBy(
-      array,
-      [(item) => orderByCaseInsensitive(item, orderBy), 'operatorName'],
-      [order]
-    );
+    return sortRows(array, orderBy, order);
   };
 
   useEffect(() => {

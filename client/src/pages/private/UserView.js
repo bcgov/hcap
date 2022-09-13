@@ -17,6 +17,7 @@ import {
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../../components/fields';
 import { useLocation } from 'react-router-dom';
+import { sortRows } from '../../utils';
 
 const columns = [
   { id: 'firstName', name: 'First Name' },
@@ -153,7 +154,7 @@ export default () => {
     setLoadingData(false);
   };
 
-  const sort = (array) => _orderBy(array, [orderBy, 'operatorName'], [order]);
+  const sort = (array) => sortRows(array, orderBy, order);
 
   useEffect(() => {
     fetchUsers({ pending: location.pathname === Routes.UserPending });

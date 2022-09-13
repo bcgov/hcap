@@ -1,5 +1,4 @@
 import React from 'react';
-import _orderBy from 'lodash/orderBy';
 
 import Alert from '@material-ui/lab/Alert';
 import { Box } from '@material-ui/core';

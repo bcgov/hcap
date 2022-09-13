@@ -76,10 +76,20 @@ const getPSICohorts = async (psiID) =>
           cohort_id: 'id',
         },
       },
+      participantStatusJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'participants.participant_id',
+        },
+      },
     })
     .find({
       psi_id: psiID,
-      or: [{ 'participants.is_current': true }, { 'participants.is_current': null }],
+      or: [
+        { 'participants.is_current': true, 'participantStatusJoin.current': true },
+        { 'participants.is_current': null, 'participantStatusJoin.current': null },
+      ],
     });
 
 const mapDataToCohort = (cohort) => {

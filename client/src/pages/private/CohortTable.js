@@ -60,6 +60,8 @@ export default ({ cohorts, editCohortAction }) => {
       case 'end_date':
         return formatCohortDate(row[columnId]);
       case 'remaining_seats':
+        console.log(row.participantStatusJoin);
+        console.log(row.participants);
         return row['cohort_size'] - row['participants'].length;
       default:
         return row[columnId];

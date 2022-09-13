@@ -18,11 +18,14 @@ export const sortObjects = (items, key, direction = 'asc') => {
     return [];
   }
   return items.sort((itema, itemb) => {
+    const a = itema[key] ?? '';
+    const b = itemb[key] ?? '';
+
     switch (direction) {
       case 'asc':
-        return itema[key].toString().localeCompare(itemb[key], 'en', { numeric: true });
+        return a.toString().localeCompare(b, 'en', { numeric: true });
       case 'desc':
-        return itemb[key].toString().localeCompare(itema[key], 'en', { numeric: true });
+        return b.toString().localeCompare(a, 'en', { numeric: true });
       default:
         return 0;
     }

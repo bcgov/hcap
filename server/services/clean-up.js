@@ -60,6 +60,7 @@ const cleanStaleInProgressParticipant = async () => {
 /**
  * @description - Creates a table of all participants that should currently be Open - Never engaged, or current status = rejected / reject_ack
  * @returns {Promise<Array>}
+ * NOTE: A current weakness of this script is that it does not cover participants who have been marked as interested again by MoH
  */
 const createStaleOpenParticipantsTable = async () => {
   // Creates a temporary table, meant for removal later
@@ -108,10 +109,10 @@ const createStaleOpenParticipantsTable = async () => {
       SELECT DISTINCT ON (ps.participant_id)
       ps.participant_id
       FROM participants_status ps
-      WHERE ps.status NOT IN ('rejected', 'reject_ack')
-      AND (
-        ps.created_at > (NOW() - interval '6 month')
-        OR ps.current = true
+      WHERE ps.created_at > (NOW() - interval '3 month')
+      OR (
+        ps.status NOT IN ('rejected', 'reject_ack')
+        AND ps.current = true
       )
       GROUP BY ps.participant_id
     )
@@ -169,7 +170,8 @@ const dropStaleOpenParticipantsTable = async () => {
  * @returns {void}
  */
 const invalidateStaleOpenParticipants = async () => {
-  const updateStatement = `DO $$
+  const updateStatement = `START TRANSACTION;
+    DO $$
     DECLARE
       participant_rec RECORD;
       body_obj JSONB;
@@ -195,6 +197,7 @@ const invalidateStaleOpenParticipants = async () => {
     END LOOP;
     END;
   $$ LANGUAGE plpgsql;
+  COMMIT;
   `;
   await dbClient.db.query(updateStatement);
 };

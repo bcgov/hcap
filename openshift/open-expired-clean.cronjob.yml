@@ -23,7 +23,7 @@ objects:
     metadata:
       name: ${APP_NAME}-clean-expired-cronjob
     spec:
-      schedule: '0 8 * * 1'
+      schedule: '0 9 * * 0'
       concurrencyPolicy: 'Replace'
       startingDeadlineSeconds: 10
       successfulJobsHistoryLimit: 3

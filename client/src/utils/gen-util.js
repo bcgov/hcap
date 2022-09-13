@@ -18,6 +18,7 @@ export const sortObjects = (items, key, direction = 'asc') => {
     return [];
   }
   return items.sort((itema, itemb) => {
+    // coalesce null fields to empty string
     const a = itema[key] ?? '';
     const b = itemb[key] ?? '';
 

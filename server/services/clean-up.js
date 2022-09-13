@@ -72,6 +72,7 @@ const createStaleOpenParticipantsTable = async () => {
   `;
   await dbClient.db.query(createTable);
 
+  // Anyone who was never engaged, but created > 6 months ago
   const pushUnengagedParticipants = `
     INSERT INTO stale_open_participants_table
     SELECT
@@ -90,6 +91,7 @@ const createStaleOpenParticipantsTable = async () => {
   `;
   await dbClient.db.query(pushUnengagedParticipants);
 
+  // Anyone who was prospected / offered then rejected, and have no other current statuses in the past 6 months
   const pushRejectedParticipants = `
     INSERT INTO stale_open_participants_table
     SELECT
@@ -101,18 +103,42 @@ const createStaleOpenParticipantsTable = async () => {
       AND ps.current = 'true'
       AND ps.created_at < (NOW() - interval '6 month')
     WHERE p.body->>'interested' = 'yes'
-    -- If anyone has a status in the past 6 months, exclude them
+    -- If anyone has a non-rejected status in the past 6 months or is has a current non-rejected status, exclude them
     AND p.id NOT IN (
       SELECT DISTINCT ON (ps.participant_id)
       ps.participant_id
       FROM participants_status ps
-      WHERE ps.created_at > (NOW() - interval '6 month')
-      AND ps.current = true
+      WHERE ps.status NOT IN ('rejected', 'reject_ack')
+      AND (
+        ps.created_at > (NOW() - interval '6 month')
+        OR ps.current = true
+      )
       GROUP BY ps.participant_id
     )
     GROUP BY p.id;
   `;
   await dbClient.db.query(pushRejectedParticipants);
+
+  // Anyone who was affected by the stale, in progress script will have only CURRENT=FALSE statuses
+  const pushStaleInProgressParticipants = `
+    INSERT INTO stale_open_participants_table
+    SELECT
+      p.id, max(ps.created_at) AS last_updated, TRUE as previously_engaged
+    FROM participants p
+    INNER JOIN participants_status ps ON
+      p.id = ps.participant_id
+      AND ps.current = 'false'
+      AND ps.created_at < (NOW() - interval '3 month')
+    WHERE p.body->>'interested' = 'yes'
+    AND p.id NOT IN (
+      SELECT DISTINCT ON (ps.participant_id)
+      ps.participant_id
+      FROM participants_status ps
+      WHERE ps.current = true
+    )
+    GROUP BY p.id;
+  `;
+  await dbClient.db.query(pushStaleInProgressParticipants);
 };
 
 /**

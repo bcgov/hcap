@@ -258,6 +258,7 @@ service-pod:
 # Cron Job
 cron-job:
 	@oc -n $(TARGET_NAMESPACE) process -f openshift/in-progres-stale-clean.cronjob.yml -p APP_NAME=$(APP_NAME) -p IMAGE_TAG=$(OS_NAMESPACE_SUFFIX) -p IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f -
+	@oc -n $(TARGET_NAMESPACE) process -f openshift/open-expired-clean.cronjob.yml -p APP_NAME=$(APP_NAME) -p IMAGE_TAG=$(OS_NAMESPACE_SUFFIX) -p IMAGE_NAMESPACE=$(TOOLS_NAMESPACE) | oc apply -n $(TARGET_NAMESPACE) -f -
 
 # Load Testing
 loadtest:

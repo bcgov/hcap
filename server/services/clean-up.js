@@ -58,8 +58,157 @@ const cleanStaleInProgressParticipant = async () => {
 };
 
 /**
+ * @description - Creates a table of all participants that should currently be Open - Never engaged, or current status = rejected / reject_ack
+ * @returns {Promise<Array>}
+ * NOTE: A current weakness of this script is that it does not cover participants who have been marked as interested again by MoH
+ */
+const createStaleOpenParticipantsTable = async () => {
+  // Creates a temporary table, meant for removal later
+  const createTable = `
+    CREATE TEMPORARY TABLE stale_open_participants_table (
+      id integer,
+      last_updated date,
+      previously_engaged boolean
+    );
+  `;
+  await dbClient.db.query(createTable);
+
+  // Anyone who was never engaged, but created > 6 months ago
+  const pushUnengagedParticipants = `
+    INSERT INTO stale_open_participants_table
+    SELECT
+    p.id, created_at::date AS last_updated, FALSE as previously_engaged
+    FROM participants p
+    WHERE p.body->>'interested' = 'yes'
+    AND (
+      p.updated_at < (NOW() - interval '6 month')
+      OR (p.updated_at IS NULL AND p.created_at < (NOW() - interval '6 month'))
+    )
+    AND NOT EXISTS (
+      SELECT ps.participant_id
+      FROM participants_status ps
+      WHERE p.id = ps.participant_id
+    );
+  `;
+  await dbClient.db.query(pushUnengagedParticipants);
+
+  // Anyone who was prospected / offered then rejected, and have no other current statuses in the past 6 months
+  const pushRejectedParticipants = `
+    INSERT INTO stale_open_participants_table
+    SELECT
+      p.id, max(ps.created_at) AS last_updated, TRUE as previously_engaged
+    FROM participants p
+    INNER JOIN participants_status ps ON
+      p.id = ps.participant_id
+      AND ps.status IN ('rejected', 'reject_ack')
+      AND ps.current = 'true'
+      AND ps.created_at < (NOW() - interval '6 month')
+    WHERE p.body->>'interested' = 'yes'
+    -- If anyone has a non-rejected status in the past 6 months or is has a current non-rejected status, exclude them
+    AND p.id NOT IN (
+      SELECT DISTINCT ON (ps.participant_id)
+      ps.participant_id
+      FROM participants_status ps
+      WHERE ps.created_at > (NOW() - interval '6 month')
+      OR (
+        ps.status NOT IN ('rejected', 'reject_ack')
+        AND ps.current = true
+      )
+      GROUP BY ps.participant_id
+    )
+    GROUP BY p.id;
+  `;
+  await dbClient.db.query(pushRejectedParticipants);
+
+  // Anyone who was affected by the stale, in progress script will have only CURRENT=FALSE statuses
+  const pushStaleInProgressParticipants = `
+    INSERT INTO stale_open_participants_table
+    SELECT
+      p.id, max(ps.created_at) AS last_updated, TRUE as previously_engaged
+    FROM participants p
+    INNER JOIN participants_status ps ON
+      p.id = ps.participant_id
+      AND ps.current = 'false'
+      AND ps.created_at < (NOW() - interval '6 month')
+    WHERE p.body->>'interested' = 'yes'
+    AND p.id NOT IN (
+      SELECT DISTINCT ON (ps.participant_id)
+      ps.participant_id
+      FROM participants_status ps
+      WHERE ps.current = true
+    )
+    GROUP BY p.id;
+  `;
+  await dbClient.db.query(pushStaleInProgressParticipants);
+};
+
+/**
+ * Gets all participants from temporary table who haven't been updated in 6 months
+ * Relies on createStaleOpenParticipantsTable
+ * @returns {Promise<Array<Object>>}
+ */
+const getStaleOpenParticipants = async () => {
+  const getQuery = `
+    SELECT * FROM stale_open_participants_table
+    WHERE last_updated < (NOW() - interval '6 month');
+  `;
+  return dbClient.db.query(getQuery);
+};
+
+/**
+ * Drops temporary table created
+ */
+const dropStaleOpenParticipantsTable = async () => {
+  const dropQuery = `
+    DROP TABLE stale_open_participants_table;
+  `;
+  return dbClient.db.query(dropQuery);
+};
+
+/**
+ * For all the expired participants, invalidates their statuses and withdraws the participant
+ * @returns {void}
+ */
+const invalidateStaleOpenParticipants = async () => {
+  const updateStatement = `DO $$
+    DECLARE
+      participant_rec RECORD;
+      body_obj JSONB;
+    BEGIN
+    FOR participant_rec IN
+      SELECT * FROM participants WHERE id IN (
+        SELECT id from stale_open_participants_table
+        WHERE last_updated < (NOW() - interval '6 month')
+      )
+    LOOP
+      -- Invalidates all current statuses for an expired participant
+      UPDATE participants_status SET
+        data = JSONB_SET(coalesce(data::JSONB, '{}'), '{cleanupDate}', to_jsonb(NOW())),
+        current = false
+      WHERE participant_id = participant_rec.id AND current = true;
+      -- Withdraws participant and sets an expiration date
+      body_obj = JSONB_SET(participant_rec.body::JSONB, '{cleanupDate}', to_jsonb(NOW()));
+      body_obj = body_obj || '{"interested" : "withdrawn"}';
+      UPDATE participants SET
+        body = body_obj,
+        updated_at = NOW()
+      WHERE id = participant_rec.id;
+    END LOOP;
+    END;
+  $$ LANGUAGE plpgsql;
+  `;
+  await dbClient.db.withTransaction(async (tx) => {
+    await tx.query(updateStatement);
+  });
+};
+
+/**
  * Exports
  */
 module.exports = {
   cleanStaleInProgressParticipant,
+  createStaleOpenParticipantsTable,
+  getStaleOpenParticipants,
+  dropStaleOpenParticipantsTable,
+  invalidateStaleOpenParticipants,
 };

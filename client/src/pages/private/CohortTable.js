@@ -59,8 +59,6 @@ export default ({ cohorts, editCohortAction }) => {
       case 'start_date':
       case 'end_date':
         return formatCohortDate(row[columnId]);
-      case 'remaining_seats':
-        return row['cohort_size'] - row['participants'].length;
       default:
         return row[columnId];
     }

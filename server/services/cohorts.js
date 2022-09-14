@@ -65,8 +65,8 @@ const getCohortParticipants = async (cohortId) =>
     });
 
 // Get all Cohorts associated with a specific PSI
-const getPSICohorts = async (psiID) =>
-  dbClient.db[collections.COHORTS]
+const getPSICohorts = async (psiID) => {
+  let psiCohorts = await dbClient.db[collections.COHORTS]
     .join({
       participants: {
         relation: collections.COHORT_PARTICIPANTS,
@@ -79,6 +79,15 @@ const getPSICohorts = async (psiID) =>
     .find({
       psi_id: psiID,
     });
+
+  // calculate remaining cohort seats
+  psiCohorts = psiCohorts.map((cohort) => ({
+    ...cohort,
+    remaining_seats: cohort.cohort_size - cohort.participants.length,
+  }));
+
+  return psiCohorts;
+};
 
 const mapDataToCohort = (cohort) => {
   const temp = {

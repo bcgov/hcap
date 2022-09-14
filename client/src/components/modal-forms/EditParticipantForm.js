@@ -5,9 +5,12 @@ import { Button } from '../generic';
 import { Box } from '@material-ui/core';
 import { RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { API_URL, EditParticipantFormSchema } from '../../constants';
+import { API_URL, EditParticipantFormSchema, participantStatus } from '../../constants';
 
 export const EditParticipantForm = ({ initialValues, onClose, submissionCallback }) => {
+  const participantIsHired = initialValues.latestStatuses.some(
+    (status) => status.status === participantStatus.HIRED
+  );
   return (
     <Formik
       initialValues={initialValues}
@@ -92,6 +95,7 @@ export const EditParticipantForm = ({ initialValues, onClose, submissionCallback
               name='interested'
               component={RenderSelectField}
               label='Program Interest'
+              disabled={participantIsHired}
               options={[
                 { value: 'yes', label: 'Interested' },
                 { value: 'withdrawn', label: 'Withdrawn' },

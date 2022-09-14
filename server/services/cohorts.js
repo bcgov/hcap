@@ -87,6 +87,8 @@ const getPSICohorts = async (psiID) =>
     .find({
       psi_id: psiID,
       // Additional condition to filter out the participants who don't have status assigned to them
+      // This is used as a safeguard against legacy data
+      // ref: https://github.com/bcgov/hcap/pull/847
       'participantStatusJoin.current !=': false,
       or: [
         { 'participantStatusJoin.status': ['hired', 'archived'] },

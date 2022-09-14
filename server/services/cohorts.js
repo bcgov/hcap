@@ -62,6 +62,7 @@ const getCohortParticipants = async (cohortId) =>
     .find({
       'cohortParticipantsJoin.cohort_id': cohortId,
       'participantStatusJoin.current': true,
+      'participantStatusJoin.status': ['hired', 'archived'],
     });
 
 // Get all Cohorts associated with a specific PSI
@@ -75,9 +76,24 @@ const getPSICohorts = async (psiID) => {
           cohort_id: 'id',
         },
       },
+      participantStatusJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'participants.participant_id',
+        },
+      },
     })
     .find({
       psi_id: psiID,
+      // Additional condition to filter out the participants who don't have status assigned to them
+      // This is used as a safeguard against legacy data
+      // ref: https://github.com/bcgov/hcap/pull/847
+      'participantStatusJoin.current !=': false,
+      or: [
+        { 'participantStatusJoin.status': ['hired', 'archived'] },
+        { 'participantStatusJoin.status': null },
+      ],
     });
 
   // calculate remaining cohort seats

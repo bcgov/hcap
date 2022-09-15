@@ -91,6 +91,36 @@ const filterCohortParticipantsForUser = (cohortParticipants, user) => {
   return [];
 };
 
+/**
+ * Calculates and appends fields to cohort objects based
+ * on cohort data and participants list
+ *
+ * availableCohortSeats: number of seats available in the cohort
+ * unsuccessfulParticipants: total participants with unsuccessful statuses
+ *
+ * @param {*} cohort cohort to calculate fields for
+ * @param {*} participants cohort participant list, used in calculations
+ * @returns
+ */
+const getCohortWithCalculatedFields = (cohort, participants) => {
+  const cohortWithCalculatedFields = { ...cohort };
+
+  // Calculate available cohort seats
+  cohortWithCalculatedFields.availableCohortSeats = cohort.cohort_size - participants.length;
+
+  // Count cohort participants with unsuccessful statuses
+  cohortWithCalculatedFields.unsuccessfulParticipants =
+    participants.filter((participant) =>
+      participant.postHireJoin?.find(
+        (postHireStatus) =>
+          postHireStatus.status === postHireStatuses.cohortUnsuccessful &&
+          postHireStatus.is_current === true
+      )
+    )?.length || 0;
+
+  return cohortWithCalculatedFields;
+};
+
 // Get all Cohorts associated with a specific PSI
 const getPSICohorts = async (psiID) => {
   let psiCohorts = await dbClient.db[collections.COHORTS]
@@ -332,6 +362,7 @@ module.exports = {
   getCohorts,
   getCohortParticipants,
   filterCohortParticipantsForUser,
+  getCohortWithCalculatedFields,
   getPSICohorts,
   getCohort,
   makeCohort,

@@ -24,11 +24,9 @@ const checkUserHasAccessToParticipant = async (id, user) => {
     });
 
     // Allow access if requesting user has access to hired site
-    if (user.regions.includes(hiredSite.body.healthAuthority)) {
-      return true;
-    }
+    const participantIsInUserRegion = user.regions.includes(hiredSite.body.healthAuthority);
 
-    return false;
+    return participantIsInUserRegion;
   }
 
   if (user.isEmployer) {

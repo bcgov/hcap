@@ -1,7 +1,7 @@
 // Participant Details Page
 // Dependency
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useHistory, Link as RouterLink } from 'react-router-dom';
 
 import { Box, Card, Grid, Link, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -31,6 +31,7 @@ import {
   EditRosStartDateDialog,
   EditRosSiteDialog,
 } from '../../components/participant-details';
+import { keyedString } from '../../utils';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -79,8 +80,6 @@ const fetchData = ({
 };
 
 export default () => {
-  // History
-  const history = useHistory();
   // State
   const [error, setError] = useState(null);
   const [participant, setParticipant] = useState(null);
@@ -170,16 +169,18 @@ export default () => {
   };
 
   // Navigate on link
-  const handleNavigateBackLink = () => {
+  const getNavigateBackLink = () => {
     switch (linkName) {
       case 'Participant':
-        history.push(Routes.ParticipantView);
-        break;
+        return Routes.ParticipantView;
       case 'Site View':
-        history.push(Routes.SiteView + `/${pageId}`);
-        break;
+        return Routes.SiteView + `/${pageId}`;
+      case 'Cohort':
+        return keyedString(Routes.CohortDetails, {
+          id: pageId,
+        });
       default:
-        history.goBack();
+        return Routes.ParticipantView;
     }
   };
 
@@ -256,13 +257,14 @@ export default () => {
               onSubmit={handleCallAssignCohort}
               onClose={onAssignCohortClose}
             />
-
             {/* Participant Info */}
             <Box pb={1}>
-              <Link onClick={handleNavigateBackLink}>{linkName}</Link> /{participant.fullName}
+              <Link to={getNavigateBackLink()} component={RouterLink}>
+                {linkName}
+              </Link>{' '}
+              / {participant.fullName}
             </Box>
             <Typography variant='h2'>Participant Details</Typography>
-
             <Grid container spacing={2} className={classes.gridSection}>
               {Object.keys(keyLabelMap).map((key) => (
                 <Grid key={key} item xs={12} sm={6} xl={3}>

@@ -26,7 +26,14 @@ const getInterestLabel = (isInterested) => {
 };
 
 export const getParticipantPageLabel = (pageName) => {
-  return pageName === 'participant' ? 'Participant' : 'Site View';
+  switch (pageName) {
+    case 'participant':
+      return 'Participant';
+    case 'cohort-details':
+      return 'Cohort';
+    default:
+      return 'Site View';
+  }
 };
 
 export const displayParticipantData = (inputData) => ({

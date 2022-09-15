@@ -81,6 +81,7 @@ export default ({ match }) => {
     const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
       id: participantId,
       page: 'cohort-details',
+      pageId: cohortId,
     });
     history.push(participantDetailsPath);
   };

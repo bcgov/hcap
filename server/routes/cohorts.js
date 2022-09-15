@@ -10,6 +10,7 @@ const {
   updateCohort,
   getCountOfAllocation,
   getCohortParticipants,
+  filterCohortParticipantsForUser,
 } = require('../services/cohorts.js');
 const { getParticipantByID } = require('../services/participants');
 const { EditCohortSchema, validate } = require('../validation');
@@ -75,11 +76,16 @@ router.get(
 router.get(
   '/:id/participants',
   [applyMiddleware(keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'))],
+  keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;
     const cohortId = parseInt(req.params.id, 10);
     const cohortParticipants = await getCohortParticipants(cohortId);
+    const filteredCohortParticipants = filterCohortParticipantsForUser(
+      cohortParticipants,
+      req.hcapUserInfo
+    );
     logger.info({
       action: 'cohort_get',
       performed_by: {
@@ -87,7 +93,7 @@ router.get(
       },
     });
 
-    return res.status(200).json(cohortParticipants);
+    return res.status(200).json(filteredCohortParticipants);
   })
 );
 

@@ -97,10 +97,21 @@ const getPSICohorts = async (psiID) => {
     });
 
   // calculate remaining cohort seats
-  psiCohorts = psiCohorts.map((cohort) => ({
-    ...cohort,
-    remaining_seats: cohort.cohort_size - cohort.participants.length,
-  }));
+  psiCohorts = psiCohorts.map((cohort) => {
+    const uniqueCohortParticipants = [];
+    // filter out duplicates
+    cohort.participants.forEach((participant) => {
+      if (
+        !uniqueCohortParticipants.find((item) => item.participant_id === participant.participant_id)
+      ) {
+        uniqueCohortParticipants.push(participant);
+      }
+    });
+    return {
+      ...cohort,
+      remaining_seats: cohort.cohort_size - uniqueCohortParticipants.length,
+    };
+  });
 
   return psiCohorts;
 };

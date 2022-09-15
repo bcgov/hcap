@@ -1,7 +1,7 @@
 // Participant Details Page
 // Dependency
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams, useHistory, Link as RouterLink } from 'react-router-dom';
+import { useParams, Link as RouterLink } from 'react-router-dom';
 
 import { Box, Card, Grid, Link, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';

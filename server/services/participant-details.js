@@ -8,8 +8,32 @@ const checkUserHasAccessToParticipant = async (id, user) => {
   if (user.isMoH || user.isSuperUser) {
     return true;
   }
-  // Get statuses connected with user
-  if (user.isHA || user.isEmployer) {
+
+  if (user.isHA) {
+    // Allow access for HA if participant is hired to HA's region
+
+    // Get participant's hired status to retrieve hired site ID
+    const hiredStatus = await dbClient.db[collections.PARTICIPANTS_STATUS].findOne({
+      participant_id: id,
+      status: HIRED,
+    });
+
+    // Get hired site to determine hired region
+    const hiredSite = await dbClient.db[collections.EMPLOYER_SITES].findOne({
+      id: hiredStatus.data.site,
+    });
+
+    // Allow access if requesting user has access to hired site
+    if (user.regions.includes(hiredSite.body.healthAuthority)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  if (user.isEmployer) {
+    // Allow access to employers if they are the person who hired or archived the user
+    // or they have access to the site the participant was hired to
     const statuses =
       (await dbClient.db[collections.PARTICIPANTS_STATUS].find({
         participant_id: id,

@@ -116,7 +116,7 @@ jobs:
           SLACK_MESSAGE: 'Test Deployment Completed :rocket:'
 
       - name: Microsoft Teams Deploy Card
-      - uses: toko-bifrost/ms-teams-deploy-card@master
+        uses: toko-bifrost/ms-teams-deploy-card@master
         if: always()
         with:
           github-token: ${{ github.token }}

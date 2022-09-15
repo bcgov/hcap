@@ -20,7 +20,7 @@ const checkUserHasAccessToParticipant = async (id, user) => {
 
     // Get hired site to determine hired region
     const hiredSite = await dbClient.db[collections.EMPLOYER_SITES].findOne({
-      id: hiredStatus.data.site,
+      'body.siteId': hiredStatus.data.site,
     });
 
     // Allow access if requesting user has access to hired site

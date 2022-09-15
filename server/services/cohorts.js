@@ -29,27 +29,27 @@ const getCohort = async (id) =>
   });
 
 const getCohortParticipants = async (cohortId) =>
-  dbClient.db[collections.PARTICIPANTS]
+  dbClient.db[collections.COHORT_PARTICIPANTS]
     .join({
-      cohortParticipantsJoin: {
+      participantsJoin: {
         type: 'INNER',
-        relation: collections.COHORT_PARTICIPANTS,
+        relation: collections.PARTICIPANTS,
         on: {
-          participant_id: 'id',
+          id: 'participant_id',
         },
       },
       postHireJoin: {
         type: 'LEFT OUTER',
         relation: collections.PARTICIPANT_POST_HIRE_STATUS,
         on: {
-          participant_id: 'id',
+          participant_id: 'participant_id',
         },
       },
       participantStatusJoin: {
-        type: 'INNER',
+        type: 'LEFT OUTER',
         relation: collections.PARTICIPANTS_STATUS,
         on: {
-          participant_id: 'id',
+          participant_id: 'participant_id',
         },
       },
       siteJoin: {
@@ -60,7 +60,7 @@ const getCohortParticipants = async (cohortId) =>
       },
     })
     .find({
-      'cohortParticipantsJoin.cohort_id': cohortId,
+      cohort_id: cohortId,
       'participantStatusJoin.current': true,
       'participantStatusJoin.status': ['hired', 'archived'],
     });
@@ -97,21 +97,10 @@ const getPSICohorts = async (psiID) => {
     });
 
   // calculate remaining cohort seats
-  psiCohorts = psiCohorts.map((cohort) => {
-    const uniqueCohortParticipants = [];
-    // filter out duplicates
-    cohort.participants.forEach((participant) => {
-      if (
-        !uniqueCohortParticipants.find((item) => item.participant_id === participant.participant_id)
-      ) {
-        uniqueCohortParticipants.push(participant);
-      }
-    });
-    return {
-      ...cohort,
-      remaining_seats: cohort.cohort_size - uniqueCohortParticipants.length,
-    };
-  });
+  psiCohorts = psiCohorts.map((cohort) => ({
+    ...cohort,
+    remaining_seats: cohort.cohort_size - cohort.participants.length,
+  }));
 
   return psiCohorts;
 };

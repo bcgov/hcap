@@ -69,7 +69,16 @@ export default ({ match }) => {
     }
   };
 
-  const getParticipantGraduationStatus = (participantStatuses) => {
+  const getParticipantGraduationStatus = (participantStatuses, participantId, participants) => {
+    // check if any of the participants were re-assigned to the same cohort
+    if (
+      participants.filter((participant) => participant.participant_id === participantId).length > 1
+    ) {
+      // extra validation for the edge case
+      if (!participantStatuses.find((postHireStatus) => postHireStatus.is_current === true)) {
+        return getPostHireStatusLabel(participantStatuses[participantStatuses.length - 1]);
+      }
+    }
     if (!participantStatuses || participantStatuses.length === 0) return 'Not recorded';
     const graduationStatus = participantStatuses.find(
       (postHireStatus) => postHireStatus.is_current === true
@@ -146,21 +155,25 @@ export default ({ match }) => {
                   renderCell={(columnId, row) => {
                     switch (columnId) {
                       case 'firstName':
-                        return row.body[columnId];
+                        return row.participantsJoin?.[0].body[columnId];
                       case 'lastName':
                         return (
                           <Link
                             component='button'
                             variant='body2'
-                            onClick={() => handleOpenParticipantDetails(row.id)}
+                            onClick={() => handleOpenParticipantDetails(row.participant_id)}
                           >
-                            {row.body[columnId]}
+                            {row.participantsJoin?.[0].body[columnId]}
                           </Link>
                         );
                       case 'siteName':
-                        return row.siteJoin?.body[columnId];
+                        return row.siteJoin?.body?.[columnId];
                       case 'graduationStatus':
-                        return getParticipantGraduationStatus(row.postHireJoin);
+                        return getParticipantGraduationStatus(
+                          row.postHireJoin,
+                          row.participant_id,
+                          rows
+                        );
                       default:
                         return row[columnId];
                     }

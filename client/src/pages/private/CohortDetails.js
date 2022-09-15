@@ -9,17 +9,18 @@ import { Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 import { fetchCohort, getPostHireStatusLabel } from '../../services';
 import { keyedString } from '../../utils';
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
-    minWidth: '1020px',
+    width: '1020px',
   },
   gridRoot: {
     padding: theme.spacing(2),
   },
   notFoundBox: {
     textAlign: 'center',
-    paddingTop: theme.spacing(6),
+    paddingTop: theme.spacing(3),
   },
 }));
 
@@ -122,6 +123,14 @@ export default ({ match }) => {
               <Grid item xs={12} sm={6}>
                 <Typography variant='subtitle2'>Number of Unsuccessful Participants</Typography>
                 <Typography variant='body1'>{cohort?.unsuccessfulParticipants ?? '...'}</Typography>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Alert severity='info'>
+                  <Typography variant='body2' gutterBottom>
+                    Participants hired outside your region will not appear in this list
+                  </Typography>
+                </Alert>
               </Grid>
             </Grid>
 

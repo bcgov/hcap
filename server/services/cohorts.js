@@ -111,13 +111,11 @@ const getCohortWithCalculatedFields = (cohort, participants) => {
   // Count cohort participants with unsuccessful statuses
   cohortWithCalculatedFields.unsuccessfulParticipants =
     participants.filter((participant) =>
-      participant.postHireJoin?.find((postHireStatus) => {
-        console.log(postHireStatus.status, postHireStatus.is_current);
-        return (
+      participant.postHireJoin?.find(
+        (postHireStatus) =>
           postHireStatus.status === postHireStatuses.cohortUnsuccessful &&
           postHireStatus.is_current === true
-        );
-      })
+      )
     )?.length || 0;
 
   return cohortWithCalculatedFields;

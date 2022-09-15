@@ -10,6 +10,8 @@ const {
   updateCohort,
   getCountOfAllocation,
   getCohortParticipants,
+  filterCohortParticipantsForUser,
+  getCohortWithCalculatedFields,
 } = require('../services/cohorts.js');
 const { getParticipantByID } = require('../services/participants');
 const { EditCohortSchema, validate } = require('../validation');
@@ -51,6 +53,8 @@ router.get(
 // Get one cohort with its id
 router.get(
   '/:id',
+  [applyMiddleware(keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'))],
+  keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;
@@ -59,6 +63,16 @@ router.get(
     if (cohort === undefined) {
       return res.status(401).send({ message: 'You do not have permission to view this record' });
     }
+
+    const cohortParticipants = await getCohortParticipants(id);
+
+    const cohortWithCalculatedFields = getCohortWithCalculatedFields(cohort, cohortParticipants);
+
+    const filteredCohortParticipants = filterCohortParticipantsForUser(
+      cohortParticipants,
+      req.hcapUserInfo
+    );
+
     logger.info({
       action: 'cohort_get',
       performed_by: {
@@ -67,27 +81,10 @@ router.get(
       id: cohort.id || '',
     });
 
-    return res.status(200).json(cohort);
-  })
-);
-
-// Get cohort participants with their statuses
-router.get(
-  '/:id/participants',
-  [applyMiddleware(keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'))],
-  asyncMiddleware(async (req, res) => {
-    const { user_id: userId, sub: localUserId } = req.user;
-    const user = userId || localUserId;
-    const cohortId = parseInt(req.params.id, 10);
-    const cohortParticipants = await getCohortParticipants(cohortId);
-    logger.info({
-      action: 'cohort_get',
-      performed_by: {
-        user,
-      },
+    return res.status(200).json({
+      cohort: cohortWithCalculatedFields,
+      participants: filteredCohortParticipants,
     });
-
-    return res.status(200).json(cohortParticipants);
   })
 );
 

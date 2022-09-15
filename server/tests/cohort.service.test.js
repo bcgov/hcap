@@ -8,7 +8,10 @@ const {
   changeCohortParticipant,
   getAssignCohort,
   findCohortByName,
+  filterCohortParticipantsForUser,
+  getCohortWithCalculatedFields,
 } = require('../services/cohorts');
+const { postHireStatuses } = require('../constants');
 
 describe('Test Post hire flow service', () => {
   let testParticipant;
@@ -63,5 +66,107 @@ describe('Test Post hire flow service', () => {
     });
     expect(cohorts.length).toBeGreaterThan(0);
     expect(cohorts[0].id).toBe(newCohort.id);
+  });
+});
+
+const cohortParticipant = ({ status, isCurrent, healthAuthority }) => ({
+  siteJoin: {
+    body: {
+      healthAuthority,
+    },
+  },
+  postHireJoin: [
+    {
+      status,
+      is_current: isCurrent,
+    },
+  ],
+});
+
+describe(`filterCohortParticipantsForUser`, () => {
+  it("HA: should remove cohort participants outside of requesting user's region", () => {
+    const cohortParticipants = [cohortParticipant({ healthAuthority: 'Northern' })];
+    const requestingUser = {
+      isHA: true,
+      regions: ['Fraser'],
+    };
+    const filteredCohortParticipants = filterCohortParticipantsForUser(
+      cohortParticipants,
+      requestingUser
+    );
+
+    expect(filteredCohortParticipants).toStrictEqual([]);
+  });
+
+  it("HA: should note remove cohort participants within requesting user's region", () => {
+    const cohortParticipants = [cohortParticipant({ healthAuthority: 'Northern' })];
+    const requestingUser = {
+      isHA: true,
+      regions: ['Northern'],
+    };
+    const filteredCohortParticipants = filterCohortParticipantsForUser(
+      cohortParticipants,
+      requestingUser
+    );
+
+    expect(filteredCohortParticipants).toStrictEqual(cohortParticipants);
+  });
+
+  it('MOH: it should return all given cohort participants', () => {
+    const cohortParticipants = [
+      {
+        siteJoin: {
+          body: {
+            healthAuthority: 'Northern',
+          },
+        },
+      },
+    ];
+
+    const requestingUser = {
+      isMoH: true,
+    };
+
+    const filteredCohortParticipants = filterCohortParticipantsForUser(
+      cohortParticipants,
+      requestingUser
+    );
+
+    expect(filteredCohortParticipants).toStrictEqual(cohortParticipants);
+  });
+});
+
+describe(`getCohortWithCalculatedFields`, () => {
+  it('calculates available cohort seats', () => {
+    const cohort = {
+      cohort_size: 10,
+    };
+    const cohortParticipants = [
+      cohortParticipant({ status: postHireStatuses.cohortUnsuccessful, isCurrent: true }),
+      cohortParticipant({ status: postHireStatuses.cohortUnsuccessful, isCurrent: true }),
+    ];
+
+    const cohortWithCalculatedFields = getCohortWithCalculatedFields(cohort, cohortParticipants);
+
+    expect(cohortWithCalculatedFields.availableCohortSeats).toBe(8);
+  });
+
+  it('calculates unsuccessful cohort participants', () => {
+    const cohort = {
+      cohort_size: 10,
+    };
+    const cohortParticipants = [
+      cohortParticipant({ status: postHireStatuses.cohortUnsuccessful, isCurrent: true }),
+      cohortParticipant({ status: postHireStatuses.cohortUnsuccessful, isCurrent: true }),
+      cohortParticipant({ status: postHireStatuses.cohortUnsuccessful, isCurrent: false }), // not counted
+      cohortParticipant({
+        status: postHireStatuses.postSecondaryEducationCompleted,
+        isCurrent: true,
+      }), // not counted
+    ];
+
+    const cohortWithCalculatedFields = getCohortWithCalculatedFields(cohort, cohortParticipants);
+
+    expect(cohortWithCalculatedFields.unsuccessfulParticipants).toBe(2);
   });
 });

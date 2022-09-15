@@ -65,6 +65,62 @@ const getCohortParticipants = async (cohortId) =>
       'participantStatusJoin.status': ['hired', 'archived'],
     });
 
+/**
+ * Filters cohort participants based on given user
+ *
+ * MOH: Don't filter participants
+ * HA: Only return participants hired to requesting HA's region
+ *
+ * @param {*} cohortParticipants list of cohort participants
+ * @param {*} user requesting user
+ * @returns filtered list of participants
+ */
+const filterCohortParticipantsForUser = (cohortParticipants, user) => {
+  if (user.isMoH) {
+    return cohortParticipants;
+  }
+
+  if (user.isHA) {
+    // Remove participants hired outside of HA's region
+    // participant.siteJoin is joined based on hired status' siteId
+    return cohortParticipants.filter((participant) =>
+      user.regions.includes(participant.siteJoin.body.healthAuthority)
+    );
+  }
+
+  return [];
+};
+
+/**
+ * Calculates and appends fields to cohort objects based
+ * on cohort data and participants list
+ *
+ * availableCohortSeats: number of seats available in the cohort
+ * unsuccessfulParticipants: total participants with unsuccessful statuses
+ *
+ * @param {*} cohort cohort to calculate fields for
+ * @param {*} participants cohort participant list, used in calculations
+ * @returns
+ */
+const getCohortWithCalculatedFields = (cohort, participants) => {
+  const cohortWithCalculatedFields = { ...cohort };
+
+  // Calculate available cohort seats
+  cohortWithCalculatedFields.availableCohortSeats = cohort.cohort_size - participants.length;
+
+  // Count cohort participants with unsuccessful statuses
+  cohortWithCalculatedFields.unsuccessfulParticipants =
+    participants.filter((participant) =>
+      participant.postHireJoin?.find(
+        (postHireStatus) =>
+          postHireStatus.status === postHireStatuses.cohortUnsuccessful &&
+          postHireStatus.is_current === true
+      )
+    )?.length || 0;
+
+  return cohortWithCalculatedFields;
+};
+
 // Get all Cohorts associated with a specific PSI
 const getPSICohorts = async (psiID) => {
   let psiCohorts = await dbClient.db[collections.COHORTS]
@@ -305,6 +361,8 @@ const changeCohortParticipant = async (
 module.exports = {
   getCohorts,
   getCohortParticipants,
+  filterCohortParticipantsForUser,
+  getCohortWithCalculatedFields,
   getPSICohorts,
   getCohort,
   makeCohort,

@@ -5,21 +5,22 @@ import { Box, Card, Grid, Typography, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { Page, CheckPermissions, Table } from '../../components/generic';
-import { Routes, ToastStatus, postHireStatuses } from '../../constants';
+import { Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
-import { fetchCohort, fetchCohortParticipants, getPostHireStatusLabel } from '../../services';
+import { fetchCohort, getPostHireStatusLabel } from '../../services';
 import { keyedString } from '../../utils';
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
-    minWidth: '1020px',
+    width: '1020px',
   },
   gridRoot: {
     padding: theme.spacing(2),
   },
   notFoundBox: {
     textAlign: 'center',
-    paddingTop: theme.spacing(6),
+    paddingTop: theme.spacing(3),
   },
 }));
 
@@ -33,18 +34,6 @@ export default ({ match }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState([]);
 
-  const cohortSize = cohort?.cohort_size || 0;
-  const assignedParticipants = rows.length || 0;
-  const availableCohortSeats = cohortSize - assignedParticipants;
-  const unsuccessfulParticipants =
-    rows.filter((participant) =>
-      participant.postHireJoin?.find(
-        (postHireStatus) =>
-          postHireStatus.status === postHireStatuses.cohortUnsuccessful &&
-          postHireStatus.is_current === true
-      )
-    )?.length || 0;
-
   const columns = [
     { id: 'lastName', name: 'Last Name', sortable: false },
     { id: 'firstName', name: 'First Name', sortable: false },
@@ -56,9 +45,8 @@ export default ({ match }) => {
     try {
       setIsLoading(true);
       const cohortData = await fetchCohort({ cohortId });
-      setCohort(cohortData);
-      const cohortParticipantsData = (await fetchCohortParticipants({ cohortId })) || [];
-      setRows(cohortParticipantsData);
+      setCohort(cohortData.cohort);
+      setRows(cohortData.participants);
     } catch (err) {
       openToast({
         status: ToastStatus.Error,
@@ -124,17 +112,25 @@ export default ({ match }) => {
 
               <Grid item xs={12} sm={6}>
                 <Typography variant='subtitle2'>Total Seats</Typography>
-                <Typography variant='body1'>{cohortSize}</Typography>
+                <Typography variant='body1'>{cohort?.cohort_size ?? '...'}</Typography>
               </Grid>
 
               <Grid item xs={12} sm={6}>
                 <Typography variant='subtitle2'>Total Available Seats</Typography>
-                <Typography variant='body1'>{availableCohortSeats}</Typography>
+                <Typography variant='body1'>{cohort?.availableCohortSeats ?? '...'}</Typography>
               </Grid>
 
               <Grid item xs={12} sm={6}>
                 <Typography variant='subtitle2'>Number of Unsuccessful Participants</Typography>
-                <Typography variant='body1'>{unsuccessfulParticipants}</Typography>
+                <Typography variant='body1'>{cohort?.unsuccessfulParticipants ?? '...'}</Typography>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Alert severity='info'>
+                  <Typography variant='body2' gutterBottom>
+                    Participants hired outside your region will not appear in this list
+                  </Typography>
+                </Alert>
               </Grid>
             </Grid>
 

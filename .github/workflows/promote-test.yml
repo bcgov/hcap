@@ -28,6 +28,18 @@ jobs:
             src:
               - 'openshift/**'
           base: 'refs/tags/test'
+      - name: Microsoft Teams Deploy Card
+        uses: toko-bifrost/ms-teams-deploy-card@master
+        if: always()
+        with:
+          github-token: ${{ github.token }}
+          webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          environment: ${{ env.OS_NAMESPACE_SUFFIX }}
+          card-layout-exit: complete
+          timezone: America/Vancouver
+          show-on-start: false
+          show-on-exit: true
+          show-on-failure: true
       - name: Dry run - Test
         env:
           OS_NAMESPACE_SUFFIX: test
@@ -105,16 +117,3 @@ jobs:
           oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
           export OS_NAMESPACE_SUFFIX=${{ env.OS_NAMESPACE_SUFFIX }}
           make server-deploy
-
-      - name: Microsoft Teams Deploy Card
-        uses: toko-bifrost/ms-teams-deploy-card@master
-        if: always()
-        with:
-          github-token: ${{ github.token }}
-          webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          environment: ${{ env.OS_NAMESPACE_SUFFIX }}
-          card-layout-exit: complete
-          timezone: America/Vancouver
-          show-on-start: false
-          show-on-exit: true
-          show-on-failure: true

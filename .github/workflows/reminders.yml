@@ -15,4 +15,4 @@ jobs:
         with:
           webhook-url: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
           provider: msteams
-          github-provider-map: 'fw-noel:Noel Feliciano,taraepp:Tara Epp,arranfw:Arran Woodruff,alva-fresh:8:Alva Kostrova'
+          github-provider-map: 'fw-noel:Noel Feliciano,taraepp:Tara Epp,arranfw:Arran Woodruff,alva-fresh:Alva Kostrova'

@@ -30,18 +30,6 @@ jobs:
         with:
           node-version: '15'
 
-      - uses: toko-bifrost/ms-teams-deploy-card@master
-        if: always()
-        with:
-          github-token: ${{ github.token }}
-          webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          environment: development
-          card-layout-exit: complete
-          timezone: America/Vancouver
-          show-on-start: false
-          show-on-exit: true
-          show-on-failure: true
-
       - name: NPM Audit
         run: |
           cd "$GITHUB_WORKSPACE/client" && npm audit --production
@@ -138,3 +126,16 @@ jobs:
         with:
           target: ${{ env.DEV_URL }}
           cmd_options: '-I'
+
+      - name: Microsoft Teams Deploy Card
+        uses: toko-bifrost/ms-teams-deploy-card@master
+        if: always()
+        with:
+          github-token: ${{ github.token }}
+          webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          environment: development
+          card-layout-exit: complete
+          timezone: America/Vancouver
+          show-on-start: false
+          show-on-exit: true
+          show-on-failure: true

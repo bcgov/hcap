@@ -13,6 +13,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
-          provider: slack
+          webhook-url: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          provider: msteams
           github-provider-map: 'fw-noel:UUWMCRU4Q,taraepp:U0373NCPMPH,arranfw:U01ADH9FUET,alva-fresh:U012X7BJV0T'

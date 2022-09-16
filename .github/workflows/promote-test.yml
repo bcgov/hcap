@@ -106,74 +106,15 @@ jobs:
           export OS_NAMESPACE_SUFFIX=${{ env.OS_NAMESPACE_SUFFIX }}
           make server-deploy
 
-      - name: Set Notification Title
-        run: echo "SLACK_TITLE=$(git tag -l --format='%(contents:subject)' test)" >> $GITHUB_ENV
-
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: 'Test Deployment Completed :rocket:'
-
       - name: Microsoft Teams Deploy Card
         uses: toko-bifrost/ms-teams-deploy-card@master
         if: always()
         with:
           github-token: ${{ github.token }}
           webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          environment: name of env
+          environment: ${{ env.OS_NAMESPACE_SUFFIX }}
+          card-layout-exit: complete
           timezone: America/Vancouver
-          custom-actions: '|
-            - text: View PR
-            url: "https://www.google.ca"'
-          custom-facts: '|
-            - name: GitHub Run ID
-            value: ${{ github.run_id}}'
-
-      - name: Microsoft Teams Notification (Generic)
-        uses: aliencube/microsoft-teams-actions@v0.8.0
-        with:
-          webhook_uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          title: 'Test Deployment Completed 🚀'
-          summary: 'PR x Promoted to env'
-          theme_color: 'FFE600'
-          sections: '[
-            {
-            "activityTitle": "Tara Epp",
-            "activitySubtitle": "9/13/2016, 11:46am",
-            "activityImage": "https://connectorsdemo.azurewebsites.net/images/MSC12_Oscar_002.jpg",
-            "facts": [
-            {
-            "name": "Ref:",
-            "value": "refs/tags/test"
-            },
-            {
-            "name": "Event:",
-            "value": "push"
-            }
-            ],
-            "text": "HCAP-1234 | Add details to page for user roles (#1234)"
-            }
-            ]'
-          actions: '[
-            {
-            "@type": "OpenUri",
-            "name": "OpenShift Deploy/Promotion To Test",
-            "targets": [
-            {
-            "os": "default",
-            "uri": "http://google.ca"
-            }
-            ]
-            },
-            {
-            "@type": "OpenUri",
-            "name": "Commit",
-            "targets": [
-            {
-            "os": "default",
-            "uri": "http://google.ca"
-            }
-            ]
-            }
-            ]'
+          show-on-start: false
+          show-on-exit: true
+          show-on-failure: true

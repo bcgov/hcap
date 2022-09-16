@@ -73,12 +73,15 @@ jobs:
           oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
           export OS_NAMESPACE_SUFFIX=${{ env.OS_NAMESPACE_SUFFIX }}
           make server-deploy
-
-      - name: Set Notification Title
-        run: echo "SLACK_TITLE=$(git tag -l --format='%(contents:subject)' prod)" >> $GITHUB_ENV
-
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: 'Prod Deployment Completed :rocket:'
+      - name: Microsoft Teams Deploy Card
+        uses: toko-bifrost/ms-teams-deploy-card@master
+        if: always()
+        with:
+          github-token: ${{ github.token }}
+          webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          environment: production
+          card-layout-exit: complete
+          timezone: America/Vancouver
+          show-on-start: false
+          show-on-exit: true
+          show-on-failure: true

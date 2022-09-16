@@ -1,9 +1,7 @@
 name: PRs reviews reminder
 
 on:
-  schedule:
-    # Every weekday every 4 hours during working hours, send notification
-    - cron: '0 15,22 * * 1-5' # Github actions works only on UTC, cannot explicitly set the TZ as PST, so we add 7 hours. Reminders at 8AM and 3PM PST
+  push:
 
 jobs:
   pr-reviews-reminder:

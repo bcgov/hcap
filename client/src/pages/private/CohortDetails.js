@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { Box, Card, Grid, Typography, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { AuthContext } from '../../providers';
 import { Page, CheckPermissions, Table } from '../../components/generic';
 import { Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
@@ -29,6 +30,9 @@ export default ({ match }) => {
   const classes = useStyles();
   const history = useHistory();
   const { openToast } = useToast();
+  const { auth } = AuthContext.useAuth();
+  const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
+  const isHA = roles?.includes('health_authority') || false;
 
   const [cohort, setCohort] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -125,13 +129,15 @@ export default ({ match }) => {
                 <Typography variant='body1'>{cohort?.unsuccessfulParticipants ?? '...'}</Typography>
               </Grid>
 
-              <Grid item xs={12}>
-                <Alert severity='info'>
-                  <Typography variant='body2' gutterBottom>
-                    Participants hired outside your region will not appear in this list
-                  </Typography>
-                </Alert>
-              </Grid>
+              {isHA && (
+                <Grid item xs={12}>
+                  <Alert severity='info'>
+                    <Typography variant='body2' gutterBottom>
+                      Participants hired outside your region will not appear in this list
+                    </Typography>
+                  </Alert>
+                </Grid>
+              )}
             </Grid>
 
             <Box>

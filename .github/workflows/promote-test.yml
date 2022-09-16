@@ -106,6 +106,7 @@ jobs:
           oc login --token="$AUTH_TOKEN" --server="$CLUSTER"
           export OS_NAMESPACE_SUFFIX=${{ env.OS_NAMESPACE_SUFFIX }}
           make server-deploy
+
       - name: Microsoft Teams Deploy Card
         uses: toko-bifrost/ms-teams-deploy-card@master
         if: always()
@@ -117,4 +118,4 @@ jobs:
           timezone: America/Vancouver
           show-on-start: false
           show-on-exit: true
-          show-on-failure: true
+          show-on-failure: false

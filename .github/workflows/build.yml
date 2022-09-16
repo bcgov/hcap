@@ -138,4 +138,4 @@ jobs:
           timezone: America/Vancouver
           show-on-start: false
           show-on-exit: true
-          show-on-failure: true
+          show-on-failure: false

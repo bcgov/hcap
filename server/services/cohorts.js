@@ -50,6 +50,7 @@ const getCohortParticipants = async (cohortId) =>
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'id',
+          status: 'hired',
         },
       },
       siteJoin: {

@@ -64,27 +64,35 @@ router.get(
       return res.status(401).send({ message: 'You do not have permission to view this record' });
     }
 
-    const cohortParticipants = await getCohortParticipants(id);
+    try {
+      const cohortParticipants = await getCohortParticipants(id);
 
-    const cohortWithCalculatedFields = getCohortWithCalculatedFields(cohort, cohortParticipants);
+      const cohortWithCalculatedFields = getCohortWithCalculatedFields(cohort, cohortParticipants);
 
-    const filteredCohortParticipants = filterCohortParticipantsForUser(
-      cohortParticipants,
-      req.hcapUserInfo
-    );
+      const filteredCohortParticipants = filterCohortParticipantsForUser(
+        cohortParticipants,
+        req.hcapUserInfo
+      );
 
-    logger.info({
-      action: 'cohort_get',
-      performed_by: {
-        user,
-      },
-      id: cohort.id || '',
-    });
+      logger.info({
+        action: 'cohort_get',
+        performed_by: {
+          user,
+        },
+        id: cohort.id || '',
+      });
 
-    return res.status(200).json({
-      cohort: cohortWithCalculatedFields,
-      participants: filteredCohortParticipants,
-    });
+      return res.status(200).json({
+        cohort: cohortWithCalculatedFields,
+        participants: filteredCohortParticipants,
+      });
+    } catch (err) {
+      logger.error(`Cohort retrieval failed ${err.message}`, {
+        context: 'cohort-controller',
+        error: err,
+      });
+      throw err;
+    }
   })
 );
 

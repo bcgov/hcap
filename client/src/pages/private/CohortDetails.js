@@ -161,7 +161,7 @@ export default ({ match }) => {
                           </Link>
                         );
                       case 'siteName':
-                        return row.siteJoin?.body[columnId];
+                        return row.siteJoin?.body[columnId] || 'Not recorded';
                       case 'graduationStatus':
                         return getParticipantGraduationStatus(row.postHireJoin);
                       default:

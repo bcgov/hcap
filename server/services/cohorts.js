@@ -61,7 +61,7 @@ const getCohortParticipants = async (cohortId) =>
       },
     })
     .find({
-      'cohortParticipantsJoin.cohort_id': cohortId,
+      'cohortParticipanjklnntsJoin.cohort_id': cohortId,
       'participantStatusJoin.current': true,
       'participantStatusJoin.status': ['hired', 'archived'],
     });
@@ -85,7 +85,7 @@ const filterCohortParticipantsForUser = (cohortParticipants, user) => {
     // Remove participants hired outside of HA's region
     // participant.siteJoin is joined based on hired status' siteId
     return cohortParticipants.filter((participant) =>
-      user.regions.includes(participant.siteJoin.body.healthAuthority)
+      user.regions.includes(participant.siteJoin?.body?.healthAuthority)
     );
   }
 

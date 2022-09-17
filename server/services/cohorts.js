@@ -61,7 +61,7 @@ const getCohortParticipants = async (cohortId) =>
       },
     })
     .find({
-      'cohortParticipanjklnntsJoin.cohort_id': cohortId,
+      'cohortParticipantsJoin.cohort_id': cohortId,
       'participantStatusJoin.current': true,
       'participantStatusJoin.status': ['hired', 'archived'],
     });

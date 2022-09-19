@@ -140,7 +140,6 @@ const getPSICohorts = async (psiID) => {
         type: 'LEFT OUTER',
         on: {
           cohort_id: 'id',
-          is_current: true,
         },
       },
       participantStatusJoin: {
@@ -162,6 +161,19 @@ const getPSICohorts = async (psiID) => {
         { 'participantStatusJoin.status': null },
       ],
     });
+
+  psiCohorts = psiCohorts.map((cohort) => ({
+    // deduplicate participants incases where they are reassigned to the same cohort
+    ...cohort,
+    participants: [
+      ...new Map(
+        cohort.participants.map((cohortParticipant) => [
+          cohortParticipant.participant_id,
+          cohortParticipant,
+        ])
+      ).values(),
+    ],
+  }));
 
   // calculate remaining cohort seats
   psiCohorts = psiCohorts.map((cohort) => ({

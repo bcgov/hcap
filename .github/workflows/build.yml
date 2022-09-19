@@ -108,15 +108,6 @@ jobs:
           make server-build
           make server-deploy
 
-      - name: Set Notification Title
-        run: echo "SLACK_TITLE=$(git tag -l --format='%(contents:subject)' dev)" >> $GITHUB_ENV
-
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: 'Dev | Deployment Completed :rocket:'
-
       - name: Health Check app
         uses: jtalk/url-health-check-action@v1.5
         with:
@@ -135,3 +126,16 @@ jobs:
         with:
           target: ${{ env.DEV_URL }}
           cmd_options: '-I'
+
+      - name: Microsoft Teams Deploy Card
+        uses: toko-bifrost/ms-teams-deploy-card@master
+        if: always()
+        with:
+          github-token: ${{ github.token }}
+          webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          environment: development
+          card-layout-exit: complete
+          timezone: America/Vancouver
+          show-on-start: false
+          show-on-exit: true
+          show-on-failure: false

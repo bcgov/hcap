@@ -28,6 +28,7 @@ jobs:
             src:
               - 'openshift/**'
           base: 'refs/tags/test'
+
       - name: Dry run - Test
         env:
           OS_NAMESPACE_SUFFIX: test
@@ -106,11 +107,15 @@ jobs:
           export OS_NAMESPACE_SUFFIX=${{ env.OS_NAMESPACE_SUFFIX }}
           make server-deploy
 
-      - name: Set Notification Title
-        run: echo "SLACK_TITLE=$(git tag -l --format='%(contents:subject)' test)" >> $GITHUB_ENV
-
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: 'Test Deployment Completed :rocket:'
+      - name: Microsoft Teams Deploy Card
+        uses: toko-bifrost/ms-teams-deploy-card@master
+        if: always()
+        with:
+          github-token: ${{ github.token }}
+          webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          environment: test
+          card-layout-exit: complete
+          timezone: America/Vancouver
+          show-on-start: false
+          show-on-exit: true
+          show-on-failure: false

@@ -140,6 +140,7 @@ const getPSICohorts = async (psiID) => {
         type: 'LEFT OUTER',
         on: {
           cohort_id: 'id',
+          is_current: true,
         },
       },
       participantStatusJoin: {

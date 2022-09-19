@@ -28,8 +28,8 @@ const getCohort = async (id) =>
     id,
   });
 
-const getCohortParticipants = async (cohortId) =>
-  dbClient.db[collections.PARTICIPANTS]
+const getCohortParticipants = async (cohortId) => {
+  const cohortParticipants = await dbClient.db[collections.PARTICIPANTS]
     .join({
       cohortParticipantsJoin: {
         type: 'INNER',
@@ -45,8 +45,16 @@ const getCohortParticipants = async (cohortId) =>
           participant_id: 'id',
         },
       },
-      participantStatusJoin: {
-        type: 'INNER',
+      participantArchivedStatusJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'id',
+          status: 'archived',
+        },
+      },
+      participantHiredStatusJoin: {
+        type: 'LEFT OUTER',
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'id',
@@ -57,14 +65,15 @@ const getCohortParticipants = async (cohortId) =>
         type: 'LEFT OUTER',
         relation: collections.EMPLOYER_SITES,
         decomposeTo: 'object',
-        on: { 'body.siteId': 'participantStatusJoin.data.site' },
+        on: { 'body.siteId': 'participantHiredStatusJoin.data.site' },
       },
     })
     .find({
       'cohortParticipantsJoin.cohort_id': cohortId,
-      'participantStatusJoin.current': true,
-      'participantStatusJoin.status': ['hired', 'archived'],
     });
+
+  return cohortParticipants;
+};
 
 /**
  * Filters cohort participants based on given user

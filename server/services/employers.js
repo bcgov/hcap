@@ -74,7 +74,7 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
         employer_sites.body -> 'city' as "city",
         employer_sites.body -> 'healthAuthority' as "healthAuthority",
         employer_sites.body -> 'postalCode' as "postalCode",
-        employer_sites.body -> 'allocation' as "allocation",
+        employer_sites.body -> 'allocation' as "allocation"
       FROM
         employer_sites
       ${additionalCriteria.length > 0 ? 'WHERE' : ''}

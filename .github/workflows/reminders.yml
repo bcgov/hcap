@@ -9,10 +9,10 @@ jobs:
   pr-reviews-reminder:
     runs-on: ubuntu-latest
     steps:
-      - uses: davideviolante/pr-reviews-reminder-action@185497b8b792b7f7c04e1263388a36873ed73f97 #v1.5.1 #secure code reviewed for this version
+      - uses: arranfw/pr-reviews-reminder-action@1.0.8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           webhook-url: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
           provider: msteams
-          github-provider-map: 'fw-noel:Noel Feliciano,taraepp:Tara Epp,arranfw:Arran Woodruff,alva-fresh:Alva Kostrova'
+          github-provider-map: 'fw-noel:noel.feliciano@ca.ey.com,taraepp:tara.epp@ca.ey.com,arranfw:arran.woodruff@ca.ey.com,alva-fresh:alva.kostrova@ca.ey.com'

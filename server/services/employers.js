@@ -75,20 +75,6 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
         employer_sites.body -> 'healthAuthority' as "healthAuthority",
         employer_sites.body -> 'postalCode' as "postalCode",
         employer_sites.body -> 'allocation' as "allocation",
-        (
-          SELECT
-              count(*)
-          FROM
-              participants_status ps
-              LEFT outer JOIN participants_status ps_da on ps.participant_id = ps_da.participant_id
-              AND ps_da.status = 'archived'
-              AND ps_da.current = 'true'
-              AND ps_da.data ->> 'type' = 'duplicate'
-          WHERE
-              ps.data ->> 'site' = employer_sites.body ->> 'siteId'
-              and ps.data ->> 'nonHcapOpportunity' = 'false'
-              and ps_da.data ->> 'type' is null
-        ) as "hireCount"
       FROM
         employer_sites
       ${additionalCriteria.length > 0 ? 'WHERE' : ''}

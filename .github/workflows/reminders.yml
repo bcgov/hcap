@@ -9,7 +9,7 @@ jobs:
   pr-reviews-reminder:
     runs-on: ubuntu-latest
     steps:
-      - uses: arranfw/pr-reviews-reminder-action@1.0.8
+      - uses: davideviolante/pr-reviews-reminder-action@2.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

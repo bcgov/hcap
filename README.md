@@ -138,21 +138,20 @@ This project is formatted with prettier, make sure to install the [VSCode extens
 
 ### Public Front End Views
 
-##### /
- - allows an employer user to submit their expressions of interest
-
-##### /employer-confirmation
- - redirect here after form submission and display the expression of interest submitted
-
-##### /login
- - Portal entry point for authenticated users to upload, view, and manage data
+Path                   | Description
+----                   | -----------
+/                      | Allows an employer user to submit their expressions of interest
+/employer-confirmation | Redirect here after form submission and display the expression of interest submitted
+/login                 | Portal entry point for authenticated users to upload, view, and manage data
 
 ### Public API Routes
 
-- /employer-form [POST] submit new employer expression of interest form
-- /keycloak-realm-client-info [GET] load config for login
-- /version [GET] view deployed version of the application
-- In production: / [GET] serves the built client app
+Path                        | Method | Description
+----                        | ------ | -----------
+/employer-form              | `POST` | Submit new employer expression of interest form
+/keycloak-realm-client-info | `GET`  | Load config for login
+/version                    | `GET`  | View deployed version of the application
+/ (in production)           | `GET`  | Serves the built client app
 
 ## OpenShift Deployment
 

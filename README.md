@@ -16,7 +16,7 @@ This is a digital service built for the Ministry of Health which supports Britis
 1. [Getting Help or Reporting an Issue](#getting-help-or-reporting-an-issue)
 1. [How to Contribute](#how-to-contribute)
 1. [Development](#development)
-    1. [Formatting](#formatting)
+1. [Formatting](#formatting)
 1. [Deployment](#deployment)
 1. [GitHub Actions](#github-actions)
 1. [Available Scripts](#available-scripts)
@@ -100,50 +100,20 @@ A service account must be created and assigned permissions to trigger a build. R
 
 **Note:** [jq](https://stedolan.github.io/jq/) is a dependency for many scripts used in this project.
 
-In the server directory, you can run:
+In the server directory, you can run the following scripts:
 
-#### `npm run parse-xml`
+Script | Description | Requires Openshift Login
+------ | ----------- | ------------------------
+`npm run parse-xml` | Parses all xml files containing in the scripts/xml directory that follows the Orbeon format, including the file name, and then submits to the /form endpoint. | No 
+`npm run feed-sites [filename].xlsx` | Parses a given xlsx file inside the `server/scripts/xlsx/` folder and feeds it to the `employer_sites` table. <br> If you've spun up the application using Docker Compose, i.e. `make local-run`, you can run the site seeding script with the following make command: <br> `make seed-sites [filename].xlsx` | No
+`npm run feed-participants [filename].xlsx` | Parses a given xlsx file inside the `server/scripts/xlsx/` folder and feeds it to the `participants` table. <br> If you've spun up the application using Docker Compose, i.e. `make local-run`, you can run the participant seeding script with the following make command: <br> `make seed-participants my_spreadsheet.xlsx` | No
+`npm run stats` | Shows the EEOI submission stats of a given period of days. | Yes
+`npm run export` | Exports all EEOI submissions from the database as a CSV file. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`)
+`npm run participant-stats-in-progress` | Exports all participants In Progress from the database as a CSV file. | Yes
+`npm run participant-stats-hired` | Exports all hired participants from the database as a CSV file. Exports all rejected participants from the database as a CSV file. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`). Records participant ID, employer ID, employer email, employer health regions and the reason and date of rejection. | Yes
+`npm run participant-stats-no-offers` | Exports participants from the database as a CSV file who have not: withdrawn from the program; been hired; or had an offer made by any employer. Participants exclusively interested in the Northern Health Authority are also excluded as additional participant engagement support is not required for this region.  Records participant ID, email address, preferred health regions, current interest indicator, and the date the record was last updated. The results of this report must be handled appropriately as PII. | Yes
 
-Parses all xml files containing in the scripts/xml directory that follows the Orbeon format, including the file name,
-and then submits to the /form endpoint. Example of file names:
-
-- Health Career Access Program - Expression of Interest - 8353ec90e6ea8727.xml
-- Health Career Access Program - Expression of Interest - 91113c10e0xx872x (1).xml
-
-#### `npm run feed-sites my_spreadsheet.xlsx` and `npm run feed-participants my_spreadsheet.xlsx`
-
-Parses a given xlsx file inside the `server/scripts/xlsx/` folder and feeds either the `employer_sites` or `participants` table.
-
-If you've spun up the application using Docker Compose i.e. `make local-run`, you can run the site seeding script with either of the following make commands:
-
-- `make seed-participants my_spreadsheet.xlsx`
-- `make seed-sites my_spreadsheet.xlsx`
-
-N.B. - The sample seed files are available in Slack channel pinned item.
-
-#### `npm run stats`
-
-Shows the EEOI submission stats of a given period of days. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`)
-
-#### `npm run export`
-
-Exports all EEOI submissions from the database as a CSV file. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`)
-
-#### `npm run participant-stats-in-progress`
-
-Exports all participants In Progress from the database as a CSV file. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`)
-
-#### `npm run participant-stats-hired`
-
-Exports all hired participants from the database as a CSV file. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`). Records employer ID, position type, site.
-
-#### `npm run participant-stats-rejected`
-
-Exports all rejected participants from the database as a CSV file. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`). Records participant ID, employer ID, employer email, employer health regions and the reason and date of rejection.
-
-#### `npm run participant-stats-no-offers`
-
-Exports participants from the database as a CSV file who have not: withdrawn from the program; been hired; or had an offer made by any employer. Participants exclusively interested in the Northern Health Authority are also excluded as additional participant engagement support is not required for this region. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`). Records participant ID, email address, preferred health regions, current interest indicator, and the date the record was last updated. The results of this report must be handled appropriately as PII.
+Before running commands marked with "Requires Openshift Login", make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`.
 
 ## Database
 

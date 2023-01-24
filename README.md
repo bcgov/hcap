@@ -161,7 +161,7 @@ The Dockerized application is deployed to OpenShift using Makefile targets and Y
 
 To create the resources required to run the application in OpenShift, run `make server-create`. Optionally, a namespace prefix and/or suffix can be provided to target a namespace other than the default `rupaog-dev` e.g. `NAMESPACE_SUFFIX=test make server-create`.
 
-The OpenShift objects created are defined in the [openshift/server.bc.yml](openshift/server.bc.yml) and [openshift/server.dc.yml](openshift/server.dc.yml). At a hight level, these objects include the following.
+The OpenShift objects created are defined in the [openshift/server.bc.yml](openshift/server.bc.yml) and [openshift/server.dc.yml](openshift/server.dc.yml). At a high level, these objects include the following.
 
 - Build Config
 - Image Stream
@@ -220,7 +220,7 @@ A service account must be created and assigned permissions to trigger a build. R
 
 ## Available Scripts
 
-**Note:** [jq](https://stedolan.github.io/jq/) is a dependencdy for many scripts used in this project.
+**Note:** [jq](https://stedolan.github.io/jq/) is a dependency for many scripts used in this project.
 
 In the server directory, you can run:
 

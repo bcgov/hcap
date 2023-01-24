@@ -12,9 +12,29 @@ This is a digital service built for the Ministry of Health which supports Britis
 
 1. [Project Status](#project-status)
 1. [Features](#features)
+    1. [Feature Flags](#feature-flags)
 1. [Getting Help or Reporting an Issue](#getting-help-or-reporting-an-issue)
 1. [How to Contribute](#how-to-contribute)
 1. [Development](#development)
+    1. [Prerequisites](#prerequisites)
+    1. [Setup and Development Commands](#setup-and-development-commands)
+    1. [Using the Application](#using-the-application)
+    1. [Formatting](#formatting)
+    1. [Public Front End Views](#public-front-end-views)
+    1. [Public API Routes](#public-api-routes)
+1. [OpenShift Deployment](#openshift-deployment)
+    1. [Application](#application)
+1. [Dev/Test Certificate Creation](#devtest-certificate-creation)
+    1. [Install Certbot](#install-certbot)
+    1. [Certificate Generation](#certificate-generation)
+    1. [Adding certificates to Openshift Routes](#adding-certificates-to-openshift-routes)
+1. [GitHub Actions](#github-actions)
+1. [Available Scripts](#available-scripts)
+1. [Database](#database)
+    1. [PostgreSQL](#postgresql)
+    1. [MongoDB](#mongodb)
+    1. [Database Backups](#database-backups)
+    1. [Migrations](#migrations)
 1. [License](#license)
 
 ## Project Status
@@ -121,7 +141,7 @@ Go to `http://keycloak.local.freshworks.club:8080/auth` console and add users/as
 - Tests can be run with
   - `make local-cypress-tests`
 
-### Using the application
+### Using the Application
 
 The application's public routes can be accessed at http://hcapparticipants.local.freshworks.club:4000.
 
@@ -257,7 +277,7 @@ Exports all rejected participants from the database as a CSV file. (Before runni
 
 Exports participants from the database as a CSV file who have not: withdrawn from the program; been hired; or had an offer made by any employer. Participants exclusively interested in the Northern Health Authority are also excluded as additional participant engagement support is not required for this region. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`). Records participant ID, email address, preferred health regions, current interest indicator, and the date the record was last updated. The results of this report must be handled appropriately as PII.
 
-### Database
+## Database
 
 This application uses both a PostgreSQL database as its main storage as well as a MongoDB database to store logging output.
 

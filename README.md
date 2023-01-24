@@ -28,7 +28,7 @@ This application is in active development.
 This project includes the following features:
 
 1. Public web form for Employer Expression of Interest (EEOI) submissions
-1. HCAP Employer Portal providing secure data upload, access, and reporting
+1. HCAP Employer Portal, providing secure data upload, access, and reporting
 
 ### Feature Flags
 
@@ -66,7 +66,7 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 
 ## Development
 
-### Pre-Requisites
+### Prerequisites
 
 - Make sure you have Docker and Docker-compose installed in your local environment. For instructions on how to install it, follow the links below:
   - https://docs.docker.com/get-docker/
@@ -75,7 +75,7 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 - Environment Variables
   - Refer to [the example file](.config/.env.example) for the required environment variables.
 
-### How-To
+### Setup and Development Commands
 
 #### To set up and run database, backend (server), and frontend (client) applications:
 - Run `make local-build` within the root folder of the project to build the application
@@ -125,16 +125,16 @@ Go to `http://keycloak.local.freshworks.club:8080/auth` console and add users/as
 
 The application's public routes can be accessed at http://hcapparticipants.local.freshworks.club:4000.
 
-The application's private routes are located at http://hcapparticipants.local.freshworks.club:4000,
-you'll need an account on the [BCeID test environment](https://www.test.bceid.ca/register/basic/account_details.aspx?type=regular&eServiceType=basic).
-When you first log in an access request will be created and it can be accepted by a teammate through `View Access Requests` or manually through Keycloak.
+The application's private routes are located at http://hcapparticipants.local.freshworks.club:4000.
+To access these, you'll need an account on the [BCeID test environment](https://www.test.bceid.ca/register/basic/account_details.aspx?type=regular&eServiceType=basic).
+When you first log in, an access request will be created, which can be accepted by a teammate through `View Access Requests` or manually through Keycloak.
 The access request will need to be approved separately on each environment.
 
 ### Formatting
 
 This project is formatted with prettier, make sure to install the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
 
-**Note:** If you didn't have prettier installed previously, be sure to enable  `"prettier.requireConfig": true,` to avoid formatting files without configurations.
+**Note:** If you didn't have prettier installed previously, be sure to enable `"prettier.requireConfig": true,` to avoid formatting files without configurations.
 
 ### Public Front End Views
 
@@ -159,7 +159,7 @@ Path                        | Method | Description
 
 The Dockerized application is deployed to OpenShift using Makefile targets and YAML templates defined in the `openshift` directory.
 
-To create the resources required to run the application in OpenShift, run `make server-create`. Optionally, a namespace prefix and/or suffix can be provided to target a namespace other than the default `rupaog-dev` e.g. `NAMESPACE_SUFFIX=test make server-create`.
+To create the resources required to run the application in OpenShift, run `make server-create`. Optionally, a namespace prefix and/or suffix can be provided to target a namespace other than the default `rupaog-dev`, e.g. `NAMESPACE_SUFFIX=test make server-create`.
 
 The OpenShift objects created are defined in the [openshift/server.bc.yml](openshift/server.bc.yml) and [openshift/server.dc.yml](openshift/server.dc.yml). At a high level, these objects include the following.
 
@@ -184,11 +184,11 @@ A *Deployment Config* defines how a new version of an application is to be deplo
 
 Finally, a *Secret* defines values that can be used by pods within in the same namespace. While there are no secrets defined in our server application, there is a reference to a secret defined by the [MongoDB database template](openshift/mongo.yml). In order for the server to access the DB, it must be provided with `MONGODB_DATABASE` and `MONGODB_URI` environment variables. The definition for these environment variables can be found in the [server deployment config template](openshift/server.dc.yml). Note that they are referencing the `${APP_NAME}-mongodb` (resolves to `hcap-mongodb`) secret and the `mongo-url` and `database` keys within this secret.
 
-## Dev/Test Certificate creation
+## Dev/Test Certificate Creation
 
 Currently, the domains use a manually created lets encrypt certificate which is only valid for 90 days, this can easily be switched to a longer lived certificate from your favorite provider. Note: the foundrybc.ca certificate is valid for 1 year.
 
-### Install certbot
+### Install Certbot
 
 ```
 brew install certbot

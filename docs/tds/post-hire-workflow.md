@@ -34,7 +34,7 @@ As the HA, I want to be able to track the completion of education for a HCAP par
 
 ## Data Flow Diagram
 
-![FlowDiagram](/documents/assets/Post-hire-flow.drawio.png)
+![FlowDiagram](/docs/assets/Post-hire-flow.drawio.png)
 
 ## Database
 

@@ -12,9 +12,29 @@ This is a digital service built for the Ministry of Health which supports Britis
 
 1. [Project Status](#project-status)
 1. [Features](#features)
+    1. [Feature Flags](#feature-flags)
 1. [Getting Help or Reporting an Issue](#getting-help-or-reporting-an-issue)
 1. [How to Contribute](#how-to-contribute)
 1. [Development](#development)
+    1. [Prerequisites](#prerequisites)
+    1. [Setup and Development Commands](#setup-and-development-commands)
+    1. [Using the Application](#using-the-application)
+    1. [Formatting](#formatting)
+    1. [Public Front End Views](#public-front-end-views)
+    1. [Public API Routes](#public-api-routes)
+1. [OpenShift Deployment](#openshift-deployment)
+    1. [Application](#application)
+1. [Dev/Test Certificate Creation](#devtest-certificate-creation)
+    1. [Install Certbot](#install-certbot)
+    1. [Certificate Generation](#certificate-generation)
+    1. [Adding certificates to Openshift Routes](#adding-certificates-to-openshift-routes)
+1. [GitHub Actions](#github-actions)
+1. [Available Scripts](#available-scripts)
+1. [Database](#database)
+    1. [PostgreSQL](#postgresql)
+    1. [MongoDB](#mongodb)
+    1. [Database Backups](#database-backups)
+    1. [Migrations](#migrations)
 1. [License](#license)
 
 ## Project Status
@@ -28,7 +48,7 @@ This application is in active development.
 This project includes the following features:
 
 1. Public web form for Employer Expression of Interest (EEOI) submissions
-1. HCAP Employer Portal providing secure data upload, access, and reporting
+1. HCAP Employer Portal, providing secure data upload, access, and reporting
 
 ### Feature Flags
 
@@ -66,7 +86,7 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 
 ## Development
 
-### Pre-Requisites
+### Prerequisites
 
 - Make sure you have Docker and Docker-compose installed in your local environment. For instructions on how to install it, follow the links below:
   - https://docs.docker.com/get-docker/
@@ -75,7 +95,7 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 - Environment Variables
   - Refer to [the example file](.config/.env.example) for the required environment variables.
 
-### How-To
+### Setup and Development Commands
 
 #### To set up and run database, backend (server), and frontend (client) applications:
 - Run `make local-build` within the root folder of the project to build the application
@@ -121,38 +141,37 @@ Go to `http://keycloak.local.freshworks.club:8080/auth` console and add users/as
 - Tests can be run with
   - `make local-cypress-tests`
 
-### Using the application
+### Using the Application
 
 The application's public routes can be accessed at http://hcapparticipants.local.freshworks.club:4000.
 
-The application's private routes are located at http://hcapparticipants.local.freshworks.club:4000,
-you'll need an account on the [BCeID test environment](https://www.test.bceid.ca/register/basic/account_details.aspx?type=regular&eServiceType=basic).
-When you first log in an access request will be created and it can be accepted by a teammate through `View Access Requests` or manually through Keycloak.
+The application's private routes are located at http://hcapparticipants.local.freshworks.club:4000.
+To access these, you'll need an account on the [BCeID test environment](https://www.test.bceid.ca/register/basic/account_details.aspx?type=regular&eServiceType=basic).
+When you first log in, an access request will be created, which can be accepted by a teammate through `View Access Requests` or manually through Keycloak.
 The access request will need to be approved separately on each environment.
 
 ### Formatting
 
 This project is formatted with prettier, make sure to install the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
 
-**Note:** If you didn't have prettier installed previously, be sure to enable  `"prettier.requireConfig": true,` to avoid formatting files without configurations.
+**Note:** If you didn't have prettier installed previously, be sure to enable `"prettier.requireConfig": true,` to avoid formatting files without configurations.
 
 ### Public Front End Views
 
-##### /
- - allows an employer user to submit their expressions of interest
-
-##### /employer-confirmation
- - redirect here after form submission and display the expression of interest submitted
-
-##### /login
- - Portal entry point for authenticated users to upload, view, and manage data
+Path                   | Description
+----                   | -----------
+/                      | Allows an employer user to submit their expressions of interest
+/employer-confirmation | Redirect here after form submission and display the expression of interest submitted
+/login                 | Portal entry point for authenticated users to upload, view, and manage data
 
 ### Public API Routes
 
-- /employer-form [POST] submit new employer expression of interest form
-- /keycloak-realm-client-info [GET] load config for login
-- /version [GET] view deployed version of the application
-- In production: / [GET] serves the built client app
+Path                        | Method | Description
+----                        | ------ | -----------
+/employer-form              | `POST` | Submit new employer expression of interest form
+/keycloak-realm-client-info | `GET`  | Load config for login
+/version                    | `GET`  | View deployed version of the application
+/ (in production)           | `GET`  | Serves the built client app
 
 ## OpenShift Deployment
 
@@ -160,36 +179,26 @@ This project is formatted with prettier, make sure to install the [VSCode extens
 
 The Dockerized application is deployed to OpenShift using Makefile targets and YAML templates defined in the `openshift` directory.
 
-To create the resources required to run the application in OpenShift, run `make server-create`. Optionally, a namespace prefix and/or suffix can be provided to target a namespace other than the default `rupaog-dev` e.g. `NAMESPACE_SUFFIX=test make server-create`.
+To create the resources required to run the application in OpenShift, run `make server-create`. Optionally, a namespace prefix and/or suffix can be provided to target a namespace other than the default `rupaog-dev`, e.g. `NAMESPACE_SUFFIX=test make server-create`.
 
-The OpenShift objects created are defined in the [openshift/server.bc.yml](openshift/server.bc.yml) and [openshift/server.dc.yml](openshift/server.dc.yml). At a hight level, these objects include the following.
+The OpenShift objects created are defined in the [openshift/server.bc.yml](openshift/server.bc.yml) and [openshift/server.dc.yml](openshift/server.dc.yml). At a high level, these objects include the following:
 
-- Build Config
-- Image Stream
-- Service
-- Route
-- Deployment Config
-- Secret
 
-At a high level, the functions of each of these objects are as follows.
+Object | Function
+------ | --------
+Build Config | Defines how an image is built. Properties such as build strategy (Docker), repository (the very repository you're looking at), and rebuild triggers are defined within this object.
+Image Stream | Defines a stream of built images. Essentially, this is an image repository similar to DockerHub. Images sent to the Image Stream must be tagged (e.g. `latest`).
+Service | Defines a hostname for a particular service exposed by a pod or set of pods. Services can only be seen and consumed by pods within the same OpenShift namespace. The service published by the HCAP application is the backend API endpoint. Similarly, the database will expose a service that is to be consumed by the application backend.
+Route | Exposes a service to the Internet. Routes differ from services in that they may only transmit HTTP(S) traffic. As such, the database service could not be directly exposed to the Internet.
+Deployment Config | Defines how a new version of an application is to be deployed. Additionally, triggers for redeployment are defined within this object. For the HCAP application, we've used a rolling deployment triggered by new images pushed to the image stream and tagged with the `latest` tag.
+Secret |Defines values that can be used by pods within in the same namespace. While there are no secrets defined in our server application, there is a reference to a secret defined by the [MongoDB database template](openshift/mongo.yml). In order for the server to access the DB, it must be provided with `MONGODB_DATABASE` and `MONGODB_URI` environment variables. The definition for these environment variables can be found in the [server deployment config template](openshift/server.dc.yml). Note that they are referencing the `${APP_NAME}-mongodb` (resolves to `hcap-mongodb`) secret and the `mongo-url` and `database` keys within this secret.
 
-The *Build Config* defines how an image is built. Properties such as build strategy (Docker), repository (the very repository you're looking at), and rebuild triggers are defined within this object.
 
-The *Image Stream* defines a stream of built images. Essentially, this is an image repository similar to DockerHub. Images sent to the Image Stream must be tagged (e.g. `latest`).
-
-The *Service* defines a hostname for a particular service exposed by a pod or set of pods. Services can only be seen and consumed by pods within the same OpenShift namespace. The service published by the HCAP application is the backend API endpoint. Similarly, the database will expose a service that is to be consumed by the application backend.
-
-A *Route* exposes a service to the Internet. Routes differ from services in that they may only transmit HTTP(S) traffic. As such, the database service could not be directly exposed to the Internet.
-
-A *Deployment Config* defines how a new version of an application is to be deployed. Additionally, triggers for redeployment are defined within this object. For the HCAP application, we've used a rolling deployment triggered by new images pushed to the image stream and tagged with the `latest` tag.
-
-Finally, a *Secret* defines values that can be used by pods within in the same namespace. While there are no secrets defined in our server application, there is a reference to a secret defined by the [MongoDB database template](openshift/mongo.yml). In order for the server to access the DB, it must be provided with `MONGODB_DATABASE` and `MONGODB_URI` environment variables. The definition for these environment variables can be found in the [server deployment config template](openshift/server.dc.yml). Note that they are referencing the `${APP_NAME}-mongodb` (resolves to `hcap-mongodb`) secret and the `mongo-url` and `database` keys within this secret.
-
-## Dev/Test Certificate creation
+## Dev/Test Certificate Creation
 
 Currently, the domains use a manually created lets encrypt certificate which is only valid for 90 days, this can easily be switched to a longer lived certificate from your favorite provider. Note: the foundrybc.ca certificate is valid for 1 year.
 
-### Install certbot
+### Install Certbot
 
 ```
 brew install certbot
@@ -221,7 +230,7 @@ A service account must be created and assigned permissions to trigger a build. R
 
 ## Available Scripts
 
-**Note:** [jq](https://stedolan.github.io/jq/) is a dependencdy for many scripts used in this project.
+**Note:** [jq](https://stedolan.github.io/jq/) is a dependency for many scripts used in this project.
 
 In the server directory, you can run:
 
@@ -268,7 +277,7 @@ Exports all rejected participants from the database as a CSV file. (Before runni
 
 Exports participants from the database as a CSV file who have not: withdrawn from the program; been hired; or had an offer made by any employer. Participants exclusively interested in the Northern Health Authority are also excluded as additional participant engagement support is not required for this region. (Before running this command, make sure that you have logged in to the OpenShift CLI and ran `make db-postgres-tunnel`). Records participant ID, email address, preferred health regions, current interest indicator, and the date the record was last updated. The results of this report must be handled appropriately as PII.
 
-### Database
+## Database
 
 This application uses both a PostgreSQL database as its main storage as well as a MongoDB database to store logging output.
 

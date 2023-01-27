@@ -103,14 +103,14 @@ export default ({ match }) => {
               <Grid item xs={12} sm={6}>
                 <Typography variant='subtitle2'>Start Date</Typography>
                 <Typography variant='body1'>
-                  {dayjs(cohort?.start_date).format('MMM DD, YYYY')}
+                  {dayjs.utc(cohort?.start_date).format('MMM DD, YYYY')}
                 </Typography>
               </Grid>
 
               <Grid item xs={12} sm={6}>
                 <Typography variant='subtitle2'>End Date</Typography>
                 <Typography variant='body1'>
-                  {dayjs(cohort?.end_date).format('MMM DD, YYYY')}
+                  {dayjs.utc(cohort?.end_date).format('MMM DD, YYYY')}
                 </Typography>
               </Grid>
 

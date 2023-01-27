@@ -18,7 +18,6 @@ server/scripts/*.csv
 server/scripts/xlsx/*
 
 # Misc.
-docs
 Dockerrun.aws.json
 audit-report.*
 .DS_Store

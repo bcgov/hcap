@@ -96,10 +96,16 @@ const getAllSitePhases = async (siteId) => {
   return phaseData;
 };
 
+const getAllPhases = async () => {
+  // TODO: see if pagination may be needed
+  const phases = await dbClient.db[collections.GLOBAL_PHASE].find({}, { limit: 100000 });
+  return phases;
+};
+
 const createGlobalPhase = async (phase, user) => {
   const phaseJson = { ...phase, created_by: user.id, updated_by: user.id };
   const res = await dbClient.db[collections.GLOBAL_PHASE].insert(phaseJson);
   return res;
 };
 
-module.exports = { createGlobalPhase, getAllSitePhases };
+module.exports = { createGlobalPhase, getAllSitePhases, getAllPhases };

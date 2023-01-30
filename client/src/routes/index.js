@@ -7,6 +7,7 @@ import Keycloak from 'keycloak-js';
 
 import { API_URL, Routes } from '../constants';
 import { AuthContext } from '../providers';
+import PhaseView from '../pages/private/PhaseView';
 const ParticipantLogin = lazy(() => import('../pages/public/ParticipantLogin'));
 const Admin = lazy(() => import('../pages/private/Admin'));
 const UserView = lazy(() => import('../pages/private/UserView'));
@@ -182,6 +183,7 @@ export default () => {
             <PrivateRoute exact path={Routes.EOIViewDetails} component={EOIViewDetails} />
             <PrivateRoute exact path={Routes.ParticipantView} component={ParticipantView} />
             <PrivateRoute exact path={Routes.ParticipantDetails} component={ParticipantDetails} />
+            <PrivateRoute exact path={Routes.PhaseView} component={PhaseView} />
             {/**
              * Adding this to support internal tab selection in global navigation
              */}

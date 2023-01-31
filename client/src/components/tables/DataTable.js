@@ -35,6 +35,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * @typedef {Object} buttonConfig
+ * @property {string} label                    Button inner text.
+ * @property {(row: object) => any?} callback  Callback function, passed the row that the click happened on.
+ *
+ * @typedef {Object} column
+ * @property {string} id                       ID string for the column, e.g. `'start_date'`. Must match a property name in the target data.
+ * @property {string} name                     Label for the column, e.g. `'Start Date'`
+ * @property {undefined|'date'|'button'} type  Type of column, used for formatting.
+ *                                             * `date` will format the column as a date, using a UTC ISO timestamp.
+ *                                             * `button` will render a button (see the `button` property).
+ * @property {buttonConfig?} button            Configuration for buttons, if `type` is `'button'`.
+ */
+
+// Data table component, renders arbitrary columns using a provided data fetching callback
+/**
+ * @param {object}   props
+ * @param {column[]} props.columns
+ * @param {function} props.fetchData
+ * @returns {JSX.Element}
+ */
 export default ({ columns, fetchData, data }) => {
   const classes = useStyles();
   const [order, setOrder] = useState('asc');
@@ -70,7 +91,7 @@ export default ({ columns, fetchData, data }) => {
 
   const types = Object.fromEntries(columns.map((column) => [column.id, column.type]));
 
-  const buttonLabels = Object.fromEntries(columns.map((column) => [column.id, column.buttonLabel]));
+  const buttonConfigs = Object.fromEntries(columns.map((column) => [column.id, column.button]));
 
   return (
     <>
@@ -94,7 +115,16 @@ export default ({ columns, fetchData, data }) => {
                 if (types[columnId] === 'date')
                   return dayjs.utc(row[columnId]).format('MMM DD, YYYY');
                 if (types[columnId] === 'button')
-                  return <Button variant='outlined' size='small' text={buttonLabels[columnId]} />;
+                  return (
+                    <Button
+                      variant='outlined'
+                      size='small'
+                      text={buttonConfigs[columnId].label}
+                      // Might be worth coalescing this, or eventually enforcing with TS,
+                      // but for now throwing a runtime error for missing callback works.
+                      onClick={() => buttonConfigs[columnId].callback(row)}
+                    />
+                  );
                 return row[columnId];
               }}
             />

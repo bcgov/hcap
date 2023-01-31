@@ -8,11 +8,14 @@ import { CheckPermissions } from '../../components/generic';
 import { fetchPhases } from '../../services/phases';
 import DataTable from '../../components/tables/DataTable';
 
+/**
+ * @type {import("../../components/tables/DataTable").column[]}
+ */
 const columns = [
   { id: 'name', name: 'Phase Name' },
   { id: 'start_date', name: 'Start Date', type: 'date' },
   { id: 'end_date', name: 'End Date', type: 'date' },
-  { id: 'edit', type: 'button', buttonLabel: 'Edit' },
+  { id: 'edit', type: 'button', button: { label: 'Edit', callback: console.log } },
 ];
 
 export default () => {

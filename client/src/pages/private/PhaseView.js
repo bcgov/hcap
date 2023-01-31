@@ -2,7 +2,7 @@ import React, { lazy } from 'react';
 import { Page, CheckPermissions } from '../../components/generic';
 import { Box, Typography } from '@material-ui/core';
 import { Link } from '@material-ui/core';
-import routes from '../../routes';
+import { Routes } from '../../constants';
 
 const PhaseTable = lazy(() => import('./PhaseTable'));
 
@@ -16,7 +16,7 @@ export default () => {
         <Box textAlign={0} width={1}>
           <Box py={4} px={2}>
             <Typography variant='body1'>
-              <Link href={routes.SiteView}>Sites</Link> / <b>Phase list</b>
+              <Link href={Routes.SiteView}>Sites</Link> / <b>Phase list</b>
             </Typography>
             <Typography variant='h2'>
               <b>Phases List</b>

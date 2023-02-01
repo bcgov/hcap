@@ -175,6 +175,16 @@ export default ({ sites, viewOnly }) => {
     await fetchSites();
   };
 
+  const renderAllocations = (data,) => {
+    return (
+      <div style={{display:'block'}}>
+        <div style={{fontWeight:'bold'}}>{data} </div>
+        <div style={{color:'lightgrey'}}>Start date - End Date</div>
+      </div>
+    )
+  }
+
+console.log(fetchedRows)
   return (
     <>
       <NewSiteDialog
@@ -291,6 +301,9 @@ export default ({ sites, viewOnly }) => {
               rows={sort(rows)}
               isLoading={isLoadingData}
               renderCell={(columnId, row) => {
+                if (columnId === 'allocation') {
+                  return renderAllocations(row[columnId])
+                }
                 if (columnId === 'details')
                   return (
                     <Button

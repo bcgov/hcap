@@ -51,7 +51,7 @@ export const fetchSitePhases = async (siteId) => {
   return [];
 };
 
-// TODO: Force ISO
+// Note: This should be converted to ISO, ideally
 export const createPhase = async (phaseJson) => {
   const response = await fetch(`${API_URL}/api/v1/phase-allocation`, {
     method: 'POST',

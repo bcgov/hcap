@@ -40,29 +40,37 @@ const useStyles = makeStyles((theme) => ({
  * @property {() => any} onSubmit              Callback form submission.
  * @property {function} onClose                Callback for modal close.
  * @property {boolean} open                    Whether to display the modal.
- * @property {Object} content                  Data to pass to the dialog, such as initial form values. 
-
- * 
+ * @property {Object} content                  Data to pass to the dialog, such as initial form values.
+ *
+ *
  * @typedef {Object} buttonConfig
  * @property {string} label                    Button inner text.
  * @property {(row: object) => any?} callback  Callback function, passed the row that the click happened on.
- * @property {(props: modalComponentProps) => JSX.Element?} modal Modal component to bind to the button. 
- * 
+ * @property {modalComponent} modal            Modal component to bind to the button.
+ *
+ *
  * @typedef {Object} column
- * @property {string} id                       ID string for the column, e.g. `'start_date'`. Must match a property name in the target data.
+ * @property {string} id                       ID string for the column, e.g. `'start_date'`.
+ *                                             Must match a property name in the target data.
  * @property {string} name                     Label for the column, e.g. `'Start Date'`
  * @property {undefined|'date'|'button'} type  Type of column, used for formatting.
  *                                             * `date` will format the column as a date, using a UTC ISO timestamp.
  *                                             * `button` will render a button (see the `button` property).
  *                                             * `modal` will open a model (see the `button.modal` property).
  * @property {buttonConfig?} button            Configuration for buttons, if `type` is `'button'`.
+ *
+ *
+ * @typedef {(columns: column[] ) => Promise<Object[]> } fetchFunction
+ * @typedef {(props: modalComponentProps) => JSX.Element?} modalComponent
  */
 
-// Data table component, renders arbitrary columns using a provided data fetching callback
 /**
+ * Data table component, renders arbitrary columns using a provided data fetching callback.
  * @param {object}   props
- * @param {column[]} props.columns
- * @param {function} props.fetchData
+ * @param {column[]} props.columns             Array of column configuration objects.
+ *                                             Defines the table's structure and behaviour.
+ * @param {fetchFunction} props.fetchData      Async function to fetch data for this table.
+ *                                             Must return an array of objects, with keys matching column IDs.
  * @returns {JSX.Element}
  */
 export default ({ columns, fetchData, data }) => {

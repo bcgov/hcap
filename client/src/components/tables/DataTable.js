@@ -139,7 +139,6 @@ export default ({ columns, fetchData, data }) => {
   const buttonConfigs = Object.fromEntries(
     columns.map((column) => {
       if (column.button && !column.button.callback && column.button.modal) {
-        // TODO: pass row to modal
         column.button.callback = (row) => openModal(column.id, row);
       }
       return [column.id, column.button];
@@ -152,7 +151,7 @@ export default ({ columns, fetchData, data }) => {
         <modal.modal
           key={modal.id}
           open={modalsState[modal.id].open}
-          onSubmit={() => modalSubmit(modal.id)} // TODO IMPL
+          onSubmit={() => modalSubmit(modal.id)}
           onClose={() => closeModal(modal.id)}
           content={modalsState[modal.id].content}
         />

@@ -86,7 +86,7 @@ export const EditPhaseDialog = ({ onSubmit, onClose, open, content }) => {
                 onClick={submitForm}
                 variant='contained'
                 color='primary'
-                text='Create'
+                text='Update'
               />
             </Box>
           </FormikForm>

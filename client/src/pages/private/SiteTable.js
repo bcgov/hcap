@@ -266,6 +266,14 @@ export default ({ sites, viewOnly }) => {
                     Create new phase
                   </MenuItem>
                 </FeatureFlaggedComponent>
+                <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
+                  <MenuItem
+                    onClick={() => history.push(Routes.PhaseView)}
+                    className={classes.menuItem}
+                  >
+                    View phase list
+                  </MenuItem>
+                </FeatureFlaggedComponent>
               </Menu>
             </Box>
           </Grid>

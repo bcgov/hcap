@@ -97,7 +97,9 @@ const getAllSitePhases = async (siteId) => {
 };
 
 const getAllPhases = async () => {
-  // TODO: see if pagination may be needed
+  // NOTE: this will not allow for full access to the phase list once it hits that 100k limit!
+  // If there is any chance of this hitting that number, or if performance starts to suffer,
+  // pagination support should be added.
   const phases = await dbClient.db[collections.GLOBAL_PHASE].find({}, { limit: 100000 });
   return phases;
 };

@@ -18,9 +18,11 @@ export default () => {
             <Typography variant='body1'>
               <Link href={Routes.SiteView}>Sites</Link> / <b>Phase list</b>
             </Typography>
-            <Typography variant='h2'>
-              <b>Phases List</b>
-            </Typography>
+            <Box paddingTop={2}>
+              <Typography variant='h2' py={2}>
+                <b>Phases List</b>
+              </Typography>
+            </Box>
           </Box>
 
           <PhaseTable />

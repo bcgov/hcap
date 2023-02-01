@@ -110,7 +110,6 @@ router.patch(
     }
     try {
       const { body, hcapUserInfo: user } = req;
-      console.log('BODY:', body);
       const response = await updateGlobalPhase(req.params.id, body, user);
       logger.info({
         action: 'phase-allocation_post',

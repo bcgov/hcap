@@ -24,7 +24,7 @@ import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import dayjs from 'dayjs';
 import { keyedString, getDialogTitle, sortObjects } from '../../utils';
-import { fetchSitePhases } from '../../services/site';
+import { fetchSitePhases } from '../../services/phases';
 
 const columnIDs = [
   { id: 'participantId', name: 'ID' },

@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { CreatePhaseSchema, ToastStatus } from '../../constants';
-import { createPhase } from '../../services/phases';
+import { updatePhase } from '../../services/phases';
 import { useToast } from '../../hooks';
 
 const useStyles = makeStyles(() => ({
@@ -17,26 +17,26 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const NewPhaseDialog = ({ onSubmit, onClose, open }) => {
+export const EditPhaseDialog = ({ onSubmit, onClose, open, content }) => {
   const { openToast } = useToast();
   const classes = useStyles();
   const initialValues = {
-    phaseName: '',
-    startDate: '',
-    endDate: '',
+    phaseName: content.name ?? '',
+    startDate: content.start_date ?? '',
+    endDate: content.end_date ?? '',
   };
 
-  const handleCreatePhase = async (phase) => {
+  const handleEditPhase = async (phase) => {
     const phaseJson = {
       name: phase.phaseName,
       start_date: phase.startDate,
       end_date: phase.endDate,
     };
-    const response = await createPhase(phaseJson);
+    const response = await updatePhase(content.id, phaseJson);
     if (response.ok) {
       openToast({
         status: ToastStatus.Success,
-        message: `Phase '${phase.phaseName}' added successfully`,
+        message: `Phase '${phase.phaseName}' updated successfully`,
       });
       await onSubmit();
     } else {
@@ -48,11 +48,11 @@ export const NewPhaseDialog = ({ onSubmit, onClose, open }) => {
   };
 
   return (
-    <Dialog title={'Create Phase'} open={open} onClose={onClose}>
+    <Dialog title={'Edit Phase'} open={open} onClose={onClose}>
       <Formik
         initialValues={initialValues}
         validationSchema={CreatePhaseSchema}
-        onSubmit={handleCreatePhase}
+        onSubmit={handleEditPhase}
       >
         {({ submitForm }) => (
           <FormikForm>

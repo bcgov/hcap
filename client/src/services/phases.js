@@ -38,3 +38,43 @@ export const fetchPhases = async (columns) => {
   });
   return mapPhasesResponse(response, columns);
 };
+
+export const fetchSitePhases = async (siteId) => {
+  const response = await fetch(`${API_URL}/api/v1/phase-allocation/${siteId}`, {
+    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    method: 'GET',
+  });
+  if (response.ok) {
+    const phases = await response.json();
+    return phases.data;
+  }
+  return [];
+};
+
+// TODO: Force ISO
+export const createPhase = async (phaseJson) => {
+  const response = await fetch(`${API_URL}/api/v1/phase-allocation`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(phaseJson),
+  });
+  return response;
+};
+
+export const updatePhase = async (phaseId, phaseJson) => {
+  console.log(phaseJson);
+  const response = await fetch(`${API_URL}/api/v1/phase-allocation/${phaseId}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(phaseJson),
+  });
+  return response;
+};

@@ -36,16 +36,25 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
+ * @typedef {Object} modalComponentProps
+ * @property {() => any} onSubmit              Callback form submission.
+ * @property {function} onClose                Callback for modal close.
+ * @property {boolean} open                    Whether to display the modal.
+ * @property {Object} content                  Data to pass to the dialog, such as initial form values. 
+
+ * 
  * @typedef {Object} buttonConfig
  * @property {string} label                    Button inner text.
  * @property {(row: object) => any?} callback  Callback function, passed the row that the click happened on.
- *
+ * @property {(props: modalComponentProps) => JSX.Element?} modal Modal component to bind to the button. 
+ * 
  * @typedef {Object} column
  * @property {string} id                       ID string for the column, e.g. `'start_date'`. Must match a property name in the target data.
  * @property {string} name                     Label for the column, e.g. `'Start Date'`
  * @property {undefined|'date'|'button'} type  Type of column, used for formatting.
  *                                             * `date` will format the column as a date, using a UTC ISO timestamp.
  *                                             * `button` will render a button (see the `button` property).
+ *                                             * `modal` will open a model (see the `button.modal` property).
  * @property {buttonConfig?} button            Configuration for buttons, if `type` is `'button'`.
  */
 
@@ -90,11 +99,65 @@ export default ({ columns, fetchData, data }) => {
   }, [data, loadData]);
 
   const types = Object.fromEntries(columns.map((column) => [column.id, column.type]));
+  const modalList = columns
+    .filter((column) => column.button && column.button.modal)
+    .map((column) => ({ id: column.id, modal: column.button.modal }));
 
-  const buttonConfigs = Object.fromEntries(columns.map((column) => [column.id, column.button]));
+  const [modalsState, setModalsState] = useState(
+    Object.fromEntries(
+      columns
+        .filter((column) => column.button && column.button.modal)
+        .map((column) => [column.id, { open: false, content: {} }])
+    )
+  );
+
+  /**
+   * @param {string} id      ID of the row to to open the modal for.
+   * @param {object} content Content to pass to the opened modal.
+   */
+  const openModal = (id, content) => {
+    const newState = { ...modalsState };
+    newState[id].open = true;
+    newState[id].content = content;
+    setModalsState(newState);
+  };
+
+  /**
+   * @param {string} id      ID of the row to to close the modal for.
+   */
+  const closeModal = (id) => {
+    const newState = { ...modalsState };
+    newState[id].open = false;
+    setModalsState(newState);
+  };
+
+  const modalSubmit = (id) => {
+    closeModal(id);
+    loadData();
+  };
+
+  const buttonConfigs = Object.fromEntries(
+    columns.map((column) => {
+      if (column.button && !column.button.callback && column.button.modal) {
+        // TODO: pass row to modal
+        column.button.callback = (row) => openModal(column.id, row);
+      }
+      return [column.id, column.button];
+    })
+  );
 
   return (
     <>
+      {modalList.map((modal) => (
+        <modal.modal
+          key={modal.id}
+          open={modalsState[modal.id].open}
+          onSubmit={() => modalSubmit(modal.id)} // TODO IMPL
+          onClose={() => closeModal(modal.id)}
+          content={modalsState[modal.id].content}
+        />
+      ))}
+
       <Grid
         container
         alignContent='flex-start'

@@ -41,13 +41,20 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 
 ## Development
 
-For development, you'll need [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed.
+For development, you will need:
+- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
+- [Node.js](https://nodejs.org/en/) and [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+- [OpenShift CLI](https://docs.openshift.com/container-platform/4.12/cli_reference/openshift_cli/getting-started-cli.html#cli-getting-started) (If working with OpenShift)
+- A working [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) distro (if running on Windows)
+  - If using WSL, make sure to run the project from a WSL directory (such as your Linux home directory), **not** a Windows directory (such as `/mnt/c/*`). Doing so prevents certain issues with Docker.
 
 To set up your development environment:
+- Configure your environment variables (see [the example file](.config/.env.example) for the required variables)
+- Run `npm i` within the root folder of the project to install NPM script dependencies
 - Run `make local-build` within the root folder of the project to build the application
 - Run `make local-run` within the root folder of the project to run the application
 
-You should see the application running at `localhost:4000`.
+You should see the application running at `http://hcapemployers.local.freshworks.club:4000/` and `http://hcapparticipants.local.freshworks.club:4000/`.
 
 See [*Development*](docs/development.md) for more details.
 

@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
 
 import { sortObjects } from '../../utils';
 
-const useStyles = makeStyles((theme) => ({
+export const useTableStyles = makeStyles((theme) => ({
   rootItem: {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
  * @returns {JSX.Element}
  */
 export default ({ columns, fetchData, data }) => {
-  const classes = useStyles();
+  const classes = useTableStyles();
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);

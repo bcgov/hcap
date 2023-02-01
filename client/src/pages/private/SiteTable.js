@@ -3,7 +3,6 @@ import { useHistory, useLocation } from 'react-router-dom';
 import store from 'store';
 
 import { Grid, Typography, MenuItem, Menu, Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
@@ -23,32 +22,7 @@ import { handleReportDownloadResult, sortObjects } from '../../utils';
 import { AuthContext } from '../../providers';
 import { FeatureFlaggedComponent, flagKeys } from '../../services';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
-
-const useStyles = makeStyles((theme) => ({
-  rootItem: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-  },
-  tableItem: {
-    paddingTop: theme.spacing(4),
-    paddingRight: theme.spacing(2),
-    paddingBottom: theme.spacing(4),
-    paddingLeft: theme.spacing(2),
-  },
-  filterLabel: {
-    color: theme.palette.gray.dark,
-    fontWeight: 700,
-  },
-  actionMenuPaper: {
-    minWidth: '220px',
-  },
-  menuItem: {
-    padding: '.75rem',
-    fontSize: '17px',
-  },
-}));
+import { useTableStyles } from '../../components/tables/DataTable';
 
 const columns = [
   { id: 'siteId', name: 'Site ID' },
@@ -62,7 +36,7 @@ const columns = [
 ];
 
 export default ({ sites, viewOnly }) => {
-  const classes = useStyles();
+  const classes = useTableStyles();
   const { openToast } = useToast();
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [order, setOrder] = useState('asc');

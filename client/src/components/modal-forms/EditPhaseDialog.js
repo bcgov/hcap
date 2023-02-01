@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { CreatePhaseSchema, ToastStatus } from '../../constants';
-import { updatePhase } from '../../services/phases';
+import { createPhase, updatePhase } from '../../services/phases';
 import { useToast } from '../../hooks';
 
 const useStyles = makeStyles(() => ({
@@ -17,14 +17,20 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const EditPhaseDialog = ({ onSubmit, onClose, open, content }) => {
+export const EditPhaseDialog = ({ onSubmit, onClose, open, content, isNew }) => {
   const { openToast } = useToast();
   const classes = useStyles();
-  const initialValues = {
-    phaseName: content.name ?? '',
-    startDate: content.start_date ?? '',
-    endDate: content.end_date ?? '',
-  };
+  const initialValues = content
+    ? {
+        phaseName: content.name ?? '',
+        startDate: content.start_date ?? '',
+        endDate: content.end_date ?? '',
+      }
+    : {
+        phaseName: '',
+        startDate: '',
+        endDate: '',
+      };
 
   const handleEditPhase = async (phase) => {
     const phaseJson = {
@@ -32,11 +38,11 @@ export const EditPhaseDialog = ({ onSubmit, onClose, open, content }) => {
       start_date: phase.startDate,
       end_date: phase.endDate,
     };
-    const response = await updatePhase(content.id, phaseJson);
+    const response = await (isNew ? createPhase(phaseJson) : updatePhase(content.id, phaseJson));
     if (response.ok) {
       openToast({
         status: ToastStatus.Success,
-        message: `Phase '${phase.phaseName}' updated successfully`,
+        message: `Phase '${phase.phaseName}' ${isNew ? 'created' : 'updated'} successfully`,
       });
       await onSubmit();
     } else {
@@ -48,7 +54,7 @@ export const EditPhaseDialog = ({ onSubmit, onClose, open, content }) => {
   };
 
   return (
-    <Dialog title={'Edit Phase'} open={open} onClose={onClose}>
+    <Dialog title={isNew ? 'Create Phase' : 'Edit Phase'} open={open} onClose={onClose}>
       <Formik
         initialValues={initialValues}
         validationSchema={CreatePhaseSchema}
@@ -86,7 +92,7 @@ export const EditPhaseDialog = ({ onSubmit, onClose, open, content }) => {
                 onClick={submitForm}
                 variant='contained'
                 color='primary'
-                text='Update'
+                text={isNew ? 'Create' : 'Update'}
               />
             </Box>
           </FormikForm>

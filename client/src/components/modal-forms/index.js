@@ -6,7 +6,6 @@ export * from './NewParticipantForm';
 export * from './EditParticipantForm';
 export * from './NewSiteDialog';
 export * from './EditSiteForm';
-export * from './NewPhaseDialog';
 export * from './PSIForm';
 export * from './EditPSIForm';
 export * from './CohortForm';

@@ -8,7 +8,7 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { Table, Button, CheckPermissions } from '../../components/generic';
-import { NewSiteDialog, NewPhaseDialog } from '../../components/modal-forms';
+import { NewSiteDialog, EditPhaseDialog } from '../../components/modal-forms';
 
 import {
   Routes,
@@ -209,10 +209,11 @@ export default ({ sites, viewOnly }) => {
         onClose={closeDialog}
       />
 
-      <NewPhaseDialog
+      <EditPhaseDialog
         open={activeModalForm === 'new-phase'}
         onSubmit={handleFormSubmit}
         onClose={closeDialog}
+        isNew={true}
       />
 
       <Grid

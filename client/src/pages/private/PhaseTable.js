@@ -5,7 +5,7 @@ import { Grid } from '@material-ui/core';
 import { AuthContext } from '../../providers';
 import { CheckPermissions } from '../../components/generic';
 
-import { fetchPhases } from '../../services/phases';
+import { FetchMappedPhases } from '../../services/phases';
 import { DataTable } from '../../components/tables/DataTable';
 import { PhaseDialog } from '../../components/modal-forms';
 
@@ -33,7 +33,7 @@ export default () => {
         direction='row'
       >
         <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-          <DataTable columns={columns} fetchData={fetchPhases} />
+          <DataTable columns={columns} fetchData={FetchMappedPhases} />
         </CheckPermissions>
       </Grid>
     </>

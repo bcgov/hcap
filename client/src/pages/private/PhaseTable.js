@@ -6,8 +6,8 @@ import { AuthContext } from '../../providers';
 import { CheckPermissions } from '../../components/generic';
 
 import { fetchPhases } from '../../services/phases';
-import DataTable from '../../components/tables/DataTable';
-import { EditPhaseDialog } from '../../components/modal-forms';
+import { DataTable } from '../../components/tables/DataTable';
+import { PhaseDialog } from '../../components/modal-forms';
 
 export default () => {
   const { auth } = AuthContext.useAuth();
@@ -20,7 +20,7 @@ export default () => {
     { id: 'name', name: 'Phase Name' },
     { id: 'start_date', name: 'Start Date', type: 'date' },
     { id: 'end_date', name: 'End Date', type: 'date' },
-    { id: 'edit', type: 'button', button: { label: 'Edit', modal: EditPhaseDialog } },
+    { id: 'edit', type: 'button', button: { label: 'Edit', modal: PhaseDialog } },
   ];
 
   return (

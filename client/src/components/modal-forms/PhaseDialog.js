@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const EditPhaseDialog = ({ onSubmit, onClose, open, content, isNew }) => {
+export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew }) => {
   const { openToast } = useToast();
   const classes = useStyles();
   const initialValues = content

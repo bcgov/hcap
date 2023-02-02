@@ -73,7 +73,7 @@ export const useTableStyles = makeStyles((theme) => ({
  *                                             Must return an array of objects, with keys matching column IDs.
  * @returns {JSX.Element}
  */
-export default ({ columns, fetchData, data }) => {
+export const DataTable = ({ columns, fetchData, data }) => {
   const classes = useTableStyles();
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);

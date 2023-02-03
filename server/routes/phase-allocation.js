@@ -44,7 +44,7 @@ router.get(
   })
 );
 
-// Read: Get phases globally
+// Read: Get global phases
 router.get(
   '/',
   [keycloak.allowRolesMiddleware('ministry_of_health'), keycloak.getUserInfoMiddleware()],

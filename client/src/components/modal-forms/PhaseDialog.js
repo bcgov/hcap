@@ -32,7 +32,7 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew }) => {
         endDate: '',
       };
 
-  const handleEditPhase = async (phase) => {
+  const handleSubmit = async (phase) => {
     const phaseJson = {
       name: phase.phaseName,
       start_date: phase.startDate,
@@ -58,7 +58,7 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew }) => {
       <Formik
         initialValues={initialValues}
         validationSchema={CreatePhaseSchema}
-        onSubmit={handleEditPhase}
+        onSubmit={handleSubmit}
       >
         {({ submitForm }) => (
           <FormikForm>

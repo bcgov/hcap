@@ -59,6 +59,10 @@ export const useTableStyles = makeStyles((theme) => ({
  *                                             * `modal` will open a model (see the `button.modal` property).
  * @property {buttonConfig?} button            Configuration for buttons, if `type` is `'button'`.
  *
+ * @typedef {Object} modalState                State of a specific modal. These values get passed to an individual modal component.
+ * @property {boolean} open                    Whether to display the modal.
+ * @property {Object} content                  Any object containing data the modal can work with, such as form presets.
+ *                                             Modal-specific, see documentation for specific modal components in use.
  *
  * @typedef {(columns: column[] ) => Promise<Object[]> } fetchFunction
  * @typedef {(props: modalComponentProps) => JSX.Element?} modalComponent
@@ -75,11 +79,17 @@ export const useTableStyles = makeStyles((theme) => ({
  */
 export const DataTable = ({ columns, fetchData, data }) => {
   const classes = useTableStyles();
+
+  // Sorting settings
   const [order, setOrder] = useState('asc');
-  const [isLoadingData, setLoadingData] = useState(false);
-  const [isPendingRequests, setIsPendingRequests] = useState(true);
-  const [rows, setRows] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
+
+  // Whether or not data is currently loading
+  const [isLoadingData, setLoadingData] = useState(false);
+  // Whether or not there is data loaded to render
+  const [hasData, setHasData] = useState(true);
+
+  const [rows, setRows] = useState([]);
 
   const handleRequestSort = (_, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -92,7 +102,8 @@ export const DataTable = ({ columns, fetchData, data }) => {
     const rowsData = await fetchData(columns);
 
     setRows(rowsData);
-    setIsPendingRequests(rowsData.length > 0);
+    // NOTE: it might be a good idea to add error handling here outside of simply an empty result list.
+    setHasData(rowsData.length > 0);
     setLoadingData(false);
   }, [setRows, fetchData, columns]);
 
@@ -106,11 +117,15 @@ export const DataTable = ({ columns, fetchData, data }) => {
     }
   }, [data, loadData]);
 
-  const types = Object.fromEntries(columns.map((column) => [column.id, column.type]));
+  const columnTypes = Object.fromEntries(columns.map((column) => [column.id, column.type]));
   const modalList = columns
     .filter((column) => column.button && column.button.modal)
     .map((column) => ({ id: column.id, modal: column.button.modal }));
 
+  /**
+   * State management for any modals assigned to this table.
+   * @type [{[id: string]: modalState}, function]
+   */
   const [modalsState, setModalsState] = useState(
     Object.fromEntries(
       columns
@@ -172,7 +187,7 @@ export const DataTable = ({ columns, fetchData, data }) => {
         alignItems='center'
         direction='row'
       >
-        {isPendingRequests && (
+        {hasData && (
           <Grid className={classes.tableItem} item xs={12}>
             <Table
               columns={columns}
@@ -182,9 +197,9 @@ export const DataTable = ({ columns, fetchData, data }) => {
               rows={sort(rows)}
               isLoading={isLoadingData}
               renderCell={(columnId, row) => {
-                if (types[columnId] === 'date')
+                if (columnTypes[columnId] === 'date')
                   return dayjs.utc(row[columnId]).format('MMM DD, YYYY');
-                if (types[columnId] === 'button')
+                if (columnTypes[columnId] === 'button')
                   return (
                     <Button
                       variant='outlined'

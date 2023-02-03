@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import store from 'store';
 
+import dayjs from 'dayjs';
 import { Grid, Typography, MenuItem, Menu, Box } from '@material-ui/core';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -14,7 +15,7 @@ import {
   regionLabelsMap,
   API_URL,
   healthAuthoritiesFilter,
-  ToastStatus,
+  ToastStatus
 } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
@@ -33,6 +34,8 @@ const columns = [
   { id: 'postalCode', name: 'Postal Code' },
   { id: 'allocation', name: 'Allocation' },
   { id: 'details' },
+  { id: 'startDate', isVisible: false },
+  { id: 'endDate', isVisible: false }
 ];
 
 export default ({ sites, viewOnly }) => {
@@ -82,9 +85,9 @@ export default ({ sites, viewOnly }) => {
   const generateReportByRegion = async (regionId) => {
     const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/hired/${regionId}`, {
       headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`
       },
-      method: 'GET',
+      method: 'GET'
     });
 
     const downloadRes = await handleReportDownloadResult(
@@ -108,7 +111,7 @@ export default ({ sites, viewOnly }) => {
     if (!regionIds || regionIds.length === 0) {
       openToast({
         status: ToastStatus.Error,
-        message: 'Download error: No health region found!',
+        message: 'Download error: No health region found!'
       });
       return;
     }
@@ -118,9 +121,9 @@ export default ({ sites, viewOnly }) => {
 
     const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/ros/${healthRegion}`, {
       headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${store.get('TOKEN')}`
       },
-      method: 'GET',
+      method: 'GET'
     });
 
     const downloadRes = await handleReportDownloadResult(
@@ -175,16 +178,16 @@ export default ({ sites, viewOnly }) => {
     await fetchSites();
   };
 
-  const renderAllocations = (data,) => {
+  const renderAllocations = (allocation, row) => {
+    const date = (date) => dayjs(row[date]).format('MMM D YYYY')
     return (
-      <div style={{display:'block'}}>
-        <div style={{fontWeight:'bold'}}>{data} </div>
-        <div style={{color:'lightgrey'}}>Start date - End Date</div>
+      <div className={classes.allocations}>
+        <div style={{ fontWeight: 'bold' }}>{allocation}</div>
+        <div style={{ color: 'lightgrey' }}>{date('startDate')} - {date('endDate')}</div>
       </div>
-    )
-  }
+    );
+  };
 
-console.log(fetchedRows)
   return (
     <>
       <NewSiteDialog
@@ -301,8 +304,8 @@ console.log(fetchedRows)
               rows={sort(rows)}
               isLoading={isLoadingData}
               renderCell={(columnId, row) => {
-                if (columnId === 'allocation') {
-                  return renderAllocations(row[columnId])
+                if (['allocation'].includes(columnId)) {
+                  return renderAllocations(row[columnId], row);
                 }
                 if (columnId === 'details')
                   return (

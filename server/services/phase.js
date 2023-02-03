@@ -96,10 +96,29 @@ const getAllSitePhases = async (siteId) => {
   return phaseData;
 };
 
+const getAllPhases = async () => {
+  // NOTE: this will not allow for full access to the phase list once it hits that 100k limit!
+  // If there is any chance of this hitting that number, or if performance starts to suffer,
+  // pagination support should be added.
+  const phases = await dbClient.db[collections.GLOBAL_PHASE].find({}, { limit: 100000 });
+  return phases;
+};
+
 const createGlobalPhase = async (phase, user) => {
-  const phaseJson = { ...phase, created_by: user.id, updated_by: user.id };
-  const res = await dbClient.db[collections.GLOBAL_PHASE].insert(phaseJson);
+  const phaseData = { ...phase, created_by: user.id, updated_by: user.id };
+  const res = await dbClient.db[collections.GLOBAL_PHASE].insert(phaseData);
   return res;
 };
 
-module.exports = { createGlobalPhase, getAllSitePhases };
+const updateGlobalPhase = async (phaseId, phase, user) => {
+  const phaseData = { ...phase, updated_by: user.id };
+  const res = await dbClient.db[collections.GLOBAL_PHASE].update(phaseId, phaseData);
+  return res;
+};
+
+module.exports = {
+  getAllSitePhases,
+  getAllPhases,
+  createGlobalPhase,
+  updateGlobalPhase,
+};

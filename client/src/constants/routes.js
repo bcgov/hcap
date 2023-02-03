@@ -36,4 +36,5 @@ export default Object.freeze({
   ReportingView: '/reporting-view',
   ParticipantDetails: '/participant-details/:page/:pageId/:id',
   ParticipantDetailsTab: '/participant-details/:page/:pageId/:id/:tab',
+  PhaseView: '/phase-view',
 });

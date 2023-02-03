@@ -4,6 +4,8 @@ const validateDateString = (s) => {
   return typeof date === 'number' && !Number.isNaN(date);
 };
 
+// NOTE: doesn't actually restrict validation to ISO!
+// This should probably be renamed or made more strict.
 const validISODateString = (s) => {
   const date = Date.parse(s);
   return typeof date === 'number' && !Number.isNaN(date);

@@ -10,25 +10,29 @@
 
 ## Prerequisites
 
-- Make sure you have [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed in your local environment.
-
+- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
+- [Node.js](https://nodejs.org/en/) and [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+- [OpenShift CLI](https://docs.openshift.com/container-platform/4.12/cli_reference/openshift_cli/getting-started-cli.html#cli-getting-started) (If working with OpenShift)
+- A working [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) distro (if running on Windows)
+  - If using WSL, make sure to run the project from a WSL directory (such as your Linux home directory), **not** a Windows directory (such as `/mnt/c/*`). Doing so prevents certain issues with Docker.
 - Environment Variables
   - Refer to [the example file](.config/.env.example) for the required environment variables.
 
 ## Setup and Development Commands
 
 ### To set up and run database, backend (server), and frontend (client) applications:
+- Run `npm i` within the root folder of the project to install NPM script dependencies
 - Run `make local-build` within the root folder of the project to build the application
 - Run `make local-run` within the root folder of the project to run the application
 
-You should see the application running at `localhost:4000`.
+You should see the application running at `http://hcapemployers.local.freshworks.club:4000/` and `http://hcapparticipants.local.freshworks.club:4000/`.
 
 ### To seed the database with data in an Excel sheet:
 
 - `make seed-sites SHEET=my_spreadsheet.xlsx`
 - `make seed-participants SHEET=my_spreadsheet.xlsx`
 
-**Note:** The Excel file should be placed in `server/scripts/xlsx`.
+**Note:** The input Excel file **must** be placed in `server/scripts/xlsx`. Test files can be found in `server/test-data`.
 
 ### To tear down your environment:
 

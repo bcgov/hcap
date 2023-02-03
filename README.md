@@ -11,11 +11,11 @@ This is a digital service built for the Ministry of Health which supports Britis
 ## Table of Contents
 
 1. [Project Status](#project-status)
-1. [Features](#features)
-    1. [Feature Flags](#feature-flags)
 1. [Getting Help or Reporting an Issue](#getting-help-or-reporting-an-issue)
 1. [How to Contribute](#how-to-contribute)
 1. [Development](#development)
+1. [Features](#features)
+    1. [Feature Flags](#feature-flags)
 1. [Formatting](#formatting)
 1. [Deployment](#deployment)
 1. [GitHub Actions](#github-actions)
@@ -28,6 +28,35 @@ This is a digital service built for the Ministry of Health which supports Britis
 [![img](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
 This application is in active development.
+
+## Getting Help or Reporting an Issue
+
+To report bugs/issues/feature requests, please file an [issue](https://github.com/bcgov/hcap/issues).
+
+## How to Contribute
+
+If you would like to contribute, please see our [contributing](CONTRIBUTING.md) guidelines.
+
+Please note that this project is released with a [Contributor Code of Conduct](CODE-OF-CONDUCT.md). By participating in this project you agree to abide by its terms.
+
+## Development
+
+For development, you will need:
+- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
+- [Node.js](https://nodejs.org/en/) and [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+- [OpenShift CLI](https://docs.openshift.com/container-platform/4.12/cli_reference/openshift_cli/getting-started-cli.html#cli-getting-started) (If working with OpenShift)
+- A working [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) distro (if running on Windows)
+  - If using WSL, make sure to run the project from a WSL directory (such as your Linux home directory), **not** a Windows directory (such as `/mnt/c/*`). Doing so prevents certain issues with Docker.
+
+To set up your development environment:
+- Configure your environment variables (see [the example file](.config/.env.example) for the required variables)
+- Run `npm i` within the root folder of the project to install NPM script dependencies
+- Run `make local-build` within the root folder of the project to build the application
+- Run `make local-run` within the root folder of the project to run the application
+
+You should see the application running at `http://hcapemployers.local.freshworks.club:4000/` and `http://hcapparticipants.local.freshworks.club:4000/`.
+
+See [*Development*](docs/development.md) for more details.
 
 ## Features
 
@@ -59,28 +88,6 @@ This config map contains the environment variables used for feature flagging.
 These flags are set per-environment.
 
 *Note:* The flag will only be enabled if the environment variable's value is exactly `true` any other values will be treated as false
-
-## Getting Help or Reporting an Issue
-
-To report bugs/issues/feature requests, please file an [issue](https://github.com/bcgov/hcap/issues).
-
-## How to Contribute
-
-If you would like to contribute, please see our [contributing](CONTRIBUTING.md) guidelines.
-
-Please note that this project is released with a [Contributor Code of Conduct](CODE-OF-CONDUCT.md). By participating in this project you agree to abide by its terms.
-
-## Development
-
-For development, you'll need [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed.
-
-To set up your development environment:
-- Run `make local-build` within the root folder of the project to build the application
-- Run `make local-run` within the root folder of the project to run the application
-
-You should see the application running at `localhost:4000`.
-
-See [*Development*](docs/development.md) for more details.
 
 ## Formatting
 

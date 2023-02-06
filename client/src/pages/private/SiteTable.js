@@ -33,7 +33,7 @@ const renderAllocations = (row) => {
         <div>
           <div style={{ fontWeight: 'bold' }}>{row['allocation']}</div>
           <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-            <div style={{ color: '#9a9696' }}>
+            <div style={{ color: '#272833' }}>
               {formattedDate('startDate')} - {formattedDate('endDate')}
             </div>
           </FeatureFlaggedComponent>

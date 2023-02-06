@@ -25,6 +25,26 @@ import { FeatureFlaggedComponent, flagKeys } from '../../services';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
 import { useTableStyles } from '../../components/tables/DataTable';
 
+const renderAllocations = (row) => {
+  const formattedDate = (date) => dayjs(row[date]).format('MMM D YYYY');
+  return (
+    <div>
+      {row['allocation'] || row['startDate'] ? (
+        <div>
+          <div style={{ fontWeight: 'bold' }}>{row['allocation']}</div>
+          <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
+            <div style={{ color: '#9a9696' }}>
+              {formattedDate('startDate')} - {formattedDate('endDate')}
+            </div>
+          </FeatureFlaggedComponent>
+        </div>
+      ) : (
+        <div style={{ fontWeight: 'bold' }}>N/A</div>
+      )}
+    </div>
+  );
+};
+
 const columns = [
   { id: 'siteId', name: 'Site ID' },
   { id: 'siteName', name: 'Site Name' },
@@ -32,10 +52,10 @@ const columns = [
   { id: 'healthAuthority', name: 'Health Authority' },
   { id: 'city', name: 'City' },
   { id: 'postalCode', name: 'Postal Code' },
-  { id: 'allocation', name: 'Allocation' },
+  { id: 'allocation', name: 'Allocation', customComponent: (row) => renderAllocations(row) },
   { id: 'details' },
-  { id: 'startDate', isVisible: false },
-  { id: 'endDate', isVisible: false }
+  { id: 'startDate', isHidden: true },
+  { id: 'endDate', isHidden: true }
 ];
 
 export default ({ sites, viewOnly }) => {
@@ -178,16 +198,7 @@ export default ({ sites, viewOnly }) => {
     await fetchSites();
   };
 
-  const renderAllocations = (allocation, row) => {
-    const date = (date) => dayjs(row[date]).format('MMM D YYYY')
-    return (
-      <div className={classes.allocations}>
-        <div style={{ fontWeight: 'bold' }}>{allocation}</div>
-        <div style={{ color: 'lightgrey' }}>{date('startDate')} - {date('endDate')}</div>
-      </div>
-    );
-  };
-
+  const columnObj = (rowId) => columns.find(({ id }) => id === rowId);
   return (
     <>
       <NewSiteDialog
@@ -304,9 +315,9 @@ export default ({ sites, viewOnly }) => {
               rows={sort(rows)}
               isLoading={isLoadingData}
               renderCell={(columnId, row) => {
-                if (['allocation'].includes(columnId)) {
-                  return renderAllocations(row[columnId], row);
-                }
+                if (columnObj(columnId).customComponent)
+                  return columnObj(columnId).customComponent(row);
+                if (columnObj(columnId).isHidden) return;
                 if (columnId === 'details')
                   return (
                     <Button

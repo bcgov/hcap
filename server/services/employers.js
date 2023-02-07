@@ -152,9 +152,14 @@ const getSiteDetailsById = async (id) => {
   return site;
 };
 
+/**
+ * @param {number} id  ID of requested site
+ * @returns {[employerSite] | [{error: string}]} Requested site
+ */
 const getSiteByID = async (id) => {
   const site = await dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
   if (site.length === 0) {
+    // This might be better as an actual rejection
     return [{ error: `No site found with id` }];
   }
 

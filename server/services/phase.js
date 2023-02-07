@@ -7,6 +7,24 @@ const { getSiteByID } = require('./employers');
 
 dayjs.extend(isBetween);
 
+/**
+ * @typedef {import('./employers').employerSite} employerSite
+ *
+ * @typedef  {Object} phase
+ * @property {number} id             Internal ID of the phase
+ * @property {string} phaseName      Human readable phase name
+ * @property {string} startDate      Date string seperated by slashes, e.g. '2020/01/01'
+ * @property {string} endDate        Date string seperated by slashes, e.g. '2020/01/01'
+ * @property {any} allocation
+ * @property {number} remainingHires Number of remaining hires
+ * @property {number} hcapHires      Number of hires from HCAP
+ * @property {number} nonHcapHires   Number of hires from outside HCAP
+ */
+
+/**
+ * @param {number} siteId
+ * @returns {phase[]}
+ */
 const getAllSitePhases = async (siteId) => {
   const [site] = await getSiteByID(siteId);
   // siteDataId is the id in the data attribute, not the table PK

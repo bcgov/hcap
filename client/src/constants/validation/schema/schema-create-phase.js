@@ -13,7 +13,10 @@ export const CreatePhaseSchema = yup.object().shape({
     .when('startDate', (startDate, schema) => {
       if (startDate) {
         const nextDay = new Date(startDate.getTime() + 86400000);
-        return schema.min(nextDay, 'End date must be at least 1 day after Start date');
+        return schema.min(
+          nextDay,
+          'Invalid entry. End date must be at least 1 day after Start date'
+        );
       } else {
         return schema;
       }

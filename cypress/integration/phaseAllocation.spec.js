@@ -65,4 +65,18 @@ describe('Phase functionality', () => {
       'Invalid entry. Date must be after December 31st 1899 and before January 1st 2100.'
     );
   });
+
+  it.skip('New phase endDate must be after startDate', () => {
+    // attempt to submit empty form
+    navigateToForm();
+    const formValues = {
+      phaseName: 'Test valid end date',
+      startDate: '2023/01/06',
+      endDate: '2023/01/05',
+    };
+    completePhaseForm(formValues);
+
+    // expect: required error on every field
+    cy.contains('p.Mui-error', 'Invalid entry. End date must be at least 1 day after Start date');
+  });
 });

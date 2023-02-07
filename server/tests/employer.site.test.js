@@ -65,7 +65,6 @@ describe('Employer Site Endpoints', () => {
   // siteId must be assigned by the test
   const siteBaseFields = {
     siteName: 'Test site',
-    // allocation: 1,
     address: '123 XYZ',
     city: 'Victoria',
     isRHO: false,
@@ -87,7 +86,6 @@ describe('Employer Site Endpoints', () => {
   const site = {
     siteId: 67,
     siteName: 'Test site',
-    // allocation: 1,
     address: '123 XYZ',
     city: 'Victoria',
     isRHO: true,
@@ -137,7 +135,6 @@ describe('Employer Site Endpoints', () => {
     expect(res).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          // allocation: site.allocation,
           healthAuthority: site.healthAuthority,
           postalCode: site.postalCode,
           siteId: site.siteId,

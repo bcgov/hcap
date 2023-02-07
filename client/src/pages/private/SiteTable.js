@@ -15,7 +15,7 @@ import {
   regionLabelsMap,
   API_URL,
   healthAuthoritiesFilter,
-  ToastStatus
+  ToastStatus,
 } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
@@ -31,15 +31,15 @@ const renderAllocations = (row) => {
     <div>
       {row['allocation'] || row['startDate'] ? (
         <div>
-          <div style={{ fontWeight: 'bold' }}>{row['allocation']}</div>
+          <div style={{ fontWeight: '700' }}>{row['allocation']}</div>
           <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-            <div style={{ color: '#272833' }}>
+            <div style={{ color: '#272833', fontWeight: '400' }}>
               {formattedDate('startDate')} - {formattedDate('endDate')}
             </div>
           </FeatureFlaggedComponent>
         </div>
       ) : (
-        <div style={{ fontWeight: 'bold' }}>N/A</div>
+        <div style={{ fontWeight: '700' }}>N/A</div>
       )}
     </div>
   );
@@ -55,7 +55,7 @@ const columns = [
   { id: 'allocation', name: 'Allocation', customComponent: (row) => renderAllocations(row) },
   { id: 'details' },
   { id: 'startDate', isHidden: true },
-  { id: 'endDate', isHidden: true }
+  { id: 'endDate', isHidden: true },
 ];
 
 export default ({ sites, viewOnly }) => {
@@ -105,9 +105,9 @@ export default ({ sites, viewOnly }) => {
   const generateReportByRegion = async (regionId) => {
     const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/hired/${regionId}`, {
       headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
-      method: 'GET'
+      method: 'GET',
     });
 
     const downloadRes = await handleReportDownloadResult(
@@ -131,7 +131,7 @@ export default ({ sites, viewOnly }) => {
     if (!regionIds || regionIds.length === 0) {
       openToast({
         status: ToastStatus.Error,
-        message: 'Download error: No health region found!'
+        message: 'Download error: No health region found!',
       });
       return;
     }
@@ -141,9 +141,9 @@ export default ({ sites, viewOnly }) => {
 
     const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/ros/${healthRegion}`, {
       headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`
+        Authorization: `Bearer ${store.get('TOKEN')}`,
       },
-      method: 'GET'
+      method: 'GET',
     });
 
     const downloadRes = await handleReportDownloadResult(

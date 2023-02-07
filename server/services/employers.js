@@ -50,7 +50,6 @@ const updateSite = async (id, site) => {
   return dbClient.db[collections.EMPLOYER_SITES].updateDoc({ id }, changes);
 };
 
-
 const getAllSites = async () =>
   dbClient.db[collections.EMPLOYER_SITES].findDoc(
     {},

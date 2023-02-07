@@ -24,10 +24,10 @@ As noted in the above README, backups are on a schedule while restoration must b
 - Scale down all resources that connect to the database - at this point, it is just the hcap-server DC pods
 - Ensure that cron jobs will not run while performing the restoration
 - Scale down patroni to a single node, ensuring that it is the leader
--- To see which members are the leaders vs the replicas, while RSH-ing into the Patroni node, use `patronictl -c patroni.yml list`
--- You can switch nodes using the config map `hcap-patroni-leader`
+    - To see which members are the leaders vs the replicas, while RSH-ing into the Patroni node, use `patronictl -c patroni.yml list`
+    - You can switch nodes using the config map `hcap-patroni-leader`
 - RSH into the backup node. You'll find the backup script `backup.sh` there
--- You can use `./backup.sh -h` for help commands
+    - You can use `./backup.sh -h` for help commands
 - Make a manual backup of current time
 - Restore with a specific file within the `backups` directory using the `backup.sh -r` script
 - Use the superuser password found in secrets

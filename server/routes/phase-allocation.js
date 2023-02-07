@@ -34,7 +34,8 @@ router.get(
     const authorized =
       user.isSuperUser ||
       user.isMoH ||
-      (user.isHA && (await getSitesForUser(user)).map((site) => site.id).includes(siteId));
+      ((user.isHA || user.isEmployer) &&
+        (await getSitesForUser(user)).map((site) => site.id).includes(siteId));
     if (!authorized) return res.status(403).send('Unauthorized site ID');
 
     // Get and return data

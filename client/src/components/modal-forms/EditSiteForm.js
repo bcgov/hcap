@@ -61,12 +61,6 @@ export const EditSiteForm = ({
               ]}
             />
             <Field name='postalCode' component={RenderTextField} label='* Postal Code' />
-            <Field
-              name='allocation'
-              type='number'
-              component={RenderTextField}
-              label='* Allocation'
-            />
             <Box pt={2} pb={1}>
               <Typography variant='body1'>
                 <b>Operator Info</b>

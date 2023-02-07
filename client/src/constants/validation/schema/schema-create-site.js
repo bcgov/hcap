@@ -1,14 +1,10 @@
 import * as yup from 'yup';
 import { healthRegions } from '../constants';
-import { validateBlankOrPositiveInteger, errorMessage } from '../functions';
+import { errorMessage } from '../functions';
 
 export const CreateSiteSchema = yup.object().shape({
   siteId: yup.number().required('Site ID is required'),
   siteName: yup.string().required(errorMessage),
-  allocation: yup
-    .number()
-    .nullable()
-    .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
   address: yup.string().nullable(),
   city: yup.string().nullable(),
   isRHO: yup.boolean().nullable().required(errorMessage),

@@ -160,7 +160,6 @@ const EmployerSiteBatchSchema = yup.array().of(
       .shape({
         siteId: yup.number().required(errorMessageIndex(index)),
         siteName: yup.string().required(errorMessageIndex(index)),
-        allocation: yup.number().nullable(errorMessageIndex(index)),
         address: yup.string().nullable(errorMessageIndex(index)),
         city: yup.string().nullable(errorMessageIndex(index)),
         isRHO: yup.boolean().nullable().required('Regional Health Office status is required'),
@@ -213,14 +212,6 @@ const CreateSiteSchema = yup
   .shape({
     siteId: yup.number().required('Site ID is required'),
     siteName: yup.string().required(errorMessage),
-    allocation: yup
-      .number()
-      .nullable()
-      .test(
-        'validate-blank-or-number',
-        'Must be a positive number',
-        validateBlankOrPositiveInteger
-      ),
     address: yup.string().nullable(),
     city: yup.string().nullable(),
     isRHO: yup.boolean().nullable().required(errorMessage),
@@ -273,14 +264,6 @@ const EditSiteSchema = yup
       .string()
       .required(errorMessage)
       .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
-    allocation: yup
-      .number()
-      .required('Allocation number is required')
-      .test(
-        'validate-blank-or-number',
-        'Must be a positive number',
-        validateBlankOrPositiveInteger
-      ),
     operatorName: yup.string().nullable(),
     operatorContactFirstName: yup.string().required(errorMessage),
     operatorContactLastName: yup.string().required(errorMessage),

@@ -27,7 +27,6 @@ export const NewSiteDialog = ({ onSubmit, onClose, open }) => {
     isRHO: null,
     postalCode: '',
     healthAuthority: '',
-    allocation: '',
     operatorName: '',
     operatorContactFirstName: '',
     operatorContactLastName: '',
@@ -43,7 +42,6 @@ export const NewSiteDialog = ({ onSubmit, onClose, open }) => {
     const siteJson = {
       ...site,
       siteId: parseInt(site.siteId),
-      allocation: parseInt(site.allocation),
     };
     const response = await createSite(siteJson);
     if (response.ok) {
@@ -92,12 +90,6 @@ export const NewSiteDialog = ({ onSubmit, onClose, open }) => {
                 component={RenderSelectField}
                 label='* Health Authority'
                 options={healthAuthorities}
-              />
-              <Field
-                name='allocation'
-                type='number'
-                component={RenderTextField}
-                label='Allocation'
               />
               <Box pt={2} pb={1}>
                 <Typography variant='body1'>

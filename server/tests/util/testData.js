@@ -67,7 +67,6 @@ const siteData = ({
 }) => ({
   siteId,
   siteName: siteName || 'Test site',
-  allocation: 1,
   address: '123 XYZ',
   city: city || 'Victoria',
   isRHO: isRHO || false,

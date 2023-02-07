@@ -10,6 +10,14 @@ export const CreatePhaseSchema = yup.object().shape({
     .test('is-reasonable', errorDateIsReasonable, validateDateIsReasonable),
   endDate: yup
     .date()
+    .when('startDate', (startDate, schema) => {
+      if (startDate) {
+        const nextDay = new Date(startDate.getTime() + 86400000);
+        return schema.min(nextDay, 'End date must be at least 1 day after Start date');
+      } else {
+        return schema;
+      }
+    })
     .required(errorMessage)
     .typeError(errorMessage)
     .test('is-reasonable', errorDateIsReasonable, validateDateIsReasonable),

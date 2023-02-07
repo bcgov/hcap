@@ -63,7 +63,12 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew }) => {
         {({ submitForm }) => (
           <FormikForm>
             <Box>
-              <Field name='phaseName' component={RenderTextField} label='* Phase name' />
+              <Field
+                name='phaseName'
+                component={RenderTextField}
+                label='* Phase name'
+                placeholder='Type in here'
+              />
               <Box
                 display='flex'
                 justifyContent='space-between'

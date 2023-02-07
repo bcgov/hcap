@@ -10,6 +10,7 @@ const {
   getAllSitePhases,
   getAllPhases,
 } = require('../services/phase');
+const { getSitesForUser } = require('../services/employers');
 const { FEATURE_PHASE_ALLOCATION } = require('../services/feature-flags');
 
 const router = express.Router();
@@ -22,25 +23,33 @@ router.get(
     keycloak.getUserInfoMiddleware(),
   ],
   asyncMiddleware(async (req, res) => {
-    const { hcapUserInfo: user } = req;
+    /**
+     * @type {import("../keycloak").hcapUserInfo} hcapUserInfo
+     */
+    const user = req.hcapUserInfo;
     const siteId = parseInt(req.params.id, 10);
 
-    // TODO: HCAP-1336 check that user has access to siteId
-    if (siteId) {
-      const result = await getAllSitePhases(siteId);
+    // Validate request
+    if (!siteId) return res.status(400).send('Invalid site ID');
+    const authorized =
+      user.isSuperUser ||
+      user.isMoH ||
+      (user.isHA && (await getSitesForUser(user)).map((site) => site.id).includes(siteId));
+    if (!authorized) return res.status(403).send('Unauthorized site ID');
 
-      logger.info({
-        action: 'phases_get',
-        performed_by: {
-          username: user.username,
-          id: user.id,
-        },
-        phases_accessed: result.map((phase) => phase.id),
-        for_site: siteId,
-      });
-      return res.json({ data: result });
-    }
-    return res.status(400).send('Invalid site id');
+    // Get and return data
+    const result = await getAllSitePhases(siteId);
+
+    logger.info({
+      action: 'phases_get',
+      performed_by: {
+        username: user.username,
+        id: user.id,
+      },
+      phases_accessed: result.map((phase) => phase.id),
+      for_site: siteId,
+    });
+    return res.json({ data: result });
   })
 );
 

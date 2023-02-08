@@ -154,9 +154,7 @@ describe('Employer Site Endpoints', () => {
     expect(sitePostRes.id).toBeDefined();
 
     const res = await getSiteByID(sitePostRes.id);
-    expect(res).toEqual(
-      expect.arrayContaining([siteBaseFields].map((item) => expect.objectContaining(item)))
-    );
+    expect(res).toEqual(expect.objectContaining(siteBaseFields));
   });
 
   it('gets a site before and after hires have been made', async () => {

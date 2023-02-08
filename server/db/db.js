@@ -54,9 +54,17 @@ class DBClient {
     return this.db.reload();
   }
 
-  async runRawQuery(query) {
-    if (!query) return;
-    await this.db.query(query);
+  /**
+   *
+   * @param {string | massive.Select | massive.Insert | massive.Update | massive.Delete} query  Query to run.
+   * @param {massive.QueryParams} queryParams  Array of parameters to use for the query.
+   *                                           For example, if `query` contains `$1`, this will be replaced with the first element of `queryParams`.
+   * @returns  Query result, or nothing if no query is provided.
+   */
+  async runRawQuery(query, queryParams) {
+    if (!query) return [];
+    const res = await this.db.query(query, queryParams);
+    return res;
   }
 
   async createDocumentTableIfNotExists(table) {

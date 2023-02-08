@@ -25,23 +25,33 @@ import { FeatureFlaggedComponent, flagKeys } from '../../services';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
 import { useTableStyles } from '../../components/tables/DataTable';
 
+const allocationStyle = {
+  allocation: {
+    fontWeight: 700,
+  },
+  dates: {
+    color: '#272833',
+    fontWeight: 400,
+  },
+};
+
 const renderAllocations = (row) => {
   const formattedDate = (date) => dayjs(row[date]).format('MMM D YYYY');
   return (
-    <div>
+    <>
       {row['allocation'] || row['startDate'] ? (
-        <div>
-          <div style={{ fontWeight: '700' }}>{row['allocation']}</div>
+        <Box>
+          <div style={allocationStyle.allocation}>{row['allocation']}</div>
           <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-            <div style={{ color: '#272833', fontWeight: '400' }}>
+            <div style={allocationStyle.dates}>
               {formattedDate('startDate')} - {formattedDate('endDate')}
             </div>
           </FeatureFlaggedComponent>
-        </div>
+        </Box>
       ) : (
-        <div style={{ fontWeight: '700' }}>N/A</div>
+        <div style={allocationStyle.allocation}>N/A</div>
       )}
-    </div>
+    </>
   );
 };
 

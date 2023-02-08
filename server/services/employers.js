@@ -154,13 +154,12 @@ const getSiteDetailsById = async (id) => {
 
 /**
  * @param {number} id  ID of requested site
- * @returns {[employerSite] | [{error: string}]} Requested site
+ * @returns {Promise<employerSite>} Requested site
  */
 const getSiteByID = async (id) => {
   const site = await dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
   if (site.length === 0) {
-    // This might be better as an actual rejection
-    return [{ error: `No site found with id` }];
+    throw new Error(`No site found with id ${id}`);
   }
 
   // Counting hire
@@ -195,7 +194,7 @@ const getSiteByID = async (id) => {
     });
   site[0].hcapHires = hcapHires;
   site[0].nonHcapHires = nonHcapHires;
-  return site;
+  return site[0];
 };
 
 module.exports = {

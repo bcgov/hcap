@@ -244,7 +244,7 @@ describe.skip('Server V1 Form Endpoints', () => {
     const sites = await getSitesForUser({ roles: ['ministry_of_health'] });
     const [siteData] = sites.filter((entry) => entry.siteId === siteResponse.siteId);
 
-    const [res] = await getSiteByID(siteData.id);
+    const res = await getSiteByID(siteData.id);
     await makeParticipant(participant1);
     await makeParticipant(participant2);
     const {

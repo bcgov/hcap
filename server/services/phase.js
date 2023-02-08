@@ -26,7 +26,8 @@ dayjs.extend(isBetween);
  * @returns {phase[]}
  */
 const getAllSitePhases = async (siteId) => {
-  const [site] = await getSiteByID(siteId);
+  const site = await getSiteByID(siteId);
+
   // siteDataId is the id in the data attribute, not the table PK
   const siteDataId = site.siteId;
   const sitePhases = await dbClient.db[collections.GLOBAL_PHASE]

@@ -150,7 +150,7 @@ export default ({ match }) => {
                 <Box pb={4} pl={2}>
                   <Box pb={2}>
                     <Typography variant='body1'>
-                      <Link href={routes.SiteView}>Sites</Link> / {site.siteName}
+                      <Link href={routes.SiteView}>View Sites</Link> / {site.siteName}
                     </Typography>
                   </Box>
                   <Grid container>

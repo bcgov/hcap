@@ -41,6 +41,13 @@ const getAllSitePhases = async (siteId) => {
    */
 
   /**
+   * Raw result from a custom query.
+   *
+   * This query essentially performs the following actions:
+   * * Grabs all phases
+   * * Finds the phase allocations for each phase at this site
+   * * For each phase, counts the number of currently hired employees within its timespan
+   * * Splits these hires into HCAP and non-HCAP hires
    * @type {sitePhasesResponse[]}
    */
   const sitePhases = await dbClient.runRawQuery(

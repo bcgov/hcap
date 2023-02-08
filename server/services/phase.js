@@ -10,7 +10,7 @@ dayjs.extend(isBetween);
 /**
  * @typedef {import('./employers').employerSite} employerSite
  *
- * @typedef  {Object} phase
+ * @typedef  {Object} sitePhase
  * @property {number} id             Internal ID of the phase
  * @property {string} phaseName      Human readable phase name
  * @property {string} startDate      Date string seperated by slashes, e.g. '2020/01/01'
@@ -22,8 +22,9 @@ dayjs.extend(isBetween);
  */
 
 /**
+ * Gets all phases for a site
  * @param {number} siteId Database ID of the site
- * @returns {Promise<phase[]>} Phases for the site
+ * @returns {Promise<sitePhase[]>} Phases for the site
  */
 const getAllSitePhases = async (siteId) => {
   const site = await getSiteByID(siteId);
@@ -90,7 +91,6 @@ const getAllSitePhases = async (siteId) => {
   }));
 };
 
-// TODO TYPES
 const getAllPhases = async () => {
   // NOTE: this will not allow for full access to the phase list once it hits that 100k limit!
   // If there is any chance of this hitting that number, or if performance starts to suffer,

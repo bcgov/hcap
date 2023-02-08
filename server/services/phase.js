@@ -68,7 +68,7 @@ const getAllSitePhases = async (siteId) => {
       ) AS non_hcap_hires 
     FROM 
       phase 
-      LEFT JOIN site_phase_allocation spa ON phase.id = spa.phase_id
+      LEFT JOIN site_phase_allocation spa ON phase.id = spa.phase_id AND spa.site_id = '$1'
       LEFT JOIN participants_status ps ON
         ps.DATA ->> 'site' = '$1' AND ps."current"
         AND ps."current"

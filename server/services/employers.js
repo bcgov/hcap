@@ -2,6 +2,24 @@ const { dbClient, collections } = require('../db');
 const { validate, EmployerSiteBatchSchema } = require('../validation');
 const { userRegionQuery } = require('./user.js');
 
+/**
+ * @typedef {import("../keycloak").hcapUserInfo} hcapUserInfo
+ *
+ * @typedef {Object} employerSite
+ * @property {number} id               Internal ID for site
+ * @property {number} siteId           User-visible ID for site
+ * @property {string} siteName         Name of site
+ * @property {string} operatorName     Name of operator (e.g. 'Interior Health Authority')
+ * @property {string} city             City the site is in
+ * @property {string} healthAuthority  Authority for the site
+ * @property {string} postalCode       Postal code of site
+ * @property {number} allocation
+ */
+
+/**
+ * @param {hcapUserInfo} user
+ * @returns {employerSite[]}
+ */
 const getEmployers = async (user) => {
   const criteria =
     user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'healthAuthority');
@@ -95,8 +113,8 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
 
 /**
  * Get all accessible sites for a user
- * @param {*} user user with roles and sites to filter
- * @returns list of sites which the user has access to
+ * @param {hcapUserInfo} user  User with roles and sites to filter
+ * @returns {employerSite[]}   List of sites which the user has access to
  */
 const getSitesForUser = async (user) => {
   const additionalCriteria = [];
@@ -116,8 +134,8 @@ const getSitesForUser = async (user) => {
 
 /**
  * Get all sites for regions, returning nothing if there's no regions passed in
- * @param {*} regions regions to get sites for
- * @returns list of sites within a region
+ * @param {string[]} regions  Regions to get sites for
+ * @returns {employerSite[]}  List of sites within a region
  */
 const getSitesForRegion = async (regions) => {
   if (regions.length > 0) {

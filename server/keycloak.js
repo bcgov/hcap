@@ -21,6 +21,23 @@ const defaults = {
   'public-client': true,
 };
 
+// NOTE: This type is not actually used in this file yet due to some JSDoc limitations.
+// It is currently just here to be used by external files (such as phase-allocation.js).
+// However, it can be used once we switch to TS.
+/**
+ * @typedef {Object} hcapUserInfo
+ * @property {string} name           Full name of user (e.g. "Tabitha Test")
+ * @property {string} username       Username (e.g. "user@bceid")
+ * @property {string} id             Unique identifier string for the user
+ * @property {any[]} sites TODO: annotate element type
+ * @property {string[]} roles        Roles of the user (such as `region_interior` or `health_authority`)
+ * @property {string[]} regions      Regions the user is assigned to (such as `Interior`)
+ * @property {boolean} isEmployer    True if the user is an employer
+ * @property {boolean} isHA          True if the user is a health authority user
+ * @property {boolean} isSuperUser   True if the user is a superuser
+ * @property {boolean} isMoH         True if the user is an MoH user
+ */
+
 class Keycloak {
   // Wrapper class around keycloak-connect
   constructor() {
@@ -79,6 +96,7 @@ class Keycloak {
         const { content } = req.kauth.grant.access_token;
         const roles = content?.resource_access[this.clientNameFrontend]?.roles || [];
         const user = await getUser(content.sub);
+
         req.hcapUserInfo = {
           name: content.name,
           username: content.preferred_username,

@@ -5,7 +5,7 @@ import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
 import { scrollUp } from '../../utils';
 import store from 'store';
-import routes from '../../constants/routes';
+import { Routes } from '../../constants';
 import { EditSiteForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { ToastStatus, EditSiteSchema, API_URL } from '../../constants';
@@ -148,7 +148,7 @@ export default ({ match }) => {
                 <Box pb={4} pl={2}>
                   <Box pb={2}>
                     <Typography variant='body1'>
-                      <Link href={routes.SiteView}>Sites</Link> / {site.siteName}
+                      <Link href={Routes.SiteView}>View Sites</Link> / {site.siteName}
                     </Typography>
                   </Box>
                   <Grid container>

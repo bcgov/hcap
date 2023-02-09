@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import store from 'store';
 
-import dayjs from 'dayjs';
 import { Grid, Typography, MenuItem, Menu, Box } from '@material-ui/core';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -24,36 +23,7 @@ import { AuthContext } from '../../providers';
 import { FeatureFlaggedComponent, flagKeys } from '../../services';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
 import { useTableStyles } from '../../components/tables/DataTable';
-
-const allocationStyle = {
-  allocation: {
-    fontWeight: 700,
-  },
-  dates: {
-    color: '#272833',
-    fontWeight: 400,
-  },
-};
-
-const renderAllocations = (row) => {
-  const formattedDate = (date) => dayjs(row[date]).format('MMM D YYYY');
-  return (
-    <>
-      {row['allocation'] || row['startDate'] ? (
-        <Box>
-          <div style={allocationStyle.allocation}>{row['allocation']}</div>
-          <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-            <div style={allocationStyle.dates}>
-              {formattedDate('startDate')} - {formattedDate('endDate')}
-            </div>
-          </FeatureFlaggedComponent>
-        </Box>
-      ) : (
-        <div style={allocationStyle.allocation}>N/A</div>
-      )}
-    </>
-  );
-};
+import { SiteTableAllocation } from './SiteTableAllocation';
 
 const columns = [
   { id: 'siteId', name: 'Site ID' },
@@ -62,7 +32,11 @@ const columns = [
   { id: 'healthAuthority', name: 'Health Authority' },
   { id: 'city', name: 'City' },
   { id: 'postalCode', name: 'Postal Code' },
-  { id: 'allocation', name: 'Allocation', customComponent: (row) => renderAllocations(row) },
+  {
+    id: 'allocation',
+    name: 'Allocation',
+    customComponent: (row) => <SiteTableAllocation row={row} />,
+  },
   { id: 'details' },
   { id: 'startDate', isHidden: true },
   { id: 'endDate', isHidden: true },

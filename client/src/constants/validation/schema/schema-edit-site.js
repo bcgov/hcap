@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { validateBlankOrPositiveInteger, errorMessage } from '../functions';
+import { errorMessage } from '../functions';
 
 export const EditSiteSchema = yup.object().shape({
   siteContactFirstName: yup.string().required(errorMessage),
@@ -17,10 +17,6 @@ export const EditSiteSchema = yup.object().shape({
     .string()
     .required(errorMessage)
     .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
-  allocation: yup
-    .number()
-    .required('Allocation number is required')
-    .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
   operatorName: yup.string().nullable(),
   operatorContactFirstName: yup.string().required(errorMessage),
   operatorContactLastName: yup.string().required(errorMessage),

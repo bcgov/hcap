@@ -11,7 +11,6 @@ const { saveSingleSite, saveSites } = require('../services/employers.js');
 const siteObject = ({ id, name }) => ({
   siteId: id,
   siteName: name || 'Test site',
-  allocation: 1,
   address: '123 XYZ',
   city: 'Victoria',
   isRHO: true,
@@ -50,7 +49,6 @@ const batchSiteObject = ({ id, name }) => {
 };
 
 const getAllSitesExpectedFields = (site) => ({
-  allocation: site.allocation,
   healthAuthority: site.healthAuthority,
   postalCode: site.postalCode,
   siteId: site.siteId,

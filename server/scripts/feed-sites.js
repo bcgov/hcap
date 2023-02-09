@@ -20,7 +20,6 @@ const errorStyle = '\x1b[31m\x1b[40m\x1b[4m\x1b[1m'; // https://stackoverflow.co
         'HCAP Site ID': 'siteId',
         'Site Name': 'siteName',
         RHO: 'isRHO',
-        Allocation: 'allocation',
         'Street Address': 'address',
         'Health Authority': 'healthAuthority',
         City: 'city',

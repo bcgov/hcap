@@ -92,9 +92,14 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
         employer_sites.body -> 'city' as "city",
         employer_sites.body -> 'healthAuthority' as "healthAuthority",
         employer_sites.body -> 'postalCode' as "postalCode",
-        employer_sites.body -> 'allocation' as "allocation"
+        spa.allocation,
+        p.start_date as "startDate", 
+        p.end_date as "endDate"
       FROM
         employer_sites
+      LEFT JOIN site_phase_allocation spa on spa.site_id = employer_sites.id 
+      LEFT JOIN phase p on p.id = spa.phase_id
+      AND CURRENT_DATE between p.start_date and p.end_date
       ${additionalCriteria.length > 0 ? 'WHERE' : ''}
         ${additionalCriteria.join(' AND ')}
       ORDER BY

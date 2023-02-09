@@ -23,6 +23,7 @@ import { AuthContext } from '../../providers';
 import { FeatureFlaggedComponent, flagKeys } from '../../services';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
 import { useTableStyles } from '../../components/tables/DataTable';
+import { SiteTableAllocation } from './SiteTableAllocation';
 
 const columns = [
   { id: 'siteId', name: 'Site ID' },
@@ -31,8 +32,14 @@ const columns = [
   { id: 'healthAuthority', name: 'Health Authority' },
   { id: 'city', name: 'City' },
   { id: 'postalCode', name: 'Postal Code' },
-  { id: 'allocation', name: 'Allocation' },
+  {
+    id: 'allocation',
+    name: 'Allocation',
+    customComponent: (row) => <SiteTableAllocation row={row} />,
+  },
   { id: 'details' },
+  { id: 'startDate', isHidden: true },
+  { id: 'endDate', isHidden: true },
 ];
 
 export default ({ sites, viewOnly }) => {
@@ -175,6 +182,7 @@ export default ({ sites, viewOnly }) => {
     await fetchSites();
   };
 
+  const columnObj = (rowId) => columns.find(({ id }) => id === rowId);
   return (
     <>
       <NewSiteDialog
@@ -291,6 +299,9 @@ export default ({ sites, viewOnly }) => {
               rows={sort(rows)}
               isLoading={isLoadingData}
               renderCell={(columnId, row) => {
+                if (columnObj(columnId).customComponent)
+                  return columnObj(columnId).customComponent(row);
+                if (columnObj(columnId).isHidden) return;
                 if (columnId === 'details')
                   return (
                     <Button

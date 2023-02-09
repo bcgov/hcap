@@ -7,93 +7,95 @@ const { getSiteByID } = require('./employers');
 
 dayjs.extend(isBetween);
 
+/**
+ * @typedef {import('./employers').employerSite} employerSite
+ *
+ * @typedef  {Object} sitePhase
+ * @property {number} id             Internal ID of the phase
+ * @property {string} phaseName      Human readable phase name
+ * @property {string} startDate      Date string seperated by slashes, e.g. '2020/01/01'
+ * @property {string} endDate        Date string seperated by slashes, e.g. '2020/01/01'
+ * @property {any} allocation
+ * @property {number} remainingHires Number of remaining hires
+ * @property {number} hcapHires      Number of hires from HCAP
+ * @property {number} nonHcapHires   Number of hires from outside HCAP
+ */
+
+/**
+ * Gets all phases for a site
+ * @param {number} siteId Database ID of the site
+ * @returns {Promise<sitePhase[]>} Phases for the site
+ */
 const getAllSitePhases = async (siteId) => {
-  const [site] = await getSiteByID(siteId);
-  // siteDataId is the id in the data attribute, not the table PK
-  const siteDataId = site.siteId;
-  const sitePhases = await dbClient.db[collections.GLOBAL_PHASE]
-    .join({
-      [collections.SITE_PHASE_ALLOCATION]: {
-        type: 'LEFT OUTER',
-        relation: collections.SITE_PHASE_ALLOCATION,
-        on: {
-          phase_id: 'id',
-          site_id: siteId,
-        },
-      },
-      // TODO: HCAP-1334 What we actually want is to have it be on: filter so that hired range is between startDate and endDate
-      // could not NULL COALESCE the start/end dates, and could not use comparitive operators (<=, etc turned to =).
-      // so we get all the hires and filter afterwards.
-      hires: {
-        type: 'LEFT OUTER',
-        relation: collections.PARTICIPANTS_STATUS,
-        on: {
-          status: 'hired',
-          'data.site': siteDataId,
-        },
-      },
-      archivedJoin: {
-        type: 'LEFT OUTER',
-        relation: collections.PARTICIPANTS_STATUS,
-        on: {
-          participant_id: 'hires.participant_id',
-          status: 'archived',
-          current: true,
-          'data.type': 'duplicate',
-        },
-      },
-    })
-    .find({ 'archivedJoin.participant_id': null });
+  const site = await getSiteByID(siteId);
 
-  // merge the site-specific allocation data into the global phase,
-  // overwriting global properties with specific where named the same (except id)
-  const phaseData = sitePhases.map((phase) => {
-    let sitePhase = phase;
+  /**
+   * @typedef {Object} sitePhasesResponse  Internal type for DB response to the `getAllSitePhases` query
+   * @property {number} id                 Internal ID of the phase
+   * @property {string} name               Name of the phase
+   * @property {Date} start_date           Start date of the phase
+   * @property {Date} end_date             End date of the phase
+   * @property {number} allocation         Number of employees allocated for this phase at this site
+   * @property {string} hcap_hires         Number of HCAP employees hired (as a string)
+   * @property {string} non_hcap_hires     Number of non-HCAP employees hired (as a string)
+   */
 
-    if (phase.site_phase_allocation.length > 0) {
-      const sitePhaseAllocation = phase.site_phase_allocation[0];
-      const start_date = sitePhaseAllocation.start_date ?? phase.start_date;
-      const end_date = sitePhaseAllocation.end_date ?? phase.end_date;
-      const allocation = sitePhaseAllocation.allocation ?? 0;
-      const site_phase_allocation_id = sitePhaseAllocation.id;
+  /**
+   * Raw result from a custom query.
+   *
+   * This query essentially performs the following actions:
+   * * Grabs all phases
+   * * Finds the phase allocations for each phase at this site
+   * * For each phase, counts the number of currently hired employees within its timespan
+   * * Splits these hires into HCAP and non-HCAP hires
+   * @type {sitePhasesResponse[]}
+   */
+  const sitePhases = await dbClient.runRawQuery(
+    `
+    SELECT 
+      phase.id, 
+      phase.name, 
+      phase.start_date, 
+      phase.end_date, 
+      spa.allocation, 
+      count(ps.id) FILTER (
+        WHERE 
+          ps.data ->> 'nonHcapOpportunity' = 'false'
+      ) AS hcap_hires, 
+      count(ps.id) FILTER (
+        WHERE 
+          ps.data ->> 'nonHcapOpportunity' = 'true'
+      ) AS non_hcap_hires 
+    FROM 
+      phase 
+      LEFT JOIN site_phase_allocation spa ON phase.id = spa.phase_id AND spa.site_id = '$1'
+      LEFT JOIN participants_status ps ON
+        ps.DATA ->> 'site' = '$1'
+        AND ps."current"
+        AND to_date(
+          ps.data ->> 'hiredDate', 'YYYY/MM/DD'
+        ) BETWEEN COALESCE(
+          spa.start_date, phase.start_date
+        ) 
+      AND COALESCE(spa.end_date, phase.end_date) 
+    GROUP BY 
+      phase.id, 
+      spa.id
+    `,
+    [site.siteId]
+  );
 
-      sitePhase = {
-        ...sitePhase,
-        start_date,
-        end_date,
-        allocation,
-        site_phase_allocation_id,
-      };
-    }
-
-    const phaseHires = phase.hires.filter((hire) =>
-      dayjs(hire.data.hiredDate).isBetween(sitePhase.start_date, sitePhase.end_date, null, '()')
-    );
-    // count HCAP and non-HCAP hires
-    sitePhase.hcapHires = phaseHires.filter((hire) => !hire.data.nonHcapOpportunity).length;
-    sitePhase.nonHcapHires = phaseHires.filter((hire) => hire.data.nonHcapOpportunity).length;
-
-    // strip time/timezone from date
-    sitePhase.start_date = dayjs.utc(sitePhase.start_date).format('YYYY/MM/DD');
-    sitePhase.end_date = dayjs.utc(sitePhase.end_date).format('YYYY/MM/DD');
-
-    // remove join attributes
-    delete sitePhase.site_phase_allocation;
-    delete sitePhase.archivedJoin;
-    delete sitePhase.hires;
-
-    return {
-      id: sitePhase.id,
-      phaseName: sitePhase.name,
-      startDate: sitePhase.start_date,
-      endDate: sitePhase.end_date,
-      allocation: sitePhase.allocation,
-      remainingHires: (sitePhase.allocation ?? 0) - sitePhase.hcapHires,
-      hcapHires: sitePhase.hcapHires,
-      nonHcapHires: sitePhase.nonHcapHires,
-    };
-  });
-  return phaseData;
+  // Transform data format and return it
+  return sitePhases.map((phase) => ({
+    id: phase.id,
+    phaseName: phase.name,
+    startDate: dayjs.utc(phase.start_date).format('YYYY/MM/DD'),
+    endDate: dayjs.utc(phase.end_date).format('YYYY/MM/DD'), // strips time/timezone from date and formats it
+    allocation: phase.allocation,
+    remainingHires: (phase.allocation ?? 0) - Number(phase.hcap_hires),
+    hcapHires: Number(phase.hcap_hires),
+    nonHcapHires: Number(phase.non_hcap_hires),
+  }));
 };
 
 const getAllPhases = async () => {

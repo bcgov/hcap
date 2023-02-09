@@ -39,18 +39,23 @@ router.get(
     if (!authorized) return res.status(403).send('Unauthorized site ID');
 
     // Get and return data
-    const result = await getAllSitePhases(siteId);
-
-    logger.info({
-      action: 'phases_get',
-      performed_by: {
-        username: user.username,
-        id: user.id,
-      },
-      phases_accessed: result.map((phase) => phase.id),
-      for_site: siteId,
-    });
-    return res.json({ data: result });
+    try {
+      const result = await getAllSitePhases(siteId);
+      logger.info({
+        action: 'phases_get',
+        performed_by: {
+          username: user.username,
+          id: user.id,
+        },
+        phases_accessed: result.map((phase) => phase.id),
+        for_site: siteId,
+      });
+      return res.json({ data: result });
+    } catch (error) {
+      return error.message.includes('No site found')
+        ? res.status(400).send('Invalid site ID')
+        : res.status(500).send('Failed to get phases for site');
+    }
   })
 );
 

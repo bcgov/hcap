@@ -151,13 +151,11 @@ describe('Employer Site Endpoints', () => {
     expect(sitePostRes.id).toBeDefined();
 
     const res = await getSiteByID(sitePostRes.id);
-    expect(res).toEqual(
-      expect.arrayContaining([siteBaseFields].map((item) => expect.objectContaining(item)))
-    );
+    expect(res).toEqual(expect.objectContaining(siteBaseFields));
   });
 
   it('gets a site before and after hires have been made', async () => {
-    const [res] = await getSiteByID(1);
+    const res = await getSiteByID(1);
     expect(res.hcapHires).toEqual('0');
     expect(res.nonHcapHires).toEqual('0');
     await makeParticipant(participant1);
@@ -187,7 +185,7 @@ describe('Employer Site Endpoints', () => {
       hiredDate: new Date(),
       startDate: new Date(),
     });
-    const [res1] = await getSiteByID(1);
+    const res1 = await getSiteByID(1);
     expect(res1.hcapHires).toEqual('1');
     expect(res1.nonHcapHires).toEqual('1');
   });
@@ -226,7 +224,7 @@ describe('Employer Site Endpoints', () => {
     const expectedSite = [{ siteId: 67, status: 'Success' }];
     expect(siteResponse).toEqual(expectedSite);
 
-    const [res] = await getSiteByID(1);
+    const res = await getSiteByID(1);
     await makeParticipant(participant1);
     await makeParticipant(participant2);
     const {
@@ -254,7 +252,7 @@ describe('Employer Site Endpoints', () => {
       hiredDate: new Date(),
       startDate: new Date(),
     });
-    const [site1] = await getSiteByID(1);
+    const site1 = await getSiteByID(1);
     const res2 = await getHiredParticipantsBySite(site1.siteId);
     expect(res2.length).toEqual(2);
   });

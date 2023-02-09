@@ -15,7 +15,7 @@ export default () => {
         <Box textAlign={0} width={1}>
           <Box py={4} px={2}>
             <Typography variant='body1'>
-              <Link href={Routes.SiteView}>Sites</Link> / <b>Phase list</b>
+              <Link href={Routes.SiteView}>View Sites</Link> / <b>Phase list</b>
             </Typography>
             <Box paddingTop={2}>
               <Typography variant='h2' py={2}>

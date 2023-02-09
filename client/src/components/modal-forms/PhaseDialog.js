@@ -67,7 +67,7 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew }) => {
                 name='phaseName'
                 component={RenderTextField}
                 label='* Phase name'
-                placeholder='Type in here'
+                placeholder='Enter a phase name'
               />
               <Box
                 display='flex'

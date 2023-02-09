@@ -42,7 +42,7 @@ describe('Phase functionality', () => {
 
     // expect: no errors, success message.
     cy.contains('.Mui-error').should('not.exist');
-    cy.get('.MuiAlert-message').contains(`Phase '${formValues.phaseName}' added successfully`);
+    cy.get('.MuiAlert-message').contains(`Phase '${formValues.phaseName}' created successfully`);
   });
 
   it('New phase validates required fields', () => {

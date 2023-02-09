@@ -10,14 +10,8 @@ describe('Phase functionality', () => {
 
   const completePhaseForm = ({ phaseName, startDate, endDate }) => {
     cy.get('[name=phaseName]').clear().type(phaseName);
-
-    // cy.get('[name=Startdate]').clear().invoke('val', startDate).should('exist').trigger('blur');
-    // cy.get('[name=Startdate]').clear().type(`{cmd+v}${startDate}`);
-
     cy.get('[name=Startdate]').clear().type(`{ctrl+v}${startDate}}`);
     cy.get('[name=Enddate]').clear().type(`{ctrl+v}${endDate}`);
-
-    // cy.get('[name=Enddate]').clear().invoke('val', endDate).should('eq', endDate).trigger('blur');
 
     cy.contains('button', 'Create').click();
   };
@@ -35,14 +29,12 @@ describe('Phase functionality', () => {
       phaseName: 'Test phase',
       startDate: '2021/03/30',
       endDate: '2022/03/31',
-      // startDate: new Date(2022, 30, 3),
-      // endDate: new Date(2022, 31, 3),
     };
     completePhaseForm(formValues);
 
     // expect: no errors, success message.
     cy.contains('.Mui-error').should('not.exist');
-    cy.get('.MuiAlert-message').contains(`Phase '${formValues.phaseName}' added successfully`);
+    cy.get('.MuiAlert-message').contains(`Phase '${formValues.phaseName}' created successfully`);
   });
 
   it('New phase validates required fields', () => {
@@ -63,8 +55,6 @@ describe('Phase functionality', () => {
       phaseName: 'Test reasonable dates phase',
       startDate: '1899/12/31',
       endDate: '2100/01/01',
-      // startDate: new Date(1899, 31, 12),
-      // endDate: new Date(2100, 1, 1),
     };
     completePhaseForm(formValues);
 
@@ -86,8 +76,6 @@ describe('Phase functionality', () => {
       phaseName: 'Test valid end date',
       startDate: '2023/01/05',
       endDate: '2023/01/04',
-      // startDate: new Date(2023, 6, 1),
-      // endDate: new Date(2023, 5, 1),
     };
     completePhaseForm(formValues);
 

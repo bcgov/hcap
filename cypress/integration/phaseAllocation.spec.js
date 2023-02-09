@@ -10,31 +10,34 @@ describe('Phase functionality', () => {
 
   const completePhaseForm = ({ phaseName, startDate, endDate }) => {
     cy.get('[name=phaseName]').clear().type(phaseName);
-    cy.get('[name=Startdate]').clear().type(startDate);
-    cy.get('[name=Enddate]').clear().type(endDate);
+    cy.get('[name=Startdate]').clear().type(`{ctrl+v}${startDate}}`);
+    cy.get('[name=Enddate]').clear().type(`{ctrl+v}${endDate}`);
 
     cy.contains('button', 'Create').click();
   };
 
   const navigateToForm = () => {
     cy.visit('site-view');
-
     cy.contains('button', 'Action').click();
     cy.contains('li', 'Create new phase').click();
   };
 
-  it.skip('MoH can create new phase', () => {
+  it('MoH can create new phase', () => {
     // happy path
     navigateToForm();
-    const formValues = { phaseName: 'Test phase', startDate: '2022/01/01', endDate: '2022/12/31' };
+    const formValues = {
+      phaseName: 'Test phase',
+      startDate: '2021/03/30',
+      endDate: '2022/03/31',
+    };
     completePhaseForm(formValues);
 
     // expect: no errors, success message.
     cy.contains('.Mui-error').should('not.exist');
-    cy.get('.MuiAlert-message').contains(`Phase '${formValues.phaseName}' added successfully`);
+    cy.get('.MuiAlert-message').contains(`Phase '${formValues.phaseName}' created successfully`);
   });
 
-  it.skip('New phase validates required fields', () => {
+  it('New phase validates required fields', () => {
     // attempt to submit empty form
     navigateToForm();
     cy.contains('button', 'Create').click();
@@ -45,7 +48,7 @@ describe('Phase functionality', () => {
     cy.contains('p.Mui-error', 'End Date is required');
   });
 
-  it.skip('New phase must be within reasonable range', () => {
+  it('New phase must be within reasonable range', () => {
     // attempt to submit empty form
     navigateToForm();
     const formValues = {
@@ -64,5 +67,19 @@ describe('Phase functionality', () => {
       'p.Mui-error',
       'Invalid entry. Date must be after December 31st 1899 and before January 1st 2100.'
     );
+  });
+
+  it('New phase endDate must be after startDate', () => {
+    // attempt to submit empty form
+    navigateToForm();
+    const formValues = {
+      phaseName: 'Test valid end date',
+      startDate: '2023/01/05',
+      endDate: '2023/01/04',
+    };
+    completePhaseForm(formValues);
+
+    // expect: required error on every field
+    cy.contains('p.Mui-error', 'Invalid entry. End date must be at least 1 day after Start date');
   });
 });

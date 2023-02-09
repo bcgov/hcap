@@ -10,23 +10,34 @@ describe('Phase functionality', () => {
 
   const completePhaseForm = ({ phaseName, startDate, endDate }) => {
     cy.get('[name=phaseName]').clear().type(phaseName);
-    cy.get('[name=Startdate]').clear().type(startDate);
-    cy.get('[name=Enddate]').clear().type(endDate);
+
+    // cy.get('[name=Startdate]').clear().invoke('val', startDate).should('exist').trigger('blur');
+    // cy.get('[name=Startdate]').clear().type(`{cmd+v}${startDate}`);
+
+    cy.get('[name=Startdate]').clear().type(`{ctrl+v}${startDate}}`);
+    cy.get('[name=Enddate]').clear().type(`{ctrl+v}${endDate}`);
+
+    // cy.get('[name=Enddate]').clear().invoke('val', endDate).should('eq', endDate).trigger('blur');
 
     cy.contains('button', 'Create').click();
   };
 
   const navigateToForm = () => {
     cy.visit('site-view');
-
     cy.contains('button', 'Action').click();
     cy.contains('li', 'Create new phase').click();
   };
 
-  it.skip('MoH can create new phase', () => {
+  it('MoH can create new phase', () => {
     // happy path
     navigateToForm();
-    const formValues = { phaseName: 'Test phase', startDate: '2022/01/01', endDate: '2022/12/31' };
+    const formValues = {
+      phaseName: 'Test phase',
+      startDate: '2021/03/30',
+      endDate: '2022/03/31',
+      // startDate: new Date(2022, 30, 3),
+      // endDate: new Date(2022, 31, 3),
+    };
     completePhaseForm(formValues);
 
     // expect: no errors, success message.
@@ -34,7 +45,7 @@ describe('Phase functionality', () => {
     cy.get('.MuiAlert-message').contains(`Phase '${formValues.phaseName}' added successfully`);
   });
 
-  it.skip('New phase validates required fields', () => {
+  it('New phase validates required fields', () => {
     // attempt to submit empty form
     navigateToForm();
     cy.contains('button', 'Create').click();
@@ -45,13 +56,15 @@ describe('Phase functionality', () => {
     cy.contains('p.Mui-error', 'End Date is required');
   });
 
-  it.skip('New phase must be within reasonable range', () => {
+  it('New phase must be within reasonable range', () => {
     // attempt to submit empty form
     navigateToForm();
     const formValues = {
       phaseName: 'Test reasonable dates phase',
       startDate: '1899/12/31',
       endDate: '2100/01/01',
+      // startDate: new Date(1899, 31, 12),
+      // endDate: new Date(2100, 1, 1),
     };
     completePhaseForm(formValues);
 
@@ -66,13 +79,15 @@ describe('Phase functionality', () => {
     );
   });
 
-  it.skip('New phase endDate must be after startDate', () => {
+  it('New phase endDate must be after startDate', () => {
     // attempt to submit empty form
     navigateToForm();
     const formValues = {
       phaseName: 'Test valid end date',
-      startDate: '2023/01/06',
-      endDate: '2023/01/05',
+      startDate: '2023/01/05',
+      endDate: '2023/01/04',
+      // startDate: new Date(2023, 6, 1),
+      // endDate: new Date(2023, 5, 1),
     };
     completePhaseForm(formValues);
 

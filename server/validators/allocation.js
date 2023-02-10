@@ -13,6 +13,8 @@ const CreateAllocationSchema = yup
         'Must be a positive number',
         validateBlankOrPositiveInteger
       ),
+    phase_id: yup.number().required('Allocation must be related to a phase'),
+    site_id: yup.number().required('Allocation must be related to a site'),
   });
 
 module.exports = { CreateAllocationSchema };

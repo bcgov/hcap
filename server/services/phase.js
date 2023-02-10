@@ -1,3 +1,4 @@
+/* eslint-disable */
 /* eslint-disable camelcase */
 // disabling camelcase check so that we can manipulate snake_case attributes without changing structure
 const dayjs = require('dayjs');
@@ -15,7 +16,7 @@ dayjs.extend(isBetween);
  * @property {string} phaseName      Human readable phase name
  * @property {string} startDate      Date string seperated by slashes, e.g. '2020/01/01'
  * @property {string} endDate        Date string seperated by slashes, e.g. '2020/01/01'
- * @property {any} allocation
+ * @property {number} allocation     Number of allocations available
  * @property {number} remainingHires Number of remaining hires
  * @property {number} hcapHires      Number of hires from HCAP
  * @property {number} nonHcapHires   Number of hires from outside HCAP
@@ -58,6 +59,7 @@ const getAllSitePhases = async (siteId) => {
       phase.start_date, 
       phase.end_date, 
       spa.allocation, 
+      spa.id as allocation_id,
       count(ps.id) FILTER (
         WHERE 
           ps.data ->> 'nonHcapOpportunity' = 'false'
@@ -82,13 +84,14 @@ const getAllSitePhases = async (siteId) => {
       phase.id, 
       spa.id
     `,
-    [site.siteId]
+    [site.id]
   );
 
   // Transform data format and return it
   return sitePhases.map((phase) => ({
     id: phase.id,
     phaseName: phase.name,
+    allocationId: phase.allocation_id,
     startDate: dayjs.utc(phase.start_date).format('YYYY/MM/DD'),
     endDate: dayjs.utc(phase.end_date).format('YYYY/MM/DD'), // strips time/timezone from date and formats it
     allocation: phase.allocation,
@@ -108,6 +111,7 @@ const getAllPhases = async () => {
 
 const createGlobalPhase = async (phase, user) => {
   const phaseData = { ...phase, created_by: user.id, updated_by: user.id };
+  CreateAllocationSchema;
   const res = await dbClient.db[collections.GLOBAL_PHASE].insert(phaseData);
   return res;
 };

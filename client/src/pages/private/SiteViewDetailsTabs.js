@@ -367,7 +367,15 @@ export default ({ id, siteId }) => {
                 rows={sort(rows)}
                 isLoading={isLoadingData}
                 renderCell={(columnId, row) => {
-                  if (columnId === 'details') return <SetPhaseAllocations isNew row={row} />;
+                  if (columnId === 'details')
+                    return (
+                      <SetPhaseAllocations
+                        isNew={row.allocation === null}
+                        row={row}
+                        siteId={id}
+                        fetchDetails={fetchDetails}
+                      />
+                    );
                   return row[columnId] ?? 'N/A';
                 }}
               />

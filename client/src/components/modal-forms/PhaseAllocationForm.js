@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Dialog } from '../generic';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const PhaseAllocationForm = ({ onSubmit, onClose, open, content, isNew }) => {
+export const PhaseAllocationForm = ({ onSubmit, onClose, open, content, isNew, siteId }) => {
   const { openToast } = useToast();
   const classes = useStyles();
   const initialValues = content
@@ -35,7 +35,8 @@ export const PhaseAllocationForm = ({ onSubmit, onClose, open, content, isNew })
   const handleSubmit = async (allocation) => {
     const allocationJson = {
       allocation: allocation.allocation,
-      phaseId: content.id,
+      phase_id: content.id,
+      site_id: parseInt(siteId, 10),
     };
     const response = await (isNew
       ? createPhaseAllocation(allocationJson)
@@ -55,6 +56,10 @@ export const PhaseAllocationForm = ({ onSubmit, onClose, open, content, isNew })
   };
   return (
     <Dialog title={isNew ? 'Set Allocation' : 'Edit Allocation'} open={open} onClose={onClose}>
+      <Typography variant='body1'>
+        Phase name:
+        <b> {content.phaseName}</b>
+      </Typography>
       <Formik
         initialValues={initialValues}
         validationSchema={CreatePhaseAllocationSchema}

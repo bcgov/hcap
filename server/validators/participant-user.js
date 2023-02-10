@@ -1,7 +1,11 @@
-const yup = require('yup');
-const { validIndigenousIdentities } = require('../constants');
+// import * as yup from 'yup';
+import { validIndigenousIdentities } from '../constants';
 
-const UserParticipantEditSchema = yup.object().shape({
+// TODO fix
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const yup = require('yup');
+
+export const UserParticipantEditSchema = yup.object().shape({
   postalCode: yup
     .string()
     .nullable()
@@ -18,14 +22,9 @@ const UserParticipantEditSchema = yup.object().shape({
   }),
 });
 
-const WaitlistEmailSchema = yup
+export const WaitlistEmailSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
     email: yup.string().required('Email is required').email('Invalid email address'),
   });
-
-module.exports = {
-  UserParticipantEditSchema,
-  WaitlistEmailSchema,
-};

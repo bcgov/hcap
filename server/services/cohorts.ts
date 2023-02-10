@@ -1,16 +1,16 @@
-const dayjs = require('dayjs');
-const utc = require('dayjs/plugin/utc');
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 
-const { dbClient, collections } = require('../db');
-const { validate, CreateCohortSchema } = require('../validation');
-const { getPostHireStatusesForParticipant } = require('./post-hire-flow');
-const { postHireStatuses } = require('../constants');
+import { dbClient, collections } from '../db';
+import { validate, CreateCohortSchema } from '../validation';
+import { getPostHireStatusesForParticipant } from './post-hire-flow';
+import { postHireStatuses } from '../constants';
 
 // Setup dayjs utc
 dayjs.extend(utc);
 
 // Gets all cohorts with their associated list of participants
-const getCohorts = async () =>
+export const getCohorts = async () =>
   dbClient.db[collections.COHORTS]
     .join({
       participants: {
@@ -23,12 +23,12 @@ const getCohorts = async () =>
     })
     .find();
 
-const getCohort = async (id) =>
+export const getCohort = async (id) =>
   dbClient.db[collections.COHORTS].find({
     id,
   });
 
-const getCohortParticipants = async (cohortId) => {
+export const getCohortParticipants = async (cohortId) => {
   const cohortParticipants = await dbClient.db[collections.PARTICIPANTS]
     .join({
       cohortParticipantsJoin: {
@@ -85,7 +85,7 @@ const getCohortParticipants = async (cohortId) => {
  * @param {*} user requesting user
  * @returns filtered list of participants
  */
-const filterCohortParticipantsForUser = (cohortParticipants, user) => {
+export const filterCohortParticipantsForUser = (cohortParticipants, user) => {
   if (user.isMoH) {
     return cohortParticipants;
   }
@@ -112,7 +112,7 @@ const filterCohortParticipantsForUser = (cohortParticipants, user) => {
  * @param {*} participants cohort participant list, used in calculations
  * @returns
  */
-const getCohortWithCalculatedFields = (cohort, participants) => {
+export const getCohortWithCalculatedFields = (cohort, participants) => {
   const cohortWithCalculatedFields = { ...cohort };
 
   // Calculate available cohort seats
@@ -132,7 +132,7 @@ const getCohortWithCalculatedFields = (cohort, participants) => {
 };
 
 // Get all Cohorts associated with a specific PSI
-const getPSICohorts = async (psiID) => {
+export const getPSICohorts = async (psiID) => {
   let psiCohorts = await dbClient.db[collections.COHORTS]
     .join({
       participants: {
@@ -201,17 +201,17 @@ const mapDataToCohort = (cohort) => {
   return cleaned;
 };
 
-const makeCohort = async (cohortData) => {
+export const makeCohort = async (cohortData) => {
   const cohort = mapDataToCohort(cohortData);
   await validate(CreateCohortSchema, cohort);
   const newCohort = await dbClient.db[collections.COHORTS].insert(cohort);
   return newCohort;
 };
 
-const updateCohort = async (id, updateData) =>
+export const updateCohort = async (id, updateData) =>
   dbClient.db[collections.COHORTS].update(id, { ...mapDataToCohort(updateData) });
 
-const getAssignCohort = async ({ participantId }) => {
+export const getAssignCohort = async ({ participantId }) => {
   const cohorts = await dbClient.db[collections.COHORTS]
     .join({
       cohortParticipant: {
@@ -249,7 +249,7 @@ const getAssignCohort = async ({ participantId }) => {
   return cohorts;
 };
 
-const assignCohort = async ({ id, participantId }) => {
+export const assignCohort = async ({ id, participantId }) => {
   // unassign pervious cohorts and update status
   await dbClient.db[collections.COHORT_PARTICIPANTS].update(
     { participant_id: participantId },
@@ -272,12 +272,12 @@ const assignCohort = async ({ id, participantId }) => {
   return newParticipantCohort;
 };
 
-const getCountOfAllocation = async ({ cohortId } = {}) =>
+export const getCountOfAllocation = async ({ cohortId } = { cohortId: null }) =>
   dbClient.db[collections.COHORT_PARTICIPANTS].count({
     cohort_id: cohortId,
   });
 
-const findCohortByName = async ({ cohortName, psiName }) =>
+export const findCohortByName = async ({ cohortName, psiName }) =>
   dbClient.db[collections.COHORTS]
     .join({
       psi: {
@@ -294,8 +294,16 @@ const findCohortByName = async ({ cohortName, psiName }) =>
       cohort_name: cohortName,
     });
 
-const changeCohortParticipant = async (
-  { cohortId, participantId, newCohortId, meta } = { meta: {} }
+export const changeCohortParticipant = async (
+  // NOTE: verify this is correct
+  // TODO fix types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  { cohortId, participantId, newCohortId, meta }: any = {
+    cohortId: null,
+    participantId: null,
+    newCohortId: null,
+    meta: {},
+  }
 ) => {
   // Get existing participant cohort map
   const participantCohort = await dbClient.db[collections.COHORT_PARTICIPANTS].findOne({
@@ -355,6 +363,8 @@ const changeCohortParticipant = async (
     // Update audit log
     let audit;
     if (Object.keys(meta).length > 0) {
+      // TODO: verify if `user` is needed
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { user, ...rest } = meta;
       audit = await tnx[collections.ADMIN_OPS_AUDIT].insert({
         user: meta.user || 'system',
@@ -379,20 +389,4 @@ const changeCohortParticipant = async (
     };
   });
   return resp;
-};
-
-module.exports = {
-  getCohorts,
-  getCohortParticipants,
-  filterCohortParticipantsForUser,
-  getCohortWithCalculatedFields,
-  getPSICohorts,
-  getCohort,
-  makeCohort,
-  assignCohort,
-  getAssignCohort,
-  updateCohort,
-  getCountOfAllocation,
-  changeCohortParticipant,
-  findCohortByName,
 };

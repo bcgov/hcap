@@ -1,7 +1,9 @@
+import { validISODateString } from './helpers';
+// TODO fix
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const yup = require('yup');
-const { validISODateString } = require('./helpers');
 
-const CreatePhaseSchema = yup
+export const CreatePhaseSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
@@ -28,5 +30,3 @@ const CreatePhaseSchema = yup
       .required('End date is required')
       .test('is-date', 'Not a valid date', validISODateString),
   });
-
-module.exports = { CreatePhaseSchema };

@@ -1,8 +1,8 @@
-const express = require('express');
-const keycloak = require('../keycloak');
-const logger = require('../logger.js');
-const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
-const {
+import express from 'express';
+import keycloak from '../keycloak';
+import logger from '../logger';
+import { asyncMiddleware, applyMiddleware } from '../error-handler';
+import {
   getCohorts,
   getCohort,
   assignCohort,
@@ -12,9 +12,9 @@ const {
   getCohortParticipants,
   filterCohortParticipantsForUser,
   getCohortWithCalculatedFields,
-} = require('../services/cohorts.js');
-const { getParticipantByID } = require('../services/participants');
-const { EditCohortSchema, validate } = require('../validation');
+} from '../services/cohorts';
+import { getParticipantByID } from '../services/participants';
+import { EditCohortSchema, validate } from '../validation';
 
 // Router
 const router = express.Router();
@@ -193,4 +193,4 @@ router.patch(
   })
 );
 
-module.exports = router;
+export default router;

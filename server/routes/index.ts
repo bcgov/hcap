@@ -1,35 +1,36 @@
 // Index route for /api/v1
-const dayjs = require('dayjs');
-const express = require('express');
-const { getSitesForUser } = require('../services/employers.js');
-const { getUserNotifications } = require('../services/user.js');
-const { validate, AccessRequestApproval } = require('../validation.js');
-const logger = require('../logger.js');
-const { dbClient, collections } = require('../db');
-const { asyncMiddleware } = require('../error-handler.js');
-const keycloak = require('../keycloak.js');
-const { healthCheck } = require('../services/health-check');
-const participantUserRoute = require('./participant-user');
-const { sanitize } = require('../utils');
-const {
+// TODO convert all imports
+import dayjs from 'dayjs';
+import express from 'express';
+import { getSitesForUser } from '../services/employers';
+import { getUserNotifications } from '../services/user';
+import { validate, AccessRequestApproval } from '../validation';
+import logger from '../logger';
+import { dbClient, collections } from '../db';
+import { asyncMiddleware } from '../error-handler';
+import keycloak from '../keycloak';
+import { healthCheck } from '../services/health-check';
+import participantUserRoute from './participant-user';
+import { sanitize } from '../utils';
+import {
   participantRouter,
   participantsRouter,
   newHiredParticipantRouter,
   employerActionsRouter,
-} = require('./participant');
+} from './participant';
 
-const { userDetailsRouter } = require('./user');
-const employerSitesRouter = require('./employer-sites');
-const phaseAllocationRouter = require('./phase-allocation');
-const allocationRouter = require('./allocation');
-const employerFormRouter = require('./employer-form');
-const psiRouter = require('./post-secondary-institutes');
-const cohortRouter = require('./cohorts');
-const psiReportRouter = require('./psi-report');
-const milestoneReportRouter = require('./milestone-report');
-const postHireStatusRouter = require('./post-hire-status');
-const rosRouter = require('./return-of-service');
-const featureFlags = require('../services/feature-flags');
+import { userDetailsRouter } from './user';
+import employerSitesRouter from './employer-sites';
+import phaseAllocationRouter from './phase-allocation';
+import allocationRouter from './allocation';
+import employerFormRouter from './employer-form';
+import psiRouter from './post-secondary-institutes';
+import cohortRouter from './cohorts';
+import psiReportRouter from './psi-report';
+import milestoneReportRouter from './milestone-report';
+import postHireStatusRouter from './post-hire-status';
+import rosRouter from './return-of-service';
+import featureFlags from '../services/feature-flags';
 
 const apiRouter = express.Router();
 apiRouter.use(keycloak.expressMiddleware());
@@ -185,12 +186,10 @@ apiRouter.get(
 apiRouter.get(`/version`, (req, res) => res.json({ version: process.env.VERSION }));
 
 // Health check
-apiRouter.get(
+export default apiRouter.get(
   `/healthcheck`,
   asyncMiddleware(async (req, res) => {
     const health = await healthCheck();
     res.status(200).json(health);
   })
 );
-
-module.exports = apiRouter;

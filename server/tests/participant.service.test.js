@@ -14,12 +14,12 @@ const {
   getParticipantsForUser,
   mapUserWithParticipant,
   withdrawParticipantsByEmail,
-} = require('../services/participants.js');
+} = require('../services/participants');
 
 const { setParticipantStatus } = require('../services/participant-status');
 
 const { createPostHireStatus } = require('../services/post-hire-flow');
-const { getReport } = require('../services/reporting.js');
+const { getReport } = require('../services/reporting');
 const { evaluateBooleanAnswer, postHireStatuses } = require('../validation');
 const { saveSites } = require('../services/employers');
 

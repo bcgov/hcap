@@ -1,4 +1,4 @@
-const { dbClient } = require('../db');
+import { dbClient } from '../db';
 
 /**
  * Helpers

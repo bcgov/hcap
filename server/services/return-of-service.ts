@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */ // TODO: fix types in this file
 /* eslint-disable camelcase */
-const { dbClient, collections } = require('../db');
-const { rosError } = require('../constants');
-const { getParticipantHiredStatuses } = require('./participant-status');
-const logger = require('../logger.js');
+import { dbClient, collections } from '../db';
+import { rosError } from '../constants';
+import { getParticipantHiredStatuses } from './participant-status';
+import logger from '../logger';
 
 const getRosParticipantStatus = async (participantId) => {
   const rosParticipantStatuses = await dbClient.db[collections.ROS_STATUS].find({
@@ -42,8 +43,9 @@ const validateRosUpdateBody = (rosParticipant, updatedSite, updatedDate, updated
 
 /**
  * Invalidate all ros statuses for participant
- * @param {*} param.db db transaction | optional database object
- * @param {*} param.participantId participant int | required participant id
+ * @param {object} param
+ * @param {any} param.db db transaction | optional database object
+ * @param {any} param.participantId participant int | required participant id
  */
 const invalidateReturnOfServiceStatus = async ({ db = null, participantId }) => {
   const dbObj = db || dbClient.db;
@@ -64,7 +66,7 @@ const insertReturnOfServiceStatus = async ({ participantId, rosBody }) =>
     return tx[collections.ROS_STATUS].insert(rosBody);
   });
 
-const createReturnOfServiceStatus = async ({
+export const createReturnOfServiceStatus = async ({
   participantId,
   data,
   siteId,
@@ -86,7 +88,19 @@ const createReturnOfServiceStatus = async ({
   return insertReturnOfServiceStatus({ participantId, rosBody });
 };
 
-const updateReturnOfServiceStatus = async ({ participantId, data, user, status }) => {
+interface updateROSStatusParams {
+  participantId: any;
+  data: any;
+  user: any;
+  status?: any;
+}
+
+export const updateReturnOfServiceStatus = async ({
+  participantId,
+  data,
+  user,
+  status,
+}: updateROSStatusParams) => {
   const rosParticipant = await getRosParticipantStatus(participantId);
 
   let siteDbId;
@@ -114,7 +128,7 @@ const updateReturnOfServiceStatus = async ({ participantId, data, user, status }
   return insertReturnOfServiceStatus({ participantId, rosBody });
 };
 
-const getReturnOfServiceStatuses = async ({ participantId }) =>
+export const getReturnOfServiceStatuses = async ({ participantId }) =>
   dbClient.db[collections.ROS_STATUS]
     .join({
       site: {
@@ -160,7 +174,7 @@ const getRosErrorMessage = (messageType) => {
   }
 };
 
-const logRosError = (actionName, err) => {
+export const logRosError = (actionName, err) => {
   logger.error({
     action: actionName,
     error: err.message,
@@ -170,11 +184,4 @@ const logRosError = (actionName, err) => {
     status: errMessage.statusCode || 400,
     message: errMessage.label || 'Server error',
   };
-};
-
-module.exports = {
-  createReturnOfServiceStatus,
-  updateReturnOfServiceStatus,
-  getReturnOfServiceStatuses,
-  logRosError,
 };

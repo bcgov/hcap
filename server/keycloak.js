@@ -1,8 +1,8 @@
-const querystring = require('querystring');
-const KeyCloakConnect = require('keycloak-connect');
-const axios = require('axios');
-const logger = require('./logger.js');
-const { getUser } = require('./services/user');
+import querystring from 'querystring';
+import KeyCloakConnect from 'keycloak-connect';
+import axios from 'axios';
+import logger from './logger';
+import { getUser } from './services/user';
 
 const MAX_RETRY = 5;
 
@@ -355,6 +355,4 @@ class Keycloak {
     }
   }
 }
-Keycloak.instance = new Keycloak();
-
-module.exports = Keycloak.instance;
+export default Keycloak.instance = new Keycloak();

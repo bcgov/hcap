@@ -1,21 +1,21 @@
-const express = require('express');
-const keycloak = require('../keycloak');
-const logger = require('../logger.js');
-const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
-const {
+import express from 'express';
+import keycloak from '../keycloak';
+import logger from '../logger';
+import { asyncMiddleware, applyMiddleware } from '../error-handler';
+import {
   CreateReturnOfServiceSchema,
   ChangeReturnOfServiceSiteSchema,
   UpdateReturnOfServiceSchema,
   validate,
-} = require('../validators');
-const {
+} from '../validators';
+import {
   createReturnOfServiceStatus,
   updateReturnOfServiceStatus,
   getReturnOfServiceStatuses,
   logRosError,
-} = require('../services/return-of-service');
-const { validateCredentials } = require('../services/user-validation');
-const { getSiteDetailsById } = require('../services/employers');
+} from '../services/return-of-service';
+import { validateCredentials } from '../services/user-validation';
+import { getSiteDetailsById } from '../services/employers';
 
 const router = express.Router();
 
@@ -154,4 +154,4 @@ router.get(
   })
 );
 
-module.exports = router;
+export default router;

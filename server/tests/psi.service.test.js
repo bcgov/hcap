@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 const { startDB, closeDB } = require('./util/db');
-const { getPSIs, getPSI, makePSI, updatePSI } = require('../services/post-secondary-institutes.js');
+const { getPSIs, getPSI, makePSI, updatePSI } = require('../services/post-secondary-institutes');
 const { makeTestPSI } = require('./util/integrationTestData');
 const { psiData } = require('./util/testData');
 

@@ -1,8 +1,9 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop, no-console */
-const { readFileSync } = require('fs');
-const { join } = require('path');
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { dbClient, collections } from '../db';
+
 const readXlsxFile = require('node-xlsx').default;
-const { dbClient, collections } = require('../db');
 
 const columnNames = ['Participant ID', 'Employer ID', 'Site ID']; // Basic validation of XLSX file
 

@@ -1,7 +1,7 @@
-const massive = require('massive');
-const migrationRunner = require('node-pg-migrate');
-const { ERROR_DUPLICATED } = require('./common');
-const logger = require('../logger.js');
+import massive from 'massive';
+import migrationRunner from 'node-pg-migrate';
+import { ERROR_DUPLICATED } from './common';
+import logger from '../logger';
 
 /**
  * This utility module provides helper methods to allow the application
@@ -11,7 +11,7 @@ class DBClient {
   constructor() {
     this.settings = {
       host: process.env.POSTGRES_HOST || 'postgres',
-      port: process.env.POSTGRES_PORT || 5432,
+      port: Number(process.env.POSTGRES_PORT) || 5432,
       database: process.env.NODE_ENV === 'test' ? 'db_test' : process.env.POSTGRES_DB,
       user: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
@@ -23,7 +23,8 @@ class DBClient {
     const { host, port, database, user, password } = this.settings;
     logger.info('Running db migrations');
     try {
-      const results = await migrationRunner.default({
+      const results = await migrationRunner({
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         log: () => {}, // Silence migrations for test suites
         databaseUrl: `postgres://${user}:${password}@${host}:${port}/${database}`,
         direction: 'up',
@@ -57,7 +58,7 @@ class DBClient {
   /**
    *
    * @param {string | massive.Select | massive.Insert | massive.Update | massive.Delete} query  Query to run.
-   * @param {massive.QueryParams} queryParams  Array of parameters to use for the query.
+   * @param {massive.QueryParams=} queryParams  Array of parameters to use for the query.
    *                                           For example, if `query` contains `$1`, this will be replaced with the first element of `queryParams`.
    * @returns  Query result, or nothing if no query is provided.
    */
@@ -89,6 +90,6 @@ class DBClient {
 
 DBClient.instance = new DBClient();
 
-module.exports = {
-  dbClient: DBClient.instance,
-};
+// TODO address this
+// eslint-disable-next-line import/prefer-default-export
+export const dbClient = DBClient.instance;

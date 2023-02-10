@@ -1,9 +1,10 @@
 /* eslint-disable camelcase */
 // disabling camelcase check so that we can manipulate snake_case attributes without changing structure
+import { dbClient, collections } from '../db';
+import { getSiteByID } from './employers';
+
 const dayjs = require('dayjs');
 const isBetween = require('dayjs/plugin/isBetween');
-const { dbClient, collections } = require('../db');
-const { getSiteByID } = require('./employers');
 
 dayjs.extend(isBetween);
 
@@ -26,7 +27,7 @@ dayjs.extend(isBetween);
  * @param {number} siteId Database ID of the site
  * @returns {Promise<sitePhase[]>} Phases for the site
  */
-const getAllSitePhases = async (siteId) => {
+export const getAllSitePhases = async (siteId) => {
   const site = await getSiteByID(siteId);
 
   /**
@@ -98,7 +99,7 @@ const getAllSitePhases = async (siteId) => {
   }));
 };
 
-const getAllPhases = async () => {
+export const getAllPhases = async () => {
   // NOTE: this will not allow for full access to the phase list once it hits that 100k limit!
   // If there is any chance of this hitting that number, or if performance starts to suffer,
   // pagination support should be added.
@@ -106,21 +107,14 @@ const getAllPhases = async () => {
   return phases;
 };
 
-const createGlobalPhase = async (phase, user) => {
+export const createGlobalPhase = async (phase, user) => {
   const phaseData = { ...phase, created_by: user.id, updated_by: user.id };
   const res = await dbClient.db[collections.GLOBAL_PHASE].insert(phaseData);
   return res;
 };
 
-const updateGlobalPhase = async (phaseId, phase, user) => {
+export const updateGlobalPhase = async (phaseId, phase, user) => {
   const phaseData = { ...phase, updated_by: user.id };
   const res = await dbClient.db[collections.GLOBAL_PHASE].update(phaseId, phaseData);
   return res;
-};
-
-module.exports = {
-  getAllSitePhases,
-  getAllPhases,
-  createGlobalPhase,
-  updateGlobalPhase,
 };

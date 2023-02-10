@@ -7,13 +7,13 @@ const {
   getSitesForUser,
   getSiteByID,
   saveSites,
-} = require('../services/employers.js');
+} = require('../services/employers');
 
 const {
   getParticipants,
   getHiredParticipantsBySite,
   makeParticipant,
-} = require('../services/participants.js');
+} = require('../services/participants');
 
 const { setParticipantStatus } = require('../services/participant-status');
 

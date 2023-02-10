@@ -6,7 +6,7 @@ const request = require('supertest');
 const app = require('../server');
 const { startDB, closeDB } = require('./util/db');
 const { getKeycloakToken, superuser } = require('./util/keycloak');
-const { saveSingleSite, saveSites } = require('../services/employers.js');
+const { saveSingleSite, saveSites } = require('../services/employers');
 
 const siteObject = ({ id, name }) => ({
   siteId: id,

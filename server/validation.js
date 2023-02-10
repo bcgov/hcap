@@ -25,6 +25,7 @@ const {
   ParticipantQuerySchema,
   ExternalHiredParticipantSchema,
   BulkEngageParticipantSchema,
+  CreateAllocationSchema,
   validate,
 } = require('./validators');
 
@@ -55,4 +56,5 @@ module.exports = {
   ParticipantPostHireStatusSchema,
   EditCohortSchema,
   BulkEngageParticipantSchema,
+  CreateAllocationSchema,
 };

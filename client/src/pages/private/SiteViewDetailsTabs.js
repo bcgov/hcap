@@ -25,6 +25,7 @@ import { useToast } from '../../hooks';
 import dayjs from 'dayjs';
 import { keyedString, getDialogTitle, sortObjects } from '../../utils';
 import { fetchSitePhases } from '../../services/phases';
+import { SetPhaseAllocations } from './SetPhaseAllocations';
 
 const columnIDs = [
   { id: 'participantId', name: 'ID' },
@@ -366,6 +367,7 @@ export default ({ id, siteId }) => {
                 rows={sort(rows)}
                 isLoading={isLoadingData}
                 renderCell={(columnId, row) => {
+                  if (columnId === 'details') return <SetPhaseAllocations isNew row={row} />;
                   return row[columnId] ?? 'N/A';
                 }}
               />

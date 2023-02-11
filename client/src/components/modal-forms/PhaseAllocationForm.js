@@ -40,7 +40,7 @@ export const PhaseAllocationForm = ({ onSubmit, onClose, open, content, isNew, s
     };
     const response = await (isNew
       ? createPhaseAllocation(allocationJson)
-      : updatePhaseAllocation(content.id, allocationJson));
+      : updatePhaseAllocation(content.allocationId, allocationJson));
     if (response.ok) {
       openToast({
         status: ToastStatus.Success,

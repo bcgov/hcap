@@ -265,6 +265,7 @@ export default ({ id, siteId }) => {
     }
   };
 
+  const columnObj = (rowId) => columns.find(({ id }) => id === rowId);
   return (
     <Grid
       container
@@ -367,6 +368,7 @@ export default ({ id, siteId }) => {
                 rows={sort(rows)}
                 isLoading={isLoadingData}
                 renderCell={(columnId, row) => {
+                  if (columnObj(columnId).isHidden) return;
                   if (columnId === 'details')
                     return (
                       <SetPhaseAllocations

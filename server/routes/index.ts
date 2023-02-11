@@ -1,5 +1,4 @@
 // Index route for /api/v1
-// TODO convert all imports
 import dayjs from 'dayjs';
 import express from 'express';
 import { getSitesForUser } from '../services/employers';

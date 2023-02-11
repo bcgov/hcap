@@ -90,6 +90,4 @@ class DBClient {
 
 DBClient.instance = new DBClient();
 
-// TODO address this
-// eslint-disable-next-line import/prefer-default-export
-export const dbClient = DBClient.instance;
+export default DBClient.instance;

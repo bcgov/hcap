@@ -1,3 +1,3 @@
 export * from './schema';
-export * from './db';
+export { default as dbClient } from './db';
 export * from './common';

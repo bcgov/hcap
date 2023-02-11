@@ -2,14 +2,12 @@ import cors from 'cors';
 import { stringReplace } from 'string-replace-middleware';
 import express from 'express';
 import helmet from 'helmet';
+import { v4 as uuidv4 } from 'uuid';
 import bodyParser from 'body-parser';
 import path from 'path';
 import apiRouter from './routes';
 import { errorHandler } from './error-handler';
 import { expressAccessLogger } from './middleware';
-
-// TODO: fix UUID importing
-const uuid = require('uuid');
 
 const apiBaseUrl = '/api/v1';
 export const app = express();
@@ -27,7 +25,7 @@ if (
  * Apply nonce for use in CSP and static files
  */
 app.use((req, res, next) => {
-  const nonce = Buffer.from(uuid.v4()).toString('base64');
+  const nonce = Buffer.from(uuidv4()).toString('base64');
   res.locals.cspNonce = nonce;
   next();
 });

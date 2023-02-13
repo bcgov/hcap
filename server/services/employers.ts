@@ -1,26 +1,20 @@
 import { dbClient, collections } from '../db';
 import { validate, EmployerSiteBatchSchema } from '../validation';
 import { userRegionQuery } from './user';
+import type { hcapUserInfo } from '../keycloak';
 
-/**
- * @typedef {import("../keycloak").hcapUserInfo} hcapUserInfo
- *
- * @typedef {Object} employerSite
- * @property {number} id               Internal ID for site
- * @property {number} siteId           User-visible ID for site
- * @property {string} siteName         Name of site
- * @property {string} operatorName     Name of operator (e.g. 'Interior Health Authority')
- * @property {string} city             City the site is in
- * @property {string} healthAuthority  Authority for the site
- * @property {string} postalCode       Postal code of site
- * @property {number} allocation
- */
+export interface employerSite {
+  id: number; // Internal ID for site
+  siteId: number; // User-visible ID for site
+  siteName: string; // Name of site
+  operatorName: string; // Name of operator (e.g. 'Interior Health Authority')
+  city: string; // City the site is in
+  healthAuthority: string; // Authority for the site
+  postalCode: string; // Postal code of site
+  allocation: number;
+}
 
-/**
- * @param {hcapUserInfo} user
- * @returns {Promise<employerSite[]>}
- */
-export const getEmployers = async (user) => {
+export const getEmployers = async (user: hcapUserInfo): Promise<employerSite[]> => {
   const criteria =
     user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'healthAuthority');
   return criteria ? dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria) : [];
@@ -114,12 +108,14 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
 
 /**
  * Get all accessible sites for a user
- * @param {hcapUserInfo} user  User with roles and sites to filter
- * @returns {Promise<employerSite[]>}   List of sites which the user has access to
+ * @param user  User with roles and sites to filter
+ * @returns List of sites which the user has access to
  */
-export const getSitesForUser = async (user) => {
+export const getSitesForUser = async (user: hcapUserInfo): Promise<employerSite[]> => {
   const additionalCriteria = [];
-  const additionalCriteriaParams = {};
+  // TODO: properly type userSites
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const additionalCriteriaParams: { userSites?: any[]; userRegions?: string[] } = {};
 
   if ((user.isHA || user.isEmployer) && user.sites.length > 0) {
     additionalCriteria.push(`(employer_sites.body ->> 'siteId')::INT IN ($(userSites:csv))`);
@@ -135,16 +131,15 @@ export const getSitesForUser = async (user) => {
 
 /**
  * Get all sites for regions, returning nothing if there's no regions passed in
- * @param {string[]} regions  Regions to get sites for
- * @returns {Promise<employerSite[]>}  List of sites within a region
+ * @param regions  Regions to get sites for
+ * @returns List of sites within a region
  */
-export const getSitesForRegion = async (regions) => {
+export const getSitesForRegion = async (regions: string[]): Promise<employerSite[]> => {
   if (regions.length > 0) {
     const additionalCriteria = [];
-    const additionalCriteriaParams = {};
 
     additionalCriteria.push(`employer_sites.body ->> 'healthAuthority' IN ($(userRegions:csv))`);
-    additionalCriteriaParams.userRegions = regions;
+    const additionalCriteriaParams = { userRegions: regions };
     return getSitesWithCriteria(additionalCriteria, additionalCriteriaParams);
   }
   return [];

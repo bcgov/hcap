@@ -1,5 +1,6 @@
-const request = require('supertest');
-const app = require('../server');
+import request from 'supertest';
+import { app } from '../server';
+
 const { startDB, closeDB } = require('./util/db');
 
 describe('Participant Expression of Interest Form Endpoints', () => {

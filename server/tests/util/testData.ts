@@ -1,9 +1,53 @@
-const dayjs = require('dayjs');
-const { postHireStatuses, rosPositionType, rosEmploymentType } = require('../../constants');
+import dayjs from 'dayjs';
 
-const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
+import { postHireStatuses, rosPositionType, rosEmploymentType } from '../../constants';
 
-const psiData = ({ instituteName, regionIndex, address, postalCode, city }) => ({
+interface participantDataArgs {
+  lastName?: string;
+  firstName?: string;
+  phoneNumber?: string;
+  emailAddress?: string;
+  preferredLocation?: string;
+  contactedDate?: string;
+}
+
+interface psiDataArgs {
+  instituteName?: string;
+  regionIndex?: number;
+  address?: string;
+  postalCode?: string;
+  city?: string;
+}
+
+interface cohortDataArgs {
+  cohortName: string;
+  startDate?: Date;
+  endDate?: Date;
+  cohortSize?: number;
+  psiID;
+}
+
+interface siteDataArgs {
+  siteName?: string;
+  healthAuthority?: string;
+  operatorName?: string;
+  operatorEmail?: string;
+  city?: string;
+  isRHO?: boolean;
+  postalCode?: string;
+  registeredBusinessName?: string;
+  siteId;
+}
+
+export const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
+
+export const psiData = ({
+  instituteName,
+  regionIndex,
+  address,
+  postalCode,
+  city,
+}: psiDataArgs) => ({
   instituteName,
   healthAuthority: regions[regionIndex || 0],
   streetAddress: address || '1815 Blanshard St',
@@ -11,15 +55,21 @@ const psiData = ({ instituteName, regionIndex, address, postalCode, city }) => (
   city: city || 'Victoria',
 });
 
-const today = new Date();
+export const today = new Date();
 
-const after = (months, input = today) => new Date(input.setMonth(input.getMonth() + months));
+export const after = (months, input = today) => new Date(input.setMonth(input.getMonth() + months));
 
-const before = (months) => dayjs().subtract(months, 'month').toDate();
+export const before = (months) => dayjs().subtract(months, 'month').toDate();
 
-const dateStr = (date = new Date()) => date.toISOString().split('T')[0].replace(/-/gi, '/');
+export const dateStr = (date = new Date()) => date.toISOString().split('T')[0].replace(/-/gi, '/');
 
-const cohortData = ({ cohortName, startDate = today, endDate, cohortSize, psiID }) => ({
+export const cohortData = ({
+  cohortName,
+  startDate = today,
+  endDate,
+  cohortSize,
+  psiID,
+}: cohortDataArgs) => ({
   cohortName,
   startDate: dateStr(startDate),
   endDate: dateStr(endDate || after(6)),
@@ -27,14 +77,14 @@ const cohortData = ({ cohortName, startDate = today, endDate, cohortSize, psiID 
   psiID,
 });
 
-const participantData = ({
+export const participantData = ({
   lastName,
   firstName,
   phoneNumber,
   emailAddress,
   preferredLocation,
   contactedDate,
-}) => ({
+}: participantDataArgs) => ({
   lastName: lastName || 'Test',
   firstName: firstName || 'Fresh',
   phoneNumber: phoneNumber || '2502223333',
@@ -46,7 +96,7 @@ const participantData = ({
   contactedDate: contactedDate || dateStr(new Date()),
 });
 
-const postHireStatusData = ({ graduationDate, participantId, status }) => ({
+export const postHireStatusData = ({ graduationDate, participantId, status }) => ({
   participantId,
   status: status || postHireStatuses.postSecondaryEducationCompleted,
   data: {
@@ -54,7 +104,7 @@ const postHireStatusData = ({ graduationDate, participantId, status }) => ({
   },
 });
 
-const siteData = ({
+export const siteData = ({
   siteName,
   healthAuthority,
   operatorName,
@@ -64,7 +114,7 @@ const siteData = ({
   postalCode,
   registeredBusinessName,
   siteId,
-}) => ({
+}: siteDataArgs) => ({
   siteId,
   siteName: siteName || 'Test site',
   address: '123 XYZ',
@@ -84,7 +134,7 @@ const siteData = ({
   siteContactEmail: 'test.site@hcpa.fresh',
 });
 
-const rosData = ({
+export const rosData = ({
   positionType = rosPositionType.permanent,
   employmentType = rosEmploymentType.fullTime,
   sameSite = true,
@@ -94,17 +144,3 @@ const rosData = ({
   employmentType,
   sameSite,
 });
-
-module.exports = {
-  regions,
-  psiData,
-  dateStr,
-  after,
-  today,
-  cohortData,
-  participantData,
-  postHireStatusData,
-  siteData,
-  rosData,
-  before,
-};

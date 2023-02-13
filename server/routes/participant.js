@@ -466,9 +466,12 @@ employerActionsRouter.delete(
   })
 );
 
-// Bulk Engage
-// Expect body: { participants: [ids...], sites: [{id: #site_id}, ...]}
-// Response: [{ participantId: #id, status: #status, success: true/false }]
+/**
+ * Bulk Engage
+ * Expect body: { participants: [ids...], sites: [{id: #site_id}, ...]}
+ * Response: [{ participantId: #id, status: #status, success: true/false }]
+ * @deprecated Not used by FE or scripts
+ */
 employerActionsRouter.post(
   '/bulk-engage',
   keycloak.allowRolesMiddleware('employer', 'health_authority'),

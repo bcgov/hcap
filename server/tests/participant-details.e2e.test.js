@@ -1,6 +1,7 @@
 // Test execution code: npm run test:debug participant-details.e2e.test.js
-const request = require('supertest');
-const app = require('../server');
+import request from 'supertest';
+import { app } from '../server';
+
 const { startDB, closeDB } = require('./util/db');
 const { makeTestParticipant, createTestParticipantStatus } = require('./util/integrationTestData');
 const { getKeycloakToken, healthAuthority, superuser } = require('./util/keycloak');

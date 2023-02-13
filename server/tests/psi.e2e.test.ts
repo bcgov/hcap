@@ -2,17 +2,34 @@
  * Tests for route /api/v1/psi
  * Test Standalone execution: npm run test:debug psi.e2e.test
  */
-const request = require('supertest');
-const app = require('../server');
-const { startDB, closeDB } = require('./util/db');
-const { getKeycloakToken, superuser } = require('./util/keycloak');
-const { makePSI } = require('../services/post-secondary-institutes');
-const { makeCohort } = require('../services/cohorts');
-const { makeTestPSI } = require('./util/integrationTestData');
+import request from 'supertest';
+import { app } from '../server';
+
+import { startDB, closeDB } from './util/db';
+import { getKeycloakToken, superuser } from './util/keycloak';
+import { makePSI } from '../services/post-secondary-institutes';
+import { makeCohort } from '../services/cohorts';
+import { makeTestPSI } from './util/integrationTestData';
+
+interface psiArgs {
+  instituteName: string;
+  regionIndex?: number;
+  address?: string;
+  postalCode?: string;
+  city?: string;
+}
+
+interface cohortArgs {
+  cohortName: string;
+  startDate?: Date;
+  endDate?: Date;
+  cohortSize?: number;
+  psiID;
+}
 
 const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
 
-const psi = ({ instituteName, regionIndex, address, postalCode, city }) => ({
+const psi = ({ instituteName, regionIndex, address, postalCode, city }: psiArgs) => ({
   instituteName,
   healthAuthority: regions[regionIndex || 0],
   streetAddress: address || '1815 Blanshard St',
@@ -26,7 +43,7 @@ const after = (months, input = today) => new Date(input.setMonth(input.getMonth(
 
 const dateStr = (date = new Date()) => date.toISOString().split('T')[0].replace(/-/gi, '/');
 
-const cohort = ({ cohortName, startDate, endDate, cohortSize, psiID }) => ({
+const cohort = ({ cohortName, startDate, endDate, cohortSize, psiID }: cohortArgs) => ({
   cohortName,
   startDate: dateStr(startDate),
   endDate: dateStr(endDate || after(6)),

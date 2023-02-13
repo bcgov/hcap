@@ -11,7 +11,8 @@
     "import/no-unresolved": 0,
     "import/prefer-default-export": 0,
     "import/extensions": [1, "never"],
-    "@typescript-eslint/no-var-requires": 0, // This is only really for the tests, and should be removed at some point
+    "@typescript-eslint/no-var-requires": 0,
+    "import/no-extraneous-dependencies": 0,
     "@typescript-eslint/ban-ts-comment": [
       2,
       {

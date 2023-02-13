@@ -1,6 +1,7 @@
-const request = require('supertest');
-const { v4 } = require('uuid');
-const app = require('../server');
+import request from 'supertest';
+import { v4 } from 'uuid';
+import { app } from '../server';
+
 const {
   getEmployers,
   getEmployerByID,

@@ -1,6 +1,6 @@
 // Libs
 import express from 'express';
-import csv from 'fast-csv';
+import * as csv from 'fast-csv';
 
 // Frameworks
 import keycloak from '../keycloak';

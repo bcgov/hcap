@@ -69,7 +69,7 @@ const insertReturnOfServiceStatus = async ({ participantId, rosBody }) =>
 export const createReturnOfServiceStatus = async ({
   participantId,
   data,
-  siteId,
+  siteId = null,
   status = 'assigned-same-site',
 }) => {
   const statuses = await getParticipantHiredStatuses(participantId);

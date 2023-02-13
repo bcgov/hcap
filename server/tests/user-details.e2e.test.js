@@ -2,8 +2,9 @@
  * Tests for route /api/v1/user-details
  * Test Standalone execution: npm run test:debug user-details.e2e.test
  */
-const request = require('supertest');
-const app = require('../server');
+import request from 'supertest';
+import { app } from '../server';
+
 const { startDB, closeDB } = require('./util/db');
 const { getKeycloakToken, superuser } = require('./util/keycloak');
 

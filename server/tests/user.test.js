@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-const { v4 } = require('uuid');
+import { v4 } from 'uuid';
+
 const { startDB, closeDB } = require('./util/db');
 const { getUserSites, makeUser } = require('../services/user');
 const { saveSites } = require('../services/employers');

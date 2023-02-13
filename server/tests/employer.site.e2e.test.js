@@ -2,11 +2,12 @@
  * Tests for route /api/v1/employer-sites
  * Test Standalone execution: npm run test:debug employer.site.e2e.test
  */
-const request = require('supertest');
-const app = require('../server');
-const { startDB, closeDB } = require('./util/db');
-const { getKeycloakToken, superuser } = require('./util/keycloak');
-const { saveSingleSite, saveSites } = require('../services/employers');
+// eslint-disable-next-line import/no-extraneous-dependencies
+import request from 'supertest';
+import { app } from '../server';
+import { startDB, closeDB } from './util/db';
+import { getKeycloakToken, superuser } from './util/keycloak';
+import { saveSingleSite, saveSites } from '../services/employers';
 
 const siteObject = ({ id, name }) => ({
   siteId: id,
@@ -38,10 +39,11 @@ const siteObject = ({ id, name }) => ({
  * @returns an object containing the given id and name and the rest of the required fields for batch saving
  */
 const batchSiteObject = ({ id, name }) => {
+  const site = siteObject({ id, name });
   const batchObject = {
-    ...siteObject({ id, name }),
-    siteContactPhoneNumber: siteObject.siteContactPhone,
-    siteContactEmailAddress: siteObject.siteContactEmail,
+    ...site,
+    siteContactPhoneNumber: site.siteContactPhone,
+    siteContactEmailAddress: site.siteContactEmail,
   };
   delete batchObject.siteContactPhone;
   delete batchObject.siteContactEmail;
@@ -159,7 +161,7 @@ describe('api-e2e tests for /employer-sites route', () => {
 
   it('should get employer-sites-detail', async () => {
     const header = await getKeycloakToken(superuser);
-    const res = await request(app).get('/api/v1/employer-sites-detail').set(header).redirects();
+    const res = await request(app).get('/api/v1/employer-sites-detail').set(header).redirects(1);
     expect(res.status).toEqual(200);
   });
 });

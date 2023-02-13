@@ -1,6 +1,7 @@
-const { ValidationError } = require('yup');
-const { v4 } = require('uuid');
-const app = require('../server');
+import { ValidationError } from 'yup';
+import { v4 } from 'uuid';
+import { app } from '../server';
+
 const {
   saveSingleSite,
   saveSites,

@@ -1,4 +1,4 @@
-// Test execution code: npm run test:debug cohort.service.test.js
+// Test execution code: npm run test:debug cohort.service.test.ts
 const { startDB, closeDB } = require('./util/db');
 
 // Utilities and helpers
@@ -69,7 +69,15 @@ describe('Test Post hire flow service', () => {
   });
 });
 
-const cohortParticipant = ({ status, isCurrent, healthAuthority }) => ({
+const cohortParticipant = ({
+  status,
+  isCurrent,
+  healthAuthority,
+}: {
+  status?: string;
+  isCurrent?: boolean;
+  healthAuthority?: string;
+}) => ({
   siteJoin: {
     body: {
       healthAuthority,

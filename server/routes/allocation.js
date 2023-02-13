@@ -4,7 +4,11 @@ const logger = require('../logger.js');
 const { asyncMiddleware } = require('../error-handler.js');
 const { CreateAllocationSchema } = require('../validation');
 const { expressRequestBodyValidator } = require('../middleware');
-const { createPhaseAllocation, updatePhaseAllocation } = require('../services/allocations');
+const {
+  createPhaseAllocation,
+  updatePhaseAllocation,
+  getPhaseAllocation,
+} = require('../services/allocations');
 const { FEATURE_PHASE_ALLOCATION } = require('../services/feature-flags');
 
 const router = express.Router();
@@ -21,11 +25,15 @@ router.post(
     if (!FEATURE_PHASE_ALLOCATION) {
       return resp.status(501).send('Phase allocation feature not active');
     }
-    // if (req.body.site_id) {
-    //   // check if site_phasE_allocation exists for site_id and phase_id, if not create one.
-    // }
+    // check if site_phasE_allocation exists for site_id and phase_id, if not create one.
+
+    const { body, hcapUserInfo: user } = req;
+    const allocation = await getPhaseAllocation(body.site_id, body.phase_id);
+    // update check
+    if (allocation.length === 1) {
+      return resp.status(400).send('An allocation already exists.');
+    }
     try {
-      const { body, hcapUserInfo: user } = req;
       const response = await createPhaseAllocation(body, user);
       logger.info({
         action: 'allocation_post',
@@ -38,7 +46,6 @@ router.post(
       logger.info(response);
       return resp.status(201).json(response);
     } catch (err) {
-      console.log('%%%%%%%%%%%%%%%%%', err);
       logger.error(err);
       return resp.status(400).send(`${err}`);
     }

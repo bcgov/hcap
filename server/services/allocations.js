@@ -7,6 +7,18 @@ const { dbClient, collections } = require('../db');
 
 dayjs.extend(isBetween);
 
+const getPhaseAllocation = async (siteId, phaseId) => {
+  const allocation = await dbClient.db[collections.SITE_PHASE_ALLOCATION].find(
+    {
+      site_id: siteId,
+      phase_id: phaseId,
+    },
+    { limit: 1 }
+  );
+
+  return allocation;
+};
+
 const createPhaseAllocation = async (allocation, user) => {
   const data = { ...allocation, created_by: user.id, updated_by: user.id };
   const res = await dbClient.db[collections.SITE_PHASE_ALLOCATION].insert(data);
@@ -20,6 +32,7 @@ const updatePhaseAllocation = async (allocationId, allocation, user) => {
 };
 
 module.exports = {
+  getPhaseAllocation,
   createPhaseAllocation,
   updatePhaseAllocation,
 };

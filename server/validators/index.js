@@ -8,6 +8,7 @@ const participantUser = require('./participant-user');
 const externalParticipant = require('./external-participant');
 const returnOfService = require('./return-of-service');
 const bulkEngage = require('./bulk-engage');
+const allocation = require('./allocation');
 
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
@@ -22,5 +23,6 @@ module.exports = {
   ...externalParticipant,
   ...returnOfService,
   ...bulkEngage,
+  ...allocation,
   validate,
 };

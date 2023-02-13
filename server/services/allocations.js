@@ -1,4 +1,3 @@
-/* eslint-disable */
 /* eslint-disable camelcase */
 // disabling camelcase check so that we can manipulate snake_case attributes without changing structure
 const dayjs = require('dayjs');

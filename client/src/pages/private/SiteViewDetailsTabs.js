@@ -52,6 +52,9 @@ const fetchDetails = async (id) => {
     const site = await response.json();
     if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
       const phases = await fetchSitePhases(site.id);
+
+      console.log('phases', phases);
+
       const currentPhase = phases.find((phase) => {
         return dayjs().isBetween(phase.startDate, phase.endDate, null, '()');
       });
@@ -207,6 +210,12 @@ export default ({ id, siteId }) => {
         return;
     }
   }, [fetchedHiredRows, fetchedWithdrawnRows, site.phases, selectedTab]);
+
+  useEffect(() => {
+    console.log('IS THIS DIFFERENT!?');
+    console.log(site.phases);
+    setRows(site.phases);
+  }, [site]);
 
   useEffect(() => {
     setLoadingData(true);

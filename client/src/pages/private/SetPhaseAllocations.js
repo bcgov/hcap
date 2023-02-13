@@ -15,7 +15,7 @@ export const SetPhaseAllocations = ({ isNew, row, siteId, fetchDetails }) => {
     setActiveModalForm('set-allocation');
   };
 
-  const handleFormSubmit = (formData) => {
+  const handleFormSubmit = () => {
     fetchDetails(siteId);
     closeDialog();
   };

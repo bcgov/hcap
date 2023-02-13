@@ -82,7 +82,7 @@ const getAllSitePhases = async (siteId) => {
       phase.id, 
       spa.id
     `,
-    [site.siteId]
+    [site.id]
   );
 
   // Transform data format and return it

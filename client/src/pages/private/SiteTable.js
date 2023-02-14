@@ -304,12 +304,17 @@ export default ({ sites, viewOnly }) => {
                 if (columnObj(columnId).isHidden) return;
                 if (columnId === 'details')
                   return (
-                    <Button
-                      onClick={() => history.push(Routes.SiteView + `/${row.id}`)}
-                      variant='outlined'
-                      size='small'
-                      text='details'
-                    />
+                    <CheckPermissions
+                      roles={roles}
+                      permittedRoles={['health_authority', 'ministry_of_health']}
+                    >
+                      <Button
+                        onClick={() => history.push(Routes.SiteView + `/${row.id}`)}
+                        variant='outlined'
+                        size='small'
+                        text='details'
+                      />
+                    </CheckPermissions>
                   );
                 return row[columnId];
               }}

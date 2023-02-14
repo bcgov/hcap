@@ -5,8 +5,8 @@
 import request from 'supertest';
 import { app } from '../server';
 
-const { startDB, closeDB } = require('./util/db');
-const { getKeycloakToken, superuser } = require('./util/keycloak');
+import { startDB, closeDB } from './util/db';
+import { getKeycloakToken, superuser } from './util/keycloak';
 
 describe('api-e2e tests for /api/v1/user-details', () => {
   let server;

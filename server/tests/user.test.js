@@ -1,9 +1,9 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 import { v4 } from 'uuid';
 
-const { startDB, closeDB } = require('./util/db');
-const { getUserSites, makeUser } = require('../services/user');
-const { saveSites } = require('../services/employers');
+import { startDB, closeDB } from './util/db';
+import { getUserSites, makeUser } from '../services/user';
+import { saveSites } from '../services/employers';
 
 describe('Users Service', () => {
   beforeAll(async () => {

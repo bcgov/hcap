@@ -1,10 +1,9 @@
 /* eslint-disable camelcase */
 // disabling camelcase check so that we can manipulate snake_case attributes without changing structure
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
 import { dbClient, collections } from '../db';
 import { getSiteByID } from './employers';
-
-const dayjs = require('dayjs');
-const isBetween = require('dayjs/plugin/isBetween');
 
 dayjs.extend(isBetween);
 

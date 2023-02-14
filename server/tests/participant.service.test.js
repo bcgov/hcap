@@ -16,12 +16,12 @@ import {
   withdrawParticipantsByEmail,
 } from '../services/participants';
 
-const { setParticipantStatus } = require('../services/participant-status');
+import { setParticipantStatus } from '../services/participant-status';
 
-const { createPostHireStatus } = require('../services/post-hire-flow');
-const { getReport } = require('../services/reporting');
-const { evaluateBooleanAnswer, postHireStatuses } = require('../validation');
-const { saveSites } = require('../services/employers');
+import { createPostHireStatus } from '../services/post-hire-flow';
+import { getReport } from '../services/reporting';
+import { evaluateBooleanAnswer, postHireStatuses } from '../validation';
+import { saveSites } from '../services/employers';
 
 describe('Participants Service', () => {
   beforeAll(async () => {

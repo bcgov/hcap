@@ -2,9 +2,9 @@
 import request from 'supertest';
 import { app } from '../server';
 
-const { startDB, closeDB } = require('./util/db');
-const { makeTestParticipant, createTestParticipantStatus } = require('./util/integrationTestData');
-const { getKeycloakToken, healthAuthority, superuser } = require('./util/keycloak');
+import { startDB, closeDB } from './util/db';
+import { makeTestParticipant, createTestParticipantStatus } from './util/integrationTestData';
+import { getKeycloakToken, healthAuthority, superuser } from './util/keycloak';
 
 describe('e2e tests for /participant/details route', () => {
   let server;

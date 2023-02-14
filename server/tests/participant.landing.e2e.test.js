@@ -5,8 +5,8 @@
 import request from 'supertest';
 import { app } from '../server';
 
-const { startDB, closeDB } = require('./util/db');
-const { getKeycloakToken, participant } = require('./util/keycloak');
+import { startDB, closeDB } from './util/db';
+import { getKeycloakToken, participant } from './util/keycloak';
 
 describe('Participant landing e2e', () => {
   let server;

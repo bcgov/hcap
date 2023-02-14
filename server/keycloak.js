@@ -355,4 +355,6 @@ class Keycloak {
     }
   }
 }
-export default Keycloak.instance = new Keycloak();
+Keycloak.instance = new Keycloak();
+
+export default Keycloak.instance;

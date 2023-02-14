@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 import { postHireStatuses, rosPositionType, rosEmploymentType } from '../../constants';
 
-interface participantDataArgs {
+interface ParticipantDataArgs {
   lastName?: string;
   firstName?: string;
   phoneNumber?: string;
@@ -11,7 +11,7 @@ interface participantDataArgs {
   contactedDate?: string;
 }
 
-interface psiDataArgs {
+interface PsiDataArgs {
   instituteName?: string;
   regionIndex?: number;
   address?: string;
@@ -19,7 +19,7 @@ interface psiDataArgs {
   city?: string;
 }
 
-interface cohortDataArgs {
+interface CohortDataArgs {
   cohortName: string;
   startDate?: Date;
   endDate?: Date;
@@ -27,7 +27,7 @@ interface cohortDataArgs {
   psiID;
 }
 
-interface siteDataArgs {
+interface SiteDataArgs {
   siteName?: string;
   healthAuthority?: string;
   operatorName?: string;
@@ -47,7 +47,7 @@ export const psiData = ({
   address,
   postalCode,
   city,
-}: psiDataArgs) => ({
+}: PsiDataArgs) => ({
   instituteName,
   healthAuthority: regions[regionIndex || 0],
   streetAddress: address || '1815 Blanshard St',
@@ -69,7 +69,7 @@ export const cohortData = ({
   endDate,
   cohortSize,
   psiID,
-}: cohortDataArgs) => ({
+}: CohortDataArgs) => ({
   cohortName,
   startDate: dateStr(startDate),
   endDate: dateStr(endDate || after(6)),
@@ -84,7 +84,7 @@ export const participantData = ({
   emailAddress,
   preferredLocation,
   contactedDate,
-}: participantDataArgs) => ({
+}: ParticipantDataArgs) => ({
   lastName: lastName || 'Test',
   firstName: firstName || 'Fresh',
   phoneNumber: phoneNumber || '2502223333',
@@ -114,7 +114,7 @@ export const siteData = ({
   postalCode,
   registeredBusinessName,
   siteId,
-}: siteDataArgs) => ({
+}: SiteDataArgs) => ({
   siteId,
   siteName: siteName || 'Test site',
   address: '123 XYZ',

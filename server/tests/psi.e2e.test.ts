@@ -11,7 +11,7 @@ import { makePSI } from '../services/post-secondary-institutes';
 import { makeCohort } from '../services/cohorts';
 import { makeTestPSI } from './util/integrationTestData';
 
-interface psiArgs {
+interface PsiArgs {
   instituteName: string;
   regionIndex?: number;
   address?: string;
@@ -19,7 +19,7 @@ interface psiArgs {
   city?: string;
 }
 
-interface cohortArgs {
+interface CohortArgs {
   cohortName: string;
   startDate?: Date;
   endDate?: Date;
@@ -29,7 +29,7 @@ interface cohortArgs {
 
 const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
 
-const psi = ({ instituteName, regionIndex, address, postalCode, city }: psiArgs) => ({
+const psi = ({ instituteName, regionIndex, address, postalCode, city }: PsiArgs) => ({
   instituteName,
   healthAuthority: regions[regionIndex || 0],
   streetAddress: address || '1815 Blanshard St',
@@ -43,7 +43,7 @@ const after = (months, input = today) => new Date(input.setMonth(input.getMonth(
 
 const dateStr = (date = new Date()) => date.toISOString().split('T')[0].replace(/-/gi, '/');
 
-const cohort = ({ cohortName, startDate, endDate, cohortSize, psiID }: cohortArgs) => ({
+const cohort = ({ cohortName, startDate, endDate, cohortSize, psiID }: CohortArgs) => ({
   cohortName,
   startDate: dateStr(startDate),
   endDate: dateStr(endDate || after(6)),

@@ -8,7 +8,7 @@ import { getSiteByID } from './employers';
 dayjs.extend(isBetween);
 
 /**
- * @typedef {import('./employers').employerSite} employerSite
+ * @typedef {import('./employers').EmployerSite} employerSite
  *
  * @typedef  {Object} sitePhase
  * @property {number} id             Internal ID of the phase

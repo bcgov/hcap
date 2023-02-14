@@ -20,7 +20,7 @@ export const makeTestPostHireStatus = async ({ email, status, data = {} }) => {
 
 export const makeTestParticipant = async (options) => makeParticipant(participantData(options));
 
-interface cohortAssignmentData {
+interface CohortAssignmentData {
   cohortName?: string;
   cohortId?;
   email?: string;
@@ -35,7 +35,7 @@ export const makeCohortAssignment = async ({
   participantId,
   psiName,
   psiId,
-}: cohortAssignmentData) => {
+}: CohortAssignmentData) => {
   let finalParticipantId = participantId;
   let finalPSIId = psiId;
   let finalCohortId = cohortId;
@@ -66,7 +66,7 @@ export const makeCohortAssignment = async ({
   };
 };
 
-interface testSiteData {
+interface TestSiteData {
   siteId;
   city?: string;
   siteName?: string;
@@ -74,7 +74,7 @@ interface testSiteData {
 }
 
 export const makeTestSite = async (
-  { siteId, city, siteName, ...rest }: testSiteData = { siteId: null, city: null, siteName: null }
+  { siteId, city, siteName, ...rest }: TestSiteData = { siteId: null, city: null, siteName: null }
 ) => {
   if (!siteId) {
     throw new Error('Site ID is required');
@@ -90,7 +90,7 @@ export const makeTestSite = async (
 export const makeTestPSI = async (psiDataObj) => makePSI(psiDataObj);
 
 // These interfaces should be fleshed out and documented
-interface makeTestParticipantStatusData {
+interface MakeTestParticipantStatusData {
   participantId?: number;
   employerId?: number;
   status;
@@ -103,7 +103,7 @@ export const makeTestParticipantStatus = async ({
   status,
   current = true,
   data,
-}: makeTestParticipantStatusData) =>
+}: MakeTestParticipantStatusData) =>
   dbClient.db[collections.PARTICIPANTS_STATUS].insert({
     participant_id: participantId,
     employer_id: employerId || 1,
@@ -112,7 +112,7 @@ export const makeTestParticipantStatus = async ({
     data,
   });
 
-interface createTestParticipantStatusData {
+interface CreateTestParticipantStatusData {
   participantData;
   siteData?;
   status?: string;
@@ -121,7 +121,7 @@ export const createTestParticipantStatus = async ({
   participantData: participantDataObj,
   siteData,
   status,
-}: createTestParticipantStatusData) => {
+}: CreateTestParticipantStatusData) => {
   const participant = await makeTestParticipant(participantDataObj);
   const site = await makeTestSite(siteData);
   const participantStatus = await makeTestParticipantStatus({

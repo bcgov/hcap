@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */ // TODO: fix types in this file
 /* eslint-disable camelcase */
 import { dbClient, collections } from '../db';
 import { rosError } from '../constants';
@@ -88,11 +87,11 @@ export const createReturnOfServiceStatus = async ({
   return insertReturnOfServiceStatus({ participantId, rosBody });
 };
 
-interface updateROSStatusParams {
-  participantId: any;
-  data: any;
-  user: any;
-  status?: any;
+interface UpdateROSStatusParams {
+  participantId;
+  data;
+  user;
+  status;
 }
 
 export const updateReturnOfServiceStatus = async ({
@@ -100,7 +99,7 @@ export const updateReturnOfServiceStatus = async ({
   data,
   user,
   status,
-}: updateROSStatusParams) => {
+}: UpdateROSStatusParams) => {
   const rosParticipant = await getRosParticipantStatus(participantId);
 
   let siteDbId;

@@ -19,7 +19,6 @@ import {
 
 import { ArchiveRequestDataShape } from './employer-operation';
 
-// TODO fix
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const yup = require('yup');
 

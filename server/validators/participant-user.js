@@ -1,7 +1,6 @@
-// import * as yup from 'yup';
 import { validIndigenousIdentities } from '../constants';
 
-// TODO fix
+// NOTE: `yup` does not seem to import properly. This should be fixed.
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const yup = require('yup');
 

@@ -7,7 +7,7 @@ import parser from 'fast-xml-parser';
 import _ from 'lodash';
 import asyncPool from 'tiny-async-pool';
 
-// TODO: fix schema importing, seems to be missing
+// WARN: schema seems to be missing! Should be fixed and made an import.
 const { validate, ParticipantFormSchema } = require('../validation');
 
 const endpoints = [

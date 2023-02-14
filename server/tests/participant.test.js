@@ -15,7 +15,7 @@ describe('Participants Endpoint', () => {
   beforeEach(async () => {
     await cleanDB();
     const mockDate = Date;
-    // @ts-ignore TODO: find a TS-friendly way of doing this
+    // @ts-ignore NOTE: should find a TS-friendly way of doing this
     global.Date = jest.fn(() => DATE_TO_USE);
     global.Date.UTC = mockDate.UTC;
     global.Date.parse = mockDate.parse;

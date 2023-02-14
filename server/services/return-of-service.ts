@@ -91,7 +91,7 @@ interface UpdateROSStatusParams {
   participantId;
   data;
   user;
-  status;
+  status?;
 }
 
 export const updateReturnOfServiceStatus = async ({

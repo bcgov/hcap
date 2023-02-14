@@ -3,7 +3,7 @@ require('dotenv').config({ path: '../.env' });
 const readXlsxFile = require('node-xlsx').default;
 const path = require('path');
 const { dbClient } = require('../db');
-const { saveSites } = require('../services/employers.js');
+const { saveSites } = require('../services/employers');
 const { createRows, verifyHeaders } = require('../utils');
 
 const errorStyle = '\x1b[31m\x1b[40m\x1b[4m\x1b[1m'; // https://stackoverflow.com/a/41407246

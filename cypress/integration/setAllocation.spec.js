@@ -70,27 +70,25 @@ describe('Allocation functionality', () => {
   });
 
   it('Validated max of 99', () => {
-    // happy path
-    // create new phase to assign allocation to
-    // createPhase();
     navigateToForm();
     const formValues = {
       allocation: '120',
     };
     selAllocationForm(formValues);
 
-    // expect: no errors, success message.
-    cy.contains('.Mui-error').should('not.exist');
-    cy.get('.MuiAlert-message').contains(`Must be between 0-99`);
+    // expect: error message to appear
+    cy.contains('p.Mui-error', 'Must be between 0-99');
   });
 
   // it('Allocation must be a positive number', () => {
   //   // attempt to submit form with a negative allocation
   //   navigateToForm();
 
-  //   cy.get('[name=allocation]').focus();
-  //   cy.get('body').trigger('keydown', { keyCode: 27 });
+  //   cy.get('[name=allocation]')
+  //     .focus()
+  //     .type('{downArrow}{downArrow}{downArrow}{downArrow}{downArrow}{downArrow}');
   //   cy.contains('button', 'Set').click();
+  //   // cy.get('.MuiDialogContent-root').click();
 
   //   cy.contains('p.Mui-error', 'Must be a positive number');
   // });

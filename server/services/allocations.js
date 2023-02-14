@@ -1,13 +1,18 @@
 /* eslint-disable camelcase */
 // disabling camelcase check so that we can manipulate snake_case attributes without changing structure
-const dayjs = require('dayjs');
-const isBetween = require('dayjs/plugin/isBetween');
 const { dbClient, collections } = require('../db');
 
-dayjs.extend(isBetween);
+/**
+ *
+ * @typedef  {Object} allocation
+ * @property {number} id             Internal ID of the allocation
+ * @property {string} phase_id      FK for phase
+ * @property {number} allocation    Number of allocations available
+ * @property {number} site_id       FK for employer_site
+ */
 
 const getPhaseAllocation = async (siteId, phaseId) => {
-  const allocation = await dbClient.db[collections.SITE_PHASE_ALLOCATION].find(
+  const allocation = await dbClient.db[collections.SITE_PHASE_ALLOCATION].findOne(
     {
       site_id: siteId,
       phase_id: phaseId,

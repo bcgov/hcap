@@ -183,6 +183,7 @@ export default ({ sites, viewOnly }) => {
   };
 
   const columnObj = (rowId) => columns.find(({ id }) => id === rowId);
+  console.log(rows);
   return (
     <>
       <NewSiteDialog

@@ -8,6 +8,7 @@ const CreateAllocationSchema = yup
     allocation: yup
       .number()
       .nullable()
+      .max(99, 'Must be between 0-99')
       .test(
         'validate-blank-or-number',
         'Must be a positive number',

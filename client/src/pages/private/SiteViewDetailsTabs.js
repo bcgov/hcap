@@ -51,9 +51,7 @@ const fetchDetails = async (id) => {
   if (response.ok) {
     const site = await response.json();
     if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
-      const phases = await fetchSitePhases(site.id);
-
-      console.log('phases', phases);
+      const phases = await fetchSitePhases(id);
 
       const currentPhase = phases.find((phase) => {
         return dayjs().isBetween(phase.startDate, phase.endDate, null, '()');
@@ -160,6 +158,16 @@ export default ({ id, siteId }) => {
     history.push(participantDetailsPath);
   };
 
+  // reset allocation table after allocations are created/edited
+  const fetchAllocationDetails = (siteId) => {
+    return fetchDetails(siteId).then((response) => {
+      dispatch({
+        type: SiteDetailTabContext.types.UPDATE_SITE,
+        payload: { site: response },
+      });
+    });
+  };
+
   const archiveOnClick = async (participantId) => {
     // Get data from row.participantId
     const response = await fetch(`${API_URL}/api/v1/participant?id=${participantId}`, {
@@ -210,12 +218,6 @@ export default ({ id, siteId }) => {
         return;
     }
   }, [fetchedHiredRows, fetchedWithdrawnRows, site.phases, selectedTab]);
-
-  useEffect(() => {
-    console.log('IS THIS DIFFERENT!?');
-    console.log(site.phases);
-    setRows(site.phases);
-  }, [site]);
 
   useEffect(() => {
     setLoadingData(true);
@@ -384,7 +386,7 @@ export default ({ id, siteId }) => {
                         isNew={row.allocation === null}
                         row={row}
                         siteId={id}
-                        fetchDetails={fetchDetails}
+                        fetchDetails={fetchAllocationDetails}
                       />
                     );
                   return row[columnId] ?? 'N/A';

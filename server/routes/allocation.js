@@ -25,12 +25,10 @@ router.post(
     if (!FEATURE_PHASE_ALLOCATION) {
       return resp.status(501).send('Phase allocation feature not active');
     }
-    // check if site_phasE_allocation exists for site_id and phase_id, if not create one.
-
+    // check if site_phase_allocation exists for site_id and phase_id, if not create one.
     const { body, hcapUserInfo: user } = req;
     const allocation = await getPhaseAllocation(body.site_id, body.phase_id);
-    // update check
-    if (allocation.length === 1) {
+    if (allocation) {
       return resp.status(400).send('An allocation already exists.');
     }
     try {

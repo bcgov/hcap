@@ -43,7 +43,7 @@ describe('Allocation functionality', () => {
     // createPhase();
     navigateToForm();
     const formValues = {
-      allocation: '300',
+      allocation: '90',
     };
     selAllocationForm(formValues);
 
@@ -67,6 +67,21 @@ describe('Allocation functionality', () => {
     // expect: dates to be disabled
     cy.get('[name=Startdate]').should('have.class', 'Mui-disabled');
     cy.get('[name=Enddate]').should('have.class', 'Mui-disabled');
+  });
+
+  it('Validated max of 99', () => {
+    // happy path
+    // create new phase to assign allocation to
+    // createPhase();
+    navigateToForm();
+    const formValues = {
+      allocation: '120',
+    };
+    selAllocationForm(formValues);
+
+    // expect: no errors, success message.
+    cy.contains('.Mui-error').should('not.exist');
+    cy.get('.MuiAlert-message').contains(`Must be between 0-99`);
   });
 
   // it('Allocation must be a positive number', () => {

@@ -76,10 +76,7 @@ const getAllSitePhases = async (siteId) => {
         AND ps."current"
         AND to_date(
           ps.data ->> 'hiredDate', 'YYYY/MM/DD'
-        ) BETWEEN COALESCE(
-          spa.start_date, phase.start_date
-        ) 
-      AND COALESCE(spa.end_date, phase.end_date) 
+        ) BETWEEN phase.start_date AND phase.end_date
     GROUP BY 
       phase.id, 
       spa.id

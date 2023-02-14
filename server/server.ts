@@ -48,7 +48,7 @@ app.use(
         'frame-ancestors': ["'self'"],
         'img-src': ["'self'", 'data:'],
         'object-src': ["'none'"],
-        // TODO: Make typing more explicit
+        // These types should be more explicit
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         'script-src': ["'self'", (req, res: any) => `'nonce-${res.locals.cspNonce}'`],
         'script-src-attr': ["'none'"],

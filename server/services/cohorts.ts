@@ -295,8 +295,7 @@ export const findCohortByName = async ({ cohortName, psiName }) =>
     });
 
 export const changeCohortParticipant = async (
-  // NOTE: verify this is correct
-  // TODO fix types
+  // WARN: This is not well typed! This should be fixed.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   { cohortId, participantId, newCohortId, meta }: any = {
     cohortId: null,
@@ -363,11 +362,9 @@ export const changeCohortParticipant = async (
     // Update audit log
     let audit;
     if (Object.keys(meta).length > 0) {
-      // TODO: verify if `user` is needed
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { user, ...rest } = meta;
       audit = await tnx[collections.ADMIN_OPS_AUDIT].insert({
-        user: meta.user || 'system',
+        user: user || 'system',
         data: {
           operationMetaData: rest,
           operationDetails: {

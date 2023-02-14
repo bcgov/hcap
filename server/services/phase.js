@@ -37,6 +37,7 @@ const getAllSitePhases = async (siteId) => {
    * @property {Date} start_date           Start date of the phase
    * @property {Date} end_date             End date of the phase
    * @property {number} allocation         Number of employees allocated for this phase at this site
+   * @property {number} allocation_id      Internal ID of the allocation connected to the site/phase
    * @property {string} hcap_hires         Number of HCAP employees hired (as a string)
    * @property {string} non_hcap_hires     Number of non-HCAP employees hired (as a string)
    */
@@ -108,7 +109,6 @@ const getAllPhases = async () => {
 
 const createGlobalPhase = async (phase, user) => {
   const phaseData = { ...phase, created_by: user.id, updated_by: user.id };
-  CreateAllocationSchema;
   const res = await dbClient.db[collections.GLOBAL_PHASE].insert(phaseData);
   return res;
 };

@@ -98,7 +98,7 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
       FROM
         employer_sites
       LEFT JOIN site_phase_allocation spa on spa.site_id = employer_sites.id 
-      INNER JOIN phase p on p.id = spa.phase_id
+      LEFT JOIN phase p on p.id = spa.phase_id
       AND CURRENT_DATE between p.start_date and p.end_date
       ${additionalCriteria.length > 0 ? 'WHERE' : ''}
         ${additionalCriteria.join(' AND ')}

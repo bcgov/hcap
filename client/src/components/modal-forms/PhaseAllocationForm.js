@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { CreatePhaseAllocationSchema, ToastStatus } from '../../constants';
-import { createPhaseAllocation, updatePhaseAllocation } from '../../services/phases';
+import { createPhaseAllocation, updatePhaseAllocation } from '../../services/allocations';
 import { useToast } from '../../hooks';
 
 const useStyles = makeStyles(() => ({

@@ -51,7 +51,7 @@ const fetchDetails = async (id) => {
   if (response.ok) {
     const site = await response.json();
     if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
-      const phases = await fetchSitePhases(id);
+      const phases = await fetchSitePhases(site.id);
 
       const currentPhase = phases.find((phase) => {
         return dayjs().isBetween(phase.startDate, phase.endDate, null, '()');

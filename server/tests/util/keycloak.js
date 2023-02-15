@@ -6,6 +6,7 @@ const superuser = {
   username: 'test-superuser',
   password: process.env.KC_TEST_SUPER_USER_PWD || 'password',
 };
+
 const employer = {
   username: 'test-employer',
   password: process.env.KC_TEST_EMPLOYER_PWD || 'password',
@@ -19,6 +20,11 @@ const participant = {
 const healthAuthority = {
   username: 'test-ha',
   password: process.env.KC_TEST_HA_PWD || 'password',
+};
+
+const ministryOfHealth = {
+  username: 'test-moh',
+  password: 'password',
 };
 
 const getKeycloakToken = async ({ username, password }) => {
@@ -49,4 +55,11 @@ const getKeycloakToken = async ({ username, password }) => {
     throw error;
   }
 };
-module.exports = { superuser, participant, employer, healthAuthority, getKeycloakToken };
+module.exports = {
+  superuser,
+  participant,
+  employer,
+  healthAuthority,
+  getKeycloakToken,
+  ministryOfHealth,
+};

@@ -16,7 +16,7 @@ describe('Allocation functionality', () => {
 
   const navigateToForm = () => {
     cy.visit('site-view');
-    cy.contains('V1V1V1');
+    cy.get('tr').first();
     cy.get('button').contains('details').click();
     cy.get('button').contains('Allocation').click();
     cy.get('tr').first();
@@ -80,16 +80,15 @@ describe('Allocation functionality', () => {
     cy.contains('p.Mui-error', 'Must be between 0-99');
   });
 
-  // it('Allocation must be a positive number', () => {
-  //   // attempt to submit form with a negative allocation
-  //   navigateToForm();
+  it('Allocation must be a positive number', () => {
+    // attempt to submit form with a negative allocation
+    navigateToForm();
 
-  //   cy.get('[name=allocation]')
-  //     .focus()
-  //     .type('{downArrow}{downArrow}{downArrow}{downArrow}{downArrow}{downArrow}');
-  //   cy.contains('button', 'Set').click();
-  //   // cy.get('.MuiDialogContent-root').click();
+    cy.get('[name=allocation]')
+      .focus()
+      .type('{downArrow}{downArrow}{downArrow}{downArrow}{downArrow}{downArrow}');
+    cy.contains('button', 'Set').click();
 
-  //   cy.contains('p.Mui-error', 'Must be a positive number');
-  // });
+    cy.contains('p.Mui-error', 'Must be a positive number');
+  });
 });

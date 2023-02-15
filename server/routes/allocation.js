@@ -66,7 +66,7 @@ router.put(
       const { body, hcapUserInfo: user } = req;
       const response = await updatePhaseAllocation(req.params.id, body, user);
       logger.info({
-        action: 'phase-allocation_post',
+        action: 'allocation_put',
         performed_by: {
           username: user.username,
           id: user.id,

@@ -34,8 +34,8 @@ router.get(
     const authorized =
       user.isSuperUser ||
       user.isMoH ||
-      ((user.isHA || user.isEmployer) &&
-        (await getSitesForUser(user)).map((site) => site.id).includes(siteId));
+      user.isHA ||
+      (user.isEmployer && (await getSitesForUser(user)).map((site) => site.id).includes(siteId));
     if (!authorized) return res.status(403).send('Unauthorized site ID');
 
     // Get and return data
@@ -62,7 +62,10 @@ router.get(
 // Read: Get global phases
 router.get(
   '/',
-  [keycloak.allowRolesMiddleware('ministry_of_health'), keycloak.getUserInfoMiddleware()],
+  [
+    keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority'),
+    keycloak.getUserInfoMiddleware(),
+  ],
   asyncMiddleware(async (req, res) => {
     const { hcapUserInfo: user } = req;
     const result = await getAllPhases();

@@ -3,7 +3,14 @@ import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography, Link } from '@material-ui/core';
 import store from 'store';
-import { Table, Button, Dialog, CustomTab, CustomTabs } from '../../components/generic';
+import {
+  Table,
+  Button,
+  Dialog,
+  CustomTab,
+  CustomTabs,
+  CheckPermissions,
+} from '../../components/generic';
 import { AuthContext, SiteDetailTabContext } from '../../providers';
 import {
   FeatureFlaggedComponent,
@@ -382,12 +389,14 @@ export default ({ id, siteId }) => {
                   if (columnObj(columnId).isHidden) return;
                   if (columnId === 'details')
                     return (
-                      <SetPhaseAllocations
-                        isNew={row.allocation === null}
-                        row={row}
-                        siteId={id}
-                        fetchDetails={fetchAllocationDetails}
-                      />
+                      <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+                        <SetPhaseAllocations
+                          isNew={row.allocation === null}
+                          row={row}
+                          siteId={id}
+                          fetchDetails={fetchAllocationDetails}
+                        />
+                      </CheckPermissions>
                     );
                   return row[columnId] ?? 'N/A';
                 }}

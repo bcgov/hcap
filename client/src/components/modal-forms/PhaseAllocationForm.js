@@ -44,7 +44,9 @@ export const PhaseAllocationForm = ({ onSubmit, onClose, open, content, isNew, s
     if (response.ok) {
       openToast({
         status: ToastStatus.Success,
-        message: `New phase allocation has been assigned`,
+        message: isNew
+          ? `New phase allocation has been successfully assigned`
+          : `Phase allocation has been successfully updated`,
       });
       await onSubmit();
     } else {

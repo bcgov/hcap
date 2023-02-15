@@ -22,17 +22,24 @@ describe('Phase Allocation Endpoints', () => {
     server.close();
   });
 
-  const user = v4();
-  // Used for batch site POST
-  const allocation = {
+  const user = { id: v4() };
+  const allocationMock = {
     site_id: 1,
     phase_id: 1,
     allocation: 30,
   };
 
+  const expectedRes = {
+    ...allocationMock,
+    id: 1,
+    created_by: user.id,
+    created_at: new Date(),
+    updated_by: user.id,
+    updated_at: new Date(),
+  };
+
   it('Set new allocation, receive success', async () => {
-    const res = await createPhaseAllocation(allocation, user);
-    const expectedRes = [{ id: 1, site_id: 1, phase_id: 1, allocation: 67 }];
+    const res = await createPhaseAllocation(allocationMock, user);
     expect(res).toEqual(expectedRes);
   });
 
@@ -46,6 +53,6 @@ describe('Phase Allocation Endpoints', () => {
       },
       user
     );
-    expect(res.allocation).toEqual(90);
+    expect(res).toEqual({ ...expectedRes, allocation: 90 });
   });
 });

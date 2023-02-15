@@ -49,7 +49,7 @@ describe('Allocation functionality', () => {
 
     // expect: no errors, success message.
     cy.contains('.Mui-error').should('not.exist');
-    cy.get('.MuiAlert-message').contains(`New phase allocation has been assigned`);
+    cy.get('.MuiAlert-message').contains(`New phase allocation has been successfully assigned`);
   });
 
   it('Validates required fields', () => {

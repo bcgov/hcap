@@ -50,8 +50,8 @@ router.post(
   })
 );
 
-// Update phase allocation: PUT
-router.put(
+// Update phase allocation: PATCH
+router.patch(
   '/:id',
   [
     keycloak.allowRolesMiddleware('ministry_of_health'),
@@ -66,7 +66,7 @@ router.put(
       const { body, hcapUserInfo: user } = req;
       const response = await updatePhaseAllocation(req.params.id, body, user);
       logger.info({
-        action: 'allocation_put',
+        action: 'allocation_patch',
         performed_by: {
           username: user.username,
           id: user.id,

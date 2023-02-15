@@ -16,7 +16,7 @@ export const createPhaseAllocation = async (allocationJson) => {
 
 export const updatePhaseAllocation = async (allocationId, allocationJson) => {
   const response = await fetch(`${API_URL}/api/v1/allocation/${allocationId}`, {
-    method: 'PUT',
+    method: 'PATCH',
     headers: {
       Authorization: `Bearer ${store.get('TOKEN')}`,
       Accept: 'application/json',

@@ -33,11 +33,13 @@ export const PhaseAllocationForm = ({ onSubmit, onClose, open, content, isNew, s
       };
 
   const handleSubmit = async (allocation) => {
-    const allocationJson = {
-      allocation: allocation.allocation,
-      phase_id: content.id,
-      site_id: parseInt(siteId, 10),
-    };
+    const allocationJson = isNew
+      ? {
+          allocation: allocation.allocation,
+          phase_id: content.id,
+          site_id: parseInt(siteId, 10),
+        }
+      : { allocation: allocation.allocation };
     const response = await (isNew
       ? createPhaseAllocation(allocationJson)
       : updatePhaseAllocation(content.allocationId, allocationJson));

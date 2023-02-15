@@ -18,4 +18,19 @@ const CreateAllocationSchema = yup
     site_id: yup.number().required('Allocation must be related to a site'),
   });
 
-module.exports = { CreateAllocationSchema };
+const UpdateAllocationSchema = yup
+  .object()
+  .noUnknown('Unknown field in entry')
+  .shape({
+    allocation: yup
+      .number()
+      .nullable()
+      .max(99, 'Must be between 0-99')
+      .test(
+        'validate-blank-or-number',
+        'Must be a positive number',
+        validateBlankOrPositiveInteger
+      ),
+  });
+
+module.exports = { CreateAllocationSchema, UpdateAllocationSchema };

@@ -2,7 +2,7 @@ const express = require('express');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { asyncMiddleware } = require('../error-handler.js');
-const { CreateAllocationSchema } = require('../validation');
+const { CreateAllocationSchema, UpdateAllocationSchema } = require('../validation');
 const { expressRequestBodyValidator } = require('../middleware');
 const {
   createPhaseAllocation,
@@ -56,7 +56,7 @@ router.patch(
   [
     keycloak.allowRolesMiddleware('ministry_of_health'),
     keycloak.getUserInfoMiddleware(),
-    expressRequestBodyValidator(CreateAllocationSchema),
+    expressRequestBodyValidator(UpdateAllocationSchema),
   ],
   asyncMiddleware(async (req, resp) => {
     if (!FEATURE_PHASE_ALLOCATION) {

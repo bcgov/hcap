@@ -50,8 +50,8 @@ router.post(
   })
 );
 
-// Update phase allocation: PATCH
-router.patch(
+// Update phase allocation: PUT
+router.put(
   '/:id',
   [
     keycloak.allowRolesMiddleware('ministry_of_health'),

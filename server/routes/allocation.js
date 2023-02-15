@@ -45,7 +45,7 @@ router.post(
       return resp.status(201).json(response);
     } catch (err) {
       logger.error(err);
-      return resp.status(400).send(`${err}`);
+      return resp.status(400).send('Failed to set phase allocation');
     }
   })
 );
@@ -77,7 +77,7 @@ router.put(
       return resp.status(201).json(response);
     } catch (err) {
       logger.error(err);
-      return resp.status(400).send(`${err}`);
+      return resp.status(400).send('Failed to update phase allocation');
     }
   })
 );

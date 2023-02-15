@@ -12,13 +12,10 @@ const { dbClient, collections } = require('../db');
  */
 
 const getPhaseAllocation = async (siteId, phaseId) => {
-  const allocation = await dbClient.db[collections.SITE_PHASE_ALLOCATION].findOne(
-    {
-      site_id: siteId,
-      phase_id: phaseId,
-    },
-    { limit: 1 }
-  );
+  const allocation = await dbClient.db[collections.SITE_PHASE_ALLOCATION].findOne({
+    site_id: siteId,
+    phase_id: phaseId,
+  });
 
   return allocation;
 };

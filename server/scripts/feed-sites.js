@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
-require('dotenv').config({ path: '../.env' });
-const readXlsxFile = require('node-xlsx').default;
-const path = require('path');
-const { dbClient } = require('../db');
-const { saveSites } = require('../services/employers');
-const { createRows, verifyHeaders } = require('../utils');
+import './load-env';
+import readXlsxFile from 'node-xlsx';
+import path from 'path';
+import { dbClient } from '../db';
+import { saveSites } from '../services/employers';
+import { createRows, verifyHeaders } from '../utils';
 
 const errorStyle = '\x1b[31m\x1b[40m\x1b[4m\x1b[1m'; // https://stackoverflow.com/a/41407246
 

@@ -1,10 +1,9 @@
 /* eslint-disable no-console, no-restricted-syntax, no-await-in-loop, no-loop-func */
+import './load-env';
 import path from 'path';
 import { parseFile } from 'fast-csv';
 import { dbClient } from '../db';
 import { collections } from '../db/schema';
-
-require('dotenv').config({ path: '../.env' });
 
 (async () => {
   if (require.main === module) {

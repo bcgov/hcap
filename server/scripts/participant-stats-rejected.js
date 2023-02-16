@@ -1,11 +1,10 @@
 /* eslint-disable no-console */
+import './load-env';
 import csv from 'fast-csv';
 import path from 'path';
 import { writeFileSync } from 'fs';
 import { dbClient } from '../db';
 import { getRejectedParticipantsReport } from '../services/reporting';
-
-require('dotenv').config({ path: '../.env' });
 
 (async () => {
   if (require.main === module) {

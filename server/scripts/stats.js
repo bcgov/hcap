@@ -1,10 +1,9 @@
 /* eslint-disable no-console */
+import './load-env';
 import inquirer from 'inquirer';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { dbClient, collections } from '../db';
-
-require('dotenv').config({ path: '../.env' });
 
 dayjs.extend(utc);
 

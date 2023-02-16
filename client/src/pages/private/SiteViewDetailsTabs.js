@@ -137,12 +137,6 @@ export default ({ id, siteId }) => {
     dispatch,
   } = SiteDetailTabContext.useTabContext();
 
-  console.log('51436513461346');
-  console.log(
-    'columns',
-    columns.find(({ id }) => id === 'startDate' || id === 'withdrawnDate')?.id
-  );
-
   const [orderBy, setOrderBy] = useState('startDate');
 
   const handleRequestSort = (event, property) => {
@@ -200,12 +194,15 @@ export default ({ id, siteId }) => {
   useEffect(() => {
     switch (selectedTab) {
       case tabs.HIRED_PARTICIPANTS:
+        setOrderBy('startDate');
         setRows(fetchedHiredRows);
         return;
       case tabs.WITHDRAWN_PARTICIPANTS:
+        setOrderBy('withdrawnDate');
         setRows(fetchedWithdrawnRows);
         return;
       case tabs.ALLOCATION:
+        setOrderBy('startDate');
         setRows(site.phases);
         return;
       default:

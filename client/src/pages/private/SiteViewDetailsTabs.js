@@ -137,7 +137,10 @@ export default ({ id, siteId }) => {
     dispatch,
   } = SiteDetailTabContext.useTabContext();
 
-  const [orderBy, setOrderBy] = useState(columns[4]?.id || 'participantName');
+  console.log('51436513461346');
+  console.log('columns', columns);
+
+  const [orderBy, setOrderBy] = useState('startDate' || 'withdrawnDate' || 'id');
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

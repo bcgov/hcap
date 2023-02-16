@@ -27,11 +27,11 @@ describe('Allocation functionality', () => {
     cy.contains('button', 'Set').click();
   };
 
-  const navigateToForm = () => {
+  const navigateToForm = (buttonLabel) => {
     cy.visit('site-view/1');
     cy.get('.MuiTab-wrapper').contains('Allocation').click();
     cy.get('tr').first();
-    cy.get('button').contains('set').click();
+    cy.get('button').contains(buttonLabel).click();
   };
 
   it('MoH can set a new allocation', () => {
@@ -64,7 +64,7 @@ describe('Allocation functionality', () => {
     };
     createPhase(phaseData);
     // attempt to submit empty form
-    navigateToForm();
+    navigateToForm('set');
     cy.contains('button', 'Set').click();
 
     // expect: required error on every field
@@ -72,7 +72,7 @@ describe('Allocation functionality', () => {
   });
 
   it('Expect start and end date to be disabled', () => {
-    navigateToForm();
+    navigateToForm('set');
 
     // expect: dates to be disabled
     cy.get('[name=Startdate]').should('have.class', 'Mui-disabled');
@@ -80,7 +80,7 @@ describe('Allocation functionality', () => {
   });
 
   it('Validated max of 99', () => {
-    navigateToForm();
+    navigateToForm('set');
     const formValues = {
       allocation: '120',
     };
@@ -92,12 +92,27 @@ describe('Allocation functionality', () => {
 
   it('Allocation must be a positive number', () => {
     // attempt to submit form with a negative allocation
-    navigateToForm();
+    navigateToForm('set');
 
     cy.get('[name=allocation]').type('1{downArrow}{downArrow}{downArrow}');
     cy.wait(500);
     cy.contains('button', 'Set').click();
 
     cy.contains('p.Mui-error', 'Must be a positive number');
+  });
+
+  it('Allocation can be edited', () => {
+    // happy path for editing allocations
+    navigateToForm('edit');
+
+    const formValues = {
+      allocation: '30',
+    };
+    selAllocationForm(formValues);
+    cy.contains('button', 'Set').click();
+
+    // expect: no errors, success message.
+    cy.contains('.Mui-error').should('not.exist');
+    cy.get('.MuiAlert-message').contains(`Phase allocation has been successfully updated`);
   });
 });

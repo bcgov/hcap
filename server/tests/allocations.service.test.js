@@ -9,37 +9,12 @@ const {
   updatePhaseAllocation,
 } = require('../services/allocations.js');
 
-const { createGlobalPhase } = require('../services/phase');
-const { makeTestSite } = require('./util/integrationTestData');
+const { makeTestFKAllocations } = require('./util/integrationTestData');
 
 const { startDB, closeDB } = require('./util/db');
 
 describe('Phase Allocation Endpoints', () => {
   let server;
-
-  const dataSetup = async (id) => {
-    const site = await makeTestSite({
-      siteId: id,
-      siteName: 'Test Site 1040',
-      city: 'Test City 1040',
-    });
-
-    const phaseData = {
-      name: 'Test Phase',
-      start_date: new Date(),
-      end_date: new Date(),
-    };
-    const user = {
-      id: 'noid',
-    };
-    expect(site.siteId).toBeDefined();
-    const phase = await createGlobalPhase(phaseData, user);
-    expect(phase.id).toBeDefined();
-    return {
-      site,
-      phase,
-    };
-  };
 
   beforeAll(async () => {
     await startDB();
@@ -54,7 +29,7 @@ describe('Phase Allocation Endpoints', () => {
   const user = { id: v4() };
 
   it('Set new allocation, receive success', async () => {
-    const { site, phase } = await dataSetup(26356);
+    const { site, phase } = await makeTestFKAllocations(26356);
     const allocationMock = {
       site_id: site.id,
       phase_id: phase.id,
@@ -79,13 +54,13 @@ describe('Phase Allocation Endpoints', () => {
   });
 
   it('getAllocation, returns empty allocation record', async () => {
-    const { site, phase } = await dataSetup(3452);
+    const { site, phase } = await makeTestFKAllocations(3452);
     const res = await getPhaseAllocation(site.id, phase.id);
     expect(res).toEqual(null);
   });
 
   it('getAllocation, returns 1 allocation record', async () => {
-    const { site, phase } = await dataSetup(35671);
+    const { site, phase } = await makeTestFKAllocations(35671);
     const allocationMock = {
       site_id: site.id,
       phase_id: phase.id,

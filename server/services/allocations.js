@@ -3,15 +3,24 @@
 const { dbClient, collections } = require('../db');
 
 /**
- *
- * @typedef  {Object} allocation
- * @property {number} id             Internal ID of the allocation
- * @property {string} phase_id      FK for phase
- * @property {number} allocation    Number of allocations available
- * @property {number} site_id       FK for employer_site
+ * Gets all phases for a site
+ * @param {number} siteId PK ID of the site
+ * @param {number} phaseId PK ID of the phase
  */
-
 const getPhaseAllocation = async (siteId, phaseId) => {
+  /**
+   * @typedef {Object} allocationResponse  type for DB response to the `getPhaseAllocation` query
+   * @property {number} id                 PK ID of the allocation
+   * @property {number} phase_id           FK for phase
+   * @property {number} allocation         Number of allocations available
+   * @property {number} site_id            FK for employer_site
+   *
+   *
+   * */
+
+  /**
+   * @type {allocationResponse}
+   * */
   const allocation = await dbClient.db[collections.SITE_PHASE_ALLOCATION].findOne({
     site_id: siteId,
     phase_id: phaseId,

@@ -138,9 +138,12 @@ export default ({ id, siteId }) => {
   } = SiteDetailTabContext.useTabContext();
 
   console.log('51436513461346');
-  console.log('columns', columns);
+  console.log(
+    'columns',
+    columns.find(({ id }) => id === 'startDate' || id === 'withdrawnDate')?.id
+  );
 
-  const [orderBy, setOrderBy] = useState('startDate' || 'withdrawnDate' || 'id');
+  const [orderBy, setOrderBy] = useState('startDate');
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

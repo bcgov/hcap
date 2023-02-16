@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 import { validateBlankOrPositiveInteger } from '../functions';
 
-export const CreatePhaseAllocationSchema = yup.object().shape({
+export const CreateAllocationSchema = yup.object().shape({
   allocation: yup
     .number()
     .nullable()

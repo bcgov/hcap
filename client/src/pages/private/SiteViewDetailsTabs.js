@@ -32,7 +32,7 @@ import { useToast } from '../../hooks';
 import dayjs from 'dayjs';
 import { keyedString, getDialogTitle, sortObjects } from '../../utils';
 import { fetchSitePhases } from '../../services/phases';
-import { SetPhaseAllocations } from './SetPhaseAllocations';
+import { SetAllocation } from './SetAllocation';
 
 const columnIDs = [
   { id: 'participantId', name: 'ID' },
@@ -390,7 +390,7 @@ export default ({ id, siteId }) => {
                   if (columnId === 'details')
                     return (
                       <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-                        <SetPhaseAllocations
+                        <SetAllocation
                           isNew={row.allocation === null}
                           row={row}
                           siteId={id}

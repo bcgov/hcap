@@ -4,8 +4,8 @@ import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { CreatePhaseAllocationSchema, ToastStatus } from '../../constants';
-import { createPhaseAllocation, updatePhaseAllocation } from '../../services/allocations';
+import { CreateAllocationSchema, ToastStatus } from '../../constants';
+import { createAllocation, updateAllocation } from '../../services/allocations';
 import { useToast } from '../../hooks';
 
 const useStyles = makeStyles(() => ({
@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const PhaseAllocationForm = ({ onSubmit, onClose, open, content, isNew, siteId }) => {
+export const AllocationForm = ({ onSubmit, onClose, open, content, isNew, siteId }) => {
   const { openToast } = useToast();
   const classes = useStyles();
   const initialValues = content
@@ -41,8 +41,8 @@ export const PhaseAllocationForm = ({ onSubmit, onClose, open, content, isNew, s
         }
       : { allocation: allocation.allocation };
     const response = await (isNew
-      ? createPhaseAllocation(allocationJson)
-      : updatePhaseAllocation(content.allocationId, allocationJson));
+      ? createAllocation(allocationJson)
+      : updateAllocation(content.allocationId, allocationJson));
     if (response.ok) {
       openToast({
         status: ToastStatus.Success,
@@ -66,7 +66,7 @@ export const PhaseAllocationForm = ({ onSubmit, onClose, open, content, isNew, s
       </Typography>
       <Formik
         initialValues={initialValues}
-        validationSchema={CreatePhaseAllocationSchema}
+        validationSchema={CreateAllocationSchema}
         onSubmit={handleSubmit}
       >
         {({ submitForm }) => (

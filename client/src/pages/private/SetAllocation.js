@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Button } from '../../components/generic';
 import { Box } from '@material-ui/core';
 
-import { PhaseAllocationForm } from '../../components/modal-forms/PhaseAllocationForm';
+import { AllocationForm } from '../../components/modal-forms/AllocationForm';
 
-export const SetPhaseAllocations = ({ isNew, row, siteId, fetchDetails }) => {
+export const SetAllocation = ({ isNew, row, siteId, fetchDetails }) => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const closeDialog = () => {
     setActiveModalForm(null);
@@ -21,7 +21,7 @@ export const SetPhaseAllocations = ({ isNew, row, siteId, fetchDetails }) => {
 
   return (
     <>
-      <PhaseAllocationForm
+      <AllocationForm
         open={activeModalForm === 'set-allocation'}
         onSubmit={handleFormSubmit}
         onClose={closeDialog}

@@ -3,11 +3,7 @@
  */
 const { v4 } = require('uuid');
 const app = require('../server');
-const {
-  getPhaseAllocation,
-  createPhaseAllocation,
-  updatePhaseAllocation,
-} = require('../services/allocations.js');
+const { getAllocation, createAllocation, updateAllocation } = require('../services/allocations.js');
 
 const { makeTestFKAllocations } = require('./util/integrationTestData');
 
@@ -35,7 +31,7 @@ describe('Phase Allocation Endpoints', () => {
       phase_id: phase.id,
       allocation: 30,
     };
-    const res = await createPhaseAllocation(allocationMock, user);
+    const res = await createAllocation(allocationMock, user);
     expect(res.allocation).toEqual(30);
     expect(res.id).toEqual(1);
     expect(res.site_id).toEqual(site.id);
@@ -43,7 +39,7 @@ describe('Phase Allocation Endpoints', () => {
   });
 
   it('Update allocation, receive success', async () => {
-    const res = await updatePhaseAllocation(
+    const res = await updateAllocation(
       1,
       {
         allocation: 90,
@@ -55,7 +51,7 @@ describe('Phase Allocation Endpoints', () => {
 
   it('getAllocation, returns empty allocation record', async () => {
     const { site, phase } = await makeTestFKAllocations(3452);
-    const res = await getPhaseAllocation(site.id, phase.id);
+    const res = await getAllocation(site.id, phase.id);
     expect(res).toEqual(null);
   });
 
@@ -66,13 +62,13 @@ describe('Phase Allocation Endpoints', () => {
       phase_id: phase.id,
       allocation: 45,
     };
-    const res = await createPhaseAllocation(allocationMock, user);
+    const res = await createAllocation(allocationMock, user);
     expect(res.allocation).toEqual(45);
     expect(res.id).toEqual(2);
     expect(res.site_id).toEqual(site.id);
     expect(res.phase_id).toEqual(phase.id);
 
-    const response = await getPhaseAllocation(site.id, phase.id);
+    const response = await getAllocation(site.id, phase.id);
     expect(response.allocation).toEqual(45);
   });
 });

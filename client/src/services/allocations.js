@@ -1,7 +1,7 @@
 import store from 'store';
 import { API_URL } from '../constants';
 
-export const createPhaseAllocation = async (payload) => {
+export const createAllocation = async (payload) => {
   const response = await fetch(`${API_URL}/api/v1/allocation`, {
     method: 'POST',
     headers: {
@@ -14,7 +14,7 @@ export const createPhaseAllocation = async (payload) => {
   return response;
 };
 
-export const updatePhaseAllocation = async (allocationId, payload) => {
+export const updateAllocation = async (allocationId, payload) => {
   const response = await fetch(`${API_URL}/api/v1/allocation/${allocationId}`, {
     method: 'PATCH',
     headers: {

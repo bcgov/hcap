@@ -8,6 +8,19 @@ describe('Allocation functionality', () => {
     cy.kcLogout();
   });
 
+  // create new phase to assign
+  const createPhase = ({ phaseName, startDate, endDate }) => {
+    cy.visit('site-view');
+    cy.contains('button', 'Action').click();
+    cy.contains('li', 'Create new phase').click();
+
+    cy.get('[name=phaseName]').clear().type(phaseName);
+    cy.get('[name=Startdate]').clear().type(`{ctrl+v}${startDate}`);
+    cy.get('[name=Enddate]').clear().type(`{ctrl+v}2022/06/30${endDate}`);
+
+    cy.contains('button', 'Create').click();
+  };
+
   const selAllocationForm = ({ allocation }) => {
     cy.get('[name=allocation]').clear().type(allocation);
 
@@ -22,6 +35,13 @@ describe('Allocation functionality', () => {
   };
 
   it('MoH can set a new allocation', () => {
+    // create new phase to assign allocation to
+    const phaseData = {
+      phaseName: 'Allocation Testing Phase',
+      startDate: '2021/03/30',
+      endDate: '2022/03/30',
+    };
+    createPhase(phaseData);
     // happy path
     navigateToForm();
     const formValues = {
@@ -35,6 +55,14 @@ describe('Allocation functionality', () => {
   });
 
   it('Validates required fields', () => {
+    // create new phase to assign allocation to
+    //  this phase can be used for the following tests
+    const phaseData = {
+      phaseName: 'Allocation Testing Phase Two',
+      startDate: '2023/03/30',
+      endDate: '2024/03/30',
+    };
+    createPhase(phaseData);
     // attempt to submit empty form
     navigateToForm();
     cy.contains('button', 'Set').click();

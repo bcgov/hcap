@@ -39,13 +39,11 @@ const moh = {
 };
 
 const dataSetup = async () => {
-  const site = await saveSingleSite(
-    siteData({
-      siteId: 7,
-      siteName: 'Test E2E Allocation',
-      operatorEmail: 'test.e2e.allocation@hcap.io',
-    })
-  );
+  const site = makeTestSite({
+    siteId: 202205252325,
+    siteName: 'Test Site 1040',
+    city: 'Test City 1040',
+  });
   expect(site.id).toBeDefined();
   const phase = await createGlobalPhase(phaseData);
   expect(phase.id).toBeDefined();
@@ -70,6 +68,7 @@ describe('api e2e tests for /allocation', () => {
   it('should set allocation to phase', async () => {
     const { site, phase } = await dataSetup();
     const header = await getKeycloakToken(ministryOfHealth);
+    console.log(header);
     const res = await request(app)
       .post(`/api/v1/allocation`)
       .send({

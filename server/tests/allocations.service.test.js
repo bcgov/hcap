@@ -1,3 +1,4 @@
+/* eslint-disable */
 // const { ValidationError } = require('yup');
 const { v4 } = require('uuid');
 const app = require('../server');
@@ -7,14 +8,34 @@ const {
   updatePhaseAllocation,
 } = require('../services/allocations.js');
 
+const { createGlobalPhase } = require('../services/phase');
+const { siteData } = require('./util/testData');
+const { makeTestSite } = require('./util/integrationTestData');
+
 const { startDB, closeDB } = require('./util/db');
 
 describe('Phase Allocation Endpoints', () => {
   let server;
 
+  const dataSetup = async () => {
+    const site = makeTestSite({
+      siteId: 202205252325,
+      siteName: 'Test Site 1040',
+      city: 'Test City 1040',
+    });
+    expect(site.id).toBeDefined();
+    const phase = await createGlobalPhase(phaseData);
+    expect(phase.id).toBeDefined();
+    return {
+      site,
+      phase,
+    };
+  };
+
   beforeAll(async () => {
     await startDB();
     server = app.listen();
+    dataSetup();
   });
 
   afterAll(async () => {

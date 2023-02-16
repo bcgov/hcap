@@ -15,32 +15,14 @@ describe('Allocation functionality', () => {
   };
 
   const navigateToForm = () => {
-    cy.visit('site-view');
+    cy.visit('site-view/1');
+    cy.get('.MuiTab-wrapper').contains('Allocation').click();
     cy.get('tr').first();
-    cy.get('button').contains('details').click();
-    cy.get('button').contains('Allocation').click();
-    cy.get('tr').first();
-    // cy.contains('allocation testing phase');
     cy.get('button').contains('set').click();
-  };
-
-  // create new phase to assign
-  const createPhase = () => {
-    cy.visit('site-view');
-    cy.contains('button', 'Action').click();
-    cy.contains('li', 'Create new phase').click();
-
-    cy.get('[name=phaseName]').clear().type('allocation testing phase');
-    cy.get('[name=Startdate]').clear().type(`{ctrl+v}2021/03/30}`);
-    cy.get('[name=Enddate]').clear().type(`{ctrl+v}2022/06/30`);
-
-    cy.contains('button', 'Create').click();
   };
 
   it('MoH can set a new allocation', () => {
     // happy path
-    // create new phase to assign allocation to
-    // createPhase();
     navigateToForm();
     const formValues = {
       allocation: '90',
@@ -84,9 +66,8 @@ describe('Allocation functionality', () => {
     // attempt to submit form with a negative allocation
     navigateToForm();
 
-    cy.get('[name=allocation]')
-      .focus()
-      .type('{downArrow}{downArrow}{downArrow}{downArrow}{downArrow}{downArrow}');
+    cy.get('[name=allocation]').type('1{downArrow}{downArrow}{downArrow}');
+    cy.wait(500);
     cy.contains('button', 'Set').click();
 
     cy.contains('p.Mui-error', 'Must be a positive number');

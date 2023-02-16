@@ -12,7 +12,8 @@
 
 - [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
 - [Node.js](https://nodejs.org/en/) and [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-- [OpenShift CLI](https://docs.openshift.com/container-platform/4.12/cli_reference/openshift_cli/getting-started-cli.html#cli-getting-started) (If working with OpenShift)
+- [jq](https://stedolan.github.io/jq/) (for certain scripts)
+- [OpenShift CLI](https://docs.openshift.com/container-platform/4.12/cli_reference/openshift_cli/getting-started-cli.html#cli-getting-started) (if working with OpenShift)
 - A working [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) distro (if running on Windows)
   - If using WSL, make sure to run the project from a WSL directory (such as your Linux home directory), **not** a Windows directory (such as `/mnt/c/*`). Doing so prevents certain issues with Docker.
 - Environment Variables

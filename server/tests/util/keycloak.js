@@ -24,7 +24,7 @@ const healthAuthority = {
 
 const ministryOfHealth = {
   username: 'test-moh',
-  password: 'password',
+  password: process.env.KC_TEST_MOH_PWD || 'password',
 };
 
 const getKeycloakToken = async ({ username, password }) => {

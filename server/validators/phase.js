@@ -5,7 +5,10 @@ const CreatePhaseSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
-    name: yup.string().required('Phase name is required').max(255, 'Phase name is too long'),
+    name: yup
+      .string()
+      .required('Phase name is required')
+      .max(255, 'Phase name should be no longer than 255 characters'),
     start_date: yup
       .string()
       .required('Start date is required')

@@ -79,17 +79,6 @@ describe('Allocation functionality', () => {
     cy.get('[name=Enddate]').should('have.class', 'Mui-disabled');
   });
 
-  it('Validated max of 99', () => {
-    navigateToForm('set');
-    const formValues = {
-      allocation: '120',
-    };
-    selAllocationForm(formValues);
-
-    // expect: error message to appear
-    cy.contains('p.Mui-error', 'Must be between 0-99');
-  });
-
   it('Allocation must be a positive number', () => {
     // attempt to submit form with a negative allocation
     navigateToForm('set');

@@ -44,17 +44,6 @@ describe('api e2e tests for /allocation', () => {
     expect(res.status).toEqual(201);
   });
 
-  it('should fail to set an allocation due to max validation', async () => {
-    const header = await getKeycloakToken(ministryOfHealth);
-    const res = await request(app)
-      .patch(`/api/v1/allocation/1`)
-      .send({
-        allocation: 120,
-      })
-      .set(header);
-    expect(res.status).toEqual(400);
-  });
-
   it('should fail to set an allocation due to null validation', async () => {
     const header = await getKeycloakToken(ministryOfHealth);
     const res = await request(app)

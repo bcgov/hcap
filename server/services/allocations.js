@@ -14,8 +14,6 @@ const getAllocation = async (siteId, phaseId) => {
    * @property {number} phase_id           FK for phase
    * @property {number} allocation         Number of allocations available
    * @property {number} site_id            FK for employer_site
-   *
-   *
    * */
 
   /**

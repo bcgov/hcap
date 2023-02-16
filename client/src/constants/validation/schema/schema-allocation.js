@@ -6,6 +6,5 @@ export const CreateAllocationSchema = yup.object().shape({
     .number()
     .nullable()
     .required('Allocation is required')
-    .max(99, 'Must be between 0-99')
     .test('validate-blank-or-number', 'Must be a positive number', validateBlankOrPositiveInteger),
 });

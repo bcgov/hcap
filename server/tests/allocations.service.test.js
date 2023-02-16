@@ -22,6 +22,7 @@ describe('Phase Allocation Endpoints', () => {
       siteId: 202205252325,
       siteName: 'Test Site 1040',
       city: 'Test City 1040',
+      id: 1,
     });
     expect(site.id).toBeDefined();
     const phase = await createGlobalPhase(phaseData);

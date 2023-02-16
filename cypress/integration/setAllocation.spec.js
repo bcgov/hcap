@@ -43,7 +43,7 @@ describe('Allocation functionality', () => {
     };
     createPhase(phaseData);
     // happy path
-    navigateToForm();
+    navigateToForm('set');
     const formValues = {
       allocation: '90',
     };

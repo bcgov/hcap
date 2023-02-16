@@ -2,7 +2,10 @@ import * as yup from 'yup';
 import { validateDateIsReasonable, errorMessage, errorDateIsReasonable } from '../functions';
 
 export const CreatePhaseSchema = yup.object().shape({
-  phaseName: yup.string().required('Phase name is required').max(255, 'Phase name is too long'),
+  phaseName: yup
+    .string()
+    .required('Phase name is required')
+    .max(255, 'Phase name should be no longer than 255 characters'),
   startDate: yup
     .date()
     .required(errorMessage)

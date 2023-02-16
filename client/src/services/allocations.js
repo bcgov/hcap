@@ -1,7 +1,7 @@
 import store from 'store';
 import { API_URL } from '../constants';
 
-export const createPhaseAllocation = async (allocationJson) => {
+export const createPhaseAllocation = async (payload) => {
   const response = await fetch(`${API_URL}/api/v1/allocation`, {
     method: 'POST',
     headers: {
@@ -9,12 +9,12 @@ export const createPhaseAllocation = async (allocationJson) => {
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
-    body: JSON.stringify(allocationJson),
+    body: JSON.stringify(payload),
   });
   return response;
 };
 
-export const updatePhaseAllocation = async (allocationId, allocationJson) => {
+export const updatePhaseAllocation = async (allocationId, payload) => {
   const response = await fetch(`${API_URL}/api/v1/allocation/${allocationId}`, {
     method: 'PATCH',
     headers: {
@@ -22,7 +22,7 @@ export const updatePhaseAllocation = async (allocationId, allocationJson) => {
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
-    body: JSON.stringify(allocationJson),
+    body: JSON.stringify(payload),
   });
   return response;
 };

@@ -20,7 +20,7 @@ const databaseCollections = {
   ADMIN_OPS_AUDIT: 'admin_operation_audit',
   GLOBAL_PHASE: 'phase',
   SITE_PHASE_ALLOCATION: 'site_phase_allocation',
-}
+};
 
 const collections = {
   EMPLOYER_FORMS: 'employer_forms',

@@ -125,7 +125,7 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
    *
    * This query performs the following actions:
    * * Uses currentPhase.id and site.id to get the correct allocation record
-   * * returns relevant allocation and phase data to the siteView table
+   * * Used currentPhase.id to get the startDate and endDate for the phase
    * @type {siteResponse[]}
    */
   // Raw SQL was required here because `options.fields` wouldn't work with `join` https://github.com/bcgov/hcap/pull/834#pullrequestreview-1100927873

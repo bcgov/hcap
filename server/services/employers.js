@@ -84,13 +84,22 @@ const getAllSites = async () =>
   );
 
 const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams) => {
-  // Get currentPhase, user currentPhase.id and site.id to get allocation number
+  /**
+   * @typedef {Object} currentPhaseResponse Internal type for DB response to the `getSitesWithCriteria` query
+   * @property {number} id                  PK ID of the phase
+   */
+  /**
+   * Raw result from a custom query.
+   *
+   * This query performs the following actions:
+   * * Gets the PK for the active/current phase using todays date to determine which is active
+   * * Stores ID in a constant, used in a subsequent query to get associated allocations, start and end dates.
+   * @type {currentPhaseResponse[]}
+   */
   const currentPhase = await dbClient.db.query(
     `
     SELECT
-    p.id as "id",
-    p.start_date as "startDate", 
-    p.end_date as "endDate"
+    p.id as "id"
     FROM phase p
     WHERE CURRENT_DATE between p.start_date and p.end_date
     LIMIT 1

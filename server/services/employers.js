@@ -81,30 +81,43 @@ const getAllSites = async () =>
   );
 
 const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams) => {
+  // Get currentPhase, user currentPhase.id and site.id to get allocation number
+  const currentPhase = await dbClient.db.query(
+    `
+        SELECT
+          p.id as "id",
+          p.start_date as "startDate", 
+          p.end_date as "endDate"
+        FROM phase p
+        WHERE CURRENT_DATE between p.start_date and p.end_date
+        LIMIT 1
+      `
+  );
   // Raw SQL was required here because `options.fields` wouldn't work with `join` https://github.com/bcgov/hcap/pull/834#pullrequestreview-1100927873
   const records = await dbClient.db.query(
     `
-      SELECT
-        employer_sites.id as "id",
-        employer_sites.body -> 'siteId' as "siteId",
-        employer_sites.body -> 'siteName' as "siteName",
-        employer_sites.body -> 'operatorName' as "operatorName",
-        employer_sites.body -> 'city' as "city",
-        employer_sites.body -> 'healthAuthority' as "healthAuthority",
-        employer_sites.body -> 'postalCode' as "postalCode",
-        spa.allocation,
-        p.start_date as "startDate", 
-        p.end_date as "endDate"
-      FROM
-        employer_sites
-      LEFT JOIN site_phase_allocation spa on spa.site_id = employer_sites.id 
-      LEFT JOIN phase p on p.id = spa.phase_id
-      AND CURRENT_DATE between p.start_date and p.end_date
-      ${additionalCriteria.length > 0 ? 'WHERE' : ''}
-        ${additionalCriteria.join(' AND ')}
-      ORDER BY
-        employer_sites.body -> 'siteName';
-    `,
+        SELECT
+          employer_sites.id as "id",
+          employer_sites.body -> 'siteId' as "siteId",
+          employer_sites.body -> 'siteName' as "siteName",
+          employer_sites.body -> 'operatorName' as "operatorName",
+          employer_sites.body -> 'city' as "city",
+          employer_sites.body -> 'healthAuthority' as "healthAuthority",
+          employer_sites.body -> 'postalCode' as "postalCode",
+          spa.allocation,
+          p.start_date as "startDate", 
+          p.end_date as "endDate"
+        FROM
+          employer_sites
+        LEFT JOIN phase p on p.id = ${currentPhase[0].id}
+        LEFT JOIN site_phase_allocation spa on spa.site_id = employer_sites.id  and spa.phase_id = ${
+          currentPhase[0].id
+        }
+        ${additionalCriteria.length > 0 ? 'WHERE' : ''}
+          ${additionalCriteria.join(' AND ')}
+        ORDER BY
+          employer_sites.body -> 'siteName';
+      `,
     additionalCriteriaParams
   );
 

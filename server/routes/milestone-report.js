@@ -70,6 +70,8 @@ const generateRosReport = async (csvStream, region) => {
       'ROS End Date': result.endDate,
       'Start Date at a Site': result.siteStartDate,
       'Site of ROS': result.site,
+      'Position Type': result.positionType,
+      'Employment Type': result.employmentType,
       'Health Region': result.healthRegion,
     });
   });

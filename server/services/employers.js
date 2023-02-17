@@ -14,8 +14,8 @@ const { userRegionQuery } = require('./user.js');
  * @property {string} healthAuthority  Authority for the site
  * @property {string} postalCode       Postal code of site
  * @property {number} allocation       Number of allocations
- * @property {Date} endDate              End date of the current phase
- * @property {Date} startDate            Start date of the current phase
+ * @property {Date} endDate            End date of the current phase
+ * @property {Date} startDate          Start date of the current phase
  *
  */
 

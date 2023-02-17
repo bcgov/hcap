@@ -38,8 +38,8 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .patch(`/api/v1/phase/1`)
       .send({
-        start_date: '2024/10/12',
-        end_date: '2027/10/12',
+        start_date: '2020/10/12',
+        end_date: '2023/10/12',
       })
       .set(header);
     expect(res.status).toEqual(403);
@@ -75,8 +75,8 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .patch(`/api/v1/phase/1`)
       .send({
-        start_date: '2024/10/12',
-        end_date: '2027/10/12',
+        start_date: '2020/10/12',
+        end_date: '2022/10/12',
       })
       .set(header);
     expect(res.status).toEqual(403);

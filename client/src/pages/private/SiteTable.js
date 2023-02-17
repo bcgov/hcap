@@ -245,11 +245,9 @@ export default ({ sites, viewOnly }) => {
                   Create new site
                 </MenuItem>
                 <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-                  <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-                    <MenuItem onClick={openNewPhaseModal} className={classes.menuItem}>
-                      Create new phase
-                    </MenuItem>
-                  </CheckPermissions>
+                  <MenuItem onClick={openNewPhaseModal} className={classes.menuItem}>
+                    Create new phase
+                  </MenuItem>
                 </FeatureFlaggedComponent>
                 <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
                   <MenuItem

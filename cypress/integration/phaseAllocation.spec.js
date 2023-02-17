@@ -22,6 +22,13 @@ describe('Phase functionality', () => {
     cy.contains('li', 'Create new phase').click();
   };
 
+  const navigateToEditForm = () => {
+    cy.visit('site-view');
+    cy.contains('button', 'Action').click();
+    cy.contains('li', 'View phase list').click();
+    cy.contains('tr', 'Test phase').contains('button', 'Edit').click();
+  };
+
   it('MoH can create new phase', () => {
     // happy path
     navigateToForm();
@@ -31,7 +38,6 @@ describe('Phase functionality', () => {
       endDate: '2022/03/31',
     };
     completePhaseForm(formValues);
-
     // expect: no errors, success message.
     cy.contains('.Mui-error').should('not.exist');
     cy.get('.MuiAlert-message').contains(`Phase '${formValues.phaseName}' created successfully`);
@@ -57,7 +63,6 @@ describe('Phase functionality', () => {
       endDate: '2100/01/01',
     };
     completePhaseForm(formValues);
-
     // expect: required error on every field
     cy.contains(
       'p.Mui-error',
@@ -81,5 +86,24 @@ describe('Phase functionality', () => {
 
     // expect: required error on every field
     cy.contains('p.Mui-error', 'Invalid entry. End date must be at least 1 day after Start date');
+  });
+
+  it('MoH can edit the start date and end date of a phase', () => {
+    navigateToEditForm();
+
+    cy.get('[name=Startdate]').clear().type(`{ctrl+v}2024/01/05`);
+    cy.get('[name=Enddate]').clear().type(`{ctrl+v}2027/01/04`);
+
+    cy.contains('button', 'Update').click();
+
+    // expect: no errors, success message.
+    cy.contains('.Mui-error').should('not.exist');
+    cy.get('.MuiAlert-message').contains(`Phase 'Test phase' updated successfully`);
+  });
+
+  it('MoH can not edit the phase name', () => {
+    navigateToEditForm();
+    // expect phaseName to be disabled
+    cy.get('[name=phaseName]').should('have.class', 'Mui-disabled');
   });
 });

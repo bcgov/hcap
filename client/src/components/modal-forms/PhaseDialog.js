@@ -68,6 +68,7 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew }) => {
                 component={RenderTextField}
                 label='* Phase name'
                 placeholder='Enter a phase name'
+                disabled={!isNew}
               />
               <Box
                 display='flex'

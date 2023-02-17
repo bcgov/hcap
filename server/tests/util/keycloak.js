@@ -21,6 +21,11 @@ const healthAuthority = {
   password: process.env.KC_TEST_HA_PWD || 'password',
 };
 
+const ministryOfHealth = {
+  username: 'test-moh',
+  password: process.env.KC_TEST_MOH_PWD || 'password',
+};
+
 const getKeycloakToken = async ({ username, password }) => {
   try {
     const data = querystring.stringify({
@@ -49,4 +54,11 @@ const getKeycloakToken = async ({ username, password }) => {
     throw error;
   }
 };
-module.exports = { superuser, participant, employer, healthAuthority, getKeycloakToken };
+module.exports = {
+  superuser,
+  participant,
+  employer,
+  healthAuthority,
+  getKeycloakToken,
+  ministryOfHealth,
+};

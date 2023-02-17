@@ -6,8 +6,8 @@ const app = require('../server');
 const {
   getAllSitePhases,
   getAllPhases,
-  createGlobalPhase,
-  updateGlobalPhase,
+  createPhase,
+  updatePhase,
 } = require('../services/phase.js');
 
 const { siteData } = require('./util/testData');
@@ -36,12 +36,12 @@ describe('Phase Allocation Endpoints', () => {
       start_date: '2023/10/12',
       end_date: '2025/10/12',
     };
-    const res = await createGlobalPhase(phaseMock, user);
+    const res = await createPhase(phaseMock, user);
     expect(res.name).toEqual('Test Phase name');
   });
 
   it('Update phase, receive success', async () => {
-    const res = await updateGlobalPhase(
+    const res = await updatePhase(
       1,
       {
         start_date: '2024/10/12',

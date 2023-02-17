@@ -4,12 +4,7 @@ const logger = require('../logger.js');
 const { asyncMiddleware } = require('../error-handler.js');
 const { CreatePhaseSchema, UpdatePhaseSchema } = require('../validation');
 const { expressRequestBodyValidator } = require('../middleware');
-const {
-  createGlobalPhase,
-  updateGlobalPhase,
-  getAllSitePhases,
-  getAllPhases,
-} = require('../services/phase');
+const { createPhase, updatePhase, getAllSitePhases, getAllPhases } = require('../services/phase');
 const { getSitesForUser } = require('../services/employers');
 const { FEATURE_PHASE_ALLOCATION } = require('../services/feature-flags');
 
@@ -96,7 +91,7 @@ router.post(
     }
     try {
       const { body, hcapUserInfo: user } = req;
-      const response = await createGlobalPhase(body, user);
+      const response = await createPhase(body, user);
       logger.info({
         action: 'phase_post',
         performed_by: {
@@ -128,7 +123,7 @@ router.patch(
     }
     try {
       const { body, hcapUserInfo: user } = req;
-      const response = await updateGlobalPhase(req.params.id, body, user);
+      const response = await updatePhase(req.params.id, body, user);
       logger.info({
         action: 'phase_patch',
         performed_by: {

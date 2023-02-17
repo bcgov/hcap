@@ -13,7 +13,10 @@ const { userRegionQuery } = require('./user.js');
  * @property {string} city             City the site is in
  * @property {string} healthAuthority  Authority for the site
  * @property {string} postalCode       Postal code of site
- * @property {number} allocation
+ * @property {number} allocation       Number of allocations
+ * @property {Date} endDate              End date of the current phase
+ * @property {Date} startDate            Start date of the current phase
+ *
  */
 
 /**
@@ -84,15 +87,38 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
   // Get currentPhase, user currentPhase.id and site.id to get allocation number
   const currentPhase = await dbClient.db.query(
     `
-        SELECT
-          p.id as "id",
-          p.start_date as "startDate", 
-          p.end_date as "endDate"
-        FROM phase p
-        WHERE CURRENT_DATE between p.start_date and p.end_date
-        LIMIT 1
-      `
+    SELECT
+    p.id as "id",
+    p.start_date as "startDate", 
+    p.end_date as "endDate"
+    FROM phase p
+    WHERE CURRENT_DATE between p.start_date and p.end_date
+    LIMIT 1
+    `
   );
+
+  /**
+   * @typedef {Object} siteResponse        Internal type for DB response to the `getSitesWithCriteria` query
+   * @property {number} id                 PK ID of the site
+   * @property {number} siteId             User populated ID for the site
+   * @property {string} siteName           Name of the site
+   * @property {string} operatorName       Name of operator for the site
+   * @property {string} city               City of the site
+   * @property {string} healthAuthority    Health Authority the site is under
+   * @property {string} postalCode         Postal code of the site
+   * @property {number} allocation         Number of allocations
+   * @property {Date} endDate              End date of the current phase
+   * @property {Date} startDate            Start date of the current phase
+   */
+
+  /**
+   * Raw result from a custom query.
+   *
+   * This query performs the following actions:
+   * * Uses currentPhase.id and site.id to get the correct allocation record
+   * * returns relevant allocation and phase data to the siteView table
+   * @type {siteResponse[]}
+   */
   // Raw SQL was required here because `options.fields` wouldn't work with `join` https://github.com/bcgov/hcap/pull/834#pullrequestreview-1100927873
   const records = await dbClient.db.query(
     `
@@ -110,7 +136,7 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
         FROM
           employer_sites
         LEFT JOIN phase p on p.id = ${currentPhase[0].id}
-        LEFT JOIN site_phase_allocation spa on spa.site_id = employer_sites.id  and spa.phase_id = ${
+        LEFT JOIN site_phase_allocation spa on spa.site_id = employer_sites.id and spa.phase_id = ${
           currentPhase[0].id
         }
         ${additionalCriteria.length > 0 ? 'WHERE' : ''}

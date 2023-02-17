@@ -47,7 +47,7 @@ apiRouter.use('/employer-sites', employerSitesRouter);
 apiRouter.use('/employer-sites-detail', employerSitesRouter);
 
 // Phase/Allocation
-apiRouter.use('/phase-allocation', phaseAllocationRouter);
+apiRouter.use('/phase', phaseAllocationRouter);
 
 // PSI Routes
 apiRouter.use(`/psi`, psiRouter);

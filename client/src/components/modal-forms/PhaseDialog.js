@@ -34,7 +34,7 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew }) => {
 
   const handleSubmit = async (phase) => {
     const phaseJson = {
-      name: phase.phaseName,
+      ...(isNew && { name: phase.phaseName }),
       start_date: phase.startDate,
       end_date: phase.endDate,
     };

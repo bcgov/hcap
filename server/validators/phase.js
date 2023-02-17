@@ -29,4 +29,28 @@ const CreatePhaseSchema = yup
       .test('is-date', 'Not a valid date', validISODateString),
   });
 
-module.exports = { CreatePhaseSchema };
+const UpdatePhaseSchema = yup
+  .object()
+  .noUnknown('Unknown field in entry')
+  .shape({
+    start_date: yup
+      .string()
+      .required('Start date is required')
+      .test('is-date', 'Not a valid date', validISODateString),
+    end_date: yup
+      .string()
+      .when('start_date', (startDate, schema) => {
+        if (startDate) {
+          return schema.test(
+            'is-after-start',
+            'Invalid entry. End date must be at least 1 day after Start date',
+            (v) => Date.parse(startDate) + 86400000 <= Date.parse(v)
+          );
+        }
+        return schema;
+      })
+      .required('End date is required')
+      .test('is-date', 'Not a valid date', validISODateString),
+  });
+
+module.exports = { CreatePhaseSchema, UpdatePhaseSchema };

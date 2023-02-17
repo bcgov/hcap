@@ -2,7 +2,7 @@ const express = require('express');
 const keycloak = require('../keycloak');
 const logger = require('../logger.js');
 const { asyncMiddleware } = require('../error-handler.js');
-const { CreatePhaseSchema } = require('../validation');
+const { CreatePhaseSchema, UpdatePhaseSchema } = require('../validation');
 const { expressRequestBodyValidator } = require('../middleware');
 const {
   createGlobalPhase,
@@ -98,7 +98,7 @@ router.post(
       const { body, hcapUserInfo: user } = req;
       const response = await createGlobalPhase(body, user);
       logger.info({
-        action: 'phase-allocation_post',
+        action: 'phase_post',
         performed_by: {
           username: user.username,
           id: user.id,
@@ -109,7 +109,7 @@ router.post(
       return resp.status(201).json(response);
     } catch (err) {
       logger.error(err);
-      return resp.status(400).send(`${err}`);
+      return resp.status(400).send('Failed to create phase');
     }
   })
 );
@@ -120,7 +120,7 @@ router.patch(
   [
     keycloak.allowRolesMiddleware('ministry_of_health'),
     keycloak.getUserInfoMiddleware(),
-    expressRequestBodyValidator(CreatePhaseSchema),
+    expressRequestBodyValidator(UpdatePhaseSchema),
   ],
   asyncMiddleware(async (req, resp) => {
     if (!FEATURE_PHASE_ALLOCATION) {
@@ -130,7 +130,7 @@ router.patch(
       const { body, hcapUserInfo: user } = req;
       const response = await updateGlobalPhase(req.params.id, body, user);
       logger.info({
-        action: 'phase-allocation_post',
+        action: 'phase_patch',
         performed_by: {
           username: user.username,
           id: user.id,
@@ -141,7 +141,7 @@ router.patch(
       return resp.status(201).json(response);
     } catch (err) {
       logger.error(err);
-      return resp.status(400).send(`${err}`);
+      return resp.status(400).send('Failed to update phase');
     }
   })
 );

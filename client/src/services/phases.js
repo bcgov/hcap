@@ -27,7 +27,7 @@ const mapPhasesResponse = async (data, columns) => {
 };
 
 export const fetchPhases = async () => {
-  const response = await fetch(`${API_URL}/api/v1/phase-allocation/`, {
+  const response = await fetch(`${API_URL}/api/v1/phase/`, {
     headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
     method: 'GET',
   });
@@ -50,7 +50,7 @@ export const FetchMappedPhases = async (columns) => {
 };
 
 export const fetchSitePhases = async (siteId) => {
-  const response = await fetch(`${API_URL}/api/v1/phase-allocation/${siteId}`, {
+  const response = await fetch(`${API_URL}/api/v1/phase/${siteId}`, {
     headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
     method: 'GET',
   });
@@ -63,7 +63,7 @@ export const fetchSitePhases = async (siteId) => {
 
 // Note: This should be converted to ISO, ideally
 export const createPhase = async (phaseJson) => {
-  const response = await fetch(`${API_URL}/api/v1/phase-allocation`, {
+  const response = await fetch(`${API_URL}/api/v1/phase`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${store.get('TOKEN')}`,
@@ -76,7 +76,7 @@ export const createPhase = async (phaseJson) => {
 };
 
 export const updatePhase = async (phaseId, phaseJson) => {
-  const response = await fetch(`${API_URL}/api/v1/phase-allocation/${phaseId}`, {
+  const response = await fetch(`${API_URL}/api/v1/phase/${phaseId}`, {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${store.get('TOKEN')}`,

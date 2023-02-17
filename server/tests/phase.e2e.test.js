@@ -1,5 +1,5 @@
 /**
- * Tests for route /api/v1/allocation
+ * Tests for route /api/v1/phase
  */
 const request = require('supertest');
 const app = require('../server');

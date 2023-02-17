@@ -84,28 +84,6 @@ const getAllSites = async () =>
   );
 
 const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams) => {
-  // /**
-  //  * @typedef {Object} currentPhaseResponse Internal type for DB response to the `getSitesWithCriteria` query
-  //  * @property {number} id                  PK ID of the phase
-  //  */
-  // /**
-  //  * Raw result from a custom query.
-  //  *
-  //  * This query performs the following actions:
-  //  * * Gets the PK for the active/current phase using todays date to determine which is active
-  //  * * Stores ID in a constant, used in a subsequent query to get associated allocations, start and end dates.
-  //  * @type {currentPhaseResponse[]}
-  //  */
-  // const currentPhase = await dbClient.db.query(
-  //   `
-  //   SELECT
-  //   p.id as "id"
-  //   FROM phase p
-  //   WHERE CURRENT_DATE between p.start_date and p.end_date
-  //   LIMIT 1
-  //   `
-  // );
-
   /**
    * @typedef {Object} siteResponse        Internal type for DB response to the `getSitesWithCriteria` query
    * @property {number} id                 PK ID of the site
@@ -124,8 +102,9 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
    * Raw result from a custom query.
    *
    * This query performs the following actions:
-   * * Uses currentPhase.id and site.id to get the correct allocation record
-   * * Used currentPhase.id to get the startDate and endDate for the phase
+   * * Uses the current date to get the active/current phase
+   * * Uses phase.id to get the startDate and endDate for the phase
+   * * uses phase.id and site.id to get the correct allocation record
    * @type {siteResponse[]}
    */
   // Raw SQL was required here because `options.fields` wouldn't work with `join` https://github.com/bcgov/hcap/pull/834#pullrequestreview-1100927873

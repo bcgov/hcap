@@ -84,27 +84,27 @@ const getAllSites = async () =>
   );
 
 const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams) => {
-  /**
-   * @typedef {Object} currentPhaseResponse Internal type for DB response to the `getSitesWithCriteria` query
-   * @property {number} id                  PK ID of the phase
-   */
-  /**
-   * Raw result from a custom query.
-   *
-   * This query performs the following actions:
-   * * Gets the PK for the active/current phase using todays date to determine which is active
-   * * Stores ID in a constant, used in a subsequent query to get associated allocations, start and end dates.
-   * @type {currentPhaseResponse[]}
-   */
-  const currentPhase = await dbClient.db.query(
-    `
-    SELECT
-    p.id as "id"
-    FROM phase p
-    WHERE CURRENT_DATE between p.start_date and p.end_date
-    LIMIT 1
-    `
-  );
+  // /**
+  //  * @typedef {Object} currentPhaseResponse Internal type for DB response to the `getSitesWithCriteria` query
+  //  * @property {number} id                  PK ID of the phase
+  //  */
+  // /**
+  //  * Raw result from a custom query.
+  //  *
+  //  * This query performs the following actions:
+  //  * * Gets the PK for the active/current phase using todays date to determine which is active
+  //  * * Stores ID in a constant, used in a subsequent query to get associated allocations, start and end dates.
+  //  * @type {currentPhaseResponse[]}
+  //  */
+  // const currentPhase = await dbClient.db.query(
+  //   `
+  //   SELECT
+  //   p.id as "id"
+  //   FROM phase p
+  //   WHERE CURRENT_DATE between p.start_date and p.end_date
+  //   LIMIT 1
+  //   `
+  // );
 
   /**
    * @typedef {Object} siteResponse        Internal type for DB response to the `getSitesWithCriteria` query
@@ -144,10 +144,8 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
           p.end_date as "endDate"
         FROM
           employer_sites
-        LEFT JOIN phase p on p.id = ${currentPhase[0].id}
-        LEFT JOIN site_phase_allocation spa on spa.site_id = employer_sites.id and spa.phase_id = ${
-          currentPhase[0].id
-        }
+          LEFT JOIN phase p ON CURRENT_DATE BETWEEN p.start_date AND p.end_date
+          LEFT JOIN site_phase_allocation spa ON spa.site_id = employer_sites.id and spa.phase_id = p.id
         ${additionalCriteria.length > 0 ? 'WHERE' : ''}
           ${additionalCriteria.join(' AND ')}
         ORDER BY

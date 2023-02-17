@@ -182,6 +182,7 @@ export default ({ sites, viewOnly }) => {
     await fetchSites();
   };
 
+  console.log(fetchSiteRows.length);
   const columnObj = (rowId) => columns.find(({ id }) => id === rowId);
   return (
     <>

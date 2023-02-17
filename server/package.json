@@ -14,6 +14,7 @@
     "feed-participants": "node scripts/feed-participants.js",
     "feed-sites": "node scripts/feed-sites.js",
     "feed-data": "node scripts/feed-data.js",
+    "clear-data": "node scripts/clear-data.js",
     "stats": "node scripts/stats.js",
     "sendMassEmail": "node scripts/sendEmailBlast.js",
     "participant-stats-hired": "node scripts/participant-stats-hired.js",
@@ -21,7 +22,7 @@
     "participant-stats-rejected": "node scripts/participant-stats-rejected.js",
     "participant-stats-no-offers": "node scripts/participant-stats-no-offers.js",
     "export": "node scripts/export.js",
-    "watch": "NODE_ENV=local nodemon main.js",
+    "watch": "nodemon main.js",
     "start": "NODE_ENV=production node main.js",
     "test:debug": "NODE_ENV=test jest --runInBand --detectOpenHandles",
     "test": "NODE_ENV=test jest --silent --runInBand --forceExit --detectOpenHandles --coverage --verbose false"

@@ -129,11 +129,8 @@ local-testing-setup:
 	@docker-compose -f docker-compose.test.yml exec server npm run feed-sites sites.xlsx
 	@docker-compose -f docker-compose.test.yml exec server npm run feed-data
 
-# ADD NODE_ENV=local to .env
-
 local-testing-teardown:
 	@docker stop ${APP_NAME}-server
-
 
 database: ## <Helper> :: Executes into database container.
 	@echo "Make: Shelling into local database container ..."

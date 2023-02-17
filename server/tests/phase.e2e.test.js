@@ -36,8 +36,9 @@ describe('api e2e tests for /phase', () => {
   it('should not allow HA to create phase', async () => {
     const header = await getKeycloakToken(healthAuthority);
     const res = await request(app)
-      .patch(`/api/v1/phase/1`)
+      .post(`/api/v1/phase`)
       .send({
+        name: 'Test HA Phase name',
         start_date: '2020/10/12',
         end_date: '2023/10/12',
       })

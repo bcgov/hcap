@@ -1,4 +1,4 @@
-const participantStatus = {
+export const participantStatus = {
   OPEN: 'open',
   PROSPECTING: 'prospecting',
   INTERVIEWING: 'interviewing',
@@ -14,8 +14,4 @@ const participantStatus = {
   UNAVAILABLE: 'unavailable',
   ROS: 'ros',
   REJECT_ACKNOWLEDGEMENT: 'reject_ack',
-};
-
-module.exports = {
-  participantStatus,
 };

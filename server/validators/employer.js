@@ -1,8 +1,9 @@
-const yup = require('yup');
-const { healthRegions, siteTypes, roles } = require('../constants');
-const { validateBlankOrPositiveInteger, errorMessage, errorMessageIndex } = require('./helpers');
+import { healthRegions, siteTypes, roles } from '../constants';
+import { validateBlankOrPositiveInteger, errorMessage, errorMessageIndex } from './helpers';
 
-const EmployerFormSchema = yup
+const yup = require('yup');
+
+export const EmployerFormSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
@@ -151,7 +152,7 @@ const EmployerFormSchema = yup
       .test('is-true', errorMessage, (v) => v === true),
   });
 
-const EmployerSiteBatchSchema = yup.array().of(
+export const EmployerSiteBatchSchema = yup.array().of(
   yup.lazy((item, options) => {
     const index = options.parent.indexOf(item);
     return yup
@@ -206,7 +207,7 @@ const EmployerSiteBatchSchema = yup.array().of(
   })
 );
 
-const CreateSiteSchema = yup
+export const CreateSiteSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
@@ -244,7 +245,7 @@ const CreateSiteSchema = yup
     siteContactEmail: yup.string().nullable().email('Invalid email address'),
   });
 
-const EditSiteSchema = yup
+export const EditSiteSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
@@ -274,10 +275,3 @@ const EditSiteSchema = yup
     operatorEmail: yup.string().required(errorMessage).email('Invalid email address'),
     history: yup.array().required('Edit history is required'),
   });
-
-module.exports = {
-  EmployerFormSchema,
-  EmployerSiteBatchSchema,
-  CreateSiteSchema,
-  EditSiteSchema,
-};

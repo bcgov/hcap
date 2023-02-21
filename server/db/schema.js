@@ -3,7 +3,7 @@
  */
 
 // All table names in our database
-const databaseCollections = {
+export const databaseCollections = {
   PARTICIPANTS: 'participants',
   PARTICIPANTS_STATUS: 'participants_status',
   GEOCODES: 'geocodes',
@@ -24,13 +24,13 @@ const databaseCollections = {
 };
 
 // Potentially deprecated: these are still referred to in the app but are seemingly no longer tables in the database
-const collections = {
+export const collections = {
   EMPLOYER_FORMS: 'employer_forms',
   SITE_PARTICIPANTS_STATUS: 'site_participants_status',
   ...databaseCollections,
 };
 
-const views = {
+export const views = {
   PARTICIPANTS_STATUS_INFOS: 'participants_status_infos',
 };
 
@@ -39,7 +39,7 @@ const views = {
 // `definition` is a raw SQL string used to create the table
 // `collection` is the name of the document table
 // `indexes` are JSONB field names on which unique indexes should be created
-const schema = {
+export const schema = {
   relationalTables: [
     {
       definition: `CREATE TABLE IF NOT EXISTS ${collections.PARTICIPANTS_STATUS} (
@@ -162,4 +162,3 @@ const schema = {
   ],
 };
 
-module.exports = { collections, databaseCollections, views, schema };

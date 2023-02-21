@@ -1,9 +1,9 @@
+import { healthRegions } from '../constants';
+import { validateDateString, validateOptionalDateString, errorMessage } from './helpers';
+
 const yup = require('yup');
-const { healthRegions } = require('../constants');
 
-const { validateDateString, validateOptionalDateString, errorMessage } = require('./helpers');
-
-const CreatePSISchema = yup
+export const CreatePSISchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
@@ -17,7 +17,7 @@ const CreatePSISchema = yup
       .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
   });
 
-const CreateCohortSchema = yup
+export const CreateCohortSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
@@ -34,7 +34,7 @@ const CreateCohortSchema = yup
     psi_id: yup.number().required('Cohort must be mapped to a PSI'),
   });
 
-const EditCohortSchema = yup
+export const EditCohortSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
@@ -49,9 +49,3 @@ const EditCohortSchema = yup
       .test('is-date', 'endDate: Not a valid date', validateOptionalDateString),
     cohortSize: yup.number().optional(),
   });
-
-module.exports = {
-  CreatePSISchema,
-  CreateCohortSchema,
-  EditCohortSchema,
-};

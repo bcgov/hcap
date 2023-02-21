@@ -1,21 +1,21 @@
 /* eslint-disable camelcase */
 // disabling camelcase check so that we can manipulate snake_case attributes without changing structure
-const dayjs = require('dayjs');
-const isBetween = require('dayjs/plugin/isBetween');
-const { dbClient, collections } = require('../db');
-const { getSiteByID } = require('./employers');
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+import { dbClient, collections } from '../db';
+import { getSiteByID } from './employers';
 
 dayjs.extend(isBetween);
 
 /**
- * @typedef {import('./employers').employerSite} employerSite
+ * @typedef {import('./employers').EmployerSite} employerSite
  *
  * @typedef  {Object} sitePhase
  * @property {number} id             Internal ID of the phase
  * @property {string} phaseName      Human readable phase name
  * @property {string} startDate      Date string seperated by slashes, e.g. '2020/01/01'
  * @property {string} endDate        Date string seperated by slashes, e.g. '2020/01/01'
- * @property {any} allocation
+ * @property {number} allocation     Number of allocations available
  * @property {number} remainingHires Number of remaining hires
  * @property {number} hcapHires      Number of hires from HCAP
  * @property {number} nonHcapHires   Number of hires from outside HCAP
@@ -26,7 +26,7 @@ dayjs.extend(isBetween);
  * @param {number} siteId Database ID of the site
  * @returns {Promise<sitePhase[]>} Phases for the site
  */
-const getAllSitePhases = async (siteId) => {
+export const getAllSitePhases = async (siteId) => {
   const site = await getSiteByID(siteId);
 
   /**
@@ -36,6 +36,7 @@ const getAllSitePhases = async (siteId) => {
    * @property {Date} start_date           Start date of the phase
    * @property {Date} end_date             End date of the phase
    * @property {number} allocation         Number of employees allocated for this phase at this site
+   * @property {number} allocation_id      Internal ID of the allocation connected to the site/phase
    * @property {string} hcap_hires         Number of HCAP employees hired (as a string)
    * @property {string} non_hcap_hires     Number of non-HCAP employees hired (as a string)
    */
@@ -58,6 +59,7 @@ const getAllSitePhases = async (siteId) => {
       phase.start_date, 
       phase.end_date, 
       spa.allocation, 
+      spa.id as allocation_id,
       count(ps.id) FILTER (
         WHERE 
           ps.data ->> 'nonHcapOpportunity' = 'false'
@@ -74,10 +76,7 @@ const getAllSitePhases = async (siteId) => {
         AND ps."current"
         AND to_date(
           ps.data ->> 'hiredDate', 'YYYY/MM/DD'
-        ) BETWEEN COALESCE(
-          spa.start_date, phase.start_date
-        ) 
-      AND COALESCE(spa.end_date, phase.end_date) 
+        ) BETWEEN phase.start_date AND phase.end_date
     GROUP BY 
       phase.id, 
       spa.id
@@ -89,6 +88,7 @@ const getAllSitePhases = async (siteId) => {
   return sitePhases.map((phase) => ({
     id: phase.id,
     phaseName: phase.name,
+    allocationId: phase.allocation_id,
     startDate: dayjs.utc(phase.start_date).format('YYYY/MM/DD'),
     endDate: dayjs.utc(phase.end_date).format('YYYY/MM/DD'), // strips time/timezone from date and formats it
     allocation: phase.allocation,
@@ -98,7 +98,7 @@ const getAllSitePhases = async (siteId) => {
   }));
 };
 
-const getAllPhases = async () => {
+export const getAllPhases = async () => {
   // NOTE: this will not allow for full access to the phase list once it hits that 100k limit!
   // If there is any chance of this hitting that number, or if performance starts to suffer,
   // pagination support should be added.
@@ -106,21 +106,14 @@ const getAllPhases = async () => {
   return phases;
 };
 
-const createGlobalPhase = async (phase, user) => {
+export const createGlobalPhase = async (phase, user) => {
   const phaseData = { ...phase, created_by: user.id, updated_by: user.id };
   const res = await dbClient.db[collections.GLOBAL_PHASE].insert(phaseData);
   return res;
 };
 
-const updateGlobalPhase = async (phaseId, phase, user) => {
+export const updateGlobalPhase = async (phaseId, phase, user) => {
   const phaseData = { ...phase, updated_by: user.id };
   const res = await dbClient.db[collections.GLOBAL_PHASE].update(phaseId, phaseData);
   return res;
-};
-
-module.exports = {
-  getAllSitePhases,
-  getAllPhases,
-  createGlobalPhase,
-  updateGlobalPhase,
 };

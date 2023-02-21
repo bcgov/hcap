@@ -1,4 +1,4 @@
-const { dbClient } = require('../db');
+import { dbClient } from '../db';
 
 /**
  * Helpers
@@ -42,9 +42,9 @@ const staleParticipantsStatusInvalidation = async () => {
 
 /**
  * @description - Clean and free all stale in-progress participants statuses and return those statuses as report
- * @returns {Promise<Array<Objects>>}
+ * @returns {Promise<Array<Object>>}
  */
-const cleanStaleInProgressParticipant = async () => {
+export const cleanStaleInProgressParticipant = async () => {
   // Print all stale in-progress participants
   const results = (await staleInProgressParticipants()) || [];
 
@@ -59,10 +59,10 @@ const cleanStaleInProgressParticipant = async () => {
 
 /**
  * @description - Creates a table of all participants that should currently be Open - Never engaged, or current status = rejected / reject_ack
- * @returns {Promise<Array>}
+ * @returns {Promise<any>}
  * NOTE: A current weakness of this script is that it does not cover participants who have been marked as interested again by MoH
  */
-const createStaleOpenParticipantsTable = async () => {
+export const createStaleOpenParticipantsTable = async () => {
   // Creates a temporary table, meant for removal later
   const createTable = `
     CREATE TEMPORARY TABLE stale_open_participants_table (
@@ -147,7 +147,7 @@ const createStaleOpenParticipantsTable = async () => {
  * Relies on createStaleOpenParticipantsTable
  * @returns {Promise<Array<Object>>}
  */
-const getStaleOpenParticipants = async () => {
+export const getStaleOpenParticipants = async () => {
   const getQuery = `
     SELECT * FROM stale_open_participants_table
     WHERE last_updated < (NOW() - interval '6 month');
@@ -158,7 +158,7 @@ const getStaleOpenParticipants = async () => {
 /**
  * Drops temporary table created
  */
-const dropStaleOpenParticipantsTable = async () => {
+export const dropStaleOpenParticipantsTable = async () => {
   const dropQuery = `
     DROP TABLE stale_open_participants_table;
   `;
@@ -167,9 +167,9 @@ const dropStaleOpenParticipantsTable = async () => {
 
 /**
  * For all the expired participants, invalidates their statuses and withdraws the participant
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const invalidateStaleOpenParticipants = async () => {
+export const invalidateStaleOpenParticipants = async () => {
   const updateStatement = `DO $$
     DECLARE
       participant_rec RECORD;
@@ -200,15 +200,4 @@ const invalidateStaleOpenParticipants = async () => {
   await dbClient.db.withTransaction(async (tx) => {
     await tx.query(updateStatement);
   });
-};
-
-/**
- * Exports
- */
-module.exports = {
-  cleanStaleInProgressParticipant,
-  createStaleOpenParticipantsTable,
-  getStaleOpenParticipants,
-  dropStaleOpenParticipantsTable,
-  invalidateStaleOpenParticipants,
 };

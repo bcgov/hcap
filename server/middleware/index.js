@@ -1,9 +1,3 @@
-const expressRequestBodyValidator = require('./express-request-validator');
-const routeRedirect = require('./route-redirect');
-const expressAccessLogger = require('./access-logger');
-
-module.exports = {
-  expressRequestBodyValidator,
-  routeRedirect,
-  expressAccessLogger,
-};
+export { default as expressRequestBodyValidator } from './express-request-validator';
+export { default as routeRedirect } from './route-redirect';
+export { default as expressAccessLogger } from './access-logger';

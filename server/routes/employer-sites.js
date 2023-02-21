@@ -1,22 +1,22 @@
-const express = require('express');
-const keycloak = require('../keycloak');
-const logger = require('../logger.js');
-const { asyncMiddleware } = require('../error-handler.js');
-const { CreateSiteSchema, EditSiteSchema } = require('../validation');
-const { expressRequestBodyValidator, routeRedirect } = require('../middleware');
-const {
+import express from 'express';
+import keycloak from '../keycloak';
+import logger from '../logger';
+import { asyncMiddleware } from '../error-handler';
+import { CreateSiteSchema, EditSiteSchema } from '../validation';
+import { expressRequestBodyValidator, routeRedirect } from '../middleware';
+import {
   saveSingleSite,
   updateSite,
   getSitesForUser,
   getSitesForRegion,
   getAllSites,
   getSiteByID,
-} = require('../services/employers');
-const {
+} from '../services/employers';
+import {
   getHiredParticipantsBySite,
   getWithdrawnParticipantsBySite,
-} = require('../services/participants.js');
-const { sanitize } = require('../utils.js');
+} from '../services/participants';
+import { sanitize } from '../utils';
 // Main router
 const router = express.Router();
 
@@ -243,4 +243,4 @@ router.get(
   })
 );
 
-module.exports = router;
+export default router;

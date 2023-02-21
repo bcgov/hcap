@@ -1,8 +1,8 @@
-const express = require('express');
-const keycloak = require('../keycloak');
-const logger = require('../logger.js');
-const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
-const { getPSICohorts, getCohort, makeCohort } = require('../services/cohorts.js');
+import express from 'express';
+import keycloak from '../keycloak';
+import logger from '../logger';
+import { asyncMiddleware, applyMiddleware } from '../error-handler';
+import { getPSICohorts, getCohort, makeCohort } from '../services/cohorts';
 
 // Router
 const router = express.Router();
@@ -87,4 +87,4 @@ router.post(
   })
 );
 
-module.exports = router;
+export default router;

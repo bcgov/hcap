@@ -1,4 +1,4 @@
-const { collections } = require('../db');
+import { collections } from '../db';
 
 exports.shorthands = undefined;
 

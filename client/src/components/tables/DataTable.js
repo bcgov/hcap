@@ -75,14 +75,16 @@ export const useTableStyles = makeStyles((theme) => ({
  *                                             Defines the table's structure and behaviour.
  * @param {fetchFunction} props.fetchData      Async function to fetch data for this table.
  *                                             Must return an array of objects, with keys matching column IDs.
+ * @param {string=} props.defaultSortColumn    ID of column to sort by, by default. Optional, defaults to the first column.
+ * @param {'asc'|'desc'|null} props.sortOrder  Direction to sort, defaults to ascending.
  * @returns {JSX.Element}
  */
-export const DataTable = ({ columns, fetchData, data }) => {
+export const DataTable = ({ columns, fetchData, data, defaultSortColumn, sortOrder }) => {
   const classes = useTableStyles();
 
   // Sorting settings
-  const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('name');
+  const [order, setOrder] = useState(sortOrder ?? 'asc');
+  const [orderBy, setOrderBy] = useState(defaultSortColumn ?? columns[0].id);
 
   // Whether or not data is currently loading
   const [isLoadingData, setLoadingData] = useState(false);

@@ -1,10 +1,10 @@
-const { dbClient, collections } = require('../db');
-const { participantStatus } = require('../constants');
+import { dbClient, collections } from '../db';
+import { participantStatus } from '../constants';
 
 const { HIRED, ARCHIVED } = participantStatus;
 
 // Verify user to view participant details
-const checkUserHasAccessToParticipant = async (id, user) => {
+export const checkUserHasAccessToParticipant = async (id, user) => {
   if (user.isMoH || user.isSuperUser) {
     return true;
   }
@@ -58,7 +58,7 @@ const checkUserHasAccessToParticipant = async (id, user) => {
   return false;
 };
 
-const participantDetails = async (id) => {
+export const participantDetails = async (id) => {
   // Verify user
   // Get participant object from database
   const [participant] =
@@ -112,9 +112,4 @@ const participantDetails = async (id) => {
     };
   }
   return participant;
-};
-
-module.exports = {
-  participantDetails,
-  checkUserHasAccessToParticipant,
 };

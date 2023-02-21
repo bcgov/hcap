@@ -1,16 +1,16 @@
 // Test execution code: npm run test:debug post-hire-flow.service.test.js
-const { startDB, closeDB } = require('./util/db');
+import { startDB, closeDB } from './util/db';
 
 // Subjects
-const {
+import {
   createPostHireStatus,
   getPostHireStatusesForParticipant,
-} = require('../services/post-hire-flow');
+} from '../services/post-hire-flow';
 
 // Utilities and helpers
-const { participantData } = require('./util/testData');
-const { makeParticipant } = require('../services/participants');
-const { postHireStatuses } = require('../validation');
+import { participantData } from './util/testData';
+import { makeParticipant } from '../services/participants';
+import { postHireStatuses } from '../validation';
 
 // Data Utility
 const makeTestPostHireStatus = async ({ email, status, data = {} }) => {

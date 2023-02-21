@@ -1,13 +1,13 @@
-const { dbClient, collections } = require('../db');
-const keycloak = require('../keycloak');
-const logger = require('../logger');
+import { dbClient, collections } from '../db';
+import keycloak from '../keycloak';
+import logger from '../logger';
 
 // Script method
-const healthCheck = async () => {
+export const healthCheck = async () => {
   let db = false;
   let kc = false;
   try {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
     const _ = await dbClient.db[collections.EMPLOYER_SITES].count();
     db = true;
   } catch (excp) {
@@ -34,8 +34,4 @@ const healthCheck = async () => {
     },
     version: process.env.VERSION,
   };
-};
-
-module.exports = {
-  healthCheck,
 };

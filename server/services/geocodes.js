@@ -1,4 +1,4 @@
-const { dbClient, collections } = require('../db');
+import { dbClient, collections } from '../db';
 
 const queryPoint = async (postalCode) => {
   const spacedCode = postalCode.includes(' ')
@@ -34,14 +34,17 @@ const queryPoint = async (postalCode) => {
   return { match: null };
 };
 
-const getPointsFromPostalCodes = async (postalCodes) => {
+export const getPointsFromPostalCodes = async (postalCodes) => {
   if (Array.isArray(postalCodes)) {
     const points = postalCodes.map((postalCode) => queryPoint(postalCode));
-    const values = await Promise.allSettled(points);
+    const values = (await Promise.allSettled(points)).map((result) => {
+      if (result.status === 'rejected') throw result.reason;
+      return result.value;
+    });
     return postalCodes.reduce(
       (acc, postalCode, i) => ({
         ...acc,
-        [postalCode.replace(/\s/g, '')]: values[i].value,
+        [postalCode.replace(/\s/g, '')]: values[i],
       }),
       {}
     );
@@ -50,22 +53,16 @@ const getPointsFromPostalCodes = async (postalCodes) => {
   return { [postalCodes]: point };
 };
 
-const getParticipantCoords = async (participantID) => {
+export const getParticipantCoords = async (participantID) => {
   const res = await dbClient.runRawQuery(
     `SELECT body->'location' FROM ${collections.PARTICIPANTS} where id=${Number(participantID)};`
   );
   return res;
 };
 
-const getSiteCoords = async (siteID) => {
+export const getSiteCoords = async (siteID) => {
   const res = await dbClient.runRawQuery(
     `SELECT body->'location' FROM ${collections.EMPLOYER_SITES} where id=${Number(siteID)}`
   );
   return res;
-};
-
-module.exports = {
-  getPointsFromPostalCodes,
-  getParticipantCoords,
-  getSiteCoords,
 };

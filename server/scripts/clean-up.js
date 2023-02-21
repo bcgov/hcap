@@ -1,6 +1,6 @@
 /* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
-const { dbClient } = require('../db');
-const { cleanStaleInProgressParticipant } = require('../services/clean-up');
+import { dbClient } from '../db';
+import { cleanStaleInProgressParticipant } from '../services/clean-up';
 /**
  * Script entry method (main)
  */

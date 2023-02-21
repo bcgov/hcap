@@ -1,14 +1,14 @@
-const { dbClient, collections } = require('../db');
-const { dayjs } = require('../utils');
+import { dbClient, collections } from '../db';
+import { dayjs } from '../utils';
 
-const userRegionQuery = (regions, target) => {
+export const userRegionQuery = (regions, target) => {
   if (regions.length === 0) return null;
   return {
     or: regions.map((region) => ({ [`${target} ilike`]: `%${region}%` })),
   };
 };
 
-const getUser = async (id) => {
+export const getUser = async (id) => {
   const query = { keycloakId: id };
   const options = { single: true };
   return dbClient.db[collections.USERS].findDoc(query, options);
@@ -45,9 +45,9 @@ const getROSEndedNotifications = async (sites) => {
  * Where each notification has a message, severity, and type
  * Empty array for no notifications
  * @param {*} hcapUserInfo
- * @returns {[]}
+ * @returns {Promise<*[]>}
  */
-const getUserNotifications = async (hcapUserInfo) => {
+export const getUserNotifications = async (hcapUserInfo) => {
   const notifications = [];
   if (hcapUserInfo.isEmployer || hcapUserInfo.isHA) {
     const rosEndedNotifications = await getROSEndedNotifications(hcapUserInfo.sites);
@@ -63,7 +63,7 @@ const getUserNotifications = async (hcapUserInfo) => {
   return notifications;
 };
 
-const getUserSites = async (id) => {
+export const getUserSites = async (id) => {
   const user = await getUser(id);
   if (!user || !user.sites) return [];
   return dbClient.db[collections.EMPLOYER_SITES].findDoc({
@@ -71,23 +71,14 @@ const getUserSites = async (id) => {
   });
 };
 
-const getUserSiteIds = async (siteIds = []) =>
+export const getUserSiteIds = async (siteIds = []) =>
   dbClient.db[collections.EMPLOYER_SITES].findDoc({
     siteId: siteIds.map((item) => item.toString()),
   });
 
-const makeUser = async ({ keycloakId, sites }) => {
+export const makeUser = async ({ keycloakId, sites }) => {
   await dbClient.db.saveDoc(collections.USERS, {
     keycloakId,
     sites,
   });
-};
-
-module.exports = {
-  getUser,
-  getUserSites,
-  userRegionQuery,
-  makeUser,
-  getUserSiteIds,
-  getUserNotifications,
 };

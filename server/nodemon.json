@@ -1,3 +1,4 @@
 {
-  "ignore": ["migrations/*.js", "tests/*.js"]
+  "ignore": ["migrations/*.js", "migrations/*.ts", "tests/*.js", "tests/*.ts"],
+  "ext": "js,ts,json"
 }

@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
-require('dotenv').config({ path: '../.env' });
-const inquirer = require('inquirer');
-const dayjs = require('dayjs');
-const utc = require('dayjs/plugin/utc');
-const { dbClient, collections } = require('../db');
+import './load-env';
+import inquirer from 'inquirer';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import { dbClient, collections } from '../db';
 
 dayjs.extend(utc);
 

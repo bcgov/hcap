@@ -1,11 +1,12 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 // Test execution code: npm run test:debug return-of-service.e2e.test.js
-const request = require('supertest');
-const app = require('../server');
-const { startDB, closeDB } = require('./util/db');
-const { getKeycloakToken, healthAuthority } = require('./util/keycloak');
-const { rosData, participantData, siteData } = require('./util/testData');
-const { createTestParticipantStatus, makeTestSite } = require('./util/integrationTestData');
+import request from 'supertest';
+import { app } from '../server';
+
+import { startDB, closeDB } from './util/db';
+import { getKeycloakToken, healthAuthority } from './util/keycloak';
+import { rosData, participantData, siteData } from './util/testData';
+import { createTestParticipantStatus, makeTestSite } from './util/integrationTestData';
 
 describe('api e2e tests for /ros routes', () => {
   let server;

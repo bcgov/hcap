@@ -1,9 +1,10 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 // Test: npm run test:debug participant.test.js
-const request = require('supertest');
-const app = require('../server');
-const { startDB, closeDB, cleanDB } = require('./util/db');
-const { getKeycloakToken, superuser } = require('./util/keycloak');
+import request from 'supertest';
+import { app } from '../server';
+
+import { startDB, closeDB, cleanDB } from './util/db';
+import { getKeycloakToken, superuser } from './util/keycloak';
 
 describe('Participants Endpoint', () => {
   // @TODO add seed data and test proper results
@@ -14,6 +15,7 @@ describe('Participants Endpoint', () => {
   beforeEach(async () => {
     await cleanDB();
     const mockDate = Date;
+    // @ts-ignore NOTE: should find a TS-friendly way of doing this
     global.Date = jest.fn(() => DATE_TO_USE);
     global.Date.UTC = mockDate.UTC;
     global.Date.parse = mockDate.parse;

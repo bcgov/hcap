@@ -3,7 +3,7 @@
  */
 import { v4 } from 'uuid';
 import { app } from '../server';
-import { getAllSitePhases, getAllPhases, createPhase, updatePhase } from '../services/phase.js';
+import { getAllSitePhases, getAllPhases, createPhase, updatePhase } from '../services/phase';
 
 import { siteData } from './util/testData';
 import { makeTestSite } from './util/integrationTestData';

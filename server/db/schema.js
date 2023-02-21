@@ -2,6 +2,7 @@
  * Define db schema rules including collection names and indexes
  */
 
+// All table names in our database
 const databaseCollections = {
   PARTICIPANTS: 'participants',
   PARTICIPANTS_STATUS: 'participants_status',
@@ -22,6 +23,7 @@ const databaseCollections = {
   SITE_PHASE_ALLOCATION: 'site_phase_allocation',
 };
 
+// Potentially deprecated: these are still referred to in the app but are seemingly no longer tables in the database
 const collections = {
   EMPLOYER_FORMS: 'employer_forms',
   SITE_PARTICIPANTS_STATUS: 'site_participants_status',

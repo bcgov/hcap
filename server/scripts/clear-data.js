@@ -1,8 +1,13 @@
+/* eslint-disable no-console */
 require('dotenv').config({ path: '../.env' });
 const { dbClient } = require('../db');
 const { databaseCollections } = require('../db/schema');
 
 (async () => {
+  if (process.env.APP_ENV === 'prod') {
+    console.log('Cannot clear data on production');
+    return;
+  }
   if (require.main === module) {
     try {
       await dbClient.connect();

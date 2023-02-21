@@ -51,10 +51,11 @@ Go to `http://keycloak.local.freshworks.club:8080/auth` console and add users/as
 
 ### To run the testing suite:
 
-- Whether or not you're currently running the app, run the test setup. This will ensure your server is pointed to the `db_test` database, clearing and repopulating it.
-  - `make local-test-setup`
-- Make sure you've imported KC users into your local environment
+- Make sure you've imported KC users into your local environment. See the above set of commands to create KC test users.
+  - `make local-kc-run`
   - `make kc-import-users`
+- Run the testing setup. This will ensure your server is pointed to the `db_test` database, clearing and repopulating it.
+  - `make local-testing-setup`
 - You can then run the Cypress tests by running
   - `make local-cypress-tests`
 - Or the server tests by running

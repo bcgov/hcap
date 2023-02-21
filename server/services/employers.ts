@@ -12,8 +12,8 @@ export interface EmployerSite {
   healthAuthority: string; // Authority for the site
   postalCode: string; // Postal code of site
   allocation: number; // Number of allocations set
-  startDate: date; // start date of current phase
-  endDate: date; // end date of current phase
+  startDate: Date; // start date of current phase
+  endDate: Date; // end date of current phase
 }
 
 export const getEmployers = async (user: hcapUserInfo): Promise<EmployerSite[]> => {

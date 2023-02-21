@@ -106,13 +106,13 @@ export const getAllPhases = async () => {
   return phases;
 };
 
-export const createGlobalPhase = async (phase, user) => {
+export const createPhase = async (phase, user) => {
   const phaseData = { ...phase, created_by: user.id, updated_by: user.id };
   const res = await dbClient.db[collections.GLOBAL_PHASE].insert(phaseData);
   return res;
 };
 
-export const updateGlobalPhase = async (phaseId, phase, user) => {
+export const updatePhase = async (phaseId, phase, user) => {
   const phaseData = { ...phase, updated_by: user.id };
   const res = await dbClient.db[collections.GLOBAL_PHASE].update(phaseId, phaseData);
   return res;

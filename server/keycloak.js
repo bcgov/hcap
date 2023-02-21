@@ -22,7 +22,7 @@ const defaults = {
 };
 
 // NOTE: This type is not actually used in this file yet due to some JSDoc limitations.
-// It is currently just here to be used by external files (such as phase-allocation.js).
+// It is currently just here to be used by external files (such as phase.js).
 // However, it can be used once we switch to TS.
 /**
  * @typedef {Object} hcapUserInfo

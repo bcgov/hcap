@@ -2,14 +2,9 @@ import express from 'express';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
-import { CreatePhaseSchema } from '../validation';
+import { CreatePhaseSchema, UpdatePhaseSchema } from '../validation';
 import { expressRequestBodyValidator } from '../middleware';
-import {
-  createGlobalPhase,
-  updateGlobalPhase,
-  getAllSitePhases,
-  getAllPhases,
-} from '../services/phase';
+import { createPhase, updatePhase, getAllSitePhases, getAllPhases } from '../services/phase';
 import { getSitesForUser } from '../services/employers';
 import { FEATURE_PHASE_ALLOCATION } from '../services/feature-flags';
 
@@ -96,9 +91,9 @@ router.post(
     }
     try {
       const { body, hcapUserInfo: user } = req;
-      const response = await createGlobalPhase(body, user);
+      const response = await createPhase(body, user);
       logger.info({
-        action: 'phase-allocation_post',
+        action: 'phase_post',
         performed_by: {
           username: user.username,
           id: user.id,
@@ -109,7 +104,7 @@ router.post(
       return resp.status(201).json(response);
     } catch (err) {
       logger.error(err);
-      return resp.status(400).send(`${err}`);
+      return resp.status(400).send('Failed to create phase');
     }
   })
 );
@@ -120,7 +115,7 @@ router.patch(
   [
     keycloak.allowRolesMiddleware('ministry_of_health'),
     keycloak.getUserInfoMiddleware(),
-    expressRequestBodyValidator(CreatePhaseSchema),
+    expressRequestBodyValidator(UpdatePhaseSchema),
   ],
   asyncMiddleware(async (req, resp) => {
     if (!FEATURE_PHASE_ALLOCATION) {
@@ -128,9 +123,9 @@ router.patch(
     }
     try {
       const { body, hcapUserInfo: user } = req;
-      const response = await updateGlobalPhase(req.params.id, body, user);
+      const response = await updatePhase(req.params.id, body, user);
       logger.info({
-        action: 'phase-allocation_post',
+        action: 'phase_patch',
         performed_by: {
           username: user.username,
           id: user.id,
@@ -141,7 +136,7 @@ router.patch(
       return resp.status(201).json(response);
     } catch (err) {
       logger.error(err);
-      return resp.status(400).send(`${err}`);
+      return resp.status(400).send('Failed to update phase');
     }
   })
 );

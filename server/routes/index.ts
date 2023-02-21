@@ -20,7 +20,7 @@ import {
 
 import { userDetailsRouter } from './user';
 import employerSitesRouter from './employer-sites';
-import phaseAllocationRouter from './phase-allocation';
+import phaseRouter from './phase';
 import allocationRouter from './allocation';
 import employerFormRouter from './employer-form';
 import psiRouter from './post-secondary-institutes';
@@ -48,7 +48,7 @@ apiRouter.use('/employer-sites', employerSitesRouter);
 apiRouter.use('/employer-sites-detail', employerSitesRouter);
 
 // Phase/Allocation
-apiRouter.use('/phase-allocation', phaseAllocationRouter);
+apiRouter.use('/phase', phaseRouter);
 apiRouter.use('/allocation', allocationRouter);
 
 // PSI Routes

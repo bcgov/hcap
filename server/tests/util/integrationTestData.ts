@@ -5,7 +5,7 @@ import { createPostHireStatus } from '../../services/post-hire-flow';
 import { makePSI } from '../../services/post-secondary-institutes';
 import { makeCohort, assignCohort } from '../../services/cohorts';
 import { saveSingleSite } from '../../services/employers';
-import { createGlobalPhase } from '../../services/phase';
+import { createPhase } from '../../services/phase';
 
 // NOTE: not ideal! This should be fixed.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -169,7 +169,7 @@ export const makeTestFKAllocations = async (id) => {
     id: 'noid',
   };
   expect(site.siteId).toBeDefined();
-  const phase = await createGlobalPhase(phaseData, user);
+  const phase = await createPhase(phaseData, user);
   expect(phase.id).toBeDefined();
   return {
     site,

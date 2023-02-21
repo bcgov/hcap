@@ -1,12 +1,12 @@
 /**
  * Tests for route /api/v1/phase
  */
-const request = require('supertest');
-const app = require('../server');
-const { startDB, closeDB } = require('./util/db');
-const { getKeycloakToken, ministryOfHealth, healthAuthority } = require('./util/keycloak');
-const { siteData } = require('./util/testData');
-const { makeTestSite } = require('./util/integrationTestData');
+import request from 'supertest';
+import app from '../server';
+import { startDB, closeDB } from './util/db';
+import { getKeycloakToken, ministryOfHealth, healthAuthority } from './util/keycloak';
+import { siteData } from './util/testData';
+import { makeTestSite } from './util/integrationTestData';
 
 describe('api e2e tests for /phase', () => {
   let server;

@@ -1,19 +1,14 @@
 /**
  * Tests for services/phase.js
  */
-const { v4 } = require('uuid');
-const app = require('../server');
-const {
-  getAllSitePhases,
-  getAllPhases,
-  createPhase,
-  updatePhase,
-} = require('../services/phase.js');
+import { v4 } from 'uuid';
+import { app } from '../server';
+import { getAllSitePhases, getAllPhases, createPhase, updatePhase } from '../services/phase.js';
 
-const { siteData } = require('./util/testData');
-const { makeTestSite } = require('./util/integrationTestData');
+import { siteData } from './util/testData';
+import { makeTestSite } from './util/integrationTestData';
 
-const { startDB, closeDB } = require('./util/db');
+import { startDB, closeDB } from './util/db';
 
 describe('Phase Allocation Endpoints', () => {
   let server;

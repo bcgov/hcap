@@ -61,7 +61,7 @@ describe('Phase Allocation Endpoints', () => {
       operatorEmail: 'test.e2e.phase@hcap.io',
     });
     const site = await makeTestSite(siteMock);
-    const res = await getAllSitePhases(site.id, user);
+    const res = await getAllSitePhases(site.id);
     expect(res.length).not.toEqual(0);
   });
 });

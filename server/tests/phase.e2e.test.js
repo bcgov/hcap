@@ -2,7 +2,7 @@
  * Tests for route /api/v1/phase
  */
 import request from 'supertest';
-import app from '../server';
+import { app } from '../server';
 import { startDB, closeDB } from './util/db';
 import { getKeycloakToken, ministryOfHealth, healthAuthority } from './util/keycloak';
 import { siteData } from './util/testData';

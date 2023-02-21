@@ -30,6 +30,8 @@ export const tabColumns = {
       { id: 'remainingHires', name: 'Remaining Hires' },
       { id: 'hcapHires', name: 'HCAP Hires' },
       { id: 'nonHcapHires', name: 'Non-HCAP Hires' },
+      { id: 'allocationId', isHidden: true },
+      { id: 'details' },
     ],
   },
 };

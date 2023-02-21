@@ -3,7 +3,14 @@ import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography, Link } from '@material-ui/core';
 import store from 'store';
-import { Table, Button, Dialog, CustomTab, CustomTabs } from '../../components/generic';
+import {
+  Table,
+  Button,
+  Dialog,
+  CustomTab,
+  CustomTabs,
+  CheckPermissions,
+} from '../../components/generic';
 import { AuthContext, SiteDetailTabContext } from '../../providers';
 import {
   FeatureFlaggedComponent,
@@ -25,6 +32,7 @@ import { useToast } from '../../hooks';
 import dayjs from 'dayjs';
 import { keyedString, getDialogTitle, sortObjects } from '../../utils';
 import { fetchSitePhases } from '../../services/phases';
+import { SetAllocation } from './SetAllocation';
 
 const columnIDs = [
   { id: 'participantId', name: 'ID' },
@@ -51,6 +59,7 @@ const fetchDetails = async (id) => {
     const site = await response.json();
     if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
       const phases = await fetchSitePhases(site.id);
+
       const currentPhase = phases.find((phase) => {
         return dayjs().isBetween(phase.startDate, phase.endDate, null, '()');
       });
@@ -137,7 +146,7 @@ export default ({ id, siteId }) => {
     dispatch,
   } = SiteDetailTabContext.useTabContext();
 
-  const [orderBy, setOrderBy] = useState(columns[4]?.id || 'participantName');
+  const [orderBy, setOrderBy] = useState('startDate');
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -154,6 +163,16 @@ export default ({ id, siteId }) => {
       pageId: id,
     });
     history.push(participantDetailsPath);
+  };
+
+  // reset allocation table after allocations are created/edited
+  const fetchAllocationDetails = (siteId) => {
+    return fetchDetails(siteId).then((response) => {
+      dispatch({
+        type: SiteDetailTabContext.types.UPDATE_SITE,
+        payload: { site: response },
+      });
+    });
   };
 
   const archiveOnClick = async (participantId) => {
@@ -194,12 +213,15 @@ export default ({ id, siteId }) => {
   useEffect(() => {
     switch (selectedTab) {
       case tabs.HIRED_PARTICIPANTS:
+        setOrderBy('startDate');
         setRows(fetchedHiredRows);
         return;
       case tabs.WITHDRAWN_PARTICIPANTS:
+        setOrderBy('withdrawnDate');
         setRows(fetchedWithdrawnRows);
         return;
       case tabs.ALLOCATION:
+        setOrderBy('startDate');
         setRows(site.phases);
         return;
       default:
@@ -264,6 +286,7 @@ export default ({ id, siteId }) => {
     }
   };
 
+  const columnObj = (rowId) => columns.find(({ id }) => id === rowId);
   return (
     <Grid
       container
@@ -366,6 +389,18 @@ export default ({ id, siteId }) => {
                 rows={sort(rows)}
                 isLoading={isLoadingData}
                 renderCell={(columnId, row) => {
+                  if (columnObj(columnId).isHidden) return;
+                  if (columnId === 'details')
+                    return (
+                      <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+                        <SetAllocation
+                          isNew={row.allocation === null}
+                          row={row}
+                          siteId={id}
+                          fetchDetails={fetchAllocationDetails}
+                        />
+                      </CheckPermissions>
+                    );
                   return row[columnId] ?? 'N/A';
                 }}
               />

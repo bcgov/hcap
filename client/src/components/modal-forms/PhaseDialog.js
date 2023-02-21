@@ -25,6 +25,7 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
   const values = useFormikContext();
   const { openToast } = useToast();
   const [overlapPhases, setOverlapPhases] = useState([]);
+  const [disabled, setDisabled] = useState(false);
   const classes = useStyles();
 
   const initialValues = content
@@ -39,7 +40,8 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
         endDate: '',
       };
 
-  const checkDateOverlap = () => {
+  const checkDateOverlap = (data) => {
+    setOverlapPhases(phases);
     console.log('PHASE @');
 
     console.log('VALUES');
@@ -54,9 +56,9 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
 
       // Check if the current date range overlaps with the input date range
       if (
-        (values.start_date >= current.start_date && values.start_date <= current.end_date) ||
-        (values.end_date >= current.start_date && values.end_date <= current.end_date) ||
-        (values.start_date <= current.start_date && values.end_date >= current.end_date)
+        (data.start_date >= current.start_date && data.start_date <= current.end_date) ||
+        (data.end_date >= current.start_date && data.end_date <= current.end_date) ||
+        (data.start_date <= current.start_date && data.end_date >= current.end_date)
       ) {
         overlappedPhases.push(current);
         console.log('VALID??');
@@ -64,7 +66,7 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
       }
 
       // Check if the input date range overlaps with the next date range in the array
-      if (next && values.end_date >= next.start_date) {
+      if (next && data.end_date >= next.start_date) {
         overlappedPhases.push(next);
         return setOverlapPhases(overlappedPhases);
       }
@@ -73,13 +75,17 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
   };
 
   useEffect(() => {
-    if (values && values.start_date && values.end_date) {
+    let count = +1;
+    console.log('count', count);
+    if (values?.start_date && values?.end_date) {
       console.log('PHASE !');
       checkDateOverlap();
     }
   }, [values]);
 
   const handleSubmit = async (phase) => {
+    checkDateOverlap(phase);
+
     const phaseJson = {
       ...(isNew && { name: phase.phaseName }),
       start_date: phase.startDate,
@@ -101,7 +107,7 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
   };
 
   // console.log(formik.values)
-
+  console.log('VALUES', values);
   return (
     <Dialog title={isNew ? 'Create Phase' : 'Edit Phase'} open={open} onClose={onClose}>
       <Formik
@@ -160,6 +166,7 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
                 variant='contained'
                 color='primary'
                 text={isNew ? 'Create' : 'Update'}
+                disabled={disabled}
               />
             </Box>
           </FormikForm>

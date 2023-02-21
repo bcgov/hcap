@@ -6,6 +6,7 @@ const superuser = {
   username: 'test-superuser',
   password: process.env.KC_TEST_SUPER_USER_PWD || 'password',
 };
+
 const employer = {
   username: 'test-employer',
   password: process.env.KC_TEST_EMPLOYER_PWD || 'password',

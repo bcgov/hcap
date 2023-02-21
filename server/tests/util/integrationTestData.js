@@ -5,6 +5,7 @@ const { createPostHireStatus } = require('../../services/post-hire-flow');
 const { makePSI } = require('../../services/post-secondary-institutes');
 const { makeCohort, assignCohort } = require('../../services/cohorts');
 const { saveSingleSite } = require('../../services/employers');
+const { createGlobalPhase } = require('../../services/phase');
 
 const makeTestPostHireStatus = async ({ email, status, data = {} }) => {
   const participantObj = participantData({ emailAddress: email });
@@ -108,6 +109,30 @@ const today = new Date();
 const makeTestCohort = async ({ cohortName, psiId, cohortSize, startDate = today, endDate }) =>
   makeCohort(cohortData({ cohortName, psiID: psiId, cohortSize, startDate, endDate }));
 
+const makeTestFKAllocations = async (id) => {
+  const site = await makeTestSite({
+    siteId: id,
+    siteName: 'Test Site 1040',
+    city: 'Test City 1040',
+  });
+
+  const phaseData = {
+    name: 'Test Phase',
+    start_date: new Date(),
+    end_date: new Date(),
+  };
+  const user = {
+    id: 'noid',
+  };
+  expect(site.siteId).toBeDefined();
+  const phase = await createGlobalPhase(phaseData, user);
+  expect(phase.id).toBeDefined();
+  return {
+    site,
+    phase,
+  };
+};
+
 module.exports = {
   makeTestParticipant,
   makeTestPostHireStatus,
@@ -117,4 +142,5 @@ module.exports = {
   createTestParticipantStatus,
   makeTestCohort,
   makeTestPSI,
+  makeTestFKAllocations,
 };

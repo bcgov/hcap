@@ -1,11 +1,11 @@
 /**
  * Tests for route /api/v1/allocation
  */
-const request = require('supertest');
-const app = require('../server');
-const { startDB, closeDB } = require('./util/db');
-const { getKeycloakToken, ministryOfHealth, healthAuthority } = require('./util/keycloak');
-const { makeTestFKAllocations } = require('./util/integrationTestData');
+import request from 'supertest';
+import { app } from '../server';
+import { startDB, closeDB } from './util/db';
+import { getKeycloakToken, ministryOfHealth, healthAuthority } from './util/keycloak';
+import { makeTestFKAllocations } from './util/integrationTestData';
 
 describe('api e2e tests for /allocation', () => {
   let server;

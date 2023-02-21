@@ -33,7 +33,12 @@ export default () => {
         direction='row'
       >
         <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-          <DataTable columns={columns} fetchData={FetchMappedPhases} />
+          <DataTable
+            columns={columns}
+            fetchData={FetchMappedPhases}
+            defaultSortColumn='start_date'
+            sortOrder='desc'
+          />
         </CheckPermissions>
       </Grid>
     </>

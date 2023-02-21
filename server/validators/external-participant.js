@@ -1,8 +1,8 @@
+import { validatePastDateString, validateDateString, errorMessage } from './helpers';
+
 const yup = require('yup');
 
-const { validatePastDateString, validateDateString, errorMessage } = require('./helpers');
-
-const ExternalHiredParticipantSchema = yup.object().shape({
+export const ExternalHiredParticipantSchema = yup.object().shape({
   firstName: yup.string().required('First Name is required'),
   lastName: yup.string().required('Last Name is required'),
   phoneNumber: yup
@@ -40,7 +40,3 @@ const ExternalHiredParticipantSchema = yup.object().shape({
     .boolean()
     .test('is-true', 'Must acknowledge participant acceptance', (v) => v === true),
 });
-
-module.exports = {
-  ExternalHiredParticipantSchema,
-};

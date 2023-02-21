@@ -1,17 +1,17 @@
-const express = require('express');
-const keycloak = require('../keycloak');
-const logger = require('../logger.js');
-const { asyncMiddleware } = require('../error-handler.js');
-const { CreatePhaseSchema } = require('../validation');
-const { expressRequestBodyValidator } = require('../middleware');
-const {
+import express from 'express';
+import keycloak from '../keycloak';
+import logger from '../logger';
+import { asyncMiddleware } from '../error-handler';
+import { CreatePhaseSchema } from '../validation';
+import { expressRequestBodyValidator } from '../middleware';
+import {
   createGlobalPhase,
   updateGlobalPhase,
   getAllSitePhases,
   getAllPhases,
-} = require('../services/phase');
-const { getSitesForUser } = require('../services/employers');
-const { FEATURE_PHASE_ALLOCATION } = require('../services/feature-flags');
+} from '../services/phase';
+import { getSitesForUser } from '../services/employers';
+import { FEATURE_PHASE_ALLOCATION } from '../services/feature-flags';
 
 const router = express.Router();
 
@@ -146,4 +146,4 @@ router.patch(
   })
 );
 
-module.exports = router;
+export default router;

@@ -1,18 +1,18 @@
-const express = require('express');
-const keycloak = require('../keycloak');
-const logger = require('../logger.js');
-const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
-const {
+import express from 'express';
+import keycloak from '../keycloak';
+import logger from '../logger';
+import { asyncMiddleware, applyMiddleware } from '../error-handler';
+import {
   getPSI,
   getPSIs,
   makePSI,
   updatePSI,
   getAllPSIWithCohorts,
-} = require('../services/post-secondary-institutes');
+} from '../services/post-secondary-institutes';
 
-const { CreatePSISchema, validate } = require('../validation');
+import { CreatePSISchema, validate } from '../validation';
 
-const cohortRoute = require('./psi-cohorts');
+import cohortRoute from './psi-cohorts';
 
 // Router
 const router = express.Router();
@@ -142,4 +142,4 @@ router.put(
   })
 );
 
-module.exports = router;
+export default router;

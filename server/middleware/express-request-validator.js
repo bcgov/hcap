@@ -1,7 +1,7 @@
-const { validate } = require('../validation');
-const logger = require('../logger.js');
+import { validate } from '../validation';
+import logger from '../logger';
 
-module.exports = function expressRequestBodyValidatorMiddleware(schema) {
+export default function expressRequestBodyValidatorMiddleware(schema) {
   return (req, resp, next) => {
     const { body } = req;
     validate(schema, body)
@@ -17,4 +17,4 @@ module.exports = function expressRequestBodyValidatorMiddleware(schema) {
         resp.status(400).json({ error });
       });
   };
-};
+}

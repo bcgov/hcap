@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
-require('dotenv').config({ path: '../.env' });
-const path = require('path');
-const fs = require('fs');
-const { dbClient } = require('../db');
+import './load-env';
+import path from 'path';
+import fs from 'fs';
+import { dbClient } from '../db';
 
-const { parseAndSaveParticipants } = require('../services/participants');
+import { parseAndSaveParticipants } from '../services/participants';
 
 const errorStyle = '\x1b[31m\x1b[40m\x1b[4m\x1b[1m'; // https://stackoverflow.com/a/41407246
 

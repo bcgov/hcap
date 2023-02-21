@@ -11,18 +11,18 @@
   "scripts": {
     "parse-xml": "cd scripts && node parse-xml.js xml",
     "migrate": "node-pg-migrate",
-    "feed-participants": "node scripts/feed-participants.js",
-    "feed-sites": "node scripts/feed-sites.js",
-    "feed-data": "node scripts/feed-data.js",
-    "stats": "node scripts/stats.js",
-    "sendMassEmail": "node scripts/sendEmailBlast.js",
-    "participant-stats-hired": "node scripts/participant-stats-hired.js",
-    "participant-stats-in-progress": "node scripts/participant-stats-in-progress.js",
-    "participant-stats-rejected": "node scripts/participant-stats-rejected.js",
-    "participant-stats-no-offers": "node scripts/participant-stats-no-offers.js",
-    "export": "node scripts/export.js",
-    "watch": "NODE_ENV=local nodemon main.js",
-    "start": "NODE_ENV=production node main.js",
+    "feed-participants": "npx ts-node scripts/feed-participants.js",
+    "feed-sites": "npx ts-node scripts/feed-sites.js",
+    "feed-data": "npx ts-node scripts/feed-data.js",
+    "stats": "npx ts-node scripts/stats.js",
+    "sendMassEmail": "npx ts-node scripts/sendEmailBlast.js",
+    "participant-stats-hired": "npx ts-node scripts/participant-stats-hired.js",
+    "participant-stats-in-progress": "npx ts-node scripts/participant-stats-in-progress.js",
+    "participant-stats-rejected": "npx ts-node scripts/participant-stats-rejected.js",
+    "participant-stats-no-offers": "npx ts-node scripts/participant-stats-no-offers.js",
+    "export": "npx ts-node scripts/export.js",
+    "watch": "NODE_ENV=local nodemon main.ts",
+    "start": "NODE_ENV=production ts-node -T main.ts",
     "test:debug": "NODE_ENV=test jest --runInBand --detectOpenHandles",
     "test": "NODE_ENV=test jest --silent --runInBand --forceExit --detectOpenHandles --coverage --verbose false"
   },
@@ -42,26 +42,40 @@
     "massive": "6.8.0",
     "minimist": "1.2.6",
     "node-cache": "5.1.2",
-    "node-pg-migrate": "5.9.0",
+    "node-pg-migrate": "6.2.2",
     "node-xlsx": "0.17.1",
     "pg": "8.5.1",
     "prettier": "2.3.0",
     "string-replace-middleware": "1.0.2",
     "tiny-async-pool": "1.1.0",
-    "uuid": "8.3.2",
+    "ts-node": "10.9.1",
+    "uuid": "9.0.0",
     "winston": "3.3.3",
-    "winston-mongodb": "5.0.5",
+    "winston-mongodb": "5.1.1",
     "yup": "0.29.3"
   },
   "devDependencies": {
+    "@types/express": "4.17.17",
+    "@types/jest": "29.4.0",
+    "@types/lodash": "4.14.191",
+    "@types/massive": "5.4.4",
+    "@types/node": "18.13.0",
+    "@types/supertest": "2.0.12",
+    "@types/uuid": "9.0.0",
+    "@typescript-eslint/eslint-plugin": "5.51.0",
+    "@typescript-eslint/parser": "5.51.0",
     "eslint-config-airbnb-base": "14.2.0",
     "eslint-config-prettier": "8.3.0",
+    "eslint-import-resolver-typescript": "3.5.3",
     "eslint-plugin-import": "2.22.0",
     "eslint-plugin-jest": "23.20.0",
     "eslint-plugin-prettier": "3.4.0",
-    "jest": "28.0.2",
+    "jest": "29.4.2",
     "nodemon": "2.0.20",
-    "supertest": "4.0.2"
+    "supertest": "4.0.2",
+    "ts-jest": "29.0.5",
+    "tslib": "2.5.0",
+    "typescript": "4.9.5"
   },
   "jest": {
     "testEnvironment": "node",
@@ -71,6 +85,15 @@
     ],
     "setupFilesAfterEnv": [
       "./tests/util/extensions.js"
-    ]
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ],
+    "preset": "ts-jest",
+    "transform": {
+      ".(js|ts)": "ts-jest"
+    }
   }
 }

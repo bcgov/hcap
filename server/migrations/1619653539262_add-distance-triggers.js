@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-const { dbClient, collections } = require('../db');
+import { dbClient, collections } from '../db';
 
 exports.up = async (pgm) => {
   await dbClient.runRawQuery('CREATE EXTENSION IF NOT EXISTS POSTGIS;');

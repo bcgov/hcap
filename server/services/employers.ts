@@ -1,6 +1,7 @@
-const { dbClient, collections } = require('../db');
-const { validate, EmployerSiteBatchSchema } = require('../validation');
-const { userRegionQuery } = require('./user.js');
+import { dbClient, collections } from '../db';
+import { validate, EmployerSiteBatchSchema } from '../validation';
+import { userRegionQuery } from './user';
+import type { hcapUserInfo } from '../keycloak';
 
 /**
  * @typedef {import("../keycloak").hcapUserInfo} hcapUserInfo
@@ -23,20 +24,32 @@ const { userRegionQuery } = require('./user.js');
  * @param {hcapUserInfo} user
  * @returns {employerSite[]}
  */
-const getEmployers = async (user) => {
+export const getEmployers = async (user: hcapUserInfo): Promise<EmployerSite[]> => {
+  export interface EmployerSite {
+    id: number; // Internal ID for site
+    siteId: number; // User-visible ID for site
+    siteName: string; // Name of site
+    operatorName: string; // Name of operator (e.g. 'Interior Health Authority')
+    city: string; // City the site is in
+    healthAuthority: string; // Authority for the site
+    postalCode: string; // Postal code of site
+    allocation: number;
+  }
+
   const criteria =
     user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'healthAuthority');
   return criteria ? dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria) : [];
 };
 
-const getEmployerByID = async (id) => dbClient.db[collections.EMPLOYER_FORMS].findDoc({ id });
+export const getEmployerByID = async (id) =>
+  dbClient.db[collections.EMPLOYER_FORMS].findDoc({ id });
 
-const saveSingleSite = async (siteJson) => {
+export const saveSingleSite = async (siteJson) => {
   const res = await dbClient.db.saveDoc(collections.EMPLOYER_SITES, siteJson);
   return res;
 };
 
-const saveSites = async (sitesArg) => {
+export const saveSites = async (sitesArg) => {
   const sites = Array.isArray(sitesArg) ? sitesArg : [sitesArg];
   await validate(EmployerSiteBatchSchema, sites);
   const promises = sites.map((site) => dbClient.db.saveDoc(collections.EMPLOYER_SITES, site));
@@ -44,22 +57,18 @@ const saveSites = async (sitesArg) => {
   const response = [];
   results.forEach((result, index) => {
     const { siteId } = sites[index];
-    switch (result.status) {
-      case 'fulfilled':
-        response.push({ siteId, status: 'Success' });
-        break;
-      default:
-        if (result.reason.code === '23505') {
-          response.push({ siteId, status: 'Duplicate' });
-        } else {
-          response.push({ siteId, status: 'Error', message: result.reason });
-        }
+    if (result.status === 'fulfilled') {
+      response.push({ siteId, status: 'Success' });
+    } else if (result.reason.code === '23505') {
+      response.push({ siteId, status: 'Duplicate' });
+    } else {
+      response.push({ siteId, status: 'Error', message: result.reason });
     }
   });
   return response;
 };
 
-const updateSite = async (id, site) => {
+export const updateSite = async (id, site) => {
   const changes = site.history[0].changes.reduce(
     (acc, change) => {
       const { field, to } = change;
@@ -71,7 +80,7 @@ const updateSite = async (id, site) => {
   return dbClient.db[collections.EMPLOYER_SITES].updateDoc({ id }, changes);
 };
 
-const getAllSites = async () =>
+export const getAllSites = async () =>
   dbClient.db[collections.EMPLOYER_SITES].findDoc(
     {},
     {
@@ -138,12 +147,13 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
 
 /**
  * Get all accessible sites for a user
- * @param {hcapUserInfo} user  User with roles and sites to filter
- * @returns {employerSite[]}   List of sites which the user has access to
+ * @param user  User with roles and sites to filter
+ * @returns List of sites which the user has access to
  */
-const getSitesForUser = async (user) => {
+export const getSitesForUser = async (user: hcapUserInfo): Promise<EmployerSite[]> => {
   const additionalCriteria = [];
-  const additionalCriteriaParams = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const additionalCriteriaParams: { userSites?: any[]; userRegions?: string[] } = {};
 
   if ((user.isHA || user.isEmployer) && user.sites.length > 0) {
     additionalCriteria.push(`(employer_sites.body ->> 'siteId')::INT IN ($(userSites:csv))`);
@@ -159,22 +169,21 @@ const getSitesForUser = async (user) => {
 
 /**
  * Get all sites for regions, returning nothing if there's no regions passed in
- * @param {string[]} regions  Regions to get sites for
- * @returns {employerSite[]}  List of sites within a region
+ * @param regions  Regions to get sites for
+ * @returns List of sites within a region
  */
-const getSitesForRegion = async (regions) => {
+export const getSitesForRegion = async (regions: string[]): Promise<EmployerSite[]> => {
   if (regions.length > 0) {
     const additionalCriteria = [];
-    const additionalCriteriaParams = {};
 
     additionalCriteria.push(`employer_sites.body ->> 'healthAuthority' IN ($(userRegions:csv))`);
-    additionalCriteriaParams.userRegions = regions;
+    const additionalCriteriaParams = { userRegions: regions };
     return getSitesWithCriteria(additionalCriteria, additionalCriteriaParams);
   }
   return [];
 };
 
-const getSiteDetailsById = async (id) => {
+export const getSiteDetailsById = async (id) => {
   const site = await dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
   if (site.length === 0) {
     return [{ error: `No site found with id` }];
@@ -184,9 +193,9 @@ const getSiteDetailsById = async (id) => {
 
 /**
  * @param {number} id  ID of requested site
- * @returns {Promise<employerSite>} Requested site
+ * @returns {Promise<EmployerSite>} Requested site
  */
-const getSiteByID = async (id) => {
+export const getSiteByID = async (id) => {
   const site = await dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
   if (site.length === 0) {
     throw new Error(`No site found with id ${id}`);
@@ -225,17 +234,4 @@ const getSiteByID = async (id) => {
   site[0].hcapHires = hcapHires;
   site[0].nonHcapHires = nonHcapHires;
   return site[0];
-};
-
-module.exports = {
-  getEmployers,
-  getEmployerByID,
-  saveSingleSite,
-  saveSites,
-  updateSite,
-  getSitesForUser,
-  getSitesForRegion,
-  getAllSites,
-  getSiteByID,
-  getSiteDetailsById,
 };

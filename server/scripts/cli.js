@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-const minimist = require('minimist');
-const services = require('./services');
-const { processServiceConfig } = require('./services/common');
-const { dbClient } = require('../db');
+import minimist from 'minimist';
+import services from './services';
+import { processServiceConfig } from './services/common';
+import { dbClient } from '../db';
 
 // Parsing arguments
 const argv = minimist(process.argv.slice(2));

@@ -1,16 +1,17 @@
 // Test execution code: npm run test:debug participant-post-hire-status.e2e.test.js
 
-const request = require('supertest');
-const app = require('../server');
-const { startDB, closeDB } = require('./util/db');
-const {
+import request from 'supertest';
+import { app } from '../server';
+
+import { startDB, closeDB } from './util/db';
+import {
   makeTestParticipant,
   makeTestPostHireStatus,
   makeCohortAssignment,
-} = require('./util/integrationTestData');
-const { getKeycloakToken, healthAuthority } = require('./util/keycloak');
-const { postHireStatusData } = require('./util/testData');
-const { postHireStatuses } = require('../validation');
+} from './util/integrationTestData';
+import { getKeycloakToken, healthAuthority } from './util/keycloak';
+import { postHireStatusData } from './util/testData';
+import { postHireStatuses } from '../validation';
 
 describe('api e2e test for /post-hire-status', () => {
   let server;

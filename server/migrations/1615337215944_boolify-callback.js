@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const { dbClient, collections } = require('../db');
+import { dbClient, collections } from '../db';
 
 exports.up = async () => {
   await dbClient.db[collections.PARTICIPANTS].updateDoc(

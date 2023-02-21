@@ -1,13 +1,13 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 // Test execution code: npm run test:debug return-of-service.test.js
-const { startDB, closeDB } = require('./util/db');
-const { participantData, siteData } = require('./util/testData');
-const { createTestParticipantStatus } = require('./util/integrationTestData');
+import { startDB, closeDB } from './util/db';
+import { participantData, siteData } from './util/testData';
+import { createTestParticipantStatus } from './util/integrationTestData';
 
-const {
+import {
   createReturnOfServiceStatus,
   getReturnOfServiceStatuses,
-} = require('../services/return-of-service');
+} from '../services/return-of-service';
 
 describe('Test return of service', () => {
   let testParticipant;

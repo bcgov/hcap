@@ -1,6 +1,6 @@
-const { dbClient, collections } = require('../db');
+import { dbClient, collections } from '../db';
 
-const invalidatePostHireStatus = async ({ participantId }) =>
+export const invalidatePostHireStatus = async ({ participantId }) =>
   dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS].update(
     { participant_id: participantId },
     {
@@ -8,14 +8,14 @@ const invalidatePostHireStatus = async ({ participantId }) =>
     }
   );
 
-const createPostHireStatus = async ({ participantId, status, data }) =>
+export const createPostHireStatus = async ({ participantId, status, data }) =>
   dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS].insert({
     participant_id: participantId,
     status,
     data,
   });
 
-const getPostHireStatusesForParticipant = async ({ participantId }) =>
+export const getPostHireStatusesForParticipant = async ({ participantId }) =>
   dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS].find(
     {
       participant_id: participantId,
@@ -25,7 +25,7 @@ const getPostHireStatusesForParticipant = async ({ participantId }) =>
     }
   );
 
-const getPostHireStatusesForCohortParticipant = async (participantId, cohortId) => {
+export const getPostHireStatusesForCohortParticipant = async (participantId, cohortId) => {
   const statuses = await dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS]
     .join({
       cohortJoin: {
@@ -53,18 +53,10 @@ const getPostHireStatusesForCohortParticipant = async (participantId, cohortId) 
 };
 
 // Get the post-hire-status for the participant
-const getPostHireStatus = async (participantId, cohortId = -1) => {
+export const getPostHireStatus = async (participantId, cohortId = -1) => {
   const statuses =
     cohortId !== -1
       ? await getPostHireStatusesForCohortParticipant(participantId, cohortId)
       : await getPostHireStatusesForParticipant({ participantId });
   return statuses;
-};
-
-module.exports = {
-  createPostHireStatus,
-  invalidatePostHireStatus,
-  getPostHireStatusesForParticipant,
-  getPostHireStatusesForCohortParticipant,
-  getPostHireStatus,
 };

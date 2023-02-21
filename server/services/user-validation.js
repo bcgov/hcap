@@ -1,5 +1,5 @@
-const { getParticipantByID } = require('./participants');
-const logger = require('../logger.js');
+import { getParticipantByID } from './participants';
+import logger from '../logger';
 
 const validateParticipant = async (participantId, actionType) => {
   const [participant] = await getParticipantByID(participantId);
@@ -28,7 +28,7 @@ const validateUser = async (user, actionType) => {
   return userData;
 };
 
-const validateCredentials = async (reqUser, participantId, actionType) => {
+export const validateCredentials = async (reqUser, participantId, actionType) => {
   const validUser = await validateUser(reqUser);
   if (!validUser) {
     return { isValid: false, status: 401, message: 'Unauthorized user', user: validUser };
@@ -44,8 +44,4 @@ const validateCredentials = async (reqUser, participantId, actionType) => {
     };
   }
   return { isValid: true, user: validUser, participant: validParticipant };
-};
-
-module.exports = {
-  validateCredentials,
 };

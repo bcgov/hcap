@@ -1,5 +1,4 @@
-const yup = require('yup');
-const {
+import {
   archiveReasonOptions,
   healthRegions,
   userRoles,
@@ -7,11 +6,13 @@ const {
   ROSUnderwayStatus,
   ROSCompleteStatus,
   SuccessfulROSReason,
-} = require('../constants');
+} from '../constants';
 
-const { validatePastDateString } = require('./helpers');
+import { validatePastDateString } from './helpers';
 
-const ArchiveRequestDataShape = (schema) =>
+const yup = require('yup');
+
+export const ArchiveRequestDataShape = (schema) =>
   schema.noUnknown('').shape({
     type: yup
       .string()
@@ -59,7 +60,7 @@ const ArchiveRequestDataShape = (schema) =>
     confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
   });
 
-const ArchiveRequest = yup
+export const ArchiveRequest = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
@@ -78,7 +79,7 @@ const ArchiveRequest = yup
     status: yup.string().oneOf(['archived'], 'Must be archived'),
   });
 
-const AccessRequestApproval = yup
+export const AccessRequestApproval = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
@@ -111,13 +112,6 @@ const AccessRequestApproval = yup
     }),
   });
 
-const RemoveParticipantUser = yup.object().shape({
+export const RemoveParticipantUser = yup.object().shape({
   email: yup.string().email('Invalid email address'),
 });
-
-module.exports = {
-  ArchiveRequestDataShape,
-  ArchiveRequest,
-  AccessRequestApproval,
-  RemoveParticipantUser,
-};

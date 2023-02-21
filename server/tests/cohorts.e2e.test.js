@@ -2,15 +2,16 @@
  * Tests for route /api/v1/cohorts
  * Test Standalone execution: npm run test:debug cohorts.e2e.test
  */
-const request = require('supertest');
-const app = require('../server');
-const { startDB, closeDB } = require('./util/db');
-const { getKeycloakToken, employer } = require('./util/keycloak');
-const { makePSI } = require('../services/post-secondary-institutes');
-const { makeCohort, assignCohort } = require('../services/cohorts');
-const { makeParticipant } = require('../services/participants');
-const { participantData, psiData, cohortData } = require('./util/testData');
-const { makeTestParticipant } = require('./util/integrationTestData');
+import request from 'supertest';
+import { app } from '../server';
+import { startDB, closeDB } from './util/db';
+import { getKeycloakToken, employer } from './util/keycloak';
+
+import { makePSI } from '../services/post-secondary-institutes';
+import { makeCohort, assignCohort } from '../services/cohorts';
+import { makeParticipant } from '../services/participants';
+import { participantData, psiData, cohortData } from './util/testData';
+import { makeTestParticipant } from './util/integrationTestData';
 
 const dataSetup = async ({
   firstName = 'Fresh1',

@@ -1,9 +1,9 @@
-const app = require('./server.js');
-const logger = require('./logger.js');
-const { dbClient } = require('./db');
-const keycloak = require('./keycloak');
+import { app } from './server';
+import logger from './logger';
+import { dbClient } from './db';
+import keycloak from './keycloak';
 
-const port = process.env.SERVER_PORT || 8080;
+const port = Number(process.env.SERVER_PORT) || 8080;
 
 /** @type {http.Server|undefined} */
 let server;

@@ -1,27 +1,33 @@
-const axios = require('axios');
-const querystring = require('querystring');
-const logger = require('../../logger');
+import axios from 'axios';
+import querystring from 'querystring';
+import logger from '../../logger';
 
-const superuser = {
+export const superuser = {
   username: 'test-superuser',
   password: process.env.KC_TEST_SUPER_USER_PWD || 'password',
 };
-const employer = {
+
+export const employer = {
   username: 'test-employer',
   password: process.env.KC_TEST_EMPLOYER_PWD || 'password',
 };
 
-const participant = {
+export const participant = {
   username: 'test.participant',
   password: process.env.KC_TEST_PARTICIPANT_PWD || 'password',
 };
 
-const healthAuthority = {
+export const healthAuthority = {
   username: 'test-ha',
   password: process.env.KC_TEST_HA_PWD || 'password',
 };
 
-const getKeycloakToken = async ({ username, password }) => {
+export const ministryOfHealth = {
+  username: 'test-moh',
+  password: process.env.KC_TEST_MOH_PWD || 'password',
+};
+
+export const getKeycloakToken = async ({ username, password }) => {
   try {
     const data = querystring.stringify({
       grant_type: 'password',
@@ -49,4 +55,3 @@ const getKeycloakToken = async ({ username, password }) => {
     throw error;
   }
 };
-module.exports = { superuser, participant, employer, healthAuthority, getKeycloakToken };

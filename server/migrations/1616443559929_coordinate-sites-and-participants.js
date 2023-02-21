@@ -1,6 +1,6 @@
 /* eslint-disable max-len, quotes, no-console */
-const { dbClient, collections } = require('../db');
-const { getPointsFromPostalCodes } = require('../services/geocodes.js');
+import { dbClient, collections } from '../db';
+import { getPointsFromPostalCodes } from '../services/geocodes';
 
 exports.up = async () => {
   const participants = await dbClient.db[collections.PARTICIPANTS].findDoc({});

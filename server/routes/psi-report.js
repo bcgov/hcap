@@ -1,11 +1,11 @@
-const express = require('express');
-const csv = require('fast-csv');
-const keycloak = require('../keycloak');
-const logger = require('../logger.js');
+import express from 'express';
+import csv from 'fast-csv';
+import keycloak from '../keycloak';
+import logger from '../logger';
 
-const { asyncMiddleware } = require('../error-handler.js');
-const { getPSIPaticipantsReport } = require('../services/reporting');
-const { DEFAULT_REGION_NAME } = require('../constants');
+import { asyncMiddleware } from '../error-handler';
+import { getPSIPaticipantsReport } from '../services/reporting';
+import { DEFAULT_REGION_NAME } from '../constants';
 
 const router = express.Router();
 
@@ -57,4 +57,4 @@ router.get(
   })
 );
 
-module.exports = router;
+export default router;

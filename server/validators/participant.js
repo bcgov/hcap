@@ -1,5 +1,4 @@
-const yup = require('yup');
-const {
+import {
   healthRegions,
   foundOutReasons,
   postHireStatuses,
@@ -7,20 +6,23 @@ const {
   participantStatuses,
   sortFields,
   orderDirections,
-} = require('../constants');
+} from '../constants';
 
-const {
+import {
   errorMessage,
   errorMessageIndex,
   validateOptionalBooleanMixed,
   validatePreferredLocation,
   validateUniqueArray,
   validateDateString,
-} = require('./helpers');
+} from './helpers';
 
-const { ArchiveRequestDataShape } = require('./employer-operation');
+import { ArchiveRequestDataShape } from './employer-operation';
 
-const ParticipantBatchSchema = yup.array().of(
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const yup = require('yup');
+
+export const ParticipantBatchSchema = yup.array().of(
   yup.lazy((item, options) => {
     const index = options.parent.indexOf(item) + 2;
     const indexName = 'row';
@@ -90,7 +92,7 @@ const ParticipantBatchSchema = yup.array().of(
   })
 );
 
-const ParticipantSchema = yup
+export const ParticipantSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
@@ -136,7 +138,7 @@ const ParticipantSchema = yup
       .test('is-true', 'Must consent', (v) => v === true),
   });
 
-const ParticipantPostHireStatusSchema = yup
+export const ParticipantPostHireStatusSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
@@ -169,7 +171,7 @@ const ParticipantPostHireStatusSchema = yup
     }),
   });
 
-const ParticipantStatusChange = yup
+export const ParticipantStatusChange = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
@@ -258,7 +260,7 @@ const ParticipantStatusChange = yup
     }),
   });
 
-const ParticipantEditSchema = yup
+export const ParticipantEditSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
@@ -283,7 +285,7 @@ const ParticipantEditSchema = yup
     id: yup.number().required('User ID is required'),
   });
 
-const ParticipantQuerySchema = yup.object().shape({
+export const ParticipantQuerySchema = yup.object().shape({
   regionFilter: yup.string().oneOf(healthRegions, 'Invalid region'),
   sortField: yup.string().oneOf(sortFields, 'Invalid sort field'),
   sortDirection: yup.string().oneOf(orderDirections, 'Invalid sort direction'),
@@ -292,12 +294,3 @@ const ParticipantQuerySchema = yup.object().shape({
   statusFilters: yup.array().of(yup.string().oneOf(participantStatuses, 'Invalid status')),
   showIndigenousOnly: yup.string().equals(['true']),
 });
-
-module.exports = {
-  ParticipantBatchSchema,
-  ParticipantSchema,
-  ParticipantPostHireStatusSchema,
-  ParticipantStatusChange,
-  ParticipantEditSchema,
-  ParticipantQuerySchema,
-};

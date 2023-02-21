@@ -1,9 +1,9 @@
 // Test Code: npm run test:debug employer-action.e2e.test.js
-const request = require('supertest');
-const app = require('../server');
-const { startDB, closeDB } = require('./util/db');
-const { getKeycloakToken, employer } = require('./util/keycloak');
-const { makeTestParticipant, makeTestSite } = require('./util/integrationTestData');
+import request from 'supertest';
+import { app } from '../server';
+import { startDB, closeDB } from './util/db';
+import { getKeycloakToken, employer } from './util/keycloak';
+import { makeTestParticipant, makeTestSite } from './util/integrationTestData';
 
 describe.skip('Test api/v1/employer-actions', () => {
   let server;

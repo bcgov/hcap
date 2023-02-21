@@ -1,14 +1,14 @@
 /* eslint-disable camelcase */
 // disabling camelcase check so that we can manipulate snake_case attributes without changing structure
-const dayjs = require('dayjs');
-const isBetween = require('dayjs/plugin/isBetween');
-const { dbClient, collections } = require('../db');
-const { getSiteByID } = require('./employers');
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+import { dbClient, collections } from '../db';
+import { getSiteByID } from './employers';
 
 dayjs.extend(isBetween);
 
 /**
- * @typedef {import('./employers').employerSite} employerSite
+ * @typedef {import('./employers').EmployerSite} employerSite
  *
  * @typedef  {Object} sitePhase
  * @property {number} id             Internal ID of the phase
@@ -26,7 +26,7 @@ dayjs.extend(isBetween);
  * @param {number} siteId Database ID of the site
  * @returns {Promise<sitePhase[]>} Phases for the site
  */
-const getAllSitePhases = async (siteId) => {
+export const getAllSitePhases = async (siteId) => {
   const site = await getSiteByID(siteId);
 
   /**
@@ -98,7 +98,7 @@ const getAllSitePhases = async (siteId) => {
   }));
 };
 
-const getAllPhases = async () => {
+export const getAllPhases = async () => {
   // NOTE: this will not allow for full access to the phase list once it hits that 100k limit!
   // If there is any chance of this hitting that number, or if performance starts to suffer,
   // pagination support should be added.
@@ -106,21 +106,14 @@ const getAllPhases = async () => {
   return phases;
 };
 
-const createPhase = async (phase, user) => {
+export const createPhase = async (phase, user) => {
   const phaseData = { ...phase, created_by: user.id, updated_by: user.id };
   const res = await dbClient.db[collections.GLOBAL_PHASE].insert(phaseData);
   return res;
 };
 
-const updatePhase = async (phaseId, phase, user) => {
+export const updatePhase = async (phaseId, phase, user) => {
   const phaseData = { ...phase, updated_by: user.id };
   const res = await dbClient.db[collections.GLOBAL_PHASE].update(phaseId, phaseData);
   return res;
-};
-
-module.exports = {
-  getAllSitePhases,
-  getAllPhases,
-  createPhase,
-  updatePhase,
 };

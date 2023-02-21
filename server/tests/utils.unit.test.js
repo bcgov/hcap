@@ -1,4 +1,4 @@
-const { addYearToDate } = require('../utils');
+import { addYearToDate } from '../utils';
 
 describe('Unit test: utils -> Add year to date', () => {
   const addYearToDateTestData = [

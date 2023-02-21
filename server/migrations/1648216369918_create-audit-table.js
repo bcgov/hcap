@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-const { collections } = require('../db');
+import { collections } from '../db';
 
 exports.shorthands = 'admin_operation_audit';
 

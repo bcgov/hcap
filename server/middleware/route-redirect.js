@@ -1,7 +1,6 @@
-const logger = require('../logger.js');
+import logger from '../logger';
 
-module.exports =
-  ({ redirect, match, log = false }) =>
+export default ({ redirect, match, log = false }) =>
   (req, res, next) => {
     const { baseUrl } = req;
     if (baseUrl.includes(match)) {

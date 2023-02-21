@@ -1,21 +1,21 @@
 // Libs
-const express = require('express');
-const csv = require('fast-csv');
+import express from 'express';
+import * as csv from 'fast-csv';
 
 // Frameworks
-const keycloak = require('../keycloak');
-const logger = require('../logger.js');
-const { asyncMiddleware } = require('../error-handler.js');
+import keycloak from '../keycloak';
+import logger from '../logger';
+import { asyncMiddleware } from '../error-handler';
 
 // Service
-const {
+import {
   checkUserRegion,
   getReport,
   getHiredParticipantsReport,
   getHARosMilestonesReport,
   getMohRosMilestonesReport,
-} = require('../services/reporting');
-const { reportType, DEFAULT_REGION_NAME } = require('../constants');
+} from '../services/reporting';
+import { reportType, DEFAULT_REGION_NAME } from '../constants';
 
 // Router
 const router = express.Router();
@@ -70,6 +70,8 @@ const generateRosReport = async (csvStream, region) => {
       'ROS End Date': result.endDate,
       'Start Date at a Site': result.siteStartDate,
       'Site of ROS': result.site,
+      'Position Type': result.positionType,
+      'Employment Type': result.employmentType,
       'Health Region': result.healthRegion,
     });
   });
@@ -79,7 +81,7 @@ const generateRosReport = async (csvStream, region) => {
  * Template for generating a hired report
  * @param user user data of a person requesting report
  * @param res response
- * @param {REPORT_TYPE} type type of report
+ * @param {any} type type of report
  * @param {string} region health region; optional - defaults to ''
  */
 const generateReport = async (user, res, type, region = DEFAULT_REGION_NAME) => {
@@ -176,4 +178,4 @@ router.get(
   })
 );
 
-module.exports = router;
+export default router;

@@ -27,9 +27,12 @@ expect.extend({
           .filter((k) => k !== 'id')
           .reduce((o, k) => ({ ...o, [k]: i[k] }), { nonHCAP: undefined })
       );
-    // Wrapping expect like this does not actually work
-    // The expect function does not function as expected, making wrapping expect matchers difficult
-    // We can return {message: string|function, pass: bool} as per https://jestjs.io/docs/en/expect#expectextendmatchers
-    return expect(trimIds(received)).toEqual(expect.arrayContaining(expected));
+
+    const valid = this.equals(trimIds(received), expect.arrayContaining(expected));
+
+    return {
+      message: () => `expected ${received} to match raw participants (${expected})`,
+      pass: valid,
+    };
   },
 });

@@ -1,15 +1,15 @@
-const express = require('express');
-const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
-const { ParticipantPostHireStatusSchema, validate } = require('../validation');
-const {
+import express from 'express';
+import { asyncMiddleware, applyMiddleware } from '../error-handler';
+import { ParticipantPostHireStatusSchema, validate } from '../validation';
+import {
   createPostHireStatus,
   invalidatePostHireStatus,
   getPostHireStatus,
-} = require('../services/post-hire-flow');
-const keycloak = require('../keycloak');
-const logger = require('../logger.js');
-const { getParticipantByID } = require('../services/participants.js');
-const { getAssignCohort } = require('../services/cohorts.js');
+} from '../services/post-hire-flow';
+import keycloak from '../keycloak';
+import logger from '../logger';
+import { getParticipantByID } from '../services/participants';
+import { getAssignCohort } from '../services/cohorts';
 
 const router = express.Router();
 
@@ -96,4 +96,4 @@ router.get(
   })
 );
 
-module.exports = router;
+export default router;

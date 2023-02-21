@@ -20,7 +20,7 @@ const validateOptionalDateString = (s) => {
 
 const validatePastDateString = (s) => {
   if (!validateDateString(s)) return false;
-  return Date.parse(s) <= new Date();
+  return Date.parse(s) <= new Date().valueOf();
 };
 
 const isBooleanValue = (val) =>

@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-const { dbClient } = require('../db');
+import { dbClient } from '../db';
 
 exports.up = async () => {
   await dbClient.db.query(`
@@ -28,4 +28,5 @@ exports.up = async () => {
         `);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 exports.down = () => {};

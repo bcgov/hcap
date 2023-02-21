@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-const { collections } = require('../db');
+import { collections } from '../db';
 
 exports.shorthands = 'add_created_at_date_for_cohort';
 

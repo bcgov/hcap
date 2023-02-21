@@ -1,8 +1,10 @@
-const dayjs = require('dayjs');
-const { addYearToDate } = require('../utils');
-const { dbClient, collections } = require('../db');
-const keycloak = require('../keycloak');
-const { DEFAULT_REGION_NAME, DEFAULT_STATUS } = require('../constants');
+import dayjs from 'dayjs';
+import { addYearToDate } from '../utils';
+import { dbClient, collections } from '../db';
+import keycloak from '../keycloak';
+import { DEFAULT_REGION_NAME, DEFAULT_STATUS } from '../constants';
+
+export { DEFAULT_REGION_NAME } from '../constants';
 
 const mapGraduationStatus = (status) => {
   switch (status) {
@@ -37,6 +39,8 @@ const mapRosEntries = (rosEntries) =>
     siteStartDate: dayjs(entry.data?.startDate || entry.data?.date).format('YYYY-MM-DD'),
     site: entry.siteJoin?.body?.siteName,
     healthRegion: entry.siteJoin?.body?.healthAuthority,
+    positionType: entry.data?.positionType || 'Unknown',
+    employmentType: entry.data?.employmentType || 'Unknown',
   }));
 
 const getPostHireStatusForParticipant = (postHireStatuses) => {
@@ -80,7 +84,7 @@ const getCohortForParticipant = (cohorts, cohortParticipants) => {
   };
 };
 
-const getReport = async () => {
+export const getReport = async () => {
   const total = await dbClient.db[collections.PARTICIPANTS].countDoc({});
   const qualified = await dbClient.db[collections.PARTICIPANTS].countDoc({ interested: 'yes' });
 
@@ -161,7 +165,7 @@ const getReport = async () => {
   };
 };
 
-const getParticipantsReport = async () => {
+export const getParticipantsReport = async () => {
   const inProgressEntries = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
       participantJoin: {
@@ -214,7 +218,7 @@ const getParticipantsReport = async () => {
   }));
 };
 
-const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
+export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
   const users = await keycloak.getUsers();
 
   const searchOptions = {
@@ -286,7 +290,7 @@ const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
   }));
 };
 
-const getRejectedParticipantsReport = async () => {
+export const getRejectedParticipantsReport = async () => {
   const rejectedEntries = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
       participantJoin: {
@@ -343,7 +347,7 @@ const getRejectedParticipantsReport = async () => {
     .filter((entry) => entry.participantInfo.interested !== 'withdrawn');
 };
 
-const getNoOfferParticipantsReport = async () => {
+export const getNoOfferParticipantsReport = async () => {
   const participants = await dbClient.db[collections.PARTICIPANTS]
     .join({
       statusJoin: {
@@ -370,7 +374,7 @@ const getNoOfferParticipantsReport = async () => {
   }));
 };
 
-const getMohRosMilestonesReport = async () => {
+export const getMohRosMilestonesReport = async () => {
   const entries = await dbClient.db[collections.ROS_STATUS]
     .join({
       participantJoin: {
@@ -403,7 +407,7 @@ const getMohRosMilestonesReport = async () => {
   return mapRosEntries(entries);
 };
 
-const getHARosMilestonesReport = async (region) => {
+export const getHARosMilestonesReport = async (region) => {
   const sameSiteRosEntries = await dbClient.db[collections.ROS_STATUS]
     .join({
       participantJoin: {
@@ -473,7 +477,7 @@ const getHARosMilestonesReport = async (region) => {
   return mapRosEntries(rosEntries);
 };
 
-const getPSIPaticipantsReport = async (region) => {
+export const getPSIPaticipantsReport = async (region) => {
   const searchOptions = {
     status: ['hired', 'archived'],
     current: true,
@@ -563,17 +567,4 @@ const getPSIPaticipantsReport = async (region) => {
  * @param {string} regionId health region
  * @return {boolean} true if the user has access
  */
-const checkUserRegion = (user, regionId) => user && user.regions?.includes(regionId);
-
-module.exports = {
-  getReport,
-  getParticipantsReport,
-  getHiredParticipantsReport,
-  getRejectedParticipantsReport,
-  getNoOfferParticipantsReport,
-  getMohRosMilestonesReport,
-  getHARosMilestonesReport,
-  getPSIPaticipantsReport,
-  checkUserRegion,
-  DEFAULT_REGION_NAME,
-};
+export const checkUserRegion = (user, regionId) => user && user.regions?.includes(regionId);

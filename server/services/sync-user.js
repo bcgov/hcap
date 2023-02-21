@@ -1,8 +1,8 @@
-const { dbClient, collections } = require('../db');
-const keycloak = require('../keycloak');
-const logger = require('../logger');
+import { dbClient, collections } from '../db';
+import keycloak from '../keycloak';
+import logger from '../logger';
 
-const syncUser = async ({ log }) => {
+export const syncUser = async ({ log }) => {
   // Fetch all db users
   const allUsers = await dbClient.db[collections.USERS].findDoc();
   // Fetch all keycloak users
@@ -22,8 +22,4 @@ const syncUser = async ({ log }) => {
     })
   );
   return resp;
-};
-
-module.exports = {
-  syncUser,
 };

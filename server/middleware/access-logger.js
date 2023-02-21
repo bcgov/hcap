@@ -1,6 +1,6 @@
-const logger = require('../logger');
+import logger from '../logger';
 
-module.exports = (req, res, next) => {
+export default (req, res, next) => {
   res.on('finish', () => {
     const { path: pathName, method, ip, baseUrl = '' } = req;
     const { statusCode } = res;

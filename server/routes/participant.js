@@ -1,7 +1,7 @@
-const { validate: uuidValidate } = require('uuid');
-const express = require('express');
+import { validate as uuidValidate } from 'uuid';
+import express from 'express';
 
-const {
+import {
   makeParticipant,
   getParticipants,
   getParticipantByID,
@@ -11,20 +11,20 @@ const {
   deleteAcknowledgement,
   archiveParticipantBySite,
   deleteParticipant,
-} = require('../services/participants.js');
+} from '../services/participants';
 
-const {
+import {
   participantDetails,
   checkUserHasAccessToParticipant,
-} = require('../services/participant-details.js');
+} from '../services/participant-details';
 
-const {
+import {
   setParticipantStatus,
   bulkEngageParticipants,
   hideStatusForUser,
-} = require('../services/participant-status');
-const { addParticipantToWaitlist } = require('../services/waitlist');
-const {
+} from '../services/participant-status';
+import { addParticipantToWaitlist } from '../services/waitlist';
+import {
   validate,
   ParticipantQuerySchema,
   ParticipantStatusChange,
@@ -35,18 +35,19 @@ const {
   RemoveParticipantUser,
   WaitlistEmailSchema,
   BulkEngageParticipantSchema,
-} = require('../validation.js');
-const keycloak = require('../keycloak.js');
-const logger = require('../logger.js');
-const { asyncMiddleware } = require('../error-handler.js');
-const { expressRequestBodyValidator } = require('../middleware/index.js');
+} from '../validation';
 
-const participantRouter = express.Router();
-const participantsRouter = express.Router();
-const newHiredParticipantRouter = express.Router();
-const employerActionsRouter = express.Router();
+import keycloak from '../keycloak';
+import logger from '../logger';
+import { asyncMiddleware } from '../error-handler';
+import { expressRequestBodyValidator } from '../middleware/index';
 
-const { participantStatus } = require('../constants');
+import { participantStatus } from '../constants';
+
+export const participantRouter = express.Router();
+export const participantsRouter = express.Router();
+export const newHiredParticipantRouter = express.Router();
+export const employerActionsRouter = express.Router();
 
 const { ALREADY_HIRED, INVALID_STATUS, INVALID_STATUS_TRANSITION, INVALID_ARCHIVE } =
   participantStatus;
@@ -275,7 +276,7 @@ if (process.env.APP_ENV === 'local') {
       expressRequestBodyValidator(RemoveParticipantUser),
     ],
     asyncMiddleware(async (req, res) => {
-      const { body: { email } = {} } = req;
+      const { body: { email } = { email: null } } = req;
       if (email) {
         await deleteParticipant({ email });
         logger.info({
@@ -426,7 +427,13 @@ employerActionsRouter.delete(
     // Get user
     const user = req.hcapUserInfo;
     // Get request body
-    const { body: { participantId, multiOrgHire, currentStatusId } = {} } = req;
+    const {
+      body: { participantId, multiOrgHire, currentStatusId } = {
+        participantId: null,
+        multiOrgHire: null,
+        currentStatusId: null,
+      },
+    } = req;
     if (!participantId) {
       return res.status(400).send('Missing participantId');
     }
@@ -459,9 +466,12 @@ employerActionsRouter.delete(
   })
 );
 
-// Bulk Engage
-// Expect body: { participants: [ids...], sites: [{id: #site_id}, ...]}
-// Response: [{ participantId: #id, status: #status, success: true/false }]
+/**
+ * Bulk Engage
+ * Expect body: { participants: [ids...], sites: [{id: #site_id}, ...]}
+ * Response: [{ participantId: #id, status: #status, success: true/false }]
+ * @deprecated Not used by FE or scripts
+ */
 employerActionsRouter.post(
   '/bulk-engage',
   keycloak.allowRolesMiddleware('employer', 'health_authority'),
@@ -482,10 +492,3 @@ employerActionsRouter.post(
     return res.status(201).json(result);
   })
 );
-
-module.exports = {
-  participantRouter,
-  participantsRouter,
-  newHiredParticipantRouter,
-  employerActionsRouter,
-};

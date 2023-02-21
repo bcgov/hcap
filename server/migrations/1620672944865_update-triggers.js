@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-const { collections } = require('../db');
+import { collections } from '../db';
 
 exports.up = async (pgm) => {
   await pgm.dropTrigger(collections.EMPLOYER_SITES, 'update_postal_code_s', { ifExists: true });

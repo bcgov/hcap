@@ -1,11 +1,13 @@
 /* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
-const fs = require('fs');
-const path = require('path');
-const axios = require('axios');
-const inquirer = require('inquirer');
-const parser = require('fast-xml-parser');
-const _ = require('lodash');
-const asyncPool = require('tiny-async-pool');
+import fs from 'fs';
+import path from 'path';
+import axios from 'axios';
+import inquirer from 'inquirer';
+import parser from 'fast-xml-parser';
+import _ from 'lodash';
+import asyncPool from 'tiny-async-pool';
+
+// WARN: schema seems to be missing! Should be fixed and made an import.
 const { validate, ParticipantFormSchema } = require('../validation');
 
 const endpoints = [

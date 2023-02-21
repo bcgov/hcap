@@ -1,12 +1,12 @@
 /* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
-const { dbClient } = require('../db');
-const {
+import { dbClient } from '../db';
+import {
   createStaleOpenParticipantsTable,
   getStaleOpenParticipants,
   dropStaleOpenParticipantsTable,
   invalidateStaleOpenParticipants,
-} = require('../services/clean-up');
-const logger = require('../logger.js');
+} from '../services/clean-up';
+import logger from '../logger';
 
 /**
  * Script entry method (main)

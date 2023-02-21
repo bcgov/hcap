@@ -1,22 +1,24 @@
-const { ValidationError } = require('yup');
-const { v4 } = require('uuid');
-const app = require('../server');
-const {
+import { ValidationError } from 'yup';
+import { v4 } from 'uuid';
+import { app } from '../server';
+
+import {
   saveSingleSite,
   saveSites,
   getSitesForUser,
   getSiteByID,
   updateSite,
-} = require('../services/employers.js');
-const {
+} from '../services/employers';
+
+import {
   getParticipants,
   makeParticipant,
   getHiredParticipantsBySite,
-} = require('../services/participants.js');
+} from '../services/participants';
 
-const { setParticipantStatus } = require('../services/participant-status');
+import { setParticipantStatus } from '../services/participant-status';
 
-const { startDB, closeDB } = require('./util/db');
+import { startDB, closeDB } from './util/db';
 
 describe('Employer Site Endpoints', () => {
   let server;

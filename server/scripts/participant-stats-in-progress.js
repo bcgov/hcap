@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
-require('dotenv').config({ path: '../.env' });
-const csv = require('fast-csv');
-const path = require('path');
-const { writeFileSync } = require('fs');
-const { dbClient } = require('../db');
-const { getParticipantsReport } = require('../services/reporting');
+import './load-env';
+import csv from 'fast-csv';
+import path from 'path';
+import { writeFileSync } from 'fs';
+import { dbClient } from '../db';
+import { getParticipantsReport } from '../services/reporting';
 
 (async () => {
   if (require.main === module) {

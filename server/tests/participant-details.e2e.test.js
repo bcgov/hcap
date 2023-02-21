@@ -1,9 +1,10 @@
 // Test execution code: npm run test:debug participant-details.e2e.test.js
-const request = require('supertest');
-const app = require('../server');
-const { startDB, closeDB } = require('./util/db');
-const { makeTestParticipant, createTestParticipantStatus } = require('./util/integrationTestData');
-const { getKeycloakToken, healthAuthority, superuser } = require('./util/keycloak');
+import request from 'supertest';
+import { app } from '../server';
+
+import { startDB, closeDB } from './util/db';
+import { makeTestParticipant, createTestParticipantStatus } from './util/integrationTestData';
+import { getKeycloakToken, healthAuthority, superuser } from './util/keycloak';
 
 describe('e2e tests for /participant/details route', () => {
   let server;

@@ -1,5 +1,5 @@
-const { dbClient, collections } = require('../db');
-const { validate, CreatePSISchema } = require('../validation');
+import { dbClient, collections } from '../db';
+import { validate, CreatePSISchema } from '../validation';
 
 // Helpers
 
@@ -8,7 +8,7 @@ const { validate, CreatePSISchema } = require('../validation');
  * @param {*} psi object data transfer object from client
  * @returns object { success: boolean, message: string, status: string }
  */
-const mapToDbModel = (psi) => ({
+export const mapToDbModel = (psi) => ({
   institute_name: psi.instituteName,
   health_authority: psi.healthAuthority,
   postal_code: psi.postalCode,
@@ -16,9 +16,9 @@ const mapToDbModel = (psi) => ({
   city: psi.city || '',
 });
 
-const getPSIs = async () => dbClient.db[collections.POST_SECONDARY_INSTITUTIONS].find();
+export const getPSIs = async () => dbClient.db[collections.POST_SECONDARY_INSTITUTIONS].find();
 
-const getAllPSIWithCohorts = async () => {
+export const getAllPSIWithCohorts = async () => {
   const results = await dbClient.db[collections.POST_SECONDARY_INSTITUTIONS]
     .join({
       cohorts: {
@@ -45,12 +45,12 @@ const getAllPSIWithCohorts = async () => {
   return results;
 };
 
-const getPSI = async (id) =>
+export const getPSI = async (id) =>
   dbClient.db[collections.POST_SECONDARY_INSTITUTIONS].find({
     id,
   });
 
-const makePSI = async (psi) => {
+export const makePSI = async (psi) => {
   await validate(CreatePSISchema, psi);
   const data = {
     institute_name: psi.instituteName,
@@ -71,7 +71,7 @@ const makePSI = async (psi) => {
   }
 };
 
-const updatePSI = async (id, update) => {
+export const updatePSI = async (id, update) => {
   // Check PSI is available or not
   const [psi] = await getPSI(id);
   if (!psi) {
@@ -101,12 +101,4 @@ const updatePSI = async (id, update) => {
   );
 
   return { success: true, message: 'PSI updated successfully', status: 200, psi: updatedPSI };
-};
-
-module.exports = {
-  getPSIs,
-  getPSI,
-  makePSI,
-  updatePSI,
-  getAllPSIWithCohorts,
 };

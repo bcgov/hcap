@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
-require('dotenv').config({ path: '../.env' });
-const csv = require('fast-csv');
-const { writeFileSync } = require('fs');
-const path = require('path');
-const { dbClient, collections } = require('../db');
+import './load-env';
+import csv from 'fast-csv';
+import { writeFileSync } from 'fs';
+import path from 'path';
+import { dbClient, collections } from '../db';
 
 const roles = [
   'Registered Nurse',

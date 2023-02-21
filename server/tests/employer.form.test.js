@@ -1,23 +1,24 @@
-const request = require('supertest');
-const { v4 } = require('uuid');
-const app = require('../server');
-const {
+import request from 'supertest';
+import { v4 } from 'uuid';
+import { app } from '../server';
+
+import {
   getEmployers,
   getEmployerByID,
   getSitesForUser,
   getSiteByID,
   saveSites,
-} = require('../services/employers.js');
+} from '../services/employers';
 
-const {
+import {
   getParticipants,
   getHiredParticipantsBySite,
   makeParticipant,
-} = require('../services/participants.js');
+} from '../services/participants';
 
-const { setParticipantStatus } = require('../services/participant-status');
+import { setParticipantStatus } from '../services/participant-status';
 
-const { startDB, closeDB, cleanDB } = require('./util/db');
+import { startDB, closeDB, cleanDB } from './util/db';
 
 describe.skip('Server V1 Form Endpoints', () => {
   let server;

@@ -1,21 +1,16 @@
 /* eslint-disable camelcase */
-const assert = require('assert');
-const dayjs = require('dayjs');
-const readXlsxFile = require('node-xlsx').default;
-const {
-  validate,
-  ParticipantBatchSchema,
-  isBooleanValue,
-  postHireStatuses,
-} = require('../validation.js');
-const { dbClient, collections } = require('../db');
-const { createRows, verifyHeaders } = require('../utils');
-const { ParticipantsFinder } = require('./participants-helper');
-const logger = require('../logger.js');
-const { getAssignCohort } = require('./cohorts');
-const { createPostHireStatus, getPostHireStatusesForParticipant } = require('./post-hire-flow');
+import assert from 'assert';
+import dayjs from 'dayjs';
+import readXlsxFile from 'node-xlsx';
+import { validate, ParticipantBatchSchema, isBooleanValue, postHireStatuses } from '../validation';
+import { dbClient, collections } from '../db';
+import { createRows, verifyHeaders } from '../utils';
+import { ParticipantsFinder } from './participants-helper';
+import logger from '../logger';
+import { getAssignCohort } from './cohorts';
+import { createPostHireStatus, getPostHireStatusesForParticipant } from './post-hire-flow';
 
-const deleteParticipant = async ({ email }) => {
+export const deleteParticipant = async ({ email }) => {
   await dbClient.db.withTransaction(async (tnx) => {
     // Delete entry from participant-user-map
     await tnx.query(
@@ -34,7 +29,7 @@ const deleteParticipant = async ({ email }) => {
   });
 };
 
-const invalidateStatus = async ({ currentStatusId }) =>
+export const invalidateStatus = async ({ currentStatusId }) =>
   dbClient.db[collections.PARTICIPANTS_STATUS].update(
     {
       id: currentStatusId,
@@ -44,7 +39,7 @@ const invalidateStatus = async ({ currentStatusId }) =>
     }
   );
 
-const deleteAcknowledgement = async (participantId) =>
+export const deleteAcknowledgement = async (participantId) =>
   dbClient.db.withTransaction(async (tx) => {
     const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
       participant_id: participantId,
@@ -63,7 +58,7 @@ const deleteAcknowledgement = async (participantId) =>
     return { success: true, message: 'Participant status acknowledged and closed' };
   });
 
-const getHiredParticipantsBySite = async (siteID) => {
+export const getHiredParticipantsBySite = async (siteID) => {
   const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
       participantJoin: {
@@ -91,7 +86,7 @@ const getHiredParticipantsBySite = async (siteID) => {
  * @param {string} siteID
  * @returns list of withdrawn participants+status related to a given siteID
  */
-const getWithdrawnParticipantsBySite = async (siteID) => {
+export const getWithdrawnParticipantsBySite = async (siteID) => {
   const participantsStatusJoin = dbClient.db[collections.PARTICIPANTS_STATUS].join({
     participantJoin: {
       type: 'LEFT OUTER',
@@ -120,14 +115,14 @@ const getWithdrawnParticipantsBySite = async (siteID) => {
   return withdrawnParticipants;
 };
 
-const getParticipantByID = async (id) => {
+export const getParticipantByID = async (id) => {
   const participant = await dbClient.db[collections.PARTICIPANTS].findDoc({
     id,
   });
   return participant;
 };
 
-const createChangeHistory = (participantBody, changes) => {
+export const createChangeHistory = (participantBody, changes) => {
   try {
     const newBody = { ...participantBody };
     const changeDetails = Object.keys(changes).reduce((target, key) => {
@@ -153,7 +148,7 @@ const createChangeHistory = (participantBody, changes) => {
   }
 };
 
-const updateParticipant = async (participantInfo) => {
+export const updateParticipant = async (participantInfo) => {
   try {
     // The below reduce function unpacks the most recent changes in the history
     // and builds them into an object to be used for the update request
@@ -200,7 +195,7 @@ const updateParticipant = async (participantInfo) => {
   }
 };
 
-const withdrawParticipant = async (participantInfo) => {
+export const withdrawParticipant = async (participantInfo) => {
   const participant = { ...participantInfo };
   const newHistory = {
     timestamp: new Date(),
@@ -216,7 +211,7 @@ const withdrawParticipant = async (participantInfo) => {
   return updateParticipant(participant);
 };
 
-const archiveParticipantBySite = async (siteId, participantId, data, userId) => {
+export const archiveParticipantBySite = async (siteId, participantId, data, userId) => {
   const hiredParticipants = await getHiredParticipantsBySite(siteId);
   if (!hiredParticipants) {
     return false;
@@ -264,10 +259,10 @@ const archiveParticipantBySite = async (siteId, participantId, data, userId) => 
   return true;
 };
 
-const validateConfirmationId = (id) =>
+export const validateConfirmationId = (id) =>
   dbClient.db[collections.CONFIRM_INTEREST].findOne({ otp: id });
 
-const confirmParticipantInterest = async (id) => {
+export const confirmParticipantInterest = async (id) => {
   const now = new Date().toJSON();
   // Check to see if there are any matching records that have not withdrawn.
   const relatedParticipants = await dbClient.db[collections.PARTICIPANTS]
@@ -339,7 +334,7 @@ const confirmParticipantInterest = async (id) => {
   return deleted.length > 0 && updatedParticipantFields.length > 0;
 };
 
-const getParticipants = async (
+export const getParticipants = async (
   user,
   pagination,
   sortField,
@@ -533,7 +528,7 @@ const getParticipants = async (
   };
 };
 
-const parseAndSaveParticipants = async (fileBuffer) => {
+export const parseAndSaveParticipants = async (fileBuffer) => {
   const columnMap = {
     ClientID: 'maximusId',
     Surname: 'lastName',
@@ -609,12 +604,12 @@ const parseAndSaveParticipants = async (fileBuffer) => {
   return response;
 };
 
-const makeParticipant = async (participantJson) => {
+export const makeParticipant = async (participantJson) => {
   const res = await dbClient.db.saveDoc(collections.PARTICIPANTS, participantJson);
   return res;
 };
 
-const createParticipantUserMap = async (userId, email, transaction) => {
+export const createParticipantUserMap = async (userId, email, transaction) => {
   assert(email, 'Email must be a non empty string');
   const participants = await transaction[collections.PARTICIPANTS]
     .join({
@@ -645,7 +640,7 @@ const createParticipantUserMap = async (userId, email, transaction) => {
   return participants;
 };
 
-const getParticipantsForUser = async (userId, email) => {
+export const getParticipantsForUser = async (userId, email) => {
   const finalResults = await dbClient.db.withTransaction(async (tnx) => {
     // Get all mapped participant
     const participants = await tnx[collections.PARTICIPANTS]
@@ -683,13 +678,13 @@ const getParticipantsForUser = async (userId, email) => {
   }));
 };
 
-const mapUserWithParticipant = async (userId, participantId) =>
+export const mapUserWithParticipant = async (userId, participantId) =>
   dbClient.db[collections.USER_PARTICIPANT_MAP].save({
     user_id: userId,
     participant_id: participantId,
   });
 
-const getParticipantByIdWithStatus = async ({ id, userId }) =>
+export const getParticipantByIdWithStatus = async ({ id, userId }) =>
   dbClient.db[collections.PARTICIPANTS]
     .join({
       currentStatuses: {
@@ -712,7 +707,7 @@ const getParticipantByIdWithStatus = async ({ id, userId }) =>
     })
     .find({ id, 'user.user_id': userId });
 
-const setParticipantLastUpdated = async (id) => {
+export const setParticipantLastUpdated = async (id) => {
   // Find participants
   let [participant] = await getParticipantByID(id);
   // Don't change status if participant is withdrawn
@@ -750,7 +745,7 @@ const setParticipantLastUpdated = async (id) => {
   }
 };
 
-const withdrawParticipantsByEmail = async (userId, email) => {
+export const withdrawParticipantsByEmail = async (userId, email) => {
   if (!email) {
     return;
   }
@@ -781,28 +776,4 @@ const withdrawParticipantsByEmail = async (userId, email) => {
       );
     });
   });
-};
-
-module.exports = {
-  archiveParticipantBySite,
-  setParticipantLastUpdated,
-  parseAndSaveParticipants,
-  getParticipants,
-  getHiredParticipantsBySite,
-  getWithdrawnParticipantsBySite,
-  getParticipantByID,
-  updateParticipant,
-  makeParticipant,
-  validateConfirmationId,
-  confirmParticipantInterest,
-  createParticipantUserMap,
-  getParticipantsForUser,
-  mapUserWithParticipant,
-  getParticipantByIdWithStatus,
-  withdrawParticipant,
-  createChangeHistory,
-  deleteAcknowledgement,
-  invalidateStatus,
-  withdrawParticipantsByEmail,
-  deleteParticipant,
 };

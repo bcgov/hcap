@@ -1,6 +1,6 @@
-const { dbClient, collections } = require('../db');
-const { participantStatus } = require('../constants');
-const { withdrawParticipant, getParticipantByID, invalidateStatus } = require('./participants');
+import { dbClient, collections } from '../db';
+import { participantStatus } from '../constants';
+import { withdrawParticipant, getParticipantByID, invalidateStatus } from './participants';
 
 const {
   PROSPECTING,
@@ -30,7 +30,7 @@ const previousStatusesMap = {
 /**
  * Invalidate all current status for site
  * @param {*} db object Database object
- * @param {*} options object
+ * @param {Object} options object
  * @param {*} options.participantId  string | number Participant ID string
  * @param {*} options.site string | number Site ID
  * @returns
@@ -61,7 +61,7 @@ const invalidateAllStatusForSite = async (db, { site, participantId }) => {
  * @param {*} currentStatusId string | number New status transition reference ID
  * @returns
  */
-const setParticipantStatus = async (
+export const setParticipantStatus = async (
   employerId,
   participantId,
   status,
@@ -257,7 +257,7 @@ const setParticipantStatus = async (
     return { status, id: statusObj.id };
   });
 
-const bulkEngageParticipants = async ({ participants, user }) =>
+export const bulkEngageParticipants = async ({ participants, user }) =>
   Promise.all(
     participants.map(async (id) => {
       const [participant] = await getParticipantByID(id);
@@ -280,7 +280,7 @@ const bulkEngageParticipants = async ({ participants, user }) =>
     })
   );
 
-const hideStatusForUser = async ({ userId, statusId }) => {
+export const hideStatusForUser = async ({ userId, statusId }) => {
   // Load status
   const status = await dbClient.db[collections.PARTICIPANTS_STATUS].findOne({ id: statusId });
   if (!status || !status.current) {
@@ -312,7 +312,7 @@ const hideStatusForUser = async ({ userId, statusId }) => {
   );
 };
 
-const getParticipantHiredStatuses = async (participantId) => {
+export const getParticipantHiredStatuses = async (participantId) => {
   const statuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
     participant_id: participantId,
     status: 'hired',
@@ -322,11 +322,4 @@ const getParticipantHiredStatuses = async (participantId) => {
     throw new Error('Participant is not hired');
   }
   return statuses;
-};
-
-module.exports = {
-  setParticipantStatus,
-  bulkEngageParticipants,
-  hideStatusForUser,
-  getParticipantHiredStatuses,
 };

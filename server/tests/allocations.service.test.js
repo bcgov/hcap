@@ -1,13 +1,11 @@
 /**
  * Tests for services/allocation.js
  */
-const { v4 } = require('uuid');
-const app = require('../server');
-const { getAllocation, createAllocation, updateAllocation } = require('../services/allocations.js');
-
-const { makeTestFKAllocations } = require('./util/integrationTestData');
-
-const { startDB, closeDB } = require('./util/db');
+import { v4 } from 'uuid';
+import { app } from '../server';
+import { getAllocation, createAllocation, updateAllocation } from '../services/allocations';
+import { makeTestFKAllocations } from './util/integrationTestData';
+import { startDB, closeDB } from './util/db';
 
 describe('Phase Allocation Endpoints', () => {
   let server;

@@ -2,7 +2,7 @@
  * Define db schema rules including collection names and indexes
  */
 
-const collections = {
+export const collections = {
   PARTICIPANTS: 'participants',
   PARTICIPANTS_STATUS: 'participants_status',
   GEOCODES: 'geocodes',
@@ -24,7 +24,7 @@ const collections = {
   SITE_PHASE_ALLOCATION: 'site_phase_allocation',
 };
 
-const views = {
+export const views = {
   PARTICIPANTS_STATUS_INFOS: 'participants_status_infos',
 };
 
@@ -33,7 +33,7 @@ const views = {
 // `definition` is a raw SQL string used to create the table
 // `collection` is the name of the document table
 // `indexes` are JSONB field names on which unique indexes should be created
-const schema = {
+export const schema = {
   relationalTables: [
     {
       definition: `CREATE TABLE IF NOT EXISTS ${collections.PARTICIPANTS_STATUS} (
@@ -155,5 +155,3 @@ const schema = {
     },
   ],
 };
-
-module.exports = { collections, views, schema };

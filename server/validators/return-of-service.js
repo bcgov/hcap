@@ -1,8 +1,9 @@
-const yup = require('yup');
-const { rosPositionTypeValues, rosEmploymentTypeValues } = require('../constants');
-const { validISODateString } = require('./helpers');
+import { rosPositionTypeValues, rosEmploymentTypeValues } from '../constants';
+import { validISODateString } from './helpers';
 
-const CreateReturnOfServiceSchema = yup
+const yup = require('yup');
+
+export const CreateReturnOfServiceSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
@@ -25,7 +26,7 @@ const CreateReturnOfServiceSchema = yup
       }),
   });
 
-const ChangeReturnOfServiceSiteSchema = yup
+export const ChangeReturnOfServiceSiteSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
@@ -48,7 +49,7 @@ const ChangeReturnOfServiceSiteSchema = yup
       }),
   });
 
-const UpdateReturnOfServiceSchema = yup
+export const UpdateReturnOfServiceSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
@@ -59,9 +60,3 @@ const UpdateReturnOfServiceSchema = yup
       site: yup.number().optional(),
     }),
   });
-
-module.exports = {
-  CreateReturnOfServiceSchema,
-  ChangeReturnOfServiceSiteSchema,
-  UpdateReturnOfServiceSchema,
-};

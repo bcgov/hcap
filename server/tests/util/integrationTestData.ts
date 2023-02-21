@@ -1,13 +1,17 @@
-const { dbClient, collections } = require('../../db');
-const { participantData, psiData, cohortData } = require('./testData');
-const { makeParticipant } = require('../../services/participants');
-const { createPostHireStatus } = require('../../services/post-hire-flow');
-const { makePSI } = require('../../services/post-secondary-institutes');
-const { makeCohort, assignCohort } = require('../../services/cohorts');
-const { saveSingleSite } = require('../../services/employers');
-const { createGlobalPhase } = require('../../services/phase');
+import { dbClient, collections } from '../../db';
+import { participantData, psiData, cohortData } from './testData';
+import { makeParticipant } from '../../services/participants';
+import { createPostHireStatus } from '../../services/post-hire-flow';
+import { makePSI } from '../../services/post-secondary-institutes';
+import { makeCohort, assignCohort } from '../../services/cohorts';
+import { saveSingleSite } from '../../services/employers';
+import { createGlobalPhase } from '../../services/phase';
 
-const makeTestPostHireStatus = async ({ email, status, data = {} }) => {
+// NOTE: not ideal! This should be fixed.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const expect: (any) => any;
+
+export const makeTestPostHireStatus = async ({ email, status, data = {} }) => {
   const participantObj = participantData({ emailAddress: email });
   const participant = await makeParticipant(participantObj);
   const postHireStatus = await createPostHireStatus({
@@ -18,16 +22,24 @@ const makeTestPostHireStatus = async ({ email, status, data = {} }) => {
   return { participant, postHireStatus };
 };
 
-const makeTestParticipant = async (options) => makeParticipant(participantData(options));
+export const makeTestParticipant = async (options) => makeParticipant(participantData(options));
 
-const makeCohortAssignment = async ({
+interface CohortAssignmentData {
+  cohortName?: string;
+  cohortId?;
+  email?: string;
+  participantId?;
+  psiName?: string;
+  psiId?;
+}
+export const makeCohortAssignment = async ({
   cohortName,
   cohortId,
   email,
   participantId,
   psiName,
   psiId,
-}) => {
+}: CohortAssignmentData) => {
   let finalParticipantId = participantId;
   let finalPSIId = psiId;
   let finalCohortId = cohortId;
@@ -58,7 +70,20 @@ const makeCohortAssignment = async ({
   };
 };
 
-const makeTestSite = async ({ siteId, city, siteName, ...rest } = {}) => {
+interface TestSiteData {
+  siteId?;
+  city?: string;
+  siteName?: string;
+  [key: string]: string | number | boolean | undefined;
+}
+
+export const makeTestSite = async (
+  { siteId, city, siteName, ...rest }: TestSiteData = {
+    siteId: undefined,
+    city: undefined,
+    siteName: undefined,
+  }
+) => {
   if (!siteId) {
     throw new Error('Site ID is required');
   }
@@ -70,16 +95,24 @@ const makeTestSite = async ({ siteId, city, siteName, ...rest } = {}) => {
   });
 };
 
-const makeTestPSI = async (psiDataObj) => makePSI(psiDataObj);
+export const makeTestPSI = async (psiDataObj) => makePSI(psiDataObj);
 
-const makeTestParticipantStatus = async ({
+// These interfaces should be fleshed out and documented
+interface MakeTestParticipantStatusData {
+  participantId?: number;
+  employerId?: number;
+  status;
+  current?: boolean;
+  data;
+}
+export const makeTestParticipantStatus = async ({
   participantId,
   employerId,
   status,
   current = true,
   data,
-}) =>
-  dbClient.db[collections.PARTICIPANTS_STATUS].insert({
+}: MakeTestParticipantStatusData) =>
+  dbClient.db?.[collections.PARTICIPANTS_STATUS].insert({
     participant_id: participantId,
     employer_id: employerId || 1,
     status,
@@ -87,11 +120,16 @@ const makeTestParticipantStatus = async ({
     data,
   });
 
-const createTestParticipantStatus = async ({
+interface CreateTestParticipantStatusData {
+  participantData;
+  siteData?;
+  status?: string;
+}
+export const createTestParticipantStatus = async ({
   participantData: participantDataObj,
   siteData,
   status,
-}) => {
+}: CreateTestParticipantStatusData) => {
   const participant = await makeTestParticipant(participantDataObj);
   const site = await makeTestSite(siteData);
   const participantStatus = await makeTestParticipantStatus({
@@ -106,10 +144,16 @@ const createTestParticipantStatus = async ({
 };
 
 const today = new Date();
-const makeTestCohort = async ({ cohortName, psiId, cohortSize, startDate = today, endDate }) =>
-  makeCohort(cohortData({ cohortName, psiID: psiId, cohortSize, startDate, endDate }));
 
-const makeTestFKAllocations = async (id) => {
+export const makeTestCohort = async ({
+  cohortName,
+  psiId,
+  cohortSize,
+  startDate = today,
+  endDate,
+}) => makeCohort(cohortData({ cohortName, psiID: psiId, cohortSize, startDate, endDate }));
+
+export const makeTestFKAllocations = async (id) => {
   const site = await makeTestSite({
     siteId: id,
     siteName: 'Test Site 1040',
@@ -131,16 +175,4 @@ const makeTestFKAllocations = async (id) => {
     site,
     phase,
   };
-};
-
-module.exports = {
-  makeTestParticipant,
-  makeTestPostHireStatus,
-  makeCohortAssignment,
-  makeTestSite,
-  makeTestParticipantStatus,
-  createTestParticipantStatus,
-  makeTestCohort,
-  makeTestPSI,
-  makeTestFKAllocations,
 };

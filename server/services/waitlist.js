@@ -1,13 +1,13 @@
-const { dbClient, collections } = require('../db');
+import { dbClient, collections } from '../db';
 
-const waitlistHasEmail = async (email) => {
+export const waitlistHasEmail = async (email) => {
   const alreadyExists = await dbClient.db[collections.PARTICIPANT_WAITLIST].findOne({
     email,
   });
   return Boolean(alreadyExists);
 };
 
-const addParticipantToWaitlist = async (email) => {
+export const addParticipantToWaitlist = async (email) => {
   if (await waitlistHasEmail(email)) {
     return false;
   }
@@ -15,8 +15,4 @@ const addParticipantToWaitlist = async (email) => {
     email,
   });
   return true;
-};
-module.exports = {
-  addParticipantToWaitlist,
-  waitlistHasEmail,
 };

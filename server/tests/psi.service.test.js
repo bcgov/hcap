@@ -1,8 +1,8 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-const { startDB, closeDB } = require('./util/db');
-const { getPSIs, getPSI, makePSI, updatePSI } = require('../services/post-secondary-institutes.js');
-const { makeTestPSI } = require('./util/integrationTestData');
-const { psiData } = require('./util/testData');
+import { startDB, closeDB } from './util/db';
+import { getPSIs, getPSI, makePSI, updatePSI } from '../services/post-secondary-institutes';
+import { makeTestPSI } from './util/integrationTestData';
+import { psiData } from './util/testData';
 
 describe('PSI Service', () => {
   beforeAll(async () => {
@@ -104,7 +104,7 @@ describe('PSI Service', () => {
   it('should update psi', async () => {
     const psiObj = psiData({
       instituteName: 'Test 202206290209',
-      streetAddress: 'Test 202206290209 Road',
+      address: 'Test 202206290209 Road',
     });
     const psi = await makeTestPSI(psiObj);
     const result = await updatePSI(psi.id, {

@@ -1,8 +1,8 @@
 /* eslint-disable max-classes-per-file */
-const { collections, views } = require('../db');
-const { userRegionQuery } = require('./user.js');
-const { participantStatus } = require('../constants');
-const logger = require('../logger.js');
+import { collections, views } from '../db';
+import { userRegionQuery } from './user';
+import { participantStatus } from '../constants';
+import logger from '../logger';
 
 const {
   OPEN: open,
@@ -564,7 +564,7 @@ class RegionsFilteredParticipantsFinder {
   }
 }
 
-class ParticipantsFinder {
+export class ParticipantsFinder {
   constructor(dbClient, user) {
     this.dbClient = dbClient;
     this.user = user;
@@ -595,7 +595,3 @@ class ParticipantsFinder {
     return new RegionsFilteredParticipantsFinder(this);
   }
 }
-
-module.exports = {
-  ParticipantsFinder,
-};

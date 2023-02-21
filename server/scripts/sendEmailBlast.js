@@ -1,12 +1,12 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-console */
-require('dotenv').config({ path: '../.env' });
-const axios = require('axios');
-const readline = require('readline');
-const { dbClient } = require('../db/db');
-const logger = require('../logger.js');
-const { collections } = require('../db/schema');
+import './load-env';
+import axios from 'axios';
+import readline from 'readline';
+import dbClient from '../db/db';
+import logger from '../logger';
+import { collections } from '../db/schema';
 
 // https://stackoverflow.com/a/40560590
 const colours = {

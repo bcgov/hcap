@@ -1,8 +1,8 @@
-const express = require('express');
-const keycloak = require('../keycloak');
-const logger = require('../logger.js');
-const { asyncMiddleware, applyMiddleware } = require('../error-handler.js');
-const {
+import express from 'express';
+import keycloak from '../keycloak';
+import logger from '../logger';
+import { asyncMiddleware, applyMiddleware } from '../error-handler';
+import {
   getParticipantsForUser,
   getParticipantByIdWithStatus,
   updateParticipant,
@@ -10,11 +10,11 @@ const {
   setParticipantLastUpdated,
   withdrawParticipant,
   withdrawParticipantsByEmail,
-} = require('../services/participants');
+} from '../services/participants';
 
-const { patchObject, sanitize } = require('../utils');
+import { patchObject, sanitize } from '../utils';
 
-const { UserParticipantEditSchema, validate } = require('../validation');
+import { UserParticipantEditSchema, validate } from '../validation';
 
 // Router
 const router = express.Router();
@@ -197,4 +197,4 @@ router.post(
   })
 );
 
-module.exports = router;
+export default router;

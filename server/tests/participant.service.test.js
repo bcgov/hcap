@@ -1,11 +1,11 @@
 // Test execution code: npm run test:debug participant.service.test.js
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-const { readFileSync } = require('fs');
-const { join } = require('path');
-const { ValidationError } = require('yup');
-const { v4 } = require('uuid');
-const { startDB, closeDB } = require('./util/db');
-const {
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { ValidationError } from 'yup';
+import { v4 } from 'uuid';
+import { startDB, closeDB } from './util/db';
+import {
   parseAndSaveParticipants,
   getParticipants,
   makeParticipant,
@@ -14,14 +14,14 @@ const {
   getParticipantsForUser,
   mapUserWithParticipant,
   withdrawParticipantsByEmail,
-} = require('../services/participants.js');
+} from '../services/participants';
 
-const { setParticipantStatus } = require('../services/participant-status');
+import { setParticipantStatus } from '../services/participant-status';
 
-const { createPostHireStatus } = require('../services/post-hire-flow');
-const { getReport } = require('../services/reporting.js');
-const { evaluateBooleanAnswer, postHireStatuses } = require('../validation');
-const { saveSites } = require('../services/employers');
+import { createPostHireStatus } from '../services/post-hire-flow';
+import { getReport } from '../services/reporting';
+import { evaluateBooleanAnswer, postHireStatuses } from '../validation';
+import { saveSites } from '../services/employers';
 
 describe('Participants Service', () => {
   beforeAll(async () => {
@@ -858,6 +858,16 @@ describe('Participants Service', () => {
     const participants = await getParticipants({ isMoH: true });
     participant.id = participants.data[0].id;
 
+    /**
+     * @type {Object}
+     * @param {string} firstName
+     * @param {string} lastName
+     * @param {string} emailAddress
+     * @param {string} phoneNumber
+     * @param {string} interest
+     * @param {string} history
+     * @param {string} id
+     */
     const reduceParticipant = Object.keys(participant).reduce(
       (o, k) => (patchableFields.includes(k) ? { ...o, [k]: participant[k] } : o),
       {}

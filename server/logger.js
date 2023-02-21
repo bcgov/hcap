@@ -1,6 +1,5 @@
-const winston = require('winston');
-const { format } = require('winston');
-require('winston-mongodb');
+import winston, { format } from 'winston';
+import 'winston-mongodb';
 
 const { timestamp, combine, printf } = format;
 
@@ -32,4 +31,4 @@ winston.add(
   })
 );
 
-module.exports = winston;
+export default winston;

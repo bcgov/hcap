@@ -1,21 +1,21 @@
 // Libs
-const express = require('express');
+import express from 'express';
 
 // Frameworks
-const keycloak = require('../keycloak');
-const logger = require('../logger.js');
-const { asyncMiddleware } = require('../error-handler.js');
-const { expressRequestBodyValidator } = require('../middleware');
-const { AccessRequestApproval } = require('../validation.js');
-const { dbClient, collections } = require('../db');
-const { sanitize } = require('../utils');
+import keycloak from '../keycloak';
+import logger from '../logger';
+import { asyncMiddleware } from '../error-handler';
+import { expressRequestBodyValidator } from '../middleware';
+import { AccessRequestApproval } from '../validation';
+import { dbClient, collections } from '../db';
+import { sanitize } from '../utils';
 // Services
-const { getUserSites } = require('../services/user.js');
+import { getUserSites } from '../services/user';
 
 /**
  * User details router
  */
-const userDetailsRouter = express.Router();
+export const userDetailsRouter = express.Router();
 userDetailsRouter.use(keycloak.allowRolesMiddleware('ministry_of_health'));
 // Index: Get
 // Get user details - Different from /user, this returns the
@@ -23,7 +23,7 @@ userDetailsRouter.use(keycloak.allowRolesMiddleware('ministry_of_health'));
 userDetailsRouter.get(
   '/',
   asyncMiddleware(async (req, res) => {
-    const { query: { id: userId } = {} } = req;
+    const { query: { id: userId } = { id: null } } = req;
     if (!userId) return res.status(400).send('No user id');
     const roles = await keycloak.getUserRoles(sanitize(userId));
     const sites = await getUserSites(sanitize(userId));
@@ -43,7 +43,16 @@ userDetailsRouter.patch(
     expressRequestBodyValidator(AccessRequestApproval),
   ],
   asyncMiddleware(async (req, res) => {
-    const { hcapUserInfo: user, body: { userId, role, regions, sites, username } = {} } = req;
+    const {
+      hcapUserInfo: user,
+      body: { userId, role, regions, sites, username } = {
+        userId: null,
+        role: null,
+        regions: null,
+        sites: null,
+        username: null,
+      },
+    } = req;
     const { id } = user;
     await keycloak.setUserRoles(sanitize(userId), role, regions);
     let action;
@@ -87,7 +96,3 @@ userDetailsRouter.patch(
     return res.json({});
   })
 );
-
-module.exports = {
-  userDetailsRouter,
-};

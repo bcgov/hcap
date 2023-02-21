@@ -1,9 +1,9 @@
 /* eslint-disable no-console, no-restricted-syntax, no-await-in-loop, no-loop-func */
-require('dotenv').config({ path: '../.env' });
-const path = require('path');
-const { parseFile } = require('fast-csv');
-const { dbClient } = require('../db');
-const { collections } = require('../db/schema');
+import './load-env';
+import path from 'path';
+import { parseFile } from 'fast-csv';
+import { dbClient } from '../db';
+import { collections } from '../db/schema';
 
 (async () => {
   if (require.main === module) {
@@ -26,6 +26,9 @@ const { collections } = require('../db/schema');
     // all responses to inserts, including duplicates and errors
     const response = [];
     // for debugging: the last record attempted to process before error
+    /**
+     * @type {any}
+     */
     let lastInsert = '';
 
     try {

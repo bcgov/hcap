@@ -1,6 +1,12 @@
-const healthRegions = ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'];
+export const healthRegions = [
+  'Interior',
+  'Fraser',
+  'Vancouver Coastal',
+  'Vancouver Island',
+  'Northern',
+];
 
-const foundOutReasons = [
+export const foundOutReasons = [
   'Friend(s)',
   'WorkBC',
   'Government announcement',
@@ -12,9 +18,9 @@ const foundOutReasons = [
   'Other',
 ];
 
-const orderDirections = ['desc', 'asc'];
+export const orderDirections = ['desc', 'asc'];
 
-const sortFields = [
+export const sortFields = [
   'id',
   'firstName',
   'lastName',
@@ -40,7 +46,7 @@ const sortFields = [
   'lastEngagedDate',
 ];
 
-const roles = [
+export const roles = [
   'Registered Nurse',
   'Licensed Practical Nurse',
   'Health Care Assistant',
@@ -50,11 +56,11 @@ const roles = [
   'Site Administrative Staff',
 ];
 
-const siteTypes = ['Long-term care', 'Assisted living', 'Both', 'Other', ''];
+export const siteTypes = ['Long-term care', 'Assisted living', 'Both', 'Other', ''];
 
-const userRoles = ['health_authority', 'employer', 'ministry_of_health'];
+export const userRoles = ['health_authority', 'employer', 'ministry_of_health'];
 
-const participantStatuses = [
+export const participantStatuses = [
   'open',
   'prospecting',
   'interviewing',
@@ -68,16 +74,16 @@ const participantStatuses = [
   'rosComplete',
 ];
 
-const postHireStatuses = {
+export const postHireStatuses = {
   orientationCompleted: 'orientation_completed',
   postSecondaryEducationUnderway: 'post_secondary_education_underway',
   postSecondaryEducationCompleted: 'post_secondary_education_completed',
   cohortUnsuccessful: 'cohort_unsuccessful',
 };
 
-const postHireStatusesValues = Object.values(postHireStatuses).sort();
+export const postHireStatusesValues = Object.values(postHireStatuses).sort();
 
-const archiveReasonOptions = [
+export const archiveReasonOptions = [
   'No longer interested in HCA/HCSW role',
   'No longer interested in a career in health care',
   'Terminated by employer',
@@ -91,36 +97,16 @@ const archiveReasonOptions = [
   'Other',
 ];
 
-const archiveStatusOptions = [
+export const archiveStatusOptions = [
   'Not begun orientation or training',
   'Provincial orientation curriculum complete',
   'Post secondary education underway',
   'Completed post secondary education',
 ];
 
-const validIndigenousIdentities = ['first-nations', 'inuit', 'metis', 'other', 'unknown'];
+export const validIndigenousIdentities = ['first-nations', 'inuit', 'metis', 'other', 'unknown'];
 
-const ROSUnderwayStatus = 'Return of service underway';
-const ROSCompleteStatus = 'Return of service complete';
-const ROSCompletedType = { value: 'rosComplete', label: 'Return of service completed' };
-const SuccessfulROSReason = 'Completed all HCAP requirements';
-
-module.exports = {
-  healthRegions,
-  foundOutReasons,
-  sortFields,
-  siteTypes,
-  userRoles,
-  participantStatuses,
-  postHireStatuses,
-  postHireStatusesValues,
-  archiveReasonOptions,
-  archiveStatusOptions,
-  roles,
-  orderDirections,
-  validIndigenousIdentities,
-  ROSUnderwayStatus,
-  ROSCompleteStatus,
-  ROSCompletedType,
-  SuccessfulROSReason,
-};
+export const ROSUnderwayStatus = 'Return of service underway';
+export const ROSCompleteStatus = 'Return of service complete';
+export const ROSCompletedType = { value: 'rosComplete', label: 'Return of service completed' };
+export const SuccessfulROSReason = 'Completed all HCAP requirements';

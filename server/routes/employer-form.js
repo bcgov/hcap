@@ -1,12 +1,12 @@
-const express = require('express');
-const keycloak = require('../keycloak');
-const logger = require('../logger.js');
-const { asyncMiddleware } = require('../error-handler.js');
-const { EmployerFormSchema } = require('../validation');
-const { getEmployers, getEmployerByID } = require('../services/employers');
-const { validate } = require('../validation');
-const { dbClient, collections } = require('../db');
-const { FEATURE_EMPLOYER_FORM } = require('../services/feature-flags');
+import express from 'express';
+import keycloak from '../keycloak';
+import logger from '../logger';
+import { asyncMiddleware } from '../error-handler';
+import { EmployerFormSchema, validate } from '../validation';
+import { getEmployers, getEmployerByID } from '../services/employers';
+
+import { dbClient, collections } from '../db';
+import { FEATURE_EMPLOYER_FORM } from '../services/feature-flags';
 // Main router
 const router = express.Router();
 
@@ -59,4 +59,4 @@ router.get(
   })
 );
 
-module.exports = router;
+export default router;

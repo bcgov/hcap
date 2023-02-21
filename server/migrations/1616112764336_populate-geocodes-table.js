@@ -1,9 +1,9 @@
 /* eslint-disable camelcase, no-restricted-syntax, no-await-in-loop, no-console */
-const fs = require('fs');
-const { join } = require('path');
-const readline = require('readline');
-const { dbClient, collections, schema } = require('../db');
-const logger = require('../logger');
+import fs from 'fs';
+import { join } from 'path';
+import readline from 'readline';
+import { dbClient, collections, schema } from '../db';
+import logger from '../logger';
 
 const objectMap = (row) => {
   const split_row = row.split('\t');
@@ -29,6 +29,7 @@ exports.up = async () => {
   }
   const file = join(__dirname, 'assets', filename);
 
+  // @ts-ignore: HACK to fix apparent bug in node types package
   const readInterface = readline.createInterface({
     input: fs.createReadStream(file),
     output: null,

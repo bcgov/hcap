@@ -2,10 +2,11 @@
  * Tests for route /api/v1/participant-user/*
  * Test Standalone execution: npm run test:debug participant.landing.e2e.test
  */
-const request = require('supertest');
-const app = require('../server');
-const { startDB, closeDB } = require('./util/db');
-const { getKeycloakToken, participant } = require('./util/keycloak');
+import request from 'supertest';
+import { app } from '../server';
+
+import { startDB, closeDB } from './util/db';
+import { getKeycloakToken, participant } from './util/keycloak';
 
 describe('Participant landing e2e', () => {
   let server;

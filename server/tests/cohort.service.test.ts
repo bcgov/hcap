@@ -1,17 +1,17 @@
-// Test execution code: npm run test:debug cohort.service.test.js
-const { startDB, closeDB } = require('./util/db');
+// Test execution code: npm run test:debug cohort.service.test.ts
+import { startDB, closeDB } from './util/db';
 
 // Utilities and helpers
-const { before } = require('./util/testData');
-const { makeCohortAssignment, makeTestCohort } = require('./util/integrationTestData');
-const {
+import { before } from './util/testData';
+import { makeCohortAssignment, makeTestCohort } from './util/integrationTestData';
+import {
   changeCohortParticipant,
   getAssignCohort,
   findCohortByName,
   filterCohortParticipantsForUser,
   getCohortWithCalculatedFields,
-} = require('../services/cohorts');
-const { postHireStatuses } = require('../constants');
+} from '../services/cohorts';
+import { postHireStatuses } from '../constants';
 
 describe('Test Post hire flow service', () => {
   let testParticipant;
@@ -69,7 +69,15 @@ describe('Test Post hire flow service', () => {
   });
 });
 
-const cohortParticipant = ({ status, isCurrent, healthAuthority }) => ({
+const cohortParticipant = ({
+  status,
+  isCurrent,
+  healthAuthority,
+}: {
+  status?: string;
+  isCurrent?: boolean;
+  healthAuthority?: string;
+}) => ({
   siteJoin: {
     body: {
       healthAuthority,

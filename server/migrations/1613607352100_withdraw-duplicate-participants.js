@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-const { dbClient, collections } = require('../db');
+import { dbClient, collections } from '../db';
 
 exports.up = async () => {
   const duplicates = [

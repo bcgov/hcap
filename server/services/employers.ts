@@ -3,39 +3,20 @@ import { validate, EmployerSiteBatchSchema } from '../validation';
 import { userRegionQuery } from './user';
 import type { hcapUserInfo } from '../keycloak';
 
-/**
- * @typedef {import("../keycloak").hcapUserInfo} hcapUserInfo
- *
- * @typedef {Object} employerSite
- * @property {number} id               Internal ID for site
- * @property {number} siteId           User-visible ID for site
- * @property {string} siteName         Name of site
- * @property {string} operatorName     Name of operator (e.g. 'Interior Health Authority')
- * @property {string} city             City the site is in
- * @property {string} healthAuthority  Authority for the site
- * @property {string} postalCode       Postal code of site
- * @property {number} allocation       Number of allocations
- * @property {Date} endDate            End date of the current phase
- * @property {Date} startDate          Start date of the current phase
- *
- */
+export interface EmployerSite {
+  id: number; // Internal ID for site
+  siteId: number; // User-visible ID for site
+  siteName: string; // Name of site
+  operatorName: string; // Name of operator (e.g. 'Interior Health Authority')
+  city: string; // City the site is in
+  healthAuthority: string; // Authority for the site
+  postalCode: string; // Postal code of site
+  allocation: number; // Number of allocations set
+  startDate: date; // start date of current phase
+  endDate: date; // end date of current phase
+}
 
-/**
- * @param {hcapUserInfo} user
- * @returns {employerSite[]}
- */
 export const getEmployers = async (user: hcapUserInfo): Promise<EmployerSite[]> => {
-  export interface EmployerSite {
-    id: number; // Internal ID for site
-    siteId: number; // User-visible ID for site
-    siteName: string; // Name of site
-    operatorName: string; // Name of operator (e.g. 'Interior Health Authority')
-    city: string; // City the site is in
-    healthAuthority: string; // Authority for the site
-    postalCode: string; // Postal code of site
-    allocation: number;
-  }
-
   const criteria =
     user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'healthAuthority');
   return criteria ? dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria) : [];
@@ -93,52 +74,29 @@ export const getAllSites = async () =>
   );
 
 const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams) => {
-  /**
-   * @typedef {Object} siteResponse        Internal type for DB response to the `getSitesWithCriteria` query
-   * @property {number} id                 PK ID of the site
-   * @property {number} siteId             User populated ID for the site
-   * @property {string} siteName           Name of the site
-   * @property {string} operatorName       Name of operator for the site
-   * @property {string} city               City of the site
-   * @property {string} healthAuthority    Health Authority the site is under
-   * @property {string} postalCode         Postal code of the site
-   * @property {number} allocation         Number of allocations
-   * @property {Date} endDate              End date of the current phase
-   * @property {Date} startDate            Start date of the current phase
-   */
-
-  /**
-   * Raw result from a custom query.
-   *
-   * This query performs the following actions:
-   * * Uses the current date to get the active/current phase
-   * * Uses phase.id to get the startDate and endDate for the phase
-   * * uses phase.id and site.id to get the correct allocation record
-   * @type {siteResponse[]}
-   */
   // Raw SQL was required here because `options.fields` wouldn't work with `join` https://github.com/bcgov/hcap/pull/834#pullrequestreview-1100927873
   const records = await dbClient.db.query(
     `
-        SELECT
-          employer_sites.id as "id",
-          employer_sites.body -> 'siteId' as "siteId",
-          employer_sites.body -> 'siteName' as "siteName",
-          employer_sites.body -> 'operatorName' as "operatorName",
-          employer_sites.body -> 'city' as "city",
-          employer_sites.body -> 'healthAuthority' as "healthAuthority",
-          employer_sites.body -> 'postalCode' as "postalCode",
-          spa.allocation,
-          p.start_date as "startDate", 
-          p.end_date as "endDate"
-        FROM
-          employer_sites
-          LEFT JOIN phase p ON CURRENT_DATE BETWEEN p.start_date AND p.end_date
-          LEFT JOIN site_phase_allocation spa ON spa.site_id = employer_sites.id and spa.phase_id = p.id
-        ${additionalCriteria.length > 0 ? 'WHERE' : ''}
-          ${additionalCriteria.join(' AND ')}
-        ORDER BY
-          employer_sites.body -> 'siteName';
-      `,
+    SELECT
+    employer_sites.id as "id",
+    employer_sites.body -> 'siteId' as "siteId",
+    employer_sites.body -> 'siteName' as "siteName",
+    employer_sites.body -> 'operatorName' as "operatorName",
+    employer_sites.body -> 'city' as "city",
+    employer_sites.body -> 'healthAuthority' as "healthAuthority",
+    employer_sites.body -> 'postalCode' as "postalCode",
+    spa.allocation,
+    p.start_date as "startDate", 
+    p.end_date as "endDate"
+  FROM
+    employer_sites
+    LEFT JOIN phase p ON CURRENT_DATE BETWEEN p.start_date AND p.end_date
+    LEFT JOIN site_phase_allocation spa ON spa.site_id = employer_sites.id and spa.phase_id = p.id
+  ${additionalCriteria.length > 0 ? 'WHERE' : ''}
+    ${additionalCriteria.join(' AND ')}
+  ORDER BY
+    employer_sites.body -> 'siteName';
+`,
     additionalCriteriaParams
   );
 

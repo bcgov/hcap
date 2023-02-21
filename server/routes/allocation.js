@@ -1,11 +1,11 @@
-const express = require('express');
-const keycloak = require('../keycloak');
-const logger = require('../logger.js');
-const { asyncMiddleware } = require('../error-handler.js');
-const { CreateAllocationSchema, UpdateAllocationSchema } = require('../validation');
-const { expressRequestBodyValidator } = require('../middleware');
-const { createAllocation, updateAllocation, getAllocation } = require('../services/allocations');
-const { FEATURE_PHASE_ALLOCATION } = require('../services/feature-flags');
+import express from 'express';
+import keycloak from '../keycloak';
+import logger from '../logger';
+import { asyncMiddleware } from '../error-handler';
+import { CreateAllocationSchema, UpdateAllocationSchema } from '../validation';
+import { expressRequestBodyValidator } from '../middleware';
+import { createAllocation, updateAllocation, getAllocation } from '../services/allocations';
+import { FEATURE_PHASE_ALLOCATION } from '../services/feature-flags';
 
 const router = express.Router();
 
@@ -78,4 +78,4 @@ router.patch(
   })
 );
 
-module.exports = router;
+export default router;

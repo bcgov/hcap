@@ -128,7 +128,7 @@ apiRouter.post(
       req.body.regions
     );
     const userInfo = await keycloak.getUser(sanitize(req.body.username));
-    await dbClient.db.saveDoc(collections.USERS, {
+    await dbClient.db?.saveDoc(collections.USERS, {
       keycloakId: req.body.userId,
       sites: req.body.sites,
       userInfo,

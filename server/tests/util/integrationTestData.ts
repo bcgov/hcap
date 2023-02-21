@@ -7,6 +7,9 @@ import { makeCohort, assignCohort } from '../../services/cohorts';
 import { saveSingleSite } from '../../services/employers';
 import { createGlobalPhase } from '../../services/phase';
 
+// NOTE: not ideal! This should be fixed.
+declare var expect: Function;
+
 export const makeTestPostHireStatus = async ({ email, status, data = {} }) => {
   const participantObj = participantData({ emailAddress: email });
   const participant = await makeParticipant(participantObj);
@@ -67,14 +70,14 @@ export const makeCohortAssignment = async ({
 };
 
 interface TestSiteData {
-  siteId;
+  siteId?;
   city?: string;
   siteName?: string;
-  [key: string]: string | number | boolean;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export const makeTestSite = async (
-  { siteId, city, siteName, ...rest }: TestSiteData = { siteId: null, city: null, siteName: null }
+  { siteId, city, siteName, ...rest }: TestSiteData = { siteId: undefined, city: undefined, siteName: undefined }
 ) => {
   if (!siteId) {
     throw new Error('Site ID is required');
@@ -103,8 +106,9 @@ export const makeTestParticipantStatus = async ({
   status,
   current = true,
   data,
-}: MakeTestParticipantStatusData) =>
-  dbClient.db[collections.PARTICIPANTS_STATUS].insert({
+}: MakeTestParticipantStatusData) => 
+  // @ts-expect-error
+  dbClient.db ? [collections.PARTICIPANTS_STATUS].insert({
     participant_id: participantId,
     employer_id: employerId || 1,
     status,

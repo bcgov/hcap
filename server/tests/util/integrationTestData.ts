@@ -8,7 +8,8 @@ import { saveSingleSite } from '../../services/employers';
 import { createGlobalPhase } from '../../services/phase';
 
 // NOTE: not ideal! This should be fixed.
-declare var expect: Function;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const expect: (any) => any;
 
 export const makeTestPostHireStatus = async ({ email, status, data = {} }) => {
   const participantObj = participantData({ emailAddress: email });
@@ -77,7 +78,11 @@ interface TestSiteData {
 }
 
 export const makeTestSite = async (
-  { siteId, city, siteName, ...rest }: TestSiteData = { siteId: undefined, city: undefined, siteName: undefined }
+  { siteId, city, siteName, ...rest }: TestSiteData = {
+    siteId: undefined,
+    city: undefined,
+    siteName: undefined,
+  }
 ) => {
   if (!siteId) {
     throw new Error('Site ID is required');
@@ -106,9 +111,8 @@ export const makeTestParticipantStatus = async ({
   status,
   current = true,
   data,
-}: MakeTestParticipantStatusData) => 
-  // @ts-expect-error
-  dbClient.db ? [collections.PARTICIPANTS_STATUS].insert({
+}: MakeTestParticipantStatusData) =>
+  dbClient.db?.[collections.PARTICIPANTS_STATUS].insert({
     participant_id: participantId,
     employer_id: employerId || 1,
     status,

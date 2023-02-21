@@ -39,6 +39,8 @@ const mapRosEntries = (rosEntries) =>
     siteStartDate: dayjs(entry.data?.startDate || entry.data?.date).format('YYYY-MM-DD'),
     site: entry.siteJoin?.body?.siteName,
     healthRegion: entry.siteJoin?.body?.healthAuthority,
+    positionType: entry.data?.positionType || 'Unknown',
+    employmentType: entry.data?.employmentType || 'Unknown',
   }));
 
 const getPostHireStatusForParticipant = (postHireStatuses) => {

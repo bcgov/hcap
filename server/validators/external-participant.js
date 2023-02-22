@@ -1,6 +1,5 @@
+import * as yup from 'yup';
 import { validatePastDateString, validateDateString, errorMessage } from './helpers';
-
-const yup = require('yup');
 
 export const ExternalHiredParticipantSchema = yup.object().shape({
   firstName: yup.string().required('First Name is required'),
@@ -16,11 +15,11 @@ export const ExternalHiredParticipantSchema = yup.object().shape({
     .oneOf(['internal', 'other'], 'Invalid entry'),
   otherOrigin: yup.string().when('origin', {
     is: 'other',
-    then: yup.string().required('Please specify'),
-    otherwise: yup
-      .string()
-      .nullable()
-      .test('is-null', 'Other origin must be null', (v) => v == null || v === ''),
+    then: (stringSchema) => stringSchema.required('Please specify'),
+    otherwise: (stringSchema) =>
+      stringSchema
+        .nullable()
+        .test('is-null', 'Other origin must be null', (v) => v == null || v === ''),
   }),
   hcapOpportunity: yup.boolean().test('is-true', 'Must be HCAP opportunity', (v) => v === true),
   contactedDate: yup

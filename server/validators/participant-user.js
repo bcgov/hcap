@@ -1,8 +1,5 @@
+import * as yup from 'yup';
 import { validIndigenousIdentities } from '../constants';
-
-// NOTE: `yup` does not seem to import properly. This should be fixed.
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const yup = require('yup');
 
 export const UserParticipantEditSchema = yup.object().shape({
   postalCode: yup
@@ -17,7 +14,8 @@ export const UserParticipantEditSchema = yup.object().shape({
   isIndigenous: yup.boolean(),
   indigenousIdentities: yup.array().when('isIndigenous', {
     is: true,
-    then: yup.array().of(yup.string().oneOf(validIndigenousIdentities, 'Invalid identity')),
+    then: (arraySchema) =>
+      arraySchema.of(yup.string().oneOf(validIndigenousIdentities, 'Invalid identity')),
   }),
 });
 

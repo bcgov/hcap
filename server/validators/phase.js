@@ -1,7 +1,5 @@
+import * as yup from 'yup';
 import { validISODateString } from './helpers';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const yup = require('yup');
 
 const dateValidation = {
   start_date: yup
@@ -10,7 +8,7 @@ const dateValidation = {
     .test('is-date', 'Not a valid date', validISODateString),
   end_date: yup
     .string()
-    .when('start_date', (startDate, schema) => {
+    .when('start_date', ([startDate], schema) => {
       if (startDate) {
         return schema.test(
           'is-after-start',

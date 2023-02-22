@@ -1,6 +1,6 @@
-const yup = require('yup');
+import * as yup from 'yup';
 
-const BulkEngageParticipantSchema = yup
+export const BulkEngageParticipantSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
@@ -14,7 +14,3 @@ const BulkEngageParticipantSchema = yup
       )
       .required('Array of sites is required'),
   });
-
-module.exports = {
-  BulkEngageParticipantSchema,
-};

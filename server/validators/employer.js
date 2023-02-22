@@ -1,7 +1,6 @@
+import * as yup from 'yup';
 import { healthRegions, siteTypes, roles } from '../constants';
 import { validateBlankOrPositiveInteger, errorMessage, errorMessageIndex } from './helpers';
-
-const yup = require('yup');
 
 export const EmployerFormSchema = yup
   .object()
@@ -16,7 +15,7 @@ export const EmployerFormSchema = yup
     operatorPhone: yup
       .string()
       .matches(/(^[0-9]{10})?$/, 'Phone number must be provided as 10 digits')
-      .nullable(true),
+      .nullable(),
     operatorAddress: yup.string().nullable(errorMessage),
     operatorPostalCode: yup
       .string()
@@ -35,19 +34,18 @@ export const EmployerFormSchema = yup
     phoneNumber: yup
       .string()
       .matches(/(^[0-9]{10})?$/, 'Phone number must be provided as 10 digits')
-      .nullable(true),
+      .nullable(),
     emailAddress: yup.string().nullable(errorMessage).email('Invalid email address'),
 
     // Site type and size info
-    check: yup.object().shape(),
     siteType: yup.string().nullable(errorMessage).oneOf(siteTypes, 'Invalid site type'),
     otherSite: yup.string().when('siteType', {
       is: 'Other',
-      then: yup.string().nullable('Must specify other site type'),
-      otherwise: yup
-        .string()
-        .nullable()
-        .test('is-null', 'Other site type must be null', (v) => v == null || v === ''),
+      then: (stringSchema) => stringSchema.nullable('Must specify other site type'),
+      otherwise: (stringSchema) =>
+        stringSchema
+          .nullable()
+          .test('is-null', 'Other site type must be null', (v) => v == null || v === ''),
     }),
     numPublicLongTermCare: yup
       .mixed()

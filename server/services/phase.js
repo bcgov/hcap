@@ -106,6 +106,12 @@ export const getAllPhases = async () => {
   return phases;
 };
 
+const checkDateOverlap = async () => {
+  const phaseData = await getAllPhases();
+
+  return phaseData;
+};
+
 export const createPhase = async (phase, user) => {
   const phaseData = { ...phase, created_by: user.id, updated_by: user.id };
   const res = await dbClient.db[collections.GLOBAL_PHASE].insert(phaseData);

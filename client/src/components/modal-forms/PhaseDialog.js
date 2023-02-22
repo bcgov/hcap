@@ -5,7 +5,7 @@ import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { useFormikContext } from 'formik';
+import { useFormikContext, useFormik } from 'formik';
 import { CreatePhaseSchema, ToastStatus } from '../../constants';
 import { createPhase, updatePhase } from '../../services/phases';
 import { useToast } from '../../hooks';
@@ -22,7 +22,8 @@ const useStyles = makeStyles(() => ({
 
 export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases }) => {
   //  const { values } = useFormikContext();
-  const values = useFormikContext();
+  // const { values } = useFormik();
+  // const values = useFormikContext();
   const { openToast } = useToast();
   const [overlapPhases, setOverlapPhases] = useState([]);
   const [disabled, setDisabled] = useState(false);
@@ -41,51 +42,59 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
       };
 
   const checkDateOverlap = (data) => {
-    setOverlapPhases(phases);
-    console.log('PHASE @');
-
-    console.log('VALUES');
+    let overlappedPhases = [];
     // Sort the date array in ascending order based on start_date
     const sorted = phases.sort((a, b) => a.start_date - b.start_date);
 
     // Loop through each date object in the array
-    for (let i = 0; i < sorted.length; i++) {
-      let overlappedPhases;
-      const current = sorted[i];
-      const next = sorted[i + 1];
+    if (data.startDate && data.endDate) {
+      for (let i = 0; i < sorted.length; i++) {
+        const current = sorted[i];
+        const next = sorted[i + 1];
 
-      // Check if the current date range overlaps with the input date range
-      if (
-        (data.start_date >= current.start_date && data.start_date <= current.end_date) ||
-        (data.end_date >= current.start_date && data.end_date <= current.end_date) ||
-        (data.start_date <= current.start_date && data.end_date >= current.end_date)
-      ) {
-        overlappedPhases.push(current);
-        console.log('VALID??');
-        return setOverlapPhases(overlappedPhases);
-      }
+        if (
+          (data.startDate >= current.start_date && data.startDate <= current.endDate) ||
+          (data.endDate >= current.start_date && data.endDate <= current.endDate) ||
+          (data.startDate <= current.start_date && data.endDate >= current.endDate)
+        ) {
+          overlappedPhases.push(current);
+          console.log('VALID??');
+          console.log('there is a date overlap');
+          setDisabled(true);
+          // setOverlapPhases(overlappedPhases);
+        }
 
-      // Check if the input date range overlaps with the next date range in the array
-      if (next && data.end_date >= next.start_date) {
-        overlappedPhases.push(next);
-        return setOverlapPhases(overlappedPhases);
+        // Check if the input date range overlaps with the next date range in the array
+        if (next && data.end_date >= next.start_date) {
+          overlappedPhases.push(next);
+          console.log('there is a date overlap');
+          setDisabled(true);
+          // setOverlapPhases(overlappedPhases);
+        }
+        setDisabled(false);
+        console.log('there is NOT a date overlap');
+        overlappedPhases = [];
+        // setOverlapPhases([]);
       }
     }
-    return setOverlapPhases([]);
+
+    return (
+      <Box flexGrow={1}>
+        {overlappedPhases?.length > 0 &&
+          overlappedPhases.map((phase) => (
+            <div key={phase.id} className='MuiFormHelperText-root Mui-error'>
+              <div>
+                {' '}
+                {phase.name} : {dayjs.utc(phase.start_date).format('MMM DD, YYYY')} -{' '}
+                {dayjs.utc(phase.end_date).format('MMM DD, YYYY')}{' '}
+              </div>
+            </div>
+          ))}
+      </Box>
+    );
   };
 
-  useEffect(() => {
-    let count = +1;
-    console.log('count', count);
-    if (values?.start_date && values?.end_date) {
-      console.log('PHASE !');
-      checkDateOverlap();
-    }
-  }, [values]);
-
   const handleSubmit = async (phase) => {
-    checkDateOverlap(phase);
-
     const phaseJson = {
       ...(isNew && { name: phase.phaseName }),
       start_date: phase.startDate,
@@ -106,8 +115,6 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
     }
   };
 
-  // console.log(formik.values)
-  console.log('VALUES', values);
   return (
     <Dialog title={isNew ? 'Create Phase' : 'Edit Phase'} open={open} onClose={onClose}>
       <Formik
@@ -115,34 +122,37 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
         validationSchema={CreatePhaseSchema}
         onSubmit={handleSubmit}
       >
-        {({ submitForm }) => (
-          <FormikForm>
-            <Box>
-              <Field
-                name='phaseName'
-                component={RenderTextField}
-                label='* Phase name'
-                placeholder='Enter a phase name'
-                disabled={!isNew}
-              />
-              <Box
-                display='flex'
-                justifyContent='space-between'
-                my={3}
-                style={{ gap: '25px' }}
-                className={classes.formRow}
-              >
-                <Box flexGrow={1}>
-                  <Field name='startDate' component={RenderDateField} label='* Start date' />
-                </Box>
-                <Box flexGrow={1}>
-                  <Field name='endDate' component={RenderDateField} label='* End date' />
+        {({ submitForm, values }) => {
+          console.log(values);
+          return (
+            <FormikForm>
+              <Box>
+                <Field
+                  name='phaseName'
+                  component={RenderTextField}
+                  label='* Phase name'
+                  placeholder='Enter a phase name'
+                  disabled={!isNew}
+                />
+                <Box
+                  display='flex'
+                  justifyContent='space-between'
+                  my={3}
+                  style={{ gap: '25px' }}
+                  className={classes.formRow}
+                >
+                  <Box flexGrow={1}>
+                    <Field name='startDate' component={RenderDateField} label='* Start date' />
+                  </Box>
+                  <Box flexGrow={1}>
+                    <Field name='endDate' component={RenderDateField} label='* End date' />
+                  </Box>
                 </Box>
               </Box>
-            </Box>
+              {checkDateOverlap(values)}
 
-            <Box flexGrow={1}>
-              {overlapPhases.map((phase) => (
+              {/* <Box flexGrow={1}>
+              {phases.map((phase) => (
                 <div key={phase.id} className='MuiFormHelperText-root Mui-error'>
                   <div>
                     {' '}
@@ -151,26 +161,27 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
                   </div>
                 </div>
               ))}
-            </Box>
+            </Box> */}
 
-            <Box display='flex' justifyContent='space-between' my={3}>
-              <Button
-                className={classes.formButton}
-                onClick={onClose}
-                color='default'
-                text='Cancel'
-              />
-              <Button
-                className={classes.formButton}
-                onClick={submitForm}
-                variant='contained'
-                color='primary'
-                text={isNew ? 'Create' : 'Update'}
-                disabled={disabled}
-              />
-            </Box>
-          </FormikForm>
-        )}
+              <Box display='flex' justifyContent='space-between' my={3}>
+                <Button
+                  className={classes.formButton}
+                  onClick={onClose}
+                  color='default'
+                  text='Cancel'
+                />
+                <Button
+                  className={classes.formButton}
+                  onClick={submitForm}
+                  variant='contained'
+                  color='primary'
+                  text={isNew ? 'Create' : 'Update'}
+                  disabled={disabled}
+                />
+              </Box>
+            </FormikForm>
+          );
+        }}
       </Formik>
     </Dialog>
   );

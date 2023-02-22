@@ -143,7 +143,9 @@ export const ParticipantPostHireStatusSchema = yup
   .shape({
     participantId: yup.number().required('Participant ID is required'),
     status: yup.string().oneOf(postHireStatusesValues, 'Invalid status'),
-    data: yup.object().when(['status'], ([status], schema) => {
+    // See https://github.com/jquense/yup/issues/1901 for why this is needed
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: yup.object().when('status', (status: any, schema) => {
       switch (status) {
         case postHireStatuses.postSecondaryEducationCompleted:
           return schema.noUnknown('Unknown field in data form').shape({

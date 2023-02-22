@@ -17,7 +17,9 @@ export const ArchiveRequestDataShape = (schema) =>
       .string()
       .oneOf(['duplicate', 'employmentEnded', 'rosComplete'], 'Please select a type')
       .required('Please select a type'),
-    reason: yup.string().when('type', ([type], stringSchema) => {
+    // See https://github.com/jquense/yup/issues/1901 for why this is needed
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    reason: yup.string().when('type', (type: any, stringSchema) => {
       if (type === 'rosComplete' || type === 'employmentEnded')
         return stringSchema
           .required('Please include a reason')
@@ -40,7 +42,9 @@ export const ArchiveRequestDataShape = (schema) =>
       }),
     rehire: yup
       .string()
-      .when('type', ([type], stringSchema) =>
+      // See https://github.com/jquense/yup/issues/1901 for why this is needed
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .when('type', (type: any, stringSchema) =>
         ['employmentEnded', 'rosComplete'].includes(type)
           ? stringSchema
               .required('Intent to rehire must not be empty')

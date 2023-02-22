@@ -8,7 +8,9 @@ const dateValidation = {
     .test('is-date', 'Not a valid date', validISODateString),
   end_date: yup
     .string()
-    .when('start_date', ([startDate], schema) => {
+    // See https://github.com/jquense/yup/issues/1901 for why this is needed
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .when('start_date', (startDate: any, schema) => {
       if (startDate) {
         return schema.test(
           'is-after-start',

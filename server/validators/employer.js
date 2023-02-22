@@ -153,54 +153,55 @@ export const EmployerFormSchema = yup
 export const EmployerSiteBatchSchema = yup.array().of(
   yup.lazy((item, options) => {
     const index = options.parent.indexOf(item);
+    const indexName = 'row';
     return yup
       .object()
       .noUnknown(`Unknown field in site data (index ${index})`)
       .shape({
-        siteId: yup.number().required(errorMessageIndex(index)),
-        siteName: yup.string().required(errorMessageIndex(index)),
-        address: yup.string().nullable(errorMessageIndex(index)),
-        city: yup.string().nullable(errorMessageIndex(index)),
+        siteId: yup.number().required(errorMessageIndex(index, indexName)),
+        siteName: yup.string().required(errorMessageIndex(index, indexName)),
+        address: yup.string().nullable(errorMessageIndex(index, indexName)),
+        city: yup.string().nullable(errorMessageIndex(index, indexName)),
         isRHO: yup.boolean().nullable().required('Regional Health Office status is required'),
         healthAuthority: yup
           .string()
-          .required(errorMessageIndex(index))
+          .required(errorMessageIndex(index, indexName))
           .oneOf(healthRegions, `Invalid location (index ${index})`),
         postalCode: yup
           .string()
-          .required(errorMessageIndex(index))
+          .required(errorMessageIndex(index, indexName))
           .matches(/(^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)$/, {
             excludeEmptyString: true,
             message: `Format as A1A 1A1 (index ${index})`,
           }),
-        registeredBusinessName: yup.string().nullable(errorMessageIndex(index)),
-        operatorName: yup.string().nullable(errorMessageIndex(index)),
-        operatorContactFirstName: yup.string().nullable(errorMessageIndex(index)),
-        operatorContactLastName: yup.string().nullable(errorMessageIndex(index)),
+        registeredBusinessName: yup.string().nullable(errorMessageIndex(index, indexName)),
+        operatorName: yup.string().nullable(errorMessageIndex(index, indexName)),
+        operatorContactFirstName: yup.string().nullable(errorMessageIndex(index, indexName)),
+        operatorContactLastName: yup.string().nullable(errorMessageIndex(index, indexName)),
         operatorEmail: yup
           .string()
           .email(`should be a valid email address (index ${index})`)
-          .nullable(errorMessageIndex(index)),
+          .nullable(errorMessageIndex(index, indexName)),
         operatorPhone: yup
           .string()
           .matches(/^([0-9]{10})$/, {
             excludeEmptyString: true,
             message: `Phone number must be provided as 10 digits (index ${index})`,
           })
-          .nullable(errorMessageIndex(index)),
-        siteContactFirstName: yup.string().nullable(errorMessageIndex(index)),
-        siteContactLastName: yup.string().nullable(errorMessageIndex(index)),
+          .nullable(errorMessageIndex(index, indexName)),
+        siteContactFirstName: yup.string().nullable(errorMessageIndex(index, indexName)),
+        siteContactLastName: yup.string().nullable(errorMessageIndex(index, indexName)),
         siteContactPhoneNumber: yup
           .string()
           .matches(/(^[0-9]{10})$/, {
             excludeEmptyString: true,
             message: `Phone number must be provided as 10 digits (index ${index})`,
           })
-          .nullable(errorMessageIndex(index)),
+          .nullable(errorMessageIndex(index, indexName)),
         siteContactEmailAddress: yup
           .string()
           .email(`should be a valid email address (index ${index})`)
-          .nullable(errorMessageIndex(index)),
+          .nullable(errorMessageIndex(index, indexName)),
       });
   })
 );

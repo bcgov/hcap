@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import './load-env';require('dotenv').config({ path: '../.env' });
+import './load-env';
+require('dotenv').config({ path: '../.env' });
 import { dbClient } from '../db';
 import { databaseCollections } from '../db/schema';
 

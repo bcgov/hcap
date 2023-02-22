@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-require('dotenv').config({ path: '../.env' });
-const { dbClient } = require('../db');
-const { databaseCollections } = require('../db/schema');
+import './load-env';require('dotenv').config({ path: '../.env' });
+import { dbClient } from '../db';
+import { databaseCollections } from '../db/schema';
 
 (async () => {
   if (process.env.APP_ENV === 'prod') {

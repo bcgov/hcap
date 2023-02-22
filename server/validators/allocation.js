@@ -1,13 +1,14 @@
-const yup = require('yup');
-const { validateBlankOrPositiveInteger } = require('./helpers');
+import * as yup from 'yup';
+import { validateBlankOrPositiveInteger } from './helpers';
 
-const CreateAllocationSchema = yup
+export const CreateAllocationSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
     allocation: yup
       .number()
       .nullable()
+      .lessThan(100000, 'Must be less than 100,000')
       .test(
         'validate-blank-or-number',
         'Must be a positive number',
@@ -17,18 +18,17 @@ const CreateAllocationSchema = yup
     site_id: yup.number().required('Allocation must be related to a site'),
   });
 
-const UpdateAllocationSchema = yup
+export const UpdateAllocationSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
     allocation: yup
       .number()
       .nullable()
+      .lessThan(100000, 'Must be less than 100,000')
       .test(
         'validate-blank-or-number',
         'Must be a positive number',
         validateBlankOrPositiveInteger
       ),
   });
-
-module.exports = { CreateAllocationSchema, UpdateAllocationSchema };

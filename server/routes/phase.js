@@ -19,7 +19,7 @@ router.get(
   ],
   asyncMiddleware(async (req, res) => {
     /**
-     * @type {import("../keycloak").hcapUserInfo} hcapUserInfo
+     * @type {import("../keycloak").HcapUserInfo} HcapUserInfo
      */
     const user = req.hcapUserInfo;
     const siteId = parseInt(req.params.id, 10);

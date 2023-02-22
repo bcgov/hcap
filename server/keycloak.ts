@@ -21,24 +21,35 @@ const defaults = {
   'public-client': true,
 };
 
-// NOTE: This type is not actually used in this file yet due to some JSDoc limitations.
-// It is currently just here to be used by external files (such as phase.js).
-// However, it can be used once we switch to TS.
-/**
- * @typedef {Object} hcapUserInfo
- * @property {string=} name           Full name of user (e.g. "Tabitha Test")
- * @property {string=} username       Username (e.g. "user@bceid")
- * @property {string=} id             Unique identifier string for the user
- * @property {any[]=} sites TODO: annotate element type
- * @property {string[]=} roles        Roles of the user (such as `region_interior` or `health_authority`)
- * @property {string[]=} regions      Regions the user is assigned to (such as `Interior`)
- * @property {boolean=} isEmployer    True if the user is an employer
- * @property {boolean=} isHA          True if the user is a health authority user
- * @property {boolean=} isSuperUser   True if the user is a superuser
- * @property {boolean=} isMoH         True if the user is an MoH user
- */
+export interface HcapUserInfo {
+  name?: string /** Full name of user (e.g. "Tabitha Test") */;
+  username?: string /** Username (e.g. "user@bceid") */;
+  id?: string /** Unique identifier string for the user */;
+  sites?: number[];
+  roles?: string[] /** Roles of the user (such as `region_interior` or `health_authority`) */;
+  regions?: string[] /** Regions the user is assigned to (such as `Interior`) */;
+  isEmployer?: boolean /** True if the user is an employer */;
+  isHA?: boolean /** True if the user is a health authority user */;
+  isSuperUser?: boolean /** True if the user is a superuser */;
+  isMoH?: boolean /** True if the user is an MoH user */;
+}
 
 class Keycloak {
+  realm: string;
+  authUrl: string;
+  clientNameFrontend: string;
+  clientNameBackend: string;
+  clientSecretBackend: string;
+  serviceAccountUsername: string;
+  serviceAccountPassword: string;
+  keycloakConnect: KeyCloakConnect.Keycloak;
+  retryCount: number;
+  // eslint-disable-next-line camelcase
+  access_token?: string;
+  clientIdMap; // These should be given stronger typing
+  roleIdMap;
+  static instance: Keycloak;
+
   // Wrapper class around keycloak-connect
   constructor() {
     const isLocal = process.env.KEYCLOAK_AUTH_URL.includes('local');
@@ -78,7 +89,7 @@ class Keycloak {
     return this.keycloakConnect.middleware(...args);
   }
 
-  allowRolesMiddleware(...roles) {
+  allowRolesMiddleware(...roles: string[]) {
     // Connect middleware for limiting roles
     const allowRoles = (token) => {
       if (token.isExpired()) return false;
@@ -219,7 +230,7 @@ class Keycloak {
     }
   }
 
-  async getUsers(ignorePending) {
+  async getUsers(ignorePending?: boolean) {
     try {
       await this.authenticateIfNeeded();
       const config = {
@@ -258,7 +269,7 @@ class Keycloak {
     }
   }
 
-  async getUser(userName) {
+  async getUser(userName: string) {
     try {
       await this.authenticateIfNeeded();
       const config = {
@@ -283,7 +294,7 @@ class Keycloak {
     return `${this.authUrl}/admin/realms/${this.realm}/users/${userId}`;
   }
 
-  async setUserRoles(userId, role, regions) {
+  async setUserRoles(userId: string, role: string, regions: string[]) {
     try {
       if (!Object.keys(this.roleIdMap).includes(role)) throw Error(`Invalid role: ${role}`);
       const regionToRole = (region) => {
@@ -319,7 +330,7 @@ class Keycloak {
     }
   }
 
-  async getUserRoles(userId) {
+  async getUserRoles(userId: string) {
     try {
       await this.authenticateIfNeeded();
       const config = { headers: { Authorization: `Bearer ${this.access_token}` } };

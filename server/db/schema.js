@@ -2,12 +2,12 @@
  * Define db schema rules including collection names and indexes
  */
 
-export const collections = {
+// All table names in our database
+export const databaseCollections = {
   PARTICIPANTS: 'participants',
   PARTICIPANTS_STATUS: 'participants_status',
   GEOCODES: 'geocodes',
   PARTICIPANTS_DISTANCE: 'participants_distance',
-  EMPLOYER_FORMS: 'employer_forms',
   EMPLOYER_SITES: 'employer_sites',
   CONFIRM_INTEREST: 'confirm_interest',
   USERS: 'users',
@@ -19,9 +19,15 @@ export const collections = {
   PARTICIPANT_POST_HIRE_STATUS: 'participant_post_hire_status',
   ROS_STATUS: 'return_of_service_status',
   ADMIN_OPS_AUDIT: 'admin_operation_audit',
-  SITE_PARTICIPANTS_STATUS: 'site_participants_status',
   GLOBAL_PHASE: 'phase',
   SITE_PHASE_ALLOCATION: 'site_phase_allocation',
+};
+
+// Potentially deprecated: these are still referred to in the app but are seemingly no longer tables in the database
+export const collections = {
+  EMPLOYER_FORMS: 'employer_forms',
+  SITE_PARTICIPANTS_STATUS: 'site_participants_status',
+  ...databaseCollections,
 };
 
 export const views = {

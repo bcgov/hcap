@@ -1,6 +1,8 @@
+import { UUID } from 'massive';
 import { dbClient, collections } from '../db';
 import { participantStatus } from '../constants';
 import { withdrawParticipant, getParticipantByID, invalidateStatus } from './participants';
+import { HcapUserInfo } from '../keycloak';
 
 const {
   PROSPECTING,
@@ -29,13 +31,16 @@ const previousStatusesMap = {
 // Helper
 /**
  * Invalidate all current status for site
- * @param {*} db object Database object
- * @param {Object} options object
- * @param {*} options.participantId  string | number Participant ID string
- * @param {*} options.site string | number Site ID
+ * @param db Database object
+ * @param options
+ * @param options.site string | number Site ID
+ * @param options.participantId  string | number Participant ID string
  * @returns
  */
-const invalidateAllStatusForSite = async (db, { site, participantId }) => {
+const invalidateAllStatusForSite = async (
+  db,
+  { site, participantId }: { site: string | number; participantId: string | number }
+) => {
   if (!db) {
     return;
   }
@@ -53,21 +58,25 @@ const invalidateAllStatusForSite = async (db, { site, participantId }) => {
 
 /**
  *
- * @param {*} employerId string | UUID Employer ID
- * @param {*} participantId string | UUID Participant ID
- * @param {*} status string | enum Status
- * @param {*} data object Data object
- * @param {*} user object User object
- * @param {*} currentStatusId string | number New status transition reference ID
+ * @param employerId Employer ID
+ * @param participantId Participant ID
+ * @param status Status
+ * @param data Data object
+ * @param user User object
+ * @param currentStatusId New status transition reference ID
  * @returns
  */
 export const setParticipantStatus = async (
-  employerId,
-  participantId,
-  status,
+  employerId: string | UUID,
+  participantId: string | UUID,
+  status: string,
   data, // JSONB on the status row
-  user = { isEmployer: true, sites: [], id: employerId },
-  currentStatusId = null
+  user: { isEmployer?: boolean; sites?: number[]; id: string } = {
+    isEmployer: true,
+    sites: [],
+    id: employerId,
+  },
+  currentStatusId: string | number = null
 ) =>
   dbClient.db.withTransaction(async (tx) => {
     // No creation of status PENDING_ACKNOWLEDGEMENT/REJECT_ACKNOWLEDGEMENT to any other status
@@ -257,7 +266,13 @@ export const setParticipantStatus = async (
     return { status, id: statusObj.id };
   });
 
-export const bulkEngageParticipants = async ({ participants, user }) =>
+export const bulkEngageParticipants = async ({
+  participants,
+  user,
+}: {
+  participants;
+  user: HcapUserInfo;
+}) =>
   Promise.all(
     participants.map(async (id) => {
       const [participant] = await getParticipantByID(id);
@@ -312,7 +327,7 @@ export const hideStatusForUser = async ({ userId, statusId }) => {
   );
 };
 
-export const getParticipantHiredStatuses = async (participantId) => {
+export const getParticipantHiredStatuses = async (participantId: number) => {
   const statuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
     participant_id: participantId,
     status: 'hired',

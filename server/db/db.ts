@@ -8,6 +8,12 @@ import logger from '../logger';
  * to easily interact with a Postgres database
  */
 class DBClient {
+  settings: { host: string; port: number; database: string; user: string; password: string };
+
+  db?: massive.Database;
+
+  static instance: DBClient;
+
   constructor() {
     this.settings = {
       host: process.env.POSTGRES_HOST || 'postgres',
@@ -57,12 +63,15 @@ class DBClient {
 
   /**
    *
-   * @param {string | massive.Select | massive.Insert | massive.Update | massive.Delete} query  Query to run.
-   * @param {massive.QueryParams=} queryParams  Array of parameters to use for the query.
-   *                                           For example, if `query` contains `$1`, this will be replaced with the first element of `queryParams`.
-   * @returns  Query result, or nothing if no query is provided.
+   * @param query        Query to run.
+   * @param queryParams  Array of parameters to use for the query.
+   *                     For example, if `query` contains `$1`, this will be replaced with the first element of `queryParams`.
+   * @returns            Query result, or nothing if no query is provided.
    */
-  async runRawQuery(query, queryParams) {
+  async runRawQuery(
+    query: string | massive.Select | massive.Insert | massive.Update | massive.Delete,
+    queryParams?: massive.QueryParams
+  ) {
     if (!query) return [];
     const res = await this.db.query(query, queryParams);
     return res;

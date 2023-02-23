@@ -1,6 +1,14 @@
 import logger from '../logger';
 
-export default ({ redirect, match, log = false }) =>
+export default ({
+    redirect,
+    match,
+    log = false,
+  }: {
+    redirect: string;
+    match: string;
+    log?: boolean;
+  }) =>
   (req, res, next) => {
     const { baseUrl } = req;
     if (baseUrl.includes(match)) {

@@ -1,6 +1,12 @@
+import type { Request, Response } from 'express';
 import logger from '../logger';
 
-export default (req, res, next) => {
+// This should have proper typing from Keycloak, if it exists
+interface HasKauth {
+  kauth;
+}
+
+export default (req: Request & HasKauth, res: Response, next: () => void) => {
   res.on('finish', () => {
     const { path: pathName, method, ip, baseUrl = '' } = req;
     const { statusCode } = res;

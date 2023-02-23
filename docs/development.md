@@ -49,23 +49,22 @@ Go to `http://keycloak.local.freshworks.club:8080/auth` console and add users/as
 - Run `make kc-export-users` to save your changes
 `409 Conflict` errors are ok if the user already exists, only the role change will be applied
 
-### To run server unit tests:
+### To run the testing suite:
 
-- Make sure containers are running
+- Make sure you've imported KC users into your local environment. See the above set of commands to create KC test users.
   - `make local-kc-run`
-- Shell into the server container by running
-  - `make local-server-workspace`
-  - `npm test`
-- or by running
-  - `make local-server-tests`
-
-### To run e2e tests:
-- Make sure containers are running
-  - `make local-kc-run`
-- Make sure you've imported KC users into your local environment
   - `make kc-import-users`
-- Tests can be run with
+- Run the testing setup. This will ensure your server is pointed to the `db_test` database, clearing and repopulating it.
+  - `make local-testing-setup`
+- You can then run the Cypress tests by running
   - `make local-cypress-tests`
+- Or the server tests by running
+  - `make local-server-tests`
+- After finishing with testing, you may want to go back to the dev database. Either tear down the whole thing:
+  - `make local-kc-down`
+- Or just down the server to restart it with with the dev database
+  - `make local-testing-teardown`
+  - `make local-kc-run`
 
 ## Using the Application
 

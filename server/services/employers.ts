@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { dbClient, collections } from '../db';
 import { validate, EmployerSiteBatchSchema } from '../validation';
 import { userRegionQuery } from './user';
@@ -100,7 +101,12 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
     additionalCriteriaParams
   );
 
-  return records;
+  // Transform and format dates - return data
+  return records.map((site) => ({
+    ...site,
+    startDate: dayjs.utc(site.startDate).format('YYYY/MM/DD'),
+    endDate: dayjs.utc(site.endDate).format('YYYY/MM/DD'), // strips time/timezone from date and formats it
+  }));
 };
 
 /**

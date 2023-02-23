@@ -41,11 +41,11 @@ const fetchParticipants = async (siteId) => {
 
   if (response.ok) {
     const { hired, withdrawn } = await response.json();
-    const hiredRowsData = mapDataToRow(hired);
-    const withdrawnRowsData = mapDataToRow(withdrawn);
-    return { hiredRowsData, withdrawnRowsData };
+    const hiredParticipants = mapDataToRow(hired);
+    const withdrawnParticipants = mapDataToRow(withdrawn);
+    return { hiredParticipants, withdrawnParticipants };
   } else {
-    return { hiredRowsData: [], withdrawnRowsData: [] };
+    return { hiredParticipants: [], withdrawnParticipants: [] };
   }
 };
 
@@ -88,6 +88,7 @@ export default ({ match }) => {
   const [site, setSite] = useState({});
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  // const [isLoadingData, setLoadingData] = useState(false);
   const id = match.params.id;
 
   const handleSiteEdit = async (site) => {
@@ -122,16 +123,36 @@ export default ({ match }) => {
 
     if (response.ok) {
       const site = await response.json();
-      if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
-        const phases = await fetchSitePhases(site.id);
+      const participants = await fetch(
+        `${API_URL}/api/v1/employer-sites/${site.siteId}/participants`,
+        {
+          headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+          method: 'GET',
+        }
+      );
 
-        const currentPhase = phases.find((phase) => {
-          return dayjs().isBetween(phase.startDate, phase.endDate, null, '()');
-        });
+      if (participants.ok) {
+        const { hired, withdrawn } = await participants.json();
+        const hiredParticipants = mapDataToRow(hired);
+        const withdrawnParticipants = mapDataToRow(withdrawn);
 
-        return setSite({ ...site, ...currentPhase, phases: phases });
-      } else {
-        return setSite({ ...site, phases: [] });
+        if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
+          const phases = await fetchSitePhases(site.id);
+
+          const currentPhase = phases.find((phase) => {
+            return dayjs().isBetween(phase.startDate, phase.endDate, null, '()');
+          });
+
+          return setSite({
+            ...site,
+            ...currentPhase,
+            phases,
+            hiredParticipants,
+            withdrawnParticipants,
+          });
+        } else {
+          return setSite({ ...site, phases: [], hiredParticipants: [], withdrawnParticipants: [] });
+        }
       }
     } else {
       return setSite({});

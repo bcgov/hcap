@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
@@ -99,19 +100,21 @@ export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
   };
 
   useEffect(() => {
+    console.log('USE EFFECT, LOAD SITE, UPDATE SITE ');
     dispatch({
       type: SiteDetailTabContext.types.LOAD_SITE,
       payload: {},
     });
-    fetchDetails().then((response) => {
-      dispatch({
-        type: SiteDetailTabContext.types.UPDATE_SITE,
-        payload: { site: response },
-      });
-    });
+    // fetchDetails().then((response) => {
+    //   dispatch({
+    //     type: SiteDetailTabContext.types.UPDATE_SITE,
+    //     payload: { site: response },
+    //   });
+    // });
   }, [dispatch, id]);
 
   useEffect(() => {
+    console.log('USE EFFECT, SELECT TAB ');
     dispatch({
       type: SiteDetailTabContext.types.SELECT_TAB,
       payload: { tab: tabs.SITE_DETAILS, roles },
@@ -119,14 +122,15 @@ export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
   }, [dispatch, roles, siteId]);
 
   useEffect(() => {
+    console.log('USE EFFECT, SELECT TAB');
     switch (selectedTab) {
       case tabs.HIRED_PARTICIPANTS:
         setOrderBy('startDate');
-        setRows(fetchedHiredRows);
+        setRows(site.hiredParticipants);
         return;
       case tabs.WITHDRAWN_PARTICIPANTS:
         setOrderBy('withdrawnDate');
-        setRows(fetchedWithdrawnRows);
+        setRows(site.withdrawnParticipants);
         return;
       case tabs.ALLOCATION:
         setOrderBy('startDate');
@@ -135,16 +139,17 @@ export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
       default:
         return;
     }
-  }, [fetchedHiredRows, fetchedWithdrawnRows, site.phases, selectedTab]);
+  }, [site.hiredParticipants, site.withdrawnParticipants, site.phases, selectedTab]);
 
-  useEffect(() => {
-    setLoadingData(true);
-    fetchParticipants(siteId).then(({ hiredRowsData, withdrawnRowsData }) => {
-      setFetchedHiredRows(hiredRowsData);
-      setFetchedWithdrawnRows(withdrawnRowsData);
-      setLoadingData(false);
-    });
-  }, [siteId, setRows, setFetchedHiredRows, setFetchedWithdrawnRows, setLoadingData]);
+  // useEffect(() => {
+  //   console.log("USE EFFECT, FETCH PARTICIPANTS")
+  //   setLoadingData(true);
+  //   fetchParticipants(siteId).then(({ hiredRowsData, withdrawnRowsData }) => {
+  //     setFetchedHiredRows(hiredRowsData);
+  //     setFetchedWithdrawnRows(withdrawnRowsData);
+  //     setLoadingData(false);
+  //   });
+  // }, [siteId, setRows, setFetchedHiredRows, setFetchedWithdrawnRows, setLoadingData]);
 
   const handleArchive = async (participantId, additional = {}) => {
     const response = await fetch(`${API_URL}/api/v1/employer-actions/archive`, {
@@ -182,10 +187,10 @@ export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
         });
       });
       // and this is to update both lists of participants
-      fetchParticipants(siteId).then(({ hiredRowsData, withdrawnRowsData }) => {
-        setFetchedHiredRows(hiredRowsData);
-        setFetchedWithdrawnRows(withdrawnRowsData);
-      });
+      // fetchParticipants(siteId).then(({ hiredRowsData, withdrawnRowsData }) => {
+      //   setFetchedHiredRows(hiredRowsData);
+      //   setFetchedWithdrawnRows(withdrawnRowsData);
+      // });
     } else {
       openToast({
         status: ToastStatus.Error,

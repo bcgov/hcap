@@ -258,3 +258,5 @@ export const createPostHireStatus = async ({ participantId, status, data }) => {
 
   throw new Error('Failed to create post-hire status', response.error || response.statusText);
 };
+
+// export const postArchive

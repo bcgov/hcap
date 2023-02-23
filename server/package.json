@@ -14,6 +14,7 @@
     "feed-participants": "npx ts-node scripts/feed-participants.js",
     "feed-sites": "npx ts-node scripts/feed-sites.js",
     "feed-data": "npx ts-node scripts/feed-data.js",
+    "clear-data": "npx ts-node scripts/clear-data.js",
     "stats": "npx ts-node scripts/stats.js",
     "sendMassEmail": "npx ts-node scripts/sendEmailBlast.js",
     "participant-stats-hired": "npx ts-node scripts/participant-stats-hired.js",

@@ -7,7 +7,7 @@ export const ExternalHiredParticipantSchema = yup.object().shape({
   phoneNumber: yup
     .string()
     .required(errorMessage)
-    .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+    .matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
   emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
   origin: yup
     .string()

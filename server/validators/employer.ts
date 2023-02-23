@@ -14,7 +14,7 @@ export const EmployerFormSchema = yup
     operatorEmail: yup.string().nullable(errorMessage).email('Invalid email address'),
     operatorPhone: yup
       .string()
-      .matches(/(^[0-9]{10})?$/, 'Phone number must be provided as 10 digits')
+      .matches(/(^\d{10})?$/, 'Phone number must be provided as 10 digits')
       .nullable(),
     operatorAddress: yup.string().nullable(errorMessage),
     operatorPostalCode: yup
@@ -33,7 +33,7 @@ export const EmployerFormSchema = yup
     siteContactLastName: yup.string().nullable(errorMessage),
     phoneNumber: yup
       .string()
-      .matches(/(^[0-9]{10})?$/, 'Phone number must be provided as 10 digits')
+      .matches(/(^\d{10})?$/, 'Phone number must be provided as 10 digits')
       .nullable(),
     emailAddress: yup.string().nullable(errorMessage).email('Invalid email address'),
 
@@ -184,7 +184,7 @@ export const EmployerSiteBatchSchema = yup.array().of(
           .nullable(errorMessageIndex(index, indexName)),
         operatorPhone: yup
           .string()
-          .matches(/^([0-9]{10})$/, {
+          .matches(/^(\d{10})$/, {
             excludeEmptyString: true,
             message: `Phone number must be provided as 10 digits (index ${index})`,
           })
@@ -193,7 +193,7 @@ export const EmployerSiteBatchSchema = yup.array().of(
         siteContactLastName: yup.string().nullable(errorMessageIndex(index, indexName)),
         siteContactPhoneNumber: yup
           .string()
-          .matches(/(^[0-9]{10})$/, {
+          .matches(/(^\d{10})$/, {
             excludeEmptyString: true,
             message: `Phone number must be provided as 10 digits (index ${index})`,
           })
@@ -253,7 +253,7 @@ export const EditSiteSchema = yup
     siteContactPhone: yup
       .string()
       .required(errorMessage)
-      .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+      .matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
     siteContactEmail: yup.string().required(errorMessage).email('Invalid email address'),
     siteName: yup.string().required(errorMessage),
     registeredBusinessName: yup.string().required(errorMessage),
@@ -270,7 +270,7 @@ export const EditSiteSchema = yup
     operatorPhone: yup
       .string()
       .required(errorMessage)
-      .matches(/^([0-9]{10})?$/, 'Phone number must be provided as 10 digits'),
+      .matches(/^(\d{10})?$/, 'Phone number must be provided as 10 digits'),
     operatorEmail: yup.string().required(errorMessage).email('Invalid email address'),
     history: yup.array().required('Edit history is required'),
   });

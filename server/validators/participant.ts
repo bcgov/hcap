@@ -108,7 +108,7 @@ export const ParticipantSchema = yup
     phoneNumber: yup
       .string()
       .required(errorMessage)
-      .matches(/^\d{10}?$/, 'Phone number must be provided as 10 digits'),
+      .matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
     emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
     postalCode: yup
       .string()
@@ -270,7 +270,7 @@ export const ParticipantEditSchema = yup
     phoneNumber: yup
       .string()
       .required(errorMessage)
-      .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+      .matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
     emailAddress: yup.string().required('Email address is required').email('Invalid email address'),
     interested: yup.string().nullable(),
     postalCode: yup

@@ -10,7 +10,7 @@ export const UserParticipantEditSchema = yup.object().shape({
     .string()
     .nullable()
     .matches(/^[A-Z]\d[A-Z]$/),
-  phoneNumber: yup.string().matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+  phoneNumber: yup.string().matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
   isIndigenous: yup.boolean(),
   indigenousIdentities: yup.array().when('isIndigenous', {
     is: true,

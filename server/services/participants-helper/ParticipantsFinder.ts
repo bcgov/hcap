@@ -1,4 +1,5 @@
 import { collections } from '../../db';
+import { HcapUserInfo } from '../../keycloak';
 import { userRegionQuery } from '../user';
 import { RegionsFilteredParticipantsFinder } from './RegionsFilteredParticipantsFinder';
 
@@ -14,7 +15,7 @@ export class ParticipantsFinder {
   rosStatuses: string;
   criteria: { 'body.preferredLocation ilike': string } | { or: { and: { or }[] }[] };
 
-  constructor(dbClient, user) {
+  constructor(dbClient, user: HcapUserInfo) {
     this.dbClient = dbClient;
     this.user = user;
     this.table = dbClient.db[collections.PARTICIPANTS];

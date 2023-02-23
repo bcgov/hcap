@@ -1,6 +1,7 @@
 import { collections, views } from '../../db';
 import { participantStatus } from '../../constants';
 import { FilteredParticipantsFinder } from './FilteredParticipantsFinder';
+import { RunContext } from './core';
 
 const {
   OPEN: open,
@@ -16,7 +17,7 @@ const {
 } = participantStatus;
 
 export class FieldsFilteredParticipantsFinder {
-  context;
+  context: RunContext & { rosStatuses; orgSpecificJoin; dbClient };
 
   constructor(context) {
     this.context = context;

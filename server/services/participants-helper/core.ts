@@ -1,10 +1,41 @@
+import { HcapUserInfo } from '../../keycloak';
 import logger from '../../logger';
+
+type sortDir = 'asc' | 'desc';
+
+export interface Pagination {
+  offset: number;
+  pageSize: number;
+  direction: sortDir;
+}
+
+// NOTE: This could use some work, but is at least a starting point.
+export interface RunContext {
+  user: HcapUserInfo;
+  table;
+  criteria;
+  options: {
+    order?: [
+      {
+        field: string;
+        direction: sortDir;
+        nulls?: string;
+        unshift?: { field: string; direction: sortDir };
+      }
+    ];
+    pagination?: Pagination;
+  };
+  employerSpecificJoin?: string;
+  hiredGlobalJoin?: string;
+  siteDistanceJoin?: string;
+  siteIdDistance?: boolean;
+}
 
 /**
  * @description Flattens the participants array into a single array based on statuses
  * @param {Array<any>} participants
- * @returns {Array<any>}
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const flattenParticipants = (participants) => {
   const flattenedParticipantList = [];
   participants.forEach((participant) => {
@@ -92,7 +123,7 @@ const addDistanceToParticipantFields = (raw, siteDistanceJoin) =>
     }),
   }));
 
-export const run = async (context) => {
+export const run = async (context: RunContext) => {
   const {
     table,
     criteria,

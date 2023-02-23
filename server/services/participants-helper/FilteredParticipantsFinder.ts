@@ -1,14 +1,15 @@
-import { run } from './core';
+import { Pagination, run } from './core';
 import { PaginatedParticipantsFinder } from './PaginatedParticipantsFinder';
+import type { RunContext } from './core';
 
 export class FilteredParticipantsFinder {
-  context;
+  context: RunContext & { rosStatuses };
 
   constructor(context) {
     this.context = context;
   }
 
-  paginate(pagination, sortField?) {
+  paginate(pagination: Pagination, sortField?: string) {
     const { user, employerSpecificJoin, siteDistanceJoin, siteIdDistance, rosStatuses } =
       this.context;
     this.context.options = pagination && {

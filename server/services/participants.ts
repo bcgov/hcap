@@ -6,6 +6,7 @@ import { validate, ParticipantBatchSchema, isBooleanValue, postHireStatuses } fr
 import { dbClient, collections } from '../db';
 import { createRows, verifyHeaders } from '../utils';
 import { ParticipantsFinder } from './participants-helper';
+import type { Pagination } from './participants-helper';
 import logger from '../logger';
 import { getAssignCohort } from './cohorts';
 import { createPostHireStatus, getPostHireStatusesForParticipant } from './post-hire-flow';
@@ -336,7 +337,7 @@ export const confirmParticipantInterest = async (id) => {
 
 export const getParticipants = async (
   user,
-  pagination,
+  pagination: Pagination,
   sortField,
   regionFilter,
   fsaFilter,

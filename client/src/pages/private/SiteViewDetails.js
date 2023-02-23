@@ -5,19 +5,82 @@ import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
 import { scrollUp } from '../../utils';
 import store from 'store';
+import dayjs from 'dayjs';
 import { Routes } from '../../constants';
 import { EditSiteForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
+import { flagKeys, featureFlag } from '../../services';
 import { ToastStatus, EditSiteSchema, API_URL } from '../../constants';
 import { SiteDetailTabContext } from '../../providers';
+import { fetchSitePhases } from '../../services/phases';
 
 const SiteViewDetailsTabs = lazy(() => import('./SiteViewDetailsTabs'));
+
+const columnIDs = [
+  { id: 'participantId', name: 'ID' },
+  { id: 'participantName', name: 'Name' },
+  { id: 'hiredDate', name: 'Hire Date' },
+  { id: 'startDate', name: 'Start Date' },
+  { id: 'nonHCAP', name: 'Position' },
+  { id: 'archive', name: 'Archive' },
+  { id: 'withdrawnDate', name: 'Withdrawn Date' },
+  { id: 'reason', name: 'Reason' },
+];
 
 const useStyles = makeStyles(() => ({
   cardRoot: {
     minWidth: '1020px',
   },
 }));
+
+const fetchParticipants = async (siteId) => {
+  const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
+    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    method: 'GET',
+  });
+
+  if (response.ok) {
+    const { hired, withdrawn } = await response.json();
+    const hiredRowsData = mapDataToRow(hired);
+    const withdrawnRowsData = mapDataToRow(withdrawn);
+    return { hiredRowsData, withdrawnRowsData };
+  } else {
+    return { hiredRowsData: [], withdrawnRowsData: [] };
+  }
+};
+
+/**
+ * Takes the data from the db and formats it for the table
+ * @param {*} response: raw data from API call
+ * @returns
+ */
+const mapDataToRow = (response) => {
+  return response.map((row) => {
+    // Pull all relevant props from row based on columns constant
+    const values = {
+      participantId: row.participant_id,
+      participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
+      hiredDate: row.data.hiredDate,
+      startDate: row.data.startDate,
+      withdrawnDate: row.data.endDate,
+      reason: row.data.reason,
+      nonHCAP: row.data.nonHcapOpportunity ? 'Non-HCAP' : 'HCAP',
+    };
+
+    const mappedRow = columnIDs.reduce(
+      (accumulator, column) => ({
+        ...accumulator,
+        [column.id]: values[column.id],
+      }),
+      {}
+    );
+    // Add additional props (user ID, button) to row
+    return {
+      ...mappedRow,
+      id: row.id,
+    };
+  });
+};
 
 export default ({ match }) => {
   const { openToast } = useToast();
@@ -58,7 +121,20 @@ export default ({ match }) => {
     });
 
     if (response.ok) {
-      setSite(await response.json());
+      const site = await response.json();
+      if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
+        const phases = await fetchSitePhases(site.id);
+
+        const currentPhase = phases.find((phase) => {
+          return dayjs().isBetween(phase.startDate, phase.endDate, null, '()');
+        });
+
+        return setSite({ ...site, ...currentPhase, phases: phases });
+      } else {
+        return setSite({ ...site, phases: [] });
+      }
+    } else {
+      return setSite({});
     }
   }, [id, setSite]);
 
@@ -176,7 +252,12 @@ export default ({ match }) => {
                   ) : null}
                 </Box>
               </Box>
-              <SiteViewDetailsTabs id={id} siteId={site.siteId} />
+              <SiteViewDetailsTabs
+                id={id}
+                siteId={site.siteId}
+                fetchDetails={fetchDetails}
+                fetchParticipants={fetchParticipants}
+              />
             </Card>
           </SiteDetailTabContext.TabProvider>
         </CheckPermissions>

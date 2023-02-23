@@ -12,12 +12,7 @@ import {
   CheckPermissions,
 } from '../../components/generic';
 import { AuthContext, SiteDetailTabContext } from '../../providers';
-import {
-  FeatureFlaggedComponent,
-  flagKeys,
-  fetchUserNotifications,
-  featureFlag,
-} from '../../services';
+import { FeatureFlaggedComponent, flagKeys, fetchUserNotifications } from '../../services';
 import {
   ToastStatus,
   API_URL,
@@ -31,98 +26,11 @@ import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import dayjs from 'dayjs';
 import { keyedString, getDialogTitle, sortObjects } from '../../utils';
-import { fetchSitePhases } from '../../services/phases';
 import { SetAllocation } from './SetAllocation';
-
-const columnIDs = [
-  { id: 'participantId', name: 'ID' },
-  { id: 'participantName', name: 'Name' },
-  { id: 'hiredDate', name: 'Hire Date' },
-  { id: 'startDate', name: 'Start Date' },
-  { id: 'nonHCAP', name: 'Position' },
-  { id: 'archive', name: 'Archive' },
-  { id: 'withdrawnDate', name: 'Withdrawn Date' },
-  { id: 'reason', name: 'Reason' },
-];
 
 const tabs = SiteDetailTabContext.tabs;
 
-const fetchDetails = async (id) => {
-  const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-    },
-    method: 'GET',
-  });
-
-  if (response.ok) {
-    const site = await response.json();
-    if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
-      const phases = await fetchSitePhases(site.id);
-
-      const currentPhase = phases.find((phase) => {
-        return dayjs().isBetween(phase.startDate, phase.endDate, null, '()');
-      });
-
-      return { ...site, ...currentPhase, phases: phases };
-    } else {
-      return { ...site, phases: [] };
-    }
-  } else {
-    return {};
-  }
-};
-
-const fetchParticipants = async (siteId) => {
-  const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
-    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-    method: 'GET',
-  });
-
-  if (response.ok) {
-    const { hired, withdrawn } = await response.json();
-    const hiredRowsData = mapDataToRow(hired);
-    const withdrawnRowsData = mapDataToRow(withdrawn);
-    return { hiredRowsData, withdrawnRowsData };
-  } else {
-    return { hiredRowsData: [], withdrawnRowsData: [] };
-  }
-};
-
-/**
- * Takes the data from the db and formats it for the table
- * @param {*} response: raw data from API call
- * @returns
- */
-const mapDataToRow = (response) => {
-  return response.map((row) => {
-    // Pull all relevant props from row based on columns constant
-    const values = {
-      participantId: row.participant_id,
-      participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
-      hiredDate: row.data.hiredDate,
-      startDate: row.data.startDate,
-      withdrawnDate: row.data.endDate,
-      reason: row.data.reason,
-      nonHCAP: row.data.nonHcapOpportunity ? 'Non-HCAP' : 'HCAP',
-    };
-
-    const mappedRow = columnIDs.reduce(
-      (accumulator, column) => ({
-        ...accumulator,
-        [column.id]: values[column.id],
-      }),
-      {}
-    );
-    // Add additional props (user ID, button) to row
-    return {
-      ...mappedRow,
-      id: row.id,
-    };
-  });
-};
-
-export default ({ id, siteId }) => {
+export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
   const history = useHistory();
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
@@ -166,8 +74,8 @@ export default ({ id, siteId }) => {
   };
 
   // reset allocation table after allocations are created/edited
-  const fetchAllocationDetails = (siteId) => {
-    return fetchDetails(siteId).then((response) => {
+  const fetchAllocationDetails = () => {
+    return fetchDetails().then((response) => {
       dispatch({
         type: SiteDetailTabContext.types.UPDATE_SITE,
         payload: { site: response },
@@ -195,7 +103,7 @@ export default ({ id, siteId }) => {
       type: SiteDetailTabContext.types.LOAD_SITE,
       payload: {},
     });
-    fetchDetails(id).then((response) => {
+    fetchDetails().then((response) => {
       dispatch({
         type: SiteDetailTabContext.types.UPDATE_SITE,
         payload: { site: response },
@@ -267,7 +175,7 @@ export default ({ id, siteId }) => {
       setActionMenuParticipant(null);
       setActiveModalForm(null);
       // this is to make sure site's HCAP hires get updated on archiving as duplicate
-      fetchDetails(id).then((resp) => {
+      fetchDetails().then((resp) => {
         dispatch({
           type: SiteDetailTabContext.types.UPDATE_SITE,
           payload: { site: resp },

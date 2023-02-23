@@ -1,14 +1,15 @@
 import { dbClient, collections } from '../db';
+import { HcapUserInfo } from '../keycloak';
 import { dayjs } from '../utils';
 
-export const userRegionQuery = (regions, target) => {
+export const userRegionQuery = (regions: string[], target: string) => {
   if (regions.length === 0) return null;
   return {
     or: regions.map((region) => ({ [`${target} ilike`]: `%${region}%` })),
   };
 };
 
-export const getUser = async (id) => {
+export const getUser = async (id: string) => {
   const query = { keycloakId: id };
   const options = { single: true };
   return dbClient.db[collections.USERS].findDoc(query, options);
@@ -16,10 +17,10 @@ export const getUser = async (id) => {
 
 /**
  * Returns all ROS statuses for given sites that are currently 'hired' (not archived) that started a year ago or more
- * @param {[id: number]} sites
+ * @param sites
  * @returns [ROS_STATUS join to PARTICIPANTS_STATUS]
  */
-const getROSEndedNotifications = async (sites) => {
+const getROSEndedNotifications = async (sites: [id: number]) => {
   const todayDate = dayjs().utc().subtract(1, 'y').toDate().toUTCString();
   return dbClient.db[collections.ROS_STATUS]
     .join({
@@ -44,10 +45,12 @@ const getROSEndedNotifications = async (sites) => {
  * Returns an array of user notification objects
  * Where each notification has a message, severity, and type
  * Empty array for no notifications
- * @param {*} hcapUserInfo
+ * @param hcapUserInfo
  * @returns {Promise<*[]>}
  */
-export const getUserNotifications = async (hcapUserInfo) => {
+export const getUserNotifications = async (
+  hcapUserInfo: HcapUserInfo & { sites: [id: number] }
+) => {
   const notifications = [];
   if (hcapUserInfo.isEmployer || hcapUserInfo.isHA) {
     const rosEndedNotifications = await getROSEndedNotifications(hcapUserInfo.sites);
@@ -63,7 +66,7 @@ export const getUserNotifications = async (hcapUserInfo) => {
   return notifications;
 };
 
-export const getUserSites = async (id) => {
+export const getUserSites = async (id: string) => {
   const user = await getUser(id);
   if (!user || !user.sites) return [];
   return dbClient.db[collections.EMPLOYER_SITES].findDoc({

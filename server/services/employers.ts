@@ -23,11 +23,11 @@ export const getEmployers = async (user: HcapUserInfo): Promise<EmployerSite[]> 
   return criteria ? dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria) : [];
 };
 
-export const getEmployerByID = async (id) =>
+export const getEmployerByID = async (id: number) =>
   dbClient.db[collections.EMPLOYER_FORMS].findDoc({ id });
 
-export const saveSingleSite = async (siteJson) => {
-  const res = await dbClient.db.saveDoc(collections.EMPLOYER_SITES, siteJson);
+export const saveSingleSite = async (sitePayload) => {
+  const res = await dbClient.db.saveDoc(collections.EMPLOYER_SITES, sitePayload);
   return res;
 };
 
@@ -50,7 +50,7 @@ export const saveSites = async (sitesArg) => {
   return response;
 };
 
-export const updateSite = async (id, site) => {
+export const updateSite = async (id: number, site) => {
   const changes = site.history[0].changes.reduce(
     (acc, change) => {
       const { field, to } = change;
@@ -156,10 +156,10 @@ export const getSiteDetailsById = async (id) => {
 };
 
 /**
- * @param {number} id  ID of requested site
- * @returns {Promise<EmployerSite>} Requested site
+ * @param id  ID of requested site
+ * @returns Requested site
  */
-export const getSiteByID = async (id) => {
+export const getSiteByID = async (id: number): Promise<EmployerSite> => {
   const site = await dbClient.db[collections.EMPLOYER_SITES].findDoc({ id });
   if (site.length === 0) {
     throw new Error(`No site found with id ${id}`);

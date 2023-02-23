@@ -1,10 +1,11 @@
 import { dbClient, collections } from '../db';
 import { participantStatus } from '../constants';
+import type { HcapUserInfo } from '../keycloak';
 
 const { HIRED, ARCHIVED } = participantStatus;
 
 // Verify user to view participant details
-export const checkUserHasAccessToParticipant = async (id, user) => {
+export const checkUserHasAccessToParticipant = async (id: number, user: HcapUserInfo) => {
   if (user.isMoH || user.isSuperUser) {
     return true;
   }
@@ -58,7 +59,7 @@ export const checkUserHasAccessToParticipant = async (id, user) => {
   return false;
 };
 
-export const participantDetails = async (id) => {
+export const participantDetails = async (id: number) => {
   // Verify user
   // Get participant object from database
   const [participant] =

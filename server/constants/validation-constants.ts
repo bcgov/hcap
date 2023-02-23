@@ -74,12 +74,14 @@ export const participantStatuses = [
   'rosComplete',
 ];
 
-export const postHireStatuses = {
-  orientationCompleted: 'orientation_completed',
-  postSecondaryEducationUnderway: 'post_secondary_education_underway',
-  postSecondaryEducationCompleted: 'post_secondary_education_completed',
-  cohortUnsuccessful: 'cohort_unsuccessful',
-};
+// Not sure why eslint thinks this is a shadow - it isn't.
+// eslint-disable-next-line no-shadow
+export enum postHireStatuses {
+  orientationCompleted = 'orientation_completed',
+  postSecondaryEducationUnderway = 'post_secondary_education_underway',
+  postSecondaryEducationCompleted = 'post_secondary_education_completed',
+  cohortUnsuccessful = 'cohort_unsuccessful',
+}
 
 export const postHireStatusesValues = Object.values(postHireStatuses).sort();
 

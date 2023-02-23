@@ -1,25 +1,30 @@
 /* eslint-disable camelcase */
+import { HcapUserInfo } from '../keycloak';
+
 // disabling camelcase check so that we can manipulate snake_case attributes without changing structure
 const { dbClient, collections } = require('../db');
 
 /**
  * Gets all phases for a site
- * @param {number} siteId PK ID of the site
- * @param {number} phaseId PK ID of the phase
+ * @param siteId PK ID of the site
+ * @param phaseId PK ID of the phase
  */
-export const getAllocation = async (siteId, phaseId) => {
-  /**
-   * @typedef {Object} allocationResponse  type for DB response to the `getAllocation` query
-   * @property {number} id                 PK ID of the allocation
-   * @property {number} phase_id           FK for phase
-   * @property {number} allocation         Number of allocations available
-   * @property {number} site_id            FK for employer_site
-   * */
+export const getAllocation = async (siteId: number, phaseId: number) => {
+  /** Type for DB response to the `getAllocation` query */
+  type AllocationResponse = {
+    /** PK ID of the allocation */
+    id: number;
+    /** FK for phase */
+    phase_id: number;
+    /** Number of allocations available */
+    allocation: number;
+    /** FK for employer_site */
+    site_id: number;
+  };
 
-  /**
-   * @type {allocationResponse}
-   * */
-  const allocation = await dbClient.db[collections.SITE_PHASE_ALLOCATION].findOne({
+  const allocation: AllocationResponse = await dbClient.db[
+    collections.SITE_PHASE_ALLOCATION
+  ].findOne({
     site_id: siteId,
     phase_id: phaseId,
   });
@@ -27,13 +32,27 @@ export const getAllocation = async (siteId, phaseId) => {
   return allocation;
 };
 
-export const createAllocation = async (allocation, user) => {
+// NOTE: This should have stronger typing on `allocation`.
+/**
+ * Creates an allocation in the database
+ * @param allocation Allocation data object
+ * @param user User performing the operation
+ * @returns DB operation result
+ */
+export const createAllocation = async (allocation, user: HcapUserInfo) => {
   const data = { ...allocation, created_by: user.id, updated_by: user.id };
   const res = await dbClient.db[collections.SITE_PHASE_ALLOCATION].insert(data);
   return res;
 };
 
-export const updateAllocation = async (allocationId, allocation, user) => {
+/**
+ * Updates an allocation in the database
+ * @param allocationId ID of allocation to edit
+ * @param allocation Allocation data object
+ * @param user User performing the operation
+ * @returns DB operation result
+ */
+export const updateAllocation = async (allocationId: number, allocation, user: HcapUserInfo) => {
   const data = { ...allocation, updated_by: user.id };
   const res = await dbClient.db[collections.SITE_PHASE_ALLOCATION].update(allocationId, data);
   return res;

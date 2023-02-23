@@ -22,16 +22,25 @@ const defaults = {
 };
 
 export interface HcapUserInfo {
-  name?: string /** Full name of user (e.g. "Tabitha Test") */;
-  username?: string /** Username (e.g. "user@bceid") */;
-  id?: string /** Unique identifier string for the user */;
+  /** Full name of user (e.g. "Tabitha Test") */
+  name?: string;
+  /** Username (e.g. "user@bceid") */
+  username?: string;
+  /** Unique identifier string for the user */
+  id?: string;
   sites?: number[];
-  roles?: string[] /** Roles of the user (such as `region_interior` or `health_authority`) */;
-  regions?: string[] /** Regions the user is assigned to (such as `Interior`) */;
-  isEmployer?: boolean /** True if the user is an employer */;
-  isHA?: boolean /** True if the user is a health authority user */;
-  isSuperUser?: boolean /** True if the user is a superuser */;
-  isMoH?: boolean /** True if the user is an MoH user */;
+  /** Roles of the user (such as `region_interior` or `health_authority`) */
+  roles?: string[];
+  /** Regions the user is assigned to (such as `Interior`) */
+  regions?: string[];
+  /** True if the user is an employer */
+  isEmployer?: boolean;
+  /** True if the user is a health authority user */
+  isHA?: boolean;
+  /** True if the user is a superuser */
+  isSuperUser?: boolean;
+  /** True if the user is an MoH user */
+  isMoH?: boolean;
 }
 
 class Keycloak {

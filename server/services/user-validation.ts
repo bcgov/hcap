@@ -1,7 +1,14 @@
 import { getParticipantByID } from './participants';
 import logger from '../logger';
 
-const validateParticipant = async (participantId, actionType) => {
+interface User {
+  email?: string;
+  // eslint-disable-next-line camelcase
+  user_id: string;
+  sub: string;
+}
+
+const validateParticipant = async (participantId: number, actionType: string) => {
   const [participant] = await getParticipantByID(participantId);
   if (!participant) {
     logger.error({
@@ -13,7 +20,7 @@ const validateParticipant = async (participantId, actionType) => {
   return participant;
 };
 
-const validateUser = async (user, actionType?) => {
+const validateUser = async (user: User, actionType?: string) => {
   const { email, user_id: userId, sub: localUserId } = user;
   const userData = userId || localUserId;
 
@@ -28,7 +35,11 @@ const validateUser = async (user, actionType?) => {
   return userData;
 };
 
-export const validateCredentials = async (reqUser, participantId, actionType) => {
+export const validateCredentials = async (
+  reqUser: User,
+  participantId: number,
+  actionType: string
+) => {
   const validUser = await validateUser(reqUser);
   if (!validUser) {
     return { isValid: false, status: 401, message: 'Unauthorized user', user: validUser };

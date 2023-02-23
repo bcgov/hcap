@@ -2,11 +2,13 @@ import { dbClient, collections } from '../db';
 import keycloak from '../keycloak';
 import logger from '../logger';
 
-export const syncUser = async ({ log }) => {
+export const syncUser = async ({ log }: { log: boolean }) => {
   // Fetch all db users
-  const allUsers = await dbClient.db[collections.USERS].findDoc();
+  const allUsers: { id: string; keycloakId: string }[] = await dbClient.db[
+    collections.USERS
+  ].findDoc();
   // Fetch all keycloak users
-  const keycloakUsers = await keycloak.getUsers(true);
+  const keycloakUsers: { id: string }[] = await keycloak.getUsers(true);
   // Sync
   const resp = await Promise.all(
     allUsers.map(async (user) => {

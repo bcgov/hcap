@@ -443,6 +443,9 @@ export const getParticipants = async (
         distance: item.distance,
         postHireStatuses: item.postHireStatuses || [],
         rosStatuses: item.rosStatuses || [],
+        statusInfos: undefined, // This gets set later. Should probably get stronger typing.
+        phoneNumber: undefined,
+        emailAddress: undefined,
       };
 
       // Get hired status

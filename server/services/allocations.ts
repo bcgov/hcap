@@ -7,7 +7,7 @@ const { dbClient, collections } = require('../db');
  * @param {number} siteId PK ID of the site
  * @param {number} phaseId PK ID of the phase
  */
-const getAllocation = async (siteId, phaseId) => {
+export const getAllocation = async (siteId, phaseId) => {
   /**
    * @typedef {Object} allocationResponse  type for DB response to the `getAllocation` query
    * @property {number} id                 PK ID of the allocation
@@ -27,20 +27,14 @@ const getAllocation = async (siteId, phaseId) => {
   return allocation;
 };
 
-const createAllocation = async (allocation, user) => {
+export const createAllocation = async (allocation, user) => {
   const data = { ...allocation, created_by: user.id, updated_by: user.id };
   const res = await dbClient.db[collections.SITE_PHASE_ALLOCATION].insert(data);
   return res;
 };
 
-const updateAllocation = async (allocationId, allocation, user) => {
+export const updateAllocation = async (allocationId, allocation, user) => {
   const data = { ...allocation, updated_by: user.id };
   const res = await dbClient.db[collections.SITE_PHASE_ALLOCATION].update(allocationId, data);
   return res;
-};
-
-module.exports = {
-  getAllocation,
-  createAllocation,
-  updateAllocation,
 };

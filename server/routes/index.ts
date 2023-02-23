@@ -29,7 +29,7 @@ import psiReportRouter from './psi-report';
 import milestoneReportRouter from './milestone-report';
 import postHireStatusRouter from './post-hire-status';
 import rosRouter from './return-of-service';
-import featureFlags from '../services/feature-flags';
+import * as featureFlags from '../services/feature-flags';
 
 const apiRouter = express.Router();
 apiRouter.use(keycloak.expressMiddleware());

@@ -13,7 +13,7 @@ const validateParticipant = async (participantId, actionType) => {
   return participant;
 };
 
-const validateUser = async (user, actionType) => {
+const validateUser = async (user, actionType?) => {
   const { email, user_id: userId, sub: localUserId } = user;
   const userData = userId || localUserId;
 

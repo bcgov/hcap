@@ -254,7 +254,7 @@ export const ParticipantStatusChange = yup
     }),
     currentStatusId: yup.number().when(['status'], ([status], schema) => {
       if (['interviewing', 'prospecting', 'prospecting', 'rejected'].includes(status))
-        return schema.required('Please specify valid current status');
+        return schema.optional();
       return schema.optional().nullable();
     }),
   });

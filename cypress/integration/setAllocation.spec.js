@@ -98,7 +98,6 @@ describe('Allocation functionality', () => {
       allocation: '30',
     };
     selAllocationForm(formValues);
-    cy.contains('button', 'Set').click();
 
     // expect: no errors, success message.
     cy.contains('.Mui-error').should('not.exist');

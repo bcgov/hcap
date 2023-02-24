@@ -15,6 +15,7 @@ import {
   mapUserWithParticipant,
   withdrawParticipantsByEmail,
 } from '../services/participants';
+import { participantStatus as ps } from '../constants';
 
 import { setParticipantStatus } from '../services/participant-status';
 
@@ -261,14 +262,14 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['open']
+      [ps.OPEN]
     );
 
-    await setParticipantStatus(employerAId, openParticipants.data[0].id, 'prospecting');
-    await setParticipantStatus(employerAId, openParticipants.data[0].id, 'interviewing');
-    await setParticipantStatus(employerAId, openParticipants.data[0].id, 'offer_made');
+    await setParticipantStatus(employerAId, openParticipants.data[0].id, ps.PROSPECTING);
+    await setParticipantStatus(employerAId, openParticipants.data[0].id, ps.INTERVIEWING);
+    await setParticipantStatus(employerAId, openParticipants.data[0].id, ps.OFFER_MADE);
 
-    await setParticipantStatus(employerBId, openParticipants.data[0].id, 'prospecting');
+    await setParticipantStatus(employerBId, openParticipants.data[0].id, ps.PROSPECTING);
 
     const participantsA = await getParticipants(
       { isEmployer: true, id: employerAId, regions },
@@ -279,7 +280,7 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['offer_made']
+      [ps.OFFER_MADE]
     );
     expect(participantsA.data[0].statusInfos[0].employerId).toEqual(employerAId);
 
@@ -292,7 +293,7 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['prospecting']
+      [ps.PROSPECTING]
     );
     expect(participantsB.data[0].statusInfos[0].employerId).toEqual(employerBId);
   });
@@ -386,8 +387,8 @@ describe('Participants Service', () => {
 
     await makeParticipant(participant);
     const participants = await getParticipants({ isMoH: true });
-    await setParticipantStatus(employerAId, participants.data[0].id, 'prospecting');
-    await setParticipantStatus(employerAId, participants.data[0].id, 'rejected', {
+    await setParticipantStatus(employerAId, participants.data[0].id, ps.PROSPECTING);
+    await setParticipantStatus(employerAId, participants.data[0].id, ps.REJECTED, {
       final_status: 'not responsive',
     });
   });
@@ -403,83 +404,83 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['open']
+      [ps.OPEN]
     );
     const participantId = participants.data[0].id;
 
     // Engage, reject
-    expect((await setParticipantStatus(employerAId, participantId, 'prospecting')).status).toEqual(
-      'prospecting'
+    expect((await setParticipantStatus(employerAId, participantId, ps.PROSPECTING)).status).toEqual(
+      ps.PROSPECTING
     );
     expect(
       (
-        await setParticipantStatus(employerAId, participantId, 'rejected', {
+        await setParticipantStatus(employerAId, participantId, ps.REJECTED, {
           final_status: 'not responsive',
-          previous: 'prospecting',
+          previous: ps.PROSPECTING,
         })
       ).status
-    ).toEqual('rejected');
+    ).toEqual(ps.REJECTED);
 
     // Engage, withdraw
-    expect((await setParticipantStatus(employerAId, participantId, 'prospecting')).status).toEqual(
-      'prospecting'
+    expect((await setParticipantStatus(employerAId, participantId, ps.PROSPECTING)).status).toEqual(
+      ps.PROSPECTING
     );
     expect(
       (
-        await setParticipantStatus(employerAId, participantId, 'rejected', {
+        await setParticipantStatus(employerAId, participantId, ps.REJECTED, {
           final_status: 'withdrawn',
-          previous: 'prospecting',
+          previous: ps.PROSPECTING,
         })
       ).status
-    ).toEqual('rejected');
+    ).toEqual(ps.REJECTED);
 
     // Re-engage, interview, reject
-    expect((await setParticipantStatus(employerAId, participantId, 'prospecting')).status).toEqual(
-      'prospecting'
-    );
-    expect((await setParticipantStatus(employerAId, participantId, 'interviewing')).status).toEqual(
-      'interviewing'
+    expect((await setParticipantStatus(employerAId, participantId, ps.PROSPECTING)).status).toEqual(
+      ps.PROSPECTING
     );
     expect(
+      (await setParticipantStatus(employerAId, participantId, ps.INTERVIEWING)).status
+    ).toEqual(ps.INTERVIEWING);
+    expect(
       (
-        await setParticipantStatus(employerAId, participantId, 'rejected', {
+        await setParticipantStatus(employerAId, participantId, ps.REJECTED, {
           final_status: 'not qualified',
-          previous: 'interviewing',
+          previous: ps.INTERVIEWING,
         })
       ).status
-    ).toEqual('rejected');
+    ).toEqual(ps.REJECTED);
 
     // Re-engage. offer made, reject
-    expect((await setParticipantStatus(employerAId, participantId, 'prospecting')).status).toEqual(
-      'prospecting'
+    expect((await setParticipantStatus(employerAId, participantId, ps.PROSPECTING)).status).toEqual(
+      ps.PROSPECTING
     );
-    expect((await setParticipantStatus(employerAId, participantId, 'interviewing')).status).toEqual(
-      'interviewing'
-    );
-    expect((await setParticipantStatus(employerAId, participantId, 'offer_made')).status).toEqual(
-      'offer_made'
+    expect(
+      (await setParticipantStatus(employerAId, participantId, ps.INTERVIEWING)).status
+    ).toEqual(ps.INTERVIEWING);
+    expect((await setParticipantStatus(employerAId, participantId, ps.OFFER_MADE)).status).toEqual(
+      ps.OFFER_MADE
     );
     expect(
       (
-        await setParticipantStatus(employerAId, participantId, 'rejected', {
+        await setParticipantStatus(employerAId, participantId, ps.REJECTED, {
           final_status: 'position filled',
-          previous: 'offer_made',
+          previous: ps.OFFER_MADE,
         })
       ).status
-    ).toEqual('rejected');
+    ).toEqual(ps.REJECTED);
 
     // Re-engage, hire
-    expect((await setParticipantStatus(employerAId, participantId, 'prospecting')).status).toEqual(
-      'prospecting'
+    expect((await setParticipantStatus(employerAId, participantId, ps.PROSPECTING)).status).toEqual(
+      ps.PROSPECTING
     );
-    expect((await setParticipantStatus(employerAId, participantId, 'interviewing')).status).toEqual(
-      'interviewing'
+    expect(
+      (await setParticipantStatus(employerAId, participantId, ps.INTERVIEWING)).status
+    ).toEqual(ps.INTERVIEWING);
+    expect((await setParticipantStatus(employerAId, participantId, ps.OFFER_MADE)).status).toEqual(
+      ps.OFFER_MADE
     );
-    expect((await setParticipantStatus(employerAId, participantId, 'offer_made')).status).toEqual(
-      'offer_made'
-    );
-    expect((await setParticipantStatus(employerAId, participantId, 'hired')).status).toEqual(
-      'hired'
+    expect((await setParticipantStatus(employerAId, participantId, ps.HIRED)).status).toEqual(
+      ps.HIRED
     );
   });
 
@@ -496,17 +497,17 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['open']
+      [ps.OPEN]
     );
 
     const hiredParticipantId = participants.data[0].id;
 
-    await setParticipantStatus(employerAId, hiredParticipantId, 'prospecting');
-    await setParticipantStatus(employerAId, hiredParticipantId, 'interviewing');
-    await setParticipantStatus(employerAId, hiredParticipantId, 'offer_made');
-    await setParticipantStatus(employerAId, hiredParticipantId, 'hired');
+    await setParticipantStatus(employerAId, hiredParticipantId, ps.PROSPECTING);
+    await setParticipantStatus(employerAId, hiredParticipantId, ps.INTERVIEWING);
+    await setParticipantStatus(employerAId, hiredParticipantId, ps.OFFER_MADE);
+    await setParticipantStatus(employerAId, hiredParticipantId, ps.HIRED);
 
-    const result = await setParticipantStatus(employerBId, hiredParticipantId, 'hired');
+    const result = await setParticipantStatus(employerBId, hiredParticipantId, ps.HIRED);
 
     expect(result.status).toEqual('already_hired');
   });
@@ -523,63 +524,63 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['open']
+      [ps.OPEN]
     );
 
     const participantId = participants.data[0].id;
 
     // Cannot skip a status
-    expect((await setParticipantStatus(employerAId, participantId, 'interviewing')).status).toEqual(
+    expect(
+      (await setParticipantStatus(employerAId, participantId, ps.INTERVIEWING)).status
+    ).toEqual('invalid_status_transition');
+    expect((await setParticipantStatus(employerAId, participantId, ps.OFFER_MADE)).status).toEqual(
       'invalid_status_transition'
     );
-    expect((await setParticipantStatus(employerAId, participantId, 'offer_made')).status).toEqual(
+    expect((await setParticipantStatus(employerAId, participantId, ps.HIRED)).status).toEqual(
       'invalid_status_transition'
     );
-    expect((await setParticipantStatus(employerAId, participantId, 'hired')).status).toEqual(
-      'invalid_status_transition'
-    );
-    expect((await setParticipantStatus(employerAId, participantId, 'interviewing')).status).toEqual(
-      'invalid_status_transition'
-    );
+    expect(
+      (await setParticipantStatus(employerAId, participantId, ps.INTERVIEWING)).status
+    ).toEqual('invalid_status_transition');
 
     // Cannot go backwards
-    await setParticipantStatus(employerAId, participantId, 'prospecting');
-    expect((await setParticipantStatus(employerAId, participantId, 'open')).status).toEqual(
+    await setParticipantStatus(employerAId, participantId, ps.PROSPECTING);
+    expect((await setParticipantStatus(employerAId, participantId, ps.OPEN)).status).toEqual(
       'invalid_status_transition'
     );
-    await setParticipantStatus(employerAId, participantId, 'interviewing');
-    expect((await setParticipantStatus(employerAId, participantId, 'prospecting')).status).toEqual(
+    await setParticipantStatus(employerAId, participantId, ps.INTERVIEWING);
+    expect((await setParticipantStatus(employerAId, participantId, ps.PROSPECTING)).status).toEqual(
       'invalid_status_transition'
     );
-    expect((await setParticipantStatus(employerAId, participantId, 'open')).status).toEqual(
+    expect((await setParticipantStatus(employerAId, participantId, ps.OPEN)).status).toEqual(
       'invalid_status_transition'
     );
-    await setParticipantStatus(employerAId, participantId, 'offer_made');
-    expect((await setParticipantStatus(employerAId, participantId, 'interviewing')).status).toEqual(
+    await setParticipantStatus(employerAId, participantId, ps.OFFER_MADE);
+    expect(
+      (await setParticipantStatus(employerAId, participantId, ps.INTERVIEWING)).status
+    ).toEqual('invalid_status_transition');
+    expect((await setParticipantStatus(employerAId, participantId, ps.PROSPECTING)).status).toEqual(
       'invalid_status_transition'
     );
-    expect((await setParticipantStatus(employerAId, participantId, 'prospecting')).status).toEqual(
-      'invalid_status_transition'
-    );
-    expect((await setParticipantStatus(employerAId, participantId, 'open')).status).toEqual(
+    expect((await setParticipantStatus(employerAId, participantId, ps.OPEN)).status).toEqual(
       'invalid_status_transition'
     );
 
     // Cannot hire and re-engage
-    await setParticipantStatus(employerAId, participantId, 'hired');
-    expect((await setParticipantStatus(employerAId, participantId, 'open')).status).toEqual(
+    await setParticipantStatus(employerAId, participantId, ps.HIRED);
+    expect((await setParticipantStatus(employerAId, participantId, ps.OPEN)).status).toEqual(
       'already_hired'
     );
-    expect((await setParticipantStatus(employerAId, participantId, 'prospecting')).status).toEqual(
+    expect((await setParticipantStatus(employerAId, participantId, ps.PROSPECTING)).status).toEqual(
       'already_hired'
     );
-    expect((await setParticipantStatus(employerAId, participantId, 'interviewing')).status).toEqual(
+    expect(
+      (await setParticipantStatus(employerAId, participantId, ps.INTERVIEWING)).status
+    ).toEqual('already_hired');
+    expect((await setParticipantStatus(employerAId, participantId, ps.OFFER_MADE)).status).toEqual(
       'already_hired'
     );
-    expect((await setParticipantStatus(employerAId, participantId, 'offer_made')).status).toEqual(
-      'already_hired'
-    );
-    expect((await setParticipantStatus(employerAId, participantId, 'hired')).status).toEqual(
+    expect((await setParticipantStatus(employerAId, participantId, ps.HIRED)).status).toEqual(
       'already_hired'
     );
   });
@@ -597,15 +598,15 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['open']
+      [ps.OPEN]
     );
 
     const selectParticipantId = participants.data[0].id;
 
     const firstReport = await getReport();
 
-    await setParticipantStatus(employerAId, selectParticipantId, 'prospecting');
-    await setParticipantStatus(employerBId, selectParticipantId, 'prospecting');
+    await setParticipantStatus(employerAId, selectParticipantId, ps.PROSPECTING);
+    await setParticipantStatus(employerBId, selectParticipantId, ps.PROSPECTING);
 
     const secondReport = await getReport();
 
@@ -625,16 +626,16 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['open']
+      [ps.OPEN]
     );
 
     const selectParticipantId = participantsB.data[0].id;
 
-    await setParticipantStatus(employerAId, selectParticipantId, 'prospecting');
-    await setParticipantStatus(employerBId, selectParticipantId, 'prospecting');
-    await setParticipantStatus(employerBId, selectParticipantId, 'interviewing');
-    await setParticipantStatus(employerBId, selectParticipantId, 'offer_made');
-    await setParticipantStatus(employerBId, selectParticipantId, 'hired', {
+    await setParticipantStatus(employerAId, selectParticipantId, ps.PROSPECTING);
+    await setParticipantStatus(employerBId, selectParticipantId, ps.PROSPECTING);
+    await setParticipantStatus(employerBId, selectParticipantId, ps.INTERVIEWING);
+    await setParticipantStatus(employerBId, selectParticipantId, ps.OFFER_MADE);
+    await setParticipantStatus(employerBId, selectParticipantId, ps.HIRED, {
       site: 2,
     });
 
@@ -647,15 +648,15 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['prospecting', 'interviewing', 'offer_made', 'unavailable']
+      [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, 'unavailable']
     );
 
-    expect(unavailableParticipantsA.data[0].statusInfos[0].status).toEqual('prospecting');
+    expect(unavailableParticipantsA.data[0].statusInfos[0].status).toEqual(ps.PROSPECTING);
     expect(unavailableParticipantsA.data[0].statusInfos[1].status).toEqual('already_hired');
 
-    await setParticipantStatus(employerAId, selectParticipantId, 'rejected', {
+    await setParticipantStatus(employerAId, selectParticipantId, ps.REJECTED, {
       final_status: 'hired by other',
-      previous: 'prospecting',
+      previous: ps.PROSPECTING,
     });
 
     const rejectedParticipantsA = await getParticipants(
@@ -667,14 +668,14 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['rejected']
+      [ps.REJECTED]
     );
 
-    expect(rejectedParticipantsA.data[0].statusInfos[0].status).toEqual('rejected');
+    expect(rejectedParticipantsA.data[0].statusInfos[0].status).toEqual(ps.REJECTED);
     expect(rejectedParticipantsA.data[0].statusInfos[0].data.final_status).toEqual(
       'hired by other'
     );
-    expect(rejectedParticipantsA.data[0].statusInfos[0].data.previous).toEqual('prospecting');
+    expect(rejectedParticipantsA.data[0].statusInfos[0].data.previous).toEqual(ps.PROSPECTING);
     expect(rejectedParticipantsA.data[0].statusInfos[1].status).toEqual('already_hired');
 
     const unavailableParticipantsAafter = await getParticipants(
@@ -686,7 +687,7 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['prospecting', 'interviewing', 'offer_made', 'unavailable']
+      [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, 'unavailable']
     );
 
     expect(unavailableParticipantsAafter.data.length).toEqual(0);
@@ -749,19 +750,19 @@ describe('Participants Service', () => {
     expect(participants.data[1].statusInfo).toEqual('Available');
     expect(participants.data[2].statusInfo).toEqual('Withdrawn');
 
-    await setParticipantStatus(employerAId, participants.data[0].id, 'prospecting');
+    await setParticipantStatus(employerAId, participants.data[0].id, ps.PROSPECTING);
 
     participants = await getParticipants({ isMoH: true });
     expect(participants.data[0].statusInfo).toEqual('In Progress');
 
-    await setParticipantStatus(employerBId, participants.data[0].id, 'prospecting');
-    await setParticipantStatus(employerBId, participants.data[0].id, 'interviewing');
-    await setParticipantStatus(employerBId, participants.data[0].id, 'offer_made');
+    await setParticipantStatus(employerBId, participants.data[0].id, ps.PROSPECTING);
+    await setParticipantStatus(employerBId, participants.data[0].id, ps.INTERVIEWING);
+    await setParticipantStatus(employerBId, participants.data[0].id, ps.OFFER_MADE);
 
     participants = await getParticipants({ isMoH: true });
     expect(participants.data[0].statusInfo).toEqual('In Progress (2)');
 
-    await setParticipantStatus(employerBId, participants.data[0].id, 'hired');
+    await setParticipantStatus(employerBId, participants.data[0].id, ps.HIRED);
 
     participants = await getParticipants({ isMoH: true });
     expect(participants.data[0].statusInfo).toEqual('Hired');
@@ -785,12 +786,12 @@ describe('Participants Service', () => {
     };
 
     const response = await makeParticipant(participant1);
-    await setParticipantStatus(employerAId, response.id, 'prospecting');
-    await setParticipantStatus(employerAId, response.id, 'interviewing', {
+    await setParticipantStatus(employerAId, response.id, ps.PROSPECTING);
+    await setParticipantStatus(employerAId, response.id, ps.INTERVIEWING, {
       contacted_at: participant1.contactedDate,
     });
-    await setParticipantStatus(employerAId, response.id, 'offer_made');
-    await setParticipantStatus(employerAId, response.id, 'hired', {
+    await setParticipantStatus(employerAId, response.id, ps.OFFER_MADE);
+    await setParticipantStatus(employerAId, response.id, ps.HIRED, {
       nonHcapOpportunity: 'no',
       contactedDate: '09/09/2020',
       hiredDate: '10/10/2020',
@@ -807,9 +808,9 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['hired']
+      [ps.HIRED]
     );
-    expect(participants.data[0].statusInfos[0].status).toEqual('hired');
+    expect(participants.data[0].statusInfos[0].status).toEqual(ps.HIRED);
 
     // Multi org support
     const employerBId = v4();
@@ -822,9 +823,9 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['hired']
+      [ps.HIRED]
     );
-    expect(participantsForEmployerB.data[0].statusInfos[0].status).toEqual('hired');
+    expect(participantsForEmployerB.data[0].statusInfos[0].status).toEqual(ps.HIRED);
   });
 
   it("Tests functionality for updating a user's information", async () => {
@@ -910,12 +911,12 @@ describe('Participants Service', () => {
     });
 
     const response = await makeParticipant(participant1);
-    await setParticipantStatus(employerAId, response.id, 'prospecting');
-    await setParticipantStatus(employerAId, response.id, 'interviewing', {
+    await setParticipantStatus(employerAId, response.id, ps.PROSPECTING);
+    await setParticipantStatus(employerAId, response.id, ps.INTERVIEWING, {
       contacted_at: participant1.contactedDate,
     });
-    await setParticipantStatus(employerAId, response.id, 'offer_made');
-    await setParticipantStatus(employerAId, response.id, 'hired', {
+    await setParticipantStatus(employerAId, response.id, ps.OFFER_MADE);
+    await setParticipantStatus(employerAId, response.id, ps.HIRED, {
       nonHcapOpportunity: 'no',
       contactedDate: '09/09/2020',
       hiredDate: '10/10/2020',
@@ -932,7 +933,7 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['hired']
+      [ps.HIRED]
     );
     expect(participants.data[0].statusInfos[0].data.siteName).toEqual('test');
   });
@@ -1055,10 +1056,10 @@ describe('Participants Service', () => {
 
     await mapUserWithParticipant(userId, resp.id);
     // Hire the user
-    await setParticipantStatus(employerId, resp.id, 'prospecting');
-    await setParticipantStatus(employerId, resp.id, 'interviewing');
-    await setParticipantStatus(employerId, resp.id, 'offer_made');
-    await setParticipantStatus(employerId, resp.id, 'hired');
+    await setParticipantStatus(employerId, resp.id, ps.PROSPECTING);
+    await setParticipantStatus(employerId, resp.id, ps.INTERVIEWING);
+    await setParticipantStatus(employerId, resp.id, ps.OFFER_MADE);
+    await setParticipantStatus(employerId, resp.id, ps.HIRED);
     const finalParticipants = await getParticipantsForUser(userId, participantData.emailAddress);
     expect(Boolean(finalParticipants.find((participant) => participant.hired.length > 0))).toEqual(
       true
@@ -1100,7 +1101,7 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      ['open']
+      [ps.OPEN]
     );
     expect(participants.data[0].postHireStatuses.length).toEqual(1);
   });

@@ -1,7 +1,31 @@
+/* eslint-disable camelcase */
 import dayjs from 'dayjs';
 import { DEFAULT_STATUS } from '../../constants';
 
-const mapGraduationStatus = (status) => {
+export interface PostHireStatus {
+  is_current?: boolean;
+  status?: string;
+  data: {
+    continue?: string;
+    unsuccessfulCohortDate?: string;
+    graduationDate?: string;
+  };
+}
+
+export interface Cohort {
+  psi_id: string;
+  cohort_name?: string;
+  start_date?: string | Date;
+  end_date?: string | Date;
+  id: number;
+}
+
+export interface CohortParticipant {
+  is_current: boolean;
+  cohort_id: number;
+}
+
+const mapGraduationStatus = (status: string) => {
   switch (status) {
     case 'cohort_unsuccessful':
       return 'Unsuccessful cohort';
@@ -12,7 +36,7 @@ const mapGraduationStatus = (status) => {
   }
 };
 
-const mapIntendToReturn = (value) => {
+const mapIntendToReturn = (value: string) => {
   switch (value) {
     case 'continue_yes':
       return 'Yes';
@@ -23,7 +47,7 @@ const mapIntendToReturn = (value) => {
   }
 };
 
-export const getPostHireStatusForParticipant = (postHireStatuses) => {
+export const getPostHireStatusForParticipant = (postHireStatuses?: PostHireStatus[]) => {
   const graduationStatus = {
     isReturning: DEFAULT_STATUS,
     status: DEFAULT_STATUS,
@@ -43,7 +67,10 @@ export const getPostHireStatusForParticipant = (postHireStatuses) => {
   };
 };
 
-export const getCohortForParticipant = (cohorts, cohortParticipants) => {
+export const getCohortForParticipant = (
+  cohorts?: Cohort[],
+  cohortParticipants?: CohortParticipant[]
+) => {
   const cohortData = {
     psiId: DEFAULT_STATUS,
     name: DEFAULT_STATUS,

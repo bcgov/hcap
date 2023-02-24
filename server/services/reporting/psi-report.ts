@@ -1,8 +1,25 @@
 import { dbClient, collections } from '../../db';
 import { DEFAULT_REGION_NAME, DEFAULT_STATUS } from '../../constants';
 import { getPostHireStatusForParticipant, getCohortForParticipant } from './participant';
+import type { PostHireStatus, Cohort, CohortParticipant } from './participant';
 
-export const getPSIPaticipantsReport = async (region) => {
+interface ParticipantEntry {
+  // eslint-disable-next-line camelcase
+  participant_id: number;
+  participantJoin: {
+    body;
+  }[];
+  postHireJoin: PostHireStatus[];
+  cohortJoin: Cohort[];
+  cohortParticipantsJoin: CohortParticipant[];
+  psiJoin: {
+    id: string;
+    // eslint-disable-next-line camelcase
+    institute_name: string;
+  }[];
+}
+
+export const getPSIPaticipantsReport = async (region: string) => {
   const searchOptions = {
     status: ['hired', 'archived'],
     current: true,
@@ -12,7 +29,7 @@ export const getPSIPaticipantsReport = async (region) => {
     searchOptions['employerSiteJoin.body.healthAuthority'] = region;
   }
 
-  const participantEntries = await dbClient.db[collections.PARTICIPANTS_STATUS]
+  const participantEntries: ParticipantEntry[] = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
       participantJoin: {
         type: 'INNER',

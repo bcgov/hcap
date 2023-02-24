@@ -34,7 +34,7 @@ export const getMohRosMilestonesReport = async () => {
   return mapRosEntries(entries);
 };
 
-export const getHARosMilestonesReport = async (region) => {
+export const getHARosMilestonesReport = async (region: string) => {
   const sameSiteRosEntries = await dbClient.db[collections.ROS_STATUS]
     .join({
       participantJoin: {

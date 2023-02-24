@@ -1,5 +1,28 @@
+/* eslint-disable camelcase */
 import dayjs from 'dayjs';
 import { addYearToDate } from '../../utils';
+
+interface RosEntry {
+  participant_id;
+  participantJoin: {
+    body: {
+      firstName: string;
+      lastName: string;
+    };
+  }[];
+  siteJoin: {
+    body: {
+      siteName: string;
+      healthAuthority: string;
+    };
+  };
+  data: {
+    date: Date | string;
+    startDate: Date | string;
+    positionType?: string;
+    employmentType?: string;
+  };
+}
 
 /**
  * Validation layer to see if the user has access to requested health region
@@ -9,7 +32,7 @@ import { addYearToDate } from '../../utils';
  */
 export const checkUserRegion = (user, regionId) => user && user.regions?.includes(regionId);
 
-export const mapRosEntries = (rosEntries) =>
+export const mapRosEntries = (rosEntries: RosEntry[]) =>
   rosEntries.map((entry) => ({
     participantId: entry.participant_id,
     firstName: entry.participantJoin?.[0]?.body?.firstName,

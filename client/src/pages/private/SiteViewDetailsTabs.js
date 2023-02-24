@@ -1,9 +1,7 @@
-/* eslint-disable */
 import React, { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography, Link } from '@material-ui/core';
-import store from 'store';
 import {
   Table,
   Button,
@@ -14,9 +12,9 @@ import {
 } from '../../components/generic';
 import { AuthContext, SiteDetailTabContext } from '../../providers';
 import { FeatureFlaggedComponent, flagKeys, fetchUserNotifications } from '../../services';
+import { archiveParticipant, fetchParticipantById } from '../../services/participant';
 import {
   ToastStatus,
-  API_URL,
   makeToasts,
   ArchiveHiredParticipantSchema,
   participantStatus,
@@ -31,15 +29,12 @@ import { SetAllocation } from './SetAllocation';
 
 const tabs = SiteDetailTabContext.tabs;
 
-export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
+export default ({ id, siteId, fetchDetails, isLoading }) => {
   const history = useHistory();
   const [order, setOrder] = useState('asc');
-  const [isLoadingData, setLoadingData] = useState(false);
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [rows, setRows] = useState([]);
-  const [fetchedHiredRows, setFetchedHiredRows] = useState([]);
-  const [fetchedWithdrawnRows, setFetchedWithdrawnRows] = useState([]);
   const { auth, dispatch: authDispatch } = AuthContext.useAuth();
   const { openToast } = useToast();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
@@ -74,47 +69,21 @@ export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
     history.push(participantDetailsPath);
   };
 
-  // reset allocation table after allocations are created/edited
-  const fetchAllocationDetails = () => {
-    return fetchDetails().then((response) => {
-      dispatch({
-        type: SiteDetailTabContext.types.UPDATE_SITE,
-        payload: { site: response },
-      });
-    });
-  };
-
   const archiveOnClick = async (participantId) => {
-    // Get data from row.participantId
-    const response = await fetch(`${API_URL}/api/v1/participant?id=${participantId}`, {
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-    const participant = await response.json();
+    const participant = await fetchParticipantById(participantId);
+
     setActionMenuParticipant(participant[0]);
     setActiveModalForm('archive');
   };
 
   useEffect(() => {
-    console.log('USE EFFECT, LOAD SITE, UPDATE SITE ');
     dispatch({
       type: SiteDetailTabContext.types.LOAD_SITE,
       payload: {},
     });
-    // fetchDetails().then((response) => {
-    //   dispatch({
-    //     type: SiteDetailTabContext.types.UPDATE_SITE,
-    //     payload: { site: response },
-    //   });
-    // });
   }, [dispatch, id]);
 
   useEffect(() => {
-    console.log('USE EFFECT, SELECT TAB ');
     dispatch({
       type: SiteDetailTabContext.types.SELECT_TAB,
       payload: { tab: tabs.SITE_DETAILS, roles },
@@ -122,7 +91,6 @@ export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
   }, [dispatch, roles, siteId]);
 
   useEffect(() => {
-    console.log('USE EFFECT, SELECT TAB');
     switch (selectedTab) {
       case tabs.HIRED_PARTICIPANTS:
         setOrderBy('startDate');
@@ -141,31 +109,8 @@ export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
     }
   }, [site.hiredParticipants, site.withdrawnParticipants, site.phases, selectedTab]);
 
-  // useEffect(() => {
-  //   console.log("USE EFFECT, FETCH PARTICIPANTS")
-  //   setLoadingData(true);
-  //   fetchParticipants(siteId).then(({ hiredRowsData, withdrawnRowsData }) => {
-  //     setFetchedHiredRows(hiredRowsData);
-  //     setFetchedWithdrawnRows(withdrawnRowsData);
-  //     setLoadingData(false);
-  //   });
-  // }, [siteId, setRows, setFetchedHiredRows, setFetchedWithdrawnRows, setLoadingData]);
-
   const handleArchive = async (participantId, additional = {}) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-actions/archive`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        participantId,
-        site: siteId,
-        data: additional,
-        status: 'archived',
-      }),
-    });
+    const response = await archiveParticipant(participantId, siteId, additional);
 
     if (response.ok) {
       const dispatchFunction = (notifications) =>
@@ -179,18 +124,7 @@ export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
       openToast(toasts[participantStatus.ARCHIVED]);
       setActionMenuParticipant(null);
       setActiveModalForm(null);
-      // this is to make sure site's HCAP hires get updated on archiving as duplicate
-      fetchDetails().then((resp) => {
-        dispatch({
-          type: SiteDetailTabContext.types.UPDATE_SITE,
-          payload: { site: resp },
-        });
-      });
-      // and this is to update both lists of participants
-      // fetchParticipants(siteId).then(({ hiredRowsData, withdrawnRowsData }) => {
-      //   setFetchedHiredRows(hiredRowsData);
-      //   setFetchedWithdrawnRows(withdrawnRowsData);
-      // });
+      await fetchDetails();
     } else {
       openToast({
         status: ToastStatus.Error,
@@ -221,7 +155,7 @@ export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
           >
             {
               Object.values(tabs).map((title) => (
-                <CustomTab key={title} label={title} value={title} disabled={isLoadingData} />
+                <CustomTab key={title} label={title} value={title} disabled={isLoading} />
               )) // Tab component with tab name as value
             }
           </CustomTabs>
@@ -261,7 +195,7 @@ export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
               rows={sort(rows)}
-              isLoading={isLoadingData}
+              isLoading={isLoading}
               renderCell={(columnId, row) => {
                 switch (columnId) {
                   case 'participantName':
@@ -300,7 +234,7 @@ export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
                 orderBy={orderBy}
                 onRequestSort={handleRequestSort}
                 rows={sort(rows)}
-                isLoading={isLoadingData}
+                isLoading={isLoading}
                 renderCell={(columnId, row) => {
                   if (columnObj(columnId).isHidden) return;
                   if (columnId === 'details')
@@ -310,7 +244,7 @@ export default ({ id, siteId, fetchDetails, fetchParticipants }) => {
                           isNew={row.allocation === null}
                           row={row}
                           siteId={id}
-                          fetchDetails={fetchAllocationDetails}
+                          fetchDetails={fetchDetails}
                         />
                       </CheckPermissions>
                     );

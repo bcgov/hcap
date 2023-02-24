@@ -4,15 +4,14 @@ import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
 import { scrollUp } from '../../utils';
-import store from 'store';
-import dayjs from 'dayjs';
 import { Routes } from '../../constants';
 import { EditSiteForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { flagKeys, featureFlag } from '../../services';
-import { ToastStatus, EditSiteSchema, API_URL } from '../../constants';
+import { ToastStatus, EditSiteSchema } from '../../constants';
 import { SiteDetailTabContext } from '../../providers';
 import { fetchSitePhases } from '../../services/phases';
+import { fetchSiteParticipants, updateSite, fetchSite } from '../../services/site';
 
 const SiteViewDetailsTabs = lazy(() => import('./SiteViewDetailsTabs'));
 
@@ -33,74 +32,16 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const fetchParticipants = async (siteId) => {
-  const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
-    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-    method: 'GET',
-  });
-
-  if (response.ok) {
-    const { hired, withdrawn } = await response.json();
-    const hiredParticipants = mapDataToRow(hired);
-    const withdrawnParticipants = mapDataToRow(withdrawn);
-    return { hiredParticipants, withdrawnParticipants };
-  } else {
-    return { hiredParticipants: [], withdrawnParticipants: [] };
-  }
-};
-
-/**
- * Takes the data from the db and formats it for the table
- * @param {*} response: raw data from API call
- * @returns
- */
-const mapDataToRow = (response) => {
-  return response.map((row) => {
-    // Pull all relevant props from row based on columns constant
-    const values = {
-      participantId: row.participant_id,
-      participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
-      hiredDate: row.data.hiredDate,
-      startDate: row.data.startDate,
-      withdrawnDate: row.data.endDate,
-      reason: row.data.reason,
-      nonHCAP: row.data.nonHcapOpportunity ? 'Non-HCAP' : 'HCAP',
-    };
-
-    const mappedRow = columnIDs.reduce(
-      (accumulator, column) => ({
-        ...accumulator,
-        [column.id]: values[column.id],
-      }),
-      {}
-    );
-    // Add additional props (user ID, button) to row
-    return {
-      ...mappedRow,
-      id: row.id,
-    };
-  });
-};
-
 export default ({ match }) => {
   const { openToast } = useToast();
   const classes = useStyles();
   const [site, setSite] = useState({});
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  // const [isLoadingData, setLoadingData] = useState(false);
   const id = match.params.id;
 
   const handleSiteEdit = async (site) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(site),
-    });
+    const response = await updateSite(site, id);
     setIsLoading(false);
     if (response.ok) {
       setActiveModalForm(null);
@@ -114,48 +55,24 @@ export default ({ match }) => {
   };
 
   const fetchDetails = useCallback(async () => {
-    const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
+    setIsLoading(true);
+    const response = await fetchSite(id);
     if (response.ok) {
       const site = await response.json();
-      const participants = await fetch(
-        `${API_URL}/api/v1/employer-sites/${site.siteId}/participants`,
-        {
-          headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-          method: 'GET',
-        }
-      );
-
-      if (participants.ok) {
-        const { hired, withdrawn } = await participants.json();
-        const hiredParticipants = mapDataToRow(hired);
-        const withdrawnParticipants = mapDataToRow(withdrawn);
-
-        if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
-          const phases = await fetchSitePhases(site.id);
-
-          const currentPhase = phases.find((phase) => {
-            return dayjs().isBetween(phase.startDate, phase.endDate, null, '()');
-          });
-
-          return setSite({
-            ...site,
-            ...currentPhase,
-            phases,
-            hiredParticipants,
-            withdrawnParticipants,
-          });
-        } else {
-          return setSite({ ...site, phases: [], hiredParticipants: [], withdrawnParticipants: [] });
-        }
+      let phases = [];
+      if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
+        phases = await fetchSitePhases(site.id);
       }
+      const participants = await fetchSiteParticipants(columnIDs, site.siteId);
+      setIsLoading(false);
+      return setSite({
+        ...site,
+        hiredParticipants: participants.hiredParticipants,
+        withdrawnParticipants: participants.withdrawnParticipants,
+        phases,
+      });
     } else {
-      return setSite({});
+      return setSite({ hiredParticipants: [], withdrawnParticipants: [], phases: [] });
     }
   }, [id, setSite]);
 
@@ -277,7 +194,7 @@ export default ({ match }) => {
                 id={id}
                 siteId={site.siteId}
                 fetchDetails={fetchDetails}
-                fetchParticipants={fetchParticipants}
+                isLoading={isLoading}
               />
             </Card>
           </SiteDetailTabContext.TabProvider>

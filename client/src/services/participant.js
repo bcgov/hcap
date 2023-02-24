@@ -56,6 +56,23 @@ export const fetchParticipant = async ({ id }) => {
   }
 };
 
+export const fetchParticipantById = async (participantId) => {
+  const url = `${API_URL}/api/v1/participant?id=${participantId}`;
+  const response = await fetch(url, {
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+    },
+    method: 'GET',
+  });
+  if (response.ok) {
+    return response.json();
+  } else {
+    throw new Error('Unable to load participant');
+  }
+};
+
 export const fetchParticipantPostHireStatus = async ({ id }) => {
   const url = `${API_URL}/api/v1/post-hire-status/participant/${id}`;
   const resp = await fetch(url, {
@@ -259,4 +276,26 @@ export const createPostHireStatus = async ({ participantId, status, data }) => {
   throw new Error('Failed to create post-hire status', response.error || response.statusText);
 };
 
-// export const postArchive
+export const archiveParticipant = async (participantId, siteId, additional) => {
+  const url = `${API_URL}/api/v1/employer-actions/archive`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      participantId,
+      site: siteId,
+      data: additional,
+      status: 'archived',
+    }),
+  });
+
+  if (response.ok) {
+    return response;
+  }
+
+  throw new Error('Failed to archive participant', response.error || response.statusText);
+};

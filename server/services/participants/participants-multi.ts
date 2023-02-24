@@ -1,22 +1,30 @@
 import readXlsxFile from 'node-xlsx';
 import { createRows, verifyHeaders } from '../../utils';
 import { dbClient, collections } from '../../db';
-import type { Pagination } from '../participants-helper';
+import type {
+  EmailAddressFilter,
+  IsIndigenousFilter,
+  LastNameFilter,
+  Pagination,
+  PostalCodeFsaFilter,
+} from '../participants-helper';
 import { ParticipantsFinder } from '../participants-helper';
 import { getPostHireStatusesForParticipant } from '../post-hire-flow';
 import { validate, ParticipantBatchSchema, isBooleanValue } from '../../validation';
+import { HcapUserInfo } from '../../keycloak';
 
 export const getParticipants = async (
-  user?,
+  user?: HcapUserInfo,
   pagination?: Pagination,
-  sortField?,
-  regionFilter?,
-  fsaFilter?,
-  lastNameFilter?,
-  emailFilter?,
+  sortField?: string,
+  regionFilter?: string,
+  /** FSA (first half of a postal code) to filter by */
+  fsaFilter?: PostalCodeFsaFilter,
+  lastNameFilter?: LastNameFilter,
+  emailFilter?: EmailAddressFilter,
   siteSelector?,
-  statusFilters?,
-  isIndigenousFilter?
+  statusFilters?: string[],
+  isIndigenousFilter?: IsIndigenousFilter
 ) => {
   // Get user ids
   const participantsFinder = new ParticipantsFinder(dbClient, user);

@@ -1,6 +1,12 @@
 import { FieldsFilteredParticipantsFinder } from './FieldsFilteredParticipantsFinder';
 import { FilteredParticipantsFinder } from './FilteredParticipantsFinder';
 
+export type PostalCodeFsaFilter = { 'body.postalCodeFsa ilike': string };
+export type LastNameFilter = { 'body.lastName ilike': string };
+export type EmailAddressFilter = { 'body.emailAddress ilike': string };
+export type InterestFilter = { 'body.interested <>': string[] } | string[];
+export type IsIndigenousFilter = { 'body.isIndigenous =': boolean };
+
 export class RegionsFilteredParticipantsFinder {
   context;
 
@@ -14,6 +20,12 @@ export class RegionsFilteredParticipantsFinder {
     emailAddress,
     interestFilter,
     isIndigenousFilter,
+  }: {
+    postalCodeFsa?: PostalCodeFsaFilter;
+    lastName?: LastNameFilter;
+    emailAddress?: EmailAddressFilter;
+    interestFilter?: InterestFilter;
+    isIndigenousFilter?: IsIndigenousFilter;
   }) {
     this.context.criteria = {
       ...this.context.criteria,

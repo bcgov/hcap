@@ -1,6 +1,8 @@
 import { dbClient, collections } from '../../db';
 
-export const deleteAcknowledgement = async (participantId: number) =>
+export const deleteAcknowledgement = async (
+  participantId: number
+): Promise<{ success: boolean; message: string }> =>
   dbClient.db.withTransaction(async (tx) => {
     const item = await tx[collections.PARTICIPANTS_STATUS].findOne({
       participant_id: participantId,

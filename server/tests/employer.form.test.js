@@ -20,6 +20,8 @@ import { setParticipantStatus } from '../services/participant-status';
 
 import { startDB, closeDB, cleanDB } from './util/db';
 
+import { participantStatus as ps } from '../constants';
+
 describe.skip('Server V1 Form Endpoints', () => {
   let server;
 
@@ -250,10 +252,10 @@ describe.skip('Server V1 Form Endpoints', () => {
     const {
       data: [ppt, ppt2],
     } = await getParticipants({ isMoH: true });
-    await setParticipantStatus(employerAId, ppt.id, 'prospecting');
-    await setParticipantStatus(employerAId, ppt.id, 'interviewing');
-    await setParticipantStatus(employerAId, ppt.id, 'offer_made');
-    await setParticipantStatus(employerAId, ppt.id, 'hired', {
+    await setParticipantStatus(employerAId, ppt.id, ps.PROSPECTING);
+    await setParticipantStatus(employerAId, ppt.id, ps.INTERVIEWING);
+    await setParticipantStatus(employerAId, ppt.id, ps.OFFER_MADE);
+    await setParticipantStatus(employerAId, ppt.id, ps.HIRED, {
       site: res.siteId,
       nonHcapOpportunity: false,
       positionTitle: 'title',
@@ -261,10 +263,10 @@ describe.skip('Server V1 Form Endpoints', () => {
       hiredDate: new Date(),
       startDate: new Date(),
     });
-    await setParticipantStatus(employerBId, ppt2.id, 'prospecting');
-    await setParticipantStatus(employerBId, ppt2.id, 'interviewing');
-    await setParticipantStatus(employerBId, ppt2.id, 'offer_made');
-    await setParticipantStatus(employerBId, ppt2.id, 'hired', {
+    await setParticipantStatus(employerBId, ppt2.id, ps.PROSPECTING);
+    await setParticipantStatus(employerBId, ppt2.id, ps.INTERVIEWING);
+    await setParticipantStatus(employerBId, ppt2.id, ps.OFFER_MADE);
+    await setParticipantStatus(employerBId, ppt2.id, ps.HIRED, {
       site: res.siteId,
       nonHcapOpportunity: true,
       positionTitle: 'title',

@@ -172,7 +172,7 @@ describe('Test Participant status data model and service', () => {
     const ps1 = await setParticipantStatus(
       emp1.id,
       participant.id,
-      'prospecting',
+      PROSPECTING,
       {
         site: site1.siteId,
       },
@@ -241,7 +241,7 @@ describe('Test Participant status data model and service', () => {
     await setParticipantStatus(
       emp2.id,
       participant.id,
-      'interviewing',
+      INTERVIEWING,
       {
         site: site1.siteId,
       },
@@ -286,7 +286,7 @@ describe('Test Participant status data model and service', () => {
     await setParticipantStatus(
       emp3.id,
       participant.id,
-      'prospecting',
+      PROSPECTING,
       {
         site: site2.siteId,
       },
@@ -337,7 +337,7 @@ describe('Test Participant status data model and service', () => {
     const ps1 = await setParticipantStatus(
       emp1.id,
       participant.id,
-      'prospecting',
+      PROSPECTING,
       {
         site: site1.siteId,
       },
@@ -410,7 +410,7 @@ describe('Test Participant status data model and service', () => {
     const ps1 = await setParticipantStatus(
       emp1.id,
       participant.id,
-      'prospecting',
+      PROSPECTING,
       {
         site: site1.siteId,
       },

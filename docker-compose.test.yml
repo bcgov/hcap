@@ -29,6 +29,7 @@ services:
         VERSION: ${COMMIT_SHA}
     environment:
       - APP_ENV=local
+      - NODE_ENV=${NODE_ENV}
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}

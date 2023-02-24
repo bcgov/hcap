@@ -1,7 +1,8 @@
+import dayjs from 'dayjs';
 import { dbClient, collections } from '../db';
 import { validate, EmployerSiteBatchSchema } from '../validation';
 import { userRegionQuery } from './user';
-import type { hcapUserInfo } from '../keycloak';
+import type { HcapUserInfo } from '../keycloak';
 
 export interface EmployerSite {
   id: number; // Internal ID for site
@@ -16,7 +17,7 @@ export interface EmployerSite {
   endDate: Date; // end date of current phase
 }
 
-export const getEmployers = async (user: hcapUserInfo): Promise<EmployerSite[]> => {
+export const getEmployers = async (user: HcapUserInfo): Promise<EmployerSite[]> => {
   const criteria =
     user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'healthAuthority');
   return criteria ? dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria) : [];
@@ -100,7 +101,12 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
     additionalCriteriaParams
   );
 
-  return records;
+  // Transform and format dates - return data
+  return records.map((site) => ({
+    ...site,
+    startDate: dayjs.utc(site.startDate).format('YYYY/MM/DD'),
+    endDate: dayjs.utc(site.endDate).format('YYYY/MM/DD'), // strips time/timezone from date and formats it
+  }));
 };
 
 /**
@@ -108,7 +114,7 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
  * @param user  User with roles and sites to filter
  * @returns List of sites which the user has access to
  */
-export const getSitesForUser = async (user: hcapUserInfo): Promise<EmployerSite[]> => {
+export const getSitesForUser = async (user: HcapUserInfo): Promise<EmployerSite[]> => {
   const additionalCriteria = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const additionalCriteriaParams: { userSites?: any[]; userRegions?: string[] } = {};

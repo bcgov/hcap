@@ -309,12 +309,12 @@ newHiredParticipantRouter.post(
       participantInfo.userUpdatedAt = new Date().toJSON();
 
       const response = await makeParticipant(participantInfo);
-      await setParticipantStatus(user.id, response.id, 'prospecting');
-      await setParticipantStatus(user.id, response.id, 'interviewing', {
+      await setParticipantStatus(user.id, response.id, participantStatus.PROSPECTING);
+      await setParticipantStatus(user.id, response.id, participantStatus.INTERVIEWING, {
         contacted_at: participantInfo.contactedDate,
       });
-      await setParticipantStatus(user.id, response.id, 'offer_made');
-      await setParticipantStatus(user.id, response.id, 'hired', {
+      await setParticipantStatus(user.id, response.id, participantStatus.OFFER_MADE);
+      await setParticipantStatus(user.id, response.id, participantStatus.HIRED, {
         site: participantInfo.site,
         nonHcapOpportunity: !participantInfo.hcapOpportunity,
         positionTitle: participantInfo.positionTitle,

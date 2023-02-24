@@ -5,8 +5,8 @@ import { getAssignCohort } from '../cohorts';
 import { createPostHireStatus, getPostHireStatusesForParticipant } from '../post-hire-flow';
 import logger from '../../logger';
 
-export const makeParticipant = async (participantJson) => {
-  const res = await dbClient.db.saveDoc(collections.PARTICIPANTS, participantJson);
+export const makeParticipant = async (participantData) => {
+  const res = await dbClient.db.saveDoc(collections.PARTICIPANTS, participantData);
   return res;
 };
 

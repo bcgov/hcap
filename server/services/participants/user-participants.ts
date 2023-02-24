@@ -1,13 +1,13 @@
 import assert from 'assert';
 import { dbClient, collections } from '../../db';
 
-export const mapUserWithParticipant = async (userId, participantId) =>
+export const mapUserWithParticipant = async (userId: string, participantId) =>
   dbClient.db[collections.USER_PARTICIPANT_MAP].save({
     user_id: userId,
     participant_id: participantId,
   });
 
-export const createParticipantUserMap = async (userId, email, transaction) => {
+export const createParticipantUserMap = async (userId: string, email: string, transaction) => {
   assert(email, 'Email must be a non empty string');
   const participants = await transaction[collections.PARTICIPANTS]
     .join({
@@ -38,7 +38,7 @@ export const createParticipantUserMap = async (userId, email, transaction) => {
   return participants;
 };
 
-export const getParticipantsForUser = async (userId, email) => {
+export const getParticipantsForUser = async (userId: string, email: string) => {
   const finalResults = await dbClient.db.withTransaction(async (tnx) => {
     // Get all mapped participant
     const participants = await tnx[collections.PARTICIPANTS]
@@ -76,7 +76,7 @@ export const getParticipantsForUser = async (userId, email) => {
   }));
 };
 
-export const withdrawParticipantsByEmail = async (userId, email) => {
+export const withdrawParticipantsByEmail = async (userId: string, email: string) => {
   if (!email) {
     return;
   }

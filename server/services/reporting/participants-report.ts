@@ -2,6 +2,115 @@ import { dbClient, collections } from '../../db';
 import keycloak from '../../keycloak';
 import { DEFAULT_REGION_NAME } from '../../constants';
 
+type HistoryItem = {
+  changes: { to: string; from: string; field: string }[];
+  timestamp: string;
+};
+
+type location = { type: 'Point'; coordinates: [number, number] };
+
+interface HiredJoin {
+  // eslint-disable-next-line camelcase
+  created_at: string;
+  id: number;
+  search: string;
+  body: {
+    history: HistoryItem[];
+  };
+}
+
+interface ParticipantJoin extends HiredJoin {
+  body: {
+    history: HistoryItem[];
+    nonHCAP: string;
+    crcClear: string;
+    lastName: string;
+    location: location;
+    firstName: string;
+    maximusId: number;
+    interested: string;
+    postalCode: string;
+    phoneNumber: string;
+    emailAddress: string;
+    postalCodeFsa: string;
+    /** ISO datetime string */
+    userUpdatedAt: string;
+    callbackStatus: false;
+    preferredLocation: string;
+  };
+}
+
+interface EmployerSiteJoin extends HiredJoin {
+  body: {
+    history: HistoryItem[];
+    city: string;
+    isRHO: boolean;
+    siteId: number;
+    address: string;
+    location: location;
+    siteName: string;
+    postalCode: string;
+    operatorName: string;
+    operatorEmail: string;
+    operatorPhone: string;
+    userUpdatedAt: string;
+    healthAuthority: string;
+    siteContactEmail: string;
+    siteContactPhone: string;
+    siteContactLastName: string;
+    siteContactFirstName: string;
+    registeredBusinessName: string;
+    siteContactPhoneNumber: string;
+    operatorContactLastName: string;
+    siteContactEmailAddress: string;
+    operatorContactFirstName: string;
+  };
+}
+
+interface ArchivedJoin extends HiredJoin {
+  data: {
+    history: HistoryItem[];
+    site: number;
+    type: string;
+    reason: string;
+    rehire: string;
+    status: string;
+    /** YYYY/MM/DD format date string */
+    endDate: string;
+    confirmed: boolean;
+  };
+  // eslint-disable-next-line camelcase
+  participant_id: number;
+  status: string;
+}
+
+type HiredEntry = {
+  // eslint-disable-next-line camelcase
+  created_at: Date;
+  current: boolean;
+  data: {
+    site: number;
+    /** YYYY/MM/DD format date string */
+    hiredDate: string;
+    /** YYYY/MM/DD format date string */
+    startDate: string;
+    positionType: string;
+    positionTitle: string;
+    nonHcapOpportunity: string;
+  };
+  employer: string;
+  id: number;
+  // eslint-disable-next-line camelcase
+  participant_id: number;
+  status: string;
+  participantJoin: [ParticipantJoin];
+  employerSiteJoin: [EmployerSiteJoin];
+  duplicateArchivedJoin: [];
+  archivedJoin: [ArchivedJoin];
+  // eslint-disable-next-line camelcase
+  employer_id: string;
+};
+
 export const getParticipantsReport = async () => {
   const inProgressEntries = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
@@ -68,7 +177,7 @@ export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) =
     searchOptions['employerSiteJoin.body.healthAuthority'] = region;
   }
 
-  const hiredEntries = await dbClient.db[collections.PARTICIPANTS_STATUS]
+  const hiredEntries: HiredEntry[] = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
       participantJoin: {
         type: 'LEFT OUTER',

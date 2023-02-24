@@ -1,8 +1,10 @@
 import { dbClient, collections } from '../../db';
 
 export const getReport = async () => {
-  const total = await dbClient.db[collections.PARTICIPANTS].countDoc({});
-  const qualified = await dbClient.db[collections.PARTICIPANTS].countDoc({ interested: 'yes' });
+  const total: number = await dbClient.db[collections.PARTICIPANTS].countDoc({});
+  const qualified: number = await dbClient.db[collections.PARTICIPANTS].countDoc({
+    interested: 'yes',
+  });
 
   const inProgressEntries = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
@@ -22,7 +24,7 @@ export const getReport = async () => {
       'hiredOrArchivedJoin.status': null,
     });
 
-  let hiredPerRegion = await dbClient.db[collections.PARTICIPANTS_STATUS]
+  const hiredPerRegionRes = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
       siteJoin: {
         type: 'LEFT OUTER',
@@ -46,7 +48,7 @@ export const getReport = async () => {
       'archivedJoin.status': null,
       'siteJoin.id <>': null,
     });
-  hiredPerRegion = hiredPerRegion.reduce((a, v) => {
+  const hiredPerRegion: { [key: string]: number } = hiredPerRegionRes.reduce((a, v) => {
     const region = v.siteJoin?.body?.healthAuthority || 'Unknown';
     if (typeof a[region] === 'undefined') return { ...a, [region]: 1 };
     return { ...a, [region]: a[region] + 1 };
@@ -54,7 +56,7 @@ export const getReport = async () => {
 
   const inProgress = [...new Set(inProgressEntries.map((i) => i.participant_id))].length;
 
-  const hired = await dbClient.db[collections.PARTICIPANTS_STATUS]
+  const hired: number = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
       archivedJoin: {
         type: 'LEFT OUTER',

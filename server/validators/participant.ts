@@ -1,3 +1,5 @@
+import * as yup from 'yup';
+
 import {
   healthRegions,
   foundOutReasons,
@@ -18,9 +20,6 @@ import {
 } from './helpers';
 
 import { ArchiveRequestDataShape } from './employer-operation';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const yup = require('yup');
 
 export const ParticipantBatchSchema = yup.array().of(
   yup.lazy((item, options) => {
@@ -51,37 +50,37 @@ export const ParticipantBatchSchema = yup.array().of(
         // Preferred location
         fraser: yup
           .mixed()
-          .optional(errorMessageIndex(index, indexName))
+          .optional()
           .test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
         interior: yup
           .mixed()
-          .optional(errorMessageIndex(index, indexName))
+          .optional()
           .test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
         northern: yup
           .mixed()
-          .optional(errorMessageIndex(index, indexName))
+          .optional()
           .test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
         vancouverCoastal: yup
           .mixed()
-          .optional(errorMessageIndex(index, indexName))
+          .optional()
           .test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
         vancouverIsland: yup
           .mixed()
-          .optional(errorMessageIndex(index, indexName))
+          .optional()
           .test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
 
         // Others
         interested: yup
           .mixed()
-          .optional(errorMessageIndex(index, indexName))
+          .optional()
           .test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
         nonHCAP: yup
           .mixed()
-          .optional(errorMessageIndex(index, indexName))
+          .optional()
           .test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
         crcClear: yup
           .mixed()
-          .optional(errorMessageIndex(index, indexName))
+          .optional()
           .test('is-bool-opt', errorMessageIndex(index, indexName), validateOptionalBooleanMixed),
       })
       .test(
@@ -109,7 +108,7 @@ export const ParticipantSchema = yup
     phoneNumber: yup
       .string()
       .required(errorMessage)
-      .matches(/^\d{10}?$/, 'Phone number must be provided as 10 digits'),
+      .matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
     emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
     postalCode: yup
       .string()
@@ -144,7 +143,7 @@ export const ParticipantPostHireStatusSchema = yup
   .shape({
     participantId: yup.number().required('Participant ID is required'),
     status: yup.string().oneOf(postHireStatusesValues, 'Invalid status'),
-    data: yup.object().when(['status'], (status, schema) => {
+    data: yup.object().when('status', ([status], schema) => {
       switch (status) {
         case postHireStatuses.postSecondaryEducationCompleted:
           return schema.noUnknown('Unknown field in data form').shape({
@@ -176,7 +175,7 @@ export const ParticipantStatusChange = yup
   .noUnknown('Unknown field in form')
   .shape({
     participantId: yup.number().required('Participant ID is required'),
-    data: yup.object().when(['status'], (status, schema) => {
+    data: yup.object().when(['status'], ([status], schema) => {
       if (status === 'interviewing') {
         return schema.noUnknown('Unknown field in form').shape({
           contacted_at: yup
@@ -201,16 +200,16 @@ export const ParticipantStatusChange = yup
             .required('Non-Hcap Opportunity is required as true or false'),
           positionTitle: yup.string().when('nonHcapOpportunity', {
             is: true,
-            then: yup.string().required('Position title is required'),
-            otherwise: yup.string().nullable(),
+            then: (stringSchema) => stringSchema.required('Position title is required'),
+            otherwise: (stringSchema) => stringSchema.nullable(),
           }),
           positionType: yup.string().when('nonHcapOpportunity', {
             is: true,
-            then: yup
-              .string()
-              .required('Position type is required')
-              .oneOf(['Full-Time', 'Part-Time', 'Casual'], 'Invalid position type'),
-            otherwise: yup.string().nullable(),
+            then: (stringSchema) =>
+              stringSchema
+                .required('Position type is required')
+                .oneOf(['Full-Time', 'Part-Time', 'Casual'], 'Invalid position type'),
+            otherwise: (stringSchema) => stringSchema.nullable(),
           }),
           site: yup.number().required('Site is required'),
         });
@@ -227,11 +226,11 @@ export const ParticipantStatusChange = yup
             ),
           previous: yup.string().when('final_status', {
             is: 'hired by other',
-            then: yup
-              .string()
-              .required('Previous status is required')
-              .oneOf(['prospecting', 'interviewing', 'offer_made'], 'Invalid previous status'),
-            otherwise: yup.string().nullable(),
+            then: (stringSchema) =>
+              stringSchema
+                .required('Previous status is required')
+                .oneOf(['prospecting', 'interviewing', 'offer_made'], 'Invalid previous status'),
+            otherwise: (stringSchema) => stringSchema.nullable(),
           }),
         });
       }
@@ -246,16 +245,16 @@ export const ParticipantStatusChange = yup
       );
     }),
     status: yup.string().oneOf(participantStatuses, 'Invalid status'),
-    site: yup.number().when(['status'], (status, schema) => {
+    site: yup.number().when(['status'], ([status], schema) => {
       if (['interviewing', 'prospecting', 'prospecting', 'rejected'].includes(status)) {
-        // TODO: Change validation to required
-        return schema.optional('Please specify valid site');
+        // WARN: Change validation to required
+        return schema.required('Please specify valid site');
       }
       return schema.optional().nullable();
     }),
-    currentStatusId: yup.number().when(['status'], (status, schema) => {
+    currentStatusId: yup.number().when(['status'], ([status], schema) => {
       if (['interviewing', 'prospecting', 'prospecting', 'rejected'].includes(status))
-        return schema.optional('Please specify valid current status');
+        return schema.optional();
       return schema.optional().nullable();
     }),
   });
@@ -269,7 +268,7 @@ export const ParticipantEditSchema = yup
     phoneNumber: yup
       .string()
       .required(errorMessage)
-      .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
+      .matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
     emailAddress: yup.string().required('Email address is required').email('Invalid email address'),
     interested: yup.string().nullable(),
     postalCode: yup

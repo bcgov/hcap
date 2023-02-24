@@ -1,7 +1,6 @@
+import * as yup from 'yup';
 import { healthRegions } from '../constants';
 import { validateDateString, validateOptionalDateString, errorMessage } from './helpers';
-
-const yup = require('yup');
 
 export const CreatePSISchema = yup
   .object()
@@ -38,7 +37,7 @@ export const EditCohortSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
-    cohortName: yup.string().optional(errorMessage),
+    cohortName: yup.string().optional(),
     startDate: yup
       .string()
       .optional()

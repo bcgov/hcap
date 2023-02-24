@@ -7,16 +7,16 @@ import { getPostHireStatusesForParticipant } from '../post-hire-flow';
 import { validate, ParticipantBatchSchema, isBooleanValue } from '../../validation';
 
 export const getParticipants = async (
-  user,
-  pagination: Pagination,
-  sortField,
-  regionFilter,
-  fsaFilter,
-  lastNameFilter,
-  emailFilter,
-  siteSelector,
-  statusFilters,
-  isIndigenousFilter
+  user?,
+  pagination?: Pagination,
+  sortField?,
+  regionFilter?,
+  fsaFilter?,
+  lastNameFilter?,
+  emailFilter?,
+  siteSelector?,
+  statusFilters?,
+  isIndigenousFilter?
 ) => {
   // Get user ids
   const participantsFinder = new ParticipantsFinder(dbClient, user);

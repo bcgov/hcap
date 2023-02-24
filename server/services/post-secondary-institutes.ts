@@ -71,7 +71,10 @@ export const makePSI = async (psi) => {
   }
 };
 
-export const updatePSI = async (id: number, update: { instituteName: string }) => {
+export const updatePSI = async (
+  id: number,
+  update: { instituteName: string; streetAddress?: string }
+) => {
   // Check PSI is available or not
   const [psi] = await getPSI(id);
   if (!psi) {

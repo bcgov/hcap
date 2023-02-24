@@ -71,7 +71,7 @@ export const setParticipantStatus = async (
   participantId: string | UUID,
   status: string,
   data, // JSONB on the status row
-  user: { isEmployer?: boolean; sites?: number[]; id: string } = {
+  user: { isEmployer?: boolean; sites?: number[]; id?: string } = {
     isEmployer: true,
     sites: [],
     id: employerId,

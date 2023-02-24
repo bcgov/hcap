@@ -15,6 +15,8 @@ export interface EmployerSite {
   allocation: number; // Number of allocations set
   startDate: Date; // start date of current phase
   endDate: Date; // end date of current phase
+  hcapHires?: number;
+  nonHcapHires?: number;
 }
 
 export const getEmployers = async (user: HcapUserInfo): Promise<EmployerSite[]> => {

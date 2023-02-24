@@ -27,7 +27,7 @@ export interface HcapUserInfo {
   /** Username (e.g. "user@bceid") */
   username?: string;
   /** Unique identifier string for the user */
-  id: string;
+  id?: string;
   sites?: number[];
   /** Roles of the user (such as `region_interior` or `health_authority`) */
   roles?: string[];

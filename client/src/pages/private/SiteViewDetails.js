@@ -72,6 +72,10 @@ export default ({ match }) => {
         phases,
       });
     } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
       return setSite({ hiredParticipants: [], withdrawnParticipants: [], phases: [] });
     }
   }, [id, setSite]);

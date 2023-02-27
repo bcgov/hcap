@@ -106,10 +106,22 @@ export const getAllPhases = async () => {
   return phases;
 };
 
-const checkDateOverlap = async () => {
-  const phaseData = await getAllPhases();
+export const checkDateOverlap = async (startDate, endDate) => {
+  const phaseData = await dbClient.db[collections.GLOBAL_PHASE].find({}, { limit: 100000 });
 
-  return phaseData;
+  const isDateRangeInvalid = phaseData.some((phase) => {
+    const phaseStartDate = Date.parse(phase.start_date);
+    const phaseEndDate = Date.parse(phase.end_date);
+    const formStartDate = Date.parse(startDate);
+    const formEndDate = Date.parse(endDate);
+    const startDateExistsWithin = formStartDate >= phaseStartDate && formStartDate <= phaseEndDate;
+    const endDateExistsWithin = formEndDate >= phaseStartDate && formEndDate <= phaseEndDate;
+    const overlaps = formStartDate <= phaseStartDate && formEndDate >= phaseEndDate;
+
+    return startDateExistsWithin || endDateExistsWithin || overlaps;
+  });
+
+  return isDateRangeInvalid;
 };
 
 export const createPhase = async (phase, user) => {

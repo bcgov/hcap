@@ -1,11 +1,10 @@
-/* eslint-disable */
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Button, Dialog } from '../generic';
-import { Box } from '@material-ui/core';
+import { Box, Typography, List, ListItem, ListItemText } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import Alert from '@material-ui/lab/Alert';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { useFormikContext, useFormik } from 'formik';
 import { CreatePhaseSchema, ToastStatus } from '../../constants';
 import { createPhase, updatePhase } from '../../services/phases';
 import { useToast } from '../../hooks';
@@ -18,15 +17,14 @@ const useStyles = makeStyles(() => ({
   formRow: {
     gap: '25px',
   },
+  listItem: {
+    paddingTop: '0',
+    paddingBottom: '0',
+  },
 }));
 
 export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases }) => {
-  //  const { values } = useFormikContext();
-  // const { values } = useFormik();
-  // const values = useFormikContext();
   const { openToast } = useToast();
-  const [overlapPhases, setOverlapPhases] = useState([]);
-  const [disabled, setDisabled] = useState(false);
   const classes = useStyles();
 
   const initialValues = content
@@ -34,65 +32,14 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
         phaseName: content.name ?? '',
         startDate: content.start_date ?? '',
         endDate: content.end_date ?? '',
+        phases: phases,
       }
     : {
         phaseName: '',
         startDate: '',
         endDate: '',
+        phases: phases,
       };
-
-  const checkDateOverlap = (data) => {
-    let overlappedPhases = [];
-    // Sort the date array in ascending order based on start_date
-    const sorted = phases.sort((a, b) => a.start_date - b.start_date);
-
-    // Loop through each date object in the array
-    if (data.startDate && data.endDate) {
-      for (let i = 0; i < sorted.length; i++) {
-        const current = sorted[i];
-        const next = sorted[i + 1];
-
-        if (
-          (data.startDate >= current.start_date && data.startDate <= current.endDate) ||
-          (data.endDate >= current.start_date && data.endDate <= current.endDate) ||
-          (data.startDate <= current.start_date && data.endDate >= current.endDate)
-        ) {
-          overlappedPhases.push(current);
-          console.log('VALID??');
-          console.log('there is a date overlap');
-          setDisabled(true);
-          // setOverlapPhases(overlappedPhases);
-        }
-
-        // Check if the input date range overlaps with the next date range in the array
-        if (next && data.end_date >= next.start_date) {
-          overlappedPhases.push(next);
-          console.log('there is a date overlap');
-          setDisabled(true);
-          // setOverlapPhases(overlappedPhases);
-        }
-        setDisabled(false);
-        console.log('there is NOT a date overlap');
-        overlappedPhases = [];
-        // setOverlapPhases([]);
-      }
-    }
-
-    return (
-      <Box flexGrow={1}>
-        {overlappedPhases?.length > 0 &&
-          overlappedPhases.map((phase) => (
-            <div key={phase.id} className='MuiFormHelperText-root Mui-error'>
-              <div>
-                {' '}
-                {phase.name} : {dayjs.utc(phase.start_date).format('MMM DD, YYYY')} -{' '}
-                {dayjs.utc(phase.end_date).format('MMM DD, YYYY')}{' '}
-              </div>
-            </div>
-          ))}
-      </Box>
-    );
-  };
 
   const handleSubmit = async (phase) => {
     const phaseJson = {
@@ -114,7 +61,6 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
       });
     }
   };
-
   return (
     <Dialog title={isNew ? 'Create Phase' : 'Edit Phase'} open={open} onClose={onClose}>
       <Formik
@@ -122,8 +68,9 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
         validationSchema={CreatePhaseSchema}
         onSubmit={handleSubmit}
       >
-        {({ submitForm, values }) => {
-          console.log(values);
+        {({ submitForm, errors }) => {
+          // yup error message is a string - convert to an array of Id's to allow for a dynamic error message
+          const phaseErrors = errors?.phases?.split(',').map(Number) || [];
           return (
             <FormikForm>
               <Box>
@@ -143,25 +90,48 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
                 >
                   <Box flexGrow={1}>
                     <Field name='startDate' component={RenderDateField} label='* Start date' />
+                    <div className='MuiFormHelperText-root Mui-error'>
+                      {errors?.phases ? 'Conflict with 1 or more phases' : ''}
+                    </div>
                   </Box>
                   <Box flexGrow={1}>
                     <Field name='endDate' component={RenderDateField} label='* End date' />
+                    <div className='MuiFormHelperText-root Mui-error'>
+                      {errors?.phases ? 'Conflict with 1 or more phases' : ''}
+                    </div>
                   </Box>
                 </Box>
               </Box>
-              {checkDateOverlap(values)}
 
-              {/* <Box flexGrow={1}>
-              {phases.map((phase) => (
-                <div key={phase.id} className='MuiFormHelperText-root Mui-error'>
-                  <div>
-                    {' '}
-                    {phase.name} : {dayjs.utc(phase.start_date).format('MMM DD, YYYY')} -{' '}
-                    {dayjs.utc(phase.end_date).format('MMM DD, YYYY')}{' '}
-                  </div>
-                </div>
-              ))}
-            </Box> */}
+              {errors?.phases || phaseErrors.length > 0 ? (
+                <Box flexGrow={1}>
+                  <Alert severity='warning'>
+                    <Typography variant='body1'>
+                      The dates selected overlap with the following phases:
+                    </Typography>
+                    <List>
+                      {phases
+                        .filter((phase) => phaseErrors.includes(phase.id))
+                        .map((phase) => (
+                          <ListItem key={phase.id} className={classes.listItem}>
+                            <ListItemText
+                              primary={`${phase.name}: ${dayjs
+                                .utc(phase.start_date)
+                                .format('MMM DD, YYYY')} -
+                          ${dayjs.utc(phase.end_date).format('MMM DD, YYYY')}`}
+                            />
+                          </ListItem>
+                        ))}
+                    </List>
+                    <Typography variant='body1'>
+                      Note: The new phase cannot overlap with current or past phases. Please update
+                      the dates in the above phases before creating a new phase.
+                    </Typography>
+                  </Alert>
+                </Box>
+              ) : (
+                <div />
+              )}
 
               <Box display='flex' justifyContent='space-between' my={3}>
                 <Button
@@ -176,7 +146,6 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
                   variant='contained'
                   color='primary'
                   text={isNew ? 'Create' : 'Update'}
-                  disabled={disabled}
                 />
               </Box>
             </FormikForm>

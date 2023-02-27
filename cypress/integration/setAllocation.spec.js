@@ -16,7 +16,7 @@ describe('Allocation functionality', () => {
 
     cy.get('[name=phaseName]').clear().type(phaseName);
     cy.get('[name=Startdate]').clear().type(`{ctrl+v}${startDate}`);
-    cy.get('[name=Enddate]').clear().type(`{ctrl+v}2022/06/30${endDate}`);
+    cy.get('[name=Enddate]').clear().type(`{ctrl+v}${endDate}`);
 
     cy.contains('button', 'Create').click();
   };
@@ -38,8 +38,8 @@ describe('Allocation functionality', () => {
     // create new phase to assign allocation to
     const phaseData = {
       phaseName: 'Allocation Testing Phase',
-      startDate: '2021/03/30',
-      endDate: '2022/03/30',
+      startDate: '1996/01/01',
+      endDate: '1997/01/01',
     };
     createPhase(phaseData);
     // happy path
@@ -59,8 +59,8 @@ describe('Allocation functionality', () => {
     //  this phase can be used for the following tests
     const phaseData = {
       phaseName: 'Allocation Testing Phase Two',
-      startDate: '2023/03/30',
-      endDate: '2024/03/30',
+      startDate: '1993/01/01',
+      endDate: '1994/01/01',
     };
     createPhase(phaseData);
     // attempt to submit empty form

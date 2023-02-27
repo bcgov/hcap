@@ -26,11 +26,24 @@ describe('api e2e tests for /phase', () => {
       .post(`/api/v1/phase`)
       .send({
         name: 'Test Phase name',
-        start_date: '2023/10/12',
-        end_date: '2025/10/12',
+        start_date: '2010/01/01',
+        end_date: '2011/01/01',
       })
       .set(header);
     expect(res.status).toEqual(201);
+  });
+
+  it('should not allow MOH to create phase with overlapping date', async () => {
+    const header = await getKeycloakToken(ministryOfHealth);
+    const res = await request(app)
+      .post(`/api/v1/phase`)
+      .send({
+        name: 'Test Phase name',
+        start_date: '2010/01/07',
+        end_date: '2010/12/07',
+      })
+      .set(header);
+    expect(res.status).toEqual(400);
   });
 
   it('should not allow HA to create phase', async () => {
@@ -39,8 +52,8 @@ describe('api e2e tests for /phase', () => {
       .post(`/api/v1/phase`)
       .send({
         name: 'Test HA Phase name',
-        start_date: '2020/10/12',
-        end_date: '2023/10/12',
+        start_date: '2012/01/01',
+        end_date: '2013/01/01',
       })
       .set(header);
     expect(res.status).toEqual(403);
@@ -52,8 +65,8 @@ describe('api e2e tests for /phase', () => {
       .post(`/api/v1/phase`)
       .send({
         name: 'Test Phase name',
-        start_date: '2023/10/12',
-        end_date: '2020/10/12',
+        start_date: '2014/01/01',
+        end_date: '2015/01/01',
       })
       .set(header);
     expect(res.status).toEqual(400);
@@ -64,11 +77,23 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .patch(`/api/v1/phase/1`)
       .send({
-        start_date: '2024/10/12',
-        end_date: '2027/10/12',
+        start_date: '2015/01/02',
+        end_date: '2016/01/01',
       })
       .set(header);
     expect(res.status).toEqual(201);
+  });
+
+  it('should now allow MOH to edit an existing phase with overlapping dates', async () => {
+    const header = await getKeycloakToken(ministryOfHealth);
+    const res = await request(app)
+      .patch(`/api/v1/phase/1`)
+      .send({
+        start_date: '2013/01/01',
+        end_date: '2018/01/01',
+      })
+      .set(header);
+    expect(res.status).toEqual(400);
   });
 
   it('should not allow HA to edit an existing phase', async () => {
@@ -76,8 +101,8 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .patch(`/api/v1/phase/1`)
       .send({
-        start_date: '2020/10/12',
-        end_date: '2022/10/12',
+        start_date: '2016/01/02',
+        end_date: '2017/01/01',
       })
       .set(header);
     expect(res.status).toEqual(403);

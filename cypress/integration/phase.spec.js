@@ -34,8 +34,8 @@ describe('Phase functionality', () => {
     navigateToForm();
     const formValues = {
       phaseName: 'Test phase',
-      startDate: '2021/03/30',
-      endDate: '2022/03/31',
+      startDate: '1990/01/01',
+      endDate: '1992/01/01',
     };
     completePhaseForm(formValues);
     // expect: no errors, success message.
@@ -86,6 +86,20 @@ describe('Phase functionality', () => {
 
     // expect: required error on every field
     cy.contains('p.Mui-error', 'Invalid entry. End date must be at least 1 day after Start date');
+  });
+
+  it('New phase cannot overlap with existing phases', () => {
+    // attempt to submit empty form
+    navigateToForm();
+    const formValues = {
+      phaseName: 'Test overlaps',
+      startDate: '1991/01/01',
+      endDate: '1992/01/01',
+    };
+    completePhaseForm(formValues);
+
+    // expect: required error on every field
+    cy.contains('p.Mui-error', 'Conflict with 1 or more phases');
   });
 
   it('MoH can edit the start date and end date of a phase', () => {

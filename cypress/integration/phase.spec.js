@@ -75,7 +75,6 @@ describe('Phase functionality', () => {
   });
 
   it('New phase endDate must be after startDate', () => {
-    // attempt to submit empty form
     navigateToForm();
     const formValues = {
       phaseName: 'Test valid end date',
@@ -84,12 +83,10 @@ describe('Phase functionality', () => {
     };
     completePhaseForm(formValues);
 
-    // expect: required error on every field
     cy.contains('p.Mui-error', 'Invalid entry. End date must be at least 1 day after Start date');
   });
 
   it('New phase cannot overlap with existing phases', () => {
-    // attempt to submit empty form
     navigateToForm();
     const formValues = {
       phaseName: 'Test overlaps',
@@ -98,15 +95,14 @@ describe('Phase functionality', () => {
     };
     completePhaseForm(formValues);
 
-    // expect: required error on every field
     cy.contains('p.Mui-error', 'Conflict with 1 or more phases');
   });
 
   it('MoH can edit the start date and end date of a phase', () => {
     navigateToEditForm();
 
-    cy.get('[name=Startdate]').clear().type(`{ctrl+v}2024/01/05`);
-    cy.get('[name=Enddate]').clear().type(`{ctrl+v}2027/01/04`);
+    cy.get('[name=Startdate]').clear().type(`{ctrl+v}1990/06/06`);
+    cy.get('[name=Enddate]').clear().type(`{ctrl+v}1991/01/01`);
 
     cy.contains('button', 'Update').click();
 

@@ -66,7 +66,7 @@ describe('api e2e tests for /phase', () => {
       .send({
         name: 'Test Phase name',
         start_date: '2014/01/01',
-        end_date: '2015/01/01',
+        end_date: '2013/12/31',
       })
       .set(header);
     expect(res.status).toEqual(400);

@@ -90,15 +90,15 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
                 >
                   <Box flexGrow={1}>
                     <Field name='startDate' component={RenderDateField} label='* Start date' />
-                    <div className='MuiFormHelperText-root Mui-error'>
+                    <p className='MuiFormHelperText-root Mui-error'>
                       {errors?.phases ? 'Conflict with 1 or more phases' : ''}
-                    </div>
+                    </p>
                   </Box>
                   <Box flexGrow={1}>
                     <Field name='endDate' component={RenderDateField} label='* End date' />
-                    <div className='MuiFormHelperText-root Mui-error'>
+                    <p className='MuiFormHelperText-root Mui-error'>
                       {errors?.phases ? 'Conflict with 1 or more phases' : ''}
-                    </div>
+                    </p>
                   </Box>
                 </Box>
               </Box>

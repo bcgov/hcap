@@ -1,4 +1,4 @@
-const validateDateString = (s) => {
+export const validateDateString = (s) => {
   if (/^\d{4}\/\d{2}\/\d{2}$/.test(s) === false) return false;
   const date = Date.parse(s);
   return typeof date === 'number' && !Number.isNaN(date);
@@ -6,45 +6,45 @@ const validateDateString = (s) => {
 
 // NOTE: doesn't actually restrict validation to ISO!
 // This should probably be renamed or made more strict.
-const validISODateString = (s) => {
+export const validISODateString = (s) => {
   const date = Date.parse(s);
   return typeof date === 'number' && !Number.isNaN(date);
 };
 
-const validateOptionalDateString = (s) => {
+export const validateOptionalDateString = (s) => {
   if (!s) return true;
   if (/^\d{4}\/\d{2}\/\d{2}$/.test(s) === false) return false;
   const date = Date.parse(s);
   return typeof date === 'number' && !Number.isNaN(date);
 };
 
-const validatePastDateString = (s) => {
+export const validatePastDateString = (s) => {
   if (!validateDateString(s)) return false;
   return Date.parse(s) <= new Date().valueOf();
 };
 
-const isBooleanValue = (val) =>
+export const isBooleanValue = (val) =>
   typeof val === 'string' && ['yes', 'no'].includes(val.toLowerCase());
 
-const evaluateBooleanAnswer = (val) => isBooleanValue(val) && val.toLowerCase() === 'yes';
+export const evaluateBooleanAnswer = (val) => isBooleanValue(val) && val.toLowerCase() === 'yes';
 
-const validateBlankOrPositiveInteger = (n) =>
+export const validateBlankOrPositiveInteger = (n) =>
   n === '' || typeof n === 'undefined' || n === null || (Number.isInteger(n) && n >= 0);
 
-const validateOptionalBooleanMixed = (n) =>
+export const validateOptionalBooleanMixed = (n) =>
   n === 'NULL' ||
   n === null ||
   typeof n === 'undefined' ||
   (Number.isInteger(n) && n >= 0) ||
   (n && isBooleanValue(n));
 
-const validatePreferredLocation = (n) =>
+export const validatePreferredLocation = (n) =>
   typeof n === 'object' &&
   (n.fraser || n.interior || n.vancouverCoastal || n.vancouverIsland || n.northern);
 
-const validateUniqueArray = (a) => Array.isArray(a) && new Set(a).size === a.length;
+export const validateUniqueArray = (a) => Array.isArray(a) && new Set(a).size === a.length;
 
-const errorMessage = ({ path }) => {
+export const errorMessage = ({ path }) => {
   const errorMessages = {
     // Common fields
     firstName: 'First name is required',
@@ -106,20 +106,5 @@ const errorMessage = ({ path }) => {
   return errorMessages[path] || `Failed validation on ${path}`;
 };
 
-const errorMessageIndex = (index, indexName) => (error) =>
+export const errorMessageIndex = (index, indexName) => (error) =>
   `${errorMessage(error)} (${indexName || 'index'} ${index})`;
-
-module.exports = {
-  validateDateString,
-  validateOptionalDateString,
-  validateOptionalBooleanMixed,
-  validatePastDateString,
-  isBooleanValue,
-  evaluateBooleanAnswer,
-  validateBlankOrPositiveInteger,
-  validatePreferredLocation,
-  validateUniqueArray,
-  errorMessage,
-  errorMessageIndex,
-  validISODateString,
-};

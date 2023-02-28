@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Dialog } from '../generic';
-// import { Box, Typography, List, ListItem, ListItemText } from '@material-ui/core';
-import { Box, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 import { RenderTextField, RenderDateField } from '../fields';
@@ -33,27 +33,29 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
   const { openToast } = useToast();
   const classes = useStyles();
   const [phases, setPhases] = useState([]);
-
-  const fetchData = async () => {
-    let phases = await fetchPhases();
-    // remove the phases getting edited from the validation
-    if (content) {
-      phases = phases.filter(({ id }) => id !== content.id);
-    }
-    setPhases(phases);
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchData();
-  }, [content]);
+    if (loading) {
+      const fetchData = async () => {
+        let phases = await fetchPhases();
+        setPhases(phases);
+        setLoading(false);
+      };
+
+      fetchData();
+    }
+  }, [loading, content]);
 
   const initialValues = content
     ? {
+        id: content.id,
         phaseName: content.name ?? '',
         startDate: content.start_date ?? '',
         endDate: content.end_date ?? '',
       }
     : {
+        id: null,
         phaseName: '',
         startDate: '',
         endDate: '',

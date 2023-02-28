@@ -113,7 +113,7 @@ export const getAllPhases = async () => {
 };
 
 export const checkDateOverlap = async (startDate, endDate, id) => {
-  const phaseData = await dbClient.db[collections.GLOBAL_PHASE].find({}, { limit: 100000 });
+  const phaseData = await getAllPhases();
   // remove the phase getting edited from the array of phases used to validate overlaps
   const filteredData = id ? phaseData.filter((phase) => Number(id) !== phase.id) : phaseData;
 

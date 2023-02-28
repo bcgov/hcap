@@ -38,8 +38,8 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .post(`/api/v1/phase`)
       .send({
-        name: 'Test Phase name',
-        start_date: '2010/13/31',
+        name: 'Test Phase name overlap Post',
+        start_date: '2010/12/31',
         end_date: '2012/01/01',
       })
       .set(header);
@@ -64,9 +64,9 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .post(`/api/v1/phase`)
       .send({
-        name: 'Test Phase name',
-        start_date: '2010/01/01',
-        end_date: '2009/12/31',
+        name: 'Test End date after Start error',
+        start_date: '2012/01/01',
+        end_date: '2011/12/31',
       })
       .set(header);
     expect(res.status).toEqual(400);
@@ -77,6 +77,7 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .patch(`/api/v1/phase/1`)
       .send({
+        name: 'Test Edit Phase',
         start_date: '2010/06/01',
         end_date: '2011/06/01',
       })
@@ -89,7 +90,7 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .post(`/api/v1/phase`)
       .send({
-        name: 'Test Phase name',
+        name: 'Test not same day',
         start_date: '2011/06/01',
         end_date: '2012/06/01',
       })
@@ -102,9 +103,9 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .post(`/api/v1/phase`)
       .send({
-        name: 'Test Phase name',
-        start_date: '2012/01/01',
-        end_date: '2013/01/01',
+        name: 'Test new phase',
+        start_date: '2011/06/02',
+        end_date: '2012/06/01',
       })
       .set(header);
     expect(res.status).toEqual(201);
@@ -113,10 +114,11 @@ describe('api e2e tests for /phase', () => {
   it('should not allow MOH to edit an existing phase with overlapping dates', async () => {
     const header = await getKeycloakToken(ministryOfHealth);
     const res = await request(app)
-      .patch(`/api/v1/phase/1`)
+      .patch(`/api/v1/phase/2`)
       .send({
-        start_date: '2010/06/01',
-        end_date: '2012/01/02',
+        name: 'Test Overlap patch',
+        start_date: '2011/05/30',
+        end_date: '2012/06/01',
       })
       .set(header);
     expect(res.status).toEqual(400);
@@ -127,8 +129,9 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .patch(`/api/v1/phase/1`)
       .send({
+        name: 'Test HA error',
         start_date: '2010/01/01',
-        end_date: '2011/01/01',
+        end_date: '2011/06/01',
       })
       .set(header);
     expect(res.status).toEqual(403);

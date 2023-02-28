@@ -136,7 +136,6 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
                         .filter((phase) => phaseErrors.includes(phase.id))
                         .map((phase) => (
                           <li key={phase.id} className={classes.listItem}>
-                            {/* <b>{phase.name}: </b> */}
                             {phase.name}: {dayjs.utc(phase.start_date).format('MMM DD, YYYY')} -
                             {dayjs.utc(phase.end_date).format('MMM DD, YYYY')}
                           </li>

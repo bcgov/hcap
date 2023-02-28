@@ -77,7 +77,7 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .patch(`/api/v1/phase/1`)
       .send({
-        start_date: '2015/01/02',
+        start_date: '2012/01/01',
         end_date: '2016/01/01',
       })
       .set(header);

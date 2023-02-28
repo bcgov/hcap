@@ -85,7 +85,6 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
         {({ submitForm, errors }) => {
           // yup error message is a string - convert to an array of Id's to allow for a dynamic error message
           const phaseErrors = errors?.phases?.split(',').map(Number) || [];
-          console.log(isNew);
           return (
             <FormikForm>
               <Box>

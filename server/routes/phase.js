@@ -138,7 +138,7 @@ router.patch(
     if (isRangeInvalid)
       return resp
         .status(400)
-        .send('Failed to create phase due to overlapping dates with existing phases');
+        .send('Failed to update phase due to overlapping dates with existing phases');
     if (!FEATURE_PHASE_ALLOCATION) {
       return resp.status(501).send('Phase allocation feature not active');
     }

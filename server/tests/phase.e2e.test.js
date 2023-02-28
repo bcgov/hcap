@@ -84,13 +84,26 @@ describe('api e2e tests for /phase', () => {
     expect(res.status).toEqual(201);
   });
 
+  it('should allow MOH to create phase that starts on the same day the previous phase ended', async () => {
+    const header = await getKeycloakToken(ministryOfHealth);
+    const res = await request(app)
+      .post(`/api/v1/phase`)
+      .send({
+        name: 'Test Phase name',
+        start_date: '2011/01/01',
+        end_date: '2013/01/01',
+      })
+      .set(header);
+    expect(res.status).toEqual(201);
+  });
+
   it('should not allow MOH to edit an existing phase with overlapping dates', async () => {
     const header = await getKeycloakToken(ministryOfHealth);
     const res = await request(app)
       .patch(`/api/v1/phase/1`)
       .send({
-        start_date: '2011/12/01',
-        end_date: '2018/01/01',
+        start_date: '2010/01/01',
+        end_date: '2012/01/02',
       })
       .set(header);
     expect(res.status).toEqual(400);

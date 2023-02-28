@@ -116,9 +116,9 @@ export const checkDateOverlap = async (startDate, endDate, id) => {
     const phaseEndDate = Date.parse(phase.end_date);
     const formStartDate = Date.parse(startDate);
     const formEndDate = Date.parse(endDate);
-    const startDateExistsWithin = formStartDate >= phaseStartDate && formStartDate <= phaseEndDate;
-    const endDateExistsWithin = formEndDate >= phaseStartDate && formEndDate <= phaseEndDate;
-    const overlaps = formStartDate <= phaseStartDate && formEndDate >= phaseEndDate;
+    const startDateExistsWithin = formStartDate > phaseStartDate && formStartDate < phaseEndDate;
+    const endDateExistsWithin = formEndDate > phaseStartDate && formEndDate < phaseEndDate;
+    const overlaps = formStartDate < phaseStartDate && formEndDate > phaseEndDate;
 
     return startDateExistsWithin || endDateExistsWithin || overlaps;
   });

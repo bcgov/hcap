@@ -49,10 +49,10 @@ export const CreatePhaseSchema = yup.object().shape({
                 const formStartDate = Date.parse(startDate);
                 const formEndDate = Date.parse(endDate);
                 const startDateExistsWithin =
-                  formStartDate > phaseStartDate && formStartDate < phaseEndDate;
+                  formStartDate >= phaseStartDate && formStartDate <= phaseEndDate;
                 const endDateExistsWithin =
-                  formEndDate > phaseStartDate && formEndDate < phaseEndDate;
-                const overlaps = formStartDate < phaseStartDate && formEndDate > phaseEndDate;
+                  formEndDate >= phaseStartDate && formEndDate <= phaseEndDate;
+                const overlaps = formStartDate <= phaseStartDate && formEndDate >= phaseEndDate;
 
                 if (startDateExistsWithin || endDateExistsWithin || overlaps) {
                   return phase;

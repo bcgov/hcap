@@ -84,7 +84,7 @@ describe('api e2e tests for /phase', () => {
     expect(res.status).toEqual(201);
   });
 
-  it('should allow MOH to create phase that starts on the same day the previous phase ended', async () => {
+  it('should not allow MOH to create phase that starts on the same day the previous phase ended', async () => {
     const header = await getKeycloakToken(ministryOfHealth);
     const res = await request(app)
       .post(`/api/v1/phase`)
@@ -92,6 +92,19 @@ describe('api e2e tests for /phase', () => {
         name: 'Test Phase name',
         start_date: '2011/06/01',
         end_date: '2012/06/01',
+      })
+      .set(header);
+    expect(res.status).toEqual(400);
+  });
+
+  it('should allow MOH to create an additional phase - required to test overlapping validation on PATCH', async () => {
+    const header = await getKeycloakToken(ministryOfHealth);
+    const res = await request(app)
+      .post(`/api/v1/phase`)
+      .send({
+        name: 'Test Phase name',
+        start_date: '2012/01/01',
+        end_date: '2013/01/01',
       })
       .set(header);
     expect(res.status).toEqual(201);
@@ -103,7 +116,7 @@ describe('api e2e tests for /phase', () => {
       .patch(`/api/v1/phase/1`)
       .send({
         start_date: '2010/06/01',
-        end_date: '2011/07/01',
+        end_date: '2012/01/02',
       })
       .set(header);
     expect(res.status).toEqual(400);

@@ -130,7 +130,11 @@ router.patch(
     expressRequestBodyValidator(UpdatePhaseSchema),
   ],
   asyncMiddleware(async (req, resp) => {
-    const isRangeInvalid = await checkDateOverlap(req.body.start_date, req.body.end_date);
+    const isRangeInvalid = await checkDateOverlap(
+      req.body.start_date,
+      req.body.end_date,
+      req.params.id
+    );
     if (isRangeInvalid)
       return resp
         .status(400)

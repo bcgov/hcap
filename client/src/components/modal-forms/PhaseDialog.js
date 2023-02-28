@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Dialog } from '../generic';
 import { Box, Typography, List, ListItem, ListItemText } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -6,7 +6,7 @@ import Alert from '@material-ui/lab/Alert';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { CreatePhaseSchema, ToastStatus } from '../../constants';
-import { createPhase, updatePhase } from '../../services/phases';
+import { createPhase, updatePhase, fetchPhases } from '../../services/phases';
 import { useToast } from '../../hooks';
 import dayjs from 'dayjs';
 
@@ -23,22 +23,34 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases }) => {
+export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew }) => {
   const { openToast } = useToast();
   const classes = useStyles();
+  const [phases, setPhases] = useState([]);
+
+  const fetchData = async () => {
+    let phases = await fetchPhases();
+    // remove the phases getting edited from the validation
+    if (content) {
+      phases = phases.filter(({ id }) => id !== content.id);
+    }
+    setPhases(phases);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [content]);
 
   const initialValues = content
     ? {
         phaseName: content.name ?? '',
         startDate: content.start_date ?? '',
         endDate: content.end_date ?? '',
-        phases: phases,
       }
     : {
         phaseName: '',
         startDate: '',
         endDate: '',
-        phases: phases,
       };
 
   const handleSubmit = async (phase) => {
@@ -61,10 +73,12 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew, phases })
       });
     }
   };
+
   return (
     <Dialog title={isNew ? 'Create Phase' : 'Edit Phase'} open={open} onClose={onClose}>
       <Formik
-        initialValues={initialValues}
+        initialValues={{ ...initialValues, phases: phases }}
+        enableReinitialize={true}
         validationSchema={CreatePhaseSchema}
         onSubmit={handleSubmit}
       >

@@ -24,7 +24,6 @@ import { FeatureFlaggedComponent, flagKeys } from '../../services';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
 import { useTableStyles } from '../../components/tables/DataTable';
 import { SiteTableAllocation } from './SiteTableAllocation';
-import { fetchPhases } from '../../services/phases';
 
 const columns = [
   { id: 'siteId', name: 'Site ID' },
@@ -51,7 +50,6 @@ export default ({ sites, viewOnly }) => {
   const [isLoadingData, setLoadingData] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
   const [rows, setRows] = useState([]);
-  const [phases, setPhases] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
   const [isLoadingReport, setLoadingReport] = useState(false);
   const [isLoadingRosReport, setLoadingRosReport] = useState(false);
@@ -175,8 +173,6 @@ export default ({ sites, viewOnly }) => {
   };
 
   const openNewPhaseModal = async () => {
-    const phases = await fetchPhases();
-    setPhases(phases);
     closeActionMenu();
     setActiveModalForm('new-phase');
   };
@@ -200,7 +196,6 @@ export default ({ sites, viewOnly }) => {
         onSubmit={handleFormSubmit}
         onClose={closeDialog}
         isNew={true}
-        phases={phases}
       />
 
       <Grid

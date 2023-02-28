@@ -39,8 +39,8 @@ describe('api e2e tests for /phase', () => {
       .post(`/api/v1/phase`)
       .send({
         name: 'Test Phase name',
-        start_date: '2010/01/07',
-        end_date: '2010/12/07',
+        start_date: '2010/13/31',
+        end_date: '2012/01/01',
       })
       .set(header);
     expect(res.status).toEqual(400);
@@ -65,8 +65,8 @@ describe('api e2e tests for /phase', () => {
       .post(`/api/v1/phase`)
       .send({
         name: 'Test Phase name',
-        start_date: '2014/01/01',
-        end_date: '2013/12/31',
+        start_date: '2010/01/01',
+        end_date: '2009/12/31',
       })
       .set(header);
     expect(res.status).toEqual(400);
@@ -77,8 +77,8 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .patch(`/api/v1/phase/1`)
       .send({
-        start_date: '2012/01/01',
-        end_date: '2016/01/01',
+        start_date: '2010/06/01',
+        end_date: '2011/06/01',
       })
       .set(header);
     expect(res.status).toEqual(201);
@@ -90,8 +90,8 @@ describe('api e2e tests for /phase', () => {
       .post(`/api/v1/phase`)
       .send({
         name: 'Test Phase name',
-        start_date: '2011/01/01',
-        end_date: '2013/01/01',
+        start_date: '2011/06/01',
+        end_date: '2012/06/01',
       })
       .set(header);
     expect(res.status).toEqual(201);
@@ -102,8 +102,8 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .patch(`/api/v1/phase/1`)
       .send({
-        start_date: '2010/01/01',
-        end_date: '2012/01/02',
+        start_date: '2010/06/01',
+        end_date: '2011/07/01',
       })
       .set(header);
     expect(res.status).toEqual(400);
@@ -114,8 +114,8 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .patch(`/api/v1/phase/1`)
       .send({
-        start_date: '2016/01/02',
-        end_date: '2017/01/01',
+        start_date: '2010/01/01',
+        end_date: '2011/01/01',
       })
       .set(header);
     expect(res.status).toEqual(403);

@@ -172,7 +172,7 @@ export default ({ sites, viewOnly }) => {
     setActiveModalForm('new-site');
   };
 
-  const openNewPhaseModal = async () => {
+  const openNewPhaseModal = () => {
     closeActionMenu();
     setActiveModalForm('new-phase');
   };

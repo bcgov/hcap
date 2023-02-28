@@ -103,7 +103,13 @@ export const getAllPhases = async () => {
   // If there is any chance of this hitting that number, or if performance starts to suffer,
   // pagination support should be added.
   const phases = await dbClient.db[collections.GLOBAL_PHASE].find({}, { limit: 100000 });
-  return phases;
+
+  // Transform dates format and return it
+  return phases.map((phase) => ({
+    ...phase,
+    start_date: dayjs.utc(phase.start_date).format('YYYY/MM/DD'),
+    end_date: dayjs.utc(phase.end_date).format('YYYY/MM/DD'),
+  }));
 };
 
 export const checkDateOverlap = async (startDate, endDate, id) => {

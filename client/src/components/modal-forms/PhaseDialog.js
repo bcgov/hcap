@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Dialog } from '../generic';
-import { Box, Typography, List, ListItem, ListItemText } from '@material-ui/core';
+// import { Box, Typography, List, ListItem, ListItemText } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 import { RenderTextField, RenderDateField } from '../fields';
@@ -17,7 +18,12 @@ const useStyles = makeStyles(() => ({
   formRow: {
     gap: '25px',
   },
+  list: {
+    overflow: 'scroll',
+    maxHeight: '250px',
+  },
   listItem: {
+    fontSize: '14px',
     paddingTop: '0',
     paddingBottom: '0',
   },
@@ -123,20 +129,17 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
                     <Typography variant='body1'>
                       The dates selected overlap with the following phases:
                     </Typography>
-                    <List>
+                    <ul className={classes.list}>
                       {phases
                         .filter((phase) => phaseErrors.includes(phase.id))
                         .map((phase) => (
-                          <ListItem key={phase.id} className={classes.listItem}>
-                            <ListItemText
-                              primary={`${phase.name}: ${dayjs
-                                .utc(phase.start_date)
-                                .format('MMM DD, YYYY')} -
-                          ${dayjs.utc(phase.end_date).format('MMM DD, YYYY')}`}
-                            />
-                          </ListItem>
+                          <li key={phase.id} className={classes.listItem}>
+                            {/* <b>{phase.name}: </b> */}
+                            {phase.name}: {dayjs.utc(phase.start_date).format('MMM DD, YYYY')} -
+                            {dayjs.utc(phase.end_date).format('MMM DD, YYYY')}
+                          </li>
                         ))}
-                    </List>
+                    </ul>
                     <Typography variant='body1'>
                       {isNew
                         ? ` Note: The new phase cannot overlap with current or past phases. Please update

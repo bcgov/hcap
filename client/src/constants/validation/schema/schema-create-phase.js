@@ -42,6 +42,7 @@ export const CreatePhaseSchema = yup.object().shape({
         return schema.test({
           name: 'validate-date-overlap',
           test: function (value) {
+            console.log(value);
             const overlappingPhaseIds = value
               .filter((phase) => {
                 const phaseStartDate = Date.parse(phase.start_date);

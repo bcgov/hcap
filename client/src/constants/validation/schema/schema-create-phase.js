@@ -60,7 +60,6 @@ export const CreatePhaseSchema = yup.object().shape({
               })
               .map(({ id }) => Number(id));
 
-            console.log('in validator', value);
             return overlappingPhaseIds.length > 0
               ? // this.createError expects a message as string, for this use case the UI needs dynamic data.
                 // returning the Ids as a string, and converting to an array of Ids in the component.

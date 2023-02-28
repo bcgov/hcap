@@ -138,8 +138,11 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew }) => {
                         ))}
                     </List>
                     <Typography variant='body1'>
-                      Note: The new phase cannot overlap with current or past phases. Please update
-                      the dates in the above phases before creating a new phase.
+                      {isNew
+                        ? ` Note: The new phase cannot overlap with current or past phases. Please update
+                      the dates in the above phases before creating a new phase.`
+                        : `Note: The selected phase cannot overlap with current or past phases. Please update
+                      the dates in the above phases before editing`}
                     </Typography>
                   </Alert>
                 </Box>

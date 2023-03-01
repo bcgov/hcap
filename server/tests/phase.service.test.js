@@ -18,19 +18,6 @@ import { makeTestParticipant, makeTestParticipantStatus, makeTestSite } from './
 import { startDB, closeDB } from './util/db';
 import { participantStatus } from '../constants';
 
-
-
-import { dbClient, collections } from '../db';
-import { stringReplace } from 'string-replace-middleware';
-
-
-const {
-  PROSPECTING,
-  INTERVIEWING,
-  OFFER_MADE,
-  HIRED,
-} = participantStatus;
-
 describe('Phase Allocation Endpoints', () => {
   let server;
 
@@ -96,7 +83,7 @@ describe('Phase Allocation Endpoints', () => {
     expect(res.length).not.toEqual(0);
   });
 
-  it.only('getAllSitePhases, returns correct # of hires and remaining hires per phase', async () => {
+  it('getAllSitePhases, returns correct # of hires and remaining hires per phase', async () => {
     const numAllocations = 30;
     const phaseMockYearOne = {
       name: '2015 Phase',

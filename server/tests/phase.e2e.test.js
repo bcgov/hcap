@@ -30,7 +30,6 @@ describe('api e2e tests for /phase', () => {
         end_date: '2011/01/01',
       })
       .set(header);
-    console.log(res);
     expect(res.status).toEqual(201);
   });
 
@@ -51,13 +50,12 @@ describe('api e2e tests for /phase', () => {
   it('should allow MOH to edit an existing phase', async () => {
     const header = await getKeycloakToken(ministryOfHealth);
     const res = await request(app)
-      .patch(`/api/v1/phase/1`)
+      .patch(`/api/v1/phase/2`)
       .send({
         start_date: '2010/01/02',
         end_date: '2010/12/31',
       })
       .set(header);
-    console.log(res);
     expect(res.status).toEqual(201);
   });
 

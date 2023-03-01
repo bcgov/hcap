@@ -4,7 +4,7 @@ import utc from 'dayjs/plugin/utc';
 import { dbClient, collections } from '../db';
 import { validate, CreateCohortSchema } from '../validation';
 import { getPostHireStatusesForParticipant } from './post-hire-flow';
-import { postHireStatuses } from '../constants';
+import { postHireStatuses, ParticipantStatus as ps } from '../constants';
 
 // Setup dayjs utc
 dayjs.extend(utc);
@@ -50,7 +50,7 @@ export const getCohortParticipants = async (cohortId) => {
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'id',
-          status: 'archived',
+          status: ps.ARCHIVED,
         },
       },
       participantHiredStatusJoin: {
@@ -58,7 +58,7 @@ export const getCohortParticipants = async (cohortId) => {
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'id',
-          status: 'hired',
+          status: ps.HIRED,
         },
       },
       siteJoin: {
@@ -157,7 +157,7 @@ export const getPSICohorts = async (psiID) => {
       // ref: https://github.com/bcgov/hcap/pull/847
       'participantStatusJoin.current !=': false,
       or: [
-        { 'participantStatusJoin.status': ['hired', 'archived'] },
+        { 'participantStatusJoin.status': [ps.HIRED, ps.ARCHIVED] },
         { 'participantStatusJoin.status': null },
       ],
     });

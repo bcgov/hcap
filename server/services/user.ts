@@ -1,6 +1,7 @@
 import { dbClient, collections } from '../db';
 import { HcapUserInfo } from '../keycloak';
 import { dayjs } from '../utils';
+import { ParticipantStatus as ps } from '../constants';
 
 export const userRegionQuery = (regions: string[], target: string) => {
   if (regions.length === 0) return null;
@@ -36,7 +37,7 @@ const getROSEndedNotifications = async (sites: [id: number]) => {
       'data.date::timestamp <=': todayDate,
       is_current: true,
       'participantStatus.current': true,
-      'participantStatus.status': 'hired',
+      'participantStatus.status': ps.HIRED,
       'participantStatus.data.site': sites,
     });
 };

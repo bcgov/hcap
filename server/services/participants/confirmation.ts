@@ -1,3 +1,4 @@
+import { ParticipantStatus } from '../../constants';
 import { dbClient, collections } from '../../db';
 
 export const validateConfirmationId = (id) =>
@@ -24,7 +25,7 @@ export const confirmParticipantInterest = async (id) => {
       },
     })
     .find({
-      status: 'hired',
+      status: ParticipantStatus.HIRED,
     });
 
   const hiredRelatedParticipants = relatedParticipants.filter((related) =>

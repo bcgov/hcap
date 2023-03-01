@@ -1,5 +1,5 @@
 import { dbClient, collections } from '../../db';
-import { DEFAULT_REGION_NAME, DEFAULT_STATUS } from '../../constants';
+import { DEFAULT_REGION_NAME, DEFAULT_STATUS, ParticipantStatus as ps } from '../../constants';
 import { getPostHireStatusForParticipant, getCohortForParticipant } from './participant';
 import type { PostHireStatus, Cohort, CohortParticipant } from './participant';
 
@@ -21,7 +21,7 @@ interface ParticipantEntry {
 
 export const getPSIPaticipantsReport = async (region: string) => {
   const searchOptions = {
-    status: ['hired', 'archived'],
+    status: [ps.HIRED, ps.ARCHIVED],
     current: true,
   };
 

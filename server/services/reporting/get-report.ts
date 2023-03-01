@@ -1,4 +1,5 @@
 import { dbClient, collections } from '../../db';
+import { ParticipantStatus as ps } from '../../constants';
 
 export const getReport = async () => {
   const total: number = await dbClient.db[collections.PARTICIPANTS].countDoc({});
@@ -13,7 +14,7 @@ export const getReport = async () => {
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'participant_id',
-          status: ['hired', 'archived'],
+          status: [ps.HIRED, ps.ARCHIVED],
           current: true,
         },
       },
@@ -37,14 +38,14 @@ export const getReport = async () => {
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'participant_id',
-          status: 'archived',
+          status: ps.ARCHIVED,
           current: true,
           'data.type': 'duplicate',
         },
       },
     })
     .find({
-      status: ['hired'],
+      status: [ps.HIRED],
       'archivedJoin.status': null,
       'siteJoin.id <>': null,
     });
@@ -63,14 +64,14 @@ export const getReport = async () => {
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'participant_id',
-          status: 'archived',
+          status: ps.ARCHIVED,
           current: true,
           'data.type': 'duplicate',
         },
       },
     })
     .count({
-      status: ['hired'],
+      status: [ps.HIRED],
       'archivedJoin.status': null,
     });
 

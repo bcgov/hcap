@@ -1,6 +1,6 @@
 import { dbClient, collections } from '../../db';
 import keycloak from '../../keycloak';
-import { DEFAULT_REGION_NAME } from '../../constants';
+import { DEFAULT_REGION_NAME, ParticipantStatus as ps } from '../../constants';
 
 type HistoryItem = {
   changes: { to: string; from: string; field: string }[];
@@ -126,7 +126,7 @@ export const getParticipantsReport = async () => {
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'participant_id',
-          status: ['hired', 'archived'],
+          status: [ps.HIRED, ps.ARCHIVED],
           current: true,
         },
       },
@@ -140,7 +140,7 @@ export const getParticipantsReport = async () => {
     })
     .find({
       current: true,
-      status: ['prospecting', 'interviewing', 'offer_made'],
+      status: [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE],
       'hiredOrArchivedJoin.status': null,
     });
 
@@ -168,7 +168,7 @@ export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) =
   const users = await keycloak.getUsers();
 
   const searchOptions = {
-    status: ['hired'],
+    status: [ps.HIRED],
     'duplicateArchivedJoin.status': null,
     // 'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
   };
@@ -198,7 +198,7 @@ export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) =
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'participant_id',
-          status: 'archived',
+          status: ps.ARCHIVED,
           current: true,
           'data.type': 'duplicate',
         },
@@ -208,7 +208,7 @@ export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) =
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'participant_id',
-          status: 'archived',
+          status: ps.ARCHIVED,
           current: true,
           'data.type <>': 'duplicate',
         },
@@ -258,14 +258,14 @@ export const getRejectedParticipantsReport = async () => {
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'participant_id',
-          status: 'hired',
+          status: ps.HIRED,
           current: true,
         },
       },
     })
     .find({
       current: true,
-      status: 'rejected',
+      status: ps.REJECTED,
       'hiredJoin.status': null,
     });
 
@@ -311,7 +311,7 @@ export const getNoOfferParticipantsReport = async () => {
     });
 
   const noOffer = participants.filter((participant) =>
-    participant.statusJoin.every((status) => !['hired', 'offer_made'].includes(status.status))
+    participant.statusJoin.every((status) => ![ps.HIRED, ps.OFFER_MADE].includes(status.status))
   );
 
   return noOffer.map((participant) => ({

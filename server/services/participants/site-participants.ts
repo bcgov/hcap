@@ -1,5 +1,6 @@
 import { dbClient, collections } from '../../db';
 import { withdrawParticipant } from './participant-entries';
+import { ParticipantStatus as ps } from '../../constants';
 
 export const getHiredParticipantsBySite = async (siteID) => {
   const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]
@@ -13,7 +14,7 @@ export const getHiredParticipantsBySite = async (siteID) => {
     })
     .find({
       current: true,
-      status: 'hired',
+      status: ps.HIRED,
       'data.site': String(siteID),
     });
   return participants;
@@ -90,7 +91,7 @@ export const getWithdrawnParticipantsBySite = async (siteID) => {
   // List of previously hired participants associated with the given SiteID
   // Looking for (current = false) to reduce the list (we aren't looking for currently hired records)
   const hiredParticipants = await participantsStatusJoin.find({
-    status: 'hired',
+    status: ps.HIRED,
     current: false,
     'data.site': siteID,
   });

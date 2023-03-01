@@ -13,6 +13,7 @@ import type {
   PostalCodeFsaFilter,
 } from '../participants-helper';
 import type { HcapUserInfo } from '../../keycloak';
+import { ParticipantStatus as ps } from '../../constants';
 
 export const makeParticipant = async (participantData) => {
   const res = await dbClient.db.saveDoc(collections.PARTICIPANTS, participantData);
@@ -285,12 +286,12 @@ export const getParticipants = async (
       };
 
       // Get hired status
-      const hiredStatus = item.statusInfos?.find((statusInfo) => statusInfo.status === 'hired');
+      const hiredStatus = item.statusInfos?.find((statusInfo) => statusInfo.status === ps.HIRED);
       const hiredForAssociatedSites = hiredStatus && user.sites.includes(hiredStatus?.data.site);
 
       // Current Status
       const currentStatusInfo = item.statusInfos[0] || {};
-      const currentStatusInProgress = !['hired', 'archived'].includes(currentStatusInfo.status);
+      const currentStatusInProgress = ![ps.HIRED, ps.ARCHIVED].includes(currentStatusInfo.status);
       // The participant is hired in a site which is not associated with user
       const hiredByOtherOrg = hiredStatus && !hiredForAssociatedSites;
       // The participant is hired by some other user but site associated by user
@@ -304,12 +305,12 @@ export const getParticipants = async (
         hiredStatus &&
         hiredForAssociatedSites &&
         currentStatusInfo.data?.site !== hiredStatus.data.site &&
-        !['hired', 'archived'].includes(currentStatusInfo.status) &&
+        ![ps.HIRED, ps.ARCHIVED].includes(currentStatusInfo.status) &&
         hiredStatus.employerId === user.id;
 
       // Archived by org
       const archivedByOrgStatus = item.statusInfos?.find(
-        (statusInfo) => statusInfo.status === 'archived' && statusInfo.employerId !== user.id
+        (statusInfo) => statusInfo.status === ps.ARCHIVED && statusInfo.employerId !== user.id
       );
 
       // Handling withdrawn and already hired, putting withdrawn as higher priority
@@ -350,7 +351,7 @@ export const getParticipants = async (
 
         participant.statusInfos.unshift(statusInfos);
         const showContactInfo = participant.statusInfos.find((statusInfo) =>
-          ['prospecting', 'interviewing', 'offer_made', 'hired'].includes(statusInfo.status)
+          [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, ps.HIRED].includes(statusInfo.status)
         );
         if (showContactInfo && !hiredByOtherOrg) {
           participant = {

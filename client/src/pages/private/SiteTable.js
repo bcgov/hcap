@@ -7,7 +7,7 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { Table, Button, CheckPermissions } from '../../components/generic';
-import { NewSiteDialog, PhaseDialog, BulkAllocationForm } from '../../components/modal-forms';
+import { NewSiteDialog, PhaseDialog } from '../../components/modal-forms';
 
 import {
   Routes,
@@ -24,6 +24,7 @@ import { FeatureFlaggedComponent, flagKeys, featureFlag } from '../../services';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
 import { useTableStyles } from '../../components/tables/DataTable';
 import { SiteTableAllocation } from './SiteTableAllocation';
+import { SetBulkAllocation } from './SetBulkAllocation';
 
 const columns = [
   { id: 'siteId', name: 'Site ID' },
@@ -164,10 +165,6 @@ export default ({ sites, viewOnly }) => {
     setActionMenuAnchorEl(event.currentTarget);
   };
 
-  const openBulkAllocationModal = () => {
-    setActiveModalForm('bulk-allocation');
-  };
-
   const closeActionMenu = () => {
     setActionMenuAnchorEl(null);
   };
@@ -203,12 +200,6 @@ export default ({ sites, viewOnly }) => {
         isNew={true}
       />
 
-      <BulkAllocationForm
-        open={activeModalForm === 'bulk-allocation'}
-        onClose={closeDialog}
-        sites={selectedSites}
-      />
-
       <Grid
         container
         alignContent='flex-start'
@@ -234,13 +225,7 @@ export default ({ sites, viewOnly }) => {
           <Grid className={classes.rootItem} item xs={3}>
             <Box px={2} display='flex' justifyContent='space-evenly'>
               <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-                <Button
-                  onClick={openBulkAllocationModal}
-                  text='Set Allocation'
-                  variant='outlined'
-                  fullWidth={false}
-                  disabled={selectedSites.length === 0}
-                />
+                <SetBulkAllocation sites={selectedSites} />
               </FeatureFlaggedComponent>
               <Button
                 onClick={openActionMenu}

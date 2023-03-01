@@ -52,10 +52,9 @@ describe('api e2e tests for /phase', () => {
       .patch(`/api/v1/phase/1`)
       .send({
         start_date: '2010/01/02',
-        end_date: '2011/01/02',
+        end_date: '2010/12/31',
       })
       .set(header);
-    console.log(res);
     expect(res.status).toEqual(201);
   });
 

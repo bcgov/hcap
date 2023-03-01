@@ -65,7 +65,7 @@ describe('api e2e tests for /phase', () => {
       .send({
         name: 'Test Phase name overlap Post',
         start_date: '2009/12/31',
-        end_date: '2010/012/31',
+        end_date: '2010/12/31',
       })
       .set(header);
     expect(res.status).toEqual(400);

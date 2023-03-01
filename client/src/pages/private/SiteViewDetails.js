@@ -32,6 +32,39 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+/**
+ * Takes the data from the db and formats it for the table
+ * @param {*} response: raw data from API call
+ * @returns
+ */
+const mapSiteParticipantsDataToRow = (response, columnIDs) => {
+  return response.map((row) => {
+    // Pull all relevant props from row based on columns constant
+    const values = {
+      participantId: row.participant_id,
+      participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
+      hiredDate: row.data.hiredDate,
+      startDate: row.data.startDate,
+      withdrawnDate: row.data.endDate,
+      reason: row.data.reason,
+      nonHCAP: row.data.nonHcapOpportunity ? 'Non-HCAP' : 'HCAP',
+    };
+
+    const mappedRow = columnIDs.reduce(
+      (accumulator, column) => ({
+        ...accumulator,
+        [column.id]: values[column.id],
+      }),
+      {}
+    );
+    // Add additional props (user ID, button) to row
+    return {
+      ...mappedRow,
+      id: row.id,
+    };
+  });
+};
+
 export default ({ match }) => {
   const { openToast } = useToast();
   const classes = useStyles();
@@ -64,11 +97,14 @@ export default ({ match }) => {
         phases = await fetchSitePhases(site.id);
       }
       const participants = await fetchSiteParticipants(columnIDs, site.siteId);
+      const { hired, withdrawn } = await participants.json();
+      const hiredParticipants = mapSiteParticipantsDataToRow(hired, columnIDs);
+      const withdrawnParticipants = mapSiteParticipantsDataToRow(withdrawn, columnIDs);
       setIsLoading(false);
       return setSite({
         ...site,
-        hiredParticipants: participants.hiredParticipants,
-        withdrawnParticipants: participants.withdrawnParticipants,
+        hiredParticipants,
+        withdrawnParticipants,
         phases,
       });
     } else {

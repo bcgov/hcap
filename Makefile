@@ -118,18 +118,18 @@ local-cypress-tests:
 	@npx cypress run --headless
 
 clear-data:
- 	@docker-compose -f docker-compose.test.yml exec server npm run clear-data
+	@docker-compose -f docker-compose.test.yml exec server npm run clear-data
 
- local-testing-setup:
- 	@docker stop ${APP_NAME}-server
- 	@NODE_ENV="test" docker-compose -f docker-compose.test.yml up -d
- 	@docker-compose -f docker-compose.test.yml exec server npm run clear-data
- 	@docker-compose -f docker-compose.test.yml exec server npm run feed-participants participants.xlsx
- 	@docker-compose -f docker-compose.test.yml exec server npm run feed-sites sites.xlsx
- 	@docker-compose -f docker-compose.test.yml exec server npm run feed-data
+local-testing-setup:
+	@docker stop ${APP_NAME}-server
+	@NODE_ENV="test" docker-compose -f docker-compose.test.yml up -d
+	@docker-compose -f docker-compose.test.yml exec server npm run clear-data
+	@docker-compose -f docker-compose.test.yml exec server npm run feed-participants participants.xlsx
+	@docker-compose -f docker-compose.test.yml exec server npm run feed-sites sites.xlsx
+	@docker-compose -f docker-compose.test.yml exec server npm run feed-data
 
- local-testing-teardown:
- 	@docker stop ${APP_NAME}-server
+local-testing-teardown:
+	@docker stop ${APP_NAME}-server
 
 database: ## <Helper> :: Executes into database container.
 	@echo "Make: Shelling into local database container ..."

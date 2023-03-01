@@ -1,5 +1,5 @@
 import { dbClient, collections } from '../../db';
-import { mapRosEntries } from './util';
+import { mapRosEntries } from './ros-entries';
 
 export const getMohRosMilestonesReport = async () => {
   const entries = await dbClient.db[collections.ROS_STATUS]

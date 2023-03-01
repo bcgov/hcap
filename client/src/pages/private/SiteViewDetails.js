@@ -70,6 +70,7 @@ export default ({ match }) => {
   const classes = useStyles();
   const [site, setSite] = useState({});
   const [activeModalForm, setActiveModalForm] = useState(null);
+  const [hasFetched, setHasFetched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const id = match.params.id;
 
@@ -88,6 +89,7 @@ export default ({ match }) => {
   };
 
   const fetchDetails = useCallback(async () => {
+    setHasFetched(true);
     setIsLoading(true);
     const response = await fetchSite(id);
     if (response.ok) {
@@ -118,8 +120,8 @@ export default ({ match }) => {
   }, [id, setSite, openToast, setIsLoading]);
 
   useEffect(() => {
-    fetchDetails();
-  }, []);
+    if (!hasFetched) fetchDetails();
+  }, [hasFetched, fetchDetails]);
 
   const defaultOnClose = () => {
     setActiveModalForm(null);

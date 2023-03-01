@@ -112,13 +112,14 @@ export default ({ match }) => {
         status: ToastStatus.Error,
         message: response.error || response.statusText || 'Server error',
       });
-      return setSite({ hiredParticipants: [], withdrawnParticipants: [], phases: [] });
+      setIsLoading(false);
+      return setSite({});
     }
-  }, [id, setSite]);
+  }, [id, setSite, openToast, setIsLoading]);
 
   useEffect(() => {
     fetchDetails();
-  }, [id, fetchDetails]);
+  }, []);
 
   const defaultOnClose = () => {
     setActiveModalForm(null);

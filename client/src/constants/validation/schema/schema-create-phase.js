@@ -45,7 +45,7 @@ export const CreatePhaseSchema = yup.object().shape({
           test: function (value) {
             // remove the currently edited phase from the array being used for validation
             const filteredPhases = value.filter((phase) => {
-              return phase.id !== id;
+              return Number(phase.id) !== Number(id);
             });
             const overlappingPhaseIds = filteredPhases
               .filter((phase) => {

@@ -115,7 +115,7 @@ export const getAllPhases = async () => {
 export const checkDateOverlap = async (startDate, endDate, id = null) => {
   const phaseData = await getAllPhases();
   // remove the phase getting edited from the array of phases used to validate overlaps
-  const filteredData = id ? phaseData.filter((phase) => id !== phase.id) : phaseData;
+  const filteredData = phaseData.filter((phase) => Number(phase.id) !== Number(id));
 
   const isDateRangeInvalid = filteredData.some((phase) => {
     const phaseStartDate = Date.parse(phase.start_date);

@@ -7,7 +7,7 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { Table, Button, CheckPermissions } from '../../components/generic';
-import { NewSiteDialog, PhaseDialog } from '../../components/modal-forms';
+import { NewSiteDialog, PhaseDialog, BulkAllocationForm } from '../../components/modal-forms';
 
 import {
   Routes,
@@ -20,7 +20,7 @@ import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import { handleReportDownloadResult, sortObjects } from '../../utils';
 import { AuthContext } from '../../providers';
-import { FeatureFlaggedComponent, flagKeys } from '../../services';
+import { FeatureFlaggedComponent, flagKeys, featureFlag } from '../../services';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
 import { useTableStyles } from '../../components/tables/DataTable';
 import { SiteTableAllocation } from './SiteTableAllocation';
@@ -49,6 +49,7 @@ export default ({ sites, viewOnly }) => {
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
+  const [selectedSites, setSelectedSites] = useState([]);
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
   const [isLoadingReport, setLoadingReport] = useState(false);
@@ -163,6 +164,10 @@ export default ({ sites, viewOnly }) => {
     setActionMenuAnchorEl(event.currentTarget);
   };
 
+  const openBulkAllocationModal = () => {
+    setActiveModalForm('bulk-allocation');
+  };
+
   const closeActionMenu = () => {
     setActionMenuAnchorEl(null);
   };
@@ -198,6 +203,12 @@ export default ({ sites, viewOnly }) => {
         isNew={true}
       />
 
+      <BulkAllocationForm
+        open={activeModalForm === 'bulk-allocation'}
+        onClose={closeDialog}
+        sites={selectedSites}
+      />
+
       <Grid
         container
         alignContent='flex-start'
@@ -219,9 +230,18 @@ export default ({ sites, viewOnly }) => {
         </Grid>
 
         <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-          <Grid item xs={8} />
-          <Grid className={classes.rootItem} item xs={2}>
-            <Box px={2} display='flex' justifyContent='end'>
+          <Grid item xs={7} />
+          <Grid className={classes.rootItem} item xs={3}>
+            <Box px={2} display='flex' justifyContent='space-evenly'>
+              <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
+                <Button
+                  onClick={openBulkAllocationModal}
+                  text='Set Allocation'
+                  variant='outlined'
+                  fullWidth={false}
+                  disabled={selectedSites.length === 0}
+                />
+              </FeatureFlaggedComponent>
               <Button
                 onClick={openActionMenu}
                 endIcon={isActionMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -297,6 +317,12 @@ export default ({ sites, viewOnly }) => {
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
               rows={sort(rows)}
+              isMultiSelect={
+                roles.includes('ministry_of_health') &&
+                featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)
+              }
+              selectedRows={selectedSites}
+              updateSelectedRows={setSelectedSites}
               isLoading={isLoadingData}
               renderCell={(columnId, row) => {
                 if (columnObj(columnId).customComponent)

@@ -15,6 +15,7 @@ describe('Allocation functionality', () => {
     cy.contains('li', 'Create new phase').click();
 
     cy.get('[name=phaseName]').clear().type(phaseName);
+    // the MUI date component does not allow users to type, so cypress needs to mock a copy/paste keyboard action
     cy.get('[name=Startdate]').clear().type(`{ctrl+v}${startDate}`);
     cy.get('[name=Enddate]').clear().type(`{ctrl+v}${endDate}`);
 
@@ -82,7 +83,7 @@ describe('Allocation functionality', () => {
   it('Allocation must be a positive number', () => {
     // attempt to submit form with a negative allocation
     navigateToForm('set');
-
+    // the MUI number component does not allow users to type a negative, so cypress needs to mock a keydown action
     cy.get('[name=allocation]').type('1{downArrow}{downArrow}{downArrow}');
     cy.wait(500);
     cy.contains('button', 'Set').click();

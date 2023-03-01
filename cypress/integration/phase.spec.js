@@ -10,6 +10,7 @@ describe('Phase functionality', () => {
 
   const completePhaseForm = ({ phaseName, startDate, endDate }) => {
     cy.get('[name=phaseName]').clear().type(phaseName);
+    // the MUI date component does not allow users to type, so cypress needs to mock a copy/paste keyboard action
     cy.get('[name=Startdate]').clear().type(`{ctrl+v}${startDate}}`);
     cy.get('[name=Enddate]').clear().type(`{ctrl+v}${endDate}`);
 
@@ -101,6 +102,7 @@ describe('Phase functionality', () => {
   it('MoH can edit the start date and end date of a phase', () => {
     navigateToEditForm();
 
+    // the MUI date component does not allow users to type, so cypress needs to mock a copy/paste keyboard action
     cy.get('[name=Startdate]').clear().type(`{ctrl+v}1990/06/06`);
     cy.get('[name=Enddate]').clear().type(`{ctrl+v}1991/01/01`);
 

@@ -33,19 +33,19 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
   const { openToast } = useToast();
   const classes = useStyles();
   const [phases, setPhases] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isPendingRequests, setIsPendingRequests] = useState(true);
 
   useEffect(() => {
-    if (loading) {
+    if (isPendingRequests) {
       const fetchData = async () => {
         let phases = await fetchPhases();
         setPhases(phases);
-        setLoading(false);
+        setIsPendingRequests(false);
       };
 
       fetchData();
     }
-  }, [loading, content]);
+  }, [isPendingRequests, content]);
 
   const initialValues = content
     ? {
@@ -62,7 +62,6 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
       };
 
   const handleSubmit = async (phase) => {
-    console.log('WHAT IS HAPPENING');
     const phaseJson = {
       ...(isNew && { name: phase.phaseName }),
       start_date: phase.startDate,
@@ -91,7 +90,6 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
         onSubmit={handleSubmit}
       >
         {({ submitForm, errors }) => {
-          console.log(errors);
           // yup error message is a string - convert to an array of Id's to allow for a dynamic error message
           const phaseErrors = errors?.phases?.split(',').map(Number) || [];
           return (

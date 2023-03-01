@@ -30,6 +30,7 @@ describe('api e2e tests for /phase', () => {
         end_date: '2011/01/01',
       })
       .set(header);
+    console.log(res);
     expect(res.status).toEqual(201);
   });
 
@@ -43,6 +44,7 @@ describe('api e2e tests for /phase', () => {
         end_date: '2013/01/01',
       })
       .set(header);
+
     expect(res.status).toEqual(400);
   });
 
@@ -55,6 +57,7 @@ describe('api e2e tests for /phase', () => {
         end_date: '2010/12/31',
       })
       .set(header);
+    console.log(res);
     expect(res.status).toEqual(201);
   });
 

@@ -1,4 +1,4 @@
-export enum participantStatus {
+export enum ParticipantStatus {
   OPEN = 'open',
   PROSPECTING = 'prospecting',
   INTERVIEWING = 'interviewing',

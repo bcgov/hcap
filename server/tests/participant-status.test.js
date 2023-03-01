@@ -9,7 +9,7 @@ import { setParticipantStatus, hideStatusForUser } from '../services/participant
 import { startDB, closeDB } from './util/db';
 import { makeTestParticipant, makeTestSite } from './util/integrationTestData';
 
-import { participantStatus } from '../constants';
+import { ParticipantStatus } from '../constants';
 
 const {
   PROSPECTING,
@@ -21,7 +21,7 @@ const {
   INVALID_ARCHIVE,
   REJECTED,
   REJECT_ACKNOWLEDGEMENT,
-} = participantStatus;
+} = ParticipantStatus;
 
 const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
 

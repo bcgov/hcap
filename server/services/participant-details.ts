@@ -1,8 +1,8 @@
 import { dbClient, collections } from '../db';
-import { participantStatus } from '../constants';
+import { ParticipantStatus } from '../constants';
 import type { HcapUserInfo } from '../keycloak';
 
-const { HIRED, ARCHIVED } = participantStatus;
+const { HIRED, ARCHIVED } = ParticipantStatus;
 
 // Verify user to view participant details
 export const checkUserHasAccessToParticipant = async (id: number, user: HcapUserInfo) => {

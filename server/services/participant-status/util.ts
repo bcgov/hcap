@@ -1,5 +1,5 @@
 import { collections } from '../../db';
-import { participantStatus as ps } from '../../constants';
+import { ParticipantStatus as ps } from '../../constants';
 
 export const previousStatusesMap = {
   [ps.PROSPECTING]: [null, ps.REJECTED],

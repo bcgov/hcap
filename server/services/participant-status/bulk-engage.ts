@@ -1,4 +1,4 @@
-import { participantStatus } from '../../constants';
+import { ParticipantStatus } from '../../constants';
 import { getParticipantByID } from '../participants';
 import { setParticipantStatus } from './set-status';
 import type { HcapUserInfo } from '../../keycloak';
@@ -20,7 +20,7 @@ export const bulkEngageParticipants = async ({
       const { status } = await setParticipantStatus(
         user.id,
         id,
-        participantStatus.PROSPECTING,
+        ParticipantStatus.PROSPECTING,
         null,
         user
       );

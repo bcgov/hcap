@@ -20,7 +20,7 @@ import { setParticipantStatus } from '../services/participant-status';
 
 import { startDB, closeDB, cleanDB } from './util/db';
 
-import { participantStatus as ps } from '../constants';
+import { ParticipantStatus as ps } from '../constants';
 
 describe.skip('Server V1 Form Endpoints', () => {
   let server;

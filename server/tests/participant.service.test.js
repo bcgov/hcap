@@ -15,7 +15,7 @@ import {
   mapUserWithParticipant,
   withdrawParticipantsByEmail,
 } from '../services/participants';
-import { participantStatus as ps } from '../constants';
+import { ParticipantStatus as ps } from '../constants';
 
 import { setParticipantStatus } from '../services/participant-status';
 

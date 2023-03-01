@@ -1,7 +1,7 @@
 import { ValidationError } from 'yup';
 import { v4 } from 'uuid';
 import { app } from '../server';
-import { participantStatus as ps } from '../constants';
+import { ParticipantStatus as ps } from '../constants';
 
 import {
   saveSingleSite,

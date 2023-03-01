@@ -1,5 +1,5 @@
 import { collections, views } from '../../db';
-import { participantStatus } from '../../constants';
+import { ParticipantStatus } from '../../constants';
 import { FilteredParticipantsFinder } from './FilteredParticipantsFinder';
 import { RunContext } from './core';
 
@@ -14,7 +14,7 @@ const {
   PENDING_ACKNOWLEDGEMENT: pendingAcknowledgement,
   ROS: ros,
   REJECT_ACKNOWLEDGEMENT: rejectAcknowledgement,
-} = participantStatus;
+} = ParticipantStatus;
 
 export class FieldsFilteredParticipantsFinder {
   context: RunContext & { rosStatuses; orgSpecificJoin; dbClient };
@@ -89,7 +89,7 @@ export class FieldsFilteredParticipantsFinder {
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'id',
-          status: participantStatus.HIRED,
+          status: ParticipantStatus.HIRED,
           current: true,
         },
       },

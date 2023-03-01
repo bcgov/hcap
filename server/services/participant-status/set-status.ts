@@ -1,6 +1,6 @@
 import { UUID } from 'massive';
 import { dbClient, collections } from '../../db';
-import { participantStatus } from '../../constants';
+import { ParticipantStatus } from '../../constants';
 import { previousStatusesMap } from './util';
 import { handleStatusTransitions } from './handle-transition';
 
@@ -16,7 +16,7 @@ const {
   PENDING_ACKNOWLEDGEMENT,
   ALREADY_HIRED,
   REJECT_ACKNOWLEDGEMENT,
-} = participantStatus;
+} = ParticipantStatus;
 
 /** Gets current participant status with context of employer */
 const getCurrentStatus = async (
@@ -46,7 +46,7 @@ const getCurrentStatus = async (
 export const setParticipantStatus = async (
   employerId: string | UUID,
   participantId: string | UUID,
-  status: participantStatus,
+  status: ParticipantStatus,
   data, // JSONB on the status row
   user: { isEmployer?: boolean; sites?: number[]; id?: string } = {
     isEmployer: true,

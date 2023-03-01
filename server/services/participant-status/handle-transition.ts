@@ -1,7 +1,7 @@
 /** Helper file for `set-status` */
 import { invalidateAllStatusForSite } from './util';
 import { withdrawParticipant } from '../participants';
-import { participantStatus as ps } from '../../constants';
+import { ParticipantStatus as ps } from '../../constants';
 import { collections } from '../../db';
 
 const handleArchivedTransition = async ({

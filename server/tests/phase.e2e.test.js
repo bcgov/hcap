@@ -33,6 +33,19 @@ describe('api e2e tests for /phase', () => {
     expect(res.status).toEqual(201);
   });
 
+  it('should not allow MOH to create phase that starts on the same day the previous phase ended', async () => {
+    const header = await getKeycloakToken(ministryOfHealth);
+    const res = await request(app)
+      .post(`/api/v1/phase`)
+      .send({
+        name: 'Test not same day',
+        start_date: '2011/01/01',
+        end_date: '2013/01/01',
+      })
+      .set(header);
+    expect(res.status).toEqual(400);
+  });
+
   it('should allow MOH to edit an existing phase', async () => {
     const header = await getKeycloakToken(ministryOfHealth);
     const res = await request(app)
@@ -84,27 +97,14 @@ describe('api e2e tests for /phase', () => {
     expect(res.status).toEqual(400);
   });
 
-  it('should not allow MOH to create phase that starts on the same day the previous phase ended', async () => {
-    const header = await getKeycloakToken(ministryOfHealth);
-    const res = await request(app)
-      .post(`/api/v1/phase`)
-      .send({
-        name: 'Test not same day',
-        start_date: '2011/01/02',
-        end_date: '2013/01/01',
-      })
-      .set(header);
-    expect(res.status).toEqual(400);
-  });
-
   it('should allow MOH to create an additional phase - required to test overlapping validation on PATCH', async () => {
     const header = await getKeycloakToken(ministryOfHealth);
     const res = await request(app)
       .post(`/api/v1/phase`)
       .send({
         name: 'Test new phase',
-        start_date: '2011/02/02',
-        end_date: '2012/01/01',
+        start_date: '2012/02/02',
+        end_date: '2013/01/01',
       })
       .set(header);
     expect(res.status).toEqual(201);
@@ -115,8 +115,8 @@ describe('api e2e tests for /phase', () => {
     const res = await request(app)
       .patch(`/api/v1/phase/2`)
       .send({
-        start_date: '2011/05/30',
-        end_date: '2012/06/01',
+        start_date: '2011/01/01',
+        end_date: '2013/06/01',
       })
       .set(header);
     expect(res.status).toEqual(400);

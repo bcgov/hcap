@@ -72,7 +72,7 @@ export const getAllSitePhases = async (siteId) => {
       phase 
       LEFT JOIN site_phase_allocation spa ON phase.id = spa.phase_id AND spa.site_id = '$1'
       LEFT JOIN participants_status ps ON
-        ps.DATA ->> 'site' = '$1'
+        ps.DATA ->> 'site' = '$2'
         AND ps."current"
         AND to_date(
           ps.data ->> 'hiredDate', 'YYYY/MM/DD'
@@ -81,7 +81,7 @@ export const getAllSitePhases = async (siteId) => {
       phase.id, 
       spa.id
     `,
-    [site.id]
+    [site.id, site.siteId]
   );
 
   // Transform data format and return it

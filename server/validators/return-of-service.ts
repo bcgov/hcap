@@ -1,14 +1,13 @@
+import * as yup from 'yup';
 import { rosPositionTypeValues, rosEmploymentTypeValues } from '../constants';
 import { validISODateString } from './helpers';
-
-const yup = require('yup');
 
 export const CreateReturnOfServiceSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
     status: yup.string().optional(),
-    siteId: yup.number().optional('SiteId should be a number and specify an employer side id'),
+    siteId: yup.number().optional(),
     data: yup
       .object()
       .required('Data object is required')

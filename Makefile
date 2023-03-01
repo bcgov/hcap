@@ -72,7 +72,6 @@ local-run: local-build
 	npm run update-apps
 	@docker-compose -f docker-compose.dev.yml up
 
-
 local-kc-build:
 	@echo "Building test local app container"
 	@docker-compose -f docker-compose.test.yml build
@@ -118,20 +117,6 @@ local-cypress-tests:
 	@echo "Running all available Cypress tests"
 	@npx cypress run --headless
 
-clear-data:
-	@docker-compose -f docker-compose.test.yml exec server npm run clear-data
-
-local-testing-setup:
-	@docker stop ${APP_NAME}-server
-	@NODE_ENV="test" docker-compose -f docker-compose.test.yml up -d
-	@docker-compose -f docker-compose.test.yml exec server npm run clear-data
-	@docker-compose -f docker-compose.test.yml exec server npm run feed-participants participants.xlsx
-	@docker-compose -f docker-compose.test.yml exec server npm run feed-sites sites.xlsx
-	@docker-compose -f docker-compose.test.yml exec server npm run feed-data
-
-local-testing-teardown:
-	@docker stop ${APP_NAME}-server
-
 database: ## <Helper> :: Executes into database container.
 	@echo "Make: Shelling into local database container ..."
 	@export PGPASSWORD=$(POSTGRES_PASSWORD)
@@ -143,6 +128,20 @@ app: ## Bash into App container
 
 run-local-db: local-build
 	@docker-compose -f docker-compose.dev.yml up postgres
+
+# Local Development for Apple Silicon computers
+
+local-kc-m-build:
+	@echo "Building test local app container"
+	@docker-compose -f docker-compose.m.test.yml build
+
+local-kc-m-run:
+	@echo "Starting test local app container"
+	@docker-compose -f docker-compose.m.test.yml up -d
+
+local-kc-m-down:
+	@echo "Stopping local app container"
+	@docker-compose -f docker-compose.m.test.yml down --remove-orphans
 
 # Git Tagging Aliases
 

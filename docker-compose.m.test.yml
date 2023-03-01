@@ -1,0 +1,115 @@
+version: '2.4' # Depending on service condition was removed in v3+
+
+services:
+  client:
+    image: ${APP_NAME}-client
+    container_name: ${APP_NAME}-client
+    environment:
+      - REACT_APP_API_URL=http://hcapemployers.local.freshworks.club:8081
+    build:
+      context: ./client
+      dockerfile: Dockerfile.test
+    ports:
+      - 4000:4000
+    volumes:
+      - ./client:/client # Use client dir in host for hot reloading
+      - /client/node_modules # Use node_modules in container
+    depends_on:
+      - server
+    networks:
+      - backend
+
+  server:
+    image: ${APP_NAME}-server
+    container_name: ${APP_NAME}-server
+    build:
+      context: ./server
+      dockerfile: Dockerfile.test
+      args:
+        VERSION: ${COMMIT_SHA}
+    environment:
+      - APP_ENV=local
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - VERSION=${COMMIT_SHA}
+      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
+      - KEYCLOAK_AUTH_URL=${KEYCLOAK_LOCAL_AUTH_URL}
+      - KEYCLOAK_API_CLIENTID=${KEYCLOAK_API_CLIENTID}
+      - KEYCLOAK_API_SECRET=${KEYCLOAK_API_SECRET}
+      - KEYCLOAK_FE_CLIENTID=${KEYCLOAK_FE_CLIENTID}
+      - KEYCLOAK_SA_USERNAME=${KEYCLOAK_SA_USERNAME}
+      - KEYCLOAK_SA_PASSWORD=${KEYCLOAK_SA_PASSWORD}
+      - KEYCLOAK_LOCAL_USERNAME=${KEYCLOAK_LOCAL_USERNAME}
+      - KEYCLOAK_LOCAL_PASSWORD=${KEYCLOAK_LOCAL_PASSWORD}
+      - KEYCLOAK_LOCAL_SECRET=${KEYCLOAK_LOCAL_SECRET}
+      - SERVER_PORT=8081
+      - FEATURE_PHASE_ALLOCATION=${FEATURE_PHASE_ALLOCATION}
+    expose:
+      - '8081'
+    ports:
+      - '8081:8081'
+    volumes:
+      - ./server:/server # Use server dir in host for hot reloading
+      - /server/node_modules # Use node_modules in container
+    depends_on:
+      postgres:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: 'always'
+
+  postgres:
+    image: postgis/postgis:13-3.1-alpine
+    container_name: ${APP_NAME}-postgres
+    restart: always
+    expose:
+      - '5432'
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - ./.pgdata-test:/var/lib/postgresql/data
+      - ./.docker/postgres/sql-init:/docker-entrypoint-initdb.d
+    ports:
+      - '5432:5432'
+    networks:
+      - backend
+
+  keycloak:
+    image: ${APP_NAME}-keycloak
+    container_name: ${APP_NAME}-keycloak
+    build:
+      context: ./.docker/keycloak
+      dockerfile: Dockerfile.m1.test
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: db_test_keycloak
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KEYCLOAK_USER: ${KEYCLOAK_SA_USERNAME}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_SA_PASSWORD}
+      KEYCLOAK_IMPORT: /tmp/realm-testing.json -Dkeycloak.profile.feature.upload_scripts=enabled
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    networks:
+      backend:
+        aliases:
+          - keycloak.local.freshworks.club
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://keycloak.local.freshworks.club:8080/auth']
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 20s
+
+networks:
+  backend:
+    driver: 'bridge'

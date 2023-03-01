@@ -1,5 +1,5 @@
 import { dbClient, collections } from '../../db';
-import { withdrawParticipant } from './participant-single';
+import { withdrawParticipant } from './participant-entries';
 
 export const getHiredParticipantsBySite = async (siteID) => {
   const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]

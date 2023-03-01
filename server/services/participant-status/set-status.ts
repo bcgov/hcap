@@ -125,7 +125,10 @@ export const setParticipantStatus = async (
       currentStatus,
       currentStatusId,
     });
+    // If we got a result body in the status transitions, we can return it now
     if ('result' in transitionResult) return transitionResult.result;
+    // Otherwise, we carry on with the rest of the process
+
     // Ignore existingStatus invalidation
     const ignoreStatusInvalidation =
       'ignoreStatusInvalidation' in transitionResult

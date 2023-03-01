@@ -2,7 +2,7 @@ import * as yup from 'yup';
 import { validateDateIsReasonable, errorMessage, errorDateIsReasonable } from '../functions';
 
 export const CreatePhaseSchema = yup.object().shape({
-  id: yup.string(),
+  id: yup.string().nullable(true),
   phaseName: yup
     .string()
     .required('Phase name is required')
@@ -44,7 +44,9 @@ export const CreatePhaseSchema = yup.object().shape({
           name: 'validate-date-overlap',
           test: function (value) {
             // remove the currently edited phase from the array being used for validation
-            const filteredPhases = value.filter((phase) => phase.id !== id);
+            const filteredPhases = value.filter((phase) => {
+              return phase.id !== id;
+            });
             const overlappingPhaseIds = filteredPhases
               .filter((phase) => {
                 const phaseStartDate = Date.parse(phase.start_date);

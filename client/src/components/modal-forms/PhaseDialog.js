@@ -62,6 +62,7 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
       };
 
   const handleSubmit = async (phase) => {
+    console.log('WHAT IS HAPPENING');
     const phaseJson = {
       ...(isNew && { name: phase.phaseName }),
       start_date: phase.startDate,
@@ -86,11 +87,11 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
     <Dialog title={isNew ? 'Create Phase' : 'Edit Phase'} open={open} onClose={onClose}>
       <Formik
         initialValues={{ ...initialValues, phases: phases }}
-        enableReinitialize={true}
         validationSchema={CreatePhaseSchema}
         onSubmit={handleSubmit}
       >
         {({ submitForm, errors }) => {
+          console.log(errors);
           // yup error message is a string - convert to an array of Id's to allow for a dynamic error message
           const phaseErrors = errors?.phases?.split(',').map(Number) || [];
           return (

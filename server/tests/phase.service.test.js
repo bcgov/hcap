@@ -54,12 +54,12 @@ describe('Phase Allocation Endpoints', () => {
     expect(res.end_date).toEqual(new Date('2002/12/01'));
   });
 
-  it('checkDateOverlap, returns true is dates are overlapping and invalid', async () => {
+  it('checkDateOverlap, returns true if dates are overlapping and invalid', async () => {
     const res = await checkDateOverlap('2001/12/01', '2002/12/01');
     expect(res).toEqual(true);
   });
 
-  it('checkDateOverlap, returns false is dates are not overlapping and valid', async () => {
+  it('checkDateOverlap, returns false if dates are not overlapping and valid', async () => {
     const res = await checkDateOverlap('2022/01/01', '2023/01/01');
     expect(res).toEqual(false);
   });

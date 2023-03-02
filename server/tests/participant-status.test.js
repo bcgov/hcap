@@ -9,7 +9,7 @@ import { setParticipantStatus, hideStatusForUser } from '../services/participant
 import { startDB, closeDB } from './util/db';
 import { makeTestParticipant, makeTestSite } from './util/integrationTestData';
 
-import { participantStatus } from '../constants';
+import { ParticipantStatus } from '../constants';
 
 const {
   PROSPECTING,
@@ -21,7 +21,7 @@ const {
   INVALID_ARCHIVE,
   REJECTED,
   REJECT_ACKNOWLEDGEMENT,
-} = participantStatus;
+} = ParticipantStatus;
 
 const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
 
@@ -172,7 +172,7 @@ describe('Test Participant status data model and service', () => {
     const ps1 = await setParticipantStatus(
       emp1.id,
       participant.id,
-      'prospecting',
+      PROSPECTING,
       {
         site: site1.siteId,
       },
@@ -241,7 +241,7 @@ describe('Test Participant status data model and service', () => {
     await setParticipantStatus(
       emp2.id,
       participant.id,
-      'interviewing',
+      INTERVIEWING,
       {
         site: site1.siteId,
       },
@@ -286,7 +286,7 @@ describe('Test Participant status data model and service', () => {
     await setParticipantStatus(
       emp3.id,
       participant.id,
-      'prospecting',
+      PROSPECTING,
       {
         site: site2.siteId,
       },
@@ -337,7 +337,7 @@ describe('Test Participant status data model and service', () => {
     const ps1 = await setParticipantStatus(
       emp1.id,
       participant.id,
-      'prospecting',
+      PROSPECTING,
       {
         site: site1.siteId,
       },
@@ -410,7 +410,7 @@ describe('Test Participant status data model and service', () => {
     const ps1 = await setParticipantStatus(
       emp1.id,
       participant.id,
-      'prospecting',
+      PROSPECTING,
       {
         site: site1.siteId,
       },

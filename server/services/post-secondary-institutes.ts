@@ -5,7 +5,7 @@ import { validate, CreatePSISchema } from '../validation';
 
 /**
  *
- * @param {*} psi object data transfer object from client
+ * @param psi object data transfer object from client
  * @returns object { success: boolean, message: string, status: string }
  */
 export const mapToDbModel = (psi) => ({
@@ -45,7 +45,7 @@ export const getAllPSIWithCohorts = async () => {
   return results;
 };
 
-export const getPSI = async (id) =>
+export const getPSI = async (id: number) =>
   dbClient.db[collections.POST_SECONDARY_INSTITUTIONS].find({
     id,
   });
@@ -71,7 +71,10 @@ export const makePSI = async (psi) => {
   }
 };
 
-export const updatePSI = async (id, update) => {
+export const updatePSI = async (
+  id: number,
+  update: { instituteName: string; streetAddress?: string }
+) => {
   // Check PSI is available or not
   const [psi] = await getPSI(id);
   if (!psi) {

@@ -1,6 +1,19 @@
 import { dbClient, collections } from '../db';
+import { postHireStatuses } from '../constants';
 
-export const invalidatePostHireStatus = async ({ participantId }) =>
+interface HasParticipantId {
+  participantId: number;
+}
+
+interface PostHireStatus extends HasParticipantId {
+  status: postHireStatuses;
+  data: {
+    graduationDate?: string;
+    unsuccessfulCohortDate?: string;
+  };
+}
+
+export const invalidatePostHireStatus = async ({ participantId }: HasParticipantId) =>
   dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS].update(
     { participant_id: participantId },
     {
@@ -8,14 +21,14 @@ export const invalidatePostHireStatus = async ({ participantId }) =>
     }
   );
 
-export const createPostHireStatus = async ({ participantId, status, data }) =>
+export const createPostHireStatus = async ({ participantId, status, data }: PostHireStatus) =>
   dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS].insert({
     participant_id: participantId,
     status,
     data,
   });
 
-export const getPostHireStatusesForParticipant = async ({ participantId }) =>
+export const getPostHireStatusesForParticipant = async ({ participantId }: HasParticipantId) =>
   dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS].find(
     {
       participant_id: participantId,
@@ -25,7 +38,10 @@ export const getPostHireStatusesForParticipant = async ({ participantId }) =>
     }
   );
 
-export const getPostHireStatusesForCohortParticipant = async (participantId, cohortId) => {
+export const getPostHireStatusesForCohortParticipant = async (
+  participantId: number,
+  cohortId: number
+) => {
   const statuses = await dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS]
     .join({
       cohortJoin: {
@@ -53,7 +69,7 @@ export const getPostHireStatusesForCohortParticipant = async (participantId, coh
 };
 
 // Get the post-hire-status for the participant
-export const getPostHireStatus = async (participantId, cohortId = -1) => {
+export const getPostHireStatus = async (participantId: number, cohortId = -1) => {
   const statuses =
     cohortId !== -1
       ? await getPostHireStatusesForCohortParticipant(participantId, cohortId)

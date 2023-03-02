@@ -15,6 +15,7 @@ import {
 import { patchObject, sanitize } from '../utils';
 
 import { UserParticipantEditSchema, validate } from '../validation';
+import { ParticipantStatus } from '../constants';
 
 // Router
 const router = express.Router();
@@ -147,7 +148,7 @@ router.post(
     if (participants.length > 0) {
       const participant = participants[0];
       const isHired = participant.currentStatuses?.some(
-        (statusObj) => statusObj.status === 'hired'
+        (statusObj) => statusObj.status === ParticipantStatus.HIRED
       );
       if (!isHired && !['no', 'withdrawn'].includes(participant.body?.interested)) {
         await withdrawParticipant({ ...participant.body, id });

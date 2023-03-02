@@ -4,7 +4,13 @@ import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
 import { CreatePhaseSchema, UpdatePhaseSchema } from '../validation';
 import { expressRequestBodyValidator } from '../middleware';
-import { createPhase, updatePhase, getAllSitePhases, getAllPhases } from '../services/phase';
+import {
+  createPhase,
+  updatePhase,
+  getAllSitePhases,
+  getAllPhases,
+  checkDateOverlap,
+} from '../services/phase';
 import { getSitesForUser } from '../services/employers';
 import { FEATURE_PHASE_ALLOCATION } from '../services/feature-flags';
 
@@ -86,6 +92,12 @@ router.post(
     expressRequestBodyValidator(CreatePhaseSchema),
   ],
   asyncMiddleware(async (req, resp) => {
+    const isRangeInvalid = await checkDateOverlap(req.body.start_date, req.body.end_date);
+    if (isRangeInvalid)
+      return resp
+        .status(400)
+        .send('Failed to create phase due to overlapping dates with existing phases');
+
     if (!FEATURE_PHASE_ALLOCATION) {
       return resp.status(501).send('Phase allocation feature not active');
     }
@@ -118,6 +130,15 @@ router.patch(
     expressRequestBodyValidator(UpdatePhaseSchema),
   ],
   asyncMiddleware(async (req, resp) => {
+    const isRangeInvalid = await checkDateOverlap(
+      req.body.start_date,
+      req.body.end_date,
+      req.params.id
+    );
+    if (isRangeInvalid)
+      return resp
+        .status(400)
+        .send('Failed to update phase due to overlapping dates with existing phases');
     if (!FEATURE_PHASE_ALLOCATION) {
       return resp.status(501).send('Phase allocation feature not active');
     }

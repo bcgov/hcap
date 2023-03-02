@@ -20,10 +20,11 @@ import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import { handleReportDownloadResult, sortObjects } from '../../utils';
 import { AuthContext } from '../../providers';
-import { FeatureFlaggedComponent, flagKeys } from '../../services';
+import { FeatureFlaggedComponent, flagKeys, featureFlag } from '../../services';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
 import { useTableStyles } from '../../components/tables/DataTable';
 import { SiteTableAllocation } from './SiteTableAllocation';
+import { SetBulkAllocation } from './SetBulkAllocation';
 
 const columns = [
   { id: 'siteId', name: 'Site ID' },
@@ -49,6 +50,7 @@ export default ({ sites, viewOnly }) => {
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
+  const [selectedSites, setSelectedSites] = useState([]);
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
   const [isLoadingReport, setLoadingReport] = useState(false);
@@ -219,9 +221,12 @@ export default ({ sites, viewOnly }) => {
         </Grid>
 
         <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-          <Grid item xs={8} />
-          <Grid className={classes.rootItem} item xs={2}>
-            <Box px={2} display='flex' justifyContent='end'>
+          <Grid item xs={7} />
+          <Grid className={classes.rootItem} item xs={3}>
+            <Box px={2} display='flex' justifyContent='space-evenly'>
+              <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
+                <SetBulkAllocation sites={selectedSites} />
+              </FeatureFlaggedComponent>
               <Button
                 onClick={openActionMenu}
                 endIcon={isActionMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -297,6 +302,12 @@ export default ({ sites, viewOnly }) => {
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
               rows={sort(rows)}
+              isMultiSelect={
+                roles.includes('ministry_of_health') &&
+                featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)
+              }
+              selectedRows={selectedSites}
+              updateSelectedRows={setSelectedSites}
               isLoading={isLoadingData}
               renderCell={(columnId, row) => {
                 if (columnObj(columnId).customComponent)

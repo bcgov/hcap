@@ -122,7 +122,7 @@ async function sendEmail(email, otp, delay) {
 }
 
 function printProgress(progress) {
-  process.stdout.clearLine();
+  process.stdout.clearLine(0);
   process.stdout.cursorTo(0);
   process.stdout.write(progress);
 }
@@ -146,17 +146,17 @@ const serialSend = async (emails, retryDelay, retryLimit, mailRate) => {
         const earlier = new Date();
         await sendEmail(email.email_address, email.otp, sendDelay);
         const later = new Date();
-        const timeToSend = later - earlier;
+        const timeToSend = later.getTime() - earlier.getTime();
         // Add time to send to previous times to send array,
         previousTTS.unshift(timeToSend);
         if (previousTTS.length > 100) previousTTS.length = 100;
         // calculate average of last 100 email sends
-        const delayAverage = average(previousTTS).toFixed(2);
+        const delayAverage = average(previousTTS);
         // Cleaner way to build long template string
         const data = [
           `Delay: ${timeToSend}`,
-          `Total Time: ${((later - start) / 1000).toFixed(0)}s`,
-          `Delay Avg: ${delayAverage}`,
+          `Total Time: ${((later.getTime() - start.getTime()) / 1000).toFixed(0)}s`,
+          `Delay Avg: ${delayAverage.toFixed(2)}`,
           `Rate Avg: ${delayAverage > 0 ? (1000 / delayAverage).toFixed(2) : 'NaN'}`,
           `${i + 1}/${emails.length}`,
           `ID: ${email.otp}`,

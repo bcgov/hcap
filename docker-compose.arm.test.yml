@@ -85,7 +85,7 @@ services:
     container_name: ${APP_NAME}-keycloak
     build:
       context: ./.docker/keycloak
-      dockerfile: Dockerfile.m1.test
+      dockerfile: Dockerfile.arm.test
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres

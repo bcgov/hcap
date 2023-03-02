@@ -74,9 +74,9 @@ Some of the images used by this project do not support ARM architecture or emula
 
 For Apple Silicon computers, please use the following commands:
 
-- local-kc-m-build
-- local-kc-m-run
-- local-kc-m-down
+- local-kc-arm-build
+- local-kc-arm-run
+- local-kc-arm-down
 
 As a side note, the architecture linux/amd64 is also for x86 Intel chips and though it tends to be easier to be emulated, it is still not optimal for Silicon computers.
 

@@ -145,17 +145,17 @@ run-local-db: local-build
 
 # Local Development for Apple Silicon computers
 
-local-kc-m-build:
+local-kc-arm-build:
 	@echo "Building test local app container"
-	@docker-compose -f docker-compose.m.test.yml build
+	@docker-compose -f docker-compose.arm.test.yml build
 
-local-kc-m-run:
+local-kc-arm-run:
 	@echo "Starting test local app container"
-	@docker-compose -f docker-compose.m.test.yml up -d
+	@docker-compose -f docker-compose.arm.test.yml up -d
 
-local-kc-m-down:
+local-kc-arm-down:
 	@echo "Stopping local app container"
-	@docker-compose -f docker-compose.m.test.yml down --remove-orphans
+	@docker-compose -f docker-compose.arm.test.yml down --remove-orphans
 
 # Git Tagging Aliases
 

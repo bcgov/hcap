@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import process from 'process';
 import './load-env';
-import csv from 'fast-csv';
+import * as csv from 'fast-csv';
 import path from 'path';
 import { writeFileSync } from 'fs';
 import { dbClient } from '../db';
@@ -37,9 +37,9 @@ const modes: {
     mapper: (result) => ({
       'Participant ID': result.participantId,
       'Employer ID': result.employerId,
-      'Employer Email': result.employerInfo.email,
-      'Employer Health Regions': result.employerInfo.regions,
-      'Reason for Rejection': result.rejection.final_status,
+      'Employer Email': result.employerInfo ? result.employerInfo.email : null,
+      'Employer Health Regions': result.employerInfo ? result.employerInfo.regions : null,
+      'Reason for Rejection': result.rejection ? result.rejection.final_status : null,
       'Date Rejected': result.date,
     }),
   },
@@ -96,10 +96,12 @@ const modes: {
         const string = Buffer.concat(chunks).toString();
         writeFileSync(path.join(__dirname, mode.filename), string);
         console.log('Done');
+        process.exit();
       });
 
     csvStream.end();
   } catch (error) {
     console.error(`Failed to retrieve participant stats, ${error}`);
+    process.exit();
   }
 })();

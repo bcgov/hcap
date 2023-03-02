@@ -21,7 +21,7 @@ describe('Allocation functionality', () => {
     cy.contains('button', 'Create').click();
   };
 
-  const selAllocationForm = ({ allocation }) => {
+  const setAllocationForm = ({ allocation }) => {
     cy.get('[name=allocation]').clear().type(allocation);
 
     cy.contains('button', 'Set').click();
@@ -47,7 +47,7 @@ describe('Allocation functionality', () => {
     const formValues = {
       allocation: '90',
     };
-    selAllocationForm(formValues);
+    setAllocationForm(formValues);
 
     // expect: no errors, success message.
     cy.contains('.Mui-error').should('not.exist');
@@ -97,8 +97,7 @@ describe('Allocation functionality', () => {
     const formValues = {
       allocation: '30',
     };
-    selAllocationForm(formValues);
-    cy.contains('button', 'Set').click();
+    setAllocationForm(formValues);
 
     // expect: no errors, success message.
     cy.contains('.Mui-error').should('not.exist');

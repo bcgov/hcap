@@ -4,14 +4,27 @@ import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
 import { scrollUp } from '../../utils';
-import store from 'store';
 import { Routes } from '../../constants';
 import { EditSiteForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
-import { ToastStatus, EditSiteSchema, API_URL } from '../../constants';
+import { flagKeys, featureFlag } from '../../services';
+import { ToastStatus, EditSiteSchema } from '../../constants';
 import { SiteDetailTabContext } from '../../providers';
+import { fetchSitePhases } from '../../services/phases';
+import { fetchSiteParticipants, updateSite, fetchSite } from '../../services/site';
 
 const SiteViewDetailsTabs = lazy(() => import('./SiteViewDetailsTabs'));
+
+const columnIDs = [
+  { id: 'participantId', name: 'ID' },
+  { id: 'participantName', name: 'Name' },
+  { id: 'hiredDate', name: 'Hire Date' },
+  { id: 'startDate', name: 'Start Date' },
+  { id: 'nonHCAP', name: 'Position' },
+  { id: 'archive', name: 'Archive' },
+  { id: 'withdrawnDate', name: 'Withdrawn Date' },
+  { id: 'reason', name: 'Reason' },
+];
 
 const useStyles = makeStyles(() => ({
   cardRoot: {
@@ -19,24 +32,50 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+/**
+ * Takes the data from the db and formats it for the table
+ * @param {*} response: raw data from API call
+ * @returns
+ */
+const mapSiteParticipantsDataToRow = (response, columnIDs) => {
+  return response.map((row) => {
+    // Pull all relevant props from row based on columns constant
+    const values = {
+      participantId: row.participant_id,
+      participantName: `${row.participantJoin.body.firstName} ${row.participantJoin.body.lastName}`,
+      hiredDate: row.data.hiredDate,
+      startDate: row.data.startDate,
+      withdrawnDate: row.data.endDate,
+      reason: row.data.reason,
+      nonHCAP: row.data.nonHcapOpportunity ? 'Non-HCAP' : 'HCAP',
+    };
+
+    const mappedRow = columnIDs.reduce(
+      (accumulator, column) => ({
+        ...accumulator,
+        [column.id]: values[column.id],
+      }),
+      {}
+    );
+    // Add additional props (user ID, button) to row
+    return {
+      ...mappedRow,
+      id: row.id,
+    };
+  });
+};
+
 export default ({ match }) => {
   const { openToast } = useToast();
   const classes = useStyles();
   const [site, setSite] = useState({});
   const [activeModalForm, setActiveModalForm] = useState(null);
+  const [hasFetched, setHasFetched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const id = match.params.id;
 
   const handleSiteEdit = async (site) => {
-    const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(site),
-    });
+    const response = await updateSite(site, id);
     setIsLoading(false);
     if (response.ok) {
       setActiveModalForm(null);
@@ -50,21 +89,39 @@ export default ({ match }) => {
   };
 
   const fetchDetails = useCallback(async () => {
-    const response = await fetch(`${API_URL}/api/v1/employer-sites/${id}`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
+    setHasFetched(true);
+    setIsLoading(true);
+    const response = await fetchSite(id);
     if (response.ok) {
-      setSite(await response.json());
+      const site = await response.json();
+      let phases = [];
+      if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
+        phases = await fetchSitePhases(site.id);
+      }
+      const participants = await fetchSiteParticipants(columnIDs, site.siteId);
+      const { hired, withdrawn } = await participants.json();
+      const hiredParticipants = mapSiteParticipantsDataToRow(hired, columnIDs);
+      const withdrawnParticipants = mapSiteParticipantsDataToRow(withdrawn, columnIDs);
+      setIsLoading(false);
+      return setSite({
+        ...site,
+        hiredParticipants,
+        withdrawnParticipants,
+        phases,
+      });
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
+      setIsLoading(false);
+      return setSite({});
     }
-  }, [id, setSite]);
+  }, [id, setSite, openToast, setIsLoading]);
 
   useEffect(() => {
-    fetchDetails();
-  }, [id, fetchDetails]);
+    if (!hasFetched) fetchDetails();
+  }, [hasFetched, fetchDetails]);
 
   const defaultOnClose = () => {
     setActiveModalForm(null);
@@ -176,7 +233,12 @@ export default ({ match }) => {
                   ) : null}
                 </Box>
               </Box>
-              <SiteViewDetailsTabs id={id} siteId={site.siteId} />
+              <SiteViewDetailsTabs
+                id={id}
+                siteId={site.siteId}
+                fetchDetails={fetchDetails}
+                isLoading={isLoading}
+              />
             </Card>
           </SiteDetailTabContext.TabProvider>
         </CheckPermissions>

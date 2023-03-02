@@ -19,8 +19,9 @@ const useStyles = makeStyles(() => ({
     gap: '25px',
   },
   list: {
-    overflow: 'scroll',
+    overflow: 'auto',
     maxHeight: '250px',
+    overflowX: 'hidden',
   },
   listItem: {
     fontSize: '14px',

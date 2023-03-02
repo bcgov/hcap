@@ -1,4 +1,4 @@
-# SSL certificates Renewal Process
+# SSL Certificates Renewal Process
 
 SSL certificates for the Dev and Test environments are automatically renewed using let's encrypt through a tool called openshift-acme.
 

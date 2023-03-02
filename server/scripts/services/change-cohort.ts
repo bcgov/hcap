@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 // Usage: node scripts/cli.js --service=changeCohort --participantId=23 --newCohort="Temp555" --newPSI="Freshworks Tech" --oldCohort="Laba2.2022" --oldPSI="Freshworks Tech"
-const { optionValidator } = require('./common');
-const { changeCohortParticipant, findCohortByName } = require('../../services/cohorts');
-const { getParticipantByID } = require('../../services/participants');
+import { optionValidator } from './common';
+import { changeCohortParticipant, findCohortByName } from '../../services/cohorts';
+import { getParticipantByID } from '../../services/participants';
 
-const serviceMethod = async (options) => {
+export const changeCohort = async (options) => {
   const { participantId, newCohort, newPSI, oldCohort, oldPSI } = options;
   const [success, message, usageMessage] = optionValidator({
     options,
@@ -53,8 +53,4 @@ const serviceMethod = async (options) => {
   } catch (error) {
     return { success: false, message: `Error: ${error}`, usageMessage: '' };
   }
-};
-
-module.exports = {
-  changeCohort: serviceMethod,
 };

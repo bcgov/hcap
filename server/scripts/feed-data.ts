@@ -26,17 +26,18 @@ import { collections } from '../db/schema';
     // all responses to inserts, including duplicates and errors
     const response = [];
     // for debugging: the last record attempted to process before error
-    /**
-     * @type {any}
-     */
-    let lastInsert = '';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let lastInsert: any = '';
 
     try {
       const rootDirectory = 'csv/';
 
       await dbClient.connect();
 
-      const readCSV = async (tableName) => {
+      // WARN: should really be `unknown`! This code should be tightened.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const readCSV = async (tableName): Promise<any[]> => {
         const options = { objectMode: true, headers: true, renameHeaders: false };
 
         return new Promise((resolve, reject) => {
@@ -118,7 +119,9 @@ import { collections } from '../db/schema';
         // reverse direction of array to delete dependent records first
         for (const tableName of [...tableNames].reverse()) {
           const tableData = testingData[tableName] ?? {};
-          const ids = Object.values(tableData).map((entry) => entry.id);
+          const ids = Object.values(tableData).map((entry) =>
+            entry && typeof entry === 'object' && 'id' in entry ? entry.id : null
+          );
           if (ids.length > 0) {
             console.log('Deleting data from table', tableName);
             await dbClient.db[tableName].destroy({ id: ids });

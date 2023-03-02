@@ -98,7 +98,7 @@ describe('Allocation functionality', () => {
     const formValues = {
       allocation: '30',
     };
-    selAllocationForm(formValues);
+    setAllocationForm(formValues);
 
     // expect: no errors, success message.
     cy.contains('.Mui-error').should('not.exist');

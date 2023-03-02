@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '../../components/generic';
 import { Box } from '@material-ui/core';
+import { fetchPhases } from '../../services/phases';
 
 import { BulkAllocationForm } from '../../components/modal-forms/BulkAllocationForm';
 
 export const SetBulkAllocation = ({ sites }) => {
   const [activeModalForm, setActiveModalForm] = useState(null);
+  const [phases, setPhases] = useState(null);
+  const [isPendingRequests, setIsPendingRequests] = useState(true);
+
   const closeDialog = () => {
     setActiveModalForm(null);
   };
@@ -14,12 +18,25 @@ export const SetBulkAllocation = ({ sites }) => {
     setActiveModalForm('bulk-allocation');
   };
 
+  useEffect(() => {
+    if (isPendingRequests) {
+      const fetchData = async () => {
+        let phases = await fetchPhases();
+        setPhases(phases);
+        setIsPendingRequests(false);
+      };
+
+      fetchData();
+    }
+  }, [isPendingRequests, phases]);
+
   return (
     <>
       <BulkAllocationForm
         open={activeModalForm === 'bulk-allocation'}
         onClose={closeDialog}
         sites={sites}
+        phases={phases}
       />
       <Box>
         <Button

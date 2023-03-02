@@ -57,3 +57,17 @@ export const updateAllocation = async (allocationId: number, allocation, user: H
   const res = await dbClient.db[collections.SITE_PHASE_ALLOCATION].update(allocationId, data);
   return res;
 };
+
+// export const createBulkAllocation = async (payload: any, user: HcapUserInfo) => {
+//   payload.siteIds.map((id) => {
+//     const data = {
+//       allocation: payload.allocation,
+//       phase_id: payload.phase.id,
+//       site_id: id,
+//     };
+
+//     return createAllocation(data, user);
+//   });
+//   // const res = await dbClient.db[collections.SITE_PHASE_ALLOCATION].insert(data);
+//   // return res;
+// };

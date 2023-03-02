@@ -26,3 +26,17 @@ export const updateAllocation = async (allocationId, payload) => {
   });
   return response;
 };
+
+// export const bulkAllocation = async (payload) => {
+//   console.log(payload);
+//   const response = await fetch(`${API_URL}/api/v1/allocation/bulk-allocation`, {
+//     method: 'POST',
+//     headers: {
+//       Authorization: `Bearer ${store.get('TOKEN')}`,
+//       Accept: 'application/json',
+//       'Content-type': 'application/json',
+//     },
+//     body: JSON.stringify(payload),
+//   });
+//   return response;
+// };

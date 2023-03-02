@@ -1,6 +1,14 @@
 import store from 'store';
 import { API_URL } from '../constants';
 
+export const fetchSite = async (siteId) => {
+  const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}`, {
+    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    method: 'GET',
+  });
+  return response;
+};
+
 export const fetchRegionSiteRows = async (columns) => {
   const response = await fetch(`${API_URL}/api/v1/employer-sites/region`, {
     headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
@@ -16,7 +24,6 @@ export const fetchSiteRows = async (columns) => {
   });
   return mapSiteRowsResponse(response, columns);
 };
-
 /**
  *
  * @param {*} response API Request response
@@ -57,5 +64,27 @@ export const createSite = async (siteJson) => {
     },
     body: JSON.stringify(siteJson),
   });
+  return response;
+};
+
+export const updateSite = async (payload, siteId) => {
+  const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+  return response;
+};
+
+export const fetchSiteParticipants = async (columnIDs, siteId) => {
+  const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
+    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    method: 'GET',
+  });
+
   return response;
 };

@@ -42,19 +42,19 @@ export const BulkAllocationForm = ({ onClose, open, sites, phases = [] }) => {
       ...values,
     };
     console.log(payload);
-    // const response = await bulkAllocation(payload);
-    // if (response.ok) {
-    //   openToast({
-    //     status: ToastStatus.Success,
-    //     message: `${sites.length} sites have been assigned allocations`,
-    //   });
-    //   await onClose();
-    // } else {
-    //   openToast({
-    //     status: ToastStatus.Error,
-    //     message: response.error || response.statusText || 'Server error',
-    //   });
-    // }
+    const response = await bulkAllocation(payload);
+    if (response.ok) {
+      openToast({
+        status: ToastStatus.Success,
+        message: `${sites.length} sites have been assigned allocations`,
+      });
+      await onClose();
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
+    }
   };
 
   return (

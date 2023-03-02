@@ -15,8 +15,9 @@ describe('Allocation functionality', () => {
     cy.contains('li', 'Create new phase').click();
 
     cy.get('[name=phaseName]').clear().type(phaseName);
+    // the MUI date component does not allow users to type, so cypress needs to mock a copy/paste keyboard action
     cy.get('[name=Startdate]').clear().type(`{ctrl+v}${startDate}`);
-    cy.get('[name=Enddate]').clear().type(`{ctrl+v}2022/06/30${endDate}`);
+    cy.get('[name=Enddate]').clear().type(`{ctrl+v}${endDate}`);
 
     cy.contains('button', 'Create').click();
   };
@@ -38,8 +39,8 @@ describe('Allocation functionality', () => {
     // create new phase to assign allocation to
     const phaseData = {
       phaseName: 'Allocation Testing Phase',
-      startDate: '2021/03/30',
-      endDate: '2022/03/30',
+      startDate: '1996/01/01',
+      endDate: '1997/01/01',
     };
     createPhase(phaseData);
     // happy path
@@ -59,8 +60,8 @@ describe('Allocation functionality', () => {
     //  this phase can be used for the following tests
     const phaseData = {
       phaseName: 'Allocation Testing Phase Two',
-      startDate: '2023/03/30',
-      endDate: '2024/03/30',
+      startDate: '1993/01/01',
+      endDate: '1994/01/01',
     };
     createPhase(phaseData);
     // attempt to submit empty form
@@ -82,7 +83,7 @@ describe('Allocation functionality', () => {
   it('Allocation must be a positive number', () => {
     // attempt to submit form with a negative allocation
     navigateToForm('set');
-
+    // the MUI number component does not allow users to type a negative, so cypress needs to mock a keydown action
     cy.get('[name=allocation]').type('1{downArrow}{downArrow}{downArrow}');
     cy.wait(500);
     cy.contains('button', 'Set').click();

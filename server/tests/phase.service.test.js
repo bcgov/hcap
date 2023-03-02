@@ -3,7 +3,13 @@
  */
 import { v4 } from 'uuid';
 import { app } from '../server';
-import { getAllSitePhases, getAllPhases, createPhase, updatePhase } from '../services/phase';
+import {
+  getAllSitePhases,
+  getAllPhases,
+  createPhase,
+  updatePhase,
+  checkDateOverlap,
+} from '../services/phase';
 
 import { siteData } from './util/testData';
 import { makeTestSite } from './util/integrationTestData';
@@ -28,8 +34,8 @@ describe('Phase Allocation Endpoints', () => {
   it('Create new phase, receive success', async () => {
     const phaseMock = {
       name: 'Test Phase name',
-      start_date: '2023/10/12',
-      end_date: '2025/10/12',
+      start_date: '2001/01/01',
+      end_date: '2002/01/01',
     };
     const res = await createPhase(phaseMock, user);
     expect(res.name).toEqual('Test Phase name');
@@ -39,13 +45,23 @@ describe('Phase Allocation Endpoints', () => {
     const res = await updatePhase(
       1,
       {
-        start_date: '2024/10/12',
-        end_date: '2027/10/12',
+        start_date: '2000/12/01',
+        end_date: '2002/12/01',
       },
       user
     );
-    expect(res.start_date).toEqual(new Date('2024/10/12'));
-    expect(res.end_date).toEqual(new Date('2027/10/12'));
+    expect(res.start_date).toEqual(new Date('2000/12/01'));
+    expect(res.end_date).toEqual(new Date('2002/12/01'));
+  });
+
+  it('checkDateOverlap, returns true if dates are overlapping and invalid', async () => {
+    const res = await checkDateOverlap('2001/12/01', '2002/12/01');
+    expect(res).toEqual(true);
+  });
+
+  it('checkDateOverlap, returns false if dates are not overlapping and valid', async () => {
+    const res = await checkDateOverlap('2022/01/01', '2023/01/01');
+    expect(res).toEqual(false);
   });
 
   it('getAllPhases, returns all phase records', async () => {

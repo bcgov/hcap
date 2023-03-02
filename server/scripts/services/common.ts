@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-const { Buffer } = require('buffer');
+import { Buffer } from 'buffer';
 
-const optionValidator = ({ options, keys = [] }) => {
+export const optionValidator = ({ options, keys = [] }) => {
   const requiredKeys = [];
   const usage = [];
   keys.forEach((key) => {
@@ -18,7 +18,7 @@ const optionValidator = ({ options, keys = [] }) => {
   return [true, ''];
 };
 
-const processServiceConfig = (configStr) => {
+export const processServiceConfig = (configStr) => {
   // Decode
   const buffer = Buffer.from(configStr, 'base64');
   const decoded = buffer.toString('utf8').trim();
@@ -45,9 +45,4 @@ const processServiceConfig = (configStr) => {
     }
   });
   return config;
-};
-
-module.exports = {
-  optionValidator,
-  processServiceConfig,
 };

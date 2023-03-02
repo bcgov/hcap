@@ -66,6 +66,20 @@ Go to `http://keycloak.local.freshworks.club:8080/auth` console and add users/as
   - `make local-testing-teardown`
   - `make local-kc-run`
 
+### Apple Silicon Computers
+
+Docker images, despite their renowned portability, are sensitive to the chip architecture they are built and run on (Docker calls this the “platform”). Apple Silicon Computers use an ARM architecture (linux/arm64) for its chips instead of the traditional x86 architecture used on Intel chips. 
+
+Some of the images used by this project do not support ARM architecture or emulation, for that reason different images need to be used. To minimize potential impact on other developers and environments, a new docker-compose was created specifically to be used when working with Apple Silicon computers.
+
+For Apple Silicon computers, please use the following commands:
+
+- local-kc-arm-build
+- local-kc-arm-run
+- local-kc-arm-down
+
+As a side note, the architecture linux/amd64 is also for x86 Intel chips and though it tends to be easier to be emulated, it is still not optimal for Silicon computers.
+
 ## Using the Application
 
 The application's public routes can be accessed at http://hcapparticipants.local.freshworks.club:4000.

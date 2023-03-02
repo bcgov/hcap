@@ -72,7 +72,6 @@ local-run: local-build
 	npm run update-apps
 	@docker-compose -f docker-compose.dev.yml up
 
-
 local-kc-build:
 	@echo "Building test local app container"
 	@docker-compose -f docker-compose.test.yml build
@@ -143,6 +142,20 @@ app: ## Bash into App container
 
 run-local-db: local-build
 	@docker-compose -f docker-compose.dev.yml up postgres
+
+# Local Development for Apple Silicon computers
+
+local-kc-arm-build:
+	@echo "Building test local app container"
+	@docker-compose -f docker-compose.arm.test.yml build
+
+local-kc-arm-run:
+	@echo "Starting test local app container"
+	@docker-compose -f docker-compose.arm.test.yml up -d
+
+local-kc-arm-down:
+	@echo "Stopping local app container"
+	@docker-compose -f docker-compose.arm.test.yml down --remove-orphans
 
 # Git Tagging Aliases
 

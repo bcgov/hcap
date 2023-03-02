@@ -169,15 +169,17 @@ describe('Phase Allocation Endpoints', () => {
       },
     ];
 
-    hiredStartDates.map(async (hiredStartDate, i) => {
-      await makeHiredParticipant({
-        emailAddress: `participantemail${i}@test.com`,
-        employerId: 1,
-        siteId: site.siteId,
-        hiredDate: hiredStartDate.hiredDate,
-        startDate: hiredStartDate.startDate,
-      });
-    });
+    await Promise.all(
+      hiredStartDates.map(async (hiredStartDate, i) => {
+        await makeHiredParticipant({
+          emailAddress: `participantemail${i}@test.com`,
+          employerId: 1,
+          siteId: site.siteId,
+          hiredDate: hiredStartDate.hiredDate,
+          startDate: hiredStartDate.startDate,
+        });
+      })
+    );
 
     // Testing get all phases for the site to see how many hires for each phase
     const sitePhases = await getAllSitePhases(site.id);

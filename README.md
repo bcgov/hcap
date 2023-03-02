@@ -129,9 +129,9 @@ This application uses both a PostgreSQL database as its main storage as well as 
 
 For more information, see [*Database*](docs/database.md).
 
-## SSL Certificates Renewal
+## SSL certificates Renewal
 
-SSL Certificates for the Dev and Test environments are automatically renewed using let's encrypt through a tool called openshift-acme.
+SSL certificates for the Dev and Test environments are automatically renewed using Let's Encrypt through a tool called `openshift-acme`.
 
 For more information on how that is setup, see [*SSL Certificates Renewal Tool*](docs/ssl-certificates-renewal.md)
 

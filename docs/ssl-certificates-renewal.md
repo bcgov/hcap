@@ -1,6 +1,6 @@
-# SSL Certificates Renewal Process
+# SSL certificates Renewal Process
 
-SSL Certificates for the Dev and Test environments are automatically renewed using let's encrypt through a tool called openshift-acme.
+SSL certificates for the Dev and Test environments are automatically renewed using let's encrypt through a tool called openshift-acme.
 
 ## Openshift-ACME
 
@@ -20,7 +20,7 @@ As part of the renewal process, Openshift-ACME exposes a new temporary route on 
 
 ### How is Openshift-ACME set up on this project?
 
-Openshift-ACME was deployed using [Single Namespace deployment strategy](https://github.com/tnozicka/openshift-acme/tree/master/deploy#single-namespace).
+Openshift-ACME was deployed using the [Single Namespace deployment strategy](https://github.com/tnozicka/openshift-acme/tree/master/deploy#single-namespace).
 
 #### Considerations
 * Read all the deployment documentation mentioned above carefully.

@@ -8,6 +8,7 @@ import {
   participantStatuses,
   sortFields,
   orderDirections,
+  ParticipantStatus,
 } from '../constants';
 
 import {
@@ -185,7 +186,7 @@ export const ParticipantStatusChange = yup
         });
       }
 
-      if (status === 'hired') {
+      if (status === ParticipantStatus.HIRED) {
         return schema.noUnknown('Unknown field in form').shape({
           startDate: yup
             .string()

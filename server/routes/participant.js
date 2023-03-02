@@ -42,7 +42,7 @@ import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
 import { expressRequestBodyValidator } from '../middleware/index';
 
-import { participantStatus } from '../constants';
+import { ParticipantStatus } from '../constants';
 
 export const participantRouter = express.Router();
 export const participantsRouter = express.Router();
@@ -50,7 +50,7 @@ export const newHiredParticipantRouter = express.Router();
 export const employerActionsRouter = express.Router();
 
 const { ALREADY_HIRED, INVALID_STATUS, INVALID_STATUS_TRANSITION, INVALID_ARCHIVE } =
-  participantStatus;
+  ParticipantStatus;
 
 // Get details of a participant by ID
 participantRouter.get(
@@ -309,12 +309,12 @@ newHiredParticipantRouter.post(
       participantInfo.userUpdatedAt = new Date().toJSON();
 
       const response = await makeParticipant(participantInfo);
-      await setParticipantStatus(user.id, response.id, 'prospecting');
-      await setParticipantStatus(user.id, response.id, 'interviewing', {
+      await setParticipantStatus(user.id, response.id, ParticipantStatus.PROSPECTING);
+      await setParticipantStatus(user.id, response.id, ParticipantStatus.INTERVIEWING, {
         contacted_at: participantInfo.contactedDate,
       });
-      await setParticipantStatus(user.id, response.id, 'offer_made');
-      await setParticipantStatus(user.id, response.id, 'hired', {
+      await setParticipantStatus(user.id, response.id, ParticipantStatus.OFFER_MADE);
+      await setParticipantStatus(user.id, response.id, ParticipantStatus.HIRED, {
         site: participantInfo.site,
         nonHcapOpportunity: !participantInfo.hcapOpportunity,
         positionTitle: participantInfo.positionTitle,

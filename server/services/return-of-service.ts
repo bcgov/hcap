@@ -4,7 +4,28 @@ import { rosError } from '../constants';
 import { getParticipantHiredStatuses } from './participant-status';
 import logger from '../logger';
 
-const getRosParticipantStatus = async (participantId) => {
+interface RosParticipant {
+  data: {
+    date?: string;
+  };
+  site_id: number;
+}
+
+interface RosStatus {
+  participantId: number;
+  data;
+  siteId?: number;
+  status?: string;
+}
+
+interface UpdateROSStatusParams {
+  participantId: number;
+  data;
+  user: string;
+  status?;
+}
+
+const getRosParticipantStatus = async (participantId: number) => {
   const rosParticipantStatuses = await dbClient.db[collections.ROS_STATUS].find({
     participant_id: participantId,
     is_current: true,
@@ -15,7 +36,7 @@ const getRosParticipantStatus = async (participantId) => {
   return rosParticipantStatuses[0];
 };
 
-const getDbSiteId = async (site) => {
+const getDbSiteId = async (site: number) => {
   const sites = await dbClient.db[collections.EMPLOYER_SITES].find({
     'body.siteId': site,
   });
@@ -25,7 +46,12 @@ const getDbSiteId = async (site) => {
   return sites[0].id;
 };
 
-const validateRosUpdateBody = (rosParticipant, updatedSite, updatedDate, updatedStartDate) => {
+const validateRosUpdateBody = (
+  rosParticipant: RosParticipant,
+  updatedSite: boolean,
+  updatedDate: boolean,
+  updatedStartDate: boolean
+) => {
   if (!rosParticipant.data) {
     throw new Error(rosError.fieldNotFound);
   }
@@ -42,11 +68,17 @@ const validateRosUpdateBody = (rosParticipant, updatedSite, updatedDate, updated
 
 /**
  * Invalidate all ros statuses for participant
- * @param {object} param
- * @param {any} param.db db transaction | optional database object
- * @param {any} param.participantId participant int | required participant id
+ * @param param
+ * @param param.db db transaction | optional database object
+ * @param param.participantId participant int | required participant id
  */
-const invalidateReturnOfServiceStatus = async ({ db = null, participantId }) => {
+const invalidateReturnOfServiceStatus = async ({
+  db = null,
+  participantId,
+}: {
+  db?;
+  participantId: number;
+}) => {
   const dbObj = db || dbClient.db;
   await dbObj[collections.ROS_STATUS].update(
     {
@@ -70,7 +102,7 @@ export const createReturnOfServiceStatus = async ({
   data,
   siteId = null,
   status = 'assigned-same-site',
-}) => {
+}: RosStatus) => {
   const statuses = await getParticipantHiredStatuses(participantId);
   let siteDbId = siteId;
   if (!siteDbId) {
@@ -86,13 +118,6 @@ export const createReturnOfServiceStatus = async ({
   };
   return insertReturnOfServiceStatus({ participantId, rosBody });
 };
-
-interface UpdateROSStatusParams {
-  participantId;
-  data;
-  user;
-  status?;
-}
 
 export const updateReturnOfServiceStatus = async ({
   participantId,
@@ -149,7 +174,7 @@ export const getReturnOfServiceStatuses = async ({ participantId }) =>
       }
     );
 
-const getRosErrorMessage = (messageType) => {
+const getRosErrorMessage = (messageType: string) => {
   switch (messageType) {
     case rosError.participantNotHired:
       return { label: 'Participant is not hired', statusCode: 400 };
@@ -173,7 +198,7 @@ const getRosErrorMessage = (messageType) => {
   }
 };
 
-export const logRosError = (actionName, err) => {
+export const logRosError = (actionName: string, err: Error) => {
   logger.error({
     action: actionName,
     error: err.message,

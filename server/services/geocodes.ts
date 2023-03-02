@@ -1,6 +1,6 @@
 import { dbClient, collections } from '../db';
 
-const queryPoint = async (postalCode) => {
+const queryPoint = async (postalCode: string) => {
   const spacedCode = postalCode.includes(' ')
     ? postalCode
     : `${postalCode.substring(0, 3)} ${postalCode.substring(3)}`;
@@ -34,7 +34,7 @@ const queryPoint = async (postalCode) => {
   return { match: null };
 };
 
-export const getPointsFromPostalCodes = async (postalCodes) => {
+export const getPointsFromPostalCodes = async (postalCodes: string | string[]) => {
   if (Array.isArray(postalCodes)) {
     const points = postalCodes.map((postalCode) => queryPoint(postalCode));
     const values = (await Promise.allSettled(points)).map((result) => {
@@ -53,14 +53,14 @@ export const getPointsFromPostalCodes = async (postalCodes) => {
   return { [postalCodes]: point };
 };
 
-export const getParticipantCoords = async (participantID) => {
+export const getParticipantCoords = async (participantID: number | string) => {
   const res = await dbClient.runRawQuery(
     `SELECT body->'location' FROM ${collections.PARTICIPANTS} where id=${Number(participantID)};`
   );
   return res;
 };
 
-export const getSiteCoords = async (siteID) => {
+export const getSiteCoords = async (siteID: number | string) => {
   const res = await dbClient.runRawQuery(
     `SELECT body->'location' FROM ${collections.EMPLOYER_SITES} where id=${Number(siteID)}`
   );

@@ -3,43 +3,57 @@
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import { dbClient, collections } from '../db';
+import { HcapUserInfo } from '../keycloak';
 import { getSiteByID } from './employers';
 
 dayjs.extend(isBetween);
 
-/**
- * @typedef {import('./employers').EmployerSite} employerSite
- *
- * @typedef  {Object} sitePhase
- * @property {number} id             Internal ID of the phase
- * @property {string} phaseName      Human readable phase name
- * @property {string} startDate      Date string seperated by slashes, e.g. '2020/01/01'
- * @property {string} endDate        Date string seperated by slashes, e.g. '2020/01/01'
- * @property {number} allocation     Number of allocations available
- * @property {number} remainingHires Number of remaining hires
- * @property {number} hcapHires      Number of hires from HCAP
- * @property {number} nonHcapHires   Number of hires from outside HCAP
- */
+type sitePhase = {
+  /** Internal ID of the phase */
+  id: number;
+  /** Human readable phase name */
+  phaseName: string;
+  /** Date string seperated by slashes, e.g. '2020/01/01' */
+  startDate: string;
+  /** Date string seperated by slashes, e.g. '2020/01/01' */
+  endDate: string;
+  /** Number of allocations available */
+  allocation: number;
+  /** Number of remaining hires */
+  remainingHires: number;
+  /** Number of hires from HCAP */
+  hcapHires: number;
+  /** Number of hires from outside HCAP */
+  nonHcapHires: number;
+};
 
 /**
  * Gets all phases for a site
- * @param {number} siteId Database ID of the site
- * @returns {Promise<sitePhase[]>} Phases for the site
+ * @param siteId Database ID of the site
+ * @returns Phases for the site
  */
-export const getAllSitePhases = async (siteId) => {
+export const getAllSitePhases = async (siteId: number): Promise<sitePhase[]> => {
   const site = await getSiteByID(siteId);
 
-  /**
-   * @typedef {Object} sitePhasesResponse  Internal type for DB response to the `getAllSitePhases` query
-   * @property {number} id                 Internal ID of the phase
-   * @property {string} name               Name of the phase
-   * @property {Date} start_date           Start date of the phase
-   * @property {Date} end_date             End date of the phase
-   * @property {number} allocation         Number of employees allocated for this phase at this site
-   * @property {number} allocation_id      Internal ID of the allocation connected to the site/phase
-   * @property {string} hcap_hires         Number of HCAP employees hired (as a string)
-   * @property {string} non_hcap_hires     Number of non-HCAP employees hired (as a string)
-   */
+  /** Internal type for DB response to the `getAllSitePhases` query */
+  type sitePhasesResponse = {
+    /** Internal ID of the phase */
+    id: number;
+    /** Name of the phase */
+    name: string;
+    /** Start date of the phase */
+    start_date: Date;
+    /** End date of the phase */
+    end_date: Date;
+    /** Number of employees allocated for this phase at this site */
+    allocation: number;
+    /** Internal ID of the allocation connected to the site/phase */
+    allocation_id: number;
+    /** Number of HCAP employees hired (as a string) */
+    hcap_hires: string;
+    /** Number of non-HCAP employees hired (as a string) */
+    non_hcap_hires: string;
+  };
 
   /**
    * Raw result from a custom query.
@@ -49,9 +63,8 @@ export const getAllSitePhases = async (siteId) => {
    * * Finds the phase allocations for each phase at this site
    * * For each phase, counts the number of currently hired employees within its timespan
    * * Splits these hires into HCAP and non-HCAP hires
-   * @type {sitePhasesResponse[]}
    */
-  const sitePhases = await dbClient.runRawQuery(
+  const sitePhases: sitePhasesResponse[] = await dbClient.runRawQuery(
     `
     SELECT 
       phase.id, 
@@ -106,13 +119,13 @@ export const getAllPhases = async () => {
   return phases;
 };
 
-export const createPhase = async (phase, user) => {
+export const createPhase = async (phase, user: HcapUserInfo) => {
   const phaseData = { ...phase, created_by: user.id, updated_by: user.id };
   const res = await dbClient.db[collections.GLOBAL_PHASE].insert(phaseData);
   return res;
 };
 
-export const updatePhase = async (phaseId, phase, user) => {
+export const updatePhase = async (phaseId, phase, user: HcapUserInfo) => {
   const phaseData = { ...phase, updated_by: user.id };
   const res = await dbClient.db[collections.GLOBAL_PHASE].update(phaseId, phaseData);
   return res;

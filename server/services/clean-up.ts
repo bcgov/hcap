@@ -1,21 +1,16 @@
 import { dbClient } from '../db';
 
 /**
- * Helpers
+ * @returns a list of stale in-progress participants statuses
  */
-/**
- * @description Returns a list of stale in-progress participants statuses
- * @returns {Promise<Array>}
- */
-const staleInProgressParticipants = async () => {
+const staleInProgressParticipants = async (): Promise<Array<unknown>> => {
   // Get all in-progress participant statuses
   const queryString = `select id, participant_id, status, employer_id, created_at::date as last_updated from participants_status ps where status in ('prospecting', 'interviewing', 'offer_made') and current = true and created_at < (NOW() - interval '30 day') order by participant_id, id;`;
   return dbClient.db.query(queryString);
 };
 
 /**
- * @description - Invalidate stale in-progress participants statuses
- * @returns {Promise<void>}
+ * Invalidate stale in-progress participants statuses
  */
 const staleParticipantsStatusInvalidation = async () => {
   const updateStatement = `DO $$
@@ -41,8 +36,7 @@ const staleParticipantsStatusInvalidation = async () => {
 };
 
 /**
- * @description - Clean and free all stale in-progress participants statuses and return those statuses as report
- * @returns {Promise<Array<Object>>}
+ * Clean and free all stale in-progress participants statuses and return those statuses as report
  */
 export const cleanStaleInProgressParticipant = async () => {
   // Print all stale in-progress participants
@@ -58,8 +52,7 @@ export const cleanStaleInProgressParticipant = async () => {
 };
 
 /**
- * @description - Creates a table of all participants that should currently be Open - Never engaged, or current status = rejected / reject_ack
- * @returns {Promise<any>}
+ * Creates a table of all participants that should currently be Open - Never engaged, or current status = rejected / reject_ack
  * NOTE: A current weakness of this script is that it does not cover participants who have been marked as interested again by MoH
  */
 export const createStaleOpenParticipantsTable = async () => {
@@ -145,9 +138,8 @@ export const createStaleOpenParticipantsTable = async () => {
 /**
  * Gets all participants from temporary table who haven't been updated in 6 months
  * Relies on createStaleOpenParticipantsTable
- * @returns {Promise<Array<Object>>}
  */
-export const getStaleOpenParticipants = async () => {
+export const getStaleOpenParticipants = async (): Promise<Array<unknown>> => {
   const getQuery = `
     SELECT * FROM stale_open_participants_table
     WHERE last_updated < (NOW() - interval '6 month');
@@ -167,7 +159,6 @@ export const dropStaleOpenParticipantsTable = async () => {
 
 /**
  * For all the expired participants, invalidates their statuses and withdraws the participant
- * @returns {Promise<void>}
  */
 export const invalidateStaleOpenParticipants = async () => {
   const updateStatement = `DO $$

@@ -13,10 +13,14 @@ import {
 import { createAllocation } from '../services/allocations';
 
 import { siteData } from './util/testData';
-import { makeTestParticipant, makeTestParticipantStatus, makeTestSite } from './util/integrationTestData';
+import {
+  makeTestParticipant,
+  makeTestParticipantStatus,
+  makeTestSite,
+} from './util/integrationTestData';
 
 import { startDB, closeDB } from './util/db';
-import { participantStatus } from '../constants';
+import { ParticipantStatus } from '../constants';
 
 describe('Phase Allocation Endpoints', () => {
   let server;
@@ -99,23 +103,29 @@ describe('Phase Allocation Endpoints', () => {
     const phaseYearTwo = await createPhase(phaseMockYearTwo, user);
 
     const siteMock = siteData({
-      siteId: 7,
+      siteId: 8,
       siteName: 'Test phase',
       operatorEmail: 'test.e2e.phase@hcap.io',
     });
     const site = await makeTestSite(siteMock);
 
     // An allocation for each created phase
-    await createAllocation({
-      site_id: site.id,
-      phase_id: phaseYearOne.id,
-      allocation: numAllocations,
-    }, user);
-    await createAllocation({
-      site_id: site.id,
-      phase_id: phaseYearTwo.id,
-      allocation: numAllocations,
-    }, user);
+    await createAllocation(
+      {
+        site_id: site.id,
+        phase_id: phaseYearOne.id,
+        allocation: numAllocations,
+      },
+      user
+    );
+    await createAllocation(
+      {
+        site_id: site.id,
+        phase_id: phaseYearTwo.id,
+        allocation: numAllocations,
+      },
+      user
+    );
 
     // Helper function for creating a participant with a hired status
     const makeHiredParticipant = async ({
@@ -129,16 +139,16 @@ describe('Phase Allocation Endpoints', () => {
       await makeTestParticipantStatus({
         participantId: participant.id,
         employerId,
-        status: participantStatus.HIRED,
+        status: ParticipantStatus.HIRED,
         current: true,
         data: {
           site: siteId,
           hiredDate,
           startDate,
           nonHcapOpportunity: false,
-        }
+        },
       });
-    }
+    };
 
     const hiredStartDates = [
       {
@@ -154,30 +164,29 @@ describe('Phase Allocation Endpoints', () => {
         startDate: '2016/03/15',
       },
       {
-        hiredDate: '2017/04/15',  // Should not be in a phase
+        hiredDate: '2017/04/15', // Should not be in a phase
         startDate: '2017/05/15',
       },
     ];
 
-    for (let i = 0; i < hiredStartDates.length; i++) {
+    hiredStartDates.map(async (hiredStartDate, i) => {
       await makeHiredParticipant({
         emailAddress: `participantemail${i}@test.com`,
         employerId: 1,
         siteId: site.siteId,
-        hiredDate: hiredStartDates[i].hiredDate,
-        startDate: hiredStartDates[i].startDate,
+        hiredDate: hiredStartDate.hiredDate,
+        startDate: hiredStartDate.startDate,
       });
-    }
+    });
 
     // Testing get all phases for the site to see how many hires for each phase
     const sitePhases = await getAllSitePhases(site.id);
-    const retrievedPhaseYearOne = sitePhases.find(phase => phase.id === phaseYearOne.id);
-    const retrievedPhaseYearTwo = sitePhases.find(phase => phase.id === phaseYearTwo.id);
+    const retrievedPhaseYearOne = sitePhases.find((phase) => phase.id === phaseYearOne.id);
+    const retrievedPhaseYearTwo = sitePhases.find((phase) => phase.id === phaseYearTwo.id);
 
     expect(retrievedPhaseYearOne.hcapHires).toEqual(2);
-    expect(retrievedPhaseYearOne.remainingHires).toEqual(numAllocations-2);
+    expect(retrievedPhaseYearOne.remainingHires).toEqual(numAllocations - 2);
     expect(retrievedPhaseYearTwo.hcapHires).toEqual(1);
-    expect(retrievedPhaseYearTwo.remainingHires).toEqual(numAllocations-1);
-    
+    expect(retrievedPhaseYearTwo.remainingHires).toEqual(numAllocations - 1);
   });
 });

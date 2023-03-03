@@ -28,7 +28,7 @@ export const SetBulkAllocation = ({ sites, handleFormSubmit }) => {
     let phases = await fetchPhases('?includeAllocations=true');
     setPhases(phases);
     setIsPendingRequests(false);
-  }, [fetchPhases, setIsPendingRequests, setPhases]);
+  }, [setIsPendingRequests, setPhases]);
 
   useEffect(() => {
     if (isPendingRequests) fetchData();

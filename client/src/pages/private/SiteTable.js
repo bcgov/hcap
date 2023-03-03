@@ -75,6 +75,7 @@ export default ({ sites, viewOnly }) => {
   };
 
   const fetchSites = async () => {
+    setSelectedSites([]);
     setLoadingData(true);
     const rowsData = isHA ? await fetchRegionSiteRows(columns) : await fetchSiteRows(columns);
 
@@ -225,7 +226,7 @@ export default ({ sites, viewOnly }) => {
           <Grid className={classes.rootItem} item xs={3}>
             <Box px={2} display='flex' justifyContent='space-evenly'>
               <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-                <SetBulkAllocation sites={selectedSites} />
+                <SetBulkAllocation sites={selectedSites} handleFormSubmit={handleFormSubmit} />
               </FeatureFlaggedComponent>
               <Button
                 onClick={openActionMenu}

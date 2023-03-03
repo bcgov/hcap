@@ -5,7 +5,7 @@ import { fetchPhases } from '../../services/phases';
 
 import { BulkAllocationForm } from '../../components/modal-forms/BulkAllocationForm';
 
-export const SetBulkAllocation = ({ sites }) => {
+export const SetBulkAllocation = ({ sites, handleFormSubmit }) => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [phases, setPhases] = useState(null);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
@@ -21,7 +21,7 @@ export const SetBulkAllocation = ({ sites }) => {
   useEffect(() => {
     if (isPendingRequests) {
       const fetchData = async () => {
-        let phases = await fetchPhases();
+        let phases = await fetchPhases('?includeAllocations=true');
         setPhases(phases);
         setIsPendingRequests(false);
       };
@@ -35,6 +35,7 @@ export const SetBulkAllocation = ({ sites }) => {
       <BulkAllocationForm
         open={activeModalForm === 'bulk-allocation'}
         onClose={closeDialog}
+        afterSubmit={handleFormSubmit}
         sites={sites}
         phases={phases}
       />

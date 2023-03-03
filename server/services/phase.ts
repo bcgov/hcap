@@ -111,11 +111,22 @@ export const getAllSitePhases = async (siteId: number): Promise<sitePhase[]> => 
   }));
 };
 
-export const getAllPhases = async () => {
+export const getAllPhases = async (query = null) => {
   // NOTE: this will not allow for full access to the phase list once it hits that 100k limit!
   // If there is any chance of this hitting that number, or if performance starts to suffer,
   // pagination support should be added.
-  const phases = await dbClient.db[collections.GLOBAL_PHASE].find({}, { limit: 100000 });
+  const phases = await dbClient.db[collections.GLOBAL_PHASE]
+    .join({
+      allocations: {
+        relation: collections.SITE_PHASE_ALLOCATION,
+        type: 'LEFT OUTER',
+        omit: !query?.includeAllocations,
+        on: {
+          phase_id: 'id',
+        },
+      },
+    })
+    .find({}, { limit: 100000 });
 
   // Transform dates format and return it
   return phases.map((phase) => ({

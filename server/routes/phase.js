@@ -1,4 +1,5 @@
 import express from 'express';
+import * as qs from 'querystring';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
@@ -68,8 +69,8 @@ router.get(
     keycloak.getUserInfoMiddleware(),
   ],
   asyncMiddleware(async (req, res) => {
-    const { hcapUserInfo: user } = req;
-    const result = await getAllPhases();
+    const { query, hcapUserInfo: user } = req;
+    const result = await getAllPhases(query);
 
     logger.info({
       action: 'phases_get',

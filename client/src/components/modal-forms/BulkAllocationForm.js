@@ -26,11 +26,13 @@ const useStyles = makeStyles(() => ({
 }));
 
 export const createPhaseDropdown = (phases) => {
-  return phases.map((phase) => ({
-    value: phase.id,
-    label: `${phase.name} - ${dateToTextString(phase.start_date)} -
+  return phases
+    .sort((a, b) => new Date(b.end_date) - new Date(a.end_date))
+    .map((phase) => ({
+      value: phase.id,
+      label: `${phase.name} - ${dateToTextString(phase.start_date)} -
     ${dateToTextString(phase.end_date)}`,
-  }));
+    }));
 };
 
 export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases = [] }) => {

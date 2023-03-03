@@ -34,7 +34,7 @@ export const SetBulkAllocation = ({ sites, handleFormSubmit }) => {
     if (isPendingRequests) {
       fetchData();
     }
-  }, [isPendingRequests, phases]);
+  }, [isPendingRequests, fetchData]);
 
   return (
     <>

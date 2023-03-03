@@ -37,10 +37,6 @@ export const BulkAllocationSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
-    acknowledgement: yup
-      .boolean()
-      .nullable()
-      .test('is-true', 'Please confirm', (v) => v === true),
     allocation: yup
       .number()
       .required('Allocations are required')
@@ -63,4 +59,10 @@ export const BulkAllocationSchema = yup
         })
       )
       .nullable(),
+    acknowledgement: yup.boolean().when('existingAllocations', {
+      is: (val) => val.length > 0,
+      then: (boolSchema) =>
+        boolSchema.test('is-true', 'Must acknowledge override', (v) => v === true),
+      otherwise: (schema) => schema.nullable(),
+    }),
   });

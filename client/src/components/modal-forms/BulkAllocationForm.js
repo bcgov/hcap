@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable */
+import React from 'react';
 import { Button, Dialog } from '../generic';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -30,13 +31,14 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
   const { openToast } = useToast();
   const classes = useStyles();
   const siteIds = sites.map(({ id }) => id);
-  const [existingAllocations, setExistingAllocations] = useState([]);
   const initialValues = {
     allocation: '',
     phase_id: '',
+    existingAllocations: [],
+    acknowledgement: false,
   };
 
-  const handleSetAllocation = (phaseId) => {
+  const handleSetAllocation = (phaseId, setValue) => {
     // get all allocations associated to the selected phase
     // filter the allocations and return all that are associated to the sites selected.
     const allocations = phases
@@ -49,14 +51,16 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
         site_id,
       }));
 
-    setExistingAllocations(allocations);
+    console.log(allocations);
+    // setExistingAllocations(allocations);
+    setValue('existingAllocations', allocations);
   };
 
   const handleSubmit = async (values) => {
+    console.log(values);
     const payload = {
       siteIds,
       ...values,
-      existingAllocations: existingAllocations,
     };
     const response = await bulkAllocation(payload);
     if (response.ok) {
@@ -83,55 +87,59 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
         onSubmit={handleSubmit}
         validationSchema={BulkAllocationSchema}
       >
-        {({ submitForm, setFieldValue }) => (
-          <FormikForm>
-            <Box my={3} style={{ gap: '25px' }}>
-              <Field
-                name='phase_id'
-                type='number'
-                component={RenderSelectField}
-                placeholder='Select phase'
-                label='* Phase name'
-                options={createPhaseDropdown(phases)}
-                onChange={({ target }) => {
-                  handleSetAllocation(target.value);
-                  setFieldValue('phase_id', target.value);
-                }}
-              />
-            </Box>
-            <Box my={3} style={{ gap: '25px' }}>
-              <Field
-                name='allocation'
-                component={RenderTextField}
-                type='number'
-                label='* Number of allocation'
-                placeholder='Type or select'
-              />
-            </Box>
-            {existingAllocations.length > 0 && (
-              <Field
-                name='acknowledgement'
-                component={RenderCheckbox}
-                label='I acknowledge that one or more site already has an allocation set. Submitting this form will override those allocation.'
-              />
-            )}
-            <Box display='flex' justifyContent='space-between' my={3}>
-              <Button
-                className={classes.formButton}
-                onClick={onClose}
-                color='default'
-                text='Cancel'
-              />
-              <Button
-                className={classes.formButton}
-                onClick={submitForm}
-                variant='contained'
-                color='primary'
-                text='Set'
-              />
-            </Box>
-          </FormikForm>
-        )}
+        {({ submitForm, setFieldValue, values, errors }) => {
+          console.log(errors);
+          return (
+            <FormikForm>
+              <Box my={3} style={{ gap: '25px' }}>
+                <Field
+                  name='phase_id'
+                  type='number'
+                  component={RenderSelectField}
+                  placeholder='Select phase'
+                  label='* Phase name'
+                  options={createPhaseDropdown(phases)}
+                  onChange={({ target }) => {
+                    handleSetAllocation(target.value, setFieldValue);
+                    setFieldValue('phase_id', target.value);
+                  }}
+                />
+              </Box>
+              <Box my={3} style={{ gap: '25px' }}>
+                <Field
+                  name='allocation'
+                  component={RenderTextField}
+                  type='number'
+                  label='* Number of allocation'
+                  placeholder='Type or select'
+                />
+              </Box>
+              {values.existingAllocations.length > 0 && (
+                <Field
+                  name='acknowledgement'
+                  component={RenderCheckbox}
+                  label='I acknowledge that one or more site already has an allocation set. Submitting this form will override those allocation.'
+                />
+              )}
+              <Box display='flex' justifyContent='space-between' my={3}>
+                <Button
+                  className={classes.formButton}
+                  onClick={onClose}
+                  color='default'
+                  text='Cancel'
+                />
+                <Button
+                  className={classes.formButton}
+                  onClick={submitForm}
+                  variant='contained'
+                  color='primary'
+                  text='Set'
+                  disabled={errors?.acknowledgement}
+                />
+              </Box>
+            </FormikForm>
+          );
+        }}
       </Formik>
     </Dialog>
   );

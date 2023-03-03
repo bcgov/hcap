@@ -28,7 +28,6 @@ export const updateAllocation = async (allocationId, payload) => {
 };
 
 export const bulkAllocation = async (payload) => {
-  console.log('PAYLOAD 2', payload);
   const response = await fetch(`${API_URL}/api/v1/allocation/bulk-allocation`, {
     method: 'POST',
     headers: {

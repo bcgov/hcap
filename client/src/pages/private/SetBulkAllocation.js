@@ -14,6 +14,11 @@ export const SetBulkAllocation = ({ sites, handleFormSubmit }) => {
     setActiveModalForm(null);
   };
 
+  const handleAfterSave = async () => {
+    await handleFormSubmit();
+    closeDialog();
+  };
+
   const openBulkAllocationModal = () => {
     setActiveModalForm('bulk-allocation');
   };
@@ -35,7 +40,7 @@ export const SetBulkAllocation = ({ sites, handleFormSubmit }) => {
       <BulkAllocationForm
         open={activeModalForm === 'bulk-allocation'}
         onClose={closeDialog}
-        afterSubmit={handleFormSubmit}
+        afterSubmit={handleAfterSave}
         sites={sites}
         phases={phases}
       />

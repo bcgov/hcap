@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '../../components/generic';
 import { Box } from '@material-ui/core';
 import { fetchPhases } from '../../services/phases';
@@ -24,16 +24,14 @@ export const SetBulkAllocation = ({ sites, handleFormSubmit }) => {
     setActiveModalForm('bulk-allocation');
   };
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     let phases = await fetchPhases('?includeAllocations=true');
     setPhases(phases);
     setIsPendingRequests(false);
-  };
+  }, [fetchPhases, setIsPendingRequests, setPhases]);
 
   useEffect(() => {
-    if (isPendingRequests) {
-      fetchData();
-    }
+    if (isPendingRequests) fetchData();
   }, [isPendingRequests, fetchData]);
 
   return (

@@ -21,7 +21,6 @@ const useStyles = makeStyles(() => ({
     maxHeight: '100px',
     overflow: 'auto',
     overflowX: 'hidden',
-    paddingBottom: '5px',
   },
 }));
 
@@ -127,11 +126,9 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
                       {`The following (${existingAllocations.length}) sites already have allocations assigned:`}
                     </Typography>
                     <ul className={classes.list}>
-                      {existingAllocations
-                        // .filter((site) => phaseErrors.includes(phase.id))
-                        .map((site) => (
-                          <li key={site.id}>{site.siteName}</li>
-                        ))}
+                      {existingAllocations.map((site) => (
+                        <li key={site.id}>{site.siteName}</li>
+                      ))}
                     </ul>
                   </Alert>
                 </Box>

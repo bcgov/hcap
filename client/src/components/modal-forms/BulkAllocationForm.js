@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Dialog } from '../generic';
 import { Box, Typography } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core/styles';
 import { BulkAllocationSchema, ToastStatus } from '../../constants';
 import { RenderTextField, RenderSelectField, RenderCheckbox } from '../fields';
@@ -16,6 +17,12 @@ const useStyles = makeStyles(() => ({
   formRow: {
     gap: '25px',
   },
+  list: {
+    maxHeight: '100px',
+    overflow: 'auto',
+    overflowX: 'hidden',
+    paddingBottom: '5px',
+  },
 }));
 
 export const createPhaseDropdown = (phases) => {
@@ -29,8 +36,6 @@ export const createPhaseDropdown = (phases) => {
 export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases = [] }) => {
   const { openToast } = useToast();
   const classes = useStyles();
-  // currently not using this value - followup PR will use these values in an alert component on the UI
-  // eslint-disable-next-line no-unused-vars
   const [existingAllocations, setExistingAllocations] = useState([]);
   const siteIds = sites.map(({ id }) => id);
   const initialValues = {
@@ -46,11 +51,11 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
     const allocations = phases
       .find(({ id }) => id === phaseId)
       ?.allocations.filter(({ site_id }) => siteIds.includes(site_id))
-      .map(({ id, allocation, phase_id, site_id }) => ({
-        id,
+      .map(({ allocation, phase_id, site_id }) => ({
         allocation,
         phase_id,
         site_id,
+        siteName: sites.find((site) => site.id === site_id).siteName,
       }));
 
     setExistingAllocations(allocations);
@@ -114,11 +119,29 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
                 />
               </Box>
               {values.existingAllocations && (
-                <Field
-                  name='acknowledgement'
-                  component={RenderCheckbox}
-                  label='I acknowledge that one or more site already has an allocation set. Submitting this form will override those allocation.'
-                />
+                <Box flexGrow={1}>
+                  <Alert severity='warning'>
+                    <Typography variant='body1'>
+                      {`The following (${existingAllocations.length}) sites already have allocations assigned:`}
+                    </Typography>
+                    <ul className={classes.list}>
+                      {existingAllocations
+                        // .filter((site) => phaseErrors.includes(phase.id))
+                        .map((site) => (
+                          <li key={site.id}>{site.siteName}</li>
+                        ))}
+                    </ul>
+                  </Alert>
+                </Box>
+              )}
+              {values.existingAllocations && (
+                <Box my={3} style={{ gap: '15px' }}>
+                  <Field
+                    name='acknowledgement'
+                    component={RenderCheckbox}
+                    label='I acknowledge that one or more sites already has an allocation set. Submitting this form will override those allocation.'
+                  />
+                </Box>
               )}
               <Box display='flex' justifyContent='space-between' my={3}>
                 <Button

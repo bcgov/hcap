@@ -16,6 +16,7 @@ export const SetBulkAllocation = ({ sites, handleFormSubmit }) => {
 
   const handleAfterSave = async () => {
     await handleFormSubmit();
+    fetchData();
     closeDialog();
   };
 
@@ -23,14 +24,14 @@ export const SetBulkAllocation = ({ sites, handleFormSubmit }) => {
     setActiveModalForm('bulk-allocation');
   };
 
+  const fetchData = async () => {
+    let phases = await fetchPhases('?includeAllocations=true');
+    setPhases(phases);
+    setIsPendingRequests(false);
+  };
+
   useEffect(() => {
     if (isPendingRequests) {
-      const fetchData = async () => {
-        let phases = await fetchPhases('?includeAllocations=true');
-        setPhases(phases);
-        setIsPendingRequests(false);
-      };
-
       fetchData();
     }
   }, [isPendingRequests, phases]);

@@ -69,4 +69,19 @@ describe('Phase Allocation Endpoints', () => {
     const response = await getAllocation(site.id, phase.id);
     expect(response.allocation).toEqual(45);
   });
+
+  // it('Set bulk allocation, receive success', async () => {
+  //   // make multiple sites
+  //   const { site, phase } = await makeTestFKAllocations(26356);
+  //   const bulkAllocationMock = {
+  //     site_id: site.id,
+  //     phase_id: phase.id,
+  //     allocation: 30,
+  //   };
+  //   const res = await createAllocation(bulkAllocationMock, user);
+  //   expect(res.allocation).toEqual(30);
+  //   expect(res.id).toEqual(1);
+  //   expect(res.site_id).toEqual(site.id);
+  //   expect(res.phase_id).toEqual(phase.id);
+  // });
 });

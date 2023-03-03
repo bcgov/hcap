@@ -135,9 +135,17 @@ describe('api e2e tests for /phase', () => {
     expect(res.status).toEqual(403);
   });
 
-  it('should return phases', async () => {
+  it('should return phases without query param', async () => {
     const header = await getKeycloakToken(healthAuthority);
     const res = await request(app).get(`/api/v1/phase`).set(header);
+    expect(res.body.data[0]).not.toHaveProperty('allocations');
+    expect(res.status).toEqual(200);
+  });
+
+  it('should return phases with allocations with query param `?includeAllocations=true`', async () => {
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app).get(`/api/v1/phase?includeAllocations=true`).set(header);
+    expect(res.body.data[0]).toHaveProperty('allocations');
     expect(res.status).toEqual(200);
   });
 

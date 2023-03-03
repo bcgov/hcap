@@ -62,9 +62,8 @@ export const createBulkAllocation = async (payload: any, user: HcapUserInfo) => 
   const updateResults = [];
   await Promise.all(
     payload.siteIds.map(async (id) => {
-      const allocationExists = payload.existingAllocations?.some(({ site_id }) => site_id === id);
-      if (allocationExists) {
-        const allocation = payload.existingAllocations?.find(({ site_id }) => site_id === id);
+      const allocation = await getAllocation(id, payload.phase_id);
+      if (allocation) {
         const data = { allocation: payload.allocation, phase_id: payload.phase_id, site_id: id };
         updateResults.push(await updateAllocation(allocation.id, data, user));
       } else {
@@ -73,7 +72,6 @@ export const createBulkAllocation = async (payload: any, user: HcapUserInfo) => 
           phase_id: payload.phase_id,
           site_id: id,
         };
-
         updateResults.push(await createAllocation(data, user));
       }
     })

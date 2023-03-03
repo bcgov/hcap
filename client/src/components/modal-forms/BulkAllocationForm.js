@@ -1,5 +1,4 @@
-/* eslint-disable */
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Dialog } from '../generic';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -30,11 +29,14 @@ export const createPhaseDropdown = (phases) => {
 export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases = [] }) => {
   const { openToast } = useToast();
   const classes = useStyles();
+  // currently not using this value - followup PR will use these values in an alert component on the UI
+  // eslint-disable-next-line no-unused-vars
+  const [existingAllocations, setExistingAllocations] = useState([]);
   const siteIds = sites.map(({ id }) => id);
   const initialValues = {
     allocation: '',
     phase_id: '',
-    existingAllocations: [],
+    existingAllocations: false,
     acknowledgement: false,
   };
 
@@ -51,13 +53,11 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
         site_id,
       }));
 
-    console.log(allocations);
-    // setExistingAllocations(allocations);
-    setValue('existingAllocations', allocations);
+    setExistingAllocations(allocations);
+    setValue('existingAllocations', allocations.length > 0);
   };
 
   const handleSubmit = async (values) => {
-    console.log(values);
     const payload = {
       siteIds,
       ...values,
@@ -88,7 +88,6 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
         validationSchema={BulkAllocationSchema}
       >
         {({ submitForm, setFieldValue, values, errors }) => {
-          console.log(errors);
           return (
             <FormikForm>
               <Box my={3} style={{ gap: '25px' }}>
@@ -99,8 +98,8 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
                   placeholder='Select phase'
                   label='* Phase name'
                   options={createPhaseDropdown(phases)}
-                  onChange={({ target }) => {
-                    handleSetAllocation(target.value, setFieldValue);
+                  onChange={async ({ target }) => {
+                    await handleSetAllocation(target.value, setFieldValue);
                     setFieldValue('phase_id', target.value);
                   }}
                 />
@@ -114,7 +113,7 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
                   placeholder='Type or select'
                 />
               </Box>
-              {values.existingAllocations.length > 0 && (
+              {values.existingAllocations && (
                 <Field
                   name='acknowledgement'
                   component={RenderCheckbox}

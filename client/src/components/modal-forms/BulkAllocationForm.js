@@ -93,74 +93,71 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
         onSubmit={handleSubmit}
         validationSchema={BulkAllocationSchema}
       >
-        {({ submitForm, setFieldValue, values, errors }) => {
-          return (
-            <FormikForm>
-              <Box my={3} style={{ gap: '25px' }}>
+        {({ submitForm, setFieldValue, values }) => (
+          <FormikForm>
+            <Box my={3} style={{ gap: '25px' }}>
+              <Field
+                name='phase_id'
+                type='number'
+                component={RenderSelectField}
+                placeholder='Select phase'
+                label='* Phase name'
+                options={createPhaseDropdown(phases)}
+                onChange={async ({ target }) => {
+                  await handleSetAllocation(target.value, setFieldValue);
+                  setFieldValue('phase_id', target.value);
+                }}
+              />
+            </Box>
+            <Box my={3} style={{ gap: '25px' }}>
+              <Field
+                name='allocation'
+                component={RenderTextField}
+                type='number'
+                label='* Number of allocation'
+                placeholder='Type or select'
+              />
+            </Box>
+            {values.existingAllocations && (
+              <Box flexGrow={1}>
+                <Alert severity='warning'>
+                  <Typography variant='body1'>
+                    {`The following (${existingAllocations.length}) sites already have allocations assigned:`}
+                  </Typography>
+                  <ul className={classes.list}>
+                    {existingAllocations.map((site) => (
+                      <li key={site.id}>{site.siteName}</li>
+                    ))}
+                  </ul>
+                </Alert>
+              </Box>
+            )}
+            {values.existingAllocations && (
+              <Box my={3} style={{ gap: '15px' }}>
                 <Field
-                  name='phase_id'
-                  type='number'
-                  component={RenderSelectField}
-                  placeholder='Select phase'
-                  label='* Phase name'
-                  options={createPhaseDropdown(phases)}
-                  onChange={async ({ target }) => {
-                    await handleSetAllocation(target.value, setFieldValue);
-                    setFieldValue('phase_id', target.value);
-                  }}
+                  name='acknowledgement'
+                  component={RenderCheckbox}
+                  label='I acknowledge that one or more sites already has an allocation set. Submitting this form will override those allocation.'
                 />
               </Box>
-              <Box my={3} style={{ gap: '25px' }}>
-                <Field
-                  name='allocation'
-                  component={RenderTextField}
-                  type='number'
-                  label='* Number of allocation'
-                  placeholder='Type or select'
-                />
-              </Box>
-              {values.existingAllocations && (
-                <Box flexGrow={1}>
-                  <Alert severity='warning'>
-                    <Typography variant='body1'>
-                      {`The following (${existingAllocations.length}) sites already have allocations assigned:`}
-                    </Typography>
-                    <ul className={classes.list}>
-                      {existingAllocations.map((site) => (
-                        <li key={site.id}>{site.siteName}</li>
-                      ))}
-                    </ul>
-                  </Alert>
-                </Box>
-              )}
-              {values.existingAllocations && (
-                <Box my={3} style={{ gap: '15px' }}>
-                  <Field
-                    name='acknowledgement'
-                    component={RenderCheckbox}
-                    label='I acknowledge that one or more sites already has an allocation set. Submitting this form will override those allocation.'
-                  />
-                </Box>
-              )}
-              <Box display='flex' justifyContent='space-between' my={3}>
-                <Button
-                  className={classes.formButton}
-                  onClick={onClose}
-                  color='default'
-                  text='Cancel'
-                />
-                <Button
-                  className={classes.formButton}
-                  onClick={submitForm}
-                  variant='contained'
-                  color='primary'
-                  text='Set'
-                  disabled={errors?.acknowledgement}
-                />
-              </Box>
-            </FormikForm>
-          );
-        }}
+            )}
+            <Box display='flex' justifyContent='space-between' my={3}>
+              <Button
+                className={classes.formButton}
+                onClick={onClose}
+                color='default'
+                text='Cancel'
+              />
+              <Button
+                className={classes.formButton}
+                onClick={submitForm}
+                variant='contained'
+                color='primary'
+                text='Set'
+              />
+            </Box>
+          </FormikForm>
+        )}
       </Formik>
     </Dialog>
   );

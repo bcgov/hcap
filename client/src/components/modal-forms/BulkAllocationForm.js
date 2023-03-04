@@ -66,7 +66,8 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
   const handleSubmit = async (values) => {
     const payload = {
       siteIds,
-      ...values,
+      allocation: values.allocation,
+      phase_id: values.phase_id,
     };
     const response = await bulkAllocation(payload);
     if (response.ok) {

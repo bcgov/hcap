@@ -98,7 +98,7 @@ export const createBulkAllocation = async (payload: bulkAllocationPayload, user:
     payload.siteIds.map(async (id) => {
       const allocationFound = existingAllocations.some(({ site_id }) => site_id === id);
       if (allocationFound) {
-        existingAllocations.map(async (allocation) => {
+        existingAllocations.forEach(async (allocation) => {
           const data = {
             allocation: payload.allocation,
             phase_id: payload.phase_id,

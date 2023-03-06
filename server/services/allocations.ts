@@ -5,7 +5,7 @@ import { HcapUserInfo } from '../keycloak';
 const { dbClient, collections } = require('../db');
 
 /**
- * Gets all phases for a site
+ * Gets allocation record associated with the site and phase
  * @param siteId PK ID of the site
  * @param phaseId PK ID of the phase
  */
@@ -30,6 +30,24 @@ export const getAllocation = async (siteId: number, phaseId: number) => {
   });
 
   return allocation;
+};
+
+/**
+ * Gets all allocations for a specific phase, given an array of site id's
+ * @param siteIds array of PK ID of the site
+ * @param phaseId PK ID of the phase
+ */
+export const getAllocationsForSites = async (siteIds, phaseId: number) => {
+  const allocations = await dbClient.runRawQuery(
+    `
+    SELECT *
+    FROM site_phase_allocation
+    WHERE site_id IN (SELECT * FROM unnest($1::int[])) AND phase_id = $2
+    `,
+    [siteIds, phaseId]
+  );
+
+  return allocations;
 };
 
 // NOTE: This should have stronger typing on `allocation`.
@@ -60,12 +78,19 @@ export const updateAllocation = async (allocationId: number, allocation, user: H
 
 export const createBulkAllocation = async (payload: any, user: HcapUserInfo) => {
   const updateResults = [];
+  const existingAllocations = await getAllocationsForSites(payload.siteIds, payload.phase_id);
   await Promise.all(
     payload.siteIds.map(async (id) => {
-      const allocation = await getAllocation(id, payload.phase_id);
-      if (allocation) {
-        const data = { allocation: payload.allocation, phase_id: payload.phase_id, site_id: id };
-        updateResults.push(await updateAllocation(allocation.id, data, user));
+      const allocationFound = existingAllocations.some(({ site_id }) => site_id === id);
+      if (allocationFound) {
+        existingAllocations.map(async (allocation) => {
+          const data = {
+            allocation: payload.allocation,
+            phase_id: payload.phase_id,
+            site_id: allocation.site_id,
+          };
+          updateResults.push(await updateAllocation(allocation.id, data, user));
+        });
       } else {
         const data = {
           allocation: payload.allocation,

@@ -24,6 +24,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+export const createSiteNameHash = (arr) =>
+  arr.reduce((map, { id, siteName }) => ({ [id]: siteName, ...map }), {});
+
 export const createPhaseDropdown = (phases) => {
   return phases
     .sort((a, b) => new Date(b.end_date) - new Date(a.end_date))
@@ -39,6 +42,7 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
   const classes = useStyles();
   const [existingAllocations, setExistingAllocations] = useState([]);
   const siteIds = sites.map(({ id }) => id);
+  const siteNames = createSiteNameHash(sites);
   const initialValues = {
     allocation: '',
     phase_id: '',
@@ -48,19 +52,14 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
 
   const handleSetAllocation = (phaseId, setValue) => {
     // get all allocations associated to the selected phase
+    const phaseAllocations = phases.find(({ id }) => id === phaseId)?.allocations;
     // filter the allocations and return all that are associated to the sites selected.
-    const allocations = phases
-      .find(({ id }) => id === phaseId)
-      ?.allocations.filter(({ site_id }) => siteIds.includes(site_id))
-      .map(({ allocation, phase_id, site_id }) => ({
-        allocation,
-        phase_id,
-        site_id,
-        siteName: sites.find((site) => site.id === site_id).siteName,
-      }));
+    const phaseSiteAllocations = phaseAllocations.filter(({ site_id }) =>
+      siteIds.includes(site_id)
+    );
 
-    setExistingAllocations(allocations);
-    setValue('existingAllocations', allocations.length > 0);
+    setExistingAllocations(phaseSiteAllocations);
+    setValue('existingAllocations', phaseSiteAllocations.length > 0);
   };
 
   const handleSubmit = async (values) => {
@@ -126,8 +125,8 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
                     {`The following (${existingAllocations.length}) sites already have allocations assigned:`}
                   </Typography>
                   <ul className={classes.list}>
-                    {existingAllocations.map((site) => (
-                      <li key={site.id}>{site.siteName}</li>
+                    {existingAllocations.map((allocation) => (
+                      <li key={allocation.id}>{siteNames[allocation.site_id]}</li>
                     ))}
                   </ul>
                 </Alert>

@@ -1,5 +1,4 @@
 import express from 'express';
-import * as qs from 'querystring';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';

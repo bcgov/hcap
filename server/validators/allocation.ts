@@ -48,11 +48,4 @@ export const BulkAllocationSchema = yup
       ),
     phase_id: yup.number().required('Allocations must be related to a phase'),
     siteIds: yup.array().of(yup.number()).required('Allocations must be related to a site'),
-    existingAllocations: yup.boolean().required(),
-    acknowledgement: yup.boolean().when('existingAllocations', {
-      is: true,
-      then: (boolSchema) =>
-        boolSchema.test('is-true', 'Must acknowledge override', (v) => v === true),
-      otherwise: (schema) => schema.nullable(),
-    }),
   });

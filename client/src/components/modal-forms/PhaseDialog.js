@@ -136,8 +136,11 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
                         .filter((phase) => phaseErrors.includes(phase.id))
                         .map((phase) => (
                           <li key={phase.id} className={classes.listItem}>
-                            {phase.name}: {dateToTextString(phase.start_date)} -{' '}
-                            {dateToTextString(phase.end_date)}
+                            {phase.name}:{' '}
+                            <b>
+                              {dateToTextString(phase.start_date)} -{' '}
+                              {dateToTextString(phase.end_date)}
+                            </b>
                           </li>
                         ))}
                     </ul>

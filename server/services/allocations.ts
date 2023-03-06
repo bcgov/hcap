@@ -4,27 +4,33 @@ import { HcapUserInfo } from '../keycloak';
 // disabling camelcase check so that we can manipulate snake_case attributes without changing structure
 const { dbClient, collections } = require('../db');
 
+export interface Allocation {
+  /** PK ID of the allocation */
+  id: number;
+  /** FK for phase */
+  phase_id: number;
+  /** Number of allocations available */
+  allocation: number;
+  /** FK for employer_site */
+  site_id: number;
+}
+
+export interface bulkAllocationPayload {
+  /** FK for phase */
+  phase_id: number;
+  /** Number of allocations available */
+  allocation: number;
+  /** array of FK for employer_sites */
+  siteIds: number[];
+}
+
 /**
  * Gets allocation record associated with the site and phase
  * @param siteId PK ID of the site
  * @param phaseId PK ID of the phase
  */
 export const getAllocation = async (siteId: number, phaseId: number) => {
-  /** Type for DB response to the `getAllocation` query */
-  type AllocationResponse = {
-    /** PK ID of the allocation */
-    id: number;
-    /** FK for phase */
-    phase_id: number;
-    /** Number of allocations available */
-    allocation: number;
-    /** FK for employer_site */
-    site_id: number;
-  };
-
-  const allocation: AllocationResponse = await dbClient.db[
-    collections.SITE_PHASE_ALLOCATION
-  ].findOne({
+  const allocation: Allocation = await dbClient.db[collections.SITE_PHASE_ALLOCATION].findOne({
     site_id: siteId,
     phase_id: phaseId,
   });
@@ -37,8 +43,8 @@ export const getAllocation = async (siteId: number, phaseId: number) => {
  * @param siteIds array of PK ID of the site
  * @param phaseId PK ID of the phase
  */
-export const getAllocationsForSites = async (siteIds, phaseId: number) => {
-  const allocations = await dbClient.runRawQuery(
+export const getAllocationsForSites = async (siteIds: number[], phaseId: number) => {
+  const allocations: Allocation[] = await dbClient.runRawQuery(
     `
     SELECT *
     FROM site_phase_allocation
@@ -76,9 +82,18 @@ export const updateAllocation = async (allocationId: number, allocation, user: H
   return res;
 };
 
-export const createBulkAllocation = async (payload: any, user: HcapUserInfo) => {
+/**
+ * Updates an allocation in the database
+ * @param payload payload
+ * @param user User performing the operation
+ * @returns array of DB operation results
+ */
+export const createBulkAllocation = async (payload: bulkAllocationPayload, user: HcapUserInfo) => {
   const updateResults = [];
-  const existingAllocations = await getAllocationsForSites(payload.siteIds, payload.phase_id);
+  const existingAllocations: Allocation[] = await getAllocationsForSites(
+    payload.siteIds,
+    payload.phase_id
+  );
   await Promise.all(
     payload.siteIds.map(async (id) => {
       const allocationFound = existingAllocations.some(({ site_id }) => site_id === id);

@@ -2,9 +2,18 @@ import express from 'express';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
-import { CreateAllocationSchema, UpdateAllocationSchema } from '../validation';
+import {
+  CreateAllocationSchema,
+  UpdateAllocationSchema,
+  BulkAllocationSchema,
+} from '../validation';
 import { expressRequestBodyValidator } from '../middleware';
-import { createAllocation, updateAllocation, getAllocation } from '../services/allocations';
+import {
+  createAllocation,
+  updateAllocation,
+  getAllocation,
+  createBulkAllocation,
+} from '../services/allocations';
 import { FEATURE_PHASE_ALLOCATION } from '../services/feature-flags';
 
 const router = express.Router();
@@ -74,6 +83,37 @@ router.patch(
     } catch (err) {
       logger.error(err);
       return resp.status(400).send('Failed to update phase allocation');
+    }
+  })
+);
+
+// Create bulk allocation: POST
+router.post(
+  '/bulk-allocation',
+  [
+    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.getUserInfoMiddleware(),
+    expressRequestBodyValidator(BulkAllocationSchema),
+  ],
+  asyncMiddleware(async (req, resp) => {
+    if (!FEATURE_PHASE_ALLOCATION) {
+      return resp.status(501).send('Phase allocation feature not active');
+    }
+    const { body, hcapUserInfo: user } = req;
+    try {
+      const response = await createBulkAllocation(body, user);
+      logger.info({
+        action: 'bulk_allocation_post',
+        performed_by: {
+          username: user.username,
+          id: user.id,
+        },
+      });
+      logger.info(response);
+      return resp.status(201).json(response);
+    } catch (err) {
+      logger.error(err);
+      return resp.status(400).send('Failed to set bulk allocations');
     }
   })
 );

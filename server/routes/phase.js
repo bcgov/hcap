@@ -68,8 +68,8 @@ router.get(
     keycloak.getUserInfoMiddleware(),
   ],
   asyncMiddleware(async (req, res) => {
-    const { hcapUserInfo: user } = req;
-    const result = await getAllPhases();
+    const { query, hcapUserInfo: user } = req;
+    const result = await getAllPhases(query?.includeAllocations);
 
     logger.info({
       action: 'phases_get',

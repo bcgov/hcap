@@ -6,7 +6,6 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 // TODO: MINOR: try reducing implicit any
 // TODO: MINOR: add JSDoc to all functions, and consider moving some to services
-// TODO: MAJOR: verify renaming the CSVs wasn't a mistake
 // TODO: MINOR: move utils to services
 
 import './load-env';

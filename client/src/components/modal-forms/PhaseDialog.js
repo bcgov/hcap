@@ -9,7 +9,7 @@ import { Field, Formik, Form as FormikForm } from 'formik';
 import { CreatePhaseSchema, ToastStatus } from '../../constants';
 import { createPhase, updatePhase, fetchPhases } from '../../services/phases';
 import { useToast } from '../../hooks';
-import { dateToTextString } from '../../utils/date';
+import { formatLongDate } from '../../utils/date';
 
 const useStyles = makeStyles(() => ({
   formButton: {
@@ -138,8 +138,7 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
                           <li key={phase.id} className={classes.listItem}>
                             {phase.name}:{' '}
                             <b>
-                              {dateToTextString(phase.start_date)} -{' '}
-                              {dateToTextString(phase.end_date)}
+                              {formatLongDate(phase.start_date)} - {formatLongDate(phase.end_date)}
                             </b>
                           </li>
                         ))}

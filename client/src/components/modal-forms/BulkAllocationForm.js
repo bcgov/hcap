@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { BulkAllocationSchema, ToastStatus } from '../../constants';
 import { RenderTextField, RenderSelectField, RenderCheckbox } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { dateToTextString } from '../../utils/date';
+import { formatLongDate } from '../../utils/date';
 import { bulkAllocation } from '../../services/allocations';
 import { useToast } from '../../hooks';
 
@@ -32,8 +32,8 @@ export const createPhaseDropdown = (phases) => {
     .sort((a, b) => new Date(b.end_date) - new Date(a.end_date))
     .map((phase) => ({
       value: phase.id,
-      label: `${phase.name} - ${dateToTextString(phase.start_date)} -
-    ${dateToTextString(phase.end_date)}`,
+      label: `${phase.name} - ${formatLongDate(phase.start_date)} -
+    ${formatLongDate(phase.end_date)}`,
     }));
 };
 

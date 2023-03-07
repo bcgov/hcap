@@ -1,11 +1,9 @@
 /*
    Global ESLint directives.
-   * `no-console`: For quick and easy result printing.
-     * TODO: MINOR: Remove this and make dedicated logging functions that are exempt.
    * `no-restricted-syntax`: needed for classic `for` loops, which can be blocked with `await`.
    * `no-await-in-loop`: needed to ensure tables are processed one at a time.
 */
-/* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
+/* eslint-disable no-restricted-syntax, no-await-in-loop */
 // TODO: MINOR: try reducing implicit any
 // TODO: MINOR: add JSDoc to all functions, and consider moving some to services
 // TODO: MAJOR: verify renaming the CSVs wasn't a mistake
@@ -16,18 +14,7 @@ import path from 'path';
 import { parseFile } from 'fast-csv';
 import { dbClient } from '../db';
 import { collections } from '../db/schema';
-
-enum InsertStatus {
-  SUCCESS = 'Success',
-  DUPLICATE = 'Duplicate',
-  MISSING_FK = 'Missing Foreign Key',
-}
-
-type InsertResult = {
-  table: string;
-  id: string;
-  status: InsertStatus;
-};
+import { logWithLevel, displayResultsTable, InsertResult, InsertStatus } from './services';
 
 /** Directory (relative to this script) to find CSVs in */
 const dataDirectory = '../test-data/';
@@ -38,8 +25,8 @@ const targetTables: { fileName: string; table: string }[] = [
   // TODO: DOCUMENT: make ticket to expand site dataset
   // TODO: DOCUMENT: make ticket to make collections an enum
   // TODO: DOCUMENT: ticket for clear-data being broken
-  { fileName: 'employer_sites.csv', table: collections.EMPLOYER_SITES },
   { fileName: 'participants.csv', table: collections.PARTICIPANTS },
+  { fileName: 'employer_sites.csv', table: collections.EMPLOYER_SITES },
   { fileName: 'phases.csv', table: collections.GLOBAL_PHASE },
   {
     fileName: 'post_secondary_institutions.csv',
@@ -62,9 +49,11 @@ async function insertRow(row, table): Promise<InsertResult> {
     await dbClient.db[table].insert(addSystemFields(row));
     return { id: row.id, table, status: InsertStatus.SUCCESS };
   } catch (error) {
+    // WARN: This also catches duplicate errors from related tables, such as `participants_distance` if populating `employer_sites`.
+    // Ideally that should have its own case, but generally that ends up causing FK errors that get caught later anyways.
     if (error.code === '23505') return { id: row.id, table, status: InsertStatus.DUPLICATE };
     if (error.code === '23503') {
-      console.warn(`${error.detail} Row ${row.id} will NOT be inserted.`);
+      logWithLevel(`${error.detail} Row ${row.id} \x1b[4mwill not be inserted\x1b[24m.`, 'warn');
       return { id: row.id, table, status: InsertStatus.MISSING_FK };
     }
     throw error;
@@ -84,7 +73,7 @@ function insertCSV(filePath: string, table: string) {
       .on('error', reject)
       .on('data', (row) => rowResults.push(insertRow(row, table)))
       .on('end', (rowCount: number) => {
-        console.log(`Parsed ${rowCount} rows for ${table}`);
+        logWithLevel(`Parsed ${rowCount} rows for ${table}`, 'info');
         Promise.all(rowResults).then((results) => resolve(results));
       });
   });
@@ -110,9 +99,9 @@ function eraseFromCSV(filePath: string, table: string) {
         ids.push(id);
       })
       .on('end', async (rowCount: number) => {
-        console.log(`Removing ${rowCount} rows in ${table}`);
+        logWithLevel(`Removing ${rowCount} rows in ${table}`, 'info');
         await dbClient.db[table].destroy({ id: ids });
-        console.log(`Deleted records with ids [ ${ids.join(', ')} ]`);
+        logWithLevel(`Deleted records with ids [ ${ids.join(', ')} ]`, 'info');
         resolve();
       });
   });
@@ -130,44 +119,13 @@ async function cleanup() {
       await eraseFromCSV(path.join(__dirname, table.fileName), table.table);
     }
   } catch (e) {
-    console.log('Error deleting data - manual cleanup required.', e);
+    logWithLevel('Error deleting data - manual cleanup required.', 'error');
+    logWithLevel(e, 'error');
     await dbClient.disconnect();
     process.exit(1);
   }
   await dbClient.disconnect();
   process.exit(0);
-}
-
-function displayResultsTable(results: InsertResult[]) {
-  const includedStatuses = new Set(results.map((result) => result.status));
-
-  const output = [...includedStatuses]
-    // Make an entry for each status type found
-    .map((status) => ({
-      status,
-      table: results[0].table,
-      // Make an array of all IDs in this status, grouped into ranges
-      ids: results
-        .filter((result) => result.status === status)
-        .map((result) => Number(result.id))
-        .sort((a, b) => a - b)
-        .reduce((ranges: [number, number][], id) => {
-          if (ranges.length && [id, id - 1].includes(ranges.at(-1)[1])) {
-            const newRanges = [...ranges];
-            newRanges.at(-1)[1] = id;
-            return newRanges;
-          }
-          return [...ranges, [id, id]];
-        }, [])
-        .map((range) => (range[0] === range[1] ? String(range[0]) : `${range[0]} - ${range[1]}`)),
-    }))
-    // Restructure so each resulting ID range gets a dedicated row
-    .map((status) =>
-      status.ids.map((idRange) => ({ status: status.status, table: status.table, ids: idRange }))
-    )
-    .reduce((merged, next) => [...merged, ...next]);
-
-  console.table(output);
 }
 
 // TODO: MAJOR: debug all error handling
@@ -178,7 +136,7 @@ function displayResultsTable(results: InsertResult[]) {
   const warnings: { table: string; message: string }[] = [];
 
   for (const table of targetTables) {
-    console.log(`\nPopulating table ${table.table} from ${table.fileName}`);
+    logWithLevel(`Populating table ${table.table} from ${table.fileName}`, 'info');
     try {
       const results = await insertCSV(
         path.join(__dirname, dataDirectory, table.fileName),
@@ -198,22 +156,29 @@ function displayResultsTable(results: InsertResult[]) {
       displayResultsTable(results);
     } catch (error) {
       // TODO: MINOR: make sure this includes specific failed entry
-      console.error('Failed to feed entity!');
-      console.error(` Error occurred in table ${table.table}, fed from ${table.fileName}`);
-      console.error('The following error occurred:');
-      console.error(error);
+      logWithLevel('Failed to feed entity!', error);
+      logWithLevel(` Error occurred in table ${table.table}, fed from ${table.fileName}`, error);
+      logWithLevel('The following error occurred:', error);
+      logWithLevel(error, error);
       cleanup();
     }
   }
-  console.log('\nData population complete.');
+  logWithLevel(
+    warnings.length ? 'Data population complete, with errors.' : 'Data population complete!',
+    'info'
+  );
   if (warnings.length) {
-    console.warn(
-      'Warning: some tables failed to populate properly! Manual cleanup may be required.\n' +
-        'Usually this is caused by an unclean database state - ' +
-        "try purging existing data (especially on tables marked with 'duplicate'), and try again."
+    logWithLevel(
+      'Warning: some tables failed to populate properly! Manual cleanup may be required.',
+      'warn'
+    );
+    logWithLevel('Usually this is caused by an unclean database state.', 'warn');
+    logWithLevel(
+      "Try purging existing data (especially on tables marked with 'duplicate'), and try again.",
+      'warn'
     );
     warnings.forEach((warning) => {
-      console.warn(`- ${warning.table}: ${warning.message}`);
+      logWithLevel(`- ${warning.table}: ${warning.message}`, 'warn');
     });
   }
   process.exit(0);

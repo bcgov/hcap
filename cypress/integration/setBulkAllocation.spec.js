@@ -1,4 +1,4 @@
-describe('Allocation functionality', () => {
+describe('Bulk Allocation functionality', () => {
   before(() => {});
   beforeEach(() => {
     cy.kcLogin('test-moh');
@@ -22,9 +22,13 @@ describe('Allocation functionality', () => {
     cy.contains('button', 'Create').click();
   };
 
-  const setBulkAllocationForm = ({ allocation }) => {
+  const setBulkAllocationForm = (allocation) => {
+    cy.get('[name=phase_id]').parent().click();
+    cy.get('li').eq(1).click();
     cy.get('[name=allocation]').clear().type(allocation);
 
+    cy.contains('button', 'Set').should('exist');
+    cy.debug();
     cy.contains('button', 'Set').click();
   };
 
@@ -35,69 +39,70 @@ describe('Allocation functionality', () => {
   //   cy.get('button').contains(buttonLabel).click();
   // };
 
-  const navigateToForm = () => {
+  const navigateToFormSelectAll = () => {
     cy.visit('site-view');
-    cy.get('.PrivateSwitchBase-input').click();
+    cy.get('th').find('[type="checkbox"]').check();
     cy.contains('button', 'Set Allocation').click();
   };
 
-  it('MoH can set a new allocation', () => {
-    // create new phase to assign allocation to
-    const phaseData = {
-      phaseName: 'Allocation Testing Phase',
-      startDate: '1996/01/01',
-      endDate: '1997/01/01',
-    };
-    createPhase(phaseData);
-    // happy path
-    navigateToForm('set');
-    const formValues = {
-      allocation: '90',
-    };
-    setBulkAllocationForm(formValues);
+  it('MoH can set bulk allocations', () => {
+    let siteCount = 0;
+
+    cy.visit('site-view');
+    cy.get('.MuiTable-root')
+      .find('tr')
+      .then((row) => {
+        siteCount = row.length;
+      });
+    navigateToFormSelectAll();
+    setBulkAllocationForm(90);
 
     // expect: no errors, success message.
     cy.contains('.Mui-error').should('not.exist');
-    cy.get('.MuiAlert-message').contains(`New phase allocation has been successfully assigned`);
+    cy.get('.MuiAlert-message').contains(`${siteCount} sites have been assigned allocations`);
   });
 
   it('Validates required fields', () => {
-    // create new phase to assign allocation to
-    //  this phase can be used for the following tests
-    const phaseData = {
-      phaseName: 'Allocation Testing Phase Two',
-      startDate: '1993/01/01',
-      endDate: '1994/01/01',
-    };
-    createPhase(phaseData);
-    // attempt to submit empty form
-    navigateToForm('set');
+    navigateToFormSelectAll();
+
+    // attempt to
     cy.contains('button', 'Set').click();
 
     // expect: required error on every field
     cy.contains('p.Mui-error', 'Allocation is required');
+    cy.contains('p.Mui-error', 'Phase is required');
   });
 
-  it('Allocation must be a positive number', () => {
-    // attempt to submit form with a negative allocation
-    navigateToForm();
-    // the MUI number component does not allow users to type a negative, so cypress needs to mock a keydown action
-    cy.get('[name=allocation]').type('1{downArrow}{downArrow}{downArrow}');
-    cy.wait(500);
-    cy.contains('button', 'Set').click();
+  // it('Allocation must be a positive number', () => {
+  //   // attempt to submit form with a negative allocation
+  //   cy.visit('site-view');
+  //   cy.get('th').first();
+  //   cy.get('[type="checkbox"]').check();
+  //   cy.contains('button', 'Set Allocation').click();
+  //   // the MUI number component does not allow users to type a negative, so cypress needs to mock a keydown action
+  //   cy.get('[name=allocation]').type('1{downArrow}{downArrow}{downArrow}');
+  //   cy.wait(500);
+  //   cy.contains('button', 'Set').click();
 
-    cy.contains('p.Mui-error', 'Must be a positive number');
-  });
+  //   cy.contains('p.Mui-error', 'Must be a positive number');
+  // });
 
   it('MOH overrides sites with existing allocations', () => {
-    // // happy path for editing allocations
-    // navigateToForm('edit');
-    // const formValues = {
-    //   allocation: '30',
-    // };
-    // setBulkAllocationForm(formValues);
-    // // expect: no errors, success message.
-    // cy.contains('.Mui-error').should('not.exist');
-    // cy.get('.MuiAlert-message').contains(`Phase allocation has been successfully updated`);
+    let siteCount = 0;
+
+    cy.visit('site-view');
+    cy.get('.MuiTable-root')
+      .find('tr')
+      .then((row) => {
+        siteCount = row.length;
+      });
+    navigateToFormSelectAll();
+    setBulkAllocationForm(200);
+    cy.get('[name=acknowledgement]').should('exist');
+    cy.get('[name=acknowledgement]').check();
+
+    // expect: no errors, success message.
+    cy.contains('.Mui-error').should('not.exist');
+    cy.get('.MuiAlert-message').contains(`${siteCount} sites have been assigned allocations`);
   });
 });

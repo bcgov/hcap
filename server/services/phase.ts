@@ -5,6 +5,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 import { dbClient, collections } from '../db';
 import { HcapUserInfo } from '../keycloak';
 import { getSiteByID } from './employers';
+import { Allocation } from './allocations';
 
 dayjs.extend(isBetween);
 
@@ -25,6 +26,19 @@ type sitePhase = {
   hcapHires: number;
   /** Number of hires from outside HCAP */
   nonHcapHires: number;
+};
+
+type phase = {
+  /** Internal ID of the phase */
+  id: number;
+  /** Human readable phase name */
+  name: string;
+  /** Date string seperated by slashes, e.g. '2020/01/01' */
+  start_date: string;
+  /** Date string seperated by slashes, e.g. '2020/01/01' */
+  end_date: string;
+  /** Number of allocations available */
+  allocations: Allocation[];
 };
 
 /**
@@ -111,16 +125,22 @@ export const getAllSitePhases = async (siteId: number): Promise<sitePhase[]> => 
   }));
 };
 
-export const getAllPhases = async (query = null) => {
+/**
+ * Gets all phases with or without associated allocations
+ *
+ * @param includeAllocations  condition to include associated allocation records
+ * @returns phase[]   An array of phases with formatted
+ */
+export const getAllPhases = async (includeAllocations = null): Promise<phase[]> => {
   // NOTE: this will not allow for full access to the phase list once it hits that 100k limit!
   // If there is any chance of this hitting that number, or if performance starts to suffer,
   // pagination support should be added.
-  const phases = await dbClient.db[collections.GLOBAL_PHASE]
+  const phases: phase[] = await dbClient.db[collections.GLOBAL_PHASE]
     .join({
       allocations: {
         relation: collections.SITE_PHASE_ALLOCATION,
         type: 'LEFT OUTER',
-        omit: !query?.includeAllocations,
+        omit: !includeAllocations,
         on: {
           phase_id: 'id',
         },

@@ -69,7 +69,7 @@ router.get(
   ],
   asyncMiddleware(async (req, res) => {
     const { query, hcapUserInfo: user } = req;
-    const result = await getAllPhases(query);
+    const result = await getAllPhases(query?.includeAllocations);
 
     logger.info({
       action: 'phases_get',

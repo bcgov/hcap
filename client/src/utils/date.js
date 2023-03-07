@@ -9,8 +9,8 @@ dayjs.extend(isBetween);
 
 export const dayUtils = dayjs;
 
-export const dateToString = (dateObj) => dayjs(dateObj).format('YYYY/MM/DD');
-export const dateToTextString = (dateObj) => dayjs.utc(dateObj).format('MMM DD, YYYY');
+export const formatShortDate = (dateObj) => dayjs(dateObj).format('YYYY/MM/DD');
+export const formatLongDate = (dateObj) => dayjs.utc(dateObj).format('MMM DD, YYYY');
 
 export const stringToDate = (dateStr) => dayjs(dateStr, 'YYYY/MM/DD');
 

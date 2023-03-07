@@ -6,7 +6,6 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 // TODO: MINOR: try reducing implicit any
 // TODO: MINOR: add JSDoc to all functions, and consider moving some to services
-// TODO: MINOR: move utils to services
 
 import './load-env';
 import path from 'path';
@@ -17,13 +16,9 @@ import { logWithLevel, displayResultsTable, InsertResult, InsertStatus } from '.
 
 /** Directory (relative to this script) to find CSVs in */
 const dataDirectory = '../test-data/';
-// ENHANCEMENT: (optional) add CLI argument for external file
 
 /** tables **in order** of when they should be inserted (for foreign key relations) */
 const targetTables: { fileName: string; table: string }[] = [
-  // TODO: DOCUMENT: make ticket to expand site dataset
-  // TODO: DOCUMENT: make ticket to make collections an enum
-  // TODO: DOCUMENT: ticket for clear-data being broken
   { fileName: 'participants.csv', table: collections.PARTICIPANTS },
   { fileName: 'employer_sites.csv', table: collections.EMPLOYER_SITES },
   { fileName: 'phases.csv', table: collections.GLOBAL_PHASE },
@@ -78,57 +73,6 @@ function insertCSV(filePath: string, table: string) {
   });
 }
 
-// TODO: MAJOR: make sure this runs
-/**
- * Deletes all database rows with IDs found in a CSV file.
- * Used as part of cleanup upon failure.
- * @param filePath Name of file to read from
- * @param table Name of table in DB to write to
- * @returns Promise that resolves on successful erasure, or rejects with an error on failure.
- */
-function eraseFromCSV(filePath: string, table: string) {
-  return new Promise<void>((resolve, reject) => {
-    const ids: string[] = [];
-    parseFile(filePath, { headers: true })
-      .on('error', reject)
-      .on('data', (row) => {
-        // Get ID from row and verify it's valid
-        const { id } = row;
-        if (typeof id !== 'string' || !id) reject(Error(`Missing ID in row: ${row}`));
-        ids.push(id);
-      })
-      .on('end', async (rowCount: number) => {
-        logWithLevel(`Removing ${rowCount} rows in ${table}`, 'info');
-        await dbClient.db[table].destroy({ id: ids });
-        logWithLevel(`Deleted records with ids [ ${ids.join(', ')} ]`, 'info');
-        resolve();
-      });
-  });
-}
-
-/**
- * Called in the case of insertion error.
- * Cleans up all inserted data,
- * and displays all attempted inserts to user to assist debugging. TODO: MAJOR: VERIFY THIS
- */
-async function cleanup() {
-  try {
-    // Reverse direction of array to delete dependent records first
-    for (const table of [...targetTables].reverse()) {
-      await eraseFromCSV(path.join(__dirname, table.fileName), table.table);
-    }
-  } catch (e) {
-    logWithLevel('Error deleting data - manual cleanup required.', 'error');
-    logWithLevel(e, 'error');
-    await dbClient.disconnect();
-    process.exit(1);
-  }
-  await dbClient.disconnect();
-  process.exit(0);
-}
-
-// TODO: MAJOR: debug all error handling
-
 /** Main */
 (async () => {
   await dbClient.connect();
@@ -154,12 +98,10 @@ async function cleanup() {
       }
       displayResultsTable(results);
     } catch (error) {
-      // TODO: MINOR: make sure this includes specific failed entry
       logWithLevel('Failed to feed entity!', error);
       logWithLevel(` Error occurred in table ${table.table}, fed from ${table.fileName}`, error);
       logWithLevel('The following error occurred:', error);
       logWithLevel(error, error);
-      cleanup();
     }
   }
   logWithLevel(

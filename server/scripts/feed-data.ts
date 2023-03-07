@@ -7,6 +7,9 @@
 */
 /* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
 // TODO: MINOR: try reducing implicit any
+// TODO: MINOR: add JSDoc to all functions, and consider moving some to services
+// TODO: MAJOR: verify renaming the CSVs wasn't a mistake
+// TODO: MINOR: move utils to services
 
 import './load-env';
 import path from 'path';
@@ -31,8 +34,11 @@ const dataDirectory = '../test-data/';
 // ENHANCEMENT: (optional) add CLI argument for external file
 
 /** tables **in order** of when they should be inserted (for foreign key relations) */
-const targetTables = [
-  // TODO: MAJOR: Add sites to this, as they are a required FK for other tables
+const targetTables: { fileName: string; table: string }[] = [
+  // TODO: DOCUMENT: make ticket to expand site dataset
+  // TODO: DOCUMENT: make ticket to make collections an enum
+  // TODO: DOCUMENT: ticket for clear-data being broken
+  { fileName: 'employer_sites.csv', table: collections.EMPLOYER_SITES },
   { fileName: 'participants.csv', table: collections.PARTICIPANTS },
   { fileName: 'phases.csv', table: collections.GLOBAL_PHASE },
   {
@@ -84,7 +90,7 @@ function insertCSV(filePath: string, table: string) {
   });
 }
 
-// TODO: MINOR: consider deleting only that which was written
+// TODO: MAJOR: make sure this runs
 /**
  * Deletes all database rows with IDs found in a CSV file.
  * Used as part of cleanup upon failure.
@@ -202,7 +208,9 @@ function displayResultsTable(results: InsertResult[]) {
   console.log('\nData population complete.');
   if (warnings.length) {
     console.warn(
-      'Warning: some tables failed to populate properly! Manual cleanup may be required.'
+      'Warning: some tables failed to populate properly! Manual cleanup may be required.\n' +
+        'Usually this is caused by an unclean database state - ' +
+        "try purging existing data (especially on tables marked with 'duplicate'), and try again."
     );
     warnings.forEach((warning) => {
       console.warn(`- ${warning.table}: ${warning.message}`);

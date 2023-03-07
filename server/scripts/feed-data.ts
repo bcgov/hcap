@@ -1,11 +1,9 @@
 /*
-   Global ESLint directives.
+   Global ESLint directives:
    * `no-restricted-syntax`: needed for classic `for` loops, which can be blocked with `await`.
    * `no-await-in-loop`: needed to ensure tables are processed one at a time.
 */
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-// TODO: MINOR: try reducing implicit any
-// TODO: MINOR: add JSDoc to all functions, and consider moving some to services
 
 import './load-env';
 import path from 'path';
@@ -14,11 +12,24 @@ import { dbClient } from '../db';
 import { collections } from '../db/schema';
 import { logWithLevel, displayResultsTable, InsertResult, InsertStatus } from './services';
 
+/** Data found in a given CSV row. Key is the column a given value was found in. */
+type CsvRow = {
+  [column: string]: string;
+};
+
 /** Directory (relative to this script) to find CSVs in */
 const dataDirectory = '../test-data/';
 
-/** tables **in order** of when they should be inserted (for foreign key relations) */
-const targetTables: { fileName: string; table: string }[] = [
+/**
+ * Database tables **in order** of when they should be inserted (due to foreign key relations),
+ * with a file name and table name for each.
+ */
+const targetTables: {
+  /** File name of CSV to read, relative to `dataDirectory` */
+  fileName: string;
+  /** Table in database to insert entries into */
+  table: string;
+}[] = [
   { fileName: 'participants.csv', table: collections.PARTICIPANTS },
   { fileName: 'employer_sites.csv', table: collections.EMPLOYER_SITES },
   { fileName: 'phases.csv', table: collections.GLOBAL_PHASE },
@@ -33,16 +44,34 @@ const targetTables: { fileName: string; table: string }[] = [
   { fileName: 'return_of_service_status.csv', table: collections.ROS_STATUS },
 ];
 
-function addSystemFields(row) {
-  return { ...row, created_by: 'system', updated_by: 'system' };
+/**
+ * Adds the `created_by` and `updated_by` fields to a row object. This is required for database insertion.
+ * @param row Row of data to append the fields to
+ * @param userID Value to populate `created_by` and `updated_by` with, defaults to `'system'`
+ * @returns Input row with the system fields populated
+ */
+function addSystemFields(row: CsvRow, userID = 'system') {
+  return { ...row, created_by: userID, updated_by: userID };
 }
 
-// TODO: MINOR: Improve typing
-async function insertRow(row, table): Promise<InsertResult> {
+/**
+ * Inserts a single row worth of data into a given table in the database.
+ * @param row Data for a single row to insert into the database
+ * @param table Name of table to insert the row into
+ * @returns Result of the operation
+ */
+async function insertRow(row: CsvRow, table: string): Promise<InsertResult> {
+  // Type guard for DB - generally unneeded, but satisfies strict TS stanards.
+  if (!('db' in dbClient) || !dbClient.db) throw new Error('Database failed to initialize!');
   try {
     await dbClient.db[table].insert(addSystemFields(row));
     return { id: row.id, table, status: InsertStatus.SUCCESS };
   } catch (error) {
+    // Type guard for unexpected error types (i.e. non-DB errors)
+    if (!error || typeof error !== 'object' || !('code' in error) || !('detail' in error)) {
+      logWithLevel('Unexpected error type during insertion!', 'error');
+      throw error;
+    }
     // WARN: This also catches duplicate errors from related tables, such as `participants_distance` if populating `employer_sites`.
     // Ideally that should have its own case, but generally that ends up causing FK errors that get caught later anyways.
     if (error.code === '23505') return { id: row.id, table, status: InsertStatus.DUPLICATE };
@@ -98,10 +127,10 @@ function insertCSV(filePath: string, table: string) {
       }
       displayResultsTable(results);
     } catch (error) {
-      logWithLevel('Failed to feed entity!', error);
-      logWithLevel(` Error occurred in table ${table.table}, fed from ${table.fileName}`, error);
-      logWithLevel('The following error occurred:', error);
-      logWithLevel(error, error);
+      logWithLevel('Failed to feed entity!', 'error');
+      logWithLevel(` Error occurred in table ${table.table}, fed from ${table.fileName}`, 'error');
+      logWithLevel('The following error occurred:', 'error');
+      logWithLevel(error, 'error');
     }
   }
   logWithLevel(

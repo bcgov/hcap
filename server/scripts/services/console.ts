@@ -7,7 +7,7 @@ import type { InsertResult } from './shared-types';
  * @param text String to output to the console.
  * @param level Log level. This determines colour and output stream.
  */
-export function logWithLevel(text: string, level: 'info' | 'warn' | 'error') {
+export function logWithLevel(text: unknown, level: 'info' | 'warn' | 'error') {
   if (level === 'info') console.log(`${text}`);
   else console.log(`${level === 'warn' ? '\x1b[33m' : '\x1b[31m'} ${text}\x1b[0m`);
 }
@@ -32,19 +32,28 @@ export function displayResultsTable(results: InsertResult[]) {
         .filter((result) => result.status === status)
         .map((result) => Number(result.id))
         .sort((a, b) => a - b)
-        .reduce((ranges: [number, number][], id) => {
-          if (ranges.length && [id, id - 1].includes(ranges.at(-1)[1])) {
+        .reduce((ranges: number[][], id) => {
+          // We can safely use non-null assertion, since we checked the length first.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          if (ranges.length && [id, id - 1].includes(ranges.at(-1)![1])) {
             const newRanges = [...ranges];
-            newRanges.at(-1)[1] = id;
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            newRanges.at(-1)![1] = id;
             return newRanges;
           }
           return [...ranges, [id, id]];
         }, [])
-        .map((range) => (range[0] === range[1] ? String(range[0]) : `${range[0]} - ${range[1]}`)),
+        .map((range: number[]) =>
+          range[0] === range[1] ? String(range[0]) : `${range[0]} - ${range[1]}`
+        ),
     }))
     // Restructure so each resulting ID range gets a dedicated row
     .map((status) =>
-      status.ids.map((idRange) => ({ status: status.status, table: status.table, ids: idRange }))
+      status.ids.map((idRange: string) => ({
+        status: status.status,
+        table: status.table,
+        ids: idRange,
+      }))
     )
     .reduce((merged, next) => [...merged, ...next]);
 

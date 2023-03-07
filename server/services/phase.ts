@@ -129,7 +129,7 @@ export const getAllSitePhases = async (siteId: number): Promise<sitePhase[]> => 
  * Gets all phases with or without associated allocations
  *
  * @param includeAllocations  condition to include associated allocation records
- * @returns phase[]   An array of phases with formatted
+ * @returns phase[]   An array of phases with formatted dates
  */
 export const getAllPhases = async (includeAllocations = null): Promise<phase[]> => {
   // NOTE: this will not allow for full access to the phase list once it hits that 100k limit!

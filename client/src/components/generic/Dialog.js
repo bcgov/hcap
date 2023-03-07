@@ -33,6 +33,7 @@ export const Dialog = ({
       open={open}
       onClose={onClose}
       disableBackdropClick
+      className={classes.dialogContainer}
     >
       <DialogTitle>
         <Box display='flex'>

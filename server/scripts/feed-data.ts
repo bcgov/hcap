@@ -3,11 +3,10 @@
    * `no-console`: For quick and easy result printing.
      * TODO: MINOR: Remove this and make dedicated logging functions that are exempt.
    * `no-restricted-syntax`: needed for classic `for` loops, which can be blocked with `await`.
-     * TODO: MINOR: Try to find a workaround if possible, or make a local comment.
    * `no-await-in-loop`: needed to ensure tables are processed one at a time.
-     * TODO: MINOR: Try to find a workaround if possible, or make a local comment.
 */
 /* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
+// TODO: MINOR: try reducing implicit any
 
 import './load-env';
 import path from 'path';
@@ -22,8 +21,8 @@ enum InsertStatus {
 }
 
 type InsertResult = {
-  table: string; // TODO: MINOR: make `collections` an enum
-  id: number;
+  table: string;
+  id: string;
   status: InsertStatus;
 };
 
@@ -117,7 +116,7 @@ async function cleanup() {
   try {
     // Reverse direction of array to delete dependent records first
     for (const table of [...targetTables].reverse()) {
-      eraseFromCSV(path.join(__dirname, table.fileName), table.table);
+      await eraseFromCSV(path.join(__dirname, table.fileName), table.table);
     }
   } catch (e) {
     console.log('Error deleting data - manual cleanup required.', e);
@@ -126,6 +125,38 @@ async function cleanup() {
   }
   await dbClient.disconnect();
   process.exit(0);
+}
+
+function displayResultsTable(results: InsertResult[]) {
+  const includedStatuses = new Set(results.map((result) => result.status));
+
+  const output = [...includedStatuses]
+    // Make an entry for each status type found
+    .map((status) => ({
+      status,
+      table: results[0].table,
+      // Make an array of all IDs in this status, grouped into ranges
+      ids: results
+        .filter((result) => result.status === status)
+        .map((result) => Number(result.id))
+        .sort((a, b) => a - b)
+        .reduce((ranges: [number, number][], id) => {
+          if (ranges.length && [id, id - 1].includes(ranges.at(-1)[1])) {
+            const newRanges = [...ranges];
+            newRanges.at(-1)[1] = id;
+            return newRanges;
+          }
+          return [...ranges, [id, id]];
+        }, [])
+        .map((range) => (range[0] === range[1] ? String(range[0]) : `${range[0]} - ${range[1]}`)),
+    }))
+    // Restructure so each resulting ID range gets a dedicated row
+    .map((status) =>
+      status.ids.map((idRange) => ({ status: status.status, table: status.table, ids: idRange }))
+    )
+    .reduce((merged, next) => [...merged, ...next]);
+
+  console.table(output);
 }
 
 // TODO: MAJOR: debug all error handling
@@ -140,7 +171,7 @@ async function cleanup() {
         path.join(__dirname, dataDirectory, table.fileName),
         table.table
       );
-      console.table(results);
+      displayResultsTable(results);
     } catch (error) {
       // TODO: MINOR: make sure this includes specific failed entry
       console.error('Failed to feed entity!');

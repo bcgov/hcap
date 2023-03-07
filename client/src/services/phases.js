@@ -26,8 +26,9 @@ const mapPhasesResponse = async (data, columns) => {
   return rowsData;
 };
 
-export const fetchPhases = async () => {
-  const response = await fetch(`${API_URL}/api/v1/phase/`, {
+export const fetchPhases = async (queryString = null) => {
+  const url = queryString ? `${API_URL}/api/v1/phase${queryString}` : `${API_URL}/api/v1/phase/`;
+  const response = await fetch(url, {
     headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
     method: 'GET',
   });

@@ -28,10 +28,11 @@ type InsertResult = {
 
 /** Directory (relative to this script) to find CSVs in */
 const dataDirectory = '../test-data/';
-// ENHANCEMENT: add CLI argument for external file
-// tables IN ORDER they should be inserted (for foreign key relations)
+// ENHANCEMENT: (optional) add CLI argument for external file
+
+/** tables **in order** of when they should be inserted (for foreign key relations) */
 const targetTables = [
-  // TODO: MAJOR: sites
+  // TODO: MAJOR: Add sites to this, as they are a required FK for other tables
   { fileName: 'participants.csv', table: collections.PARTICIPANTS },
   { fileName: 'phases.csv', table: collections.GLOBAL_PHASE },
   {
@@ -49,13 +50,17 @@ function addSystemFields(row) {
   return { ...row, created_by: 'system', updated_by: 'system' };
 }
 
+// TODO: MINOR: Improve typing
 async function insertRow(row, table): Promise<InsertResult> {
   try {
     await dbClient.db[table].insert(addSystemFields(row));
     return { id: row.id, table, status: InsertStatus.SUCCESS };
   } catch (error) {
     if (error.code === '23505') return { id: row.id, table, status: InsertStatus.DUPLICATE };
-    if (error.code === '23503') return { id: row.id, table, status: InsertStatus.MISSING_FK };
+    if (error.code === '23503') {
+      console.warn(`${error.detail} Row ${row.id} will NOT be inserted.`);
+      return { id: row.id, table, status: InsertStatus.MISSING_FK };
+    }
     throw error;
   }
 }
@@ -164,13 +169,26 @@ function displayResultsTable(results: InsertResult[]) {
 /** Main */
 (async () => {
   await dbClient.connect();
+  const warnings: { table: string; message: string }[] = [];
+
   for (const table of targetTables) {
-    console.log(`Populating table ${table.table} from ${table.fileName}`);
+    console.log(`\nPopulating table ${table.table} from ${table.fileName}`);
     try {
       const results = await insertCSV(
         path.join(__dirname, dataDirectory, table.fileName),
         table.table
       );
+      if (results.find((result) => result.status === InsertStatus.MISSING_FK)) {
+        const missingCount = results.filter(
+          (result) => result.status === InsertStatus.MISSING_FK
+        ).length;
+        warnings.push({
+          table: table.table,
+          message: `${missingCount} ${
+            missingCount > 1 ? 'entries' : 'entry'
+          } could not be added due to a missing foreign key`,
+        });
+      }
       displayResultsTable(results);
     } catch (error) {
       // TODO: MINOR: make sure this includes specific failed entry
@@ -181,6 +199,14 @@ function displayResultsTable(results: InsertResult[]) {
       cleanup();
     }
   }
-  console.log('Data population complete!');
+  console.log('\nData population complete.');
+  if (warnings.length) {
+    console.warn(
+      'Warning: some tables failed to populate properly! Manual cleanup may be required.'
+    );
+    warnings.forEach((warning) => {
+      console.warn(`- ${warning.table}: ${warning.message}`);
+    });
+  }
   process.exit(0);
 })();

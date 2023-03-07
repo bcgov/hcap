@@ -1,139 +1,155 @@
-/* eslint-disable no-console, no-restricted-syntax, no-await-in-loop, no-loop-func */
+/*
+   Global ESLint directives.
+   * `no-console`: For quick and easy result printing.
+     * TODO: MINOR: Remove this and make dedicated logging functions that are exempt.
+   * `no-restricted-syntax`: needed for classic `for` loops, which can be blocked with `await`.
+     * TODO: MINOR: Try to find a workaround if possible, or make a local comment.
+   * `no-await-in-loop`: needed to ensure tables are processed one at a time.
+     * TODO: MINOR: Try to find a workaround if possible, or make a local comment.
+*/
+/* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
+
 import './load-env';
 import path from 'path';
 import { parseFile } from 'fast-csv';
 import { dbClient } from '../db';
 import { collections } from '../db/schema';
 
+enum InsertStatus {
+  SUCCESS = 'Success',
+  DUPLICATE = 'Duplicate',
+  MISSING_FK = 'Missing Foreign Key',
+}
+
+type InsertResult = {
+  table: string; // TODO: MINOR: make `collections` an enum
+  id: number;
+  status: InsertStatus;
+};
+
+/** Directory (relative to this script) to find CSVs in */
+const dataDirectory = '../test-data/';
+// ENHANCEMENT: add CLI argument for external file
+// tables IN ORDER they should be inserted (for foreign key relations)
+const targetTables = [
+  // TODO: MAJOR: sites
+  { fileName: 'participants.csv', table: collections.PARTICIPANTS },
+  { fileName: 'phases.csv', table: collections.GLOBAL_PHASE },
+  {
+    fileName: 'post_secondary_institutions.csv',
+    table: collections.POST_SECONDARY_INSTITUTIONS,
+  },
+  { fileName: 'cohorts.csv', table: collections.COHORTS },
+  { fileName: 'cohort_participants.csv', table: collections.COHORT_PARTICIPANTS },
+  { fileName: 'participants_status.csv', table: collections.PARTICIPANTS_STATUS },
+  { fileName: 'participant_post_hire_status.csv', table: collections.PARTICIPANT_POST_HIRE_STATUS },
+  { fileName: 'return_of_service_status.csv', table: collections.ROS_STATUS },
+];
+
+function addSystemFields(row) {
+  return { ...row, created_by: 'system', updated_by: 'system' };
+}
+
+async function insertRow(row, table): Promise<InsertResult> {
+  try {
+    await dbClient.db[table].insert(addSystemFields(row));
+    return { id: row.id, table, status: InsertStatus.SUCCESS };
+  } catch (error) {
+    if (error.code === '23505') return { id: row.id, table, status: InsertStatus.DUPLICATE };
+    if (error.code === '23503') return { id: row.id, table, status: InsertStatus.MISSING_FK };
+    throw error;
+  }
+}
+
+/**
+ * Inserts all rows from a streamed CSV file into a table in the database.
+ * @param filePath Name of file to read from
+ * @param table Name of table in DB to write to
+ * @returns Array of `InsertResult`s for each transaction
+ */
+function insertCSV(filePath: string, table: string) {
+  return new Promise<InsertResult[]>((resolve, reject) => {
+    const rowResults: Promise<InsertResult>[] = [];
+    parseFile(filePath, { headers: true })
+      .on('error', reject)
+      .on('data', (row) => rowResults.push(insertRow(row, table)))
+      .on('end', (rowCount: number) => {
+        console.log(`Parsed ${rowCount} rows for ${table}`);
+        Promise.all(rowResults).then((results) => resolve(results));
+      });
+  });
+}
+
+// TODO: MINOR: consider deleting only that which was written
+/**
+ * Deletes all database rows with IDs found in a CSV file.
+ * Used as part of cleanup upon failure.
+ * @param filePath Name of file to read from
+ * @param table Name of table in DB to write to
+ * @returns Promise that resolves on successful erasure, or rejects with an error on failure.
+ */
+function eraseFromCSV(filePath: string, table: string) {
+  return new Promise<void>((resolve, reject) => {
+    const ids: string[] = [];
+    parseFile(filePath, { headers: true })
+      .on('error', reject)
+      .on('data', (row) => {
+        // Get ID from row and verify it's valid
+        const { id } = row;
+        if (typeof id !== 'string' || !id) reject(Error(`Missing ID in row: ${row}`));
+        ids.push(id);
+      })
+      .on('end', async (rowCount: number) => {
+        console.log(`Removing ${rowCount} rows in ${table}`);
+        await dbClient.db[table].destroy({ id: ids });
+        console.log(`Deleted records with ids [ ${ids.join(', ')} ]`);
+        resolve();
+      });
+  });
+}
+
+/**
+ * Called in the case of insertion error.
+ * Cleans up all inserted data,
+ * and displays all attempted inserts to user to assist debugging. TODO: MAJOR: VERIFY THIS
+ */
+async function cleanup() {
+  try {
+    // Reverse direction of array to delete dependent records first
+    for (const table of [...targetTables].reverse()) {
+      eraseFromCSV(path.join(__dirname, table.fileName), table.table);
+    }
+  } catch (e) {
+    console.log('Error deleting data - manual cleanup required.', e);
+    await dbClient.disconnect();
+    process.exit(1);
+  }
+  await dbClient.disconnect();
+  process.exit(0);
+}
+
+// TODO: MAJOR: debug all error handling
+
+/** Main */
 (async () => {
-  if (require.main === module) {
-    /**
-     * mapping records in csv example:
-     * in post_secondary_institutions, have a line where id is 'hello'
-     * for foreign key relation to that record in cohorts table, set psi_id to 'hello'
-     * the id will be substituted for the real one after it has been created
-     */
-    // tables IN ORDER they should be inserted (for foreign key relations)
-    const tableNames = [
-      collections.POST_SECONDARY_INSTITUTIONS,
-      collections.COHORTS,
-      collections.COHORT_PARTICIPANTS,
-      collections.PARTICIPANTS_STATUS,
-      collections.PARTICIPANT_POST_HIRE_STATUS,
-    ];
-    // all data successfully created in process
-    const testingData = {};
-    // all responses to inserts, including duplicates and errors
-    const response = [];
-    // for debugging: the last record attempted to process before error
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let lastInsert: any = '';
-
+  await dbClient.connect();
+  for (const table of targetTables) {
+    console.log(`Populating table ${table.table} from ${table.fileName}`);
     try {
-      const rootDirectory = 'csv/';
-
-      await dbClient.connect();
-
-      // WARN: should really be `unknown`! This code should be tightened.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const readCSV = async (tableName): Promise<any[]> => {
-        const options = { objectMode: true, headers: true, renameHeaders: false };
-
-        return new Promise((resolve, reject) => {
-          const results = [];
-          const fileName = path.resolve(__dirname, `${rootDirectory + tableName}.csv`);
-          parseFile(fileName, options)
-            .on('error', (error) => {
-              reject(error);
-            })
-            .on('data', (row) => {
-              results.push(row);
-            })
-            .on('end', () => {
-              resolve(results);
-            });
-        });
-      };
-
-      for (const tableName of tableNames) {
-        lastInsert = `${tableName} table`;
-        let tableData = await readCSV(tableName);
-
-        testingData[tableName] = {};
-
-        // replace placeholder foreign keys with actual values
-        const foreignKeys = dbClient.db[tableName].fks;
-
-        foreignKeys.forEach((foreignKey) => {
-          const foreignTable = foreignKey.origin_name;
-
-          if (foreignTable in testingData) {
-            const keyNameInThisTable = foreignKey.dependent_columns[0];
-            const keyNameInOtherTable = foreignKey.origin_columns[0];
-
-            tableData = tableData.map((tableRow) => {
-              lastInsert = { ...tableRow };
-              lastInsert.tableName = tableName;
-              const placeHolderKey = tableRow[keyNameInThisTable];
-              const realKey = testingData[foreignTable][placeHolderKey][keyNameInOtherTable];
-
-              const updatedTableRow = tableRow;
-              updatedTableRow[keyNameInThisTable] = realKey;
-              return updatedTableRow;
-            });
-          }
-        });
-
-        const promises = tableData.map((entryData) => {
-          const tableEntry = { ...entryData };
-          delete tableEntry.id;
-          return dbClient.db[tableName].insert(tableEntry);
-        });
-        const results = await Promise.allSettled(promises);
-
-        results.forEach((result, index) => {
-          let { id } = tableData[index];
-          if (result.status === 'fulfilled') {
-            testingData[tableName][id] = result.value;
-            id = result.value.id;
-            response.push({ table: tableName, id, status: 'Success' });
-          } else if (result.reason.code === '23505') {
-            response.push({ table: tableName, id, status: 'Duplicate' });
-          } else {
-            response.push({ table: tableName, id, status: 'Error', message: result.reason });
-            throw new Error(result.reason);
-          }
-        });
-      }
-      console.table(response);
-      process.exit(0);
+      const results = await insertCSV(
+        path.join(__dirname, dataDirectory, table.fileName),
+        table.table
+      );
+      console.table(results);
     } catch (error) {
-      // clean up all inserted data on failure,
-      // and display all attempted inserts to user to assist debugging
-      try {
-        console.error(`Failed to feed entity, ${error}`);
-        console.log('There may be a problem with the following data or mapped records:');
-        console.dir(lastInsert);
-        console.table(response);
-        // reverse direction of array to delete dependent records first
-        for (const tableName of [...tableNames].reverse()) {
-          const tableData = testingData[tableName] ?? {};
-          const ids = Object.values(tableData).map((entry) =>
-            entry && typeof entry === 'object' && 'id' in entry ? entry.id : null
-          );
-          if (ids.length > 0) {
-            console.log('Deleting data from table', tableName);
-            await dbClient.db[tableName].destroy({ id: ids });
-            console.log(`Deleted records with ids [ ${ids.join(', ')} ]`);
-          }
-        }
-      } catch (e) {
-        console.log('Error deleting data - manual cleanup required.', e);
-      }
-
-      await dbClient.disconnect();
-      process.exit(1);
+      // TODO: MINOR: make sure this includes specific failed entry
+      console.error('Failed to feed entity!');
+      console.error(` Error occurred in table ${table.table}, fed from ${table.fileName}`);
+      console.error('The following error occurred:');
+      console.error(error);
+      cleanup();
     }
   }
+  console.log('Data population complete!');
+  process.exit(0);
 })();

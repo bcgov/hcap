@@ -1,4 +1,4 @@
-FROM public.ecr.aws/bitnami/node:14.17.3
+FROM public.ecr.aws/bitnami/node:18.15.0
 
 # Allow node modules to be called directly
 ENV PATH $PATH:/usr/src/app/node_modules/.bin

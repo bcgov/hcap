@@ -212,8 +212,11 @@ export const getSiteByID = async (id: number): Promise<EmployerSite> => {
       'duplicateArchivedJoin.status': null,
     });
 
-  site[0].hcapHires = hcapHires;
-  site[0].nonHcapHires = nonHcapHires;
-  site[0].allocation = currentAllocation[0].allocation;
-  return site[0];
+  const siteResponse = {
+    ...site[0],
+    hcapHires,
+    nonHcapHires,
+    allocation: currentAllocation[0].allocation,
+  };
+  return siteResponse;
 };

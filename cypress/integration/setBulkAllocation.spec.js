@@ -24,9 +24,6 @@ describe('Bulk Allocation functionality', () => {
 
   it('MoH can set bulk allocations', () => {
     cy.visit('site-view');
-    cy.get('table')
-      .find('tbody tr')
-      .then((elm) => cy.log(elm.length));
     cy.get('tbody tr')
       .its('length')
       .then((n) => {
@@ -35,6 +32,7 @@ describe('Bulk Allocation functionality', () => {
         setBulkAllocationForm(90);
         // expect: no errors, success message.
         cy.contains('.Mui-error').should('not.exist');
+        // remove table header row from count
         cy.get('.MuiAlert-message').contains(`${n - 1} sites have been assigned allocations`);
       });
   });
@@ -66,10 +64,6 @@ describe('Bulk Allocation functionality', () => {
 
   it('MOH overrides sites with existing allocations', () => {
     cy.visit('site-view');
-
-    cy.get('table')
-      .find('tbody tr')
-      .then((elm) => cy.log(elm.length));
     cy.get('tbody tr')
       .its('length')
       .then((n) => {
@@ -82,6 +76,7 @@ describe('Bulk Allocation functionality', () => {
 
         // expect: no errors, success message.
         cy.contains('.Mui-error').should('not.exist');
+        // remove table header row from count
         cy.get('.MuiAlert-message').contains(`${n - 1} sites have been assigned allocations`);
       });
   });

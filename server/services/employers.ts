@@ -3,6 +3,7 @@ import { dbClient, collections } from '../db';
 import { validate, EmployerSiteBatchSchema } from '../validation';
 import { userRegionQuery } from './user';
 import type { HcapUserInfo } from '../keycloak';
+import { formatDateSansTimezone } from '../utils';
 
 export interface EmployerSite {
   id: number; // Internal ID for site
@@ -106,8 +107,8 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
   // Transform and format dates - return data
   return records.map((site) => ({
     ...site,
-    startDate: dayjs.utc(site.startDate).format('YYYY/MM/DD'),
-    endDate: dayjs.utc(site.endDate).format('YYYY/MM/DD'), // strips time/timezone from date and formats it
+    startDate: formatDateSansTimezone(site.startDate),
+    endDate: formatDateSansTimezone(site.endDate), // strips time/timezone from date and formats it
   }));
 };
 

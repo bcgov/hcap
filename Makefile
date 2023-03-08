@@ -46,11 +46,11 @@ migrate-down:
 
 seed-participants:
 	@echo "Seeding participants from server/test-data"
-	@docker-compose -f docker-compose.dev.yml exec server npm run feed-participants
+	@docker-compose -f docker-compose.dev.yml exec server npm run feed-participants $$SHEET
 
 seed-sites:
 	@echo "Seeding sites from server/test-data"
-	@docker-compose -f docker-compose.dev.yml exec server npm run feed-sites
+	@docker-compose -f docker-compose.dev.yml exec server npm run feed-sites $$SHEET
 
 seed-data:
 	@echo "Seeding additional data from server/test-data"

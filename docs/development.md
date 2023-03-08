@@ -30,10 +30,10 @@ You should see the application running at `http://hcapemployers.local.freshworks
 
 ### To seed the database with data in an Excel sheet:
 
-- `make seed-sites SHEET=my_spreadsheet.xlsx`
-- `make seed-participants SHEET=my_spreadsheet.xlsx`
+- `make seed-sites SHEET=my_spreadsheet.csv`
+- `make seed-participants SHEET=my_spreadsheet.csv`
 
-**Note:** The input Excel file **must** be placed in `server/scripts/xlsx`. Test files can be found in `server/test-data`.
+**Note:** The input CSV file path is relative to  `server/test-data`.
 
 ### To tear down your environment:
 

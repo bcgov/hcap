@@ -26,11 +26,15 @@ export const SiteTableAllocation = ({ row }) => {
         <div className={classes.allocation}>
           {row['allocation'] || row['allocation'] === 0 ? row['allocation'] : 'N/A'}
         </div>
-        <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-          <div className={classes.dates}>
-            {formattedDate('startDate')} - {formattedDate('endDate')}
-          </div>
-        </FeatureFlaggedComponent>
+        {row['startDate'] ? (
+          <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
+            <div className={classes.dates}>
+              {formattedDate('startDate')} - {formattedDate('endDate')}
+            </div>
+          </FeatureFlaggedComponent>
+        ) : (
+          <div />
+        )}
       </Box>
     </>
   );

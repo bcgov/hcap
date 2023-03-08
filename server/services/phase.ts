@@ -6,6 +6,7 @@ import { dbClient, collections } from '../db';
 import { HcapUserInfo } from '../keycloak';
 import { getSiteByID } from './employers';
 import { Allocation } from './allocations';
+import { formatDateSansTimezone } from '../utils';
 
 dayjs.extend(isBetween);
 
@@ -116,8 +117,8 @@ export const getAllSitePhases = async (siteId: number): Promise<sitePhase[]> => 
     id: phase.id,
     phaseName: phase.name,
     allocationId: phase.allocation_id,
-    startDate: dayjs.utc(phase.start_date).format('YYYY/MM/DD'),
-    endDate: dayjs.utc(phase.end_date).format('YYYY/MM/DD'), // strips time/timezone from date and formats it
+    startDate: formatDateSansTimezone(phase.start_date),
+    endDate: formatDateSansTimezone(phase.end_date),
     allocation: phase.allocation,
     remainingHires: (phase.allocation ?? 0) - Number(phase.hcap_hires),
     hcapHires: Number(phase.hcap_hires),
@@ -151,8 +152,8 @@ export const getAllPhases = async (includeAllocations = null): Promise<phase[]> 
   // Transform dates format and return it
   return phases.map((phase) => ({
     ...phase,
-    start_date: dayjs.utc(phase.start_date).format('YYYY/MM/DD'),
-    end_date: dayjs.utc(phase.end_date).format('YYYY/MM/DD'),
+    start_date: formatDateSansTimezone(phase.start_date),
+    end_date: formatDateSansTimezone(phase.end_date),
   }));
 };
 

@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const SiteTableAllocation = ({ row }) => {
-  console.log(row);
   const classes = useStyles();
   const formattedDate = (date) => dayjs(row[date]).format('MMM D YYYY');
 

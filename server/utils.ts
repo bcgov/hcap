@@ -17,6 +17,8 @@ export const addYearToDate = (dateObj) => {
   return newDate;
 };
 
+// TODO: DELETE THIS
+/** @deprecated - unused anywhere but tests. Should be deleted once tests are updated. */
 export const verifyHeaders = (dataRows, columnMap) => {
   const headers = dataRows[0];
   Object.keys(columnMap).forEach((columName) => {
@@ -26,6 +28,8 @@ export const verifyHeaders = (dataRows, columnMap) => {
   });
 };
 
+// TODO: DELETE THIS
+/** @deprecated - unused anywhere but tests. Should be deleted once tests are updated. */
 export const createRows = (dataRows, columnMap) => {
   const headers = dataRows[0];
   const rowSize = dataRows.length;

@@ -3,6 +3,8 @@ import { createRows, verifyHeaders } from '../../utils';
 import { dbClient, collections } from '../../db';
 import { validate, ParticipantBatchSchema, isBooleanValue } from '../../validation';
 
+// TODO: DELETE THIS
+/** @deprecated - unused everywhere but tests. Should be deleted once tests are updated to match. */
 export const parseAndSaveParticipants = async (fileBuffer) => {
   const columnMap = {
     ClientID: 'maximusId',

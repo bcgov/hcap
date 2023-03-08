@@ -33,6 +33,8 @@ export const saveSingleSite = async (sitePayload) => {
   return res;
 };
 
+// TODO: DELETE THIS
+/** @deprecated - unused anywhere but tests. Should be deleted once tests are updated. */
 export const saveSites = async (sitesArg) => {
   const sites = Array.isArray(sitesArg) ? sitesArg : [sitesArg];
   await validate(EmployerSiteBatchSchema, sites);

@@ -17,6 +17,13 @@ type CsvRow = {
   [column: string]: string;
 };
 
+type TargetTable = {
+  /** File name of CSV to read, relative to `dataDirectory` */
+  fileName: string;
+  /** Table in database to insert entries into */
+  table: string;
+};
+
 /** Directory (relative to this script) to find CSVs in */
 const dataDirectory = '../test-data/';
 
@@ -24,12 +31,7 @@ const dataDirectory = '../test-data/';
  * Database tables **in order** of when they should be inserted (due to foreign key relations),
  * with a file name and table name for each.
  */
-const targetTables: {
-  /** File name of CSV to read, relative to `dataDirectory` */
-  fileName: string;
-  /** Table in database to insert entries into */
-  table: string;
-}[] = [
+const defaultTables: TargetTable[] = [
   { fileName: 'participants.csv', table: collections.PARTICIPANTS },
   { fileName: 'employer_sites.csv', table: collections.EMPLOYER_SITES },
   { fileName: 'phases.csv', table: collections.GLOBAL_PHASE },
@@ -102,8 +104,11 @@ function insertCSV(filePath: string, table: string) {
   });
 }
 
-/** Main */
-(async () => {
+/**
+ * Feeds data from specified CSV files to their matching database tables.
+ * The main logic of `feed-data`.
+ */
+export async function feedData(targetTables: TargetTable[]) {
   await dbClient.connect();
   const warnings: { table: string; message: string }[] = [];
 
@@ -152,4 +157,9 @@ function insertCSV(filePath: string, table: string) {
     });
   }
   process.exit(0);
-})();
+}
+
+// Only run defaults if directly invoked, allowing other scripts to extend this one
+if (require.main === module) {
+  feedData(defaultTables);
+}

@@ -5,6 +5,13 @@ export const keyedString = (str, keyValues) =>
   );
 export const capitalizedString = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
+export const truncateString = (str, length) => {
+  if (str.length <= length) {
+    return str;
+  }
+  return str.slice(0, length) + '...';
+};
+
 /**
  * Sorts a list of objects based on the values of a given key
  *

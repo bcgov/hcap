@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const SiteTableAllocation = ({ row }) => {
+  console.log(row);
   const classes = useStyles();
   const formattedDate = (date) => dayjs(row[date]).format('MMM D YYYY');
 
@@ -26,11 +27,15 @@ export const SiteTableAllocation = ({ row }) => {
         <div className={classes.allocation}>
           {row['allocation'] || row['allocation'] === 0 ? row['allocation'] : 'N/A'}
         </div>
-        <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-          <div className={classes.dates}>
-            {formattedDate('startDate')} - {formattedDate('endDate')}
-          </div>
-        </FeatureFlaggedComponent>
+        {row['allocation'] && row['startDate'] ? (
+          <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
+            <div className={classes.dates}>
+              {formattedDate('startDate')} - {formattedDate('endDate')}
+            </div>
+          </FeatureFlaggedComponent>
+        ) : (
+          <div />
+        )}
       </Box>
     </>
   );

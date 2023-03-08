@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState } from 'react';
 import { Button, Dialog } from '../generic';
 import { Box, Typography } from '@material-ui/core';
@@ -94,7 +93,7 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
         onSubmit={handleSubmit}
         validationSchema={BulkAllocationSchema}
       >
-        {({ submitForm, setFieldValue, values, errors }) => (
+        {({ submitForm, setFieldValue, values }) => (
           <FormikForm>
             <Box my={3} style={{ gap: '25px' }}>
               <Field

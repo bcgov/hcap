@@ -110,7 +110,7 @@ function insertCSV(filePath: string, table: string) {
  */
 export async function feedData(targetTables: TargetTable[]) {
   await dbClient.connect();
-  const warnings: { table: string; message: string }[] = [];
+  const errors: { table: string; message: string; level: 'warn' | 'error' }[] = [];
 
   for (const table of targetTables) {
     logWithLevel(`Populating table ${table.table} from ${table.fileName}`, 'info');
@@ -123,11 +123,12 @@ export async function feedData(targetTables: TargetTable[]) {
         const missingCount = results.filter(
           (result) => result.status === InsertStatus.MISSING_FK
         ).length;
-        warnings.push({
+        errors.push({
           table: table.table,
           message: `${missingCount} ${
             missingCount > 1 ? 'entries' : 'entry'
           } could not be added due to a missing foreign key`,
+          level: 'warn',
         });
       }
       displayResultsTable(results);
@@ -136,27 +137,42 @@ export async function feedData(targetTables: TargetTable[]) {
       logWithLevel(` Error occurred in table ${table.table}, fed from ${table.fileName}`, 'error');
       logWithLevel('The following error occurred:', 'error');
       logWithLevel(error, 'error');
+      errors.push({
+        table: table.table,
+        message: String(error),
+        level: 'error',
+      });
     }
   }
   logWithLevel(
-    warnings.length ? 'Data population complete, with errors.' : 'Data population complete!',
+    errors.length ? 'Data population complete, with errors.' : 'Data population complete!',
     'info'
   );
-  if (warnings.length) {
+  if (errors.length) {
+    const hasErrors = errors.filter((error) => error.level === 'error').length > 0;
     logWithLevel(
       'Warning: some tables failed to populate properly! Manual cleanup may be required.',
-      'warn'
+      hasErrors ? 'error' : 'warn'
     );
-    logWithLevel('Usually this is caused by an unclean database state.', 'warn');
-    logWithLevel(
-      "Try purging existing data (especially on tables marked with 'duplicate'), and try again.",
-      'warn'
-    );
-    warnings.forEach((warning) => {
-      logWithLevel(`- ${warning.table}: ${warning.message}`, 'warn');
+    if (hasErrors) {
+      logWithLevel(
+        'Some of these errors were unexpected or critical - this may reflect an issue with your environment.',
+        'error'
+      );
+    } else {
+      logWithLevel('Usually this is caused by an unclean database state.', 'warn');
+      logWithLevel(
+        "Try purging existing data (especially on tables marked with 'duplicate'), and try again.",
+        'warn'
+      );
+    }
+    errors.forEach(({ level, message, table }) => {
+      logWithLevel(`- ${table}: ${message}`, level);
     });
   }
-  process.exit(0);
+
+  // Exit with error if the population didn't go smoothly
+  process.exit(errors.length ? 1 : 0);
 }
 
 // Only run defaults if directly invoked, allowing other scripts to extend this one

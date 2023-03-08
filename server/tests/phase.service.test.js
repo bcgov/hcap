@@ -73,6 +73,15 @@ describe('Phase Allocation Endpoints', () => {
   it('getAllPhases, returns all phase records', async () => {
     const res = await getAllPhases();
     expect(res[0].name).toEqual('Test Phase name');
+    expect(res[0]).not.toHaveProperty('allocations');
+    expect(res.length).not.toEqual(0);
+  });
+
+  it('getAllPhases with includeAllocations, returns all phase records with associated allocations', async () => {
+    const includeAllocations = true;
+    const res = await getAllPhases(includeAllocations);
+    expect(res[0].name).toEqual('Test Phase name');
+    expect(res[0]).toHaveProperty('allocations');
     expect(res.length).not.toEqual(0);
   });
 

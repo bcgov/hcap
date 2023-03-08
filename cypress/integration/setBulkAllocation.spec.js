@@ -13,46 +13,39 @@ describe('Bulk Allocation functionality', () => {
     cy.get('li').eq(1).click();
     cy.get('[name=allocation]').clear().type(allocation);
 
-    cy.contains('button', 'Cancel').should('exist');
-    cy.contains('button', 'Set')
-      .should('exist')
-      .then(($Set) => {
-        $Set.click();
-      });
-
-    cy.wait(2000);
+    cy.contains('button', 'Set').click({ force: true });
+    cy.get('form').submit();
   };
 
   const navigateToFormSelectAll = () => {
-    cy.visit('site-view');
     cy.get('th').find('[type="checkbox"]').check();
     cy.contains('button', 'Set Allocation').click();
   };
 
   it('MoH can set bulk allocations', () => {
-    let siteCount = 0;
-
     cy.visit('site-view');
-    cy.get('.MuiTable-root')
-      .find('tr')
-      .then((row) => {
-        siteCount = row.length;
+    cy.get('table')
+      .find('tbody tr')
+      .then((elm) => cy.log(elm.length));
+    cy.get('tbody tr')
+      .its('length')
+      .then((n) => {
+        cy.log(n);
+        navigateToFormSelectAll();
+        setBulkAllocationForm(90);
+        // expect: no errors, success message.
+        cy.contains('.Mui-error').should('not.exist');
+        cy.get('.MuiAlert-message').contains(`${n - 1} sites have been assigned allocations`);
       });
-    navigateToFormSelectAll();
-    setBulkAllocationForm(90);
-
-    // expect: no errors, success message.
-    cy.contains('.Mui-error').should('not.exist');
-    cy.get('.MuiAlert-message').contains(`${siteCount} sites have been assigned allocations`);
   });
 
   it('Validates required fields', () => {
+    cy.visit('site-view');
     navigateToFormSelectAll();
 
     // attempt to
-    cy.contains('button', 'Set').then(($Set) => {
-      $Set.click();
-    });
+    cy.contains('button', 'Set').click({ force: true });
+    cy.get('form').submit();
 
     // expect: required error on every field
     cy.contains('p.Mui-error', 'Allocation is required');
@@ -61,35 +54,35 @@ describe('Bulk Allocation functionality', () => {
 
   it('Allocation must be a positive number', () => {
     // attempt to submit form with a negative allocation
+    cy.visit('site-view');
     navigateToFormSelectAll();
     // the MUI number component does not allow users to type a negative, so cypress needs to mock a keydown action
     cy.get('[name=allocation]').type('1{downArrow}{downArrow}{downArrow}');
-    // cy.wait(500);
-    // cy.contains('button', 'Set').then(($Set) => {
-    //   $Set.click();
-    // });
-
     cy.contains('button', 'Set').click({ force: true });
+    cy.get('form').submit();
 
     cy.contains('p.Mui-error', 'Must be a positive number');
   });
 
   it('MOH overrides sites with existing allocations', () => {
-    let siteCount = 0;
-
     cy.visit('site-view');
-    cy.get('.MuiTable-root')
-      .find('tr')
-      .then((row) => {
-        siteCount = row.length;
-      });
-    navigateToFormSelectAll();
-    setBulkAllocationForm(200);
-    cy.get('[name=acknowledgement]').should('exist');
-    cy.get('[name=acknowledgement]').check();
 
-    // expect: no errors, success message.
-    cy.contains('.Mui-error').should('not.exist');
-    cy.get('.MuiAlert-message').contains(`${siteCount} sites have been assigned allocations`);
+    cy.get('table')
+      .find('tbody tr')
+      .then((elm) => cy.log(elm.length));
+    cy.get('tbody tr')
+      .its('length')
+      .then((n) => {
+        cy.log(n);
+        navigateToFormSelectAll();
+        setBulkAllocationForm(200);
+        cy.get('[name=acknowledgement]').should('exist');
+        cy.get('[name=acknowledgement]').check();
+        cy.get('form').submit();
+
+        // expect: no errors, success message.
+        cy.contains('.Mui-error').should('not.exist');
+        cy.get('.MuiAlert-message').contains(`${n - 1} sites have been assigned allocations`);
+      });
   });
 });

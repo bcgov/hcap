@@ -15,7 +15,7 @@ export interface Allocation {
   site_id: number;
 }
 
-export interface bulkAllocationPayload {
+export interface BulkAllocationPayload {
   /** FK for phase */
   phase_id: number;
   /** Number of allocations available */
@@ -88,24 +88,27 @@ export const updateAllocation = async (allocationId: number, allocation, user: H
  * @param user User performing the operation
  * @returns array of DB operation results
  */
-export const createBulkAllocation = async (payload: bulkAllocationPayload, user: HcapUserInfo) => {
+export const createBulkAllocation = async (payload: BulkAllocationPayload, user: HcapUserInfo) => {
   const updateResults = [];
   const existingAllocations: Allocation[] = await getAllocationsForSites(
     payload.siteIds,
     payload.phase_id
   );
+
   await Promise.all(
     payload.siteIds.map(async (id) => {
       const allocationFound = existingAllocations.some(({ site_id }) => site_id === id);
+
       if (allocationFound) {
-        existingAllocations.forEach(async (allocation) => {
+        const promises = existingAllocations.map(async (allocation) => {
           const data = {
             allocation: payload.allocation,
             phase_id: payload.phase_id,
             site_id: allocation.site_id,
           };
-          updateResults.push(await updateAllocation(allocation.id, data, user));
+          return await updateAllocation(allocation.id, data, user);
         });
+        updateResults.push(...(await Promise.all(promises)));
       } else {
         const data = {
           allocation: payload.allocation,

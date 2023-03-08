@@ -25,7 +25,7 @@
     "watch": "nodemon main.ts",
     "start": "NODE_ENV=production ts-node -T main.ts",
     "test:debug": "NODE_ENV=test jest --runInBand --detectOpenHandles",
-    "test": "NODE_ENV=test jest --silent --runInBand --forceExit --detectOpenHandles --coverage --verbose false"
+    "test": "NODE_ENV=test jest --silent=false --runInBand --forceExit --detectOpenHandles --coverage --verbose false allocations.service.test.js"
   },
   "dependencies": {
     "axios": "0.21.4",

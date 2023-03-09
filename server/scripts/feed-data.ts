@@ -104,7 +104,8 @@ function insertCSV(filePath: string, table: string) {
       .on('error', reject)
       .on('data', (row) => rowResults.push(insertRow(row, table)))
       .on('end', (rowCount: number) => {
-        dbClient.runRawQuery(`ALTER SEQUENCE ${table}_id_seq RESTART WITH ${rowCount}`);
+        // Massive's insert function, used in insertRow, does not update the sequence to autopopulate the primary keys
+        dbClient.runRawQuery(`ALTER SEQUENCE ${table}_id_seq RESTART WITH ${rowCount + 1}`);
         logWithLevel(`Parsed ${rowCount} rows for ${table}`, 'info');
         Promise.all(rowResults).then((results) => resolve(results));
       });

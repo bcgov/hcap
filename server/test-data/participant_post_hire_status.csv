@@ -1,5 +1,4 @@
 id,participant_id,status,data,is_current
-0,0,post_secondary_education_completed,"{""graduationDate"": ""2021/01/07""}",True
 1,91,post_secondary_education_completed,"{""graduationDate"": ""2021/04/26""}",True
 2,8,post_secondary_education_completed,"{""graduationDate"": ""2022/07/22""}",True
 3,71,post_secondary_education_completed,"{""graduationDate"": ""2020/08/11""}",True
@@ -65,3 +64,4 @@ id,participant_id,status,data,is_current
 63,25,post_secondary_education_completed,"{""graduationDate"": ""2022/03/07""}",True
 64,26,post_secondary_education_completed,"{""graduationDate"": ""2022/03/07""}",True
 65,27,post_secondary_education_completed,"{""graduationDate"": ""2022/03/07""}",True
+66,99,post_secondary_education_completed,"{""graduationDate"": ""2021/01/07""}",True

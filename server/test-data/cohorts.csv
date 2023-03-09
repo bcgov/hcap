@@ -1,5 +1,4 @@
 id,cohort_name,start_date,end_date,cohort_size,psi_id
-0,Huge Walrus Cohort,2021-09-04,2021-12-17,41,15
 1,Polite Eft Cohort,2021-09-11,2021-11-05,5,14
 2,United Mammal Cohort,2022-06-11,2022-11-24,31,11
 3,Alive Ram Cohort,2021-12-31,2022-06-16,59,9
@@ -12,7 +11,7 @@ id,cohort_name,start_date,end_date,cohort_size,psi_id
 10,Wired Fawn Cohort,2021-04-04,2021-08-22,65,14
 11,Liked Pup Cohort,2020-11-26,2021-01-27,49,12
 12,Poetic Puma Cohort,2021-08-28,2022-06-08,10,15
-13,Holy Jackal Cohort,2022-07-15,2022-12-12,77,0
+13,Holy Jackal Cohort,2022-07-15,2022-12-12,77,16
 14,Crack Puma Cohort,2021-05-24,2021-07-17,22,1
 15,Deep Louse Cohort,2020-05-31,2020-10-10,79,12
 16,Aware Grouse Cohort,2020-11-21,2021-07-18,33,1
@@ -37,7 +36,7 @@ id,cohort_name,start_date,end_date,cohort_size,psi_id
 35,Sound Mammal Cohort,2021-11-05,2022-10-07,26,1
 36,Light Parrot Cohort,2020-04-03,2020-10-03,73,6
 37,Holy Elf Cohort,2021-06-29,2021-08-30,74,5
-38,Master Oyster Cohort,2021-04-09,2021-06-11,47,0
+38,Master Oyster Cohort,2021-04-09,2021-06-11,47,16
 39,Tight Osprey Cohort,2020-07-19,2021-06-16,3,6
 40,Pure Boar Cohort,2021-10-01,2022-04-11,14,6
 41,Noble Imp Cohort,2021-12-25,2022-10-26,64,6
@@ -59,3 +58,4 @@ id,cohort_name,start_date,end_date,cohort_size,psi_id
 57,Exact Ox Cohort,2021-08-19,2022-02-15,26,12
 58,Mint Grub Cohort,2020-08-28,2020-11-07,5,11
 59,Live Weasel Cohort,2020-08-17,2021-06-05,64,8
+60,Huge Walrus Cohort,2021-09-04,2021-12-17,41,15

@@ -1,5 +1,4 @@
 id,name,start_date,end_date
-0,Moved Marten,2020-01-01,2020-12-30
 1,Pet Snail,2020-12-31,2021-12-30
 2,Top Lynx,2021-12-31,2022-12-30
 3,Sacred Macaw,2022-12-31,2023-12-31
@@ -9,3 +8,4 @@ id,name,start_date,end_date
 7,Hot Mouse,2027-01-01,2027-12-31
 8,Nearby Asp,2028-01-01,2028-12-30
 9,Nice Lion,2028-12-31,2029-12-31
+10,Moved Marten,2020-01-01,2020-12-30

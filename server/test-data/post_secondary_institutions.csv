@@ -1,5 +1,4 @@
 id,institute_name,health_authority,street_address,city,postal_code
-0,Moving Mutt University,Fraser,1950 5 Avenue,Surrey,V3S 9Y7
 1,True Gator College,Fraser,4414 Duck Avenue,Victoria,V8Z 2L9
 2,Trusty Pigeon Institute,Fraser,2639 Robin Avenue,Cranbrook,V1C 6R5
 3,Enough Koala Academy,Interior,1108 Worm Road,Victoria,V9A 5P6
@@ -15,3 +14,4 @@ id,institute_name,health_authority,street_address,city,postal_code
 13,Adrian University,Vancouver Island,2994 Ox Street,Pitt Meadows,V3Y 2B8
 14,Parsons College,Interior,2643 Shad Road,Qualicum Beach,V9K 2B2
 15,Ware College,Interior,1392 Alien Drive,Richmond,V6X 3X2
+16,Moving Mutt University,Fraser,1950 5 Avenue,Surrey,V3S 9Y7

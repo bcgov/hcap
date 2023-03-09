@@ -1,5 +1,4 @@
 id,participant_id,status,data,site_id
-0,48,assigned-same-site,"{""date"": ""2022-04-06T00:00:00"", ""sameSite"": true, ""positionType"": ""casual"", ""employmentType"": ""full-time""}",5
 1,1,assigned-new-site,"{""date"": ""2021-05-15T00:00:00"", ""sameSite"": false, ""positionType"": ""casual"", ""employmentType"": ""full-time""}",2
 2,14,assigned-same-site,"{""date"": ""2022-09-13T00:00:00"", ""sameSite"": true, ""positionType"": ""permanent"", ""employmentType"": ""part-time""}",5
 3,82,assigned-same-site,"{""date"": ""2022-02-14T00:00:00"", ""sameSite"": true, ""positionType"": ""permanent"", ""employmentType"": ""full-time""}",3
@@ -48,3 +47,4 @@ id,participant_id,status,data,site_id
 46,37,assigned-same-site,"{""date"": ""2021-11-26T00:00:00"", ""sameSite"": true, ""positionType"": ""casual"", ""employmentType"": ""full-time""}",1
 47,87,assigned-same-site,"{""date"": ""2022-10-17T00:00:00"", ""sameSite"": true, ""positionType"": ""permanent"", ""employmentType"": ""part-time""}",4
 48,62,assigned-same-site,"{""date"": ""2021-08-17T00:00:00"", ""sameSite"": true, ""positionType"": ""casual"", ""employmentType"": ""full-time""}",5
+49,48,assigned-same-site,"{""date"": ""2022-04-06T00:00:00"", ""sameSite"": true, ""positionType"": ""casual"", ""employmentType"": ""full-time""}",5

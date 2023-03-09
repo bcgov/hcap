@@ -93,10 +93,13 @@ export const createAllocationIdHash = (arr) =>
  * Updates an allocation in the database
  * @param payload payload
  * @param user User performing the operation
- * @returns array of DB operation results
+ * @returns array updated/created allocations - DB operation results
  */
-export const createBulkAllocation = async (payload: BulkAllocationPayload, user: HcapUserInfo) => {
-  const updateResults = [];
+export const createBulkAllocation = async (
+  payload: BulkAllocationPayload,
+  user: HcapUserInfo
+): Promise<Allocation[]> => {
+  const updateResults: Allocation[] = [];
 
   const existingAllocations: Allocation[] = await getAllocationsForSites(
     payload.siteIds,

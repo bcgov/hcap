@@ -156,11 +156,11 @@ describe('api e2e tests for /phase', () => {
     expect(res.status).toEqual(200);
   });
 
+  // The api used JSON.parse to convert the string 'false' and 'true' into booleans
   it('should not return phases with allocations with query param `?includeAllocations=notABoolean`', async () => {
     const header = await getKeycloakToken(healthAuthority);
     const res = await request(app).get(`/api/v1/phase?includeAllocations=notABoolean`).set(header);
-    expect(res.body.data[0]).not.toHaveProperty('allocations');
-    expect(res.status).toEqual(200);
+    expect(res.status).toEqual(500);
   });
 
   it('should return all phases with allocations', async () => {

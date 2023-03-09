@@ -3,7 +3,6 @@
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import { dbClient, collections } from '../db';
-import isNull from 'lodash/isNull';
 import { HcapUserInfo } from '../keycloak';
 import { getSiteByID } from './employers';
 import { Allocation } from './allocations';

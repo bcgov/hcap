@@ -129,10 +129,7 @@ jobs:
         run: make local-kc-run
 
       - name: Add Sites
-        run: cd server && POSTGRES_HOST=localhost npm run feed-sites
-
-      - name: Add Participants
-        run: cd server && POSTGRES_HOST=localhost npm run feed-participants
+        run: cd server && POSTGRES_HOST=localhost npm run feed-data -- --skip-missing-tables
 
       - name: Jest run
         run: make local-server-tests

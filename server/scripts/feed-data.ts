@@ -24,6 +24,12 @@ type TargetTable = {
   table: string;
 };
 
+type InsertError = {
+  table: string;
+  message: string;
+  level: 'warn' | 'error';
+};
+
 /** Directory (relative to this script) to find CSVs in */
 const dataDirectory = '../test-data/';
 
@@ -105,50 +111,25 @@ function insertCSV(filePath: string, table: string) {
   });
 }
 
-/**
- * Feeds data from specified CSV files to their matching database tables.
- * The main logic of `feed-data`.
- */
-export async function feedData(targetTables: TargetTable[]) {
-  await dbClient.connect();
-  const errors: { table: string; message: string; level: 'warn' | 'error' }[] = [];
+// Script-specific logging functions
 
-  for (const table of targetTables) {
-    logWithLevel(`Populating table ${table.table} from ${table.fileName}`, 'info');
-    try {
-      const results = await insertCSV(
-        path.join(__dirname, dataDirectory, table.fileName),
-        table.table
-      );
-      if (results.find((result) => result.status === InsertStatus.MISSING_FK)) {
-        const missingCount = results.filter(
-          (result) => result.status === InsertStatus.MISSING_FK
-        ).length;
-        errors.push({
-          table: table.table,
-          message: `${missingCount} ${
-            missingCount > 1 ? 'entries' : 'entry'
-          } could not be added due to a missing foreign key`,
-          level: 'warn',
-        });
-      }
-      displayResultsTable(results);
-    } catch (error) {
-      logWithLevel('Failed to feed entity!', 'error');
-      logWithLevel(` Error occurred in table ${table.table}, fed from ${table.fileName}`, 'error');
-      logWithLevel('The following error occurred:', 'error');
-      logWithLevel(error, 'error');
-      errors.push({
-        table: table.table,
-        message: String(error),
-        level: 'error',
-      });
-    }
-  }
-  logWithLevel(
-    errors.length ? 'Data population complete, with errors.' : 'Data population complete!',
-    'info'
-  );
+/**
+ * Logs an unexpected error from populating a table.
+ * @param table Table error occurred in
+ * @param error Error message or object to log
+ */
+function logTableError(table: TargetTable, error) {
+  logWithLevel('Failed to feed entity!', 'error');
+  logWithLevel(` Error occurred in table ${table.table}, fed from ${table.fileName}`, 'error');
+  logWithLevel('The following error occurred:', 'error');
+  logWithLevel(error, 'error');
+}
+
+/**
+ * Logs all errors encountered while running the script.
+ * @param errors Errors to print.
+ */
+function logFinalErrors(errors: InsertError[]) {
   if (errors.length) {
     const hasErrors = errors.filter((error) => error.level === 'error').length > 0;
     logWithLevel(
@@ -171,6 +152,61 @@ export async function feedData(targetTables: TargetTable[]) {
       logWithLevel(`- ${table}: ${message}`, level);
     });
   }
+}
+
+/**
+ * Feeds data from specified CSV files to their matching database tables.
+ * The main logic of `feed-data`.
+ */
+export async function feedData(targetTables: TargetTable[], skipMissingTables = false) {
+  await dbClient.connect();
+
+  const errors: InsertError[] = [];
+
+  for (const table of targetTables) {
+    // Check if table exists before trying to write to it
+    if (!(await dbClient.db.listTables()).includes(table.table)) {
+      if (!skipMissingTables)
+        throw new Error(`Table ${table.table} is missing in database. Cannot continue.`);
+      // Otherwise just log and move on
+      logWithLevel(`Table ${table.table} is missing in database. Skipping.\n`, 'warn');
+    } else {
+      logWithLevel(`Populating table ${table.table} from ${table.fileName}`, 'info');
+      try {
+        const results = await insertCSV(
+          path.join(__dirname, dataDirectory, table.fileName),
+          table.table
+        );
+        if (results.find((result) => result.status === InsertStatus.MISSING_FK)) {
+          const missingCount = results.filter(
+            (result) => result.status === InsertStatus.MISSING_FK
+          ).length;
+          errors.push({
+            table: table.table,
+            message: `${missingCount} ${
+              missingCount > 1 ? 'entries' : 'entry'
+            } could not be added due to a missing foreign key`,
+            level: 'warn',
+          });
+        }
+        displayResultsTable(results);
+      } catch (error) {
+        logTableError(table, error);
+        errors.push({
+          table: table.table,
+          message: String(error),
+          level: 'error',
+        });
+      }
+    }
+  }
+
+  // Display final results
+  logWithLevel(
+    errors.length ? 'Data population complete, with errors.' : 'Data population complete!',
+    'info'
+  );
+  logFinalErrors(errors);
 
   // Exit with error if the population didn't go smoothly
   process.exit(errors.length ? 1 : 0);
@@ -178,5 +214,6 @@ export async function feedData(targetTables: TargetTable[]) {
 
 // Only run defaults if directly invoked, allowing other scripts to extend this one
 if (require.main === module) {
-  feedData(defaultTables);
+  const skipMissingTables = process.argv.includes('--skip-missing-tables');
+  feedData(defaultTables, skipMissingTables);
 }

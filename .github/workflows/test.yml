@@ -128,11 +128,8 @@ jobs:
       - name: Build and Run
         run: make local-kc-run
 
-      - name: Add Sites
-        run: cd server && POSTGRES_HOST=localhost npm run feed-sites
-
-      - name: Add Participants
-        run: cd server && POSTGRES_HOST=localhost npm run feed-participants
+      - name: Add Test Data
+        run: cd server && POSTGRES_HOST=localhost npm run feed-data
 
       - name: Jest run
         run: make local-server-tests

@@ -129,10 +129,10 @@ export const getAllSitePhases = async (siteId: number): Promise<sitePhase[]> => 
 /**
  * Gets all phases with or without associated allocations
  *
- * @param includeAllocations  condition to include associated allocation records
+ * @param includeAllocations  condition to include associated allocation records - comes from queryParams and is passed as a {includeAllocations: "true"}
  * @returns phase[]   An array of phases with formatted dates
  */
-export const getAllPhases = async (includeAllocations = null): Promise<phase[]> => {
+export const getAllPhases = async (includeAllocations: string | null = null): Promise<phase[]> => {
   // NOTE: this will not allow for full access to the phase list once it hits that 100k limit!
   // If there is any chance of this hitting that number, or if performance starts to suffer,
   // pagination support should be added.
@@ -141,7 +141,7 @@ export const getAllPhases = async (includeAllocations = null): Promise<phase[]> 
       allocations: {
         relation: collections.SITE_PHASE_ALLOCATION,
         type: 'LEFT OUTER',
-        omit: !includeAllocations,
+        omit: !JSON.parse(includeAllocations),
         on: {
           phase_id: 'id',
         },

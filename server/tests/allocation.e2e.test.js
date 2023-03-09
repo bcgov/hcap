@@ -92,4 +92,62 @@ describe('api e2e tests for /allocation', () => {
       .set(header);
     expect(res.status).toEqual(403);
   });
+
+  it('should set bulk allocations to phase', async () => {
+    const { site, phase } = await makeTestFKAllocations(847583759);
+    const header = await getKeycloakToken(ministryOfHealth);
+    const res = await request(app)
+      .post(`/api/v1/allocation/bulk-allocation`)
+      .send({
+        allocation: 50,
+        phase_id: phase.id,
+        siteIds: [site.id],
+      })
+      .set(header);
+    expect(res.status).toEqual(201);
+  });
+
+  it('should fail to set a bulk allocation due to unauthorized user', async () => {
+    const { site, phase } = await makeTestFKAllocations(1122);
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app)
+      .post(`/api/v1/allocation/bulk-allocation`)
+      .send({
+        allocation: 50,
+        phase_id: phase.id,
+        siteIds: [site.id],
+      })
+      .set(header);
+    expect(res.status).toEqual(403);
+  });
+
+  it('should fail to set a bulk allocation due to `noUnknown` validation', async () => {
+    const header = await getKeycloakToken(ministryOfHealth);
+    const { site, phase } = await makeTestFKAllocations(573857);
+    const res = await request(app)
+      .post(`/api/v1/allocation/bulk-allocation`)
+      .send({
+        allocation: 50,
+        phase_id: phase.id,
+        siteIds: [site.id],
+        start_date: new Date(),
+      })
+      .set(header);
+    expect(res.status).toEqual(400);
+  });
+
+  it('should fail to set a bulk allocation due to `no negative` validation', async () => {
+    const header = await getKeycloakToken(ministryOfHealth);
+    const { site, phase } = await makeTestFKAllocations(6755744);
+    const res = await request(app)
+      .post(`/api/v1/allocation/bulk-allocation`)
+      .send({
+        allocation: -20,
+        phase_id: phase.id,
+        siteIds: [site.id],
+        start_date: new Date(),
+      })
+      .set(header);
+    expect(res.status).toEqual(400);
+  });
 });

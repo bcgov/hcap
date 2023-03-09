@@ -3,7 +3,7 @@ import { v4 } from 'uuid';
 
 import { startDB, closeDB } from './util/db';
 import { getUserSites, makeUser } from '../services/user';
-import { saveSites } from '../services/employers';
+import { saveSites } from './util/mock';
 
 describe('Users Service', () => {
   beforeAll(async () => {

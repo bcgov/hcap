@@ -22,7 +22,7 @@ import { setParticipantStatus } from '../services/participant-status';
 import { createPostHireStatus } from '../services/post-hire-flow';
 import { getReport } from '../services/reporting';
 import { evaluateBooleanAnswer, postHireStatuses } from '../validation';
-import { saveSites } from '../services/employers';
+import { saveSites } from './util/mock';
 
 describe('Participants Service', () => {
   beforeAll(async () => {

@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import { dbClient, collections } from '../db';
-import { validate, EmployerSiteBatchSchema } from '../validation';
 import { userRegionQuery } from './user';
 import type { HcapUserInfo } from '../keycloak';
 
@@ -31,27 +30,6 @@ export const getEmployerByID = async (id: number) =>
 export const saveSingleSite = async (sitePayload) => {
   const res = await dbClient.db.saveDoc(collections.EMPLOYER_SITES, sitePayload);
   return res;
-};
-
-// TODO: DELETE THIS
-/** @deprecated - unused anywhere but tests. Should be deleted once tests are updated. */
-export const saveSites = async (sitesArg) => {
-  const sites = Array.isArray(sitesArg) ? sitesArg : [sitesArg];
-  await validate(EmployerSiteBatchSchema, sites);
-  const promises = sites.map((site) => dbClient.db.saveDoc(collections.EMPLOYER_SITES, site));
-  const results = await Promise.allSettled(promises);
-  const response = [];
-  results.forEach((result, index) => {
-    const { siteId } = sites[index];
-    if (result.status === 'fulfilled') {
-      response.push({ siteId, status: 'Success' });
-    } else if (result.reason.code === '23505') {
-      response.push({ siteId, status: 'Duplicate' });
-    } else {
-      response.push({ siteId, status: 'Error', message: result.reason });
-    }
-  });
-  return response;
 };
 
 export const updateSite = async (id: number, site) => {

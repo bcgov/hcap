@@ -3,13 +3,7 @@ import { v4 } from 'uuid';
 import { app } from '../server';
 import { ParticipantStatus as ps } from '../constants';
 
-import {
-  saveSingleSite,
-  saveSites,
-  getSitesForUser,
-  getSiteByID,
-  updateSite,
-} from '../services/employers';
+import { saveSingleSite, getSitesForUser, getSiteByID, updateSite } from '../services/employers';
 
 import {
   getParticipants,
@@ -20,6 +14,7 @@ import {
 import { setParticipantStatus } from '../services/participant-status';
 
 import { startDB, closeDB } from './util/db';
+import { saveSites } from './util/mock';
 
 describe('Employer Site Endpoints', () => {
   let server;

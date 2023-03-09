@@ -7,7 +7,8 @@ import request from 'supertest';
 import { app } from '../server';
 import { startDB, closeDB } from './util/db';
 import { getKeycloakToken, superuser } from './util/keycloak';
-import { saveSingleSite, saveSites } from '../services/employers';
+import { saveSingleSite } from '../services/employers';
+import { saveSites } from './util/mock';
 
 const siteObject = ({ id, name }) => ({
   siteId: id,

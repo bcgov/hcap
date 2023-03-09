@@ -2,13 +2,7 @@ import request from 'supertest';
 import { v4 } from 'uuid';
 import { app } from '../server';
 
-import {
-  getEmployers,
-  getEmployerByID,
-  getSitesForUser,
-  getSiteByID,
-  saveSites,
-} from '../services/employers';
+import { getEmployers, getEmployerByID, getSitesForUser, getSiteByID } from '../services/employers';
 
 import {
   getParticipants,
@@ -19,6 +13,7 @@ import {
 import { setParticipantStatus } from '../services/participant-status';
 
 import { startDB, closeDB, cleanDB } from './util/db';
+import { saveSites } from './util/mock';
 
 import { ParticipantStatus as ps } from '../constants';
 

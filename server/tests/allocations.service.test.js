@@ -3,11 +3,17 @@
  */
 import { v4 } from 'uuid';
 import { app } from '../server';
-import { getAllocation, createAllocation, updateAllocation } from '../services/allocations';
+import {
+  getAllocation,
+  createAllocation,
+  updateAllocation,
+  createBulkAllocation,
+  getAllocationsForSites,
+} from '../services/allocations';
 import { makeTestFKAllocations } from './util/integrationTestData';
 import { startDB, closeDB } from './util/db';
 
-describe('Phase Allocation Endpoints', () => {
+describe('Allocation Endpoints', () => {
   let server;
 
   beforeAll(async () => {
@@ -68,5 +74,51 @@ describe('Phase Allocation Endpoints', () => {
 
     const response = await getAllocation(site.id, phase.id);
     expect(response.allocation).toEqual(45);
+  });
+
+  it('Set bulk allocation, receive success - testing create path', async () => {
+    const { site, phase } = await makeTestFKAllocations(5432524);
+
+    const allocations = await getAllocationsForSites([site.id], phase.id);
+    expect(allocations.length).toEqual(0);
+
+    const bulkAllocationMock = {
+      siteIds: [site.id],
+      phase_id: phase.id,
+      allocation: 30,
+    };
+    const res = await createBulkAllocation(bulkAllocationMock, user);
+    expect(res.length).toEqual(1);
+    expect(res[0].allocation).toEqual(30);
+  });
+
+  it('Set bulk allocation, receive success - testing update path', async () => {
+    const { site, phase } = await makeTestFKAllocations(90442);
+
+    const allocationMock = {
+      site_id: site.id,
+      phase_id: phase.id,
+      allocation: 45,
+    };
+
+    const allocationRes = await createAllocation(allocationMock, user);
+    expect(allocationRes.allocation).toEqual(45);
+
+    const allocations = await getAllocationsForSites([site.id], phase.id);
+    expect(allocations.length).toEqual(1);
+    expect(allocations[0].allocation).toEqual(45);
+
+    const bulkAllocationMock = {
+      siteIds: [site.id],
+      phase_id: phase.id,
+      allocation: 1000,
+    };
+    const res = await createBulkAllocation(bulkAllocationMock, user);
+    expect(res.length).toEqual(1);
+    expect(res[0].allocation).toEqual(1000);
+
+    const updatedAllocations = await getAllocationsForSites([site.id], phase.id);
+    expect(updatedAllocations.length).toEqual(1);
+    expect(updatedAllocations[0].allocation).toEqual(1000);
   });
 });

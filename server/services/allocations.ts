@@ -15,7 +15,7 @@ export interface Allocation {
   site_id: number;
 }
 
-export interface bulkAllocationPayload {
+export interface BulkAllocationPayload {
   /** FK for phase */
   phase_id: number;
   /** Number of allocations available */
@@ -83,29 +83,41 @@ export const updateAllocation = async (allocationId: number, allocation, user: H
 };
 
 /**
+ * Formats an array of allocations to an id hash
+ * @param arr existingAllocation array
+ * @returns Array of [{site_id: allocation_id}]
+ */
+export const createAllocationIdHash = (arr) =>
+  arr.reduce((map, { id, site_id }) => ({ [site_id]: id, ...map }), {});
+/**
  * Updates an allocation in the database
  * @param payload payload
  * @param user User performing the operation
- * @returns array of DB operation results
+ * @returns array updated/created allocations - DB operation results
  */
-export const createBulkAllocation = async (payload: bulkAllocationPayload, user: HcapUserInfo) => {
-  const updateResults = [];
+export const createBulkAllocation = async (
+  payload: BulkAllocationPayload,
+  user: HcapUserInfo
+): Promise<Allocation[]> => {
+  const updateResults: Allocation[] = [];
+
   const existingAllocations: Allocation[] = await getAllocationsForSites(
     payload.siteIds,
     payload.phase_id
   );
+
   await Promise.all(
     payload.siteIds.map(async (id) => {
       const allocationFound = existingAllocations.some(({ site_id }) => site_id === id);
+      const allocationIdHash = createAllocationIdHash(existingAllocations);
+
       if (allocationFound) {
-        existingAllocations.forEach(async (allocation) => {
-          const data = {
-            allocation: payload.allocation,
-            phase_id: payload.phase_id,
-            site_id: allocation.site_id,
-          };
-          updateResults.push(await updateAllocation(allocation.id, data, user));
-        });
+        const data = {
+          allocation: payload.allocation,
+          phase_id: payload.phase_id,
+          site_id: id,
+        };
+        updateResults.push(await updateAllocation(allocationIdHash[id], data, user));
       } else {
         const data = {
           allocation: payload.allocation,

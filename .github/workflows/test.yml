@@ -128,7 +128,7 @@ jobs:
       - name: Build and Run
         run: make local-kc-run
 
-      - name: Add Sites
+      - name: Add Test Data
         run: cd server && POSTGRES_HOST=localhost npm run feed-data -- --skip-missing-tables
 
       - name: Jest run

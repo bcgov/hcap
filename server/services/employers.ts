@@ -3,6 +3,7 @@ import { validate, EmployerSiteBatchSchema } from '../validation';
 import { userRegionQuery } from './user';
 import type { HcapUserInfo } from '../keycloak';
 import { formatDateSansTimezone } from '../utils';
+import { Allocation } from '../services/allocations';
 
 export interface EmployerSite {
   id: number; // Internal ID for site
@@ -167,7 +168,7 @@ export const getSiteByID = async (id: number): Promise<EmployerSite> => {
     throw new Error(`No site found with id ${id}`);
   }
 
-  const currentAllocation = await dbClient.runRawQuery(
+  const allocationResponse: Allocation[] = await dbClient.runRawQuery(
     `
     SELECT spa.allocation
       FROM site_phase_allocation spa
@@ -211,11 +212,10 @@ export const getSiteByID = async (id: number): Promise<EmployerSite> => {
       'duplicateArchivedJoin.status': null,
     });
 
-  const siteResponse = {
-    ...site[0],
-    hcapHires,
-    nonHcapHires,
-    allocation: currentAllocation[0].allocation,
-  };
-  return siteResponse;
+  const currentAllocation = allocationResponse.length ? allocationResponse[0].allocation : null;
+
+  site[0].hcapHires = hcapHires;
+  site[0].nonHcapHires = nonHcapHires;
+  site[0].allocation = currentAllocation;
+  return site[0];
 };

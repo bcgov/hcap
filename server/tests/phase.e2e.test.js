@@ -149,6 +149,20 @@ describe('api e2e tests for /phase', () => {
     expect(res.status).toEqual(200);
   });
 
+  it('should not return phases with allocations with query param `?includeAllocations=false`', async () => {
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app).get(`/api/v1/phase?includeAllocations=false`).set(header);
+    expect(res.body.data[0]).not.toHaveProperty('allocations');
+    expect(res.status).toEqual(200);
+  });
+
+  it('should not return phases with allocations with query param `?includeAllocations=notABoolean`', async () => {
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app).get(`/api/v1/phase?includeAllocations=notABoolean`).set(header);
+    expect(res.body.data[0]).not.toHaveProperty('allocations');
+    expect(res.status).toEqual(200);
+  });
+
   it('should return all phases with allocations', async () => {
     const siteMock = siteData({
       siteId: 7,

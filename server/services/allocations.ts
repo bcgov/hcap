@@ -83,6 +83,13 @@ export const updateAllocation = async (allocationId: number, allocation, user: H
 };
 
 /**
+ * Formats an array of allocations to an id hash
+ * @param arr existingAllocation array
+ * @returns Array of [{site_id: allocation_id}]
+ */
+export const createAllocationIdHash = (arr) =>
+  arr.reduce((map, { id, site_id }) => ({ [site_id]: id, ...map }), {});
+/**
  * Updates an allocation in the database
  * @param payload payload
  * @param user User performing the operation
@@ -90,6 +97,7 @@ export const updateAllocation = async (allocationId: number, allocation, user: H
  */
 export const createBulkAllocation = async (payload: BulkAllocationPayload, user: HcapUserInfo) => {
   const updateResults = [];
+
   const existingAllocations: Allocation[] = await getAllocationsForSites(
     payload.siteIds,
     payload.phase_id
@@ -98,17 +106,15 @@ export const createBulkAllocation = async (payload: BulkAllocationPayload, user:
   await Promise.all(
     payload.siteIds.map(async (id) => {
       const allocationFound = existingAllocations.some(({ site_id }) => site_id === id);
+      const allocationIdHash = createAllocationIdHash(existingAllocations);
 
       if (allocationFound) {
-        const promises = existingAllocations.map(async (allocation) => {
-          const data = {
-            allocation: payload.allocation,
-            phase_id: payload.phase_id,
-            site_id: allocation.site_id,
-          };
-          return await updateAllocation(allocation.id, data, user);
-        });
-        updateResults.push(...(await Promise.all(promises)));
+        const data = {
+          allocation: payload.allocation,
+          phase_id: payload.phase_id,
+          site_id: id,
+        };
+        updateResults.push(await updateAllocation(allocationIdHash[id], data, user));
       } else {
         const data = {
           allocation: payload.allocation,

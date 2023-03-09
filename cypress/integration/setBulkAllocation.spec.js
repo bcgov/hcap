@@ -54,7 +54,6 @@ describe('Bulk Allocation functionality', () => {
       .find('[type="checkbox"]')
       .its('length')
       .then((n) => {
-        cy.log(n);
         setBulkAllocationForm(90);
         // expect: no errors, success message.
         cy.contains('.Mui-error').should('not.exist');
@@ -93,7 +92,6 @@ describe('Bulk Allocation functionality', () => {
       .find('[type="checkbox"]')
       .its('length')
       .then((n) => {
-        cy.log(n);
         const override = true;
         setBulkAllocationForm(200, override);
         cy.get('form').submit();
@@ -101,7 +99,6 @@ describe('Bulk Allocation functionality', () => {
         // expect: no errors, success message.
         cy.get('[name=acknowledgement]').should('exist');
         cy.contains('.Mui-error').should('not.exist');
-        cy.wait(2000);
         cy.get('.MuiAlert-message').contains(`${n} sites have been assigned allocations`);
       });
   });

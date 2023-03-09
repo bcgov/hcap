@@ -41,7 +41,7 @@ id,cohort_id,participant_id,is_current
 39,36,98,False
 40,58,38,True
 41,55,39,True
-42,42,26,False
+42,42,26,True
 43,9,85,True
 44,3,7,False
 45,2,49,False

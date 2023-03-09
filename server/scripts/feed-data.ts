@@ -98,6 +98,7 @@ function insertCSV(filePath: string, table: string) {
       .on('error', reject)
       .on('data', (row) => rowResults.push(insertRow(row, table)))
       .on('end', (rowCount: number) => {
+        dbClient.runRawQuery(`ALTER SEQUENCE ${table}_id_seq RESTART WITH ${rowCount}`);
         logWithLevel(`Parsed ${rowCount} rows for ${table}`, 'info');
         Promise.all(rowResults).then((results) => resolve(results));
       });

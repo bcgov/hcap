@@ -63,3 +63,5 @@ id,participant_id,status,data,is_current
 61,17,post_secondary_education_completed,"{""graduationDate"": ""2021/10/14""}",True
 62,39,post_secondary_education_completed,"{""graduationDate"": ""2021/06/06""}",True
 63,25,post_secondary_education_completed,"{""graduationDate"": ""2022/03/07""}",True
+64,26,post_secondary_education_completed,"{""graduationDate"": ""2022/03/07""}",True
+65,27,post_secondary_education_completed,"{""graduationDate"": ""2022/03/07""}",True

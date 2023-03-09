@@ -157,7 +157,7 @@ describe('api e2e tests for /phase', () => {
   });
 
   // The api used JSON.parse to convert the string 'false' and 'true' into booleans
-  it('should not return phases with allocations with query param `?includeAllocations=notABoolean`', async () => {
+  it('should return an error with query param `?includeAllocations=notABoolean`', async () => {
     const header = await getKeycloakToken(healthAuthority);
     const res = await request(app).get(`/api/v1/phase?includeAllocations=notABoolean`).set(header);
     expect(res.status).toEqual(500);

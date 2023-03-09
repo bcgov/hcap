@@ -1,12 +1,8 @@
 // Test execution code: npm run test:debug participant.service.test.js
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { ValidationError } from 'yup';
 import { v4 } from 'uuid';
 import { startDB, closeDB } from './util/db';
 import {
-  parseAndSaveParticipants,
   getParticipants,
   makeParticipant,
   getParticipantByID,
@@ -166,63 +162,6 @@ describe('Participants Service', () => {
       preferredLocation: 'Fraser;Vancouver Coastal',
     },
   ];
-
-  it('Parse participants xlsx, receive success', async () => {
-    const file = readFileSync(join(__dirname, './mock/xlsx/participants-data.xlsx'));
-    const res = await parseAndSaveParticipants(file);
-
-    const expectedRes = [
-      { id: 6488690, status: 'Success' },
-      { id: 6488691, status: 'Success' },
-      { id: 6488692, status: 'Success' },
-      { id: 6488693, status: 'Success' },
-      { id: 6488694, status: 'Success' },
-      { id: 6488695, status: 'Success' },
-      { id: 6488696, status: 'Success' },
-      { id: 6488697, status: 'Success' },
-      { id: 6488698, status: 'Success' },
-      { id: 6488699, status: 'Success' },
-    ];
-
-    expect(res).toEqual(expectedRes);
-  });
-
-  it('Parse participants xlsx, force lowercase interested', async () => {
-    const file = readFileSync(join(__dirname, './mock/xlsx/participants-data.xlsx'));
-    await parseAndSaveParticipants(file);
-    const participants = await getParticipants({ isSuperUser: true });
-    const participant = participants.data.find(
-      (p) => p.firstName === 'Hux' && p.lastName === 'Hector'
-    );
-    expect(participant.interested).toEqual('yes');
-  });
-
-  it('Parse participants xlsx, receive duplicate errors', async () => {
-    const file = readFileSync(join(__dirname, './mock/xlsx/participants-data.xlsx'));
-    const res = await parseAndSaveParticipants(file);
-
-    const expectedRes = [
-      { id: 6488690, status: 'Duplicate' },
-      { id: 6488691, status: 'Duplicate' },
-      { id: 6488692, status: 'Duplicate' },
-      { id: 6488693, status: 'Duplicate' },
-      { id: 6488694, status: 'Duplicate' },
-      { id: 6488695, status: 'Duplicate' },
-      { id: 6488696, status: 'Duplicate' },
-      { id: 6488697, status: 'Duplicate' },
-      { id: 6488698, status: 'Duplicate' },
-      { id: 6488699, status: 'Duplicate' },
-    ];
-
-    expect(res).toEqual(expectedRes);
-  });
-
-  it('Parse participants xlsx, receive validation error', async () => {
-    const file = readFileSync(join(__dirname, './mock/xlsx/participants-data-error.xlsx'));
-    expect(parseAndSaveParticipants(file)).rejects.toEqual(
-      new ValidationError('Please specify a preferred (EOI) location for participant of row 2')
-    );
-  });
 
   it('Get participants as superuser, receive all successfully', async () => {
     const res = await getParticipants({ isSuperUser: true });

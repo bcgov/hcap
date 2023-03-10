@@ -186,6 +186,7 @@ describe('Employer Site Endpoints', () => {
     const res1 = await getSiteByID(1);
     expect(res1.hcapHires).toEqual('1');
     expect(res1.nonHcapHires).toEqual('1');
+    expect(res1.allocation).toBeDefined();
   });
 
   it('Create new site, receive validation error', async () => {

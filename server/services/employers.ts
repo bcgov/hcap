@@ -126,6 +126,7 @@ export const getSitesForUser = async (user: HcapUserInfo): Promise<EmployerSite[
     additionalCriteria.push(`(employer_sites.body ->> 'siteId')::INT IN ($(userSites:csv))`);
     additionalCriteriaParams.userSites = user.sites;
   }
+
   if (user.isHA && user.regions.length > 0) {
     additionalCriteria.push(`employer_sites.body ->> 'healthAuthority' IN ($(userRegions:csv))`);
     additionalCriteriaParams.userRegions = user.regions;

@@ -61,7 +61,7 @@ export const SelectProspectingSiteForm = ({
 
   return (
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-      {({ submitForm, values }) => (
+      {({ submitForm }) => (
         <FormikForm>
           <Typography className={classes.formLabel} variant='subtitle2'>
             {`Please select the site ${

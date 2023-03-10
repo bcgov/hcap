@@ -4,6 +4,7 @@ import { Button } from '../generic';
 import { Box, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } from '../fields';
+import { flagKeys, featureFlag } from '../../services';
 import { fetchSitePhases } from '../../services/phases';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { getTodayDate } from '../../utils';
@@ -93,7 +94,8 @@ export const HireForm = ({ onSubmit, onClose, sites }) => {
                 label='I acknowledge that the participant has accepted the offer in writing.'
               />
             </Box>
-            {currentPhase && (
+
+            {currentPhase && featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION) && (
               <Box mt={2} gap={15}>
                 <Alert severity='info'>
                   <Typography variant='body2' gutterBottom>

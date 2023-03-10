@@ -9,7 +9,7 @@ describe('Participants status suite', () => {
     cy.contains('button', 'View My Candidates').click();
   };
 
-  const interviewParticipantForm = (siteId) => {
+  const interviewParticipantForm = () => {
     // let it select today as the date
     cy.get('input[name=ContactedDate]').clear().type('2022/01/13');
     cy.contains('button', 'Submit').click();
@@ -24,6 +24,8 @@ describe('Participants status suite', () => {
     cy.get(`li[data-value='${siteId}']`).click();
     // acknowledge participant accepted offer in writing
     cy.get('input[name="acknowledge"]').click();
+    //  expect alert with allocations/remainingHires to exist
+    cy.contains('.MuiAlert-standardInfo').should('exist');
 
     cy.contains('button', 'Submit').click();
   };

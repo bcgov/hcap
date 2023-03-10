@@ -1,9 +1,9 @@
-import dayjs from 'dayjs';
 import { dbClient, collections } from '../db';
 import { validate, EmployerSiteBatchSchema } from '../validation';
 import { userRegionQuery } from './user';
 import type { HcapUserInfo } from '../keycloak';
 import { formatDateSansTimezone } from '../utils';
+import { Allocation } from '../services/allocations';
 
 export interface EmployerSite {
   id: number; // Internal ID for site
@@ -167,6 +167,19 @@ export const getSiteByID = async (id: number): Promise<EmployerSite> => {
     throw new Error(`No site found with id ${id}`);
   }
 
+  const allocationResponse: Allocation[] = await dbClient.runRawQuery(
+    `
+    SELECT spa.allocation
+      FROM site_phase_allocation spa
+        JOIN (
+          SELECT id FROM phase
+          WHERE CURRENT_DATE BETWEEN start_date AND end_date
+          LIMIT 1
+        ) p ON p.id = spa.phase_id
+      WHERE spa.site_id = $1;
+    `,
+    [site[0].id]
+  );
   // Counting hire
   // Join Criteria for duplicate participant
   const duplicateArchivedJoin = {
@@ -197,7 +210,11 @@ export const getSiteByID = async (id: number): Promise<EmployerSite> => {
       'data.nonHcapOpportunity': 'true',
       'duplicateArchivedJoin.status': null,
     });
+
+  const currentAllocation = allocationResponse.length ? allocationResponse[0].allocation : null;
+
   site[0].hcapHires = hcapHires;
   site[0].nonHcapHires = nonHcapHires;
+  site[0].allocation = currentAllocation;
   return site[0];
 };

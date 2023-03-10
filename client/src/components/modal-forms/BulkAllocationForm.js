@@ -104,8 +104,8 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
                 placeholder='Select phase'
                 label='* Phase name'
                 options={createPhaseDropdown(phases)}
-                onChange={async ({ target }) => {
-                  await handleSetAllocation(target.value, setFieldValue);
+                onChange={({ target }) => {
+                  handleSetAllocation(target.value, setFieldValue);
                   setFieldValue('phase_id', target.value);
                 }}
               />

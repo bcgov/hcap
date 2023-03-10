@@ -15,6 +15,34 @@ describe('Return of Service Form', () => {
   const maxValidDate = '2099/12/31';
   const futureInvalidDate = '2100/01/01';
 
+  it('Should validate required fields', () => {
+    const participantId = 27;
+    // go to participant view
+    cy.visit('participant-view');
+
+    // go to hired tab
+    cy.contains('button', 'Hired Candidates').click();
+
+    // find a hired participant
+    cy.contains('td', participantId)
+      .parent()
+      .within(() => {
+        // click the Actions button belonging to that participant
+        cy.get('td:last-child button').click();
+      });
+
+    // click Return of Service
+    cy.contains('li', 'Return Of Service').click();
+    // go to hired tab
+    cy.contains('button', 'Confirm').click();
+
+    // expect: required error on every field
+    cy.contains('p.Mui-error', 'Return of service date is required');
+    cy.contains('p.Mui-error', 'Position Type is required');
+    cy.contains('p.Mui-error', 'Please confirm');
+    cy.contains('p.Mui-error', 'Employment Type is required');
+  });
+
   it('Should produce error when ROS date is past max valid date', () => {
     const participantId = 27;
     completeROSForm(participantId, futureInvalidDate);

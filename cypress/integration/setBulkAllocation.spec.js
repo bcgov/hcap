@@ -44,7 +44,7 @@ describe('Bulk Allocation functionality', () => {
     const phaseData = {
       phaseName: 'Bulk Allocation Testing Phase',
       startDate: '2023/01/01',
-      endDate: '2024/01/01',
+      endDate: '2023/02/01',
     };
     // create phase - use new phase to set allocations
     createPhase(phaseData);

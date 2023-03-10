@@ -28,6 +28,8 @@ export const HireForm = ({ onSubmit, onClose, sites }) => {
     setPhases(phases);
   };
 
+  console.log(phases.length);
+  console.log(!phases.length);
   return (
     <Formik initialValues={hireInitialValues} validationSchema={HireFormSchema} onSubmit={onSubmit}>
       {({ submitForm, values, setFieldValue }) => {

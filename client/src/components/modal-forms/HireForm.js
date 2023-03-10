@@ -23,8 +23,8 @@ export const HireForm = ({ onSubmit, onClose, sites }) => {
   const [phases, setPhases] = useState([]);
 
   const handleCurrentPhase = async (siteId) => {
-    const site = sites.filter((site) => site.siteId === siteId);
-    let phases = await fetchSitePhases(site[0].id);
+    const site = sites.filter((site) => site.siteId === siteId)[0];
+    let phases = await fetchSitePhases(site.id);
     setPhases(phases);
   };
 

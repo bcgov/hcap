@@ -28,14 +28,12 @@ export const HireForm = ({ onSubmit, onClose, sites }) => {
     setPhases(phases);
   };
 
-  console.log(phases.length);
-  console.log(!phases.length);
   return (
     <Formik initialValues={hireInitialValues} validationSchema={HireFormSchema} onSubmit={onSubmit}>
       {({ submitForm, values, setFieldValue }) => {
         const currentPhase =
           values.hiredDate && values.site
-            ? phases.filter(
+            ? phases?.filter(
                 (phase) =>
                   Date.parse(phase.startDate) <= Date.parse(values.hiredDate) &&
                   Date.parse(values.hiredDate) <= Date.parse(phase.endDate)

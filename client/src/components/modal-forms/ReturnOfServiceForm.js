@@ -144,7 +144,7 @@ export const ReturnOfServiceForm = ({
                   <Field
                     name='employmentType'
                     component={RenderRadioGroup}
-                    label='Specific position type (optional)'
+                    label='Specific position type'
                     options={rosEmploymentTypeOptions}
                     boldLabel
                   />

@@ -21,14 +21,6 @@ import { evaluateBooleanAnswer, postHireStatuses } from '../validation';
 import { saveSites } from './util/mock';
 
 describe('Participants Service', () => {
-  beforeAll(async () => {
-    await startDB();
-  });
-
-  afterAll(async () => {
-    await closeDB();
-  });
-
   const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
 
   const allParticipants = [
@@ -162,6 +154,15 @@ describe('Participants Service', () => {
       preferredLocation: 'Fraser;Vancouver Coastal',
     },
   ];
+
+  beforeAll(async () => {
+    await startDB();
+    await Promise.all(allParticipants.map(async (participant) => makeParticipant(participant)));
+  });
+
+  afterAll(async () => {
+    await closeDB();
+  });
 
   it('Get participants as superuser, receive all successfully', async () => {
     const res = await getParticipants({ isSuperUser: true });

@@ -1,12 +1,11 @@
-/* eslint-disable */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } from '../fields';
 import { fetchSitePhases } from '../../services/phases';
-import { Field, Formik, useFormik, Form as FormikForm } from 'formik';
+import { Field, Formik, Form as FormikForm } from 'formik';
 import { getTodayDate } from '../../utils';
 import { HireFormSchema } from '../../constants';
 
@@ -21,61 +20,25 @@ const hireInitialValues = {
 };
 
 export const HireForm = ({ onSubmit, onClose, sites }) => {
-  // const formikRef = useRef();
   const [phases, setPhases] = useState([]);
-  const [currentPhase, setCurrentPhase] = useState({});
-  const formik = useFormik({
-    onChange: (values) => {
-      console.log('VALUES', values);
-    },
-  });
 
   const handleCurrentPhase = async (siteId) => {
-    console.log('DOING SOMETHING');
     const site = sites.filter((site) => site.siteId === siteId);
     let phases = await fetchSitePhases(site[0].id);
     setPhases(phases);
   };
 
-  // const handleChange = () => {
-  //   console.log('YEEE>>');
-  // };
-
-  // useEffect(() => {
-  //   console.log('CALLLLEDDD');
-  //   console.log(values);
-  //   if (values) {
-  //     // const { hiredDate } = formikRef.current.values;
-  //     console.log(values);
-  //     const currentPhase = phases.filter(
-  //       (phase) =>
-  //         Date.parse(phase.startDate) <= Date.parse(hiredDate) &&
-  //         Date.parse(values.hiredDate) <= Date.parse(phase.endDate)
-  //     )[0];
-  //     console.log(hiredDate);
-  //     console.log(currentPhase);
-  //     setCurrentPhase(currentPhase);
-  //   }
-  // }, [values]);
-
   return (
-    <Formik
-      initialValues={hireInitialValues}
-      validationSchema={HireFormSchema}
-      onSubmit={onSubmit}
-      onChange={handleChange}
-      // innerRef={formikRef}
-      // enableReinitialize
-    >
+    <Formik initialValues={hireInitialValues} validationSchema={HireFormSchema} onSubmit={onSubmit}>
       {({ submitForm, values, setFieldValue }) => {
-        console.log(phases);
-        // const currentPhase = values.hiredDate
-        //   ? phases.filter(
-        //       (phase) =>
-        //         Date.parse(phase.startDate) <= Date.parse(values.hiredDate) &&
-        //         Date.parse(values.hiredDate) <= Date.parse(phase.endDate)
-        //     )[0]
-        //   : null;
+        const currentPhase =
+          values.hiredDate && values.site
+            ? phases.filter(
+                (phase) =>
+                  Date.parse(phase.startDate) <= Date.parse(values.hiredDate) &&
+                  Date.parse(values.hiredDate) <= Date.parse(phase.endDate)
+              )[0]
+            : null;
 
         return (
           <FormikForm>
@@ -109,7 +72,6 @@ export const HireForm = ({ onSubmit, onClose, sites }) => {
                 component={RenderDateField}
                 maxDate={getTodayDate()}
                 label='* Date Hired'
-                onChange={formik.handleChange}
               />
               <Field name='startDate' component={RenderDateField} label='* Start Date' />
               <Field
@@ -131,7 +93,7 @@ export const HireForm = ({ onSubmit, onClose, sites }) => {
                 label='I acknowledge that the participant has accepted the offer in writing.'
               />
             </Box>
-            {currentPhase && values.site && (
+            {currentPhase && (
               <Box mt={2} gap={15}>
                 <Alert severity='info'>
                   <Typography variant='body2' gutterBottom>

@@ -43,8 +43,8 @@ describe('Bulk Allocation functionality', () => {
   it('MoH can set bulk allocations', () => {
     const phaseData = {
       phaseName: 'Bulk Allocation Testing Phase',
-      startDate: '2023/01/01',
-      endDate: '2024/01/01',
+      startDate: '2030/01/01',
+      endDate: '2031/01/01',
     };
     // create phase - use new phase to set allocations
     createPhase(phaseData);

@@ -23,7 +23,10 @@ export const EmployerFormSchema = yup
       .matches(/(^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)?$/, 'Format as A1A 1A1'),
 
     // Site contact info
-    siteName: yup.string().nullable(errorMessage),
+    siteName: yup
+      .string()
+      .nullable(errorMessage)
+      .max(255, 'Site name should be no longer than 255 characters'),
     address: yup.string().nullable(errorMessage),
     healthAuthority: yup
       .string()
@@ -150,12 +153,74 @@ export const EmployerFormSchema = yup
       .test('is-true', errorMessage, (v) => v === true),
   });
 
+export const EmployerSiteBatchSchema = yup.array().of(
+  yup.lazy((item, options) => {
+    const index = options.parent.indexOf(item);
+    const indexName = 'row';
+    return yup
+      .object()
+      .noUnknown(`Unknown field in site data (index ${index})`)
+      .shape({
+        siteId: yup.number().required(errorMessageIndex(index, indexName)),
+        siteName: yup
+          .string()
+          .required(errorMessageIndex(index, indexName))
+          .max(255, 'Site name should be no longer than 255 characters'),
+        address: yup.string().nullable(errorMessageIndex(index, indexName)),
+        city: yup.string().nullable(errorMessageIndex(index, indexName)),
+        isRHO: yup.boolean().nullable().required('Regional Health Office status is required'),
+        healthAuthority: yup
+          .string()
+          .required(errorMessageIndex(index, indexName))
+          .oneOf(healthRegions, `Invalid location (index ${index})`),
+        postalCode: yup
+          .string()
+          .required(errorMessageIndex(index, indexName))
+          .matches(/(^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)$/, {
+            excludeEmptyString: true,
+            message: `Format as A1A 1A1 (index ${index})`,
+          }),
+        registeredBusinessName: yup.string().nullable(errorMessageIndex(index, indexName)),
+        operatorName: yup.string().nullable(errorMessageIndex(index, indexName)),
+        operatorContactFirstName: yup.string().nullable(errorMessageIndex(index, indexName)),
+        operatorContactLastName: yup.string().nullable(errorMessageIndex(index, indexName)),
+        operatorEmail: yup
+          .string()
+          .email(`should be a valid email address (index ${index})`)
+          .nullable(errorMessageIndex(index, indexName)),
+        operatorPhone: yup
+          .string()
+          .matches(/^(\d{10})$/, {
+            excludeEmptyString: true,
+            message: `Phone number must be provided as 10 digits (index ${index})`,
+          })
+          .nullable(errorMessageIndex(index, indexName)),
+        siteContactFirstName: yup.string().nullable(errorMessageIndex(index, indexName)),
+        siteContactLastName: yup.string().nullable(errorMessageIndex(index, indexName)),
+        siteContactPhoneNumber: yup
+          .string()
+          .matches(/(^\d{10})$/, {
+            excludeEmptyString: true,
+            message: `Phone number must be provided as 10 digits (index ${index})`,
+          })
+          .nullable(errorMessageIndex(index, indexName)),
+        siteContactEmailAddress: yup
+          .string()
+          .email(`should be a valid email address (index ${index})`)
+          .nullable(errorMessageIndex(index, indexName)),
+      });
+  })
+);
+
 export const CreateSiteSchema = yup
   .object()
   .noUnknown('Unknown field in entry')
   .shape({
     siteId: yup.number().required('Site ID is required'),
-    siteName: yup.string().required(errorMessage),
+    siteName: yup
+      .string()
+      .required(errorMessage)
+      .max(255, 'Site name should be no longer than 255 characters'),
     address: yup.string().nullable(),
     city: yup.string().nullable(),
     isRHO: yup.boolean().nullable().required(errorMessage),
@@ -199,7 +264,10 @@ export const EditSiteSchema = yup
       .required(errorMessage)
       .matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
     siteContactEmail: yup.string().required(errorMessage).email('Invalid email address'),
-    siteName: yup.string().required(errorMessage),
+    siteName: yup
+      .string()
+      .required(errorMessage)
+      .max(255, 'Site name should be no longer than 255 characters'),
     registeredBusinessName: yup.string().required(errorMessage),
     address: yup.string().required(errorMessage),
     city: yup.string().required(errorMessage),

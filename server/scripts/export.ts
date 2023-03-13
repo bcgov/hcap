@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import './load-env';
-import csv from 'fast-csv';
+import * as csv from 'fast-csv';
 import { writeFileSync } from 'fs';
 import path from 'path';
 import { dbClient, collections } from '../db';

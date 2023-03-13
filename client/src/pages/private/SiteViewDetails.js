@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
-import { scrollUp } from '../../utils';
+import { scrollUp, addEllipsisMask } from '../../utils';
 import { Routes, MAX_LABEL_LENGTH } from '../../constants';
 import { EditSiteForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
@@ -12,7 +12,6 @@ import { ToastStatus, EditSiteSchema } from '../../constants';
 import { SiteDetailTabContext } from '../../providers';
 import { fetchSitePhases } from '../../services/phases';
 import { fetchSiteParticipants, updateSite, fetchSite } from '../../services/site';
-import { addEllipsisMask } from '../../utils';
 
 const SiteViewDetailsTabs = lazy(() => import('./SiteViewDetailsTabs'));
 

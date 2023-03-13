@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import { healthRegions, siteTypes, roles } from '../constants';
-import { validateBlankOrPositiveInteger, errorMessage } from './helpers';
+import { validateBlankOrPositiveInteger, errorMessage, errorMessageIndex } from './helpers';
 
 export const EmployerFormSchema = yup
   .object()

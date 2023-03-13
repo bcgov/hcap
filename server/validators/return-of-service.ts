@@ -20,7 +20,10 @@ export const CreateReturnOfServiceSchema = yup
           .string()
           .required('Position Type (data.positionType) is required')
           .oneOf(rosPositionTypeValues),
-        employmentType: yup.string().optional().oneOf(rosEmploymentTypeValues),
+        employmentType: yup
+          .string()
+          .required('Employment Type is required')
+          .oneOf(rosEmploymentTypeValues),
         sameSite: yup.boolean().required('Same Site flag (data.sameSite) is required'),
       }),
   });
@@ -44,7 +47,10 @@ export const ChangeReturnOfServiceSiteSchema = yup
           .string()
           .required('Position Type (data.positionType) is required')
           .oneOf(rosPositionTypeValues),
-        employmentType: yup.string().optional().oneOf(rosEmploymentTypeValues),
+        employmentType: yup
+          .string()
+          .required('Employment Type is required')
+          .oneOf(rosEmploymentTypeValues),
       }),
   });
 

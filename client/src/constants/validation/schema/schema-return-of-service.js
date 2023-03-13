@@ -18,7 +18,7 @@ export const ReturnOfServiceSchema = yup
     positionType: yup.string().required('Position Type is required').oneOf(rosPositionTypeValues),
     employmentType: yup
       .string()
-      .optional('Please select employment type')
+      .required('Employment Type is required')
       .oneOf(rosEmploymentTypeValues),
     sameSite: yup
       .boolean()

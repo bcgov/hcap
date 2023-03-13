@@ -85,8 +85,8 @@ local-kc-run-only:
 	@docker-compose -f docker-compose.test.yml up -d 
 
 local-kc-run-debug: local-kc-build
-	@echo "Starting test local app container"
-	@docker-compose -f docker-compose.test.yml up
+	@echo "Starting test local app container in debug mode"
+	@docker-compose -f docker-compose.debug.yml up
 
 local-kc-down:
 	@echo "Stopping local app container"

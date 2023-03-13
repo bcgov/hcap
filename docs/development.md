@@ -28,6 +28,13 @@
 
 You should see the application running at `http://hcapemployers.local.freshworks.club:4000/` and `http://hcapparticipants.local.freshworks.club:4000/`.
 
+### To run the server with debugging enabled:
+
+- Run `make local-kc-run-debug` within the root of the project
+- Attach a debugger (such as VS Code's built in debugger, or DevTools)
+
+The project will run inside your terminal (without detaching) and be open to local debuggers.
+
 ### To seed the database with data in an Excel sheet:
 
 - `make seed-sites SHEET=my_spreadsheet.xlsx`

@@ -45,6 +45,17 @@ describe('api e2e tests for /ros routes', () => {
     expect(res.body).toHaveProperty('id');
   });
 
+  it('should fail to create ros status due to validation errors', async () => {
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app)
+      .post(`/api/v1/ros/participant/${testParticipant.id}`)
+      .send({
+        data: rosData({ employmentType: null }),
+      })
+      .set(header);
+    expect(res.status).toEqual(400);
+  });
+
   it('should create RoS status with different site', async () => {
     const { participant } = await createTestParticipantStatus({
       participantData: participantData({ emailAddress: 'test.e2e.ros1@hcap.io' }),
@@ -70,6 +81,23 @@ describe('api e2e tests for /ros routes', () => {
       .set(header);
     expect(res.status).toEqual(201);
     expect(res.body).toHaveProperty('id');
+  });
+
+  it('should fail to create RoS status with different site due to validation errors', async () => {
+    const siteOther = await makeTestSite({
+      siteId: 2006706702001,
+      siteName: 'Test E2E ROS Service Global - 2',
+      operatorEmail: 'test.e2e.ros.ops2@hcap.io',
+    });
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app)
+      .post(`/api/v1/ros/participant/${testParticipant.id}`)
+      .send({
+        siteId: siteOther.id,
+        data: rosData({ employmentType: null }),
+      })
+      .set(header);
+    expect(res.status).toEqual(400);
   });
 
   it('should get ros status', async () => {

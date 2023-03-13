@@ -1,3 +1,4 @@
+/* eslint-disable */
 // Participant Details Page
 // Dependency
 import React, { useEffect, useState, useMemo } from 'react';
@@ -103,6 +104,7 @@ export default () => {
   const linkName = getParticipantPageLabel(page);
   // Edit Button flag
   const enableEdit = roles.some((role) => ['ministry_of_health', 'superuser'].includes(role));
+
   const isMoH = roles.includes('ministry_of_health');
 
   // UI Actions

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Grid, Typography, Dialog, Box } from '@material-ui/core';
 import { Button } from '../../components/generic/Button';
 import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
@@ -107,7 +108,7 @@ export const TrackGraduation = (props) => {
               color='default'
               variant='contained'
               text='Update status'
-              disabled={disableTrackGraduation}
+              // disabled={disableTrackGraduation}
               onClick={() => {
                 setShowEditModal(true);
               }}

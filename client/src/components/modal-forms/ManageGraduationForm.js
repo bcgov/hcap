@@ -72,10 +72,10 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
                     }
                     component={RenderDateField}
                     maxDate={getTodayDate()}
-                    disabled={
-                      values.status === postHireStatuses.postSecondaryEducationCompleted &&
-                      values.data.date === cohortEndDate
-                    }
+                    // disabled={
+                    //   values.status === postHireStatuses.postSecondaryEducationCompleted &&
+                    //   values.data.date === cohortEndDate
+                    // }
                   />
                 }
                 <br />

@@ -61,7 +61,7 @@ export const ParticipantTableFilters = ({ loading, locations }) => {
           </TextField>
         </Box>
       </Grid>
-      <Grid item>
+      {/* <Grid item>
         <Box pl={2}>
           <DebounceTextField
             time={1000}
@@ -73,7 +73,7 @@ export const ParticipantTableFilters = ({ loading, locations }) => {
             placeholder='Forward Sortation Area'
           />
         </Box>
-      </Grid>
+      </Grid> */}
       <Grid item>
         <Box pl={2}>
           {!hideLastNameAndEmailFilter && (

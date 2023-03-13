@@ -17,7 +17,7 @@ describe('Users Service', () => {
   it('get user sites', async () => {
     const id = v4();
 
-    const siteMocks = {
+    const siteMock = {
       city: 'Osoyoos',
       isRHO: false,
       siteId: 5,
@@ -36,11 +36,11 @@ describe('Users Service', () => {
       operatorContactFirstName: 'Heather',
     };
 
-    await saveSingleSite(siteMocks);
+    await saveSingleSite(siteMock);
     await makeUser({ keycloakId: id, sites: [5] });
 
     const sitesResult = await getUserSites(id);
 
-    expect(sitesResult[0].siteId).toEqual(siteMocks[0].siteId);
+    expect(sitesResult[0].siteId).toEqual(siteMock[0].siteId);
   });
 });

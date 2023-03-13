@@ -18,7 +18,7 @@ import { setParticipantStatus } from '../services/participant-status';
 import { createPostHireStatus } from '../services/post-hire-flow';
 import { getReport } from '../services/reporting';
 import { evaluateBooleanAnswer, postHireStatuses } from '../validation';
-import { saveSites } from './util/mock';
+import { saveSingleSite } from '../services/employers';
 
 describe('Participants Service', () => {
   const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
@@ -842,7 +842,7 @@ describe('Participants Service', () => {
       contactedDate: '09/09/2020',
     };
 
-    await saveSites({
+    await saveSingleSite({
       siteId: 2,
       siteName: 'test',
       isRHO: false,

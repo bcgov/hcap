@@ -2,7 +2,13 @@ import request from 'supertest';
 import { v4 } from 'uuid';
 import { app } from '../server';
 
-import { getEmployers, getEmployerByID, getSitesForUser, getSiteByID } from '../services/employers';
+import {
+  getEmployers,
+  getEmployerByID,
+  getSitesForUser,
+  getSiteByID,
+  saveSingleSite,
+} from '../services/employers';
 
 import {
   getParticipants,
@@ -13,7 +19,6 @@ import {
 import { setParticipantStatus } from '../services/participant-status';
 
 import { startDB, closeDB, cleanDB } from './util/db';
-import { saveSites } from './util/mock';
 
 import { ParticipantStatus as ps } from '../constants';
 
@@ -234,12 +239,10 @@ describe.skip('Server V1 Form Endpoints', () => {
   it('checks response from the site participants endpoint', async () => {
     await cleanDB();
 
-    const [siteResponse] = await saveSites(site);
-    const expectedResponse = { siteId: 67, status: 'Success' };
-    expect(siteResponse).toEqual(expectedResponse);
+    await expect(saveSingleSite(site)).resolves.not.toThrow();
 
     const sites = await getSitesForUser({ roles: ['ministry_of_health'] });
-    const [siteData] = sites.filter((entry) => entry.siteId === siteResponse.siteId);
+    const [siteData] = sites.filter((entry) => entry.siteId === site.siteId);
 
     const res = await getSiteByID(siteData.id);
     await makeParticipant(participant1);

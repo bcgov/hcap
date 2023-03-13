@@ -1,4 +1,3 @@
-import { ValidationError } from 'yup';
 import { v4 } from 'uuid';
 import { app } from '../server';
 import { ParticipantStatus as ps } from '../constants';
@@ -14,7 +13,6 @@ import {
 import { setParticipantStatus } from '../services/participant-status';
 
 import { startDB, closeDB } from './util/db';
-import { EmployerSiteBatchSchema, validate } from '../validators';
 
 describe('Employer Site Endpoints', () => {
   let server;
@@ -185,16 +183,6 @@ describe('Employer Site Endpoints', () => {
     expect(res1.hcapHires).toEqual('1');
     expect(res1.nonHcapHires).toEqual('1');
     expect(res1.allocation).toBeDefined();
-  });
-
-  it('Validates new site, receives validation error', async () => {
-    expect(
-      validate(EmployerSiteBatchSchema, { ...site, siteContactPhoneNumber: '1' })
-    ).rejects.toEqual(new ValidationError('Phone number must be provided as 10 digits (index 0)'));
-
-    expect(validate(EmployerSiteBatchSchema, { ...site, isRHO: null })).rejects.toEqual(
-      new ValidationError('Regional Health Office status is required')
-    );
   });
 
   it('Create new site, receive duplicated', async () => {

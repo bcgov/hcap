@@ -41,6 +41,6 @@ describe('Users Service', () => {
 
     const sitesResult = await getUserSites(id);
 
-    expect(sitesResult[0].siteId).toEqual(siteMock[0].siteId);
+    expect(sitesResult[0].siteId).toEqual(siteMock.siteId);
   });
 });

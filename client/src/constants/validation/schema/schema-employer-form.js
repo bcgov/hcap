@@ -24,7 +24,10 @@ export const EmployerFormSchema = yup
       .matches(/^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/, 'Format as A1A 1A1'),
 
     // Site contact info
-    siteName: yup.string().nullable(errorMessage),
+    siteName: yup
+      .string()
+      .nullable(errorMessage)
+      .max(255, 'Site name should be no longer than 255 characters'),
     address: yup.string().nullable(errorMessage),
     healthAuthority: yup
       .string()

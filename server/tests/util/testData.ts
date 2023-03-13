@@ -57,9 +57,10 @@ export const psiData = ({
 
 export const today = new Date();
 
-export const after = (months, input = today) => new Date(input.setMonth(input.getMonth() + months));
+export const after = (months: number, input = today) =>
+  new Date(input.setMonth(input.getMonth() + months));
 
-export const before = (months) => dayjs().subtract(months, 'month').toDate();
+export const before = (months: number) => dayjs().subtract(months, 'month').toDate();
 
 export const dateStr = (date = new Date()) => date.toISOString().split('T')[0].replace(/-/gi, '/');
 

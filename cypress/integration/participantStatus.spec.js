@@ -7,6 +7,9 @@ describe('Participants status suite', () => {
     cy.kcLogout();
   });
 
+  const addWeeksAndFormatDate = (date, numOfWeeks) =>
+    new Date(new Date(date).getTime() + 6.048e8 * numOfWeeks).toISOString().split('T')[0];
+
   const getPhasesFromCSV = () => {
     cy.readFile('server/test-data/phases.csv').then((csvData) => {
       const rows = csvData.split('\n');
@@ -57,9 +60,7 @@ describe('Participants status suite', () => {
     // Ensure dates used are within the phase range of phases[0]
     cy.get('@phases').then((phases) => {
       const startDate = phases[0].start_date;
-      const [year, month, day] = startDate.split('/');
-      const contractedDate = `${year + 1}/${+month + 1}/${day}`;
-      cy.get('input[name=ContactedDate]').clear().type(contractedDate);
+      cy.get('input[name=ContactedDate]').clear().type(addWeeksAndFormatDate(startDate, 1));
       cy.contains('button', 'Submit').click();
     });
   };
@@ -68,12 +69,8 @@ describe('Participants status suite', () => {
     // Ensure dates used are within the phase range of phases[0]
     cy.get('@phases').then((phases) => {
       const startDate = phases[0].start_date;
-      const [year, month, day] = startDate.split('/');
-      const dateHired = `${year + 1}/${+month + 1}/${day + 1}`;
-      const dateStarted = `${year + 1}/${+month + 2}/${day + 2}`;
-      // both dates
-      cy.get('input[name=DateHired]').clear().type(dateHired);
-      cy.get('input[name=StartDate]').clear().type(dateStarted);
+      cy.get('input[name=DateHired]').clear().type(addWeeksAndFormatDate(startDate, 2));
+      cy.get('input[name=StartDate]').clear().type(addWeeksAndFormatDate(startDate, 3));
       // select site
       cy.get('#mui-component-select-site').click();
       cy.get(`li[data-value='${siteId}']`).click();

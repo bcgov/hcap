@@ -95,25 +95,27 @@ export const HireForm = ({ onSubmit, onClose, sites }) => {
               />
             </Box>
 
-            {currentPhase && featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION) && (
-              <Box mt={2} gap={15}>
-                <Alert severity='info'>
-                  <Typography variant='body2' gutterBottom>
-                    {currentPhase.allocation || currentPhase.allocation === 0 ? (
-                      <>
-                        This site has <b>{currentPhase.allocation}</b> allocations assigned and has{' '}
-                        <b>{currentPhase.remainingHires}</b> remaining slots.
-                      </>
-                    ) : (
-                      <>
-                        The hired date selected falls within a phase that does not have any
-                        allocations set.
-                      </>
-                    )}
-                  </Typography>
-                </Alert>
-              </Box>
-            )}
+            {!values.nonHcapOpportunity &&
+              currentPhase &&
+              featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION) && (
+                <Box mt={2} gap={15}>
+                  <Alert severity='info'>
+                    <Typography variant='body2' gutterBottom>
+                      {currentPhase.allocation || currentPhase.allocation === 0 ? (
+                        <>
+                          This site has <b>{currentPhase.allocation}</b> allocations assigned and
+                          has <b>{currentPhase.remainingHires}</b> remaining slots.
+                        </>
+                      ) : (
+                        <>
+                          The site currenty has 0 allocations assigned. Please contat your Health
+                          Authority for further information.
+                        </>
+                      )}
+                    </Typography>
+                  </Alert>
+                </Box>
+              )}
             <Box mt={3}>
               <Grid container spacing={2} justify='flex-end'>
                 <Grid item>

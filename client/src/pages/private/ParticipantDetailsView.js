@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Participant Details Page
 // Dependency
 import React, { useEffect, useState, useMemo } from 'react';

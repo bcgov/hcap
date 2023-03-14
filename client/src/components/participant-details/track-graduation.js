@@ -155,7 +155,7 @@ export const TrackGraduation = (props) => {
                   await createPostHireStatus(payload);
                   setShowEditModal(false);
                   openToast({
-                    status: ToastStatus.Info,
+                    status: ToastStatus.Success,
                     message: 'Participant status updated',
                   });
                   if (values.continue === 'continue_no') {

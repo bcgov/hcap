@@ -1,12 +1,8 @@
 // Test execution code: npm run test:debug participant.service.test.js
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { ValidationError } from 'yup';
 import { v4 } from 'uuid';
 import { startDB, closeDB } from './util/db';
 import {
-  parseAndSaveParticipants,
   getParticipants,
   makeParticipant,
   getParticipantByID,
@@ -22,17 +18,9 @@ import { setParticipantStatus } from '../services/participant-status';
 import { createPostHireStatus } from '../services/post-hire-flow';
 import { getReport } from '../services/reporting';
 import { evaluateBooleanAnswer, postHireStatuses } from '../validation';
-import { saveSites } from '../services/employers';
+import { saveSingleSite } from '../services/employers';
 
 describe('Participants Service', () => {
-  beforeAll(async () => {
-    await startDB();
-  });
-
-  afterAll(async () => {
-    await closeDB();
-  });
-
   const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
 
   const allParticipants = [
@@ -167,61 +155,13 @@ describe('Participants Service', () => {
     },
   ];
 
-  it('Parse participants xlsx, receive success', async () => {
-    const file = readFileSync(join(__dirname, './mock/xlsx/participants-data.xlsx'));
-    const res = await parseAndSaveParticipants(file);
-
-    const expectedRes = [
-      { id: 6488690, status: 'Success' },
-      { id: 6488691, status: 'Success' },
-      { id: 6488692, status: 'Success' },
-      { id: 6488693, status: 'Success' },
-      { id: 6488694, status: 'Success' },
-      { id: 6488695, status: 'Success' },
-      { id: 6488696, status: 'Success' },
-      { id: 6488697, status: 'Success' },
-      { id: 6488698, status: 'Success' },
-      { id: 6488699, status: 'Success' },
-    ];
-
-    expect(res).toEqual(expectedRes);
+  beforeAll(async () => {
+    await startDB();
+    await Promise.all(allParticipants.map(async (participant) => makeParticipant(participant)));
   });
 
-  it('Parse participants xlsx, force lowercase interested', async () => {
-    const file = readFileSync(join(__dirname, './mock/xlsx/participants-data.xlsx'));
-    await parseAndSaveParticipants(file);
-    const participants = await getParticipants({ isSuperUser: true });
-    const participant = participants.data.find(
-      (p) => p.firstName === 'Hux' && p.lastName === 'Hector'
-    );
-    expect(participant.interested).toEqual('yes');
-  });
-
-  it('Parse participants xlsx, receive duplicate errors', async () => {
-    const file = readFileSync(join(__dirname, './mock/xlsx/participants-data.xlsx'));
-    const res = await parseAndSaveParticipants(file);
-
-    const expectedRes = [
-      { id: 6488690, status: 'Duplicate' },
-      { id: 6488691, status: 'Duplicate' },
-      { id: 6488692, status: 'Duplicate' },
-      { id: 6488693, status: 'Duplicate' },
-      { id: 6488694, status: 'Duplicate' },
-      { id: 6488695, status: 'Duplicate' },
-      { id: 6488696, status: 'Duplicate' },
-      { id: 6488697, status: 'Duplicate' },
-      { id: 6488698, status: 'Duplicate' },
-      { id: 6488699, status: 'Duplicate' },
-    ];
-
-    expect(res).toEqual(expectedRes);
-  });
-
-  it('Parse participants xlsx, receive validation error', async () => {
-    const file = readFileSync(join(__dirname, './mock/xlsx/participants-data-error.xlsx'));
-    expect(parseAndSaveParticipants(file)).rejects.toEqual(
-      new ValidationError('Please specify a preferred (EOI) location for participant of row 2')
-    );
+  afterAll(async () => {
+    await closeDB();
   });
 
   it('Get participants as superuser, receive all successfully', async () => {
@@ -902,7 +842,7 @@ describe('Participants Service', () => {
       contactedDate: '09/09/2020',
     };
 
-    await saveSites({
+    await saveSingleSite({
       siteId: 2,
       siteName: 'test',
       isRHO: false,

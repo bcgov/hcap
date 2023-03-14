@@ -772,6 +772,7 @@ describe('Participants Service', () => {
     await closeDB();
     await startDB();
     const participant = {
+      id: null,
       maximusId: 648691,
       lastName: 'Extra',
       firstName: 'Eduardo',
@@ -799,17 +800,15 @@ describe('Participants Service', () => {
     const participants = await getParticipants({ isMoH: true });
     participant.id = participants.data[0].id;
 
-    /**
-     * @type {Object}
-     * @param {string} firstName
-     * @param {string} lastName
-     * @param {string} emailAddress
-     * @param {string} phoneNumber
-     * @param {string} interest
-     * @param {string} history
-     * @param {string} id
-     */
-    const reduceParticipant = Object.keys(participant).reduce(
+    const reduceParticipant: {
+      firstName?: string;
+      lastName?: string;
+      emailAddress?: string;
+      phoneNumber?: string;
+      interest?: string;
+      history?; // Could use better typing
+      id?: string;
+    } = Object.keys(participant).reduce(
       (o, k) => (patchableFields.includes(k) ? { ...o, [k]: participant[k] } : o),
       {}
     );

@@ -1,10 +1,31 @@
 describe('Participants status suite', () => {
   // Ensure phases and allocations exist - to test alert message
   before(() => {
+    getPhasesFromCSV();
     cy.kcLogin('test-moh');
     setBulkAllocationForm();
     cy.kcLogout();
   });
+
+  const getPhasesFromCSV = () => {
+    cy.readFile('server/test-data/phases.csv').then((csvData) => {
+      const rows = csvData.split('\n');
+      const headers = rows[0].split(',');
+
+      // Create an array of objects representing the CSV data
+      const data = rows.slice(1).map((row) => {
+        const values = row.split(',');
+        const obj = {};
+        for (let i = 0; i < headers.length; i++) {
+          obj[headers[i]] = values[i];
+        }
+        return obj;
+      });
+
+      // Store the data in the Cypress test context
+      cy.wrap(data).as('phases');
+    });
+  };
 
   const setBulkAllocationForm = () => {
     cy.visit('site-view');
@@ -12,11 +33,13 @@ describe('Participants status suite', () => {
     cy.contains('button', 'Set Allocation').click();
     cy.get('[name=phase_id]').parent().click();
     // use existing phase 'with PhaseNAme=Sacred Macaw
-    cy.get('li').contains('Sacred Macaw').click();
-    cy.get('[name=allocation]').clear().type(100);
+    cy.get('@phases').then((phase) => {
+      cy.get('li').contains(phase[0].name).click();
+      cy.get('[name=allocation]').clear().type(100);
 
-    cy.contains('button', 'Set').click({ force: true });
-    cy.get('form').submit();
+      cy.contains('button', 'Set').click({ force: true });
+      cy.get('form').submit();
+    });
   };
 
   const engageParticipantForm = (siteId) => {
@@ -31,26 +54,37 @@ describe('Participants status suite', () => {
 
   const interviewParticipantForm = () => {
     // let it select today as the date
-    // Ensure dates selected are within the phase range of Sacred Macaw
-    cy.get('input[name=ContactedDate]').clear().type('2023/01/13');
-    cy.contains('button', 'Submit').click();
+    // Ensure dates used are within the phase range of phases[0]
+    cy.get('@phases').then((phases) => {
+      const startDate = phases[0].start_date;
+      const [year, month, day] = startDate.split('/');
+      const contractedDate = `${year + 1}/${+month + 1}/${day}`;
+      cy.get('input[name=ContactedDate]').clear().type(contractedDate);
+      cy.contains('button', 'Submit').click();
+    });
   };
 
   const hireParticipantForm = (siteId) => {
-    // both dates
-    // Ensure dates selected are within the phase range of Sacred Macaw
-    cy.get('input[name=DateHired]').clear().type('2023/01/14');
-    cy.get('input[name=StartDate]').clear().type('2023/01/15');
-    // select site
-    cy.get('#mui-component-select-site').click();
-    cy.get(`li[data-value='${siteId}']`).click();
-    // acknowledge participant accepted offer in writing
-    cy.get('input[name="acknowledge"]').click();
-    //  expect alert with allocations/remainingHires to exist
-    cy.wait(1000);
-    cy.get('.MuiAlert-message').contains(`This site has 100 allocations assigned`);
+    // Ensure dates used are within the phase range of phases[0]
+    cy.get('@phases').then((phases) => {
+      const startDate = phases[0].start_date;
+      const [year, month, day] = startDate.split('/');
+      const dateHired = `${year + 1}/${+month + 1}/${day + 1}`;
+      const dateStarted = `${year + 1}/${+month + 2}/${day + 2}`;
+      // both dates
+      cy.get('input[name=DateHired]').clear().type(dateHired);
+      cy.get('input[name=StartDate]').clear().type(dateStarted);
+      // select site
+      cy.get('#mui-component-select-site').click();
+      cy.get(`li[data-value='${siteId}']`).click();
+      // acknowledge participant accepted offer in writing
+      cy.get('input[name="acknowledge"]').click();
+      //  expect alert with allocations/remainingHires to exist
+      cy.wait(1000);
+      cy.get('.MuiAlert-message').contains('This site has 100 allocations assigned');
 
-    cy.contains('button', 'Submit').click();
+      cy.contains('button', 'Submit').click();
+    });
   };
 
   const archiveHiredParticipantForm = () => {
@@ -165,7 +199,7 @@ describe('Participants status suite', () => {
   };
 
   it('Flow test: available --> engage by HA --> hired --> archived & acknowledged', () => {
-    const participantId = 5;
+    const participantId = 4;
     const hireSite = 1;
     // this needs to be an EXACT match- no "August 10" when we want participant 10!
     const participantIdRegex = new RegExp('^' + participantId + '$', 'g');

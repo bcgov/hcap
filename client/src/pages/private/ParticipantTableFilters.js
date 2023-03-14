@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography, TextField, MenuItem, Checkbox, FormLabel } from '@material-ui/core';
+import { CheckPermissions } from '../../components/generic';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { FILTERABLE_FIELDS } from '../../constants';
@@ -61,19 +62,21 @@ export const ParticipantTableFilters = ({ loading, locations }) => {
           </TextField>
         </Box>
       </Grid>
-      {/* <Grid item>
-        <Box pl={2}>
-          <DebounceTextField
-            time={1000}
-            variant='filled'
-            fullWidth
-            disabled={loading}
-            defaultValue={filter[FILTERABLE_FIELDS.FSA]?.value || ''}
-            onDebounce={(text) => setFilter(FILTERABLE_FIELDS.FSA, text)}
-            placeholder='Forward Sortation Area'
-          />
-        </Box>
-      </Grid> */}
+      <CheckPermissions permittedRoles={['employer', 'health_authority']}>
+        <Grid item>
+          <Box pl={2}>
+            <DebounceTextField
+              time={1000}
+              variant='filled'
+              fullWidth
+              disabled={loading}
+              defaultValue={filter[FILTERABLE_FIELDS.FSA]?.value || ''}
+              onDebounce={(text) => setFilter(FILTERABLE_FIELDS.FSA, text)}
+              placeholder='Forward Sortation Area'
+            />
+          </Box>
+        </Grid>
+      </CheckPermissions>
       <Grid item>
         <Box pl={2}>
           {!hideLastNameAndEmailFilter && (

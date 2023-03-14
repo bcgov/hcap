@@ -97,7 +97,7 @@ export const makeToasts = (firstName, lastName) => {
 };
 
 export const FILTERABLE_FIELDS = {
-  // FSA: 'fsaFilter',
+  FSA: 'fsaFilter',
   EMAIL: 'emailFilter',
   LASTNAME: 'lastNameFilter',
   REGION: 'regionFilter',

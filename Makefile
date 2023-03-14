@@ -44,21 +44,16 @@ migrate-down:
 	@npm run migrate down --prefix server
 
 
-copy-sample-data:
-	@echo "++\n Copying server/sample-data to server/scripts/xlsx\n++"
-	@mkdir -p server/scripts/xlsx
-	@cp server/test-data/* server/scripts/xlsx
-
 seed-participants:
-	@echo "Seeding participants from server/scripts/xlsx"
+	@echo "Seeding participants from server/test-data"
 	@docker-compose -f docker-compose.dev.yml exec server npm run feed-participants $$SHEET
 
 seed-sites:
-	@echo "Seeding sites from server/scripts/xlsx"
+	@echo "Seeding sites from server/test-data"
 	@docker-compose -f docker-compose.dev.yml exec server npm run feed-sites $$SHEET
 
 seed-data:
-	@echo "Seeding additional data from server/scripts/xlsx"
+	@echo "Seeding additional data from server/test-data"
 	@docker-compose -f docker-compose.dev.yml exec server npm run feed-data
 
 # Local Development
@@ -85,8 +80,8 @@ local-kc-run-only:
 	@docker-compose -f docker-compose.test.yml up -d 
 
 local-kc-run-debug: local-kc-build
-	@echo "Starting test local app container"
-	@docker-compose -f docker-compose.test.yml up
+	@echo "Starting test local app container in debug mode"
+	@docker-compose -f docker-compose.debug.yml up
 
 local-kc-down:
 	@echo "Stopping local app container"
@@ -124,8 +119,6 @@ local-testing-setup:
 	@docker stop ${APP_NAME}-server
 	@NODE_ENV="test" docker-compose -f docker-compose.test.yml up -d
 	@docker-compose -f docker-compose.test.yml exec server npm run clear-data
-	@docker-compose -f docker-compose.test.yml exec server npm run feed-participants participants.xlsx
-	@docker-compose -f docker-compose.test.yml exec server npm run feed-sites sites.xlsx
 	@docker-compose -f docker-compose.test.yml exec server npm run feed-data
 
 local-testing-teardown:

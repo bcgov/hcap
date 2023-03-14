@@ -1,4 +1,0 @@
-employer_id,participant_id,status,current,created_at,data
-test_ha,26,hired,TRUE,2022-02-02,"{""site"":1,""hiredDate"":""2022/05/02"",""startDate"":""2022/05/03"",""positionType"":"""",""positionTitle"":"""",""nonHcapOpportunity"":false}"
-test_ha,27,hired,TRUE,2022-02-02,"{""site"":1,""hiredDate"":""2022/05/02"",""startDate"":""2022/05/03"",""positionType"":"""",""positionTitle"":"""",""nonHcapOpportunity"":false}"
-test_employer,28,hired,TRUE,2022-02-02,"{""site"":1,""hiredDate"":""2022/05/02"",""startDate"":""2022/05/03"",""positionType"":"""",""positionTitle"":"""",""nonHcapOpportunity"":false}"

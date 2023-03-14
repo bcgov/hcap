@@ -3,8 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
-import { scrollUp } from '../../utils';
-import { Routes } from '../../constants';
+import { scrollUp, addEllipsisMask } from '../../utils';
+import { Routes, MAX_LABEL_LENGTH } from '../../constants';
 import { EditSiteForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { flagKeys, featureFlag } from '../../services';
@@ -131,7 +131,7 @@ export default ({ match }) => {
   return (
     <>
       <Dialog
-        title={`Edit Site (${site.siteName})`}
+        title={`Edit Site (${addEllipsisMask(site.siteName, MAX_LABEL_LENGTH)})`}
         open={activeModalForm != null}
         onClose={defaultOnClose}
       >
@@ -205,7 +205,8 @@ export default ({ match }) => {
                 <Box pb={4} pl={2}>
                   <Box pb={2}>
                     <Typography variant='body1'>
-                      <Link href={Routes.SiteView}>View Sites</Link> / {site.siteName}
+                      <Link href={Routes.SiteView}>View Sites</Link> /{' '}
+                      {addEllipsisMask(site.siteName, MAX_LABEL_LENGTH)}
                     </Typography>
                   </Box>
                   <Grid container>

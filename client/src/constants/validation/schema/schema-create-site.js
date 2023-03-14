@@ -4,7 +4,10 @@ import { errorMessage } from '../functions';
 
 export const CreateSiteSchema = yup.object().shape({
   siteId: yup.number().required('Site ID is required'),
-  siteName: yup.string().required(errorMessage),
+  siteName: yup
+    .string()
+    .required(errorMessage)
+    .max(255, 'Site name should be no longer than 255 characters'),
   address: yup.string().nullable(),
   city: yup.string().nullable(),
   isRHO: yup.boolean().nullable().required(errorMessage),

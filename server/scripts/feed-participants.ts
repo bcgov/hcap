@@ -1,37 +1,16 @@
-/* eslint-disable no-console */
+/** Wrapper for `feed-data` to specifically feed participants */
 import './load-env';
-import path from 'path';
-import fs from 'fs';
-import { dbClient } from '../db';
+import { feedData } from './feed-data';
+import { collections } from '../db';
 
-import { parseAndSaveParticipants } from '../services/participants';
+// WARN: does not enforce certain constraints from source file!
+// Ensure your input file does not, for example, contain invalid values where it shouldn't.
 
-const errorStyle = '\x1b[31m\x1b[40m\x1b[4m\x1b[1m'; // https://stackoverflow.com/a/41407246
-
-(async () => {
-  if (require.main === module) {
-    if (!process.argv[2]) {
-      console.error(`${errorStyle}Error: Input sheet filename required.`);
-      process.exit(0);
-    }
-
-    await dbClient.connect();
-    console.log('Successfully Connected to DB');
-
-    try {
-      fs.readFile(path.resolve(__dirname, `xlsx/${process.argv[2]}`), async (err, data) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-
-        const results = await parseAndSaveParticipants(data);
-
-        console.table(results);
-        process.exit(0);
-      });
-    } catch (error) {
-      console.error(`Failed to feed employer sites entity, ${error}`);
-    }
-  }
-})();
+if (require.main === module) {
+  feedData([
+    {
+      table: collections.PARTICIPANTS,
+      fileName: process.argv[2] ?? 'participants.csv',
+    },
+  ]);
+}

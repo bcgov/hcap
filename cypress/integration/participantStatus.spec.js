@@ -2,16 +2,30 @@ describe('Participants status suite', () => {
   // Ensure phases and allocations exist - to test alert message
   before(() => {
     cy.kcLogin('test-moh');
+    createPhase();
     setBulkAllocationForm();
     cy.kcLogout();
   });
+
+  const createPhase = () => {
+    cy.visit('site-view');
+    cy.contains('button', 'Action').click();
+    cy.contains('li', 'Create new phase').click();
+
+    cy.get('[name=phaseName]').clear().type('Participant Status Testing Phase');
+    // the MUI date component does not allow users to type, so cypress needs to mock a copy/paste keyboard action
+    cy.get('[name=Startdate]').clear().type(`{ctrl+v}2030/01/10`);
+    cy.get('[name=Enddate]').clear().type(`{ctrl+v}2030/01/20`);
+
+    cy.contains('button', 'Create').click();
+  };
 
   const setBulkAllocationForm = () => {
     cy.visit('site-view');
     cy.get('th').find('[type="checkbox"]').check();
     cy.contains('button', 'Set Allocation').click();
     cy.get('[name=phase_id]').parent().click();
-    cy.get('li').contains('Nice Lion').click();
+    cy.get('li').contains('Participant Status Testing Phase').click();
     cy.get('[name=allocation]').clear().type(100);
 
     cy.contains('button', 'Set').click({ force: true });
@@ -30,14 +44,14 @@ describe('Participants status suite', () => {
 
   const interviewParticipantForm = () => {
     // let it select today as the date
-    cy.get('input[name=ContactedDate]').clear().type('2029/01/13');
+    cy.get('input[name=ContactedDate]').clear().type('2030/01/13');
     cy.contains('button', 'Submit').click();
   };
 
   const hireParticipantForm = (siteId) => {
     // both dates
-    cy.get('input[name=DateHired]').clear().type('2029/01/14');
-    cy.get('input[name=StartDate]').clear().type('2029/01/15');
+    cy.get('input[name=DateHired]').clear().type('2030/01/14');
+    cy.get('input[name=StartDate]').clear().type('2030/01/15');
     // select site
     cy.get('#mui-component-select-site').click();
     cy.get(`li[data-value='${siteId}']`).click();

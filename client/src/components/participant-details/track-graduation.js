@@ -15,6 +15,7 @@ import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
 import { formatCohortDate } from '../../utils';
 import { participantStatus } from '../../constants';
+import { CheckPermissions } from '../../components/generic';
 // Helper function to call archive participant service
 const handleArchive = async (
   participantId,
@@ -62,10 +63,6 @@ export const TrackGraduation = (props) => {
   const [showEditModel, setShowEditModal] = useState(false);
   const [showArchiveModel, setShowArchiveModal] = useState(false);
   const { openToast } = useToast();
-  const disableTrackGraduation =
-    props.participant?.postHireStatus?.status ===
-      postHireStatuses.postSecondaryEducationCompleted ||
-    (!roles.includes('health_authority') && !cohort?.id);
 
   const cohortEndDate = props.participant?.cohort
     ? formatCohortDate(props.participant.cohort.end_date, { isForm: true })
@@ -73,6 +70,11 @@ export const TrackGraduation = (props) => {
 
   const dispatchFunction = (notifications) =>
     dispatch({ type: AuthContext.USER_NOTIFICATIONS_UPDATED, payload: notifications });
+
+  const initialDateValue =
+    props?.participant?.postHireStatus?.status === postHireStatuses.cohortUnsuccessful
+      ? props?.participant?.postHireStatus?.data?.unsuccessfulCohortDate
+      : props?.participant?.postHireStatus?.data?.graduationDate;
 
   useEffect(() => {
     setCohort(props.participant?.cohort);
@@ -103,17 +105,18 @@ export const TrackGraduation = (props) => {
               {props?.participant?.postHireStatusLabel || 'N/A'}
             </Typography>
           </Box>
-          <Grid item xs={6}>
-            <Button
-              color='default'
-              variant='contained'
-              text='Update status'
-              // disabled={disableTrackGraduation}
-              onClick={() => {
-                setShowEditModal(true);
-              }}
-            />
-          </Grid>
+          <CheckPermissions permittedRoles={['employer', 'health_authority']}>
+            <Grid item xs={6}>
+              <Button
+                color='default'
+                variant='contained'
+                text='Update status'
+                onClick={() => {
+                  setShowEditModal(true);
+                }}
+              />
+            </Grid>
+          </CheckPermissions>
         </Grid>
       </Grid>
       <>
@@ -126,11 +129,9 @@ export const TrackGraduation = (props) => {
                   props?.participant?.postHireStatus?.status ||
                   postHireStatuses.postSecondaryEducationCompleted,
                 data: {
-                  date:
-                    props?.participant?.postHireStatus?.status ===
-                    postHireStatuses.cohortUnsuccessful
-                      ? ''
-                      : cohortEndDate,
+                  date: props?.participant?.postHireStatus?.status
+                    ? initialDateValue
+                    : cohortEndDate,
                 },
                 continue: 'continue_yes',
               }}

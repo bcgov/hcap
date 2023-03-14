@@ -9,7 +9,10 @@ export const EditSiteSchema = yup.object().shape({
     .required(errorMessage)
     .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
   siteContactEmail: yup.string().required(errorMessage).email('Invalid email address'),
-  siteName: yup.string().required(errorMessage),
+  siteName: yup
+    .string()
+    .required(errorMessage)
+    .max(255, 'Site name should be no longer than 255 characters'),
   registeredBusinessName: yup.string().required(errorMessage),
   address: yup.string().required(errorMessage),
   city: yup.string().required(errorMessage),

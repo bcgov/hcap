@@ -25,6 +25,23 @@ describe('Tests the Site Details View', () => {
     cy.get('button.Mui-selected').should('have.text', 'Site Details');
   });
 
+  it('creates a new site as MoH, gets error site name is too long', () => {
+    const longSiteName =
+      'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.';
+    cy.kcLogin('test-moh');
+    cy.visit('/site-view');
+    cy.get('span.MuiButton-label', { timeout: 10000 }).should('include.text', 'Action');
+    cy.get('span.MuiButton-label').contains('Action').click();
+    cy.get('li.MuiListItem-button', { timeout: 10000 }).should('include.text', 'Create new site');
+    cy.get('li.MuiListItem-button').contains('Create new site').click();
+    cy.get('input#siteId').focus().type('1111');
+    cy.get('input#siteName').focus().type(longSiteName);
+
+    cy.get('span.MuiButton-label').contains('Submit').click();
+    // show have error
+    cy.contains('p.Mui-error', 'Site name should be no longer than 255 characters');
+  });
+
   it('edits a site and confirms the new data is rendered', () => {
     cy.kcLogin('test-moh');
     cy.visit('/site-view');
@@ -33,7 +50,7 @@ describe('Tests the Site Details View', () => {
     cy.get('button').contains('Edit').click();
     cy.get('input#siteContactFirstName').clear().type('newName');
     cy.get('input#siteContactLastName').clear().type('Name');
-    cy.get('input#siteContactPhone').clear().type('1112223333');
+    cy.get('input#siteContactPhone').clear().type('1111223333');
     cy.get('input#siteContactEmail').clear().type('email@addr.ess');
     cy.get('input#siteName').clear().type('IGotAName');
     cy.get('input#registeredBusinessName').clear().type('JimCroce');

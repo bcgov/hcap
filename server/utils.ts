@@ -17,32 +17,6 @@ export const addYearToDate = (dateObj) => {
   return newDate;
 };
 
-export const verifyHeaders = (dataRows, columnMap) => {
-  const headers = dataRows[0];
-  Object.keys(columnMap).forEach((columName) => {
-    if (!headers.includes(columName)) {
-      throw new Error(`Missing header "${columName}" in spreadsheet`);
-    }
-  });
-};
-
-export const createRows = (dataRows, columnMap) => {
-  const headers = dataRows[0];
-  const rowSize = dataRows.length;
-  const rows = [];
-  dataRows.slice(1, rowSize).forEach((dataRow) => {
-    if (dataRow.length === 0) return; // ignore empty rows
-    const row = {};
-    headers.forEach((header, index) => {
-      if (!columnMap[header]) return;
-
-      row[columnMap[header]] = dataRow[index];
-    });
-    rows.push(row);
-  });
-  return rows;
-};
-
 export const patchObject = (source, patchableFields) =>
   Object.keys(source).reduce(
     (target, key) => (patchableFields.includes(key) ? { ...target, [key]: source[key] } : target),

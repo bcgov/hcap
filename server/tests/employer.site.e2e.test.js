@@ -7,7 +7,7 @@ import request from 'supertest';
 import { app } from '../server';
 import { startDB, closeDB } from './util/db';
 import { getKeycloakToken, superuser } from './util/keycloak';
-import { saveSingleSite, saveSites } from '../services/employers';
+import { saveSingleSite } from '../services/employers';
 
 const siteObject = ({ id, name }) => ({
   siteId: id,
@@ -80,6 +80,17 @@ describe('api-e2e tests for /employer-sites route', () => {
     expect(res.status).toEqual(201);
   });
 
+  it('should error when saving site due to validation', async () => {
+    const longSiteName =
+      'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.';
+    // Used for batch site POST
+    const site = siteObject({ id: 61, name: longSiteName });
+    const header = await getKeycloakToken(superuser);
+    const res = await request(app).post('/api/v1/employer-sites').set(header).send(site);
+
+    expect(res.status).toEqual(400);
+  });
+
   it('should update site', async () => {
     const site = siteObject({ id: 91, name: 'Test Site 1' });
 
@@ -117,7 +128,7 @@ describe('api-e2e tests for /employer-sites route', () => {
       batchSiteObject({ id: 107, name: 'Test Site 3' }),
     ];
 
-    await saveSites(sites);
+    await Promise.all(sites.map(saveSingleSite));
 
     const header = await getKeycloakToken(superuser);
     const res = await request(app).get('/api/v1/employer-sites/user').set(header);

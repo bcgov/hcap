@@ -103,8 +103,8 @@ describe('Phase functionality', () => {
     navigateToEditForm();
 
     // the MUI date component does not allow users to type, so cypress needs to mock a copy/paste keyboard action
-    cy.get('[name=Startdate]').clear().type(`{ctrl+v}1990/06/06`);
-    cy.get('[name=Enddate]').clear().type(`{ctrl+v}1991/01/01`);
+    cy.get('[name=Startdate]').clear().type(`{ctrl+v}1993/06/06`);
+    cy.get('[name=Enddate]').clear().type(`{ctrl+v}1994/01/01`);
 
     cy.contains('button', 'Update').click();
 

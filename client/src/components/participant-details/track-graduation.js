@@ -64,6 +64,8 @@ export const TrackGraduation = (props) => {
   const [showArchiveModel, setShowArchiveModal] = useState(false);
   const { openToast } = useToast();
 
+  const isEmployer = roles.includes('employer');
+
   const cohortEndDate = props.participant?.cohort
     ? formatCohortDate(props.participant.cohort.end_date, { isForm: true })
     : null;
@@ -111,6 +113,7 @@ export const TrackGraduation = (props) => {
                 color='default'
                 variant='contained'
                 text='Update status'
+                disabled={isEmployer && !cohort?.id}
                 onClick={() => {
                   setShowEditModal(true);
                 }}

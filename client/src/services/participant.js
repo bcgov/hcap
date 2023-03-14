@@ -42,7 +42,6 @@ export const fetchParticipant = async ({ id }) => {
   });
   if (resp.ok) {
     const { participant } = await resp.json();
-    console.log('PARTICIPANT', participant);
     const cohort = await fetchParticipantCohort({ id });
     const postHireStatus = await fetchParticipantPostHireStatus({ id });
     return {

@@ -39,8 +39,7 @@ describe('Participants status suite', () => {
     cy.get('[name=phase_id]').parent().click();
     // use existing phase 'with PhaseNAme=Sacred Macaw
     cy.get('@phases').then((phases) => {
-      cy.log(phases);
-      cy.get('li').contains(phases[0].name).click();
+      cy.get('li').contains(phases[1].name).click();
       cy.get('[name=allocation]').clear().type(100);
 
       cy.contains('button', 'Set').click({ force: true });
@@ -62,7 +61,7 @@ describe('Participants status suite', () => {
     // let it select today as the date
     // Ensure dates used are within the phase range of phases[0]
     cy.get('@phases').then((phases) => {
-      const startDate = phases[0].start_date;
+      const startDate = phases[1].start_date;
       cy.get('input[name=ContactedDate]').clear().type(addWeeksAndFormatDate(startDate, 1));
       cy.contains('button', 'Submit').click();
     });
@@ -71,7 +70,7 @@ describe('Participants status suite', () => {
   const hireParticipantForm = (siteId) => {
     // Ensure dates used are within the phase range of phases[0]
     cy.get('@phases').then((phases) => {
-      const startDate = phases[0].start_date;
+      const startDate = phases[1].start_date;
       cy.get('input[name=DateHired]').clear().type(addWeeksAndFormatDate(startDate, 2));
       cy.get('input[name=StartDate]').clear().type(addWeeksAndFormatDate(startDate, 3));
       // select site

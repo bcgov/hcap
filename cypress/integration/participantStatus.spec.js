@@ -28,7 +28,7 @@ describe('Participants status suite', () => {
       });
 
       // Store the data in the Cypress test context
-      cy.wrap(rowObj).as('phases');
+      cy.wrap(rowArr).as('phases');
     });
   };
 

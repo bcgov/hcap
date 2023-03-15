@@ -101,8 +101,7 @@ export default () => {
   const { id, page, pageId } = useParams();
   // Breadcrumb name
   const linkName = getParticipantPageLabel(page);
-  // Edit Button flag
-  const enableEdit = roles.some((role) => ['ministry_of_health', 'superuser'].includes(role));
+
   const isMoH = roles.includes('ministry_of_health');
 
   // UI Actions
@@ -321,16 +320,16 @@ export default () => {
                 </Grid>
               </CheckPermissions>
             )}
-
-            <Button
-              test-id='editInfoButton'
-              text='Edit Info'
-              variant='outlined'
-              color='primary'
-              disabled={!enableEdit}
-              onClick={showEditInfoModal}
-              fullWidth={false}
-            />
+            <CheckPermissions permittedRoles={['ministry_of_health', 'superuser']}>
+              <Button
+                test-id='editInfoButton'
+                text='Edit Info'
+                variant='outlined'
+                color='primary'
+                onClick={showEditInfoModal}
+                fullWidth={false}
+              />
+            </CheckPermissions>
 
             {!disableAssign && !participant.ros && (
               <>

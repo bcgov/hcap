@@ -3,7 +3,6 @@ import { RenderDateField, RenderRadioGroup } from '../fields';
 import React, { useMemo } from 'react';
 import { Box, Grid, Typography } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
-import { getTodayDate } from '../../utils';
 import { Button } from '../../components/generic/Button';
 import { AuthContext } from '../../providers';
 import { ParticipantPostHireStatusSchema } from '../../constants/validation';
@@ -71,11 +70,6 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
                         : 'Withdrawal date from cohort'
                     }
                     component={RenderDateField}
-                    maxDate={getTodayDate()}
-                    disabled={
-                      values.status === postHireStatuses.postSecondaryEducationCompleted &&
-                      values.data.date === cohortEndDate
-                    }
                   />
                 }
                 <br />

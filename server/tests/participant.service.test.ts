@@ -771,8 +771,7 @@ describe('Participants Service', () => {
   it("Tests functionality for updating a user's information", async () => {
     await closeDB();
     await startDB();
-    const participant = {
-      id: null,
+    const participantData = {
       maximusId: 648691,
       lastName: 'Extra',
       firstName: 'Eduardo',
@@ -796,9 +795,12 @@ describe('Participants Service', () => {
       'id',
     ];
 
-    await makeParticipant(participant);
+    await makeParticipant(participantData);
     const participants = await getParticipants({ isMoH: true });
-    participant.id = participants.data[0].id;
+    const participant = {
+      id: participants.data[0].id,
+      ...participantData,
+    };
 
     const reduceParticipant: {
       firstName?: string;

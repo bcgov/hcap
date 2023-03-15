@@ -87,7 +87,6 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
     }
   };
 
-  console.log(phases);
   return (
     <Dialog title={isNew ? 'Create Phase' : 'Edit Phase'} open={open} onClose={onClose}>
       <Formik

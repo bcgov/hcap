@@ -13,6 +13,7 @@ import {
 } from '../services/phase';
 import { getSitesForUser } from '../services/employers';
 import { FEATURE_PHASE_ALLOCATION } from '../services/feature-flags';
+import type { HcapUserInfo } from '../keycloak';
 
 const router = express.Router();
 
@@ -24,10 +25,7 @@ router.get(
     keycloak.getUserInfoMiddleware(),
   ],
   asyncMiddleware(async (req, res) => {
-    /**
-     * @type {import("../keycloak").HcapUserInfo} HcapUserInfo
-     */
-    const user = req.hcapUserInfo;
+    const user: HcapUserInfo = req.hcapUserInfo;
     const siteId = parseInt(req.params.id, 10);
 
     // Validate request

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable */
+import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box, Typography } from '@material-ui/core';
@@ -22,6 +23,8 @@ const hireInitialValues = {
 
 export const HireForm = ({ onSubmit, onClose, sites }) => {
   const [phases, setPhases] = useState([]);
+  const [currentPhase, setCurrentPhase] = useState(null);
+  const [formValues, setformValues] = useState(hireInitialValues);
 
   const handleCurrentPhase = async (siteId) => {
     const site = sites.filter((site) => site.siteId === siteId)[0];
@@ -29,18 +32,22 @@ export const HireForm = ({ onSubmit, onClose, sites }) => {
     setPhases(phases);
   };
 
+  useEffect(() => {
+    const { hiredDate, site } = formValues;
+    if (hiredDate && site && phases.length) {
+      const cPhase = phases?.filter(
+        (phase) =>
+          Date.parse(phase.startDate) <= Date.parse(hiredDate) &&
+          Date.parse(hiredDate) <= Date.parse(phase.endDate)
+      )[0];
+      setCurrentPhase(cPhase);
+    }
+  }, [formValues, phases]);
+
   return (
     <Formik initialValues={hireInitialValues} validationSchema={HireFormSchema} onSubmit={onSubmit}>
       {({ submitForm, values, setFieldValue }) => {
-        const currentPhase =
-          values.hiredDate && values.site
-            ? phases?.filter(
-                (phase) =>
-                  Date.parse(phase.startDate) <= Date.parse(values.hiredDate) &&
-                  Date.parse(values.hiredDate) <= Date.parse(phase.endDate)
-              )[0]
-            : null;
-
+        setformValues(values);
         return (
           <FormikForm>
             <Box>

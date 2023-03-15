@@ -14,19 +14,21 @@ describe('Participants status suite', () => {
     cy.readFile('server/test-data/phases.csv').then((csvData) => {
       const rows = csvData.split('\n');
       const headers = rows[0].split(',');
+      const rowArr = [];
 
-      // Create an array of objects representing the CSV data
-      const data = rows.slice(1).map((row) => {
+      rows.slice(1).forEach((row) => {
         const values = row.split(',');
         const obj = {};
-        for (let i = 0; i < headers.length; i++) {
-          obj[headers[i]] = values[i];
-        }
-        return obj;
+
+        headers.forEach((header, index) => {
+          obj[header] = values[index];
+        });
+
+        rowArr.push(obj);
       });
 
       // Store the data in the Cypress test context
-      cy.wrap(data).as('phases');
+      cy.wrap(rowObj).as('phases');
     });
   };
 
@@ -36,8 +38,9 @@ describe('Participants status suite', () => {
     cy.contains('button', 'Set Allocation').click();
     cy.get('[name=phase_id]').parent().click();
     // use existing phase 'with PhaseNAme=Sacred Macaw
-    cy.get('@phases').then((phase) => {
-      cy.get('li').contains(phase[0].name).click();
+    cy.get('@phases').then((phases) => {
+      cy.log(phases);
+      cy.get('li').contains(phases[1].name).click();
       cy.get('[name=allocation]').clear().type(100);
 
       cy.contains('button', 'Set').click({ force: true });
@@ -59,7 +62,7 @@ describe('Participants status suite', () => {
     // let it select today as the date
     // Ensure dates used are within the phase range of phases[0]
     cy.get('@phases').then((phases) => {
-      const startDate = phases[0].start_date;
+      const startDate = phases[1].start_date;
       cy.get('input[name=ContactedDate]').clear().type(addWeeksAndFormatDate(startDate, 1));
       cy.contains('button', 'Submit').click();
     });
@@ -68,7 +71,7 @@ describe('Participants status suite', () => {
   const hireParticipantForm = (siteId) => {
     // Ensure dates used are within the phase range of phases[0]
     cy.get('@phases').then((phases) => {
-      const startDate = phases[0].start_date;
+      const startDate = phases[1].start_date;
       cy.get('input[name=DateHired]').clear().type(addWeeksAndFormatDate(startDate, 2));
       cy.get('input[name=StartDate]').clear().type(addWeeksAndFormatDate(startDate, 3));
       // select site
@@ -77,7 +80,6 @@ describe('Participants status suite', () => {
       // acknowledge participant accepted offer in writing
       cy.get('input[name="acknowledge"]').click();
       //  expect alert with allocations/remainingHires to exist
-      cy.wait(1000);
       cy.get('.MuiAlert-message').contains('This site has 100 allocations assigned');
 
       cy.contains('button', 'Submit').click();

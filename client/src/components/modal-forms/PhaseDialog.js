@@ -37,7 +37,11 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
   const [isPendingRequests, setIsPendingRequests] = useState(true);
 
   useEffect(() => {
-    if (isPendingRequests) {
+    // reset state to re-fetch data if dialog is re-opened
+    if (!open) {
+      setIsPendingRequests(true);
+    }
+    if (isPendingRequests && open) {
       const fetchData = async () => {
         let phases = await fetchPhases();
         setPhases(phases);
@@ -46,7 +50,7 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
 
       fetchData();
     }
-  }, [isPendingRequests, content]);
+  }, [isPendingRequests, content, open]);
 
   const initialValues = content
     ? {
@@ -83,12 +87,14 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
     }
   };
 
+  console.log(phases);
   return (
     <Dialog title={isNew ? 'Create Phase' : 'Edit Phase'} open={open} onClose={onClose}>
       <Formik
         initialValues={{ ...initialValues, phases: phases }}
         validationSchema={CreatePhaseSchema}
         onSubmit={handleSubmit}
+        enableReinitialize={true}
       >
         {({ submitForm, errors }) => {
           // yup error message is a string - convert to an array of Id's to allow for a dynamic error message

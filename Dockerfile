@@ -1,5 +1,5 @@
 # Client
-FROM registry.access.redhat.com/ubi8/nodejs-14:1 AS client
+FROM registry.access.redhat.com/ubi8/nodejs-18:1 AS client
 
 # Build client
 ENV HOME_CLIENT /opt/app-root/src/app/client
@@ -16,7 +16,7 @@ COPY client/. .
 RUN INLINE_RUNTIME_CHUNK=false npm run build
 
 # Server
-FROM registry.access.redhat.com/ubi8/nodejs-14:1 AS server
+FROM registry.access.redhat.com/ubi8/nodejs-18:1 AS server
 # Static env vars
 ARG VERSION
 ENV VERSION $VERSION

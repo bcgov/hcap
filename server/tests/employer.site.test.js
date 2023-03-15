@@ -1,15 +1,8 @@
-import { ValidationError } from 'yup';
 import { v4 } from 'uuid';
 import { app } from '../server';
 import { ParticipantStatus as ps } from '../constants';
 
-import {
-  saveSingleSite,
-  saveSites,
-  getSitesForUser,
-  getSiteByID,
-  updateSite,
-} from '../services/employers';
+import { saveSingleSite, getSitesForUser, getSiteByID, updateSite } from '../services/employers';
 
 import {
   getParticipants,
@@ -126,10 +119,8 @@ describe('Employer Site Endpoints', () => {
     }
   });
 
-  it('Create new site via batch, receive success', async () => {
-    const res = await saveSites(site);
-    const expectedRes = [{ siteId: 67, status: 'Success' }];
-    expect(res).toEqual(expectedRes);
+  it('Creates a new site, receives success', async () => {
+    await expect(saveSingleSite(site)).resolves.not.toThrow();
   });
 
   it('Get sites, receive all successfully', async () => {
@@ -194,20 +185,10 @@ describe('Employer Site Endpoints', () => {
     expect(res1.allocation).toBeDefined();
   });
 
-  it('Create new site, receive validation error', async () => {
-    expect(saveSites({ ...site, siteContactPhoneNumber: '1' })).rejects.toEqual(
-      new ValidationError('Phone number must be provided as 10 digits (index 0)')
-    );
-
-    expect(saveSites({ ...site, isRHO: null })).rejects.toEqual(
-      new ValidationError('Regional Health Office status is required')
-    );
-  });
-
   it('Create new site, receive duplicated', async () => {
-    const res = await saveSites(site);
-    const expectedRes = [{ siteId: 67, status: 'Duplicate' }];
-    expect(res).toEqual(expectedRes);
+    const [result] = await Promise.allSettled([saveSingleSite(site)]);
+    expect(result.status).toEqual('rejected');
+    if (result.status === 'rejected') expect(result.reason.code).toEqual('23505');
   });
 
   it('Update site, receive success', async () => {
@@ -224,9 +205,7 @@ describe('Employer Site Endpoints', () => {
     await closeDB();
     await startDB();
 
-    const siteResponse = await saveSites(site);
-    const expectedSite = [{ siteId: 67, status: 'Success' }];
-    expect(siteResponse).toEqual(expectedSite);
+    await expect(saveSingleSite(site)).resolves.not.toThrow();
 
     const res = await getSiteByID(1);
     await makeParticipant(participant1);

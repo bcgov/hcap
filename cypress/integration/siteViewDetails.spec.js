@@ -50,7 +50,7 @@ describe('Tests the Site Details View', () => {
     cy.get('button').contains('Edit').click();
     cy.get('input#siteContactFirstName').clear().type('newName');
     cy.get('input#siteContactLastName').clear().type('Name');
-    cy.get('input#siteContactPhone').clear().type('1112223333');
+    cy.get('input#siteContactPhone').clear().type('1111223333');
     cy.get('input#siteContactEmail').clear().type('email@addr.ess');
     cy.get('input#siteName').clear().type('IGotAName');
     cy.get('input#registeredBusinessName').clear().type('JimCroce');

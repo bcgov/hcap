@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { Grid, Typography, Dialog, Box } from '@material-ui/core';
 import { Button } from '../../components/generic/Button';
 import { ArchiveHiredParticipantForm } from '../../components/modal-forms';

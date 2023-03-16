@@ -1,4 +1,52 @@
 describe('Participants status suite', () => {
+  // Ensure phases and allocations exist - to test alert message
+  before(() => {
+    getPhasesFromCSV();
+    cy.kcLogin('test-moh');
+    setBulkAllocationForm();
+    cy.kcLogout();
+  });
+
+  const addWeeksAndFormatDate = (date, numOfWeeks) =>
+    new Date(new Date(date).getTime() + 6.048e8 * numOfWeeks).toISOString().split('T')[0];
+
+  const getPhasesFromCSV = () => {
+    cy.readFile('server/test-data/phases.csv').then((csvData) => {
+      const rows = csvData.split('\n');
+      const headers = rows[0].split(',');
+      const rowArr = [];
+
+      rows.slice(1).forEach((row) => {
+        const values = row.split(',');
+        const obj = {};
+
+        headers.forEach((header, index) => {
+          obj[header] = values[index];
+        });
+
+        rowArr.push(obj);
+      });
+
+      // Store the data in the Cypress test context
+      cy.wrap(rowArr).as('phases');
+    });
+  };
+
+  const setBulkAllocationForm = () => {
+    cy.visit('site-view');
+    cy.get('th').find('[type="checkbox"]').check();
+    cy.contains('button', 'Set Allocation').click();
+    cy.get('[name=phase_id]').parent().click();
+    // use existing phase 'with PhaseNAme=Sacred Macaw
+    cy.get('@phases').then((phases) => {
+      cy.get('li').contains(phases[1].name).click();
+      cy.get('[name=allocation]').clear().type(100);
+
+      cy.contains('button', 'Set').click({ force: true });
+      cy.get('form').submit();
+    });
+  };
+
   const engageParticipantForm = (siteId) => {
     // click the select site input
     cy.get('#mui-component-select-prospectingSite').click();
@@ -9,23 +57,33 @@ describe('Participants status suite', () => {
     cy.contains('button', 'View My Candidates').click();
   };
 
-  const interviewParticipantForm = (siteId) => {
+  const interviewParticipantForm = () => {
     // let it select today as the date
-    cy.get('input[name=ContactedDate]').clear().type('2022/01/13');
-    cy.contains('button', 'Submit').click();
+    // Ensure dates used are within the phase range of phases[0]
+    cy.get('@phases').then((phases) => {
+      const startDate = phases[1].start_date;
+      cy.get('input[name=ContactedDate]').clear().type(addWeeksAndFormatDate(startDate, 1));
+      cy.contains('button', 'Submit').click();
+    });
   };
 
   const hireParticipantForm = (siteId) => {
-    // both dates
-    cy.get('input[name=DateHired]').clear().type('2022/01/14');
-    cy.get('input[name=StartDate]').clear().type('2022/01/15');
-    // select site
-    cy.get('#mui-component-select-site').click();
-    cy.get(`li[data-value='${siteId}']`).click();
-    // acknowledge participant accepted offer in writing
-    cy.get('input[name="acknowledge"]').click();
+    // Ensure dates used are within the phase range of phases[0]
+    cy.get('@phases').then((phases) => {
+      const startDate = phases[1].start_date;
+      cy.get('input[name=DateHired]').clear().type(addWeeksAndFormatDate(startDate, 2));
+      cy.get('input[name=StartDate]').clear().type(addWeeksAndFormatDate(startDate, 3));
+      // select site
+      cy.get('#mui-component-select-site').click();
+      cy.get(`li[data-value='${siteId}']`).click();
+      // acknowledge participant accepted offer in writing
+      cy.get('input[name="acknowledge"]').click();
+      //  expect alert with allocations/remainingHires to exist
+      cy.wait(2000);
+      cy.get('.MuiAlert-message').contains('This site has 100 allocations assigned');
 
-    cy.contains('button', 'Submit').click();
+      cy.contains('button', 'Submit').click();
+    });
   };
 
   const archiveHiredParticipantForm = () => {

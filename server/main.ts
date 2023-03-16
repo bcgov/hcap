@@ -1,3 +1,4 @@
+import type { Server } from 'http';
 import { app } from './server';
 import logger from './logger';
 import { dbClient } from './db';
@@ -5,8 +6,7 @@ import keycloak from './keycloak';
 
 const port = Number(process.env.SERVER_PORT) || 8080;
 
-/** @type {http.Server|undefined} */
-let server;
+let server: Server | undefined;
 
 // shut down server
 async function shutdown() {

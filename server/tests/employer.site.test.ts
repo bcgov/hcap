@@ -100,20 +100,19 @@ describe('Employer Site Endpoints', () => {
   };
 
   it('Create new single site, receive success', async () => {
-    siteBaseFields.siteId = 90;
-    const res = await saveSingleSite(siteBaseFields);
+    const res = await saveSingleSite({ ...siteBaseFields, siteId: 90 });
     expect(res.siteId).toEqual(90);
     expect(res.id).toBeDefined();
   });
 
   it('Create duplicate single site, receive dupe', async () => {
-    siteBaseFields.siteId = 91;
-    const res = await saveSingleSite(siteBaseFields);
+    const dupeSite = { ...siteBaseFields, siteId: 91 };
+    const res = await saveSingleSite(dupeSite);
     expect(res.siteId).toEqual(91);
     expect(res.id).toBeDefined();
 
     try {
-      await saveSingleSite(siteBaseFields);
+      await saveSingleSite(dupeSite);
     } catch (excp) {
       expect(excp.code).toEqual('23505');
     }
@@ -139,13 +138,13 @@ describe('Employer Site Endpoints', () => {
   });
 
   it('Gets a single site', async () => {
-    siteBaseFields.siteId = 92;
-    const sitePostRes = await saveSingleSite(siteBaseFields);
+    const siteToGet = { ...siteBaseFields, siteId: 92 };
+    const sitePostRes = await saveSingleSite(siteToGet);
     expect(sitePostRes.siteId).toEqual(92);
     expect(sitePostRes.id).toBeDefined();
 
     const res = await getSiteByID(sitePostRes.id);
-    expect(res).toEqual(expect.objectContaining(siteBaseFields));
+    expect(res).toEqual(expect.objectContaining(siteToGet));
   });
 
   it('gets a site before and after hires have been made', async () => {

@@ -202,6 +202,7 @@ const ParticipantTable = () => {
   const isSuperUser = roles.includes('superuser');
   const isAdmin = isMoH || isSuperUser;
   const isEmployer = roles.includes('health_authority') || roles.includes('employer');
+  const isHA = roles.includes('health_authority');
 
   const fetchParticipants = async () => {
     if (!columns) return;
@@ -580,7 +581,7 @@ const ParticipantTable = () => {
               }}
               rows={rows}
               isLoading={isLoadingData}
-              isMultiSelect={selectedTab === 'Available Participants'}
+              isMultiSelect={selectedTab === 'Available Participants' && isHA}
               selectedRows={selectedParticipants}
               updateSelectedRows={setSelectedParticipants}
               multiSelectAction={bulkEngage}

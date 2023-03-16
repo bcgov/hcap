@@ -1,11 +1,14 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { Box, Card, Grid, Typography, Link } from '@material-ui/core';
+import { Box, Card, Grid, Typography, Link, Dialog } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { ManageGraduationForm } from '../../components/modal-forms/ManageGraduationForm';
+import { postHireStatuses } from '../../constants';
+import { createBulkPostHireStatus } from '../../services/participant';
 
 import { AuthContext } from '../../providers';
-import { Page, CheckPermissions, Table } from '../../components/generic';
+import { Page, CheckPermissions, Table, Button } from '../../components/generic';
 import { Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 import { fetchCohort, getPostHireStatusLabel } from '../../services';
@@ -36,7 +39,9 @@ export default ({ match }) => {
 
   const [cohort, setCohort] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedParticipants, setSelectedParticipants] = useState([]);
   const [rows, setRows] = useState([]);
+  const [showGraduationModal, setShowGraduationModal] = useState(false);
 
   const columns = [
     { id: 'lastName', name: 'Last Name', sortable: false },
@@ -69,6 +74,26 @@ export default ({ match }) => {
     return getPostHireStatusLabel(graduationStatus);
   };
 
+  const handleBulkGraduate = async (values) => {
+    const payload = {
+      ...values,
+      data:
+        values.status === postHireStatuses.postSecondaryEducationCompleted
+          ? {
+              graduationDate: values?.data?.date,
+            }
+          : {
+              unsuccessfulCohortDate: values?.data?.date,
+              continue: values.continue,
+            },
+    };
+    console.log(payload);
+    await createBulkPostHireStatus(payload);
+    setShowGraduationModal(false);
+    setSelectedParticipants([]);
+    fetchCohortDetails();
+  };
+
   const handleOpenParticipantDetails = (participantId) => {
     const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
       id: participantId,
@@ -85,6 +110,26 @@ export default ({ match }) => {
 
   return (
     <Page>
+      {showGraduationModal && (
+        <Dialog title={'Graduation Status'} open={showGraduationModal}>
+          <ManageGraduationForm
+            cohortEndDate={cohort.end_date}
+            initialValues={{
+              status: postHireStatuses.postSecondaryEducationCompleted,
+              data: {
+                date: cohort.end_date,
+              },
+              continue: 'continue_yes',
+              participantId: selectedParticipants.map(({ id }) => id),
+            }}
+            onClose={() => {
+              setShowGraduationModal(false);
+            }}
+            onSubmit={handleBulkGraduate}
+          />
+        </Dialog>
+      )}
+
       <CheckPermissions
         permittedRoles={['health_authority', 'ministry_of_health']}
         renderErrorMessage={true}
@@ -140,12 +185,29 @@ export default ({ match }) => {
               )}
             </Grid>
 
+            <CheckPermissions permittedRoles={['ministry_of_health']}>
+              <Grid item xs={2}>
+                <Button
+                  size='small'
+                  variant='outlined'
+                  text='Bulk Graduate'
+                  disabled={selectedParticipants.length < 1}
+                  onClick={() => {
+                    setShowGraduationModal(true);
+                  }}
+                />
+              </Grid>
+            </CheckPermissions>
+
             <Box>
               {rows.length > 0 ? (
                 <Table
                   columns={columns}
                   rows={rows}
                   isLoading={isLoading}
+                  isMultiSelect={roles.includes('ministry_of_health')}
+                  selectedRows={selectedParticipants}
+                  updateSelectedRows={setSelectedParticipants}
                   renderCell={(columnId, row) => {
                     switch (columnId) {
                       case 'firstName':

@@ -213,6 +213,7 @@ export const Table = ({
   selectedRows = [],
   updateSelectedRows,
   multiSelectAction,
+  isRowSelectable = true,
 }) => {
   const rowsOnPage = rows.length;
   const createSortHandler = (property) => (event) => {
@@ -320,6 +321,7 @@ export const Table = ({
                         <Checkbox
                           color='primary'
                           checked={isRowSelected}
+                          disabled={!isRowSelectable}
                           onClick={(event) => handleSelectRow(event, row)}
                         />
                       </StyledHeaderTableCell>

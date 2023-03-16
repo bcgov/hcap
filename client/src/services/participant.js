@@ -254,7 +254,7 @@ export const acknowledgeParticipant = async ({ participantId, multiOrgHire, curr
   throw new Error('Failed to acknowledge participant', response.error || response.statusText);
 };
 
-export const createPostHireStatus = async ({ participantId, status, data }) => {
+export const createPostHireStatus = async ({ participantIds, status, data }) => {
   const url = `${API_URL}/api/v1/post-hire-status`;
   const response = await fetch(url, {
     method: 'POST',
@@ -264,7 +264,7 @@ export const createPostHireStatus = async ({ participantId, status, data }) => {
       'Content-type': 'application/json',
     },
     body: JSON.stringify({
-      participantId,
+      participantIds,
       status,
       data,
     }),
@@ -275,29 +275,6 @@ export const createPostHireStatus = async ({ participantId, status, data }) => {
 
   throw new Error('Failed to create post-hire status', response.error || response.statusText);
 };
-
-// NEEDED!?!?!
-// export const createBulkPostHireStatus = async ({ participantId, status, data }) => {
-//   const url = `${API_URL}/api/v1/post-hire-status/bulk-graduate`;
-//   const response = await fetch(url, {
-//     method: 'POST',
-//     headers: {
-//       Authorization: `Bearer ${store.get('TOKEN')}`,
-//       Accept: 'application/json',
-//       'Content-type': 'application/json',
-//     },
-//     body: JSON.stringify({
-//       participantId,
-//       status,
-//       data,
-//     }),
-//   });
-//   if (response.ok) {
-//     return await response.json();
-//   }
-
-//   throw new Error('Failed to create post-hire status', response.error || response.statusText);
-// };
 
 export const archiveParticipant = async (participantId, siteId, additional) => {
   const url = `${API_URL}/api/v1/employer-actions/archive`;

@@ -26,31 +26,38 @@ router.post(
     const user = userId || localUserId;
     // Validate the request body
     await validate(ParticipantPostHireStatusSchema, body);
-    const { participantId } = body;
+    const { participantIds } = body;
     // Check participant exists
-    // const [participant] = await getParticipantByID(participantId);
-    const participants = [];
+    const notParticipants = [];
     await Promise.all(
-      participantId.map(async (id) => {
-        participants.push(await getParticipantByID(id));
+      participantIds.map(async (id) => {
+        const [participant] = await getParticipantByID(id);
+        if (!participant) notParticipants.push(id);
       })
     );
-    if (participants.length) {
+
+    if (notParticipants.length) {
       logger.error({
         action: 'post-hire-status_post',
-        message: `Participant(s) do not exist with id ${JSON.stringify(
-          participants.map(({ id }) => id)
-        )}`,
+        message: `Participant(s) do not exist with id ${JSON.stringify(notParticipants)}`,
       });
+
       return res.status(422).send('Participant does not exist. Please check participant ID');
     }
 
     // Get Cohort
-    const cohorts = await getAssignCohort({ participantId });
-    if (cohorts.length === 0) {
+    const noCohorts = [];
+    await Promise.all(
+      participantIds.map(async (id) => {
+        const cohorts = await getAssignCohort({ participantId: id });
+        if (cohorts.length === 0) noCohorts.push(id);
+      })
+    );
+
+    if (noCohorts.length) {
       logger.error({
         action: 'post-hire-status_post',
-        message: `Cohort does not exist for participant with id ${participantId}`,
+        message: `Cohort does not exist for participant with id ${JSON.stringify(noCohorts)}`,
       });
 
       return res
@@ -62,7 +69,7 @@ router.post(
     try {
       const results = [];
       await Promise.all(
-        participantId.map(async (id) => {
+        participantIds.map(async (id) => {
           await invalidatePostHireStatus({ ...body, participantId: id });
           results.push(await createPostHireStatus({ ...body, participantId: id }));
         })
@@ -78,62 +85,6 @@ router.post(
     }
   })
 );
-
-// router.post(
-//   '/bulk-graduate',
-//   applyMiddleware(keycloak.allowRolesMiddleware('ministry_of_health')),
-//   asyncMiddleware(async (req, res) => {
-//     const { user_id: userId, sub: localUserId } = req.user;
-//     const { body } = req;
-
-//     const user = userId || localUserId;
-//     // Validate the request body
-//     // await validate(ParticipantPostHireStatusSchema, body);
-//     const { participantId } = body;
-//     // Check participant exists
-//     // const [participant] = await getParticipantByID(participantId);
-//     // if (!participant) {
-//     //   logger.error({
-//     //     action: 'post-hire-status_post',
-//     //     message: `Participant does not exist with id ${participantId}`,
-//     //   });
-//     //   return res.status(422).send('Participant does not exist. Please check participant ID');
-//     // }
-
-//     // // Get Cohort
-//     // const cohorts = await getAssignCohort({ participantId });
-//     // if (cohorts.length === 0) {
-//     //   logger.error({
-//     //     action: 'post-hire-status_post',
-//     //     message: `Cohort does not exist for participant with id ${participantId}`,
-//     //   });
-
-//     //   return res
-//     //     .status(422)
-//     //     .send('Cohort does not exist. Please assign a cohort to the participant');
-//     // }
-
-//     // Save the record
-//     try {
-//       const results = [];
-//       await Promise.all(
-//         participantId.map(async (id) => {
-//           await invalidatePostHireStatus({ ...body, participantId: id });
-//           results.push(await createPostHireStatus({ ...body, participantId: id }));
-//         })
-//       );
-//       logger.info({
-//         action: 'post-hire-status_post',
-//         performed_by: user,
-//         // id: result !== undefined ? result.id : '',
-//       });
-//       return res.status(201).json(results);
-//     } catch (e) {
-//       logger.error(e);
-//       return res.status(500).json({});
-//     }
-//   })
-// );
 
 router.get(
   '/participant/:participantId',

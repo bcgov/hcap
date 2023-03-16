@@ -76,7 +76,6 @@ router.get(
     const id = parseInt(req.params.id, 10);
     try {
       const [psi] = await getPSI(id);
-      console.log('IS THIS FAILING!?!?!?');
       if (psi === undefined) {
         return res.status(401).send({ message: 'You do not have permission to view this record' });
       }
@@ -90,7 +89,6 @@ router.get(
 
       return res.status(200).json(psi);
     } catch (e) {
-      console.log('ERROR', e);
       logger.error(e);
       return res.status(500).json({});
     }

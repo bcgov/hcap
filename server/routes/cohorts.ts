@@ -87,7 +87,6 @@ router.get(
         participants: filteredCohortParticipants,
       });
     } catch (err) {
-      console.log('ERROR', err);
       logger.error(`Cohort retrieval failed ${err.message}`, {
         context: 'cohort-controller',
         error: err,

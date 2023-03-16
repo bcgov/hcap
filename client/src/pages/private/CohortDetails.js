@@ -111,7 +111,7 @@ export default ({ match }) => {
   return (
     <Page>
       {showGraduationModal && (
-        <Dialog title={'Graduation Status'} open={showGraduationModal}>
+        <Dialog title={'Set Bulk Graduation Status'} open={showGraduationModal}>
           <ManageGraduationForm
             cohortEndDate={cohort.end_date}
             initialValues={{
@@ -120,7 +120,8 @@ export default ({ match }) => {
                 date: cohort.end_date,
               },
               continue: 'continue_yes',
-              participantId: selectedParticipants.map(({ id }) => id),
+              participantIds: selectedParticipants.map(({ id }) => id),
+              // participantIds: [70, 71, 205, 304, 405, 300],
             }}
             onClose={() => {
               setShowGraduationModal(false);
@@ -208,7 +209,9 @@ export default ({ match }) => {
                   isMultiSelect={roles.includes('health_authority')}
                   selectedRows={selectedParticipants}
                   updateSelectedRows={setSelectedParticipants}
+                  isRowSelectable={(params) => params.rows.graduationStatus !== 'Not recorded'}
                   renderCell={(columnId, row) => {
+                    console.log(row);
                     switch (columnId) {
                       case 'firstName':
                         return row.body[columnId];

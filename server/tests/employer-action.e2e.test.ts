@@ -44,7 +44,7 @@ describe.skip('Test api/v1/employer-actions', () => {
   it('should create participant status as HA', async () => {
     // Participant
     const participant = await makeTestParticipant({
-      emailAddress: 'employer.action.e2e.1@hcap.io',
+      emailAddress: 'HAemployer.action.e2e.1@hcap.io',
     });
     const site = await makeTestSite({
       siteId: 54353535623,

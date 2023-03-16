@@ -123,6 +123,11 @@ const addDistanceToParticipantFields = (raw, siteDistanceJoin) =>
     }),
   }));
 
+/**
+ * Runs a participant finder context
+ * @param context Participant finder context
+ * @returns Array of participants
+ */
 export const run = async (context: RunContext) => {
   const {
     table,

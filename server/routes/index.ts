@@ -67,7 +67,7 @@ apiRouter.use('/milestone-report', milestoneReportRouter);
 // Post hire status
 apiRouter.use('/post-hire-status', postHireStatusRouter);
 // NEEDED??
-apiRouter.use('/post-hire-status/bulk-graduate', postHireStatusRouter);
+// apiRouter.use('/post-hire-status/bulk-graduate', postHireStatusRouter);
 
 // Return of service
 apiRouter.use('/ros', rosRouter);

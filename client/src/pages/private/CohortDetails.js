@@ -5,7 +5,7 @@ import { Box, Card, Grid, Typography, Link, Dialog } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ManageGraduationForm } from '../../components/modal-forms/ManageGraduationForm';
 import { postHireStatuses } from '../../constants';
-import { createBulkPostHireStatus } from '../../services/participant';
+import { createPostHireStatus } from '../../services/participant';
 
 import { AuthContext } from '../../providers';
 import { Page, CheckPermissions, Table, Button } from '../../components/generic';
@@ -88,7 +88,7 @@ export default ({ match }) => {
             },
     };
     console.log(payload);
-    await createBulkPostHireStatus(payload);
+    await createPostHireStatus(payload);
     setShowGraduationModal(false);
     setSelectedParticipants([]);
     fetchCohortDetails();
@@ -185,7 +185,7 @@ export default ({ match }) => {
               )}
             </Grid>
 
-            <CheckPermissions permittedRoles={['ministry_of_health']}>
+            <CheckPermissions permittedRoles={['health_authority']}>
               <Grid item xs={2}>
                 <Button
                   size='small'
@@ -205,7 +205,7 @@ export default ({ match }) => {
                   columns={columns}
                   rows={rows}
                   isLoading={isLoading}
-                  isMultiSelect={roles.includes('ministry_of_health')}
+                  isMultiSelect={roles.includes('health_authority')}
                   selectedRows={selectedParticipants}
                   updateSelectedRows={setSelectedParticipants}
                   renderCell={(columnId, row) => {

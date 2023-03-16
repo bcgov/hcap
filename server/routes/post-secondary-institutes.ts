@@ -75,6 +75,7 @@ router.get(
     const user = userId || localUserId;
     const id = parseInt(req.params.id, 10);
     const [psi] = await getPSI(id);
+    console.log('IS THIS FAILING!?!?!?');
     if (psi === undefined) {
       return res.status(401).send({ message: 'You do not have permission to view this record' });
     }

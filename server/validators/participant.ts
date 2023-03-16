@@ -142,7 +142,7 @@ export const ParticipantPostHireStatusSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
-    participantId: yup.number().required('Participant ID is required'),
+    participantId: yup.array().of(yup.number().required('Participant ID is required')),
     status: yup.string().oneOf(postHireStatusesValues, 'Invalid status'),
     data: yup.object().when('status', ([status], schema) => {
       switch (status) {

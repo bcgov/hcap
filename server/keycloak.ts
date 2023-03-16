@@ -363,7 +363,7 @@ class Keycloak {
       const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
       const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${
         this.clientIdMap[this.clientNameFrontend]
-      }/roles/pending/users`;
+      }/roles/pending/users?briefRepresentation=true&max=1000000`;
       const response = await axios.get(url, config);
       return response.data;
     } catch (error) {

@@ -16,7 +16,7 @@ import {
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../../components/fields';
 import { useLocation } from 'react-router-dom';
-import { sortObjects } from '../../utils';
+import { addEllipsisMask, sortObjects } from '../../utils';
 
 const columns = [
   { id: 'firstName', name: 'First Name' },
@@ -94,7 +94,7 @@ export default () => {
         const mappedRow = columns.reduce(
           (accumulator, column) => ({
             ...accumulator,
-            [column.id]: row[column.id],
+            [column.id]: addEllipsisMask(row[column.id], 100),
           }),
           {}
         );

@@ -74,24 +74,19 @@ router.get(
     const { user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;
     const id = parseInt(req.params.id, 10);
-    try {
-      const [psi] = await getPSI(id);
-      if (psi === undefined) {
-        return res.status(401).send({ message: 'You do not have permission to view this record' });
-      }
-      logger.info({
-        action: 'post-secondary-institute_get',
-        performed_by: {
-          user,
-        },
-        id: psi.length > 0 ? psi.id : '',
-      });
-
-      return res.status(200).json(psi);
-    } catch (e) {
-      logger.error(e);
-      return res.status(500).json({});
+    const [psi] = await getPSI(id);
+    if (psi === undefined) {
+      return res.status(401).send({ message: 'You do not have permission to view this record' });
     }
+    logger.info({
+      action: 'post-secondary-institute_get',
+      performed_by: {
+        user,
+      },
+      id: psi.length > 0 ? psi.id : '',
+    });
+
+    return res.status(200).json(psi);
   })
 );
 

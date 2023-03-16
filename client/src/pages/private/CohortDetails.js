@@ -87,7 +87,6 @@ export default ({ match }) => {
               continue: values.continue,
             },
     };
-    console.log(payload);
     await createPostHireStatus(payload);
     setShowGraduationModal(false);
     setSelectedParticipants([]);
@@ -121,7 +120,6 @@ export default ({ match }) => {
               },
               continue: 'continue_yes',
               participantIds: selectedParticipants.map(({ id }) => id),
-              // participantIds: [70, 71, 205, 304, 405, 300],
             }}
             onClose={() => {
               setShowGraduationModal(false);

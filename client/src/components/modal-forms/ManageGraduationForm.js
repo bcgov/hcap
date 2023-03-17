@@ -29,6 +29,7 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
               setFieldValue('continue', 'continue_yes');
             } else {
               setFieldValue('data.date', '');
+              setFieldTouched('data.date', false);
             }
           };
 

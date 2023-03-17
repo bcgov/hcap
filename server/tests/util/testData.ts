@@ -97,8 +97,8 @@ export const participantData = ({
   contactedDate: contactedDate || dateStr(new Date()),
 });
 
-export const postHireStatusData = ({ graduationDate, participantId, status }) => ({
-  participantId,
+export const postHireStatusData = ({ graduationDate, participantIds, status }) => ({
+  participantIds,
   status: status || postHireStatuses.postSecondaryEducationCompleted,
   data: {
     graduationDate,

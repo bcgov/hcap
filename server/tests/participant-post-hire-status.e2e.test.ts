@@ -51,7 +51,7 @@ describe('api e2e test for /post-hire-status', () => {
     expect(psiId).toBeTruthy();
     expect(cohortAssignmentId).toBeTruthy();
     const testData = {
-      participantId: p.id,
+      participantIds: [p.id],
       status: postHireStatuses.postSecondaryEducationCompleted,
       data: {
         graduationDate: '2020/01/01',
@@ -81,7 +81,7 @@ describe('api e2e test for /post-hire-status', () => {
       emailAddress: 'test.participant.hire4@hcap.io',
     });
     const body = postHireStatusData({
-      participantId: participant.id,
+      participantIds: [participant.id],
       status: postHireStatuses.postSecondaryEducationCompleted,
       graduationDate: '2022/02/01',
     });

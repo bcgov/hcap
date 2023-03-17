@@ -60,16 +60,17 @@ const handleArchivedTransition = async ({
   return {};
 };
 
-// Handles the logic when a participant gets hired into a site
-const handleHiredTransition = async ({
-  tx,
-  existingCurrentStatus,
-  site,
-  participantId,
-  participant,
-}) => {
+/**
+ * Handles the logic when a participant gets hired into a site
+ * @param options
+ * @param options.tx Database transaction
+ * @param options.existingCurrentStatus Current status of the participant
+ * @param options.site Site Id that is hiring participant
+ * @param options.participant Participant as pulled from db
+ */
+const handleHiredTransition = async ({ tx, existingCurrentStatus, site, participant }) => {
   // Invalidate all current statuses for site
-  await invalidateAllStatusForSite(tx, { site, participantId });
+  await invalidateAllStatusForSite(tx, { site, participantId: participant.id });
 
   // If they get hired in a health authority they are not a part of, it gets added to their preferred locations
   // That way, HA users can see participants hired in their region
@@ -82,7 +83,7 @@ const handleHiredTransition = async ({
     !participantPreferredLocations?.toLowerCase().split(';').includes(siteLocation?.toLowerCase())
   ) {
     await tx[collections.PARTICIPANTS].updateDoc(
-      { id: participantId },
+      { id: participant.id },
       { preferredLocation: `${participantPreferredLocations};${siteLocation}` }
     );
   }

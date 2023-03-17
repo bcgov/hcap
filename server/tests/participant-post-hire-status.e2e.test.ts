@@ -60,7 +60,7 @@ describe('api e2e test for /post-hire-status', () => {
     const header = await getKeycloakToken(healthAuthority);
     const res = await request(app).post('/api/v1/post-hire-status').send(testData).set(header);
     expect(res.status).toEqual(201);
-    expect(res.body).toHaveProperty('id');
+    expect(res[0].body).toHaveProperty('id');
   });
 
   it('should return all post hire status for participant', async () => {

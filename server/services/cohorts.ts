@@ -93,9 +93,9 @@ export const filterCohortParticipantsForUser = (cohortParticipants, user) => {
   if (user.isHA) {
     // Remove participants hired outside of HA's region
     // participant.siteJoin is joined based on hired status' siteId
-    return cohortParticipants.filter((participant) => {
-      return user.regions.includes(participant.siteJoin?.body?.healthAuthority);
-    });
+    return cohortParticipants.filter((participant) =>
+      user.regions.includes(participant.siteJoin?.body?.healthAuthority)
+    );
   }
 
   return [];

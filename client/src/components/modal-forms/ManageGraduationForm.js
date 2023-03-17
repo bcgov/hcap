@@ -7,12 +7,11 @@ import { Button } from '../../components/generic/Button';
 import { AuthContext } from '../../providers';
 import { ParticipantPostHireStatusSchema } from '../../constants/validation';
 import { postHireStatuses } from '../../constants';
-import dayjs from 'dayjs';
+
 export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortEndDate }) => {
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
-  const cohortEndDateObj = dayjs(cohortEndDate, 'YYYY/MM/DD');
-  const today = new Date();
+
   return (
     <Box spacing={10} p={4} width={380}>
       <Formik
@@ -34,7 +33,8 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
           };
           const isGraduatingBeforeCohortEndDate =
             values.status === postHireStatuses.postSecondaryEducationCompleted &&
-            cohortEndDateObj > today;
+            new Date(cohortEndDate) > new Date(values.data.date);
+
           return (
             <FormikForm>
               <Box>

@@ -201,8 +201,8 @@ const ParticipantTable = () => {
   const isMoH = roles.includes('ministry_of_health');
   const isSuperUser = roles.includes('superuser');
   const isAdmin = isMoH || isSuperUser;
-  const isEmployer = roles.includes('health_authority') || roles.includes('employer');
   const isHA = roles.includes('health_authority');
+  const isEmployer = roles.includes('employer');
 
   const fetchParticipants = async () => {
     if (!columns) return;
@@ -383,7 +383,7 @@ const ParticipantTable = () => {
       case 'lastName':
         if (
           isAdmin ||
-          (isEmployer && ['Hired Candidates', 'Return Of Service'].includes(selectedTab))
+          ((isEmployer || isHA) && ['Hired Candidates', 'Return Of Service'].includes(selectedTab))
         ) {
           return (
             <Link

@@ -13,13 +13,6 @@ export const ParticipantPostHireStatusSchema = yup
     data: yup.object().when(['status'], (status, schema) => {
       switch (status) {
         case postHireStatuses.postSecondaryEducationCompleted:
-          return schema.noUnknown('Unknown field in data form').shape({
-            date: yup
-              .string()
-              .required('Date is required')
-              .test('is-date', 'Invalid date', validateDateString),
-          });
-
         case postHireStatuses.cohortUnsuccessful:
           return schema.noUnknown('Unknown field in data form').shape({
             date: yup

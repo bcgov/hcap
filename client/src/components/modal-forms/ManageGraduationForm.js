@@ -47,12 +47,13 @@ export const ManageGraduationForm = ({
               setFieldValue('continue', 'continue_yes');
             } else {
               setFieldValue('data.date', '');
+              setFieldTouched('data.date', false);
             }
           };
+
           const isGraduatingBeforeCohortEndDate =
             values.status === postHireStatuses.postSecondaryEducationCompleted &&
             new Date(cohortEndDate) > new Date(values.data.date);
-
           return (
             <FormikForm>
               <Box>

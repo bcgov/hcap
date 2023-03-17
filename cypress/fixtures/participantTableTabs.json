@@ -132,7 +132,7 @@
     {
       "name": "employer",
       "fixture": "test-employer",
-      "tabsWithMultiselect": ["Available Participants"],
+      "tabsWithMultiselect": [],
       "tabsWithActions": [
         "Available Participants",
         "My Candidates",

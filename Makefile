@@ -110,7 +110,7 @@ local-server-tests:
 
 local-cypress-tests:
 	@echo "Running all available Cypress tests"
-	@npx cypress run --headed
+	@npx cypress run --headless
 
 clear-data:
 	@docker-compose -f docker-compose.test.yml exec server npm run clear-data

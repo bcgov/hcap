@@ -124,6 +124,7 @@ export default ({ match }) => {
               setShowGraduationModal(false);
             }}
             onSubmit={handleBulkGraduate}
+            isBulkGraduate
           />
         </Dialog>
       )}

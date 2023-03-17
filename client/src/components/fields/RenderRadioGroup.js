@@ -38,6 +38,7 @@ export const RenderRadioGroup = ({
       }
     }
   };
+  console.log(options);
 
   return (
     <Fragment>

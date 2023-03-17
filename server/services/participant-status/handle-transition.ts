@@ -54,15 +54,38 @@ const handleArchivedTransition = async ({
 
   // Withdraw participant from program
   if (!isRosComplete) {
-    await withdrawParticipant(participant[0]);
+    await withdrawParticipant(participant);
   }
 
   return {};
 };
 
-const handleHiredTransition = async ({ tx, existingCurrentStatus, site, participantId }) => {
+// Handles the logic when a participant gets hired into a site
+const handleHiredTransition = async ({
+  tx,
+  existingCurrentStatus,
+  site,
+  participantId,
+  participant,
+}) => {
   // Invalidate all current statuses for site
   await invalidateAllStatusForSite(tx, { site, participantId });
+
+  // If they get hired in a health authority they are not a part of, it gets added to their preferred locations
+  // That way, HA users can see participants hired in their region
+  const employerSite = await tx[collections.EMPLOYER_SITES].findOne({
+    'body.siteId': site,
+  });
+  const participantPreferredLocations = participant.preferredLocation;
+  const siteLocation = employerSite.body.healthAuthority;
+  if (
+    !participantPreferredLocations?.toLowerCase().split(';').includes(siteLocation?.toLowerCase())
+  ) {
+    await tx[collections.PARTICIPANTS].updateDoc(
+      { id: participantId },
+      { preferredLocation: `${participantPreferredLocations};${siteLocation}` }
+    );
+  }
 
   // If no previous status with site or previous status site mismatch
   if (existingCurrentStatus.data?.site && existingCurrentStatus.data?.site !== site) {

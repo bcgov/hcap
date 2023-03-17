@@ -474,7 +474,7 @@ employerActionsRouter.delete(
  */
 employerActionsRouter.post(
   '/bulk-engage',
-  keycloak.allowRolesMiddleware('employer', 'health_authority'),
+  keycloak.allowRolesMiddleware('health_authority'),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     // Validate Body

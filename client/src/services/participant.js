@@ -48,10 +48,14 @@ export const fetchParticipant = async ({ id }) => {
     const status = participant.latestStatuses.length
       ? participant.latestStatuses[0].status
       : 'available';
-    const site =
-      status === 'hired'
-        ? await (await fetchSite(participant.latestStatuses[0].siteId)).json()
-        : null;
+    // NOTE: ideally there should be a role check here! Otherwise employers will just make requests that will never work.
+    // Unfortunately, that would probably mean untangling a lot of how roles are handled.
+    let site = null;
+    if (status === 'hired') {
+      const siteRes = await fetchSite(participant.latestStatuses[0].siteId);
+      // Check for valid response before parsing
+      if (siteRes.ok) site = await siteRes.json();
+    }
     return {
       ...participant,
       cohort,

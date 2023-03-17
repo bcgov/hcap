@@ -114,7 +114,7 @@ export const HireForm = ({ onSubmit, onClose, sites }) => {
                         </>
                       ) : (
                         <>
-                          The site currenty has 0 allocations assigned. Please contat your Health
+                          The site currenty has 0 allocations assigned. Please contact your Health
                           Authority for further information.
                         </>
                       )}

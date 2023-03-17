@@ -140,8 +140,8 @@ export const ManageGraduationForm = ({
                   <Box flexGrow={1}>
                     <MuiAlert severity='warning'>
                       <Typography variant='body1'>
-                        The following participants already have a graduation status Submitting this
-                        form will override this status.
+                        The following participants already have a graduation status. Submitting this
+                        form will override their previous status.
                       </Typography>
                       <ul className={classes.list}>
                         {participants.map((participant) => (

@@ -125,6 +125,9 @@ export default ({ match }) => {
             }}
             onSubmit={handleBulkGraduate}
             isBulkGraduate
+            participants={selectedParticipants.filter(
+              (participant) => participant.postHireJoin[0]?.status
+            )}
           />
         </Dialog>
       )}
@@ -207,9 +210,7 @@ export default ({ match }) => {
                   isMultiSelect={roles.includes('health_authority')}
                   selectedRows={selectedParticipants}
                   updateSelectedRows={setSelectedParticipants}
-                  isRowSelectable={(params) => params.rows.graduationStatus !== 'Not recorded'}
                   renderCell={(columnId, row) => {
-                    console.log(row);
                     switch (columnId) {
                       case 'firstName':
                         return row.body[columnId];

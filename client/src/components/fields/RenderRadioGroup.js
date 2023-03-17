@@ -38,27 +38,29 @@ export const RenderRadioGroup = ({
       }
     }
   };
-  console.log(options);
 
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} boldLabel={boldLabel} />}
       <RadioGroup {...field} {...props} onChange={handleChange}>
-        {options.map((option) => (
-          <Fragment key={option.value}>
-            <FormControlLabel
-              value={option.value}
-              checked={field.value === option.value}
-              label={option.label}
-              disabled={disabled}
-              labelPlacement='end'
-              control={<Radio color={option.color || 'primary'} />}
-            />
-            {hiddenCheckbox?.fields.includes(field.value) &&
-              option.value === field.value &&
-              hiddenCheckbox.node}
-          </Fragment>
-        ))}
+        {options.map(
+          (option) =>
+            option && (
+              <Fragment key={option.value}>
+                <FormControlLabel
+                  value={option.value}
+                  checked={field.value === option.value}
+                  label={option.label}
+                  disabled={disabled}
+                  labelPlacement='end'
+                  control={<Radio color={option.color || 'primary'} />}
+                />
+                {hiddenCheckbox?.fields.includes(field.value) &&
+                  option.value === field.value &&
+                  hiddenCheckbox.node}
+              </Fragment>
+            )
+        )}
       </RadioGroup>
       <InputFieldError error={<ErrorMessage name={field.name} />} />
     </Fragment>

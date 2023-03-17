@@ -77,7 +77,7 @@ const handleHiredTransition = async ({
     'body.siteId': site,
   });
   const participantPreferredLocations = participant.preferredLocation;
-  const siteLocation = employerSite.body.healthAuthority;
+  const siteLocation = employerSite?.body?.healthAuthority;
   if (
     !participantPreferredLocations?.toLowerCase().split(';').includes(siteLocation?.toLowerCase())
   ) {

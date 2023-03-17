@@ -4,12 +4,11 @@ import dayjs from 'dayjs';
 import { Box, Card, Grid, Typography, Link, Dialog } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ManageGraduationForm } from '../../components/modal-forms/ManageGraduationForm';
-import { postHireStatuses } from '../../constants';
 import { createPostHireStatus } from '../../services/participant';
 
 import { AuthContext } from '../../providers';
 import { Page, CheckPermissions, Table, Button } from '../../components/generic';
-import { Routes, ToastStatus } from '../../constants';
+import { Routes, ToastStatus, postHireStatuses } from '../../constants';
 import { useToast } from '../../hooks';
 import { fetchCohort, getPostHireStatusLabel } from '../../services';
 import { keyedString } from '../../utils';

@@ -25,6 +25,17 @@ const getInterestLabel = (isInterested) => {
   }
 };
 
+/**
+ * Function to make underscore-seperated strings title case with spaces.
+ * @param {string} status Status string from DB
+ * @returns Title case formatted status
+ */
+const getStatusLabel = (status) =>
+  status
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
 export const getParticipantPageLabel = (pageName) => {
   switch (pageName) {
     case 'participant':
@@ -40,6 +51,7 @@ export const displayParticipantData = (inputData) => ({
   ...pick(inputData, Object.keys(keyLabelMap)),
   fullName: `${inputData.firstName} ${inputData.lastName}`,
   interested: getInterestLabel(inputData.interested),
+  status: getStatusLabel(inputData.status),
   ros:
     inputData.rosStatus && Object.keys(inputData.rosStatus).length
       ? mapRosData(inputData.rosStatus)

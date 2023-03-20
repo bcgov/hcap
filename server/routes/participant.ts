@@ -65,7 +65,6 @@ participantRouter.get(
     if (!hasAccess) {
       return res.status(403).send('User has no access to this participant');
     }
-    console.log('%@#$%!#$^', hasAccess);
 
     const participant = await participantDetails(id);
     if (!participant) {

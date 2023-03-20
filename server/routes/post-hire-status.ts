@@ -10,15 +10,23 @@ import keycloak from '../keycloak';
 import logger from '../logger';
 import { getParticipantByID } from '../services/participants';
 import { getAssignCohort } from '../services/cohorts';
+import { valid } from 'semver';
 
 const router = express.Router();
+
+type notParticipant = {
+  id: string;
+  valid: boolean;
+};
 
 // Apply setup user middleware
 router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 
 router.post(
   '/',
-  applyMiddleware(keycloak.allowRolesMiddleware('health_authority', 'employer')),
+  applyMiddleware(
+    keycloak.allowRolesMiddleware('health_authority', 'employer', 'ministry_of_health')
+  ),
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const { body } = req;
@@ -28,7 +36,7 @@ router.post(
     await validate(ParticipantPostHireStatusSchema, body);
     const { participantIds } = body;
     // Check participant exists
-    const notParticipants = [];
+    const notParticipants: number[] = [];
     await Promise.all(
       participantIds.map(async (id) => {
         const [participant] = await getParticipantByID(id);
@@ -42,11 +50,17 @@ router.post(
         message: `Participant(s) do not exist with id ${JSON.stringify(notParticipants)}`,
       });
 
-      return res.status(422).send('Participant does not exist. Please check participant ID');
+      return res
+        .status(422)
+        .send(
+          `Participant(s) do not exist with id ${JSON.stringify(
+            notParticipants
+          )}. Please check participant ID`
+        );
     }
 
     // Get Cohort
-    const noCohorts = [];
+    const noCohorts: number[] = [];
     await Promise.all(
       participantIds.map(async (id) => {
         const cohorts = await getAssignCohort({ participantId: id });
@@ -62,7 +76,11 @@ router.post(
 
       return res
         .status(422)
-        .send('Cohort does not exist. Please assign a cohort to the participant');
+        .send(
+          `Cohort does not exist. Please assign a cohort to the participant with id ${JSON.stringify(
+            noCohorts
+          )}`
+        );
     }
 
     // Save the record

@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { Box, Card, Grid, Typography, Link, Dialog } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import MuiAlert from '@material-ui/lab/Alert';
 import { ManageGraduationForm } from '../../components/modal-forms/ManageGraduationForm';
 import { createPostHireStatus } from '../../services/participant';
 
@@ -111,6 +110,7 @@ export default ({ match }) => {
   const hasSelectedParticipantGraduated = selectedParticipants
     .map(({ id, postHireJoin }) => ({ id, graduated: postHireJoin.length !== 0 }))
     .filter(({ graduated }) => graduated);
+
   return (
     <Page>
       {showGraduationModal && (
@@ -190,7 +190,7 @@ export default ({ match }) => {
               )}
             </Grid>
 
-            <CheckPermissions permittedRoles={['health_authority']}>
+            <CheckPermissions permittedRoles={['health_authority', 'ministry_of_health']}>
               <>
                 <Grid item xs={2}>
                   <Button
@@ -207,11 +207,11 @@ export default ({ match }) => {
                 </Grid>
                 <br />
                 {hasSelectedParticipantGraduated.length > 0 && (
-                  <MuiAlert severity='warning'>
+                  <Alert severity='warning'>
                     Bulk Graduation is only available for participants with no graduation status.
                     Please deselect participants who have had a successful or unsuccessful
                     graduation.
-                  </MuiAlert>
+                  </Alert>
                 )}
               </>
             </CheckPermissions>
@@ -222,7 +222,7 @@ export default ({ match }) => {
                   columns={columns}
                   rows={rows}
                   isLoading={isLoading}
-                  isMultiSelect={roles.includes('health_authority')}
+                  isMultiSelect={roles.includes('ministry_of_health')}
                   selectedRows={selectedParticipants}
                   updateSelectedRows={setSelectedParticipants}
                   renderCell={(columnId, row) => {

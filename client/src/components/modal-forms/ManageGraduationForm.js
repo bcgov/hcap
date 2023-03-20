@@ -14,7 +14,6 @@ export const ManageGraduationForm = ({
   onSubmit,
   cohortEndDate,
   isBulkGraduate = false,
-  participants = [],
 }) => {
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);

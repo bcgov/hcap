@@ -123,7 +123,6 @@ export default ({ match }) => {
                 date: cohortEndDate,
               },
               continue: 'continue_yes',
-              // participantIds: [300, 10 ],
               participantIds: selectedParticipants.map(({ id }) => id),
             }}
             onClose={() => {

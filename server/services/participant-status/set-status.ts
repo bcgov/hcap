@@ -105,7 +105,7 @@ export const setParticipantStatus = async (
     }
 
     // Load Participant
-    const participant = await tx[collections.PARTICIPANTS].findDoc({
+    const [participant] = await tx[collections.PARTICIPANTS].findDoc({
       id: participantId,
     });
 
@@ -168,8 +168,8 @@ export const setParticipantStatus = async (
     // Sending participant details for in-progress statuses
     if ([PROSPECTING, INTERVIEWING, OFFER_MADE, HIRED].includes(status)) {
       return {
-        emailAddress: participant[0].emailAddress,
-        phoneNumber: participant[0].phoneNumber,
+        emailAddress: participant.emailAddress,
+        phoneNumber: participant.phoneNumber,
         status,
         id: statusObj.id,
       };

@@ -10,14 +10,8 @@ import keycloak from '../keycloak';
 import logger from '../logger';
 import { getParticipantByID } from '../services/participants';
 import { getAssignCohort } from '../services/cohorts';
-import { valid } from 'semver';
 
 const router = express.Router();
-
-type notParticipant = {
-  id: string;
-  valid: boolean;
-};
 
 // Apply setup user middleware
 router.use(applyMiddleware(keycloak.setupUserMiddleware()));

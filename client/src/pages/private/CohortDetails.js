@@ -185,7 +185,7 @@ export default ({ match }) => {
               )}
             </Grid>
 
-            <CheckPermissions permittedRoles={['health_authority', 'ministry_of_health']}>
+            <CheckPermissions permittedRoles={['health_authority']}>
               <>
                 <Grid item xs={2}>
                   <Button
@@ -217,7 +217,7 @@ export default ({ match }) => {
                   columns={columns}
                   rows={rows}
                   isLoading={isLoading}
-                  isMultiSelect={roles.includes('ministry_of_health')}
+                  isMultiSelect={roles.includes('health_authority')}
                   selectedRows={selectedParticipants}
                   updateSelectedRows={setSelectedParticipants}
                   renderCell={(columnId, row) => {

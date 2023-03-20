@@ -18,9 +18,7 @@ router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 
 router.post(
   '/',
-  applyMiddleware(
-    keycloak.allowRolesMiddleware('health_authority', 'employer', 'ministry_of_health')
-  ),
+  applyMiddleware(keycloak.allowRolesMiddleware('health_authority', 'employer')),
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const { body } = req;

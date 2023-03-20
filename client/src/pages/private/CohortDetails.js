@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { Box, Card, Grid, Typography, Link, Dialog } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import MuiAlert from '@material-ui/lab/Alert';
 import { ManageGraduationForm } from '../../components/modal-forms/ManageGraduationForm';
 import { createPostHireStatus } from '../../services/participant';
 
@@ -11,7 +12,7 @@ import { Page, CheckPermissions, Table, Button } from '../../components/generic'
 import { Routes, ToastStatus, postHireStatuses } from '../../constants';
 import { useToast } from '../../hooks';
 import { fetchCohort, getPostHireStatusLabel } from '../../services';
-import { keyedString } from '../../utils';
+import { keyedString, formatCohortDate } from '../../utils';
 import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
@@ -106,18 +107,23 @@ export default ({ match }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const cohortEndDate = formatCohortDate(cohort?.end_date, { isForm: true });
+  const hasSelectedParticipantGraduated = selectedParticipants
+    .map(({ id, postHireJoin }) => ({ id, graduated: postHireJoin.length !== 0 }))
+    .filter(({ graduated }) => graduated);
   return (
     <Page>
       {showGraduationModal && (
         <Dialog title={'Set Bulk Graduation Status'} open={showGraduationModal}>
           <ManageGraduationForm
-            cohortEndDate={cohort.end_date}
+            cohortEndDate={cohortEndDate}
             initialValues={{
               status: postHireStatuses.postSecondaryEducationCompleted,
               data: {
-                date: cohort.end_date,
+                date: cohortEndDate,
               },
               continue: 'continue_yes',
+              // participantIds: [300, 10 ],
               participantIds: selectedParticipants.map(({ id }) => id),
             }}
             onClose={() => {
@@ -125,9 +131,7 @@ export default ({ match }) => {
             }}
             onSubmit={handleBulkGraduate}
             isBulkGraduate
-            participants={selectedParticipants.filter(
-              (participant) => participant.postHireJoin[0]?.status
-            )}
+            participants={selectedParticipants}
           />
         </Dialog>
       )}
@@ -188,17 +192,29 @@ export default ({ match }) => {
             </Grid>
 
             <CheckPermissions permittedRoles={['health_authority']}>
-              <Grid item xs={2}>
-                <Button
-                  size='small'
-                  variant='outlined'
-                  text='Bulk Graduate'
-                  disabled={selectedParticipants.length < 1}
-                  onClick={() => {
-                    setShowGraduationModal(true);
-                  }}
-                />
-              </Grid>
+              <>
+                <Grid item xs={2}>
+                  <Button
+                    size='small'
+                    variant='outlined'
+                    text='Bulk Graduate'
+                    disabled={
+                      selectedParticipants.length < 1 || hasSelectedParticipantGraduated.length > 0
+                    }
+                    onClick={() => {
+                      setShowGraduationModal(true);
+                    }}
+                  />
+                </Grid>
+                <br />
+                {hasSelectedParticipantGraduated.length > 0 && (
+                  <MuiAlert severity='warning'>
+                    Bulk Graduation is only available for participants with no graduation status.
+                    Please deselect participants who have had a successful or unsuccessful
+                    graduation.
+                  </MuiAlert>
+                )}
+              </>
             </CheckPermissions>
 
             <Box>

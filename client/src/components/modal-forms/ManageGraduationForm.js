@@ -4,18 +4,9 @@ import React, { useMemo } from 'react';
 import { Box, Grid, Typography } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
 import { Button } from '../../components/generic/Button';
-import { makeStyles } from '@material-ui/core/styles';
 import { AuthContext } from '../../providers';
 import { ParticipantPostHireStatusSchema } from '../../constants/validation';
 import { postHireStatuses } from '../../constants';
-
-const useStyles = makeStyles(() => ({
-  list: {
-    maxHeight: '100px',
-    overflow: 'auto',
-    overflowX: 'hidden',
-  },
-}));
 
 export const ManageGraduationForm = ({
   initialValues,
@@ -25,10 +16,8 @@ export const ManageGraduationForm = ({
   isBulkGraduate = false,
   participants = [],
 }) => {
-  const classes = useStyles();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
-  const showOverrideAlert = isBulkGraduate && participants.length > 0;
 
   return (
     <Box spacing={10} p={4} width={380}>
@@ -135,23 +124,6 @@ export const ManageGraduationForm = ({
                   <MuiAlert severity='warning'>
                     {'Graduation cannot be tracked before cohort has ended.'}
                   </MuiAlert>
-                )}
-                {showOverrideAlert && (
-                  <Box flexGrow={1}>
-                    <MuiAlert severity='warning'>
-                      <Typography variant='body1'>
-                        The following participants already have a graduation status. Submitting this
-                        form will override their previous status.
-                      </Typography>
-                      <ul className={classes.list}>
-                        {participants.map((participant) => (
-                          <li
-                            key={participant.id}
-                          >{`${participant.body.firstName} ${participant.body.lastName}`}</li>
-                        ))}
-                      </ul>
-                    </MuiAlert>
-                  </Box>
                 )}
                 <hr />
                 <Box mt={3}>

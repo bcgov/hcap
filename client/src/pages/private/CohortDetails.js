@@ -125,7 +125,6 @@ export default ({ match }) => {
             }}
             onSubmit={handleBulkGraduate}
             isBulkGraduate
-            participants={selectedParticipants}
           />
         </Dialog>
       )}

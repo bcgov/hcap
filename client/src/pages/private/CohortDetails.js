@@ -73,18 +73,13 @@ export default ({ match }) => {
     return getPostHireStatusLabel(graduationStatus);
   };
 
+  // Bulk Graduation only allows the successful graduation path
   const handleBulkGraduate = async (values) => {
     const payload = {
       ...values,
-      data:
-        values.status === postHireStatuses.postSecondaryEducationCompleted
-          ? {
-              graduationDate: values?.data?.date,
-            }
-          : {
-              unsuccessfulCohortDate: values?.data?.date,
-              continue: values.continue,
-            },
+      data: {
+        graduationDate: values?.data?.date,
+      },
     };
     await createPostHireStatus(payload);
     setShowGraduationModal(false);

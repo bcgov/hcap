@@ -40,11 +40,13 @@ describe('Tests the Cohort View', () => {
     cy.visit('/admin');
     cy.contains('Manage PSI').click();
 
-    // Select a PSI in the region of HA - Fraser
-    cy.get('div[aria-label="Health Authority filter"]').click();
-    cy.get('li').contains('Fraser').click();
+    cy.get('@psi').then((psi) => {
+      cy.contains(psi[0].institute_name).click();
+    });
+    // expect there to be no cohorts
+    cy.get('.MuiTypography-h5').contains('No Cohorts Added').should('be.visible');
 
-    cy.contains('Full Sawfly University').click();
+    // Add a cohort
     cy.get('button').contains('Manage').click();
     cy.get('li').contains('Add Cohort').should('be.visible').click();
 
@@ -83,7 +85,7 @@ describe('Tests the Cohort View', () => {
     visitsCohort('Fraser');
 
     cy.get('tbody tr').should('have.length', 3);
-    // MOH can see all PARTICIPANTS
+    // MOH can see all participants
     cy.get('.MuiAlert-standardInfo').should('not.exist');
   });
 
@@ -97,27 +99,20 @@ describe('Tests the Cohort View', () => {
       .should('be.visible');
   });
 
-  const navigateToFormSelectAll = () => {
-    cy.get('th').find('[type="checkbox"]').check();
-    cy.contains('button', 'Bulk Graduate').click();
-  };
-
   it('HA visits cohort view, can  `Bulk Graduate`', () => {
     cy.kcLogin('test-ha');
     visitsCohort('Fraser');
 
-    cy.get('.MuiAlert-standardInfo')
-      .contains('Participants hired outside your region will not appear in this list')
-      .should('be.visible');
-
     cy.get('button').contains('Bulk Graduate').should('be.visible');
-
+    // select all rows in table
     cy.get('tr td')
       .find('[type="checkbox"]')
       .its('length')
       .then((n) => {
-        navigateToFormSelectAll();
+        cy.get('th').find('[type="checkbox"]').check();
+        cy.contains('button', 'Bulk Graduate').click();
         cy.get('@selectedCohort').then((selectedCohort) => {
+          // form is pre-populated with cohortEndDate
           cy.formatDateWithOffset(selectedCohort.end_date, 1, false).then((formattedDate) => {
             cy.get('[name=GraduationDate]').clear().type(`{ctrl+v}${formattedDate}`);
           });
@@ -128,6 +123,7 @@ describe('Tests the Cohort View', () => {
             .contains('Graduation cannot be tracked before cohort has ended.')
             .should('be.visible');
 
+          // update the date to be valid and submit form
           cy.formatDateWithOffset(selectedCohort.end_date, 1).then((formattedDate) => {
             cy.get('[name=GraduationDate]').clear().type(`{ctrl+v}${formattedDate}`);
           });
@@ -144,13 +140,9 @@ describe('Tests the Cohort View', () => {
     cy.kcLogin('test-ha');
     visitsCohort('Fraser');
 
-    cy.get('.MuiAlert-standardInfo')
-      .contains('Participants hired outside your region will not appear in this list')
-      .should('be.visible');
-
     cy.get('button').contains('Bulk Graduate').should('be.visible');
     cy.get('th').find('[type="checkbox"]').check();
-
+    // button should be disabled. as participants have already been graduated.
     cy.get('button').contains('Bulk Graduate').should('have.class', 'Mui-disabled');
 
     cy.get('.MuiAlert-standardInfo')

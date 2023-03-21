@@ -27,7 +27,6 @@ describe('Tests the Cohort View', () => {
         const cohortInPSI = cohorts.filter((cohort) => cohort.psi_id === pisInHA[0].id);
         // add alias for cohort to use in later in the test
         cy.wrap(cohortInPSI[2]).as('selectedCohort');
-        // // Click on cohort 'Proper Hen Cohort'
         cy.contains(cohortInPSI[2].cohort_name).click();
       });
     });
@@ -61,6 +60,7 @@ describe('Tests the Cohort View', () => {
 
     // navigate to /cohort/:id
     cy.contains('Empty New Cohort').click();
+    cy.wait(1000);
     cy.get('.MuiTypography-subtitle1')
       .contains('No Participants in this Cohort')
       .should('be.visible');
@@ -140,6 +140,7 @@ describe('Tests the Cohort View', () => {
 
     cy.get('button').contains('Bulk Graduate').should('be.visible');
     cy.get('th').find('[type="checkbox"]').check();
+    cy.wait(1000);
     // button should be disabled. as participants have already been graduated.
     cy.get('button').contains('Bulk Graduate').should('have.class', 'Mui-disabled');
 

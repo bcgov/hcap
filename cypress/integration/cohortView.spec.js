@@ -21,11 +21,9 @@ describe('Tests the Cohort View', () => {
 
     // Click on a PSI in fraser, and click on a cohort
     cy.get('@psi').then((psi) => {
-      cy.log(psi);
       const pisInHA = psi.filter((institute) => institute.health_authority === healthAuthority);
       cy.contains(pisInHA[0].institute_name).click();
       cy.get('@cohorts').then((cohorts) => {
-        cy.log(cohorts);
         const cohortInPSI = cohorts.filter((cohort) => cohort.psi_id === pisInHA[0].id);
         // add alias for cohort to use in later in the test
         cy.wrap(cohortInPSI[2]).as('selectedCohort');

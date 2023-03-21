@@ -448,4 +448,71 @@ describe('Test Participant status data model and service', () => {
     const statusInfo = statusInfos[0];
     expect(statusInfo.status).toBe('prospecting');
   });
+
+  it('should add preferred location if hired in a region not currently in participant preferred location', async () => {
+    const initialPreferredLocation = 'Fraser';
+    const siteLocation = 'Interior';
+
+    const participant = await makeTestParticipant({
+      emailAddress: 'test.set.status.preferred.location@hcap.io',
+      preferredLocation: initialPreferredLocation,
+    });
+    const site = await makeTestSite({
+      siteId: '202303161650',
+      siteName: 'Test Site 20001',
+      city: 'Test City 20001',
+      healthAuthority: siteLocation,
+    });
+    const emp1 = { id: v4(), sites: [site.siteId] };
+
+    const ps1 = await setParticipantStatus(
+      emp1.id,
+      participant.id,
+      PROSPECTING,
+      {
+        site: site.siteId,
+      },
+      emp1
+    );
+
+    const ps2 = await setParticipantStatus(
+      emp1.id,
+      participant.id,
+      INTERVIEWING,
+      {
+        site: site.siteId,
+      },
+      emp1,
+      ps1.id
+    );
+
+    const ps3 = await setParticipantStatus(
+      emp1.id,
+      participant.id,
+      OFFER_MADE,
+      {
+        site: site.siteId,
+      },
+      emp1,
+      ps2.id
+    );
+
+    await setParticipantStatus(
+      emp1.id,
+      participant.id,
+      HIRED,
+      {
+        site: site.siteId,
+      },
+      emp1,
+      ps3.id
+    );
+
+    const participantUpdated = await dbClient.db[collections.PARTICIPANTS].findOne({
+      id: participant.id,
+    });
+    expect(participantUpdated.body.preferredLocation).toEqual(
+      `${initialPreferredLocation};${siteLocation}`
+    );
+  });
 });

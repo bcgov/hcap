@@ -27,8 +27,8 @@ type postHireStatusBody = {
       /** Date set If status = unsuccessful */
       unsuccessfulCohortDate?: string;
     };
-    /** User setting the status */
   };
+  /** User setting the status */
   user: {
     /** User id from keycloak */
     user_id: string;

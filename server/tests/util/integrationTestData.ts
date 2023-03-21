@@ -74,14 +74,16 @@ interface TestSiteData {
   siteId?;
   city?: string;
   siteName?: string;
+  healthAuthority?: string;
   [key: string]: string | number | boolean | undefined;
 }
 
 export const makeTestSite = async (
-  { siteId, city, siteName, ...rest }: TestSiteData = {
+  { siteId, city, siteName, healthAuthority = 'Vancouver Island', ...rest }: TestSiteData = {
     siteId: undefined,
     city: undefined,
     siteName: undefined,
+    healthAuthority: undefined,
   }
 ) => {
   if (!siteId) {
@@ -91,6 +93,7 @@ export const makeTestSite = async (
     siteId,
     city,
     siteName,
+    healthAuthority,
     ...rest,
   });
 };

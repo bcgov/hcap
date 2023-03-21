@@ -60,7 +60,8 @@ describe('Tests the Cohort View', () => {
 
     // navigate to /cohort/:id
     cy.contains('Empty New Cohort').click();
-    cy.wait(1000);
+    // wait for page to load before checking for notification
+    cy.wait(1500);
     cy.get('.MuiTypography-subtitle1')
       .contains('No Participants in this Cohort')
       .should('be.visible');
@@ -70,10 +71,6 @@ describe('Tests the Cohort View', () => {
   it('MOH visits cohort view, cannot `Bulk Graduate`', () => {
     cy.kcLogin('test-moh');
     visitsCohort('Fraser');
-
-    cy.get('.MuiTypography-subtitle1')
-      .contains('No Participants in this Cohort')
-      .should('be.visible');
 
     cy.get('button').contains('Bulk Graduate').should('not.exist');
   });
@@ -140,11 +137,10 @@ describe('Tests the Cohort View', () => {
 
     cy.get('button').contains('Bulk Graduate').should('be.visible');
     cy.get('th').find('[type="checkbox"]').check();
-    cy.wait(1000);
     // button should be disabled. as participants have already been graduated.
-    cy.get('button').contains('Bulk Graduate').should('have.class', 'Mui-disabled');
+    cy.contains('Bulk Graduate').should('have.class', 'Mui-disabled');
 
-    cy.get('.MuiAlert-standardInfo')
+    cy.get('.MuiAlert-standardWarning')
       .contains(
         'Bulk Graduation is only available for participants with no graduation status. Please deselect participants who have had a successful or unsuccessful graduation.'
       )

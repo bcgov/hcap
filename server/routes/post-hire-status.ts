@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import express from 'express';
 import { asyncMiddleware, applyMiddleware } from '../error-handler';
 import { ParticipantPostHireStatusSchema, validate } from '../validation';
@@ -10,16 +11,32 @@ import keycloak from '../keycloak';
 import logger from '../logger';
 import { getParticipantByID } from '../services/participants';
 import { getAssignCohort } from '../services/cohorts';
+import { postHireStatuses } from '../constants';
 
 const router = express.Router();
 
+type postHireStatusBody = {
+  body: {
+    participantIds: number[]; // participant IDs getting their post hire status set/updated
+    status: postHireStatuses; //  String representing the status
+    data: {
+      graduationDate?: string; // Date set If status = successful
+      unsuccessfulCohortDate?: string; // Date set If status = unsuccessful
+    };
+  };
+  /** User setting the status */
+  user: {
+    user_id: string; // User id from keycloak
+    sub: string; // Additional user id from keycloak
+  };
+};
 // Apply setup user middleware
 router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 
 router.post(
   '/',
   applyMiddleware(keycloak.allowRolesMiddleware('health_authority', 'employer')),
-  asyncMiddleware(async (req, res) => {
+  asyncMiddleware(async (req: postHireStatusBody, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const { body } = req;
 
@@ -27,42 +44,60 @@ router.post(
     // Validate the request body
     await validate(ParticipantPostHireStatusSchema, body);
     const { participantIds } = body;
-    // Check participant exists
-    const notParticipants = [];
-    await Promise.all(
-      participantIds.map(async (id) => {
-        const [participant] = await getParticipantByID(id);
-        if (!participant) notParticipants.push(id);
-      })
-    );
+
+    const notParticipants: {
+      id: number;
+      valid: boolean;
+    }[] = (
+      await Promise.all(
+        participantIds.map(async (id) => ({ id, valid: (await getParticipantByID(id)).length > 0 }))
+      )
+    ).filter(({ valid }) => !valid);
 
     if (notParticipants.length) {
       logger.error({
         action: 'post-hire-status_post',
-        message: `Participant(s) do not exist with id ${JSON.stringify(notParticipants)}`,
-      });
-
-      return res.status(422).send('Participant does not exist. Please check participant ID');
-    }
-
-    // Get Cohort
-    const noCohorts = [];
-    await Promise.all(
-      participantIds.map(async (id) => {
-        const cohorts = await getAssignCohort({ participantId: id });
-        if (cohorts.length === 0) noCohorts.push(id);
-      })
-    );
-
-    if (noCohorts.length) {
-      logger.error({
-        action: 'post-hire-status_post',
-        message: `Cohort does not exist for participant with id ${JSON.stringify(noCohorts)}`,
+        message: `Participant(s) do not exist with id ${JSON.stringify(
+          notParticipants.map(({ id }) => id)
+        )}`,
       });
 
       return res
         .status(422)
-        .send('Cohort does not exist. Please assign a cohort to the participant');
+        .send(
+          `Participant(s) do not exist with id ${JSON.stringify(
+            notParticipants.map(({ id }) => id)
+          )}. Please check participant ID`
+        );
+    }
+
+    const noCohorts: {
+      id: number;
+      valid: boolean;
+    }[] = (
+      await Promise.all(
+        participantIds.map(async (id) => ({
+          id,
+          valid: (await getAssignCohort({ participantId: id })).length > 0,
+        }))
+      )
+    ).filter(({ valid }) => !valid);
+
+    if (noCohorts.length) {
+      logger.error({
+        action: 'post-hire-status_post',
+        message: `Cohort does not exist for participant with id ${JSON.stringify(
+          noCohorts.map(({ id }) => id)
+        )}`,
+      });
+
+      return res
+        .status(422)
+        .send(
+          `Cohort does not exist. Please assign a cohort to the participant with id ${JSON.stringify(
+            noCohorts.map(({ id }) => id)
+          )}`
+        );
     }
 
     // Save the record

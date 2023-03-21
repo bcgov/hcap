@@ -228,6 +228,7 @@ export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) =
     positionTitle: entry.data?.positionTitle,
     employerRegion: entry.employerSiteJoin?.[0]?.body?.healthAuthority,
     employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,
+    employerSiteId: entry.employerSiteJoin?.[0]?.body?.siteId,
     startDate: entry.data?.startDate,
     isRHO: entry.employerSiteJoin?.[0]?.body?.isRHO,
     withdrawReason: entry.archivedJoin?.[0]?.data?.reason,

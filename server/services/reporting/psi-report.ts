@@ -1,7 +1,7 @@
 import { dbClient, collections } from '../../db';
 import { DEFAULT_REGION_NAME, DEFAULT_STATUS, ParticipantStatus as ps } from '../../constants';
 import { getPostHireStatusForParticipant, getCohortForParticipant } from './participant';
-import type { PostHireStatus, Cohort, CohortParticipant } from './participant';
+import { PostHireStatus, Cohort, CohortParticipant } from './participant';
 
 interface ParticipantEntry {
   // eslint-disable-next-line camelcase
@@ -99,6 +99,7 @@ export const getPSIPaticipantsReport = async (region: string) => {
       graduation: graduationData.status,
       isReturning: graduationData.isReturning,
       graduationDate: graduationData.date,
+      psiRegion: entry.psiJoin?.find((psi) => psi.id === cohortData.psiId)?.health_authority,
     };
   });
 };

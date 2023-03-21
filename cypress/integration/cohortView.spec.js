@@ -38,7 +38,8 @@ describe('Tests the Cohort View', () => {
     cy.contains('Manage PSI').click();
 
     cy.get('@psi').then((psi) => {
-      cy.contains(psi[0].institute_name).click();
+      // intentionally select a PSI with 0 existing cohorts
+      cy.contains(psi[12].institute_name).click();
     });
     // expect there to be no cohorts
     cy.get('.MuiTypography-h5').contains('No Cohorts Added').should('be.visible');
@@ -59,7 +60,7 @@ describe('Tests the Cohort View', () => {
       .should('be.visible');
 
     // navigate to /cohort/:id
-    cy.contains('Empty New Cohort').click();
+    cy.contains('Empty New Cohort').click({ force: true });
     // wait for page to load before checking for notification
     cy.wait(2000);
     cy.get('.MuiTypography-subtitle1')

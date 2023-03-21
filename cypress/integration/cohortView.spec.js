@@ -61,7 +61,7 @@ describe('Tests the Cohort View', () => {
     // navigate to /cohort/:id
     cy.contains('Empty New Cohort').click();
     // wait for page to load before checking for notification
-    cy.wait(1500);
+    cy.wait(2000);
     cy.get('.MuiTypography-subtitle1')
       .contains('No Participants in this Cohort')
       .should('be.visible');
@@ -126,6 +126,8 @@ describe('Tests the Cohort View', () => {
           cy.contains('button', 'Submit').click();
           // expect: no errors, success message.
           cy.contains('.Mui-error').should('not.exist');
+          // wait for form to submit and message to show
+          cy.wait(1000);
           cy.get('.MuiAlert-message').contains('Participant(s) status updated');
         });
       });

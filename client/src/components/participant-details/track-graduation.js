@@ -142,7 +142,7 @@ export const TrackGraduation = (props) => {
               }}
               onSubmit={async (values) => {
                 const payload = {
-                  participantId: props?.participant.id,
+                  participantIds: [props?.participant.id],
                   status: values.status,
                   data:
                     values.status === postHireStatuses.postSecondaryEducationCompleted

@@ -268,7 +268,7 @@ export const acknowledgeParticipant = async ({ participantId, multiOrgHire, curr
   throw new Error('Failed to acknowledge participant', response.error || response.statusText);
 };
 
-export const createPostHireStatus = async ({ participantId, status, data }) => {
+export const createPostHireStatus = async ({ participantIds, status, data }) => {
   const url = `${API_URL}/api/v1/post-hire-status`;
   const response = await fetch(url, {
     method: 'POST',
@@ -278,7 +278,7 @@ export const createPostHireStatus = async ({ participantId, status, data }) => {
       'Content-type': 'application/json',
     },
     body: JSON.stringify({
-      participantId,
+      participantIds,
       status,
       data,
     }),

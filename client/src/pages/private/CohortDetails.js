@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { Box, Card, Grid, Typography, Link } from '@material-ui/core';
+import { Box, Card, Grid, Typography, Link, Dialog } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { ManageGraduationForm } from '../../components/modal-forms/ManageGraduationForm';
+import { createPostHireStatus } from '../../services/participant';
 
 import { AuthContext } from '../../providers';
-import { Page, CheckPermissions, Table } from '../../components/generic';
-import { Routes, ToastStatus } from '../../constants';
+import { Page, CheckPermissions, Table, Button } from '../../components/generic';
+import { Routes, ToastStatus, postHireStatuses } from '../../constants';
 import { useToast } from '../../hooks';
 import { fetchCohort, getPostHireStatusLabel } from '../../services';
-import { keyedString } from '../../utils';
+import { keyedString, formatCohortDate } from '../../utils';
 import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
@@ -36,7 +38,9 @@ export default ({ match }) => {
 
   const [cohort, setCohort] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedParticipants, setSelectedParticipants] = useState([]);
   const [rows, setRows] = useState([]);
+  const [showGraduationModal, setShowGraduationModal] = useState(false);
 
   const columns = [
     { id: 'lastName', name: 'Last Name', sortable: false },
@@ -69,6 +73,20 @@ export default ({ match }) => {
     return getPostHireStatusLabel(graduationStatus);
   };
 
+  // Bulk Graduation only allows the successful graduation path
+  const handleBulkGraduate = async (values) => {
+    const payload = {
+      ...values,
+      data: {
+        graduationDate: values?.data?.date,
+      },
+    };
+    await createPostHireStatus(payload);
+    setShowGraduationModal(false);
+    setSelectedParticipants([]);
+    fetchCohortDetails();
+  };
+
   const handleOpenParticipantDetails = (participantId) => {
     const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
       id: participantId,
@@ -83,8 +101,34 @@ export default ({ match }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const cohortEndDate = formatCohortDate(cohort?.end_date, { isForm: true });
+  const hasSelectedParticipantGraduated = selectedParticipants
+    .map(({ id, postHireJoin }) => ({ id, graduated: postHireJoin.length !== 0 }))
+    .filter(({ graduated }) => graduated);
+
   return (
     <Page>
+      {showGraduationModal && (
+        <Dialog title={'Set Bulk Graduation Status'} open={showGraduationModal}>
+          <ManageGraduationForm
+            cohortEndDate={cohortEndDate}
+            initialValues={{
+              status: postHireStatuses.postSecondaryEducationCompleted,
+              data: {
+                date: cohortEndDate,
+              },
+              continue: 'continue_yes',
+              participantIds: selectedParticipants.map(({ id }) => id),
+            }}
+            onClose={() => {
+              setShowGraduationModal(false);
+            }}
+            onSubmit={handleBulkGraduate}
+            isBulkGraduate
+          />
+        </Dialog>
+      )}
+
       <CheckPermissions
         permittedRoles={['health_authority', 'ministry_of_health']}
         renderErrorMessage={true}
@@ -140,12 +184,41 @@ export default ({ match }) => {
               )}
             </Grid>
 
+            <CheckPermissions permittedRoles={['health_authority']}>
+              <>
+                <Grid item xs={2}>
+                  <Button
+                    size='small'
+                    variant='outlined'
+                    text='Bulk Graduate'
+                    disabled={
+                      selectedParticipants.length < 1 || hasSelectedParticipantGraduated.length > 0
+                    }
+                    onClick={() => {
+                      setShowGraduationModal(true);
+                    }}
+                  />
+                </Grid>
+                <br />
+                {hasSelectedParticipantGraduated.length > 0 && (
+                  <Alert severity='warning'>
+                    Bulk Graduation is only available for participants with no graduation status.
+                    Please deselect participants who have had a successful or unsuccessful
+                    graduation.
+                  </Alert>
+                )}
+              </>
+            </CheckPermissions>
+
             <Box>
               {rows.length > 0 ? (
                 <Table
                   columns={columns}
                   rows={rows}
                   isLoading={isLoading}
+                  isMultiSelect={roles.includes('health_authority')}
+                  selectedRows={selectedParticipants}
+                  updateSelectedRows={setSelectedParticipants}
                   renderCell={(columnId, row) => {
                     switch (columnId) {
                       case 'firstName':

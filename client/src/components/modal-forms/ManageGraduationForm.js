@@ -8,7 +8,13 @@ import { AuthContext } from '../../providers';
 import { ParticipantPostHireStatusSchema } from '../../constants/validation';
 import { postHireStatuses } from '../../constants';
 
-export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortEndDate }) => {
+export const ManageGraduationForm = ({
+  initialValues,
+  onClose,
+  onSubmit,
+  cohortEndDate,
+  isBulkGraduate = false,
+}) => {
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
 
@@ -55,7 +61,7 @@ export const ManageGraduationForm = ({ initialValues, onClose, onSubmit, cohortE
                       value: postHireStatuses.postSecondaryEducationCompleted,
                       label: 'Graduated',
                     },
-                    {
+                    !isBulkGraduate && {
                       value: postHireStatuses.cohortUnsuccessful,
                       label: 'Unsuccessful cohort',
                     },

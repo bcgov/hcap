@@ -61,6 +61,8 @@ describe('Tests the Cohort View', () => {
 
     // navigate to /cohort/:id
     cy.contains('Empty New Cohort').click({ force: true });
+    // Wait for page to load after click
+    cy.wait(500);
     // wait for page to load before checking for notification
     cy.get('.MuiTypography-subtitle1')
       .contains('No Participants in this Cohort')

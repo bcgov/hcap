@@ -1,7 +1,12 @@
 import { dbClient, collections } from '../../db';
 import { DEFAULT_REGION_NAME, DEFAULT_STATUS, ParticipantStatus as ps } from '../../constants';
-import { getPostHireStatusForParticipant, getCohortForParticipant } from './participant';
-import { PostHireStatus, Cohort, CohortParticipant } from './participant';
+import {
+  getPostHireStatusForParticipant,
+  getCohortForParticipant,
+  PostHireStatus,
+  Cohort,
+  CohortParticipant,
+} from './participant';
 
 interface ParticipantEntry {
   // eslint-disable-next-line camelcase
@@ -14,6 +19,8 @@ interface ParticipantEntry {
   cohortParticipantsJoin: CohortParticipant[];
   psiJoin: {
     id: string;
+    // eslint-disable-next-line camelcase
+    health_authority: string;
     // eslint-disable-next-line camelcase
     institute_name: string;
   }[];
@@ -83,6 +90,7 @@ export const getPSIPaticipantsReport = async (region: string) => {
     });
 
   return participantEntries.map((entry) => {
+    console.log('!#%!#$%!#$%^!#$^', entry.psiJoin);
     const participantData = entry.participantJoin?.[0]?.body;
     const graduationData = getPostHireStatusForParticipant(entry.postHireJoin);
     const cohortData = getCohortForParticipant(entry.cohortJoin, entry.cohortParticipantsJoin);

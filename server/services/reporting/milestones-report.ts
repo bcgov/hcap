@@ -19,6 +19,14 @@ export const getMohRosMilestonesReport = async () => {
           id: 'site_id',
         },
       },
+      participantStatusJoin: {
+        type: 'LEFT OUTER',
+        decomposeTo: 'object',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          id: 'participant_id',
+        },
+      },
     })
     .find(
       {},
@@ -50,6 +58,14 @@ export const getHARosMilestonesReport = async (region: string) => {
         relation: collections.EMPLOYER_SITES,
         on: {
           id: 'site_id',
+        },
+      },
+      participantStatusJoin: {
+        type: 'LEFT OUTER',
+        decomposeTo: 'object',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          id: 'participant_id',
         },
       },
     })
@@ -100,6 +116,8 @@ export const getHARosMilestonesReport = async (region: string) => {
     rosEntries = rosEntries.concat(editedEntries);
     rosEntries.sort((a, b) => a.participant_id - b.participant_id);
   }
+
+  console.log('@#$^@#$%^$!#^@#$', rosEntries);
 
   return mapRosEntries(rosEntries);
 };

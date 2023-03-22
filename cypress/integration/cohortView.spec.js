@@ -32,7 +32,7 @@ describe('Tests the Cohort View', () => {
     });
   };
 
-  it('HA visits a PSI details page -> creates new cohort -> checks for no participants in the table', () => {
+  it('HA visits a PSI details page -> creates new cohort', () => {
     cy.kcLogin('test-ha');
     cy.visit('/admin');
     cy.contains('Manage PSI').click();
@@ -58,16 +58,24 @@ describe('Tests the Cohort View', () => {
     cy.get('div.MuiAlert-message')
       .contains(`Cohort 'Empty New Cohort' added successfully`)
       .should('be.visible');
+  });
 
-    // navigate to /cohort/:id
-    cy.contains('Empty New Cohort').click({ force: true });
-    // Wait for page to load after click
-    cy.wait(500);
-    // wait for page to load before checking for notification
-    cy.get('.MuiTypography-subtitle1')
-      .contains('No Participants in this Cohort')
-      .should('be.visible');
-    cy.get('.MuiTypography-body1').contains('100');
+  it('HA visits new cohort, checks for no participants in the table`', () => {
+    cy.kcLogin('test-ha');
+    cy.visit('/psi-view');
+
+    cy.get('@psi').then((psi) => {
+      // intentionally select a PSI with 0 existing cohorts
+      cy.contains(psi[12].institute_name).click();
+      cy.contains('Empty New Cohort').click();
+      // Wait for page to load after click
+      cy.wait(500);
+      // wait for page to load before checking for notification
+      cy.get('.MuiTypography-body1').contains('100');
+      cy.get('.MuiTypography-subtitle1')
+        .contains('No Participants in this Cohort')
+        .should('be.visible');
+    });
   });
 
   it('MOH visits cohort view, cannot `Bulk Graduate`', () => {

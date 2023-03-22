@@ -82,6 +82,10 @@ export default ({ match }) => {
       },
     };
     await createPostHireStatus(payload);
+    openToast({
+      status: ToastStatus.Success,
+      message: 'Participant(s) status updated',
+    });
     setShowGraduationModal(false);
     setSelectedParticipants([]);
     fetchCohortDetails();

@@ -17,19 +17,26 @@ const router = express.Router();
 
 type postHireStatusBody = {
   body: {
-    participantIds: number[]; // participant IDs getting their post hire status set/updated
-    status: postHireStatuses; //  String representing the status
+    /** participant IDs getting their post hire status set/updated */
+    participantIds: number[];
+    /**  String representing the status */
+    status: postHireStatuses;
     data: {
-      graduationDate?: string; // Date set If status = successful
-      unsuccessfulCohortDate?: string; // Date set If status = unsuccessful
+      /** Date set If status = successful */
+      graduationDate?: string;
+      /** Date set If status = unsuccessful */
+      unsuccessfulCohortDate?: string;
     };
   };
   /** User setting the status */
   user: {
-    user_id: string; // User id from keycloak
-    sub: string; // Additional user id from keycloak
+    /** User id from keycloak */
+    user_id: string;
+    /** Additional user id from keycloak */
+    sub: string;
   };
 };
+
 // Apply setup user middleware
 router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 

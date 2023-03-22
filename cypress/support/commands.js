@@ -1,6 +1,14 @@
 // These commands were sourced from the cypress-keycloak-login package
 const crypto = require('crypto');
 
+// relative paths to test data, used with command `cy.getCSVData`
+const CSVPaths = {
+  cohortParticipants: 'server/test-data/cohort_participants.csv',
+  cohorts: 'server/test-data/cohorts.csv',
+  psi: 'server/test-data/post_secondary_institutions.csv',
+  phases: 'server/test-data/phases.csv',
+};
+
 const getAuthCodeFromLocation = (location) => {
   try {
     let url = new URL(location);
@@ -235,4 +243,31 @@ Cypress.Commands.add('assignSitesToUser', (username, site_ids) => {
   cy.contains('button', 'Submit').click();
 
   cy.kcLogout();
+});
+
+// Allows dev to use test data from csv files in the cypress test suites
+Cypress.Commands.add('getCSVData', (dataSet) => {
+  cy.readFile(CSVPaths[dataSet]).then((csvData) => {
+    const rows = csvData.split('\n');
+    const headers = rows[0].split(',');
+    const rowArr = [];
+
+    rows.slice(1).forEach((row) => {
+      const values = row.split(',');
+      const obj = {};
+
+      headers.forEach((header, index) => {
+        obj[header] = values[index];
+      });
+
+      rowArr.push(obj);
+    });
+
+    return rowArr;
+  });
+});
+// Allows dev to add or subtract weeks from a mock date to use in their test, vs creating hard coded dates.
+Cypress.Commands.add('formatDateWithOffset', (date, numOfWeeks, isAdd = true) => {
+  const offSet = isAdd ? 6.048e8 * numOfWeeks : -6.048e8 * numOfWeeks;
+  return new Date(new Date(date).getTime() + offSet).toISOString().split('T')[0];
 });

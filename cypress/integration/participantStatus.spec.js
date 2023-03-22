@@ -1,36 +1,14 @@
 describe('Participants status suite', () => {
   // Ensure phases and allocations exist - to test alert message
   before(() => {
-    getPhasesFromCSV();
+    // get test phase data and assign to alias
+    cy.getCSVData('phases').then((data) => {
+      cy.wrap(data).as('phases');
+    });
     cy.kcLogin('test-moh');
     setBulkAllocationForm();
     cy.kcLogout();
   });
-
-  const addWeeksAndFormatDate = (date, numOfWeeks) =>
-    new Date(new Date(date).getTime() + 6.048e8 * numOfWeeks).toISOString().split('T')[0];
-
-  const getPhasesFromCSV = () => {
-    cy.readFile('server/test-data/phases.csv').then((csvData) => {
-      const rows = csvData.split('\n');
-      const headers = rows[0].split(',');
-      const rowArr = [];
-
-      rows.slice(1).forEach((row) => {
-        const values = row.split(',');
-        const obj = {};
-
-        headers.forEach((header, index) => {
-          obj[header] = values[index];
-        });
-
-        rowArr.push(obj);
-      });
-
-      // Store the data in the Cypress test context
-      cy.wrap(rowArr).as('phases');
-    });
-  };
 
   const setBulkAllocationForm = () => {
     cy.visit('site-view');
@@ -61,8 +39,9 @@ describe('Participants status suite', () => {
     // let it select today as the date
     // Ensure dates used are within the phase range of phases[0]
     cy.get('@phases').then((phases) => {
-      const startDate = phases[1].start_date;
-      cy.get('input[name=ContactedDate]').clear().type(addWeeksAndFormatDate(startDate, 1));
+      cy.formatDateWithOffset(phases[1].start_date, 1).then((formattedDate) => {
+        cy.get('input[name=ContactedDate]').clear().type(`{ctrl+v}${formattedDate}`);
+      });
       cy.contains('button', 'Submit').click();
     });
   };
@@ -70,9 +49,12 @@ describe('Participants status suite', () => {
   const hireParticipantForm = (siteId) => {
     // Ensure dates used are within the phase range of phases[0]
     cy.get('@phases').then((phases) => {
-      const startDate = phases[1].start_date;
-      cy.get('input[name=DateHired]').clear().type(addWeeksAndFormatDate(startDate, 2));
-      cy.get('input[name=StartDate]').clear().type(addWeeksAndFormatDate(startDate, 3));
+      cy.formatDateWithOffset(phases[1].start_date, 2).then((formattedDate) => {
+        cy.get('input[name=DateHired]').clear().type(`{ctrl+v}${formattedDate}`);
+      });
+      cy.formatDateWithOffset(phases[1].start_date, 3).then((formattedDate) => {
+        cy.get('input[name=StartDate]').clear().type(`{ctrl+v}${formattedDate}`);
+      });
       // select site
       cy.get('#mui-component-select-site').click();
       cy.get(`li[data-value='${siteId}']`).click();

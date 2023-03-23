@@ -1,3 +1,5 @@
+import { flagKeys, featureFlag } from '../services';
+
 export const tabColumns = {
   // Tabs, associated allowed roles, displayed statuses
   'Site Details': {
@@ -58,9 +60,11 @@ export const fieldsLabelMap = {
     'Postal Code': 'postalCode',
     Region: 'healthAuthority',
   },
-  'Positions Overview': {
-    Allocation: 'allocation',
-    'HCAP Hires': 'hcapHires',
-    'Non-HCAP Hires': 'nonHcapHires',
-  },
+  ...(featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION) && {
+    'Positions Overview': {
+      Allocation: 'allocation',
+      'HCAP Hires': 'hcapHires',
+      'Non-HCAP Hires': 'nonHcapHires',
+    },
+  }),
 };

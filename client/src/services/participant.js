@@ -1,6 +1,5 @@
 import store from 'store';
 import { API_URL, postHireStatuses } from '../constants';
-import { fetchSite } from './site';
 
 export const getCohortPsiName = (cohort = {}) =>
   cohort?.cohort_name && cohort.psi?.institute_name
@@ -45,25 +44,12 @@ export const fetchParticipant = async ({ id }) => {
     const { participant } = await resp.json();
     const cohort = await fetchParticipantCohort({ id });
     const postHireStatus = await fetchParticipantPostHireStatus({ id });
-    const status = participant.latestStatuses.length
-      ? participant.latestStatuses[0].status
-      : 'available';
-    // NOTE: ideally there should be a role check here! Otherwise employers will just make requests that will never work.
-    // Unfortunately, that would probably mean untangling a lot of how roles are handled.
-    let site = null;
-    if (status === 'hired') {
-      const siteRes = await fetchSite(participant.latestStatuses[0].siteId);
-      // Check for valid response before parsing
-      if (siteRes.ok) site = await siteRes.json();
-    }
     return {
       ...participant,
       cohort,
       cohortName: getCohortPsiName(cohort),
       postHireStatus,
       postHireStatusLabel: getPostHireStatusLabel(postHireStatus),
-      status,
-      siteName: site ? site.siteName : null,
     };
   } else {
     throw new Error('Unable to load participant');

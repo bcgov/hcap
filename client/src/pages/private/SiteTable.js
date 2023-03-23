@@ -34,9 +34,11 @@ const columns = [
   { id: 'city', name: 'City' },
   { id: 'postalCode', name: 'Postal Code' },
   {
-    id: 'allocation',
-    name: 'Allocation',
-    customComponent: (row) => <SiteTableAllocation row={row} />,
+    ...(featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION) && {
+      id: 'allocation',
+      name: 'Allocation',
+      customComponent: (row) => <SiteTableAllocation row={row} />,
+    }),
   },
   { id: 'details' },
   { id: 'startDate', isHidden: true },

@@ -6,7 +6,7 @@ import { getAllSites } from '../../../services';
 import { Dialog } from '../../generic';
 import { EditRosSiteForm } from '../../modal-forms';
 
-export const EditRosSiteDialog = ({ isOpen, onClose, onSubmit }) => {
+export const EditRosSiteDialog = ({ isOpen, onClose, onSubmit, rosData }) => {
   const [allSites, setAllSites] = useState([]);
   const { openToast } = useToast();
 
@@ -36,7 +36,7 @@ export const EditRosSiteDialog = ({ isOpen, onClose, onSubmit }) => {
           positionType: undefined,
           employmentType: undefined,
           site: undefined,
-          healthAuthority: undefined,
+          healthAuthority: rosData?.healthAuthority,
         }}
         validationSchema={EditRosSiteSchema}
         onSubmit={onSubmit}

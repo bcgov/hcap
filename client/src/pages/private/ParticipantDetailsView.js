@@ -28,7 +28,6 @@ import {
   EditParticipantDialog,
   PSICohortView,
   EditRosDateDialog,
-  EditRosStartDateDialog,
   EditRosSiteDialog,
 } from '../../components/participant-details';
 import { keyedString } from '../../utils';
@@ -238,6 +237,7 @@ export default () => {
     });
   }, [setParticipant, setPSIList, setActualParticipant, setError, setDisableAssign, id]);
 
+  console.log(participant);
   // Render
   return (
     <Page>
@@ -367,15 +367,10 @@ export default () => {
         onClose={handleEditParticipantClose}
       />
 
-      <EditRosStartDateDialog
-        isOpen={editFormField === 'startDate'}
-        onClose={handleEditRosFieldClose}
-        onSubmit={handleEditRosField}
-      />
-
       <EditRosDateDialog
         isOpen={editFormField === 'date'}
         onClose={handleEditRosFieldClose}
+        rosData={participant?.ros}
         onSubmit={handleEditRosField}
       />
 
@@ -383,6 +378,7 @@ export default () => {
         isOpen={editFormField === 'siteName'}
         onClose={handleEditRosFieldClose}
         onSubmit={handleEditRosField}
+        rosData={participant?.ros}
       />
     </Page>
   );

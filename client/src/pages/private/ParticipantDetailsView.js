@@ -28,6 +28,7 @@ import {
   EditParticipantDialog,
   PSICohortView,
   EditRosDateDialog,
+  EditRosStartDateDialog,
   EditRosSiteDialog,
 } from '../../components/participant-details';
 import { keyedString } from '../../utils';
@@ -237,6 +238,7 @@ export default () => {
     });
   }, [setParticipant, setPSIList, setActualParticipant, setError, setDisableAssign, id]);
 
+  console.log(participant);
   // Render
   return (
     <Page>
@@ -264,16 +266,19 @@ export default () => {
             </Box>
             <Typography variant='h2'>Participant Details</Typography>
             <Grid container spacing={2} className={classes.gridSection}>
-              {Object.keys(keyLabelMap).map((key) => (
-                <Grid key={key} item xs={12} sm={6} xl={3}>
-                  <Typography variant='body1'>
-                    <b>{keyLabelMap[key]}</b>
-                  </Typography>
-                  <Typography test-id={'participantDetailsView' + key} variant='body1'>
-                    {participant[key]}
-                  </Typography>
-                </Grid>
-              ))}
+              {Object.keys(keyLabelMap).map(
+                (key) =>
+                  participant[key] && (
+                    <Grid key={key} item xs={12} sm={6} xl={3}>
+                      <Typography variant='body1'>
+                        <b>{keyLabelMap[key]}</b>
+                      </Typography>
+                      <Typography test-id={'participantDetailsView' + key} variant='body1'>
+                        {participant[key]}
+                      </Typography>
+                    </Grid>
+                  )
+              )}
             </Grid>
 
             {/* Participant RoS Info */}
@@ -361,6 +366,13 @@ export default () => {
         isOpen={showEditModal}
         onSubmit={onUpdateInfo}
         onClose={handleEditParticipantClose}
+      />
+
+      <EditRosStartDateDialog
+        isOpen={editFormField === 'startDate'}
+        onClose={handleEditRosFieldClose}
+        rosData={participant?.ros}
+        onSubmit={handleEditRosField}
       />
 
       <EditRosDateDialog

@@ -44,12 +44,6 @@ const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
       'Start Date': result.startDate,
       'Withdraw Date': result.withdrawDate,
       'Withdraw Reason': result.withdrawReason,
-      // 'Employer Email': result.employerEmail,
-      // 'HCAP Position': result.hcapPosition,
-      // 'Position Type': result.positionType,
-      // 'Position Title': result.positionTitle,
-      // 'Regional Health Office': result.isRHO,
-      // 'Intent To Rehire': result?.rehire,
     });
   });
 };

@@ -26,9 +26,6 @@ export const getMohRosMilestonesReport = async () => {
         on: {
           participant_id: 'participant_id',
           current: true,
-
-          // site_id: 'data.site',
-          'data?.site': 'site_id',
         },
       },
     })
@@ -121,8 +118,6 @@ export const getHARosMilestonesReport = async (region: string) => {
     rosEntries = rosEntries.concat(editedEntries);
     rosEntries.sort((a, b) => a.participant_id - b.participant_id);
   }
-
-  console.log('@#$^@#$%^$!#^@#$', rosEntries);
 
   return mapRosEntries(rosEntries);
 };

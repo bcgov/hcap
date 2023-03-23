@@ -32,12 +32,6 @@ interface RosEntry {
   };
 }
 
-// getROSCompleted = (entry: RosEntry) => {
-//   return entry.participantStatusJoin?.current && entry.participantStatusJoin?.status === "rosComplete"
-// };
-
-// {"site": 4, "type": "rosComplete", "reason": "Completed all HCAP requirements", "rehire": "Yes", "status": "Return of service complete", "endDate": "2022/01/01", "confirmed": true}
-
 export const mapRosEntries = (rosEntries: RosEntry[]) =>
   rosEntries.map((entry) => {
     console.log(entry.participantStatusJoin?.status);

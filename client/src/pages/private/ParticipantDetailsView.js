@@ -265,16 +265,19 @@ export default () => {
             </Box>
             <Typography variant='h2'>Participant Details</Typography>
             <Grid container spacing={2} className={classes.gridSection}>
-              {Object.keys(keyLabelMap).map((key) => (
-                <Grid key={key} item xs={12} sm={6} xl={3}>
-                  <Typography variant='body1'>
-                    <b>{keyLabelMap[key]}</b>
-                  </Typography>
-                  <Typography test-id={'participantDetailsView' + key} variant='body1'>
-                    {participant[key]}
-                  </Typography>
-                </Grid>
-              ))}
+              {Object.keys(keyLabelMap).map(
+                (key) =>
+                  participant[key] && (
+                    <Grid key={key} item xs={12} sm={6} xl={3}>
+                      <Typography variant='body1'>
+                        <b>{keyLabelMap[key]}</b>
+                      </Typography>
+                      <Typography test-id={'participantDetailsView' + key} variant='body1'>
+                        {participant[key]}
+                      </Typography>
+                    </Grid>
+                  )
+              )}
             </Grid>
 
             {/* Participant RoS Info */}
@@ -367,12 +370,14 @@ export default () => {
       <EditRosStartDateDialog
         isOpen={editFormField === 'startDate'}
         onClose={handleEditRosFieldClose}
+        rosData={participant?.ros}
         onSubmit={handleEditRosField}
       />
 
       <EditRosDateDialog
         isOpen={editFormField === 'date'}
         onClose={handleEditRosFieldClose}
+        rosData={participant?.ros}
         onSubmit={handleEditRosField}
       />
 
@@ -380,6 +385,7 @@ export default () => {
         isOpen={editFormField === 'siteName'}
         onClose={handleEditRosFieldClose}
         onSubmit={handleEditRosField}
+        rosData={participant?.ros}
       />
     </Page>
   );

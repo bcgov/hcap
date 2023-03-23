@@ -7,8 +7,6 @@ export const keyLabelMap = {
   postalCodeFsa: 'Postal Code FSA',
   cohortName: 'Cohort / PSI',
   postHireStatusLabel: 'Graduation Status',
-  status: 'Employment Status',
-  siteName: 'Site',
 };
 
 export const rosEditWarning =

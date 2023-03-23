@@ -32,21 +32,18 @@ const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
   results.forEach((result) => {
     csvStream.write({
       'Participant ID': result.participantId,
-      FSA: result.participantFsa,
       'First Name': result.firstName,
       'Last Name': result.lastName,
       'Employer ID': result.employerId,
-      'Employer Email': result.employerEmail,
-      'HCAP Position': result.hcapPosition,
-      'Position Type': result.positionType,
-      'Position Title': result.positionTitle,
+      Email: result.email,
       'Employer Site Region': result.employerRegion,
+      'Employer Site ID': result.employerSiteId,
       'Employer Site': result.employerSite,
+      'Employer City': result.employerCity,
+      'Hire Date': result.hiredDate,
       'Start Date': result.startDate,
-      'Regional Health Office': result.isRHO,
-      'Withdraw Reason': result.withdrawReason,
       'Withdraw Date': result.withdrawDate,
-      'Intent To Rehire': result?.rehire,
+      'Withdraw Reason': result.withdrawReason,
     });
   });
 };
@@ -65,13 +62,12 @@ const generateRosReport = async (csvStream, region) => {
       'Participant ID': result.participantId,
       'First Name': result.firstName,
       'Last Name': result.lastName,
-      'Confirm HCA': result.isHCA,
       'ROS Start Date': result.startDate,
       'ROS End Date': result.endDate,
       'Start Date at a Site': result.siteStartDate,
-      'Site of ROS': result.site,
       'Position Type': result.positionType,
-      'Employment Type': result.employmentType,
+      'Specific Position Type': result.employmentType,
+      'Site of ROS': result.site,
       'Health Region': result.healthRegion,
     });
   });

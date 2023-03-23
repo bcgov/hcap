@@ -220,19 +220,16 @@ export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) =
     participantId: entry.participant_id,
     firstName: entry.participantJoin?.[0]?.body?.firstName,
     lastName: entry.participantJoin?.[0]?.body?.lastName,
-    participantFsa: entry.participantJoin?.[0]?.body?.postalCodeFsa,
     employerId: entry.employer_id,
-    employerEmail: users.find((user) => user.id === entry.employer_id)?.email,
-    hcapPosition: !(entry.data?.nonHcapOpportunity || false),
-    positionType: entry.data?.positionType,
-    positionTitle: entry.data?.positionTitle,
+    email: entry.participantJoin?.[0]?.body?.emailAddress,
     employerRegion: entry.employerSiteJoin?.[0]?.body?.healthAuthority,
     employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,
+    employerCity: entry.employerSiteJoin?.[0]?.body.city,
+    employerSiteId: entry.employerSiteJoin?.[0]?.body?.siteId,
     startDate: entry.data?.startDate,
-    isRHO: entry.employerSiteJoin?.[0]?.body?.isRHO,
+    hiredDate: entry.data?.hiredDate,
     withdrawReason: entry.archivedJoin?.[0]?.data?.reason,
     withdrawDate: entry.archivedJoin?.[0]?.data?.endDate,
-    rehire: entry.archivedJoin?.[0]?.data?.rehire,
   }));
 };
 

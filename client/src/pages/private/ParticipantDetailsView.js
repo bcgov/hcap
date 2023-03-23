@@ -265,19 +265,16 @@ export default () => {
             </Box>
             <Typography variant='h2'>Participant Details</Typography>
             <Grid container spacing={2} className={classes.gridSection}>
-              {Object.keys(keyLabelMap).map(
-                (key) =>
-                  participant[key] && (
-                    <Grid key={key} item xs={12} sm={6} xl={3}>
-                      <Typography variant='body1'>
-                        <b>{keyLabelMap[key]}</b>
-                      </Typography>
-                      <Typography test-id={'participantDetailsView' + key} variant='body1'>
-                        {participant[key]}
-                      </Typography>
-                    </Grid>
-                  )
-              )}
+              {Object.keys(keyLabelMap).map((key) => (
+                <Grid key={key} item xs={12} sm={6} xl={3}>
+                  <Typography variant='body1'>
+                    <b>{keyLabelMap[key]}</b>
+                  </Typography>
+                  <Typography test-id={'participantDetailsView' + key} variant='body1'>
+                    {participant[key]}
+                  </Typography>
+                </Grid>
+              ))}
             </Grid>
 
             {/* Participant RoS Info */}

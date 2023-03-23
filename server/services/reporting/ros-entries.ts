@@ -29,12 +29,11 @@ export const mapRosEntries = (rosEntries: RosEntry[]) =>
     participantId: entry.participant_id,
     firstName: entry.participantJoin?.[0]?.body?.firstName,
     lastName: entry.participantJoin?.[0]?.body?.lastName,
-    isHCA: true,
     startDate: dayjs(entry.data?.date).format('YYYY-MM-DD'),
     endDate: addYearToDate(entry.data?.date).format('YYYY-MM-DD'),
     siteStartDate: dayjs(entry.data?.startDate || entry.data?.date).format('YYYY-MM-DD'),
     site: entry.siteJoin?.body?.siteName,
-    healthRegion: entry.siteJoin?.body?.healthAuthority,
     positionType: entry.data?.positionType || 'Unknown',
+    healthRegion: entry.siteJoin?.body?.healthAuthority,
     employmentType: entry.data?.employmentType || 'Unknown',
   }));

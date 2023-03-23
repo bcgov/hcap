@@ -208,7 +208,7 @@ export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) =
         relation: collections.PARTICIPANTS_STATUS,
         on: {
           participant_id: 'participant_id',
-          status: [ps.HIRED, ps.ARCHIVED],
+          status: ps.ARCHIVED,
           current: true,
           'data.type <>': 'duplicate',
         },

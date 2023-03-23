@@ -35,6 +35,7 @@ router.get(
         'First Name': result.firstName,
         'Last Name': result.lastName,
         PSI: result.psi,
+        'PSI region': result.psiRegion,
         Cohort: result.cohort,
         'Cohort Start Date': result.startDate,
         'Cohort End Date': result.endDate,

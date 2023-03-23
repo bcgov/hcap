@@ -77,6 +77,7 @@ const handleHiredTransition = async ({ tx, existingCurrentStatus, site, particip
   const employerSite = await tx[collections.EMPLOYER_SITES].findOne({
     'body.siteId': site,
   });
+
   const participantPreferredLocations = participant.preferredLocation;
   const siteLocation = employerSite?.body?.healthAuthority;
   if (

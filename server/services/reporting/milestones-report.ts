@@ -24,7 +24,11 @@ export const getMohRosMilestonesReport = async () => {
         decomposeTo: 'object',
         relation: collections.PARTICIPANTS_STATUS,
         on: {
-          id: 'participant_id',
+          participant_id: 'participant_id',
+          current: true,
+
+          // site_id: 'data.site',
+          'data?.site': 'site_id',
         },
       },
     })
@@ -65,7 +69,8 @@ export const getHARosMilestonesReport = async (region: string) => {
         decomposeTo: 'object',
         relation: collections.PARTICIPANTS_STATUS,
         on: {
-          id: 'participant_id',
+          participant_id: 'participant_id',
+          current: true,
         },
       },
     })

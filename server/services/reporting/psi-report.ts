@@ -90,7 +90,6 @@ export const getPSIPaticipantsReport = async (region: string) => {
     });
 
   return participantEntries.map((entry) => {
-    console.log('!#%!#$%!#$%^!#$^', entry.psiJoin);
     const participantData = entry.participantJoin?.[0]?.body;
     const graduationData = getPostHireStatusForParticipant(entry.postHireJoin);
     const cohortData = getCohortForParticipant(entry.cohortJoin, entry.cohortParticipantsJoin);

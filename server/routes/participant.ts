@@ -391,6 +391,7 @@ employerActionsRouter.post(
         message: 'User does not have access to this site',
       });
     }
+
     const result = await setParticipantStatus(
       user.id,
       participantId,

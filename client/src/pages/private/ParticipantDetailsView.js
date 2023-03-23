@@ -237,7 +237,6 @@ export default () => {
     });
   }, [setParticipant, setPSIList, setActualParticipant, setError, setDisableAssign, id]);
 
-  console.log(participant);
   // Render
   return (
     <Page>

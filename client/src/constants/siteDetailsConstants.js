@@ -61,7 +61,7 @@ export const fieldsLabelMap = {
     Region: 'healthAuthority',
   },
   ...(featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION) && {
-    'Positions Overview': {
+    'Positions Overview (Current Phase)': {
       Allocation: 'allocation',
       'HCAP Hires': 'hcapHires',
       'Non-HCAP Hires': 'nonHcapHires',

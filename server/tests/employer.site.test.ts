@@ -3,6 +3,7 @@ import { app } from '../server';
 import { ParticipantStatus as ps } from '../constants';
 
 import { saveSingleSite, getSitesForUser, getSiteByID, updateSite } from '../services/employers';
+import { createPhase } from '../services/phase';
 
 import {
   getParticipants,
@@ -147,10 +148,25 @@ describe('Employer Site Endpoints', () => {
     expect(res).toEqual(expect.objectContaining(siteToGet));
   });
 
-  it('gets a site before and after hires have been made', async () => {
+  it('gets a site before and after hires have been made in a current phase', async () => {
+    const currentDayPlusOne = new Date(new Date().setDate(new Date().getDate() + 1));
+    const currentDayPlusOneYr = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
+
     const res = await getSiteByID(1);
     expect(res.hcapHires).toEqual('0');
     expect(res.nonHcapHires).toEqual('0');
+
+    const phaseData = {
+      name: 'Test Phase for Hire Status',
+      start_date: new Date(),
+      end_date: currentDayPlusOneYr,
+    };
+    const user = {
+      id: 'noid',
+    };
+    const phase = await createPhase(phaseData, user);
+    expect(phase.id).toBeDefined();
+
     await makeParticipant(participant1);
     await makeParticipant(participant2);
     const {
@@ -164,8 +180,8 @@ describe('Employer Site Endpoints', () => {
       nonHcapOpportunity: false,
       positionTitle: 'title',
       positionType: 'posType',
-      hiredDate: new Date(),
-      startDate: new Date(),
+      hiredDate: currentDayPlusOne,
+      startDate: currentDayPlusOne,
     });
     await setParticipantStatus(employerBId, ppt2.id, ps.PROSPECTING);
     await setParticipantStatus(employerBId, ppt2.id, ps.INTERVIEWING);
@@ -175,8 +191,8 @@ describe('Employer Site Endpoints', () => {
       nonHcapOpportunity: true,
       positionTitle: 'title',
       positionType: 'posType',
-      hiredDate: new Date(),
-      startDate: new Date(),
+      hiredDate: currentDayPlusOne,
+      startDate: currentDayPlusOne,
     });
     const res1 = await getSiteByID(1);
     expect(res1.hcapHires).toEqual('1');

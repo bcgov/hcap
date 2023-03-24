@@ -161,41 +161,30 @@ export const getSiteByID = async (id: number): Promise<EmployerSite> => {
     `,
     [site[0].id]
   );
-  // Counting hire
-  // Join Criteria for duplicate participant
-  const duplicateArchivedJoin = {
-    type: 'LEFT OUTER',
-    relation: collections.PARTICIPANTS_STATUS,
-    on: {
-      participant_id: 'participant_id',
-      status: 'archived',
-      current: true,
-      'data.type': 'duplicate',
-    },
-  };
-  const hcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS]
-    .join({
-      duplicateArchivedJoin,
-    })
-    .count({
-      'data.site': site[0].siteId,
-      'data.nonHcapOpportunity': 'false',
-      'duplicateArchivedJoin.status': null,
-    });
-  const nonHcapHires = await dbClient.db[collections.PARTICIPANTS_STATUS]
-    .join({
-      duplicateArchivedJoin,
-    })
-    .count({
-      'data.site': site[0].siteId,
-      'data.nonHcapOpportunity': 'true',
-      'duplicateArchivedJoin.status': null,
-    });
+
+  /* eslint-disable camelcase */
+  const [hireResponse]: { hcap_hires: number; non_hcap_hires: number }[] =
+    await dbClient.runRawQuery(
+      `
+    SELECT 
+      COUNT(ps.id) FILTER (WHERE ps.data->>'nonHcapOpportunity' = 'false') AS hcap_hires,
+      COUNT(ps.id) FILTER (WHERE ps.data->>'nonHcapOpportunity' = 'true') AS non_hcap_hires 
+    FROM participants_status ps
+    LEFT JOIN phase p ON CURRENT_DATE BETWEEN p.start_date AND p.end_date
+      WHERE ps.data->>'site' = '$1'
+      AND ps.status = 'hired'
+      AND ps.current
+      AND TO_DATE(ps.data->>'hiredDate', 'YYYY/MM/DD') BETWEEN p.start_date AND p.end_date;
+    `,
+      [site[0].siteId]
+    );
 
   const currentAllocation = allocationResponse.length ? allocationResponse[0].allocation : null;
 
-  site[0].hcapHires = hcapHires;
-  site[0].nonHcapHires = nonHcapHires;
-  site[0].allocation = currentAllocation;
-  return site[0];
+  return {
+    ...site[0],
+    nonHcapHires: hireResponse.non_hcap_hires,
+    hcapHires: hireResponse.hcap_hires,
+    allocation: currentAllocation,
+  };
 };

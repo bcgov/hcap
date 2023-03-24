@@ -11,6 +11,7 @@ import type {
   LastNameFilter,
   Pagination,
   PostalCodeFsaFilter,
+  idFilter,
 } from '../participants-helper';
 import type { HcapUserInfo } from '../../keycloak';
 import { ParticipantStatus as ps } from '../../constants';
@@ -175,6 +176,7 @@ export const getParticipants = async (
   pagination?: Pagination,
   sortField?: string,
   regionFilter?: string,
+  idFilter?: idFilter,
   /** FSA (first half of a postal code) to filter by */
   fsaFilter?: PostalCodeFsaFilter,
   lastNameFilter?: LastNameFilter,
@@ -189,6 +191,7 @@ export const getParticipants = async (
   let participants = await participantsFinder
     .filterRegion(regionFilter)
     .filterParticipantFields({
+      id: idFilter,
       postalCodeFsa: fsaFilter,
       lastName: lastNameFilter,
       emailAddress: emailFilter,

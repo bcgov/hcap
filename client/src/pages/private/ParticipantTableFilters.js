@@ -77,6 +77,23 @@ export const ParticipantTableFilters = ({ loading, locations }) => {
           </Box>
         </Grid>
       </CheckPermissions>
+      {isMoH && (
+        <Grid item>
+          <Box pl={2}>
+            {!hideLastNameAndEmailFilter && (
+              <DebounceTextField
+                time={1000}
+                variant='filled'
+                fullWidth
+                disabled={loading}
+                defaultValue={filter[FILTERABLE_FIELDS.ID]?.value || ''}
+                onDebounce={(text) => setFilter(FILTERABLE_FIELDS.ID, text)}
+                placeholder='Participant ID'
+              />
+            )}
+          </Box>
+        </Grid>
+      )}
       <Grid item>
         <Box pl={2}>
           {!hideLastNameAndEmailFilter && (

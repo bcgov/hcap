@@ -60,7 +60,8 @@ exports.up = async () => {
     END $$`,
 
     // Drop the allocation from the sites table
-    `UPDATE ${collections.EMPLOYER_SITES} SET body = body::jsonb - 'allocation'`,
+    // Should go in a future migration. Commented out for now in case we need to roll back for any reason
+    // `UPDATE ${collections.EMPLOYER_SITES} SET body = body::jsonb - 'allocation'`,
   ];
   await dbClient.db.withTransaction(async (tx) => {
     for (const query of queries) {

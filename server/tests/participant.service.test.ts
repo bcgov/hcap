@@ -202,6 +202,7 @@ describe('Participants Service', () => {
       null,
       null,
       null,
+      null,
       [ps.OPEN]
     );
 
@@ -220,12 +221,14 @@ describe('Participants Service', () => {
       null,
       null,
       null,
+      null,
       [ps.OFFER_MADE]
     );
     expect(participantsA.data[0].statusInfos[0].employerId).toEqual(employerAId);
 
     const participantsB = await getParticipants(
       { isEmployer: true, id: employerBId, regions },
+      null,
       null,
       null,
       null,
@@ -344,6 +347,7 @@ describe('Participants Service', () => {
       null,
       null,
       null,
+      null,
       [ps.OPEN]
     );
     const participantId = participants.data[0].id;
@@ -437,6 +441,7 @@ describe('Participants Service', () => {
       null,
       null,
       null,
+      null,
       [ps.OPEN]
     );
 
@@ -457,6 +462,7 @@ describe('Participants Service', () => {
 
     const participants = await getParticipants(
       { isEmployer: true, id: employerAId, regions },
+      null,
       null,
       null,
       null,

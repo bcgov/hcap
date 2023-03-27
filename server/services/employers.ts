@@ -19,6 +19,12 @@ export interface EmployerSite {
   nonHcapHires?: number;
 }
 
+export interface EmployerSiteBasic {
+  id: number; // Internal ID for site
+  siteId: number; // User-visible ID for site
+  siteName: string; // Name of site
+}
+
 export const getEmployers = async (user: HcapUserInfo): Promise<EmployerSite[]> => {
   const criteria =
     user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'healthAuthority');
@@ -187,4 +193,20 @@ export const getSiteByID = async (id: number): Promise<EmployerSite> => {
     hcapHires: hireResponse.hcap_hires,
     allocation: currentAllocation,
   };
+};
+
+/**
+ * @param siteId  body.siteId of requested site
+ * @returns Requested site
+ */
+export const getSiteByBodySiteID = async (siteId: string): Promise<EmployerSiteBasic> => {
+  const [site] = await dbClient.db[collections.EMPLOYER_SITES].find({
+    'body.siteId': siteId,
+  });
+
+  if (site.length === 0) {
+    throw new Error(`No site found with siteId ${siteId}`);
+  }
+
+  return { id: site.id, siteId: site.body.siteId, siteName: site.body.siteName };
 };

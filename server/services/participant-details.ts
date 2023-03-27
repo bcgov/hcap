@@ -1,6 +1,7 @@
 import { dbClient, collections } from '../db';
 import { ParticipantStatus } from '../constants';
 import type { HcapUserInfo } from '../keycloak';
+import { getSiteByBodySiteID } from './employers';
 
 const { HIRED, ARCHIVED } = ParticipantStatus;
 
@@ -68,6 +69,7 @@ export const participantDetails = async (id: number) => {
     })) || [];
 
   if (participant) {
+    console.log('@#$%!#@$%!#$%???? GETTING HERE');
     // Get RoS status
     const [rosStatusDbObj] = await dbClient.db[collections.ROS_STATUS]
       .join({
@@ -96,9 +98,18 @@ export const participantDetails = async (id: number) => {
       status: status.status,
     }));
 
+    // If the status is hired, get siteName
+    const currentStatusHired = latestStatuses?.[0].status === 'hired';
+    const siteRes = currentStatusHired
+      ? await getSiteByBodySiteID(latestStatuses?.[0].data.site)
+      : null;
+
     const { body: rosSiteDetails } = rosStatusDbObj?.rosSite || { body: {} };
     return {
       ...participant,
+      ...(siteRes && {
+        siteName: siteRes.siteName,
+      }),
       ...(rosStatusDbObj && {
         rosStatus: {
           ...rosStatusDbObj,

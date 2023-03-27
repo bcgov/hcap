@@ -24,6 +24,8 @@ describe('e2e tests for /participant/details route', () => {
 
     const header = await getKeycloakToken(ministryOfHealth);
     const res = await request(app).get(`/api/v1/participant/details/${p.id}`).set(header);
+
+    console.log('@#%#@$^%!#^', res.error);
     expect(res.status).toEqual(200);
   });
 

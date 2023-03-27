@@ -56,6 +56,7 @@ export const fetchParticipant = async ({ id }) => {
       postHireStatus,
       postHireStatusLabel: getPostHireStatusLabel(postHireStatus),
       status,
+      siteName: participant.latestStatuses?.[0]?.siteName || null,
     };
   } else {
     throw new Error('Unable to load participant');

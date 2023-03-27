@@ -39,6 +39,7 @@ export class RegionsFilteredParticipantsFinder {
       ...(interestFilter && { 'body.interested <>': ['no', 'withdrawn'] }),
       ...(isIndigenousFilter && { 'body.isIndigenous =': true }),
     };
+
     return new FieldsFilteredParticipantsFinder(this.context);
   }
 

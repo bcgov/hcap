@@ -538,6 +538,7 @@ describe('Participants Service', () => {
       null,
       null,
       null,
+      null,
       [ps.OPEN]
     );
 
@@ -559,6 +560,7 @@ describe('Participants Service', () => {
 
     const participantsB = await getParticipants(
       { isEmployer: true, id: employerBId, regions, sites: [2] },
+      null,
       null,
       null,
       null,
@@ -588,6 +590,7 @@ describe('Participants Service', () => {
       null,
       null,
       null,
+      null,
       [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, 'unavailable']
     );
 
@@ -608,6 +611,7 @@ describe('Participants Service', () => {
       null,
       null,
       null,
+      null,
       [ps.REJECTED]
     );
 
@@ -620,6 +624,7 @@ describe('Participants Service', () => {
 
     const unavailableParticipantsAafter = await getParticipants(
       { isEmployer: true, id: employerAId, regions, sites: [] },
+      null,
       null,
       null,
       null,
@@ -748,6 +753,7 @@ describe('Participants Service', () => {
       null,
       null,
       null,
+      null,
       [ps.HIRED]
     );
     expect(participants.data[0].statusInfos[0].status).toEqual(ps.HIRED);
@@ -756,6 +762,7 @@ describe('Participants Service', () => {
     const employerBId = v4();
     const participantsForEmployerB = await getParticipants(
       { isEmployer: true, id: employerBId, regions, sites: [2] },
+      null,
       null,
       null,
       null,
@@ -867,6 +874,7 @@ describe('Participants Service', () => {
 
     const participants = await getParticipants(
       { isEmployer: true, id: employerAId, regions, sites: [2] },
+      null,
       null,
       null,
       null,
@@ -1035,6 +1043,7 @@ describe('Participants Service', () => {
 
     const participants = await getParticipants(
       { isEmployer: true, id: employerAId, regions },
+      null,
       null,
       null,
       null,

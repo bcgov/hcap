@@ -69,7 +69,6 @@ export const participantDetails = async (id: number) => {
     })) || [];
 
   if (participant) {
-    console.log('@#$%!#@$%!#$%???? GETTING HERE');
     // Get RoS status
     const [rosStatusDbObj] = await dbClient.db[collections.ROS_STATUS]
       .join({

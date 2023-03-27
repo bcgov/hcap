@@ -19,12 +19,6 @@ export interface EmployerSite {
   nonHcapHires?: number;
 }
 
-export interface EmployerSiteBasic {
-  id: number; // Internal ID for site
-  siteId: number; // User-visible ID for site
-  siteName: string; // Name of site
-}
-
 export const getEmployers = async (user: HcapUserInfo): Promise<EmployerSite[]> => {
   const criteria =
     user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'healthAuthority');

@@ -2,7 +2,13 @@ import { v4 } from 'uuid';
 import { app } from '../server';
 import { ParticipantStatus as ps } from '../constants';
 
-import { saveSingleSite, getSitesForUser, getSiteByID, updateSite } from '../services/employers';
+import {
+  saveSingleSite,
+  getSitesForUser,
+  getSiteByID,
+  updateSite,
+  getSiteByBodySiteID,
+} from '../services/employers';
 import { createPhase } from '../services/phase';
 
 import {
@@ -146,6 +152,22 @@ describe('Employer Site Endpoints', () => {
 
     const res = await getSiteByID(sitePostRes.id);
     expect(res).toEqual(expect.objectContaining(siteToGet));
+  });
+
+  it('Gets a single site by body.siteID', async () => {
+    const siteToGet = { ...siteBaseFields, siteId: 100 };
+    const sitePostRes = await saveSingleSite(siteToGet);
+    expect(sitePostRes.siteId).toEqual(100);
+    expect(sitePostRes.id).toBeDefined();
+
+    const res = await getSiteByBodySiteID(sitePostRes.siteId);
+    expect(res).toEqual(
+      expect.objectContaining({
+        id: sitePostRes.id,
+        siteId: sitePostRes.siteId,
+        siteName: sitePostRes.siteName,
+      })
+    );
   });
 
   it('gets a site before and after hires have been made in a current phase', async () => {

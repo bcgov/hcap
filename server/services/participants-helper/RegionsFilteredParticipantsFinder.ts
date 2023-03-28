@@ -6,6 +6,7 @@ export type LastNameFilter = { 'body.lastName ilike': string };
 export type EmailAddressFilter = { 'body.emailAddress ilike': string };
 export type InterestFilter = { 'body.interested <>': string[] } | string[];
 export type IsIndigenousFilter = { 'body.isIndigenous =': boolean };
+export type idFilter = { 'id =': string };
 
 export class RegionsFilteredParticipantsFinder {
   context;
@@ -15,12 +16,14 @@ export class RegionsFilteredParticipantsFinder {
   }
 
   filterParticipantFields({
+    id,
     postalCodeFsa,
     lastName,
     emailAddress,
     interestFilter,
     isIndigenousFilter,
   }: {
+    id?: idFilter;
     postalCodeFsa?: PostalCodeFsaFilter;
     lastName?: LastNameFilter;
     emailAddress?: EmailAddressFilter;
@@ -29,12 +32,14 @@ export class RegionsFilteredParticipantsFinder {
   }) {
     this.context.criteria = {
       ...this.context.criteria,
+      ...(id && { 'id =': id }),
       ...(postalCodeFsa && { 'body.postalCodeFsa ilike': `${postalCodeFsa}%` }),
       ...(lastName && { 'body.lastName ilike': `${lastName}%` }),
       ...(emailAddress && { 'body.emailAddress ilike': `${emailAddress}%` }),
       ...(interestFilter && { 'body.interested <>': ['no', 'withdrawn'] }),
       ...(isIndigenousFilter && { 'body.isIndigenous =': true }),
     };
+
     return new FieldsFilteredParticipantsFinder(this.context);
   }
 

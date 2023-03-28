@@ -69,6 +69,7 @@ const generateRosReport = async (csvStream, region) => {
       'Specific Position Type': result.employmentType,
       'Site of ROS': result.site,
       'Health Region': result.healthRegion,
+      'Return of Service Completed': result.rosCompleted,
     });
   });
 };

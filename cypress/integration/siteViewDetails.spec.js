@@ -10,14 +10,14 @@ describe('Tests the Site Details View', () => {
     cy.get('span.MuiButton-label').contains('Action').click();
     cy.get('li.MuiListItem-button', { timeout: 10000 }).should('include.text', 'Create new site');
     cy.get('li.MuiListItem-button').contains('Create new site').click();
-    cy.get('input#siteId').focus().type('1111');
+    cy.get('input#siteId').focus().type('2020');
     cy.get('input#siteName').focus().type('New Site');
     cy.get('input#postalCode').focus().type('V1V1V1');
     cy.get('label.MuiFormControlLabel-root').contains('No').click();
     cy.get('div#mui-component-select-healthAuthority').click();
     cy.get('li').contains('Fraser Health').click();
     cy.get('span.MuiButton-label').contains('Submit').click();
-    cy.contains('1111')
+    cy.contains('2020')
       .parent('tr')
       .within(() => {
         cy.get('button').click({ force: true });
@@ -34,7 +34,7 @@ describe('Tests the Site Details View', () => {
     cy.get('span.MuiButton-label').contains('Action').click();
     cy.get('li.MuiListItem-button', { timeout: 10000 }).should('include.text', 'Create new site');
     cy.get('li.MuiListItem-button').contains('Create new site').click();
-    cy.get('input#siteId').focus().type('1111');
+    cy.get('input#siteId').focus().type('2020');
     cy.get('input#siteName').focus().type(longSiteName);
 
     cy.get('span.MuiButton-label').contains('Submit').click();

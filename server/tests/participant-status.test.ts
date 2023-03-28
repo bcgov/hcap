@@ -189,6 +189,7 @@ describe('Test Participant status data model and service', () => {
       null,
       null,
       null,
+      null,
       ['open']
     );
     const filteredOpenForEmp1 = resultOpenWithEmp1.data.filter((p) => p.id === participant.id);
@@ -197,6 +198,7 @@ describe('Test Participant status data model and service', () => {
     // Check with open status for emp2
     const resultOpenWithEmp2 = await getParticipants(
       { isEmployer: true, id: emp2.id, regions, sites: emp2.sites },
+      null,
       null,
       null,
       null,
@@ -218,6 +220,7 @@ describe('Test Participant status data model and service', () => {
       null,
       null,
       null,
+      null,
       ['prospecting']
     );
     expect(resultSuccess.data.length).toBeGreaterThanOrEqual(1);
@@ -225,6 +228,7 @@ describe('Test Participant status data model and service', () => {
 
     const resultFailure = await getParticipants(
       { isEmployer: true, id: emp3.id, regions, sites: emp3.sites },
+      null,
       null,
       null,
       null,
@@ -259,6 +263,7 @@ describe('Test Participant status data model and service', () => {
       null,
       null,
       null,
+      null,
       ['interviewing']
     );
 
@@ -268,6 +273,7 @@ describe('Test Participant status data model and service', () => {
     // Test Open status
     const resultOpen = await getParticipants(
       { isEmployer: true, id: emp3.id, regions, sites: emp3.sites },
+      null,
       null,
       null,
       null,
@@ -296,6 +302,7 @@ describe('Test Participant status data model and service', () => {
     // Get statuses with emp1 for Dual statuses for mult org employee
     const resultDual = await getParticipants(
       { isEmployer: true, id: emp1.id, regions, sites: emp1.sites },
+      null,
       null,
       null,
       null,
@@ -358,7 +365,7 @@ describe('Test Participant status data model and service', () => {
     );
     expect(ps2.status).toBe(REJECTED);
 
-    const statuses = await getParticipants(emp2, null, null, null, null, null, null, null, [
+    const statuses = await getParticipants(emp2, null, null, null, null, null, null, null, null, [
       'prospecting',
       'interviewing',
     ]);
@@ -372,9 +379,18 @@ describe('Test Participant status data model and service', () => {
     expect(statusInfo.data?.final_status).toBe('withdrawn');
 
     // Check reject status for employer1
-    const resultReject = await getParticipants(emp1, null, null, null, null, null, null, null, [
-      REJECTED,
-    ]);
+    const resultReject = await getParticipants(
+      emp1,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      [REJECTED]
+    );
     expect(resultReject.data.length).toBeGreaterThanOrEqual(1);
     const filteredReject = resultReject.data.find((p) => p.id === participant.id);
     expect(filteredReject).toBeDefined();
@@ -383,9 +399,18 @@ describe('Test Participant status data model and service', () => {
     expect(rejectStatusInfo.data?.final_status).toBe('withdrawn');
 
     // No reject for emp2
-    const resultNoReject = await getParticipants(emp2, null, null, null, null, null, null, null, [
-      REJECTED,
-    ]);
+    const resultNoReject = await getParticipants(
+      emp2,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      [REJECTED]
+    );
     expect(resultNoReject.data.length).toBe(0);
   });
 
@@ -422,7 +447,7 @@ describe('Test Participant status data model and service', () => {
     await hideStatusForUser({ userId: emp1.id, statusId: ps1.id });
 
     // Get status and check
-    const statuses = await getParticipants(emp1, null, null, null, null, null, null, null, [
+    const statuses = await getParticipants(emp1, null, null, null, null, null, null, null, null, [
       'prospecting',
     ]);
 
@@ -436,7 +461,7 @@ describe('Test Participant status data model and service', () => {
       sites: [site1.siteId],
     };
 
-    const statuses2 = await getParticipants(emp2, null, null, null, null, null, null, null, [
+    const statuses2 = await getParticipants(emp2, null, null, null, null, null, null, null, null, [
       'prospecting',
     ]);
 

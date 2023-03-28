@@ -84,10 +84,21 @@ describe('api-e2e tests for /employer-sites route', () => {
   it('should error when saving site due to validation', async () => {
     const longSiteName =
       'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.';
-    // Used for batch site POST
     const site = siteObject({ id: 61, name: longSiteName });
     const header = await getKeycloakToken(superuser);
     const res = await request(app).post('/api/v1/employer-sites').set(header).send(site);
+
+    expect(res.status).toEqual(400);
+  });
+
+  it('should error when saving site due to validation with site type', async () => {
+    const site = siteObject({ id: 61, name: 'testing failure' });
+    const invalidSiteObject = { ...site, siteType: 'Home Health Care' };
+    const header = await getKeycloakToken(superuser);
+    const res = await request(app)
+      .post('/api/v1/employer-sites')
+      .set(header)
+      .send(invalidSiteObject);
 
     expect(res.status).toEqual(400);
   });

@@ -92,7 +92,7 @@ export const participantDetails = async (id: number) => {
     participant.latestStatuses = latestStatuses.map((status) => ({
       id: status.id,
       employerId: status.employer_id,
-      siteId: status.data.site,
+      siteId: status.data?.site,
       status: status.status,
     }));
 

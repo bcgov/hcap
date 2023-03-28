@@ -20,7 +20,6 @@ import { TableFilter } from '../../components/generic/TableFilter';
 import { useToast } from '../../hooks';
 import { handleReportDownloadResult, sortObjects } from '../../utils';
 import { AuthContext } from '../../providers';
-import { FeatureFlaggedComponent, flagKeys, featureFlag } from '../../services';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
 import { useTableStyles } from '../../components/tables/DataTable';
 import { SiteTableAllocation } from './SiteTableAllocation';
@@ -34,11 +33,9 @@ const columns = [
   { id: 'city', name: 'City' },
   { id: 'postalCode', name: 'Postal Code' },
   {
-    ...(featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION) && {
-      id: 'allocation',
-      name: 'Allocation',
-      customComponent: (row) => <SiteTableAllocation row={row} />,
-    }),
+    id: 'allocation',
+    name: 'Allocation',
+    customComponent: (row) => <SiteTableAllocation row={row} />,
   },
   { id: 'details' },
   { id: 'startDate', isHidden: true },
@@ -227,9 +224,7 @@ export default ({ sites, viewOnly }) => {
           <Grid item xs={7} />
           <Grid className={classes.rootItem} item xs={3}>
             <Box px={2} display='flex' justifyContent='space-evenly'>
-              <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-                <SetBulkAllocation sites={selectedSites} handleFormSubmit={handleFormSubmit} />
-              </FeatureFlaggedComponent>
+              <SetBulkAllocation sites={selectedSites} handleFormSubmit={handleFormSubmit} />
               <Button
                 onClick={openActionMenu}
                 endIcon={isActionMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -252,19 +247,15 @@ export default ({ sites, viewOnly }) => {
                 <MenuItem onClick={openNewSiteModal} className={classes.menuItem}>
                   Create new site
                 </MenuItem>
-                <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-                  <MenuItem onClick={openNewPhaseModal} className={classes.menuItem}>
-                    Create new phase
-                  </MenuItem>
-                </FeatureFlaggedComponent>
-                <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-                  <MenuItem
-                    onClick={() => history.push(Routes.PhaseView)}
-                    className={classes.menuItem}
-                  >
-                    View phase list
-                  </MenuItem>
-                </FeatureFlaggedComponent>
+                <MenuItem onClick={openNewPhaseModal} className={classes.menuItem}>
+                  Create new phase
+                </MenuItem>
+                <MenuItem
+                  onClick={() => history.push(Routes.PhaseView)}
+                  className={classes.menuItem}
+                >
+                  View phase list
+                </MenuItem>
               </Menu>
             </Box>
           </Grid>
@@ -305,10 +296,7 @@ export default ({ sites, viewOnly }) => {
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
               rows={sort(rows)}
-              isMultiSelect={
-                roles.includes('ministry_of_health') &&
-                featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)
-              }
+              isMultiSelect={roles.includes('ministry_of_health')}
               selectedRows={selectedSites}
               updateSelectedRows={setSelectedSites}
               isLoading={isLoadingData}

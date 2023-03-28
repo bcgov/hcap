@@ -4,8 +4,6 @@ import dayjs from 'dayjs';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { FeatureFlaggedComponent, flagKeys } from '../../services';
-
 const useStyles = makeStyles((theme) => ({
   allocation: {
     fontWeight: 700,
@@ -27,11 +25,9 @@ export const SiteTableAllocation = ({ row }) => {
           {row['allocation'] || row['allocation'] === 0 ? row['allocation'] : 'N/A'}
         </div>
         {row['startDate'] ? (
-          <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-            <div className={classes.dates}>
-              {formattedDate('startDate')} - {formattedDate('endDate')}
-            </div>
-          </FeatureFlaggedComponent>
+          <div className={classes.dates}>
+            {formattedDate('startDate')} - {formattedDate('endDate')}
+          </div>
         ) : (
           <div />
         )}

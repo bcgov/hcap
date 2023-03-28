@@ -7,7 +7,6 @@ import { scrollUp, addEllipsisMask } from '../../utils';
 import { Routes, MAX_LABEL_LENGTH } from '../../constants';
 import { EditSiteForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
-import { flagKeys, featureFlag } from '../../services';
 import { ToastStatus, EditSiteSchema } from '../../constants';
 import { SiteDetailTabContext } from '../../providers';
 import { fetchSitePhases } from '../../services/phases';
@@ -94,10 +93,7 @@ export default ({ match }) => {
     const response = await fetchSite(id);
     if (response.ok) {
       const site = await response.json();
-      let phases = [];
-      if (featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION)) {
-        phases = await fetchSitePhases(site.id);
-      }
+      const phases = await fetchSitePhases(site.id);
       const participants = await fetchSiteParticipants(columnIDs, site.siteId);
       const { hired, withdrawn } = await participants.json();
       const hiredParticipants = mapSiteParticipantsDataToRow(hired, columnIDs);

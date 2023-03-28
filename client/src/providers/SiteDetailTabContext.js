@@ -1,6 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
 import { tabColumns } from '../constants';
-import { featureFlag, flagKeys } from '../services';
 
 const SiteDetailTabContext = React.createContext();
 
@@ -14,7 +13,7 @@ const tabs = {
   SITE_DETAILS: 'Site Details',
   HIRED_PARTICIPANTS: 'Hired Participants',
   WITHDRAWN_PARTICIPANTS: 'Withdrawn Participants',
-  ...(featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION) ? { ALLOCATION: 'Allocation' } : {}),
+  ALLOCATION: 'Allocation',
 };
 
 const participantsReducer = (state, action) => {

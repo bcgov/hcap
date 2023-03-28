@@ -15,6 +15,7 @@ const siteObject = ({ id, name }) => ({
   address: '123 XYZ',
   city: 'Victoria',
   isRHO: true,
+  siteType: 'Acute',
   healthAuthority: 'Vancouver Island',
   postalCode: 'V8V 1M5',
   registeredBusinessName: 'AAA',

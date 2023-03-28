@@ -19,6 +19,16 @@ export const getMohRosMilestonesReport = async () => {
           id: 'site_id',
         },
       },
+      participantStatusJoin: {
+        type: 'LEFT OUTER',
+        decomposeTo: 'object',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'participant_id',
+          current: true,
+          'data.site': 'siteJoin.body.siteId',
+        },
+      },
     })
     .find(
       {},
@@ -50,6 +60,16 @@ export const getHARosMilestonesReport = async (region: string) => {
         relation: collections.EMPLOYER_SITES,
         on: {
           id: 'site_id',
+        },
+      },
+      participantStatusJoin: {
+        type: 'LEFT OUTER',
+        decomposeTo: 'object',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'participant_id',
+          current: true,
+          'data.site': 'siteJoin.body.siteId',
         },
       },
     })
@@ -84,6 +104,16 @@ export const getHARosMilestonesReport = async (region: string) => {
         relation: collections.EMPLOYER_SITES,
         on: {
           id: 'site_id',
+        },
+      },
+      participantStatusJoin: {
+        type: 'LEFT OUTER',
+        decomposeTo: 'object',
+        relation: collections.PARTICIPANTS_STATUS,
+        on: {
+          participant_id: 'participant_id',
+          current: true,
+          'data.site': 'siteJoin.body.siteId',
         },
       },
     })

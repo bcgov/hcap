@@ -6,7 +6,7 @@
 import request from 'supertest';
 import { app } from '../server';
 import { startDB, closeDB } from './util/db';
-import { getKeycloakToken, superuser } from './util/keycloak';
+import { getKeycloakToken, superuser, ministryOfHealth } from './util/keycloak';
 import { saveSingleSite } from '../services/employers';
 
 const siteObject = ({ id, name }) => ({
@@ -94,7 +94,7 @@ describe('api-e2e tests for /employer-sites route', () => {
   it('should error when saving site due to validation with site type', async () => {
     const site = siteObject({ id: 61, name: 'testing failure' });
     const invalidSiteObject = { ...site, siteType: 'Home Health Care' };
-    const header = await getKeycloakToken(superuser);
+    const header = await getKeycloakToken(ministryOfHealth);
     const res = await request(app)
       .post('/api/v1/employer-sites')
       .set(header)
@@ -128,6 +128,34 @@ describe('api-e2e tests for /employer-sites route', () => {
       .send({ ...update });
 
     expect(res.status).toEqual(200);
+  });
+
+  it('should fail to update site due to missing siteType', async () => {
+    const site = siteObject({ id: 91, name: 'Testing Failure again' });
+
+    const savedSite = await saveSingleSite(site);
+
+    const update = {
+      ...site,
+      history: [
+        {
+          timestamp: new Date(),
+          changes: [{ field: 'siteName', from: 'Test site', to: 'Test Site New' }],
+        },
+      ],
+    };
+
+    delete update.siteId;
+    delete update.healthAuthority;
+    delete update.siteType;
+
+    const header = await getKeycloakToken(ministryOfHealth);
+    const res = await request(app)
+      .patch(`/api/v1/employer-sites/${savedSite.id}`)
+      .set(header)
+      .send({ ...update });
+
+    expect(res.status).toEqual(400);
   });
 
   it('should get sites', async () => {

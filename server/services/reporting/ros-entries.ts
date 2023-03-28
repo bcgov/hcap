@@ -46,7 +46,7 @@ export const mapRosEntries = (rosEntries: RosEntry[]) =>
     employmentType: entry.data?.employmentType || 'Unknown',
     rosCompleted:
       entry.participantStatusJoin?.status === 'archived' &&
-      entry.participantStatusJoin.data?.type === 'rosComplete' &&
+      entry.participantStatusJoin?.data?.type === 'rosComplete' &&
       entry.participantStatusJoin?.current &&
-      entry.participantStatusJoin.data?.confirmed,
+      entry.participantStatusJoin?.data?.confirmed,
   }));

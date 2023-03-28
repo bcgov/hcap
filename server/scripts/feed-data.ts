@@ -41,6 +41,7 @@ const defaultTables: TargetTable[] = [
   { fileName: 'participants.csv', table: collections.PARTICIPANTS },
   { fileName: 'employer_sites.csv', table: collections.EMPLOYER_SITES },
   { fileName: 'phases.csv', table: collections.GLOBAL_PHASE },
+  { fileName: 'site_phase_allocations.csv', table: collections.SITE_PHASE_ALLOCATION },
   {
     fileName: 'post_secondary_institutions.csv',
     table: collections.POST_SECONDARY_INSTITUTIONS,

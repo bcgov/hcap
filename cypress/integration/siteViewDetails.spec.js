@@ -16,6 +16,8 @@ describe('Tests the Site Details View', () => {
     cy.get('label.MuiFormControlLabel-root').contains('No').click();
     cy.get('div#mui-component-select-healthAuthority').click();
     cy.get('li').contains('Fraser Health').click();
+    cy.get('[name=siteType]').parent().click();
+    cy.get('li').contains('Private').click();
     cy.get('span.MuiButton-label').contains('Submit').click();
     cy.contains('1111')
       .parent('tr')
@@ -58,6 +60,8 @@ describe('Tests the Site Details View', () => {
     cy.get('input#city').clear().type('Victoria');
     cy.get('label.MuiFormControlLabel-root').contains('No').click();
     cy.get('input#postalCode').clear().type('V1V1V1');
+    cy.get('[name=siteType]').parent().click();
+    cy.get('li').contains('Acute').click();
     cy.get('input#operatorContactFirstName').clear().type('Sylvan');
     cy.get('input#operatorContactLastName').clear().type('Esso');
     cy.get('input#operatorPhone').clear().type('3332221111');

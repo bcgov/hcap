@@ -1,6 +1,5 @@
 import store from 'store';
 import { API_URL, postHireStatuses } from '../constants';
-// import { fetchSiteByBodySiteId } from './site';
 
 export const getCohortPsiName = (cohort = {}) =>
   cohort?.cohort_name && cohort.psi?.institute_name

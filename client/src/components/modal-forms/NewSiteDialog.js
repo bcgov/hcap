@@ -3,7 +3,7 @@ import { Button, Dialog } from '../generic';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { RenderTextField, RenderSelectField, RenderRadioGroup } from '../fields';
-import { CreateSiteSchema, healthAuthorities, ToastStatus } from '../../constants';
+import { CreateSiteSchema, healthAuthorities, ToastStatus, siteTypeOptions } from '../../constants';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import Typography from '@material-ui/core/Typography';
 import { createSite } from '../../services/site';
@@ -27,6 +27,7 @@ export const NewSiteDialog = ({ onSubmit, onClose, open }) => {
     isRHO: null,
     postalCode: '',
     healthAuthority: '',
+    siteType: '',
     operatorName: '',
     operatorContactFirstName: '',
     operatorContactLastName: '',
@@ -90,6 +91,12 @@ export const NewSiteDialog = ({ onSubmit, onClose, open }) => {
                 component={RenderSelectField}
                 label='* Health Authority'
                 options={healthAuthorities}
+              />
+              <Field
+                name='siteType'
+                component={RenderSelectField}
+                label='* Type of Site'
+                options={siteTypeOptions}
               />
               <Box pt={2} pb={1}>
                 <Typography variant='body1'>

@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { healthRegions, siteTypes, roles } from '../constants';
+import { healthRegions, siteTypes, roles, siteTypesOptions } from '../constants';
 import { validateBlankOrPositiveInteger, errorMessage, errorMessageIndex } from './helpers';
 
 export const EmployerFormSchema = yup
@@ -153,6 +153,7 @@ export const EmployerFormSchema = yup
       .test('is-true', errorMessage, (v) => v === true),
   });
 
+// TODO: determine if this is needed
 export const EmployerSiteBatchSchema = yup.array().of(
   yup.lazy((item, options) => {
     const index = options.parent.indexOf(item);
@@ -225,6 +226,7 @@ export const CreateSiteSchema = yup
     city: yup.string().nullable(),
     isRHO: yup.boolean().nullable().required(errorMessage),
     healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
+    siteType: yup.string().required(errorMessage).oneOf(siteTypesOptions, 'Invalid site type'),
     postalCode: yup
       .string()
       .required(errorMessage)
@@ -272,6 +274,7 @@ export const EditSiteSchema = yup
     address: yup.string().required(errorMessage),
     city: yup.string().required(errorMessage),
     isRHO: yup.boolean().nullable().required(errorMessage),
+    siteType: yup.string().required(errorMessage).oneOf(siteTypesOptions, 'Invalid site type'),
     postalCode: yup
       .string()
       .required(errorMessage)

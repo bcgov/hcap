@@ -2,7 +2,8 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box, makeStyles } from '@material-ui/core';
-import { RenderRadioGroup, RenderTextField } from '../fields';
+import { siteTypeOptions } from '../../constants';
+import { RenderRadioGroup, RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -26,7 +27,7 @@ export const EditSiteForm = ({
   const classes = useStyles();
   return (
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-      {({ submitForm, values }) => (
+      {({ submitForm }) => (
         <FormikForm>
           <Box>
             <Box pt={1} pb={1}>
@@ -51,6 +52,7 @@ export const EditSiteForm = ({
             />
             <Field name='address' component={RenderTextField} label='* Street Address' />
             <Field name='city' component={RenderTextField} label='* City' />
+            <Field name='postalCode' component={RenderTextField} label='* Postal Code' />
             <Field
               name='isRHO'
               component={RenderRadioGroup}
@@ -60,7 +62,12 @@ export const EditSiteForm = ({
                 { value: false, label: 'No' },
               ]}
             />
-            <Field name='postalCode' component={RenderTextField} label='* Postal Code' />
+            <Field
+              name='siteType'
+              component={RenderSelectField}
+              label='* Type of Site'
+              options={siteTypeOptions}
+            />
             <Box pt={2} pb={1}>
               <Typography variant='body1'>
                 <b>Operator Info</b>

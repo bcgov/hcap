@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { healthRegions } from '../constants';
+import { healthRegions, siteTypesOptions } from '../constants';
 import { errorMessage } from '../functions';
 
 export const CreateSiteSchema = yup.object().shape({
@@ -12,6 +12,7 @@ export const CreateSiteSchema = yup.object().shape({
   city: yup.string().nullable(),
   isRHO: yup.boolean().nullable().required(errorMessage),
   healthAuthority: yup.string().required(errorMessage).oneOf(healthRegions, 'Invalid region'),
+  siteType: yup.string().required(errorMessage).oneOf(siteTypesOptions, 'Invalid site type'),
   postalCode: yup
     .string()
     .required(errorMessage)

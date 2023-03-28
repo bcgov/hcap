@@ -19,6 +19,7 @@ describe('Participants status suite', () => {
     cy.get('@phases').then((phases) => {
       cy.get('li').contains(phases[1].name).click();
       cy.get('[name=allocation]').clear().type(100);
+      cy.get('input[name="acknowledgement"]').click();
 
       cy.contains('button', 'Set').click({ force: true });
       cy.get('form').submit();
@@ -181,7 +182,7 @@ describe('Participants status suite', () => {
 
   it('Flow test: available --> engage by HA --> hired --> archived & acknowledged', () => {
     const participantId = 4;
-    const hireSite = 1;
+    const hireSite = 1111;
     // this needs to be an EXACT match- no "August 10" when we want participant 10!
     const participantIdRegex = new RegExp('^' + participantId + '$', 'g');
 

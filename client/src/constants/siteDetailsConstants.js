@@ -68,7 +68,7 @@ export const fieldsLabelMap = {
     City: 'city',
     'Postal Code': 'postalCode',
     Region: 'healthAuthority',
-    'Type of Site': 'siteType',
+    'Site Type': 'siteType',
   },
   ...(featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION) && {
     'Positions Overview (Current Phase)': {

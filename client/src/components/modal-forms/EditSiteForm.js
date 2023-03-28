@@ -65,7 +65,7 @@ export const EditSiteForm = ({
             <Field
               name='siteType'
               component={RenderSelectField}
-              label='* Type of Site'
+              label='* Site Type'
               options={siteTypeOptions}
             />
             <Box pt={2} pb={1}>

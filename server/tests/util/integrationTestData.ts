@@ -75,7 +75,7 @@ interface TestSiteData {
   city?: string;
   siteName?: string;
   healthAuthority?: string;
-  siteType?: strin;
+  siteType?: string;
   [key: string]: string | number | boolean | undefined;
 }
 

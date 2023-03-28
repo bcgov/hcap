@@ -92,7 +92,7 @@ describe('api-e2e tests for /employer-sites route', () => {
   });
 
   it('should error when saving site due to validation with site type', async () => {
-    const site = siteObject({ id: 61, name: 'testing failure' });
+    const site = siteObject({ id: 909, name: 'testing failure' });
     const invalidSiteObject = { ...site, siteType: 'Home Health Care' };
     const header = await getKeycloakToken(ministryOfHealth);
     const res = await request(app)
@@ -131,7 +131,7 @@ describe('api-e2e tests for /employer-sites route', () => {
   });
 
   it('should fail to update site due to missing siteType', async () => {
-    const site = siteObject({ id: 91, name: 'Testing Failure again' });
+    const site = siteObject({ id: 910, name: 'Testing Failure again' });
 
     const savedSite = await saveSingleSite(site);
 

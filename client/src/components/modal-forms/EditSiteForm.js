@@ -54,6 +54,12 @@ export const EditSiteForm = ({
             <Field name='city' component={RenderTextField} label='* City' />
             <Field name='postalCode' component={RenderTextField} label='* Postal Code' />
             <Field
+              name='siteType'
+              component={RenderSelectField}
+              label='* Site Type'
+              options={siteTypeOptions}
+            />
+            <Field
               name='isRHO'
               component={RenderRadioGroup}
               label='Is this site a Regional Health Office?'
@@ -61,12 +67,6 @@ export const EditSiteForm = ({
                 { value: true, label: 'Yes' },
                 { value: false, label: 'No' },
               ]}
-            />
-            <Field
-              name='siteType'
-              component={RenderSelectField}
-              label='* Site Type'
-              options={siteTypeOptions}
             />
             <Box pt={2} pb={1}>
               <Typography variant='body1'>

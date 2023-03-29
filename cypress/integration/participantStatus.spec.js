@@ -179,27 +179,21 @@ describe('Participants status suite', () => {
       });
     cy.contains('button', 'Move to Archived Candidates').click();
   };
-  describe('Health Authority', () => {
-    beforeEach(() => {
-      cy.kcLogin('test-ha');
-    });
-    afterEach(() => {
-      cy.kcLogout();
-    });
 
-    it('Flow test: available --> engage by HA --> hired --> archived & acknowledged', () => {
-      const participantId = 4;
-      const hireSite = 1111;
-      // this needs to be an EXACT match- no "August 10" when we want participant 10!
-      const participantIdRegex = new RegExp('^' + participantId + '$', 'g');
+  it('Flow test: available --> engage by HA --> hired --> archived & acknowledged', () => {
+    const participantId = 4;
+    const hireSite = 1111;
+    // this needs to be an EXACT match- no "August 10" when we want participant 10!
+    const participantIdRegex = new RegExp('^' + participantId + '$', 'g');
 
-      cy.assignSitesToUser('test-ha', [hireSite]);
+    cy.assignSitesToUser('test-ha', [hireSite]);
 
-      // go from available status to hired status
-      progressParticipantHire(participantIdRegex, hireSite, 'available', 'hired');
+    cy.kcLogin('test-ha');
+    // go from available status to hired status
+    progressParticipantHire(participantIdRegex, hireSite, 'available', 'hired');
 
-      // archive participant
-      archiveParticipant(participantIdRegex, 'Hired Candidates');
-    });
+    // archive participant
+    archiveParticipant(participantIdRegex, 'Hired Candidates');
+    cy.kcLogout();
   });
 });

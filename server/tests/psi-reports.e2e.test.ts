@@ -7,7 +7,7 @@ import { app } from '../server';
 import { startDB, closeDB } from './util/db';
 import { getKeycloakToken, ministryOfHealth, healthAuthority, employer } from './util/keycloak';
 
-describe('api-e2e test for route /api/v1/milestone-report', () => {
+describe('api-e2e test for route /api/v1/psi-report', () => {
   let server;
   beforeAll(async () => {
     await startDB();
@@ -33,7 +33,7 @@ describe('api-e2e test for route /api/v1/milestone-report', () => {
 
   it('should fail get report for employer', async () => {
     const header = await getKeycloakToken(employer);
-    const res = await request(app).get('/api/v1/psi-report').set(header);
+    const res = await request(app).get('/api/v1/psi-report/csv/participants').set(header);
     expect(res.status).toEqual(403);
   });
 });

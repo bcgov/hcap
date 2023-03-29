@@ -52,7 +52,7 @@ export default () => {
             </ParticipantsContext.ParticipantsProvider>
           )}
 
-          {tabValue === 1 && <SiteTable sites={sites} viewOnly />}
+          {tabValue === 1 && <SiteTable sites={sites} />}
         </Grid>
       </CheckPermissions>
     </Page>

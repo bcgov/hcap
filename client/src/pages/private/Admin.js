@@ -82,8 +82,8 @@ export default () => {
               <CheckPermissions permittedRoles={['ministry_of_health']}>
                 {renderAdminButton(Routes.UserEdit, 'Manage Users')}
               </CheckPermissions>
-              <CheckPermissions permittedRoles={['ministry_of_health']}>
-                {renderAdminButton(Routes.ReportingView, 'View Milestone Reports')}
+              <CheckPermissions permittedRoles={['ministry_of_health', 'health_authority']}>
+                {renderAdminButton(Routes.ReportingView, 'Reporting')}
               </CheckPermissions>
               <CheckPermissions permittedRoles={['ministry_of_health', 'health_authority']}>
                 {renderAdminButton(Routes.PSIView, 'Manage PSI')}

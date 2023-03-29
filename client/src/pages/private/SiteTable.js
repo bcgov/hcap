@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import store from 'store';
 
 import { Grid, Typography, MenuItem, Menu, Box } from '@material-ui/core';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
@@ -9,16 +8,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Table, Button, CheckPermissions } from '../../components/generic';
 import { NewSiteDialog, PhaseDialog } from '../../components/modal-forms';
 
-import {
-  Routes,
-  regionLabelsMap,
-  API_URL,
-  healthAuthoritiesFilter,
-  ToastStatus,
-} from '../../constants';
+import { Routes, regionLabelsMap, healthAuthoritiesFilter } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
-import { useToast } from '../../hooks';
-import { handleReportDownloadResult, sortObjects } from '../../utils';
+import { sortObjects } from '../../utils';
 import { AuthContext } from '../../providers';
 import { FeatureFlaggedComponent, flagKeys, featureFlag } from '../../services';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
@@ -45,9 +37,8 @@ const columns = [
   { id: 'endDate', isHidden: true },
 ];
 
-export default ({ sites, viewOnly }) => {
+export default ({ sites }) => {
   const classes = useTableStyles();
-  const { openToast } = useToast();
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
@@ -55,8 +46,8 @@ export default ({ sites, viewOnly }) => {
   const [selectedSites, setSelectedSites] = useState([]);
   const [rows, setRows] = useState([]);
   const [fetchedRows, setFetchedRows] = useState([]);
-  const [isLoadingReport, setLoadingReport] = useState(false);
-  const [isLoadingRosReport, setLoadingRosReport] = useState(false);
+  // const [isLoadingReport, setLoadingReport] = useState(false);
+  // const [isLoadingRosReport, setLoadingRosReport] = useState(false);
   const [actionMenuAnchorEl, setActionMenuAnchorEl] = React.useState(null);
 
   const [orderBy, setOrderBy] = useState('siteName');
@@ -89,59 +80,6 @@ export default ({ sites, viewOnly }) => {
 
   const closeDialog = () => {
     setActiveModalForm(null);
-  };
-
-  const generateReportByRegion = async (regionId) => {
-    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/hired/${regionId}`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    const downloadRes = await handleReportDownloadResult(
-      response,
-      `report-hired-${regionId}-${new Date().toJSON()}.csv`
-    );
-    openToast(downloadRes);
-  };
-
-  const downloadHiringReport = async () => {
-    setLoadingReport(true);
-    for (const region of healthAuthorities) {
-      if (region !== 'None') {
-        await generateReportByRegion(region);
-      }
-    }
-    setLoadingReport(false);
-  };
-
-  const downloadRosReport = async (regionIds) => {
-    if (!regionIds || regionIds.length === 0) {
-      openToast({
-        status: ToastStatus.Error,
-        message: 'Download error: No health region found!',
-      });
-      return;
-    }
-
-    setLoadingRosReport(true);
-    const healthRegion = regionIds[0];
-
-    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/ros/${healthRegion}`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    const downloadRes = await handleReportDownloadResult(
-      response,
-      `return-of-service-milestones-${new Date().toJSON()}.csv`
-    );
-    openToast(downloadRes);
-
-    setLoadingRosReport(false);
   };
 
   useEffect(() => {
@@ -271,31 +209,6 @@ export default ({ sites, viewOnly }) => {
         </CheckPermissions>
 
         {roles.includes('superuser') && <Grid item xs={8} />}
-
-        {!viewOnly && (
-          <CheckPermissions roles={roles} permittedRoles={['health_authority']}>
-            <Grid item xs={6} />
-            <Grid container item xs={4}>
-              <Grid className={classes.rootItem} item xs={12}>
-                <Button
-                  onClick={downloadHiringReport}
-                  variant='outlined'
-                  text='Download Hiring Milestones Report'
-                  loading={isLoadingReport}
-                />
-              </Grid>
-
-              <Grid className={classes.rootItem} item xs={12}>
-                <Button
-                  onClick={() => downloadRosReport(healthAuthorities)}
-                  variant='outlined'
-                  text='Download Return of Service Milestones report'
-                  loading={isLoadingRosReport}
-                />
-              </Grid>
-            </Grid>
-          </CheckPermissions>
-        )}
 
         {isPendingRequests && (
           <Grid className={classes.tableItem} item xs={12}>

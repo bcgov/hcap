@@ -1,14 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Box, Container, Typography, List, ListItem, ListItemText } from '@material-ui/core';
-import store from 'store';
 
 import { Page, Card, CheckPermissions, Button } from '../../components/generic';
-import { API_URL } from '../../constants';
+import { regionLabelsMap } from '../../constants';
+import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
-import { handleReportDownloadResult } from '../../utils';
+import {
+  fetchMilestoneReports,
+  downloadMilestoneReports,
+  downloadPSIReports,
+} from '../../services/reports';
+import {
+  ToastStatus,
+  DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
+  DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+} from '../../constants';
 
 export default () => {
   const { openToast } = useToast();
+  const { auth } = AuthContext.useAuth();
+  const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
+  const isMoH = roles.includes('ministry_of_health');
+  const [HARegion] = roles.map((loc) => regionLabelsMap[loc]).filter(Boolean);
+
   const reportStats = {
     total: 'Total Participants',
     qualified: 'Qualified',
@@ -23,117 +37,120 @@ export default () => {
     hiredPerRegion: {},
   });
 
-  const [isLoadingHiringReport, setLoadingHiringReport] = useState(false);
-  const [isLoadingRosReport, setLoadingRosReport] = useState(false);
+  const [isLoadingReport, setLoadingReport] = useState(null);
 
   const fetchReport = async () => {
-    const response = await fetch(`${API_URL}/api/v1/milestone-report`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
+    const results = await fetchMilestoneReports();
 
-    if (response.ok) {
-      const results = await response.json();
-      setReport({
-        total: results.data.total,
-        qualified: results.data.qualified,
-        inProgress: results.data.inProgress,
-        hired: results.data.hired,
-        hiredPerRegion: results.data.hiredPerRegion,
-      });
+    if (results) {
+      setReport(results.data);
     }
   };
 
-  const handleDownloadHiringReportClick = async () => {
-    setLoadingHiringReport(true);
-    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/hired`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    const downloadRes = await handleReportDownloadResult(
-      response,
-      `participant-stats-hired-${new Date().toJSON()}.csv`
-    );
-    openToast(downloadRes);
-
-    setLoadingHiringReport(false);
+  const handleDownloadMilestoneReports = async (reportType) => {
+    setLoadingReport(reportType);
+    const region = isMoH ? null : HARegion;
+    const response = await downloadMilestoneReports(reportType, region);
+    if (response.ok) {
+      openToast({
+        status: ToastStatus.Success,
+        message: response.message || DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
+      });
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+      });
+    }
+    setLoadingReport('');
   };
 
-  const handleDownloadRosReportClick = async () => {
-    setLoadingRosReport(true);
-    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/ros`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    const downloadRes = await handleReportDownloadResult(
-      response,
-      `return-of-service-milestones-${new Date().toJSON()}.csv`
-    );
-    openToast(downloadRes);
-
-    setLoadingRosReport(false);
+  const handleDownloadPSIReports = async (reportType) => {
+    setLoadingReport(reportType);
+    const response = await downloadPSIReports(reportType);
+    if (response.ok) {
+      openToast({
+        status: ToastStatus.Success,
+        message: response.message || DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
+      });
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+      });
+    }
+    setLoadingReport('');
   };
 
   useEffect(() => {
-    fetchReport();
-  }, []);
+    isMoH && fetchReport();
+  }, [isMoH]);
 
   return (
-    <Page>
-      <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
-        <Container maxWidth='md'>
-          <Box py={6}>
-            <Typography variant='subtitle1' gutterBottom>
-              Milestone Reporting
-            </Typography>
-            <Box py={2} display='flex' justifyContent='space-between'>
-              {Object.keys(reportStats).map((item, ind) => (
-                <Card key={`st_${ind}`}>
-                  <Typography variant='h4'>{report[item]}</Typography>
-                  <Typography variant='body1'>{reportStats[item]}</Typography>
-                </Card>
-              ))}
-            </Box>
-
-            <Box py={4}>
+    <Page centered={!isMoH}>
+      <CheckPermissions
+        permittedRoles={['ministry_of_health', 'health_authority']}
+        renderErrorMessage={true}
+      >
+        <CheckPermissions permittedRoles={['ministry_of_health']}>
+          <Container maxWidth='md'>
+            <Box py={2}>
               <Typography variant='subtitle1' gutterBottom>
-                Hired Per Region
+                Milestone Reporting
               </Typography>
-              <Box py={2}>
-                <Card noPadding>
-                  <List>
-                    {Object.keys(report.hiredPerRegion).map((key) => (
-                      <ListItem key={key}>
-                        <ListItemText primary={`${key}: ${report.hiredPerRegion[key]}`} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Card>
+              <Box py={2} display='flex' justifyContent='space-between'>
+                {Object.keys(reportStats).map((item, ind) => (
+                  <Card key={`st_${ind}`}>
+                    <Typography variant='h4'>{report[item]}</Typography>
+                    <Typography variant='body1'>{reportStats[item]}</Typography>
+                  </Card>
+                ))}
+              </Box>
+
+              <Box py={4}>
+                <Typography variant='subtitle1' gutterBottom>
+                  Hired Per Region
+                </Typography>
+                <Box py={2}>
+                  <Card noPadding>
+                    <List>
+                      {Object.keys(report.hiredPerRegion).map((key) => (
+                        <ListItem key={key}>
+                          <ListItemText primary={`${key}: ${report.hiredPerRegion[key]}`} />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Card>
+                </Box>
               </Box>
             </Box>
+          </Container>
+        </CheckPermissions>
 
+        <Container maxWidth='md'>
+          <Box>
             <Box py={1} display='flex' justifyContent='center'>
               <Button
                 fullWidth={false}
-                loading={isLoadingHiringReport}
-                onClick={handleDownloadHiringReportClick}
+                loading={isLoadingReport === 'hired'}
+                onClick={() => handleDownloadMilestoneReports('hired')}
                 text='Download hiring report'
               />
             </Box>
             <Box py={1} display='flex' justifyContent='center'>
               <Button
                 fullWidth={false}
-                loading={isLoadingRosReport}
-                onClick={handleDownloadRosReportClick}
+                loading={isLoadingReport === 'ros'}
+                onClick={() => handleDownloadMilestoneReports('ros')}
                 text='Download return of service milestones report'
+              />
+            </Box>
+            <Box py={1} display='flex' justifyContent='center'>
+              <Button
+                fullWidth={false}
+                loading={isLoadingReport === 'psi'}
+                onClick={() => handleDownloadPSIReports('psi')}
+                text='Download participants attending PSI report'
               />
             </Box>
           </Box>

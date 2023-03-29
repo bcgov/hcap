@@ -10,6 +10,11 @@ import {
   downloadMilestoneReports,
   downloadPSIReports,
 } from '../../services/reports';
+import {
+  ToastStatus,
+  DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
+  DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+} from '../../constants';
 
 export default () => {
   const { openToast } = useToast();
@@ -46,16 +51,34 @@ export default () => {
     setLoadingReport(reportType);
     const region = isMoH ? null : HARegion;
     const response = await downloadMilestoneReports(reportType, region);
-    openToast(response);
-
+    if (response.ok) {
+      openToast({
+        status: ToastStatus.Success,
+        message: response.message || DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
+      });
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+      });
+    }
     setLoadingReport('');
   };
 
   const handleDownloadPSIReports = async (reportType) => {
     setLoadingReport(reportType);
     const response = await downloadPSIReports(reportType);
-    openToast(response);
-
+    if (response.ok) {
+      openToast({
+        status: ToastStatus.Success,
+        message: response.message || DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
+      });
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
+      });
+    }
     setLoadingReport('');
   };
 

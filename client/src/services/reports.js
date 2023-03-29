@@ -46,8 +46,8 @@ export const downloadMilestoneReports = async (reportType, region = null) => {
   });
 
   if (response.ok) {
-    const downloadRes = await handleReportDownloadResult(response, csvTitle(reportType, region));
-    return downloadRes;
+    await handleReportDownloadResult(response, csvTitle(reportType, region));
+    return response;
   } else {
     throw new Error('Failed to download report');
   }
@@ -63,8 +63,8 @@ export const downloadPSIReports = async (reportType) => {
   });
 
   if (response.ok) {
-    const downloadRes = await handleReportDownloadResult(response, csvTitle(reportType));
-    return downloadRes;
+    await handleReportDownloadResult(response, csvTitle(reportType));
+    return response;
   } else {
     throw new Error('Failed to download report');
   }

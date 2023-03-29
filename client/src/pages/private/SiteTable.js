@@ -23,6 +23,7 @@ const columns = [
   { id: 'siteName', name: 'Site Name' },
   { id: 'operatorName', name: 'Operator Name' },
   { id: 'healthAuthority', name: 'Health Authority' },
+  { id: 'siteType', name: 'Site Type' },
   { id: 'city', name: 'City' },
   { id: 'postalCode', name: 'Postal Code' },
   {

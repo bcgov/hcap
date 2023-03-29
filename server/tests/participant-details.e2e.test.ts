@@ -4,7 +4,7 @@ import { app } from '../server';
 
 import { startDB, closeDB } from './util/db';
 import { makeTestParticipant, createTestParticipantStatus } from './util/integrationTestData';
-import { getKeycloakToken, healthAuthority, superuser } from './util/keycloak';
+import { getKeycloakToken, healthAuthority, ministryOfHealth } from './util/keycloak';
 
 describe('e2e tests for /participant/details route', () => {
   let server;
@@ -22,8 +22,9 @@ describe('e2e tests for /participant/details route', () => {
     const p = await makeTestParticipant({ emailAddress: 'test.e2e.participant.details.1@hcap.io' });
     expect(p.id).toBeDefined();
 
-    const header = await getKeycloakToken(superuser);
+    const header = await getKeycloakToken(ministryOfHealth);
     const res = await request(app).get(`/api/v1/participant/details/${p.id}`).set(header);
+
     expect(res.status).toEqual(200);
   });
 

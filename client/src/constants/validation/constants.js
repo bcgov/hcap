@@ -6,6 +6,15 @@ export const healthRegions = [
   'Northern',
 ];
 
+export const siteTypesOptions = [
+  'Health Authority',
+  'Home Health',
+  'Acute',
+  'Indigenous',
+  'Private',
+  'Affiliate',
+];
+
 export const foundOutReasons = [
   'Friend(s)',
   'WorkBC',

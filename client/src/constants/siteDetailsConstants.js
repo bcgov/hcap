@@ -1,3 +1,12 @@
+export const siteTypeOptions = [
+  { value: 'Health Authority', label: 'Health Authority' },
+  { value: 'Home Health', label: 'Home Health' },
+  { value: 'Acute', label: 'Acute' },
+  { value: 'Indigenous', label: 'Indigenous' },
+  { value: 'Private', label: 'Private' },
+  { value: 'Affiliate', label: 'Affiliate' },
+];
+
 export const tabColumns = {
   // Tabs, associated allowed roles, displayed statuses
   'Site Details': {
@@ -57,6 +66,7 @@ export const fieldsLabelMap = {
     City: 'city',
     'Postal Code': 'postalCode',
     Region: 'healthAuthority',
+    'Site Type': 'siteType',
   },
   'Positions Overview (Current Phase)': {
     Allocation: 'allocation',

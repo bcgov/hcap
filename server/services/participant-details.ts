@@ -85,15 +85,28 @@ export const participantDetails = async (id: number) => {
         is_current: true,
       });
 
-    const latestStatuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
-      participant_id: id,
-      current: true,
-    });
+    const latestStatuses = await dbClient.db[collections.PARTICIPANTS_STATUS]
+      .join({
+        site: {
+          type: 'LEFT OUTER',
+          relation: collections.EMPLOYER_SITES,
+          decomposeTo: 'object',
+          on: {
+            'body.siteId': 'data.site',
+          },
+        },
+      })
+      .find({
+        participant_id: id,
+        current: true,
+      });
+
     participant.latestStatuses = latestStatuses.map((status) => ({
       id: status.id,
       employerId: status.employer_id,
-      siteId: status.data.site,
+      siteId: status.data?.site,
       status: status.status,
+      siteName: status.site?.body.siteName,
     }));
 
     const { body: rosSiteDetails } = rosStatusDbObj?.rosSite || { body: {} };

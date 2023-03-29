@@ -28,6 +28,15 @@ export const getGraduationStatus = (statuses = []) => {
       return 'No';
   }
 };
+// determine which status to display, If 'hired' exists, show hired status and siteName, else show the first status
+const getDefaultStatusAndSite = (statusArr) => {
+  if (!statusArr.length) return { status: 'available', siteName: null };
+  if (statusArr.length) {
+    const [hired] = statusArr.filter((status) => status.status === 'hired');
+    if (hired) return { status: hired.status, siteName: hired.siteName };
+    return { status: statusArr[0].status, siteName: null };
+  }
+};
 
 // Fetch Participant
 export const fetchParticipant = async ({ id }) => {
@@ -44,12 +53,14 @@ export const fetchParticipant = async ({ id }) => {
     const { participant } = await resp.json();
     const cohort = await fetchParticipantCohort({ id });
     const postHireStatus = await fetchParticipantPostHireStatus({ id });
+
     return {
       ...participant,
       cohort,
       cohortName: getCohortPsiName(cohort),
       postHireStatus,
       postHireStatusLabel: getPostHireStatusLabel(postHireStatus),
+      ...getDefaultStatusAndSite(participant.latestStatuses),
     };
   } else {
     throw new Error('Unable to load participant');

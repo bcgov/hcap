@@ -63,12 +63,6 @@ export default () => {
     isMoH && fetchReport();
   }, [isMoH]);
 
-  // setHealthAuthorities(
-  //   roles.includes('superuser') || roles.includes('ministry_of_health')
-  //     ? Object.values(regionLabelsMap)
-  //     : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
-  // );
-  console.log(roles.map((loc) => regionLabelsMap[loc]).filter(Boolean));
   return (
     <Page centered={!isMoH}>
       <CheckPermissions

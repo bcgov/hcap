@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import { siteTypesOptions } from '../constants';
 import { errorMessage } from '../functions';
 
 export const EditSiteSchema = yup.object().shape({
@@ -20,6 +21,7 @@ export const EditSiteSchema = yup.object().shape({
     .string()
     .required(errorMessage)
     .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
+  siteType: yup.string().required(errorMessage).oneOf(siteTypesOptions, 'Invalid site type'),
   operatorName: yup.string().nullable(),
   operatorContactFirstName: yup.string().required(errorMessage),
   operatorContactLastName: yup.string().required(errorMessage),

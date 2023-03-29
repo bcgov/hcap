@@ -11,6 +11,7 @@ export interface EmployerSite {
   operatorName: string; // Name of operator (e.g. 'Interior Health Authority')
   city: string; // City the site is in
   healthAuthority: string; // Authority for the site
+  siteType: string; // Type of site
   postalCode: string; // Postal code of site
   allocation: number; // Number of allocations set
   startDate: Date; // start date of current phase
@@ -69,6 +70,7 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
     employer_sites.body -> 'city' as "city",
     employer_sites.body -> 'healthAuthority' as "healthAuthority",
     employer_sites.body -> 'postalCode' as "postalCode",
+    employer_sites.body -> 'siteType' as "siteType",
     spa.allocation,
     p.start_date as "startDate", 
     p.end_date as "endDate"

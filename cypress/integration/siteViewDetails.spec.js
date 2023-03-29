@@ -10,12 +10,31 @@ describe('Tests the Site Details View', () => {
     cy.get('span.MuiButton-label').contains('Action').click();
     cy.get('li.MuiListItem-button', { timeout: 10000 }).should('include.text', 'Create new site');
     cy.get('li.MuiListItem-button').contains('Create new site').click();
+    // Site Key Details
     cy.get('input#siteId').focus().type('2020');
     cy.get('input#siteName').focus().type('New Site');
+    cy.get('input#address').focus().type('13920 Main st');
+    cy.get('input#city').focus().type('Victoria');
     cy.get('input#postalCode').focus().type('V1V1V1');
     cy.get('label.MuiFormControlLabel-root').contains('No').click();
     cy.get('div#mui-component-select-healthAuthority').click();
     cy.get('li').contains('Fraser Health').click();
+    cy.get('[name=siteType]').parent().click();
+    cy.get('li').contains('Private').click();
+    // Additional Site Info
+    cy.get('input#registeredBusinessName').clear().type('Sallys Operation INC');
+    // Operator Info
+    cy.get('input#operatorName').clear().type('Sallys Operation');
+    cy.get('input#operatorContactFirstName').clear().type('Sally');
+    cy.get('input#operatorContactLastName').clear().type('Smith');
+    cy.get('input#operatorPhone').clear().type('3334521111');
+    cy.get('input#operatorEmail').clear().type('sally.smith@co.com');
+
+    // Site Contact
+    cy.get('input#siteContactFirstName').clear().type('Becca');
+    cy.get('input#siteContactLastName').clear().type('Bronson');
+    cy.get('input#siteContactPhone').clear().type('5554521111');
+    cy.get('input#siteContactEmail').clear().type('becca.bronson@co.com');
     cy.get('span.MuiButton-label').contains('Submit').click();
     cy.contains('2020')
       .parent('tr')
@@ -58,6 +77,8 @@ describe('Tests the Site Details View', () => {
     cy.get('input#city').clear().type('Victoria');
     cy.get('label.MuiFormControlLabel-root').contains('No').click();
     cy.get('input#postalCode').clear().type('V1V1V1');
+    cy.get('[name=siteType]').parent().click();
+    cy.get('li').contains('Acute').click();
     cy.get('input#operatorContactFirstName').clear().type('Sylvan');
     cy.get('input#operatorContactLastName').clear().type('Esso');
     cy.get('input#operatorPhone').clear().type('3332221111');

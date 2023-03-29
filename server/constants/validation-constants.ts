@@ -58,6 +58,15 @@ export const roles = [
 
 export const siteTypes = ['Long-term care', 'Assisted living', 'Both', 'Other', ''];
 
+export const siteTypesOptions = [
+  'Health Authority',
+  'Home Health',
+  'Acute',
+  'Indigenous',
+  'Private',
+  'Affiliate',
+];
+
 export const userRoles = ['health_authority', 'employer', 'ministry_of_health'];
 
 export const participantStatuses = [

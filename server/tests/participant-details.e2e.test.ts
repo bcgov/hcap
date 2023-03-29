@@ -28,6 +28,13 @@ describe('e2e tests for /participant/details route', () => {
     expect(res.status).toEqual(200);
   });
 
+  it('should not return participant for MoH if participant.id does not exist', async () => {
+    const header = await getKeycloakToken(ministryOfHealth);
+    const res = await request(app).get(`/api/v1/participant/details/574857`).set(header);
+
+    expect(res.status).toEqual(404);
+  });
+
   it('should not return participant for HA if participant is not in the same region', async () => {
     const { participant } = await createTestParticipantStatus({
       participantData: { emailAddress: 'test.e2e.participant.details.2@hcap.io' },

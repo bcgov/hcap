@@ -1,21 +1,23 @@
-/* eslint-disable */
 import React, { useEffect, useState, useMemo } from 'react';
 import { Box, Container, Typography, List, ListItem, ListItemText } from '@material-ui/core';
-import store from 'store';
 
 import { Page, Card, CheckPermissions, Button } from '../../components/generic';
-import { API_URL } from '../../constants';
+import { regionLabelsMap } from '../../constants';
 import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
-import { handleReportDownloadResult } from '../../utils';
-import { fetchMilestoneReports, downloadReport } from '../../services/reports';
+import {
+  fetchMilestoneReports,
+  downloadMilestoneReports,
+  downloadPSIReports,
+} from '../../services/reports';
 
 export default () => {
   const { openToast } = useToast();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
-
   const isMoH = roles.includes('ministry_of_health');
+  const [HARegion] = roles.map((loc) => regionLabelsMap[loc]).filter(Boolean);
+
   const reportStats = {
     total: 'Total Participants',
     qualified: 'Qualified',
@@ -30,9 +32,7 @@ export default () => {
     hiredPerRegion: {},
   });
 
-  const [isLoadingHiringReport, setLoadingHiringReport] = useState(false);
-  const [isLoadingRosReport, setLoadingRosReport] = useState(false);
-  // const [isLoadingReport, setLoadingReport] = useState(false);
+  const [isLoadingReport, setLoadingReport] = useState(null);
 
   const fetchReport = async () => {
     const results = await fetchMilestoneReports();
@@ -42,44 +42,33 @@ export default () => {
     }
   };
 
-  const handleDownloadReport = async (reportType) => {
-    setLoadingHiringReport(true);
-    const response = await downloadReport(reportType);
+  const handleDownloadMilestoneReports = async (reportType) => {
+    setLoadingReport(reportType);
+    const region = isMoH ? null : HARegion;
+    const response = await downloadMilestoneReports(reportType, region);
     openToast(response);
 
-    setLoadingHiringReport(false);
+    setLoadingReport('');
   };
 
-  const handleDownloadHiringReportClick = async (reportType) => {
-    setLoadingHiringReport(true);
-    const response = await downloadReport(reportType);
-    openToast(downloadRes);
+  const handleDownloadPSIReports = async (reportType) => {
+    setLoadingReport(reportType);
+    const response = await downloadPSIReports(reportType);
+    openToast(response);
 
-    setLoadingHiringReport(false);
-  };
-
-  const handleDownloadRosReportClick = async () => {
-    setLoadingRosReport(true);
-    const response = await fetch(`${API_URL}/api/v1/milestone-report/csv/ros`, {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-      },
-      method: 'GET',
-    });
-
-    const downloadRes = await handleReportDownloadResult(
-      response,
-      `return-of-service-milestones-${new Date().toJSON()}.csv`
-    );
-    openToast(downloadRes);
-
-    setLoadingRosReport(false);
+    setLoadingReport('');
   };
 
   useEffect(() => {
     isMoH && fetchReport();
   }, [isMoH]);
 
+  // setHealthAuthorities(
+  //   roles.includes('superuser') || roles.includes('ministry_of_health')
+  //     ? Object.values(regionLabelsMap)
+  //     : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
+  // );
+  console.log(roles.map((loc) => regionLabelsMap[loc]).filter(Boolean));
   return (
     <Page centered={!isMoH}>
       <CheckPermissions
@@ -126,24 +115,24 @@ export default () => {
             <Box py={1} display='flex' justifyContent='center'>
               <Button
                 fullWidth={false}
-                loading={isLoadingHiringReport}
-                onClick={() => handleDownloadReport('hired')}
+                loading={isLoadingReport === 'hired'}
+                onClick={() => handleDownloadMilestoneReports('hired')}
                 text='Download hiring report'
               />
             </Box>
             <Box py={1} display='flex' justifyContent='center'>
               <Button
                 fullWidth={false}
-                loading={isLoadingRosReport}
-                onClick={() => handleDownloadReport('ros')}
+                loading={isLoadingReport === 'ros'}
+                onClick={() => handleDownloadMilestoneReports('ros')}
                 text='Download return of service milestones report'
               />
             </Box>
             <Box py={1} display='flex' justifyContent='center'>
               <Button
                 fullWidth={false}
-                loading={isLoadingRosReport}
-                onClick={() => handleDownloadReport('participants')}
+                loading={isLoadingReport === 'psi'}
+                onClick={() => handleDownloadPSIReports('psi')}
                 text='Download participants attending PSI report'
               />
             </Box>

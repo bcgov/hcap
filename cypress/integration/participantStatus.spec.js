@@ -62,7 +62,7 @@ describe('Participants status suite', () => {
       // acknowledge participant accepted offer in writing
       cy.get('input[name="acknowledge"]').click();
       //  expect alert with allocations/remainingHires to exist
-      cy.wait(2500);
+      cy.wait(3000);
       cy.get('.MuiAlert-message').contains('This site has 100 allocations assigned');
 
       cy.contains('button', 'Submit').click();

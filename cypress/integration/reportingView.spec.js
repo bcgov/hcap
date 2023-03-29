@@ -60,6 +60,7 @@ describe('Reporting Download', () => {
 
     it('Should be able to ROS milestone report', () => {
       clickReportButton('Download return of service milestones report');
+      cy.readFile(`return-of-service-milestones-${new Date().toJSON()}.csv`).should('exist');
       cy.get('.MuiAlert-message').contains('Report generated successfully!').should('be.visible');
     });
 

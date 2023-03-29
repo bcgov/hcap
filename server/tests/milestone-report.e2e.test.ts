@@ -30,7 +30,6 @@ describe('api-e2e test for route /api/v1/milestone-report', () => {
     const header = await getKeycloakToken(healthAuthority);
     const res = await request(app).get('/api/v1/milestone-report').set(header);
     expect(res.status).toEqual(403);
-    expect(res.body?.data).toBeDefined();
   });
 
   it('should get hired report for MOH', async () => {
@@ -52,8 +51,20 @@ describe('api-e2e test for route /api/v1/milestone-report', () => {
   });
 
   it('should fail to get return of service milestone report without region for HA', async () => {
-    const header = await getKeycloakToken(ministryOfHealth);
+    const header = await getKeycloakToken(healthAuthority);
     const res = await request(app).get('/api/v1/milestone-report/csv/ros').set(header);
+    expect(res.status).toEqual(403);
+  });
+
+  it('should fail to get return of service milestone report with wrong region for HA', async () => {
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app).get('/api/v1/milestone-report/csv/ros/Interior').set(header);
+    expect(res.status).toEqual(403);
+  });
+
+  it('should fail to get hired report with wrong region for HA', async () => {
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app).get('/api/v1/milestone-report/csv/hired/Interior').set(header);
     expect(res.status).toEqual(403);
   });
 

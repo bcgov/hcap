@@ -5,7 +5,7 @@
 import request from 'supertest';
 import { app } from '../server';
 import { startDB, closeDB } from './util/db';
-import { getKeycloakToken, superuser } from './util/keycloak';
+import { getKeycloakToken, ministryOfHealth, healthAuthority } from './util/keycloak';
 
 describe('api-e2e test for route /api/v1/milestone-report', () => {
   let server;
@@ -19,16 +19,53 @@ describe('api-e2e test for route /api/v1/milestone-report', () => {
     await server.close();
   });
 
-  it('should get report', async () => {
-    const header = await getKeycloakToken(superuser);
+  it('should get report for MOH', async () => {
+    const header = await getKeycloakToken(ministryOfHealth);
     const res = await request(app).get('/api/v1/milestone-report').set(header);
     expect(res.status).toEqual(200);
     expect(res.body?.data).toBeDefined();
   });
 
-  it('should get hired report', async () => {
-    const header = await getKeycloakToken(superuser);
+  it('should not get report for HA', async () => {
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app).get('/api/v1/milestone-report').set(header);
+    expect(res.status).toEqual(403);
+    expect(res.body?.data).toBeDefined();
+  });
+
+  it('should get hired report for MOH', async () => {
+    const header = await getKeycloakToken(ministryOfHealth);
     const res = await request(app).get('/api/v1/milestone-report/csv/hired').set(header);
+    expect(res.status).toEqual(200);
+  });
+
+  it('should get fail to get hired report without region as HA', async () => {
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app).get('/api/v1/milestone-report/csv/hired').set(header);
+    expect(res.status).toEqual(403);
+  });
+
+  it('should get return of service milestone report for MOH', async () => {
+    const header = await getKeycloakToken(ministryOfHealth);
+    const res = await request(app).get('/api/v1/milestone-report/csv/ros').set(header);
+    expect(res.status).toEqual(200);
+  });
+
+  it('should fail to get return of service milestone report without region for HA', async () => {
+    const header = await getKeycloakToken(ministryOfHealth);
+    const res = await request(app).get('/api/v1/milestone-report/csv/ros').set(header);
+    expect(res.status).toEqual(403);
+  });
+
+  it('should get return of service milestone report with region for HA', async () => {
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app).get('/api/v1/milestone-report/csv/ros/Fraser').set(header);
+    expect(res.status).toEqual(200);
+  });
+
+  it('should get hired report with region for HA', async () => {
+    const header = await getKeycloakToken(healthAuthority);
+    const res = await request(app).get('/api/v1/milestone-report/csv/hired/Fraser').set(header);
     expect(res.status).toEqual(200);
   });
 });

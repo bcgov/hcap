@@ -182,7 +182,6 @@ describe('Participants status suite', () => {
   describe('Health Authority', () => {
     beforeEach(() => {
       cy.kcLogin('test-ha');
-      navigateToReportingView();
     });
     afterEach(() => {
       cy.kcLogout();

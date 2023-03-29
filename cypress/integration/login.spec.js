@@ -11,7 +11,7 @@ describe('Login', () => {
     cy.contains('View Sites').should('exist');
     cy.contains('View Access Requests').should('exist');
     cy.contains('Manage Users').should('exist');
-    cy.contains('View Milestone Reports').should('exist');
+    cy.contains('Reporting').should('exist');
     cy.contains('Manage PSI').should('exist');
   });
 
@@ -23,7 +23,7 @@ describe('Login', () => {
     cy.contains('View Sites').should('exist');
     cy.contains('View Access Requests').should('exist');
     cy.contains('Manage Users').should('exist');
-    cy.contains('View Milestone Reports').should('exist');
+    cy.contains('Reporting').should('exist');
     cy.contains('Manage PSI').should('exist');
   });
 
@@ -34,8 +34,8 @@ describe('Login', () => {
     cy.contains('View Employer EOIs').should('exist');
     cy.contains('View Sites').should('exist');
     cy.contains('View Access Requests').should('not.exist');
+    cy.contains('Reporting').should('exist');
     cy.contains('Manage Users').should('not.exist');
-    cy.contains('View Milestone Reports').should('not.exist');
     cy.contains('Manage PSI').should('exist');
   });
 

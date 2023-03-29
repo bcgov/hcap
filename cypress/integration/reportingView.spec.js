@@ -1,15 +1,12 @@
 describe('Reporting Download', () => {
-  beforeEach(() => {
-    cy.kcLogin('test-ha');
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
-  });
-
   const navigateToReportingView = () => {
     cy.visit('/admin');
-    cy.contains('button', 'Reporting').click();
+    cy.contains('Reporting').click();
+  };
+
+  const clickReportButton = (buttonLabel) => {
+    cy.get('button').contains(buttonLabel).should('be.visible');
+    cy.get('button').contains(buttonLabel).click();
   };
 
   describe('Health Authority', () => {
@@ -21,15 +18,24 @@ describe('Reporting Download', () => {
       cy.kcLogout();
     });
 
-    it('Should be able to download Hiring report by region', () => {});
+    it('Should be able to download Hiring report by region', () => {
+      clickReportButton('Download hiring report');
+      cy.get('.MuiAlert-message').contains('Report generated successfully!').should('be.visible');
+    });
 
-    it('Should be able to download ROS milestone report by region', () => {});
+    it('Should be able to download ROS milestone report by region', () => {
+      clickReportButton('Download return of service milestones report');
+      cy.get('.MuiAlert-message').contains('Report generated successfully!').should('be.visible');
+    });
 
-    it('Should be able to PSI attending report', () => {});
+    it('Should be able to PSI attending report', () => {
+      clickReportButton('Download participants attending PSI report');
+      cy.get('.MuiAlert-message').contains('Report generated successfully!').should('be.visible');
+    });
 
-    it('Should be not able to see additional reporting information on the reporting view as HA', () => {
-      cy.kcLogin('test-ha');
-      navigateToReportingView();
+    it('Should be not able to see additional reporting information on the reporting view', () => {
+      cy.contains('Milestone Reporting').should('not.exist');
+      cy.contains('Hired Per Region').should('not.exist');
     });
   });
 
@@ -42,13 +48,25 @@ describe('Reporting Download', () => {
       cy.kcLogout();
     });
 
-    it('Should be able to see additional reporting information on the reporting view as MOH', () => {});
+    it('Should be able to see additional reporting information on the reporting view', () => {
+      cy.get('.MuiTypography-subtitle1').contains('Milestone Reporting').should('be.visible');
+      cy.get('.MuiTypography-subtitle1').contains('Hired Per Region').should('be.visible');
+    });
 
-    it('Should be able to download Hiring report as MOH', () => {});
+    it('Should be able to download Hiring report', () => {
+      clickReportButton('Download hiring report');
+      cy.get('.MuiAlert-message').contains('Report generated successfully!').should('be.visible');
+    });
 
-    it('Should be able to ROS milestone report as MOH', () => {});
+    it('Should be able to ROS milestone report', () => {
+      clickReportButton('Download return of service milestones report');
+      cy.get('.MuiAlert-message').contains('Report generated successfully!').should('be.visible');
+    });
 
-    it('Should be able to PSI attending report as MOH', () => {});
+    it('Should be able to PSI attending report', () => {
+      clickReportButton('Download participants attending PSI report');
+      cy.get('.MuiAlert-message').contains('Report generated successfully!').should('be.visible');
+    });
   });
 
   describe('Employer', () => {

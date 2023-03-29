@@ -90,7 +90,7 @@ const checkVariables = (config: AccessConfig, name: string) => {
   console.table(config);
   Object.entries(config).forEach(([key, value]) => {
     if (!value) {
-      console.error(!!value, `'${key}' of ${name} is not set`);
+      console.error(`'${key}' of ${name} is not set`);
       process.exit(1);
     }
   });

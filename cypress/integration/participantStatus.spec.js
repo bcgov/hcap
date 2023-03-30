@@ -64,9 +64,8 @@ describe('Participants status suite', () => {
       cy.get(`li[data-value='${siteId}']`).click();
       // acknowledge participant accepted offer in writing
       cy.get('input[name="acknowledge"]').click();
-      // cy.intercept('GET', `/phase/${siteId}`).as('phaseGet');
-      //  expect alert with allocations/remainingHires to exist
       cy.wait('@phaseGet');
+      //  expect alert with allocations/remainingHires to exist
       cy.get('.MuiAlert-message').contains('This site has 100 allocations assigned');
 
       cy.contains('button', 'Submit').click();

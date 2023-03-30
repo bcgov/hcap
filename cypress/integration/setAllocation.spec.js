@@ -85,7 +85,6 @@ describe('Allocation functionality', () => {
     navigateToForm('set');
     // the MUI number component does not allow users to type a negative, so cypress needs to mock a keydown action
     cy.get('[name=allocation]').type('1{downArrow}{downArrow}{downArrow}');
-    cy.wait(500);
     cy.contains('button', 'Set').click();
 
     cy.contains('p.Mui-error', 'Must be a positive number');

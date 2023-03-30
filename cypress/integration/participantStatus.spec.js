@@ -1,4 +1,4 @@
-describe('Participants status suite', () => {
+describe('Participants status suite', { defaultCommandTimeout: 1000 }, () => {
   // Ensure phases and allocations exist - to test alert message
   before(() => {
     // get test phase data and assign to alias

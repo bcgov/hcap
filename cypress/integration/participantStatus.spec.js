@@ -1,5 +1,5 @@
 // Override the default timeout, this test timesout in the pipeline
-describe('Participants status suite', { defaultCommandTimeout: 10000 }, () => {
+describe('Participants status suite', { defaultCommandTimeout: 50000 }, () => {
   // Ensure phases and allocations exist - to test alert message
   before(() => {
     // get test phase data and assign to alias

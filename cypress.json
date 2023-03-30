@@ -1,6 +1,5 @@
 {
   "baseUrl": "http://hcapemployers.local.freshworks.club:4000",
-  "defaultCommandTimeout": 20000,
   "chromeWebSecurity": false,
   "video": false,
   "isLocal": false,

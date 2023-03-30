@@ -58,11 +58,15 @@ describe('Participants status suite', () => {
       });
       // select site
       cy.get('#mui-component-select-site').click();
+      // when siteID is selected, the component fetches all sitePhases and displays an alert
+      // Intercept the GET request, check for alert once request resolves
+      cy.intercept(`${Cypress.env('apiBaseURL')}/phase/*`).as('phaseGet');
       cy.get(`li[data-value='${siteId}']`).click();
       // acknowledge participant accepted offer in writing
       cy.get('input[name="acknowledge"]').click();
+      // cy.intercept('GET', `/phase/${siteId}`).as('phaseGet');
       //  expect alert with allocations/remainingHires to exist
-      cy.wait(2500);
+      cy.wait('@phaseGet');
       cy.get('.MuiAlert-message').contains('This site has 100 allocations assigned');
 
       cy.contains('button', 'Submit').click();

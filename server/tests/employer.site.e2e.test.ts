@@ -1,12 +1,19 @@
+import request from 'supertest';
+import {
+  employer,
+  getKeycloakToken,
+  superuser,
+  ministryOfHealth,
+  healthAuthority,
+} from './util/keycloak';
 /**
  * Tests for route /api/v1/employer-sites
  * Test Standalone execution: npm run test:debug employer.site.e2e.test
  */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import request from 'supertest';
 import { app } from '../server';
 import { startDB, closeDB } from './util/db';
-import { getKeycloakToken, superuser, ministryOfHealth } from './util/keycloak';
+
 import { saveSingleSite } from '../services/employers';
 
 const siteObject = ({ id, name }) => ({
@@ -72,148 +79,201 @@ describe('api-e2e tests for /employer-sites route', () => {
     await server.close();
   });
 
-  it('should save site', async () => {
-    // Used for batch site POST
-    const site = siteObject({ id: 61, name: 'Test Site 0' });
-    const header = await getKeycloakToken(superuser);
-    const res = await request(app).post('/api/v1/employer-sites').set(header).send(site);
+  describe('POST /', () => {
+    it('should save site as MOH', async () => {
+      // Used for batch site POST
+      const site = siteObject({ id: 61, name: 'Test Site 0' });
+      const header = await getKeycloakToken(ministryOfHealth);
+      const res = await request(app).post('/api/v1/employer-sites').set(header).send(site);
 
-    expect(res.status).toEqual(201);
+      expect(res.status).toEqual(201);
+    });
+
+    it('should error to save site as MOH - Duplicate', async () => {
+      // Used for batch site POST
+      const site = siteObject({ id: 61, name: 'Test Site 0' });
+      const header = await getKeycloakToken(ministryOfHealth);
+      const res = await request(app).post('/api/v1/employer-sites').set(header).send(site);
+      expect(res.status).toEqual(400);
+    });
+
+    it('should error when saving site due to validation', async () => {
+      const longSiteName =
+        'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.';
+      const site = siteObject({ id: 61, name: longSiteName });
+      const header = await getKeycloakToken(ministryOfHealth);
+      const res = await request(app).post('/api/v1/employer-sites').set(header).send(site);
+
+      expect(res.status).toEqual(400);
+    });
+
+    it('should error when saving site due to validation with site type', async () => {
+      const site = siteObject({ id: 909, name: 'testing failure' });
+      const invalidSiteObject = { ...site, siteType: 'Home Health Care' };
+      const header = await getKeycloakToken(ministryOfHealth);
+      const res = await request(app)
+        .post('/api/v1/employer-sites')
+        .set(header)
+        .send(invalidSiteObject);
+
+      expect(res.status).toEqual(400);
+    });
   });
 
-  it('should error when saving site due to validation', async () => {
-    const longSiteName =
-      'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.';
-    const site = siteObject({ id: 61, name: longSiteName });
-    const header = await getKeycloakToken(superuser);
-    const res = await request(app).post('/api/v1/employer-sites').set(header).send(site);
+  describe('PATCH /:id', () => {
+    it('should update site as MOH', async () => {
+      const site = siteObject({ id: 91, name: 'Test Site 1' });
 
-    expect(res.status).toEqual(400);
+      const savedSite = await saveSingleSite(site);
+
+      const update = {
+        ...site,
+        history: [
+          {
+            timestamp: new Date(),
+            changes: [{ field: 'siteName', from: 'Test site', to: 'Test Site New' }],
+          },
+        ],
+      };
+
+      delete update.siteId;
+      delete update.healthAuthority;
+
+      const header = await getKeycloakToken(ministryOfHealth);
+      const res = await request(app)
+        .patch(`/api/v1/employer-sites/${savedSite.id}`)
+        .set(header)
+        .send({ ...update });
+
+      expect(res.status).toEqual(200);
+    });
+
+    it('should fail to update site due to missing siteType', async () => {
+      const site = siteObject({ id: 910, name: 'Testing Failure again' });
+
+      const savedSite = await saveSingleSite(site);
+
+      const update = {
+        ...site,
+        history: [
+          {
+            timestamp: new Date(),
+            changes: [{ field: 'siteName', from: 'Test site', to: 'Test Site New' }],
+          },
+        ],
+      };
+
+      delete update.siteId;
+      delete update.healthAuthority;
+      delete update.siteType;
+
+      const header = await getKeycloakToken(ministryOfHealth);
+      const res = await request(app)
+        .patch(`/api/v1/employer-sites/${savedSite.id}`)
+        .set(header)
+        .send({ ...update });
+
+      expect(res.status).toEqual(400);
+    });
   });
 
-  it('should error when saving site due to validation with site type', async () => {
-    const site = siteObject({ id: 909, name: 'testing failure' });
-    const invalidSiteObject = { ...site, siteType: 'Home Health Care' };
-    const header = await getKeycloakToken(ministryOfHealth);
-    const res = await request(app)
-      .post('/api/v1/employer-sites')
-      .set(header)
-      .send(invalidSiteObject);
+  // This API is not currently being used by the FE
+  describe('GET /', () => {
+    it('should get all sites for MOH', async () => {
+      const header = await getKeycloakToken(ministryOfHealth);
+      const res = await request(app).get('/api/v1/employer-sites').set(header);
+      expect(res.status).toEqual(200);
+      expect(res.body.data[0].id).toBeDefined();
+      expect(res.body.data[0].siteId).toBeDefined();
+    });
 
-    expect(res.status).toEqual(400);
+    it('should get all sites for HA', async () => {
+      const header = await getKeycloakToken(healthAuthority);
+      const res = await request(app).get('/api/v1/employer-sites').set(header);
+      expect(res.status).toEqual(200);
+      expect(res.body.data[0].id).toBeDefined();
+      expect(res.body.data[0].siteId).toBeDefined();
+    });
+
+    it('should get all sites for HA', async () => {
+      const header = await getKeycloakToken(employer);
+      const res = await request(app).get('/api/v1/employer-sites').set(header);
+      expect(res.status).toEqual(200);
+      expect(res.body.data[0].id).toBeDefined();
+      expect(res.body.data[0].siteId).toBeDefined();
+    });
   });
 
-  it('should update site', async () => {
-    const site = siteObject({ id: 91, name: 'Test Site 1' });
+  describe('GET /user - Get All user sites', () => {
+    it('should get sites', async () => {
+      await closeDB();
+      await startDB();
 
-    const savedSite = await saveSingleSite(site);
+      const sites = [
+        batchSiteObject({ id: 105, name: 'Test Site 1' }),
+        batchSiteObject({ id: 106, name: 'Test Site 2' }),
+        batchSiteObject({ id: 107, name: 'Test Site 3' }),
+      ];
 
-    const update = {
-      ...site,
-      history: [
-        {
-          timestamp: new Date(),
-          changes: [{ field: 'siteName', from: 'Test site', to: 'Test Site New' }],
-        },
-      ],
-    };
+      await Promise.all(sites.map(saveSingleSite));
 
-    delete update.siteId;
-    delete update.healthAuthority;
-
-    const header = await getKeycloakToken(superuser);
-    const res = await request(app)
-      .patch(`/api/v1/employer-sites/${savedSite.id}`)
-      .set(header)
-      .send({ ...update });
-
-    expect(res.status).toEqual(200);
-  });
-
-  it('should fail to update site due to missing siteType', async () => {
-    const site = siteObject({ id: 910, name: 'Testing Failure again' });
-
-    const savedSite = await saveSingleSite(site);
-
-    const update = {
-      ...site,
-      history: [
-        {
-          timestamp: new Date(),
-          changes: [{ field: 'siteName', from: 'Test site', to: 'Test Site New' }],
-        },
-      ],
-    };
-
-    delete update.siteId;
-    delete update.healthAuthority;
-    delete update.siteType;
-
-    const header = await getKeycloakToken(ministryOfHealth);
-    const res = await request(app)
-      .patch(`/api/v1/employer-sites/${savedSite.id}`)
-      .set(header)
-      .send({ ...update });
-
-    expect(res.status).toEqual(400);
-  });
-
-  it('should get sites', async () => {
-    await closeDB();
-    await startDB();
-
-    const sites = [
-      batchSiteObject({ id: 105, name: 'Test Site 1' }),
-      batchSiteObject({ id: 106, name: 'Test Site 2' }),
-      batchSiteObject({ id: 107, name: 'Test Site 3' }),
-    ];
-
-    await Promise.all(sites.map(saveSingleSite));
-
-    const header = await getKeycloakToken(superuser);
-    const res = await request(app).get('/api/v1/employer-sites/user').set(header);
-    expect(res.status).toEqual(200);
-    expect(res.body.data.length).toEqual(3);
-    expect(res.body.data).toEqual(
-      expect.arrayContaining(
-        sites.map((site) =>
-          // using objectContaining because the API returns an ID after saving to the database
-          expect.objectContaining(getAllSitesExpectedFields(site))
+      const header = await getKeycloakToken(superuser);
+      const res = await request(app).get('/api/v1/employer-sites/user').set(header);
+      expect(res.status).toEqual(200);
+      expect(res.body.data.length).toEqual(3);
+      expect(res.body.data).toEqual(
+        expect.arrayContaining(
+          sites.map((site) =>
+            // using objectContaining because the API returns an ID after saving to the database
+            expect.objectContaining(getAllSitesExpectedFields(site))
+          )
         )
-      )
-    );
+      );
+    });
   });
 
-  it('should get site by id', async () => {
-    const site = siteObject({ id: 108, name: 'FW Test Site 1' });
-    const savedSite = await saveSingleSite(site);
-    const header = await getKeycloakToken(superuser);
-    const res = await request(app).get(`/api/v1/employer-sites/${savedSite.id}`).set(header);
-    expect(res.status).toEqual(200);
-    expect(res.body.id).toEqual(savedSite.id);
-    expect(res.body.siteId).toEqual(site.siteId);
-    expect(res.body.allocation).toBeDefined();
+  describe('GET /:id', () => {
+    it('should get site by id', async () => {
+      const site = siteObject({ id: 108, name: 'FW Test Site 1' });
+      const savedSite = await saveSingleSite(site);
+      const header = await getKeycloakToken(superuser);
+      const res = await request(app).get(`/api/v1/employer-sites/${savedSite.id}`).set(header);
+      expect(res.status).toEqual(200);
+      expect(res.body.id).toEqual(savedSite.id);
+      expect(res.body.siteId).toEqual(site.siteId);
+      expect(res.body.allocation).toBeDefined();
+    });
   });
 
-  // TODO: Add basic smoke test on route. Need to add solid verification logic
-  it('should get all participants of site by id', async () => {
-    const site = siteObject({ id: 109, name: 'FW Test Site 1' });
-    const savedSite = await saveSingleSite(site);
-    const expected = {
-      hired: [],
-      withdrawn: [],
-    };
-    const header = await getKeycloakToken(superuser);
-    const res = await request(app)
-      .get(`/api/v1/employer-sites/${savedSite.id}/participants`)
-      .set(header);
-    expect(res.status).toEqual(200);
-    expect(res.body).toEqual(expected);
+  describe('GET /region - Get all sites for HA by region', () => {
+    it('should get sites by region of HA', async () => {
+      const header = await getKeycloakToken(healthAuthority);
+      const res = await request(app).get(`/api/v1/employer-sites/region`).set(header);
+      expect(res.status).toEqual(200);
+    });
   });
 
-  it('should get employer-sites-detail', async () => {
-    const header = await getKeycloakToken(superuser);
-    const res = await request(app).get('/api/v1/employer-sites-detail').set(header).redirects(1);
-    expect(res.status).toEqual(200);
+  describe('GET /:id/participants - Get all participants associated to a site', () => {
+    // TODO: Add basic smoke test on route. Need to add solid verification logic
+    it('should get all participants of site by id', async () => {
+      const site = siteObject({ id: 109, name: 'FW Test Site 1' });
+      const savedSite = await saveSingleSite(site);
+      const expected = {
+        hired: [],
+        withdrawn: [],
+      };
+      const header = await getKeycloakToken(superuser);
+      const res = await request(app)
+        .get(`/api/v1/employer-sites/${savedSite.id}/participants`)
+        .set(header);
+      expect(res.status).toEqual(200);
+      expect(res.body).toEqual(expected);
+    });
+
+    it('should get employer-sites-detail', async () => {
+      const header = await getKeycloakToken(superuser);
+      const res = await request(app).get('/api/v1/employer-sites-detail').set(header).redirects(1);
+      expect(res.status).toEqual(200);
+    });
   });
 });

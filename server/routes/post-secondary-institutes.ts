@@ -70,6 +70,7 @@ router.get(
 //  Get a specific PSI by its ID
 router.get(
   '/:id',
+  keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority'),
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;

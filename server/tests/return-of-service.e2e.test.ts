@@ -100,7 +100,7 @@ describe('api e2e tests for /ros routes', () => {
     expect(res.status).toEqual(400);
   });
 
-  it('should get ros status', async () => {
+  it('should get ros status as HA', async () => {
     const header = await getKeycloakToken(healthAuthority);
     const res = await request(app).get(`/api/v1/ros/participant/${testParticipant.id}`).set(header);
     expect(res.status).toEqual(200);

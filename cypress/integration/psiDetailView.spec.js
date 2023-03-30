@@ -45,8 +45,9 @@ describe('Tests the PSI View', () => {
     cy.get('button').contains('Manage').click();
     cy.get('li').contains('Edit').should('be.visible').click();
     cy.get('input#streetAddress').clear().type('146 Numeral Ave');
+    cy.intercept(`${Cypress.env('apiBaseURL')}/psi/*`).as('psiPatch');
     cy.get('span.MuiButton-label').contains('Submit').click();
-    cy.wait(1000);
+    cy.wait('@psiPatch');
     cy.get('[test-id=psi-details-view-addr]').should('have.text', '146 Numeral Ave');
   });
 

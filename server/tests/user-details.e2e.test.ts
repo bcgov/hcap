@@ -7,6 +7,7 @@ import { app } from '../server';
 
 import { startDB, closeDB } from './util/db';
 import { getKeycloakToken, superuser, ministryOfHealth } from './util/keycloak';
+import { makeTestSite } from './util/integrationTestData';
 
 describe('api-e2e tests for /api/v1/user-details', () => {
   let server;
@@ -39,6 +40,30 @@ describe('api-e2e tests for /api/v1/user-details', () => {
   });
 
   describe('PATCH /user-details', () => {
+    it('should assign site to employer', async () => {
+      const site1 = await makeTestSite({
+        siteId: 206758493211,
+        siteName: 'Test Site for User assignment',
+        city: 'Test City 1030',
+      });
+      const header = await getKeycloakToken(superuser);
+      const usersRes = await request(app).get('/api/v1/users').set(header);
+      const [employer] = usersRes.body.data.filter((user) => user.username === 'test-employer');
+      expect(usersRes.status).toEqual(200);
+      const res = await request(app)
+        .patch(`/api/v1/user-details?id=${employer.id}`)
+        .set(header)
+        .send({
+          role: 'employer',
+          userId: employer.id,
+          username: employer.username,
+          sites: [site1.siteId],
+          acknowledgement: false,
+          regions: ['Fraser', 'Northern', 'Vancouver Coastal'],
+        });
+      expect(res.status).toEqual(200);
+    });
+
     it('should not update user but get error 400', async () => {
       const header = await getKeycloakToken(superuser);
       const res = await request(app).patch('/api/v1/user-details').set(header).send({});

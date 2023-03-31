@@ -188,8 +188,8 @@ describe('Participants status suite', () => {
 
     cy.assignSitesToUser('test-ha', [hireSite]);
 
-    cy.kcLogin('test-ha');
     // go from available status to hired status
+    cy.kcLogin('test-ha');
     progressParticipantHire(participantIdRegex, hireSite, 'available', 'hired');
 
     // archive participant

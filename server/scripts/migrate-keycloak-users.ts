@@ -2,6 +2,7 @@
 import axios from 'axios';
 import _ from 'lodash';
 import querystring from 'querystring';
+import { PromisePool } from '@supercharge/promise-pool';
 
 interface AccessConfig {
   auth_url: string;
@@ -38,6 +39,8 @@ if (TARGET_CONFIG.realm === 'moh_applications') {
   TARGET_CONFIG.api_url = process.env.TARGET_KEYCLOAK_API_URL;
 }
 
+const POOL_SIZE = 10;
+
 const getToken = async (config: AccessConfig): Promise<string> => {
   const { auth_url, realm, client_id, client_secret, username, password } = config;
 
@@ -65,13 +68,42 @@ const getApiUrl = (config: AccessConfig): string => {
   return `${auth_url}/admin/realms/${realm}`;
 };
 
-const getUsers = async (config: AccessConfig, token: string) => {
-  const url = `${getApiUrl(config)}/users?briefPresentation=true&max=10000`;
+const getUserCount = async (config: AccessConfig, token: string): Promise<number> => {
+  const url = `${getApiUrl(config)}/users/count`;
+
+  const { data: count } = await axios.get(`${url}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return count;
+};
+
+const getUsersByOffset = async (
+  config: AccessConfig,
+  token: string,
+  offset: number,
+  size: number
+) => {
+  const url = `${getApiUrl(config)}/users?briefPresentation=true&first=${offset}&max=${size}`;
 
   const response = await axios.get(`${url}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;
+};
+
+const getUsers = async (config: AccessConfig, token: string) => {
+  const total = await getUserCount(config, token);
+
+  console.log(`fetching ${total} users from ${config.auth_url}`);
+
+  const users = [];
+  await PromisePool.for(_.range(total / POOL_SIZE))
+    .withConcurrency(POOL_SIZE)
+    .process(async (__, index, pool) => {
+      const result = await getUsersByOffset(config, token, index * POOL_SIZE, POOL_SIZE);
+      users.push(...result);
+    });
+  return users;
 };
 
 const getUserById = async (config: AccessConfig, id: string, token: string): Promise<void> => {
@@ -176,10 +208,10 @@ const updateUserRoles = async (
   const sourceUsers = await getUsers(SOURCE_CONFIG, sourceToken);
 
   const targetToken = await getToken(TARGET_CONFIG);
-  const targetUsers = await getUsers(TARGET_CONFIG, targetToken);
-
-  console.log(`${sourceUsers.length} users from the source`);
-  console.log(`${targetUsers.length} users from the target`);
+  const targetUsers = _.chain(await getUsers(TARGET_CONFIG, targetToken))
+    .keyBy('username')
+    .mapValues()
+    .value();
 
   const sourceClientGuid = await getClientUuid(
     SOURCE_CONFIG,
@@ -196,17 +228,20 @@ const updateUserRoles = async (
   const targetClientRoles = await getClientRoles(TARGET_CONFIG, targetToken, targetClientGuid);
 
   // migrate users
-  for (const user of sourceUsers) {
-    if (user.username) {
-      const targetUser = targetUsers.find(
-        (u) => u.username.toLowerCase() === user.username.toLowerCase()
-      );
+  let dropped = 0;
+  let created = 0;
+
+  const syncUser = async (user) => {
+    const active = user.attributes?.bceid_userid?.length || user.attributes?.idir_userid?.length;
+    if (user.username && active) {
+      const targetUser = targetUsers[user.username];
 
       let newUser = targetUser;
       if (!newUser) {
         const details = await getUserById(SOURCE_CONFIG, user.id, sourceToken);
         await insertUser(TARGET_CONFIG, details, targetToken);
         newUser = await getUserByName(TARGET_CONFIG, user.username, targetToken);
+        created += 1;
       }
 
       // get users roles on source keycloak
@@ -223,10 +258,27 @@ const updateUserRoles = async (
         targetRoles.map((r) => _.pick(r, ['id', 'name'])),
         targetToken
       );
-      console.log(
-        `update user '${user.username}' roles: `,
-        targetRoles.map((r) => r.name)
-      );
+    } else {
+      dropped += 1;
     }
-  }
+  };
+
+  await PromisePool.for(sourceUsers)
+    .withConcurrency(10)
+    .handleError(async (error, user, pool) => {
+      if (error) {
+        console.error(error);
+        pool.stop();
+      }
+    })
+    .onTaskFinished((user, pool) => {
+      const progress = `Progress: ${Math.round(pool.processedPercentage())}%`;
+      process.stdout.cursorTo(0);
+      process.stdout.write(`${progress}: ${pool.processedCount()}/${sourceUsers.length}`);
+    })
+    .process(syncUser);
+
+  console.log();
+  console.log(`Created ${created} users`);
+  console.log(`Dropped ${dropped} users`);
 })();

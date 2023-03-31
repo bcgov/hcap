@@ -50,7 +50,7 @@ describe('api e2e tests for /allocation', () => {
 
     it('should fail to set an allocation due to negative number', async () => {
       const { site, phase } = await makeTestFKAllocations(25134776);
-      const header = await getKeycloakToken(healthAuthority);
+      const header = await getKeycloakToken(ministryOfHealth);
       const res = await request(app)
         .post(`/api/v1/allocation`)
         .send({

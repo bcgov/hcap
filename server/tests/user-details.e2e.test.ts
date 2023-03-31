@@ -23,7 +23,7 @@ describe('api-e2e tests for /api/v1/user-details', () => {
   describe('GET /user-details', () => {
     it('should get user details for MOH', async () => {
       const header = await getKeycloakToken(ministryOfHealth);
-      const usersRes = await request(app).get('/api/v1/employer-sites/user').set(header);
+      const usersRes = await request(app).get('/api/v1/users').set(header);
       expect(usersRes.status).toEqual(200);
       const res = await request(app)
         .get(`/api/v1/user-details?id=${usersRes.body.data[0].id}`)

@@ -81,6 +81,17 @@ describe('api e2e tests for /participant-user', () => {
     });
   });
 
+  describe('PATCH /participant/batch', () => {
+    it('should update participant', async () => {
+      const header = await getKeycloakToken(participant);
+      const res = await request(app)
+        .patch(`/api/v1/participant-user/participant/batch`)
+        .send(JSON.stringify({ isIndigenous: true, indigenousIdentities: 'inuit' }))
+        .set(header);
+      expect(res.status).toEqual(200);
+    });
+  });
+
   describe('POST /participant/:id/withdraw', () => {
     it('should withdraw a participant', async () => {
       const header = await getKeycloakToken(participant);
@@ -91,6 +102,24 @@ describe('api e2e tests for /participant-user', () => {
         })
         .set(header);
       expect(res.status).toEqual(200);
+    });
+  });
+
+  describe('POST /participant/:id/reconfirm_interest', () => {
+    it('should reconfirm interest for a participant', async () => {
+      const header = await getKeycloakToken(participant);
+      const res = await request(app)
+        .post(`/api/v1/participant-user/participant/${testParticipant.id}/reconfirm_interest`)
+        .set(header);
+      expect(res.status).toEqual(201);
+    });
+
+    it('should fail to reconfirm interest for a participant - invalid id', async () => {
+      const header = await getKeycloakToken(participant);
+      const res = await request(app)
+        .post(`/api/v1/participant-user/participant/57485/reconfirm_interest`)
+        .set(header);
+      expect(res.status).toEqual(401);
     });
   });
 

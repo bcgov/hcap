@@ -10,6 +10,7 @@ import {
   employer,
   superuser,
 } from './util/keycloak';
+import { makeTestParticipant } from './util/integrationTestData';
 
 describe('e2e tests for /participant route', () => {
   let server;
@@ -46,17 +47,58 @@ describe('e2e tests for /participant route', () => {
     });
   });
 
-  describe('POST /participants/waitlist', () => {
-    it('should add participant to waitlist', async () => {
-      const header = await getKeycloakToken(superuser);
+  describe('PATCH /', () => {
+    it('should update participant data', async () => {
+      const p = await makeTestParticipant({
+        emailAddress: 'test.e2e.participant.patch@hcap.com',
+      });
+      const header = await getKeycloakToken(ministryOfHealth);
       const res = await request(app)
-        .post(`/api/v1/participants/waitlist`)
+        .patch(`/api/v1/participant`)
         .send({
-          email: 'waitlist.participant@hcap.com',
+          firstName: 'Tom',
+          lastName: 'Smith',
+          phoneNumber: '6859600596',
+          interested: true,
+          emailAddress: 'patch.participant@hcap.com',
+          postalCode: 'V1V3E4',
+          history: [
+            {
+              timestamp: new Date(),
+              changes: [],
+            },
+          ],
+          id: p.id,
         })
         .set(header);
+      expect(res.status).toEqual(200);
+    });
 
-      expect(res.status).toEqual(201);
+    it('should fail to update due to validation error - no unknown', async () => {
+      const p = await makeTestParticipant({
+        emailAddress: 'test.e2e.participant.patch-1@hcap.com',
+      });
+      const header = await getKeycloakToken(ministryOfHealth);
+      const res = await request(app)
+        .patch(`/api/v1/participant`)
+        .send({
+          firstName: 'Tom',
+          city: 'Vancouver',
+          lastName: 'Smith',
+          phoneNumber: '6859600596',
+          interested: true,
+          emailAddress: 'patch.participant@hcap.com',
+          postalCode: 'V1V3E4',
+          history: [
+            {
+              timestamp: new Date(),
+              changes: [],
+            },
+          ],
+          id: p.id,
+        })
+        .set(header);
+      expect(res.status).toEqual(200);
     });
   });
 });

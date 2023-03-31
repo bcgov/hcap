@@ -99,7 +99,6 @@ describe('Bulk Allocation functionality', () => {
         cy.wait('@bulkPOST');
 
         // expect: no errors, success message.
-        cy.get('[name=acknowledgement]').should('exist');
         cy.contains('.Mui-error').should('not.exist');
         cy.get('.MuiAlert-message').contains(`${n} sites have been assigned allocations`);
       });

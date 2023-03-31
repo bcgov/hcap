@@ -29,8 +29,9 @@ describe('Tests the User View', () => {
     cy.get('input[name=acknowledgement]').focus();
     cy.get('input[name=acknowledgement]').check();
     cy.get('input[name=acknowledgement]').should('have.attr', 'value', 'true');
+    cy.intercept(`${Cypress.env('apiBaseURL')}/approve-user`).as('userPost');
     cy.get('button').contains('Submit').click({ force: true });
-    cy.wait(2000);
+    cy.wait('@userPost');
     cy.get('div.MuiAlert-message').contains('Access request approved').should('be.visible');
   });
 });

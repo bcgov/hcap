@@ -1,4 +1,5 @@
-describe('Participants status suite', () => {
+// Override the default timeout, this test timesout in the pipeline
+describe('Participants status suite', { defaultCommandTimeout: 50000 }, () => {
   // Ensure phases and allocations exist - to test alert message
   before(() => {
     // get test phase data and assign to alias
@@ -58,11 +59,14 @@ describe('Participants status suite', () => {
       });
       // select site
       cy.get('#mui-component-select-site').click();
+      // when siteID is selected, the component fetches all sitePhases and displays an alert
+      // Intercept the GET request, check for alert once request resolves
+      cy.intercept(`${Cypress.env('apiBaseURL')}/phase/*`).as('phaseGet');
       cy.get(`li[data-value='${siteId}']`).click();
       // acknowledge participant accepted offer in writing
       cy.get('input[name="acknowledge"]').click();
+      cy.wait('@phaseGet');
       //  expect alert with allocations/remainingHires to exist
-      cy.wait(2500);
       cy.get('.MuiAlert-message').contains('This site has 100 allocations assigned');
 
       cy.contains('button', 'Submit').click();

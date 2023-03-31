@@ -4,8 +4,11 @@ describe('Participant Table', () => {
   fixture.roles.map((role) => {
     it(`Correctly renders tabs for ${role.name}`, () => {
       cy.kcLogin(role.fixture);
+      cy.intercept(`${Cypress.env('apiBaseURL')}/participants?*`).as('participantGet');
+      // Wait for page to load after click
       cy.visit('/participant-view');
-      cy.wait(1500);
+
+      cy.wait('@participantGet');
       cy.get('div.MuiTabs-root')
         .find('button.MuiTab-root')
         .should('have.length', role.allTabs.length);

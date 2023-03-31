@@ -67,9 +67,10 @@ describe('Tests the Cohort View', () => {
     cy.get('@psi').then((psi) => {
       // intentionally select a PSI with 0 existing cohorts
       cy.contains(psi[12].institute_name).click();
+      cy.intercept(`${Cypress.env('apiBaseURL')}/cohorts/*`).as('cohortGet');
       cy.contains('Empty New Cohort').click();
       // Wait for page to load after click
-      cy.wait(500);
+      cy.wait('@cohortGet');
       // wait for page to load before checking for notification
       cy.get('.MuiTypography-body1').contains('100');
       cy.get('.MuiTypography-subtitle1')
@@ -133,11 +134,12 @@ describe('Tests the Cohort View', () => {
             cy.get('[name=GraduationDate]').clear().type(`{ctrl+v}${formattedDate}`);
           });
 
+          cy.intercept(`${Cypress.env('apiBaseURL')}/post-hire-status`).as('statusPost');
           cy.contains('button', 'Submit').click();
           // expect: no errors, success message.
           cy.contains('.Mui-error').should('not.exist');
           // wait for form to submit and message to show
-          cy.wait(1000);
+          cy.wait('@statusPost');
           cy.get('.MuiAlert-message').contains('Participant(s) status updated');
         });
       });

@@ -61,6 +61,7 @@
     "yup": "1.0.0"
   },
   "devDependencies": {
+    "@supercharge/promise-pool": "^2.4.0",
     "@types/express": "4.17.17",
     "@types/jest": "29.4.0",
     "@types/lodash": "4.14.191",

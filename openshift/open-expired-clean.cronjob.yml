@@ -43,7 +43,7 @@ objects:
                     - container-entrypoint
                     - bash
                     - '-c'
-                    - 'node scripts/withdraw-stale-open-participants.js'
+                    - 'npm run clean-stale-open-cronjob'
                   env:
                     - name: APP_ENV
                       value: ${IMAGE_TAG}

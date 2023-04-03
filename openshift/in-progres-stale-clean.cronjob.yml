@@ -42,7 +42,7 @@ objects:
                     - container-entrypoint
                     - bash
                     - '-c'
-                    - 'node scripts/clean-up.js'
+                    - 'npm run clean-stale-cronjob'
                   env:
                     - name: APP_ENV
                       value: ${IMAGE_TAG}

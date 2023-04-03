@@ -3,6 +3,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import querystring from 'querystring';
 import { PromisePool } from '@supercharge/promise-pool';
+import { dbClient } from '../db';
 
 interface AccessConfig {
   auth_url: string;
@@ -13,6 +14,15 @@ interface AccessConfig {
   client_secret: string;
   username: string;
   password: string;
+}
+
+interface User {
+  id: string;
+  username: string;
+  attributes?: {
+    idir_userid?: string;
+    bceid_userid?: string;
+  };
 }
 
 const SOURCE_CONFIG: AccessConfig = {
@@ -82,7 +92,7 @@ const getUsersByOffset = async (
   token: string,
   offset: number,
   size: number
-) => {
+): Promise<User[]> => {
   const url = `${getApiUrl(config)}/users?briefPresentation=true&first=${offset}&max=${size}`;
 
   const response = await axios.get(`${url}`, {
@@ -91,7 +101,7 @@ const getUsersByOffset = async (
   return response.data;
 };
 
-const getUsers = async (config: AccessConfig, token: string) => {
+const getUsers = async (config: AccessConfig, token: string): Promise<User[]> => {
   const total = await getUserCount(config, token);
 
   console.log(`fetching ${total} users from ${config.auth_url}`);
@@ -106,7 +116,7 @@ const getUsers = async (config: AccessConfig, token: string) => {
   return users;
 };
 
-const getUserById = async (config: AccessConfig, id: string, token: string): Promise<void> => {
+const getUserById = async (config: AccessConfig, id: string, token: string): Promise<User> => {
   const url = getApiUrl(config);
 
   const response = await axios.get(`${url}/users/${id}`, {
@@ -119,7 +129,7 @@ const getUserByName = async (
   config: AccessConfig,
   username: string,
   token: string
-): Promise<string> => {
+): Promise<User> => {
   const url = `${getApiUrl(config)}/users?briefPresentation=true&max=1&username=${username}`;
 
   const response = await axios.get(`${url}`, {
@@ -128,7 +138,7 @@ const getUserByName = async (
   return response.data[0];
 };
 
-const insertUser = async (config: AccessConfig, user: any, token: string) => {
+const insertUser = async (config: AccessConfig, user: any, token: string): Promise<void> => {
   const url = getApiUrl(config);
 
   await axios.post(`${url}/users`, user, {
@@ -136,7 +146,7 @@ const insertUser = async (config: AccessConfig, user: any, token: string) => {
   });
 };
 
-const checkVariables = (config: AccessConfig, name: string) => {
+const checkVariables = (config: AccessConfig, name: string): void => {
   console.log(`${name.toUpperCase()} ACCESS CONFIG`);
   console.table(config);
 
@@ -200,7 +210,7 @@ const updateUserRoles = async (
   });
 };
 
-const printUsersStats = (users) => {
+const printUsersStats = (users: User[]) => {
   const stats = {
     users: users.length,
     idir: users.filter((u) => u.attributes?.idir_userid).length,
@@ -211,24 +221,92 @@ const printUsersStats = (users) => {
 };
 
 const COMMAND_OPTIONS = [
-  '--dry-run', // print user statistics
+  '--print-users', // print user statistics
   '--database', // migrate database
   '--keycloak', // migrate keycloak users
 ];
 
 const checkOption = (option: string) => {
   if (!COMMAND_OPTIONS.includes(option)) {
-    console.log('Command option is required.');
-    console.log(`${process.argv[0]} ${process.argv[1]} [${COMMAND_OPTIONS.join('|')}]`);
+    console.error('Command option is required.');
+    console.error(`${process.argv[0]} ${process.argv[1]} [${COMMAND_OPTIONS.join('|')}]`);
     process.exit(1);
   }
 };
 
-const migrateDatabase = (sourceUsers, targetUsers) => {
-  console.log('migrate database');
+const changeUserId = async (oldId: string, newId: string): Promise<void> => {
+  await dbClient.db.withTransaction(async (tx) => {
+    // // update users.userInfo.id
+    let rows = await tx.query(`
+      SELECT body
+      FROM users
+      WHERE body -> 'userInfo' ->> 'id' = '${oldId}';
+    `);
+    for (const row of rows) {
+      row.body.userInfo.id = newId;
+      await tx.query(`
+        UPDATE users
+        SET body = '${JSON.stringify(row.body)}'
+        WHERE body -> 'userInfo' ->> 'id' = '${oldId}';
+      `);
+    }
+
+    // update participants_status.employer_id
+    await tx.query(`
+      UPDATE participants_status
+      SET employer_id = '${newId}'
+      WHERE employer_id = '${oldId}';
+    `);
+
+    // update participants_status.data.hiddenForUserIds
+    rows = await tx.query(`
+      SELECT id, data
+      FROM participants_status
+      WHERE data -> 'hiddenForUserIds' ->> '${oldId}' IS NOT null;
+    `);
+    for (const row of rows) {
+      row.data.hiddenForUserIds[newId] = row.data.hiddenForUserIds[oldId];
+      delete row.data.hiddenForUserIds[oldId];
+      await tx.query(`
+        UPDATE participants_status
+        SET data = '${JSON.stringify(row.data)}'
+        WHERE
+          id = '${row.id}' AND
+          data -> 'hiddenForUserIds' ->> '${oldId}' IS NOT null;
+      `);
+    }
+  });
 };
 
-(async function () {
+const migrateDatabase = async (sourceUsers: User[], targetUsers: Record<string, User>) => {
+  // check if all users are defined on the target keycloak
+  const unMappedUsers = sourceUsers.filter((u) => !targetUsers[u.username]);
+  if (unMappedUsers.length) {
+    console.error(`${unMappedUsers.length} users not found on the target keycloak`);
+    process.exit(1);
+  }
+
+  const idMap = sourceUsers.map((u) => [u.id, targetUsers[u.username].id]);
+
+  await dbClient.connect();
+
+  await PromisePool.for(idMap)
+    .withConcurrency(POOL_SIZE)
+    .handleError(async (error, user, pool) => {
+      if (error) {
+        console.error(error);
+        pool.stop();
+      }
+    })
+    .onTaskFinished((user, pool) => {
+      const progress = `Progress: ${Math.round(pool.processedPercentage())}%`;
+      process.stdout.cursorTo(0);
+      process.stdout.write(`${progress}: ${pool.processedCount()}/${sourceUsers.length}`);
+    })
+    .process(([oldId, newId]) => changeUserId(oldId, newId));
+};
+
+(async function migrateUsers() {
   const option = process.argv[2];
   checkOption(option);
 
@@ -251,7 +329,7 @@ const migrateDatabase = (sourceUsers, targetUsers) => {
     .value();
 
   if (option === COMMAND_OPTIONS[1]) {
-    migrateDatabase(sourceUsers, targetUsers);
+    await migrateDatabase(sourceUsers, targetUsers);
     return;
   }
 
@@ -306,7 +384,7 @@ const migrateDatabase = (sourceUsers, targetUsers) => {
   };
 
   await PromisePool.for(sourceUsers)
-    .withConcurrency(10)
+    .withConcurrency(POOL_SIZE)
     .handleError(async (error, user, pool) => {
       if (error) {
         console.error(error);

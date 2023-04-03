@@ -200,18 +200,60 @@ const updateUserRoles = async (
   });
 };
 
+const printUsersStats = (users) => {
+  const stats = {
+    users: users.length,
+    idir: users.filter((u) => u.attributes?.idir_userid).length,
+    bceid: users.filter((u) => u.attributes?.bceid_userid).length,
+  };
+
+  console.table(stats);
+};
+
+const COMMAND_OPTIONS = [
+  '--dry-run', // print user statistics
+  '--database', // migrate database
+  '--keycloak', // migrate keycloak users
+];
+
+const checkOption = (option: string) => {
+  if (!COMMAND_OPTIONS.includes(option)) {
+    console.log('Command option is required.');
+    console.log(`${process.argv[0]} ${process.argv[1]} [${COMMAND_OPTIONS.join('|')}]`);
+    process.exit(1);
+  }
+};
+
+const migrateDatabase = (sourceUsers, targetUsers) => {
+  console.log('migrate database');
+};
+
 (async function () {
+  const option = process.argv[2];
+  checkOption(option);
+
   checkVariables(SOURCE_CONFIG, 'source keycloak');
-  checkVariables(TARGET_CONFIG, 'target keycloak');
 
   const sourceToken = await getToken(SOURCE_CONFIG);
   const sourceUsers = await getUsers(SOURCE_CONFIG, sourceToken);
+
+  if (option === COMMAND_OPTIONS[0]) {
+    printUsersStats(sourceUsers);
+    return;
+  }
+
+  checkVariables(TARGET_CONFIG, 'target keycloak');
 
   const targetToken = await getToken(TARGET_CONFIG);
   const targetUsers = _.chain(await getUsers(TARGET_CONFIG, targetToken))
     .keyBy('username')
     .mapValues()
     .value();
+
+  if (option === COMMAND_OPTIONS[1]) {
+    migrateDatabase(sourceUsers, targetUsers);
+    return;
+  }
 
   const sourceClientGuid = await getClientUuid(
     SOURCE_CONFIG,

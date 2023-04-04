@@ -46,6 +46,7 @@ export interface HcapUserInfo {
 class Keycloak {
   realm: string;
   authUrl: string;
+  apiUrl: string;
   clientNameFrontend: string;
   clientNameBackend: string;
   clientSecretBackend: string;
@@ -63,6 +64,9 @@ class Keycloak {
   constructor() {
     const isLocal = process.env.KEYCLOAK_AUTH_URL.includes('local');
     this.realm = process.env.KEYCLOAK_REALM;
+    this.apiUrl = isLocal
+      ? process.env.KEYCLOAK_AUTH_URL + `/admin/realms/${this.realm}`
+      : process.env.KEYCLOAK_UMS_API_URL;
     this.authUrl = process.env.KEYCLOAK_AUTH_URL;
     this.clientNameFrontend = process.env.KEYCLOAK_FE_CLIENTID;
     this.clientNameBackend = process.env.KEYCLOAK_API_CLIENTID;
@@ -159,11 +163,9 @@ class Keycloak {
   async authenticateServiceAccount() {
     logger.info('Authenticating Keycloak service account');
     const data = querystring.stringify({
-      grant_type: 'password',
+      grant_type: 'client_credentials',
       client_id: this.clientNameBackend,
       client_secret: this.clientSecretBackend,
-      username: this.serviceAccountUsername,
-      password: this.serviceAccountPassword,
     });
     const url = `${this.authUrl}/realms/${this.realm}/protocol/openid-connect/token`;
     const config = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } };
@@ -216,7 +218,7 @@ class Keycloak {
       {
         // Map of clients to their internal Keycloak ID
         const clientNames = [this.clientNameBackend, this.clientNameFrontend];
-        const url = `${this.authUrl}/admin/realms/${this.realm}/clients`;
+        const url = `${this.apiUrl}/clients`;
         const response = await axios.get(url, config);
         this.clientIdMap = response.data
           .filter((client) => clientNames.includes(client.clientId))
@@ -224,9 +226,7 @@ class Keycloak {
       }
       {
         // Map containing all roles a user can assume and their associated Keycloak IDs
-        const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${
-          this.clientIdMap[this.clientNameFrontend]
-        }/roles`;
+        const url = `${this.apiUrl}/clients/${this.clientIdMap[this.clientNameFrontend]}/roles`;
         const response = await axios.get(url, config);
         this.roleIdMap = response.data.reduce((a, role) => ({ ...a, [role.name]: role.id }), {});
       }
@@ -254,15 +254,13 @@ class Keycloak {
       };
 
       if (!ignorePending) {
-        return getData(
-          `${this.authUrl}/admin/realms/${this.realm}/users?briefRepresentation=true&max=1000000`
-        );
+        return getData(`${this.apiUrl}/users?briefRepresentation=true&max=1000000`);
       }
 
       const results = await Promise.all(
         ['ministry_of_health', 'employer', 'health_authority'].map(async (role) =>
           getData(
-            `${this.authUrl}/admin/realms/${this.realm}/clients/${
+            `${this.apiUrl}/clients/${
               this.clientIdMap[this.clientNameFrontend]
             }/roles/${role}/users?briefRepresentation=true&max=1000000`
           )
@@ -286,7 +284,7 @@ class Keycloak {
           Authorization: `Bearer ${this.access_token}`,
         },
       };
-      const url = `${this.authUrl}/admin/realms/${this.realm}/users?briefRepresentation=true&username=${userName}&exact=true`;
+      const url = `${this.apiUrl}/users?briefRepresentation=true&username=${userName}&exact=true`;
       const response = await axios.get(url, config);
       return response.data[0];
     } catch (error) {
@@ -300,7 +298,7 @@ class Keycloak {
 
   getUserUrl(userId = '') {
     if (!userId) throw new Error('keycloak: User ID is required');
-    return `${this.authUrl}/admin/realms/${this.realm}/users/${userId}`;
+    return `${this.apiUrl}/users/${userId}`;
   }
 
   async setUserRoles(userId: string, role: string, regions: string[]) {
@@ -343,11 +341,12 @@ class Keycloak {
     try {
       await this.authenticateIfNeeded();
       const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-      const url = `${this.getUserUrl(userId)}/role-mappings`;
+      const url = `${this.getUserUrl(userId)}/role-mappings/clients/${
+        this.clientIdMap[this.clientNameFrontend]
+      }`;
       const response = await axios.get(url, config);
-      return response.data.clientMappings[this.clientNameFrontend].mappings.map(
-        (item) => item.name
-      );
+
+      return response.data.map((item: { name: string }) => item.name);
     } catch (error) {
       logger.error('KC getUserRoles Failed', {
         context: 'kc-getUserRoles',
@@ -361,7 +360,7 @@ class Keycloak {
     try {
       await this.authenticateIfNeeded();
       const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-      const url = `${this.authUrl}/admin/realms/${this.realm}/clients/${
+      const url = `${this.apiUrl}/clients/${
         this.clientIdMap[this.clientNameFrontend]
       }/roles/pending/users?briefRepresentation=true&max=1000000`;
       const response = await axios.get(url, config);

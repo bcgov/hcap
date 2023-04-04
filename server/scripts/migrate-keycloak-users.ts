@@ -244,6 +244,8 @@ const changeUserId = async (oldId: string, newId: string): Promise<void> => {
     `);
     for (const row of rows) {
       row.body.userInfo.id = newId;
+      row.body.keycloakId = newId;
+      row.body.oldKeycloakId = oldId;
       await tx.query(`
         UPDATE users
         SET body = '${JSON.stringify(row.body)}'

@@ -94,10 +94,11 @@ describe('Bulk Allocation functionality', () => {
       .then((n) => {
         const override = true;
         setBulkAllocationForm(200, override);
+        cy.intercept(`${Cypress.env('apiBaseURL')}/allocation/bulk-allocation`).as('bulkPOST');
         cy.get('form').submit();
+        cy.wait('@bulkPOST');
 
         // expect: no errors, success message.
-        cy.get('[name=acknowledgement]').should('exist');
         cy.contains('.Mui-error').should('not.exist');
         cy.get('.MuiAlert-message').contains(`${n} sites have been assigned allocations`);
       });

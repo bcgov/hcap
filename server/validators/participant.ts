@@ -22,6 +22,7 @@ import {
 
 import { ArchiveRequestDataShape } from './employer-operation';
 
+// TODO: Determine if this is needed
 export const ParticipantBatchSchema = yup.array().of(
   yup.lazy((item, options) => {
     const index = options.parent.indexOf(item) + 2;

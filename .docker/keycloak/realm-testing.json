@@ -1063,7 +1063,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "bf49b5d9-dd6b-46a1-b011-9ac75337cadb",
       "redirectUris": ["*"],
       "webOrigins": ["*"],
       "notBefore": 0,

@@ -30,7 +30,6 @@ import milestoneReportRouter from './milestone-report';
 import postHireStatusRouter from './post-hire-status';
 import rosRouter from './return-of-service';
 import * as featureFlags from '../services/feature-flags';
-import { getKeycloakToken, ministryOfHealth } from '../tests/util/keycloak';
 
 const apiRouter = express.Router();
 apiRouter.use(keycloak.expressMiddleware());
@@ -103,9 +102,8 @@ apiRouter.get(
 // Get users from Keycloak
 apiRouter.get(
   `/users`,
-  // keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
-    console.log(await getKeycloakToken(ministryOfHealth));
     const users = await keycloak.getUsers(true);
     const scrubbed = users.map((user) => ({
       id: user.id,

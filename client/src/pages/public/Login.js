@@ -6,6 +6,7 @@ import { useKeycloak } from '@react-keycloak/web';
 import { Page } from '../../components/generic';
 import { Routes } from '../../constants';
 import store from 'store';
+import { createCustomLoginUrl } from '../../utils';
 
 export default () => {
   const [keycloak] = useKeycloak();
@@ -15,9 +16,8 @@ export default () => {
     let idpHint;
 
     const redirect = state ? state.redirectOnLogin : Routes.Admin;
-
     store.set('REDIRECT', redirect);
-    keycloak.login({ idpHint, redirectUri: `${window.location.origin}${Routes.Keycloak}` });
+    window.location.replace(createCustomLoginUrl(keycloak, Routes.Keycloak, idpHint));
   }, [keycloak, state]);
 
   return (

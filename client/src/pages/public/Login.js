@@ -13,11 +13,9 @@ export default () => {
   const { state } = useLocation();
 
   useEffect(() => {
-    let idpHint;
-
     const redirect = state ? state.redirectOnLogin : Routes.Admin;
     store.set('REDIRECT', redirect);
-    window.location.replace(createCustomLoginUrl(keycloak, Routes.Keycloak, idpHint));
+    window.location.replace(createCustomLoginUrl(keycloak, Routes.Keycloak));
   }, [keycloak, state]);
 
   return (

@@ -12,7 +12,7 @@ export const createCustomLoginUrl = (kcInstance, route, idpHint) => {
     idpHint,
     redirectUri: `${window.location.origin}${route}`,
   });
-  const fullLoginUrl = loginUrl + `&idps_to_show=${idps.join(',')}`;
+  const fullLoginUrl = loginUrl + `&idps_to_show=${idpHint || idps.join(',')}`;
 
   return fullLoginUrl;
 };

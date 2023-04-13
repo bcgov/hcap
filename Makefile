@@ -43,6 +43,14 @@ migrate-up:
 migrate-down:
 	@npm run migrate down --prefix server
 
+migrate-up-last:
+	@npm run migrate up 1 --prefix server
+
+migrate-down-last:
+	@npm run migrate down 1 --prefix server
+
+migrate-redo:
+	@npm run migrate redo --prefix server
 
 seed-participants:
 	@echo "Seeding participants from server/test-data"

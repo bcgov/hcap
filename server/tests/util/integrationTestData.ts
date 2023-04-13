@@ -135,11 +135,13 @@ export const makeTestParticipantStatus = async ({
 
 interface CreateTestParticipantStatusData {
   participantData;
+  employerId: number;
   siteData?;
   status?: string;
 }
 export const createTestParticipantStatus = async ({
   participantData: participantDataObj,
+  employerId,
   siteData,
   status,
 }: CreateTestParticipantStatusData) => {
@@ -147,6 +149,7 @@ export const createTestParticipantStatus = async ({
   const site = await makeTestSite(siteData);
   const participantStatus = await makeTestParticipantStatus({
     participantId: participant.id,
+    employerId,
     status: status || 'hired',
     current: true,
     data: {
@@ -179,7 +182,7 @@ export const makeTestFKAllocations = async (id) => {
     end_date: new Date(),
   };
   const user = {
-    id: 'noid',
+    id: 0,
   };
   expect(site.siteId).toBeDefined();
   const phase = await createPhase(phaseData, user);

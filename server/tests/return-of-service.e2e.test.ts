@@ -4,7 +4,13 @@ import request from 'supertest';
 import { app } from '../server';
 
 import { startDB, closeDB } from './util/db';
-import { getKeycloakToken, healthAuthority, employer, ministryOfHealth } from './util/keycloak';
+import {
+  getKeycloakToken,
+  healthAuthority,
+  employer,
+  ministryOfHealth,
+  approveUsers,
+} from './util/keycloak';
 import { rosData, participantData, siteData } from './util/testData';
 import { rosPositionType } from '../constants';
 import { createTestParticipantStatus, makeTestSite } from './util/integrationTestData';
@@ -16,8 +22,11 @@ describe('api e2e tests for /ros routes', () => {
   beforeAll(async () => {
     await startDB();
     server = app.listen();
+    await approveUsers(employer, healthAuthority, ministryOfHealth);
+
     const { participant, site } = await createTestParticipantStatus({
       participantData: participantData({ emailAddress: 'test.e2e.ros@hcap.io' }),
+      employerId: 1,
       siteData: siteData({
         siteId: 7,
         siteName: 'Test E2E ROS Service Global',
@@ -74,6 +83,7 @@ describe('api e2e tests for /ros routes', () => {
     it('should create RoS status with different site', async () => {
       const { participant } = await createTestParticipantStatus({
         participantData: participantData({ emailAddress: 'test.e2e.ros1@hcap.io' }),
+        employerId: 1,
         siteData: siteData({
           siteId: 202206022000,
           siteName: 'Test E2E ROS Service Global - 1',

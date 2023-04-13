@@ -2,7 +2,8 @@ import axios from 'axios';
 import crypto from 'crypto';
 import { JSDOM } from 'jsdom';
 import querystring from 'querystring';
-
+import { collections, dbClient } from '../../db';
+import keycloak from '../../keycloak';
 import logger from '../../logger';
 
 export const superuser = {
@@ -145,4 +146,17 @@ export const getKeycloakToken = async ({ username, password }) => {
     });
     throw error;
   }
+};
+
+export const approveUsers = async (...users: { username: string }[]) => {
+  await Promise.all(
+    users.map(async (user) => {
+      const userInfo = await keycloak.getUser(user.username);
+      await dbClient.db?.saveDoc(collections.USERS, {
+        keycloakId: userInfo.id,
+        sites: [1111, 4444, 7777],
+        userInfo,
+      });
+    })
+  );
 };

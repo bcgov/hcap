@@ -26,8 +26,10 @@ export interface HcapUserInfo {
   name?: string;
   /** Username (e.g. "user@bceid") */
   username?: string;
+  /** local id */
+  id?: number;
   /** Unique identifier string for the user */
-  id?: string;
+  keycloakId?: string;
   sites?: number[];
   /** Roles of the user (such as `region_interior` or `health_authority`) */
   roles?: string[];
@@ -124,7 +126,8 @@ class Keycloak {
         req.hcapUserInfo = {
           name: content.name,
           username: content.preferred_username,
-          id: content.sub,
+          keycloakId: content.sub,
+          id: user?.id,
           sites: user?.sites || [],
           roles,
           regions: roles.map((role) => regionMap[role]).filter((region) => region),

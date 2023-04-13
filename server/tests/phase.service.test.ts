@@ -11,6 +11,7 @@ import {
   checkDateOverlap,
 } from '../services/phase';
 import { createAllocation } from '../services/allocations';
+import { approveUsers, employer } from './util/keycloak';
 
 import { siteData } from './util/testData';
 import {
@@ -28,6 +29,7 @@ describe('Phase Allocation Endpoints', () => {
   beforeAll(async () => {
     await startDB();
     server = app.listen();
+    await approveUsers(employer);
   });
 
   afterAll(async () => {
@@ -35,7 +37,7 @@ describe('Phase Allocation Endpoints', () => {
     server.close();
   });
 
-  const user = { id: v4() };
+  const user = { id: 1 };
 
   it('Create new phase, receive success', async () => {
     const phaseMock = {

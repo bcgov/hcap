@@ -5,6 +5,7 @@ import {
   superuser,
   ministryOfHealth,
   healthAuthority,
+  approveUsers,
 } from './util/keycloak';
 /**
  * Tests for route /api/v1/employer-sites
@@ -72,6 +73,7 @@ describe('api-e2e tests for /employer-sites route', () => {
   beforeAll(async () => {
     await startDB();
     server = app.listen();
+    await approveUsers(ministryOfHealth, employer, healthAuthority);
   });
 
   afterAll(async () => {
@@ -208,6 +210,7 @@ describe('api-e2e tests for /employer-sites route', () => {
     it('should get sites', async () => {
       await closeDB();
       await startDB();
+      await approveUsers(healthAuthority, superuser);
 
       const sites = [
         batchSiteObject({ id: 105, name: 'Test Site 1' }),

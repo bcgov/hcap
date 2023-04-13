@@ -26,7 +26,7 @@ describe('Allocation Endpoints', () => {
     server.close();
   });
 
-  const user = { id: v4() };
+  const user = { id: 1 };
 
   it('Set new allocation, receive success', async () => {
     const { site, phase } = await makeTestFKAllocations(26356);

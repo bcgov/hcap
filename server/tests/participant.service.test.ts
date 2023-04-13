@@ -19,6 +19,7 @@ import { createPostHireStatus } from '../services/post-hire-flow';
 import { getReport } from '../services/reporting';
 import { evaluateBooleanAnswer, postHireStatuses } from '../validation';
 import { saveSingleSite } from '../services/employers';
+import { approveUsers, employer, healthAuthority } from './util/keycloak';
 
 describe('Participants Service', () => {
   const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
@@ -158,6 +159,7 @@ describe('Participants Service', () => {
   beforeAll(async () => {
     await startDB();
     await Promise.all(allParticipants.map(async (participant) => makeParticipant(participant)));
+    await approveUsers(employer, healthAuthority);
   });
 
   afterAll(async () => {
@@ -190,8 +192,8 @@ describe('Participants Service', () => {
   });
 
   it('Set participant status with different employers, fetch participant with status', async () => {
-    const employerAId = v4();
-    const employerBId = v4();
+    const employerAId = 1;
+    const employerBId = 2;
 
     const openParticipants = await getParticipants(
       { isEmployer: true, id: employerAId, regions },
@@ -312,7 +314,7 @@ describe('Participants Service', () => {
   });
 
   it('confirms that reporting works properly', async () => {
-    const employerAId = v4();
+    const employerAId = 1;
 
     const participant = {
       maximusId: 648690,
@@ -337,7 +339,7 @@ describe('Participants Service', () => {
   });
 
   it('Status change happy path', async () => {
-    const employerAId = v4();
+    const employerAId = 1;
     const participants = await getParticipants(
       { isEmployer: true, id: employerAId, regions },
       null,
@@ -429,8 +431,8 @@ describe('Participants Service', () => {
   });
 
   it('Employer A hires participant X then employer B cannot hire participant X', async () => {
-    const employerAId = v4();
-    const employerBId = v4();
+    const employerAId = 1;
+    const employerBId = 2;
 
     const participants = await getParticipants(
       { isEmployer: true, id: employerAId, regions },
@@ -458,7 +460,7 @@ describe('Participants Service', () => {
   });
 
   it('Status change does not follow transitions: open > prospecting > interviewing > offer_made > hired, receive invalid_status_transition', async () => {
-    const employerAId = v4();
+    const employerAId = 1;
 
     const participants = await getParticipants(
       { isEmployer: true, id: employerAId, regions },
@@ -532,8 +534,8 @@ describe('Participants Service', () => {
   });
 
   it('Two Employers engage one participant and the inProgress number increases by one', async () => {
-    const employerAId = v4();
-    const employerBId = v4();
+    const employerAId = 1;
+    const employerBId = 2;
 
     const participants = await getParticipants(
       { isEmployer: true, id: employerAId, regions },
@@ -561,8 +563,8 @@ describe('Participants Service', () => {
   });
 
   it('See unavailable participant, acknowledge as rejected, then receive 0 unavailable participants', async () => {
-    const employerAId = v4();
-    const employerBId = v4();
+    const employerAId = 1;
+    const employerBId = 2;
 
     const participantsB = await getParticipants(
       { isEmployer: true, id: employerBId, regions, sites: [2] },
@@ -597,11 +599,12 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, 'unavailable']
+      [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, ps.UNAVAILABLE]
     );
 
-    expect(unavailableParticipantsA.data[0].statusInfos[0].status).toEqual(ps.PROSPECTING);
-    expect(unavailableParticipantsA.data[0].statusInfos[1].status).toEqual('already_hired');
+    let participant = unavailableParticipantsA.data.find((p) => p.id === selectParticipantId);
+    expect(participant.statusInfos[0].status).toEqual(ps.PROSPECTING);
+    expect(participant.statusInfos[1].status).toEqual(ps.ALREADY_HIRED);
 
     await setParticipantStatus(employerAId, selectParticipantId, ps.REJECTED, {
       final_status: 'hired by other',
@@ -621,12 +624,11 @@ describe('Participants Service', () => {
       [ps.REJECTED]
     );
 
-    expect(rejectedParticipantsA.data[0].statusInfos[0].status).toEqual(ps.REJECTED);
-    expect(rejectedParticipantsA.data[0].statusInfos[0].data.final_status).toEqual(
-      'hired by other'
-    );
-    expect(rejectedParticipantsA.data[0].statusInfos[0].data.previous).toEqual(ps.PROSPECTING);
-    expect(rejectedParticipantsA.data[0].statusInfos[1].status).toEqual('already_hired');
+    participant = rejectedParticipantsA.data.find((p) => p.id === selectParticipantId);
+    expect(participant.statusInfos[0].status).toEqual(ps.REJECTED);
+    expect(participant.statusInfos[0].data.final_status).toEqual('hired by other');
+    expect(participant.statusInfos[0].data.previous).toEqual(ps.PROSPECTING);
+    expect(participant.statusInfos[1].status).toEqual(ps.ALREADY_HIRED);
 
     const unavailableParticipantsAafter = await getParticipants(
       { isEmployer: true, id: employerAId, regions, sites: [] },
@@ -638,17 +640,19 @@ describe('Participants Service', () => {
       null,
       null,
       null,
-      [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, 'unavailable']
+      [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, ps.UNAVAILABLE]
     );
 
-    expect(unavailableParticipantsAafter.data.length).toEqual(0);
+    participant = unavailableParticipantsAafter.data.find((p) => p.id === selectParticipantId);
+    expect(participant).toBeUndefined();
   });
 
   it('Checks MoH status versus multiple employer engagement', async () => {
     await closeDB();
     await startDB();
-    const employerAId = v4();
-    const employerBId = v4();
+    await approveUsers(employer, healthAuthority);
+    const employerAId = 1;
+    const employerBId = 2;
 
     const participant1 = {
       maximusId: 648690,
@@ -722,7 +726,8 @@ describe('Participants Service', () => {
   it('checks the status of an entry made through the new-hired-participant endpoint', async () => {
     await closeDB();
     await startDB();
-    const employerAId = v4();
+    await approveUsers(employer);
+    const employerAId = 1;
 
     const participant1 = {
       lastName: 'Extra',
@@ -765,7 +770,7 @@ describe('Participants Service', () => {
     expect(participants.data[0].statusInfos[0].status).toEqual(ps.HIRED);
 
     // Multi org support
-    const employerBId = v4();
+    const employerBId = 2;
     const participantsForEmployerB = await getParticipants(
       { isEmployer: true, id: employerBId, regions, sites: [2] },
       null,
@@ -842,7 +847,8 @@ describe('Participants Service', () => {
   it('checks the site name of a hired participant', async () => {
     await closeDB();
     await startDB();
-    const employerAId = v4();
+    await approveUsers(employer);
+    const employerAId = 1;
 
     const participant1 = {
       lastName: 'Extra',
@@ -1007,7 +1013,7 @@ describe('Participants Service', () => {
     const resp = await makeParticipant(participantData);
 
     const userId = v4();
-    const employerId = v4();
+    const employerId = 1;
 
     await mapUserWithParticipant(userId, resp.id);
     // Hire the user
@@ -1024,7 +1030,8 @@ describe('Participants Service', () => {
   it('should returns post hire statuses', async () => {
     await closeDB();
     await startDB();
-    const employerAId = v4();
+    await approveUsers(employer);
+    const employerAId = 1;
 
     const participant1 = {
       lastName: 'Extra',

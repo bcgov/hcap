@@ -4,7 +4,7 @@
 import request from 'supertest';
 import { app } from '../server';
 import { startDB, closeDB } from './util/db';
-import { getKeycloakToken, ministryOfHealth, healthAuthority } from './util/keycloak';
+import { getKeycloakToken, ministryOfHealth, healthAuthority, approveUsers } from './util/keycloak';
 import { siteData } from './util/testData';
 import { makeTestSite } from './util/integrationTestData';
 
@@ -13,6 +13,7 @@ describe('api e2e tests for /phase', () => {
   beforeAll(async () => {
     await startDB();
     server = app.listen();
+    await approveUsers(healthAuthority, ministryOfHealth);
   });
 
   afterAll(async () => {

@@ -57,6 +57,9 @@ jobs:
           cat > .env << EOF
           ${{ secrets.ENVFILE }}
           KEYCLOAK_LOCAL_SECRET=${{ secrets.KEYCLOAK_LOCAL_SECRET }}
+          KEYCLOAK_LOCAL_REALM=${{ secrets.KEYCLOAK_LOCAL_REALM }}
+          KEYCLOAK_LOCAL_API_CLIENTID=${{ secrets.KEYCLOAK_LOCAL_API_CLIENTID }}
+          KEYCLOAK_LOCAL_FE_CLIENTID=${{ secrets.KEYCLOAK_LOCAL_FE_CLIENTID }}
           EOF
 
       - name: Build and Run
@@ -123,6 +126,9 @@ jobs:
           cat > .env << EOF
           ${{ secrets.ENVFILE }}
           KEYCLOAK_LOCAL_SECRET=${{ secrets.KEYCLOAK_LOCAL_SECRET }}
+          KEYCLOAK_LOCAL_REALM=${{ secrets.KEYCLOAK_LOCAL_REALM }}
+          KEYCLOAK_LOCAL_API_CLIENTID=${{ secrets.KEYCLOAK_LOCAL_API_CLIENTID }}
+          KEYCLOAK_LOCAL_FE_CLIENTID=${{ secrets.KEYCLOAK_LOCAL_FE_CLIENTID }}
           EOF
 
       - name: Build and Run

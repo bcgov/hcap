@@ -1,4 +1,4 @@
-FROM wizzn/keycloak:14
+FROM sleighzy/keycloak:16.1.0-arm64
 
 USER 0
 COPY create-users.sh /opt/jboss/startup-scripts/create-users.sh

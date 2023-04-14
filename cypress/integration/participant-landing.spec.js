@@ -4,6 +4,7 @@ describe('e2e test for participant landing page', () => {
   before(() => {
     // Create one participant
     cy.callAPI({
+      user: 'test-superuser',
       api: '/participants',
       body: fixture,
     });
@@ -11,6 +12,7 @@ describe('e2e test for participant landing page', () => {
 
   after(() => {
     cy.callAPI({
+      user: 'test-superuser',
       api: '/participants',
       method: 'DELETE',
       body: {

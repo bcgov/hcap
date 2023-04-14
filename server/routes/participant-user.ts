@@ -32,7 +32,8 @@ router.use(applyMiddleware(keycloak.allowRolesMiddleware('participant')));
 router.get(
   '/participants',
   asyncMiddleware(async (req, res) => {
-    const { email, user_id: userId } = req.user;
+    const { email } = req.user;
+    const userId = req.user.user_id ?? req.user.sub;
     if (email && userId) {
       const response = await getParticipantsForUser(userId, email);
       logger.info({
@@ -51,7 +52,7 @@ router.get(
 router.get(
   '/participant/:id',
   asyncMiddleware(async (req, res) => {
-    const { user_id: userId } = req.user;
+    const userId = req.user.user_id ?? req.user.sub;
     const { id } = req.params;
     const participants = await getParticipantByIdWithStatus({ id, userId });
     if (!participants.length) {
@@ -81,7 +82,8 @@ const patchableFields = [
 router.patch(
   '/participant/batch',
   asyncMiddleware(async (req, res) => {
-    const { user_id: userId, email } = req.user;
+    const { email } = req.user;
+    const userId = req.user.user_id ?? req.user.sub;
 
     const changes = { ...patchObject(req.body, patchableFields) };
     await validate(UserParticipantEditSchema, changes);
@@ -115,7 +117,7 @@ router.patch(
 router.patch(
   '/participant/:id',
   asyncMiddleware(async (req, res) => {
-    const { user_id: userId } = req.user;
+    const userId = req.user.user_id ?? req.user.sub;
     const id = sanitize(req.params.id);
     const changes = { ...patchObject(req.body, patchableFields), id };
     await validate(UserParticipantEditSchema, changes);
@@ -142,7 +144,7 @@ router.patch(
 router.post(
   '/participant/:id/withdraw',
   asyncMiddleware(async (req, res) => {
-    const { user_id: userId } = req.user;
+    const userId = req.user.user_id ?? req.user.sub;
     const { id } = req.params;
     const participants = await getParticipantByIdWithStatus({ id, userId });
     if (participants.length > 0) {
@@ -172,7 +174,8 @@ router.post(
 router.post(
   '/withdraw',
   asyncMiddleware(async (req, res) => {
-    await withdrawParticipantsByEmail(req.user.user_id, req.user.email);
+    const userId = req.user.user_id ?? req.user.sub;
+    await withdrawParticipantsByEmail(userId, req.user.email);
     return res.status(204).send({});
   })
 );
@@ -180,7 +183,7 @@ router.post(
 router.post(
   '/participant/:id/reconfirm_interest',
   asyncMiddleware(async (req, res) => {
-    const { user_id: userId } = req.user;
+    const userId = req.user.user_id ?? req.user.sub;
     const { id } = req.params;
     const participants = await getParticipantByIdWithStatus({ id, userId });
     if (!participants.length) {

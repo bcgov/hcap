@@ -7,3 +7,4 @@ export * from './getDialogTitle';
 export * from './prettifyStatus';
 export * from './gen-util';
 export * from './csvReports';
+export * from './keycloak-util';

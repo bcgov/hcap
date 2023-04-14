@@ -1,7 +1,6 @@
 /**
  * Tests for services/allocation.js
  */
-import { v4 } from 'uuid';
 import { app } from '../server';
 import {
   getAllocation,

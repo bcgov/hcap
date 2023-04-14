@@ -11,14 +11,14 @@ id,employer_id,participant_id,status,current,data
 10,1,38,rejected,False,"{""final_status"": ""hired by other""}"
 11,1,38,offer_made,False,{}
 12,1,38,interviewing,True,"{""site"": 7777, ""contacted_at"": ""2022/06/07""}"
-13,1,0,prospecting,False,"{""site"": 6666}"
-14,1,0,prospecting,False,"{""site"": 1111}"
-15,1,0,hired,False,"{""site"": 3333, ""hiredDate"": ""2020/07/14"", ""startDate"": ""2020/07/21"", ""positionType"": """", ""positionTitle"": """"}"
-16,1,0,offer_made,False,{}
-17,1,0,rejected,False,"{""final_status"": ""not responsive""}"
-18,1,0,rejected,False,"{""final_status"": ""not responsive""}"
-19,1,0,rejected,False,"{""final_status"": ""position filled""}"
-20,1,0,prospecting,True,"{""site"": 6666}"
+13,1,1,prospecting,False,"{""site"": 6666}"
+14,1,2,prospecting,False,"{""site"": 1111}"
+15,1,3,hired,False,"{""site"": 3333, ""hiredDate"": ""2020/07/14"", ""startDate"": ""2020/07/21"", ""positionType"": """", ""positionTitle"": """"}"
+16,1,4,offer_made,False,{}
+17,1,5,rejected,False,"{""final_status"": ""not responsive""}"
+18,1,6,rejected,False,"{""final_status"": ""not responsive""}"
+19,1,7,rejected,False,"{""final_status"": ""position filled""}"
+20,1,8,prospecting,True,"{""site"": 6666}"
 21,1,96,prospecting,False,"{""site"": 2222}"
 22,1,96,hired,False,"{""site"": 7777, ""hiredDate"": ""2020/11/18"", ""startDate"": ""2020/12/02"", ""positionType"": """", ""positionTitle"": """"}"
 23,1,96,offer_made,False,{}

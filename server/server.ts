@@ -38,9 +38,8 @@ app.use(
         'connect-src': [
           "'self'",
           'https://orgbook.gov.bc.ca',
-          'https://dev.oidc.gov.bc.ca',
-          'https://test.oidc.gov.bc.ca',
-          'https://oidc.gov.bc.ca',
+          'https://common-logon-test.hlth.gov.bc.ca',
+          'https://common-logon.hlth.gov.bc.ca',
         ],
         'base-uri': ["'self'"],
         'block-all-mixed-content': [],

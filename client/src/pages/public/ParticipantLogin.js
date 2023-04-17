@@ -6,7 +6,6 @@ import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import { Routes, BC_SERVICES_CARD_LINK } from '../../constants';
 import { useHistory } from 'react-router-dom';
-import { createCustomLoginUrl } from '../../utils';
 
 const useStyles = makeStyles((theme) => ({
   blueText: {
@@ -46,7 +45,10 @@ export default () => {
   const history = useHistory();
 
   const redirectToLogin = () => {
-    window.location.replace(createCustomLoginUrl(keycloak, Routes.ParticipantLanding, 'BCSC'));
+    keycloak.login({
+      idpHint: 'bcsc_hcap',
+      redirectUri: `${window.location.origin}${Routes.ParticipantLanding}`,
+    });
   };
   const redirectToForm = () => {
     history.push(Routes.ParticipantForm);

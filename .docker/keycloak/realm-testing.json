@@ -817,6 +817,21 @@
       "nodeReRegistrationTimeout": -1,
       "protocolMappers": [
         {
+          "id": "99a318ea-7b43-45d4-af69-681d437d9c3e",
+          "name": "bcsc_guid",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "bcsc_guid",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "bcsc_guid",
+            "jsonType.label": "String"
+          }
+        },
+        {
           "id": "60507962-9c5e-4b75-ab39-26f39f5fccb9",
           "name": "Client IP Address",
           "protocol": "openid-connect",

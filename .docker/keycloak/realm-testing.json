@@ -1176,7 +1176,7 @@
           }
         }
       ],
-      "defaultClientScopes": ["web-origins", "user_id", "profile", "roles", "email"],
+      "defaultClientScopes": ["web-origins", "user_id", "profile", "roles", "bcsc_guid", "email"],
       "optionalClientScopes": ["address", "phone", "offline_access", "microprofile-jwt"]
     },
     {
@@ -1786,6 +1786,33 @@
             "claim.name": "resource_access.${client_id}.roles",
             "jsonType.label": "String",
             "multivalued": "true"
+          }
+        }
+      ]
+    },
+    {
+      "id": "c014861f-c9d5-418e-a81c-dd2a4009005f",
+      "name": "bcsc_guid",
+      "description": "BCSC login guid",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      },
+      "protocolMappers": [
+        {
+          "id": "3cb806ff-6c40-4ca1-a9cc-4055c337e66c",
+          "name": "bcsc_guid",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "bcsc_guid",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "bcsc_guid",
+            "jsonType.label": "String"
           }
         }
       ]

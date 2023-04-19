@@ -1,6 +1,8 @@
+import _ from 'lodash';
 import querystring from 'querystring';
 import KeyCloakConnect from 'keycloak-connect';
 import axios from 'axios';
+import { collections, dbClient } from './db';
 import logger from './logger';
 import { getUser } from './services/user';
 
@@ -65,7 +67,7 @@ class Keycloak {
     const isLocal = process.env.KEYCLOAK_AUTH_URL.includes('local');
     this.realm = process.env.KEYCLOAK_REALM;
     this.apiUrl = isLocal
-      ? process.env.KEYCLOAK_AUTH_URL + `/admin/realms/${this.realm}`
+      ? `${process.env.KEYCLOAK_AUTH_URL}/admin/realms/${this.realm}`
       : process.env.KEYCLOAK_UMS_API_URL;
     this.authUrl = process.env.KEYCLOAK_AUTH_URL;
     this.clientNameFrontend = process.env.KEYCLOAK_FE_CLIENTID;
@@ -118,13 +120,24 @@ class Keycloak {
     return async (req, res, next) => {
       try {
         const { content } = req.kauth.grant.access_token;
-        const roles = content?.resource_access[this.clientNameFrontend]?.roles || [];
-        const user = await getUser(content.sub);
+        let roles = content?.resource_access[this.clientNameFrontend]?.roles || [];
+
+        const keycloakId = content.sub;
+        const username = content.preferred_username;
+
+        if (roles.length === 0 || (roles.length === 1 && roles.includes('pending'))) {
+          const cachedRoles = await this.migrateUser(keycloakId, content.email, username);
+          if (cachedRoles) {
+            roles = cachedRoles;
+          }
+        }
+
+        const user = await getUser(keycloakId);
 
         req.hcapUserInfo = {
           name: content.name,
-          username: content.preferred_username,
-          id: content.sub,
+          username,
+          id: keycloakId,
           sites: user?.sites || [],
           roles,
           regions: roles.map((role) => regionMap[role]).filter((region) => region),
@@ -301,33 +314,47 @@ class Keycloak {
     return `${this.apiUrl}/users/${userId}`;
   }
 
-  async setUserRoles(userId: string, role: string, regions: string[]) {
+  async deleteUserRoles(userId: string) {
+    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    const url = `${this.getUserUrl(userId)}/role-mappings/clients/${
+      this.clientIdMap[this.clientNameFrontend]
+    }`;
+    {
+      const data = (await this.getUserRoles(userId)).map((item) => ({
+        name: item,
+        id: this.roleIdMap[item],
+      }));
+      await axios.delete(url, { ...config, data });
+    }
+  }
+
+  async setUserRoles(userId: string, roles: string[]) {
+    await this.authenticateIfNeeded();
+
+    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
+    const url = `${this.getUserUrl(userId)}/role-mappings/clients/${
+      this.clientIdMap[this.clientNameFrontend]
+    }`;
+
+    const data = roles
+      .filter((r) => this.roleIdMap[r])
+      .map((role) => ({ name: role, id: this.roleIdMap[role] }));
+
+    await axios.post(url, data, config);
+  }
+
+  async setUserRoleWithRegions(userId: string, role: string, regions: string[]) {
     try {
       if (!Object.keys(this.roleIdMap).includes(role)) throw Error(`Invalid role: ${role}`);
-      const regionToRole = (region) => {
-        const roleName = Object.keys(regionMap).find((k) => regionMap[k] === region);
-        if (!roleName || !this.roleIdMap[roleName]) return null;
-        return { name: roleName, id: this.roleIdMap[roleName] };
-      };
+
       await this.authenticateIfNeeded();
-      const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-      const url = `${this.getUserUrl(userId)}/role-mappings/clients/${
-        this.clientIdMap[this.clientNameFrontend]
-      }`;
-      {
-        const data = (await this.getUserRoles(userId)).map((item) => ({
-          name: item,
-          id: this.roleIdMap[item],
-        }));
-        await axios.delete(url, { ...config, data });
-      }
-      {
-        const data = [
-          ...regions.map(regionToRole).filter((x) => x),
-          { name: role, id: this.roleIdMap[role] },
-        ];
-        await axios.post(url, data, config);
-      }
+      await this.deleteUserRoles(userId);
+
+      const regionalRoles = regions
+        .map((region) => _.findKey(regionMap, (v) => v === region))
+        .filter((v) => v);
+
+      await this.setUserRoles(userId, [role, ...regionalRoles]);
     } catch (error) {
       logger.error('KC setUserRoles Failed', {
         context: 'kc-setUserRoles',
@@ -340,10 +367,12 @@ class Keycloak {
   async getUserRoles(userId: string) {
     try {
       await this.authenticateIfNeeded();
+
       const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
       const url = `${this.getUserUrl(userId)}/role-mappings/clients/${
         this.clientIdMap[this.clientNameFrontend]
       }`;
+
       const response = await axios.get(url, config);
 
       return response.data.map((item: { name: string }) => item.name);
@@ -372,6 +401,65 @@ class Keycloak {
       });
       throw error;
     }
+  }
+
+  /**
+   * Migrate user's old keycloak id to new keycloak id and update roles
+   *
+   * @param keycloakId
+   * @param email
+   * @param username
+   */
+  async migrateUser(keycloakId: string, email: string, username: string): Promise<string[] | null> {
+    const migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne({
+      'email ilike': email,
+      'username ilike': username.includes('@bceid') ? `${username.split('@')[0]}@bceid%` : username,
+    });
+
+    if (!migrationStatus || migrationStatus.status !== 'pending') {
+      return null;
+    }
+
+    const undefinedRoles = migrationStatus.roles.filter((role) => !this.roleIdMap[role]);
+
+    if (undefinedRoles.length > 0) {
+      const msg = `${undefinedRoles.join(', ')} not defined`;
+      logger.error(msg, { context: 'kc-user-migration' });
+      throw Error(msg);
+    }
+
+    try {
+      await this.setUserRoles(keycloakId, migrationStatus.roles);
+    } catch (e) {
+      logger.error(`failed to update user(${keycloakId})'s role`, { context: 'kc-user-migration' });
+      throw e;
+    }
+
+    const [user] = await dbClient.db[collections.USERS].findDoc({
+      'userInfo.username ilike': username.includes('@bceid')
+        ? `${username.split('@')[0]}@bceid%`
+        : username,
+      'userInfo.email ilike': email,
+    });
+    if (user) {
+      user.userInfo.username = username;
+      await dbClient.db[collections.USERS].updateDoc(user.id, {
+        sites: user.sites || [],
+        userInfo: user.userInfo,
+        keycloakId,
+      });
+    } else {
+      logger.error(`no user record for ${keycloakId}`);
+    }
+
+    migrationStatus.username = username;
+    migrationStatus.status = 'complete';
+    migrationStatus.migrated_at = new Date();
+
+    await dbClient.db[collections.USER_MIGRATION].save(migrationStatus);
+    logger.info(`keycloak user migrated: ${migrationStatus.id} -> ${keycloakId}`);
+
+    return migrationStatus.roles;
   }
 }
 Keycloak.instance = new Keycloak();

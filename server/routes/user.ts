@@ -54,7 +54,7 @@ userDetailsRouter.patch(
       },
     } = req;
     const { id } = user;
-    await keycloak.setUserRoles(sanitize(userId), role, regions);
+    await keycloak.setUserRoleWithRegions(sanitize(userId), role, regions);
     let action;
     // Get user details from keycloak
     const userInfo = await keycloak.getUser(sanitize(username));

@@ -123,7 +123,7 @@ apiRouter.post(
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(AccessRequestApproval, req.body);
-    await keycloak.setUserRoles(
+    await keycloak.setUserRoleWithRegions(
       sanitize(req.body.userId),
       sanitize(req.body.role),
       req.body.regions

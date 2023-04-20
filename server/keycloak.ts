@@ -7,6 +7,7 @@ import logger from './logger';
 import { getUser } from './services/user';
 
 const MAX_RETRY = 5;
+const options = ['bceid', 'idir'];
 
 const regionMap = {
   region_fraser: 'Fraser',
@@ -120,12 +121,28 @@ class Keycloak {
   getUserInfoMiddleware() {
     // Connect middleware for adding HCAP user info to request object
     return async (req, res, next) => {
+      let roles = ['pending'];
+
       try {
         const { content } = req.kauth.grant.access_token;
-        let roles = content?.resource_access[this.clientNameFrontend]?.roles || [];
-
         const keycloakId = content.sub;
         const { preferred_username: username, email } = content;
+
+        const existingUser = await dbClient.db[collections.USER_MIGRATION].findOne({
+          'email ilike': email,
+          'username ilike': username.includes('@bceid')
+            ? `${username.split('@')[0]}@bceid%`
+            : username,
+        });
+
+        const type = email.split('@')[1];
+        const shouldSetRoles = !content?.resource_access && !existingUser && options.includes(type);
+
+        if (shouldSetRoles) {
+          this.setUserRoles(keycloakId, roles);
+        } else {
+          roles = content?.resource_access[this.clientNameFrontend]?.roles || [];
+        }
 
         if (roles.length === 0 || (roles.length === 1 && roles.includes('pending'))) {
           const cachedRoles = await this.migrateUser(keycloakId, email, username);

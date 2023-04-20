@@ -84,6 +84,7 @@ describe('Keycloak User Migration', () => {
     if (!participant) {
       const [updatedUser] = await dbClient.db[collections.USERS].findDoc({ keycloakId });
       expect(updatedUser.id).toEqual(user.id);
+      expect(updatedUser.userInfo.id).toEqual(keycloakId);
     }
     const roles = await keycloak.getUserRoles(keycloakId);
     const roleUpdated = newMigrationStatus.roles.every((role) => roles.includes(role));

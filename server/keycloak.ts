@@ -123,10 +123,10 @@ class Keycloak {
         let roles = content?.resource_access[this.clientNameFrontend]?.roles || [];
 
         const keycloakId = content.sub;
-        const username = content.preferred_username;
+        const { preferred_username: username, email } = content;
 
         if (roles.length === 0 || (roles.length === 1 && roles.includes('pending'))) {
-          const cachedRoles = await this.migrateUser(keycloakId, content.email, username);
+          const cachedRoles = await this.migrateUser(keycloakId, email, username);
           if (cachedRoles) {
             roles = cachedRoles;
           }
@@ -315,6 +315,8 @@ class Keycloak {
   }
 
   async deleteUserRoles(userId: string) {
+    await this.authenticateIfNeeded();
+
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
     const url = `${this.getUserUrl(userId)}/role-mappings/clients/${
       this.clientIdMap[this.clientNameFrontend]

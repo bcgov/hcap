@@ -10,6 +10,7 @@ import logger from '../../logger';
 export interface TestUser {
   username: string;
   password: string;
+  email?: string;
 }
 
 export const superuser: TestUser = {
@@ -29,6 +30,7 @@ export const employerBceid: TestUser = {
 export const participant: TestUser = {
   username: 'test.participant',
   password: process.env.KC_TEST_PARTICIPANT_PWD || 'password',
+  email: 'cristiano.ronaldo@hcap.club',
 };
 
 export const healthAuthority: TestUser = {

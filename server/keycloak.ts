@@ -413,12 +413,30 @@ class Keycloak {
    * @param username
    */
   async migrateUser(keycloakId: string, email: string, username: string): Promise<string[] | null> {
-    const migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne({
+    const meta = { context: 'kc-user-migration' };
+    const usernameCondition = username.includes('@bceid')
+      ? `${username.split('@')[0]}@bceid%`
+      : username;
+
+    let migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne({
       'email ilike': email,
-      'username ilike': username.includes('@bceid') ? `${username.split('@')[0]}@bceid%` : username,
+      'username ilike': usernameCondition,
     });
 
-    if (!migrationStatus || migrationStatus.status !== 'pending') {
+    if (!migrationStatus) {
+      migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne({
+        'username ilike': usernameCondition,
+      });
+      if (migrationStatus) {
+        const message = `user migration record with same username but different email found for ${keycloakId}`;
+        migrationStatus.message = message;
+        logger.error(message, meta);
+        await dbClient.db[collections.USER_MIGRATION].save(migrationStatus);
+      }
+      return null;
+    }
+
+    if (migrationStatus.status !== 'pending') {
       return null;
     }
 
@@ -426,14 +444,14 @@ class Keycloak {
 
     if (undefinedRoles.length > 0) {
       const msg = `${undefinedRoles.join(', ')} not defined`;
-      logger.error(msg, { context: 'kc-user-migration' });
+      logger.error(msg, meta);
       throw Error(msg);
     }
 
     try {
       await this.setUserRoles(keycloakId, migrationStatus.roles);
     } catch (e) {
-      logger.error(`failed to update user(${keycloakId})'s role`, { context: 'kc-user-migration' });
+      logger.error(`failed to update user(${keycloakId})'s role`, meta);
       throw e;
     }
 
@@ -452,7 +470,9 @@ class Keycloak {
         keycloakId,
       });
     } else {
-      logger.error(`no user record for ${keycloakId}`);
+      const message = `no user record found for ${keycloakId}`;
+      migrationStatus.message = message;
+      logger.error(message, meta);
     }
 
     migrationStatus.username = username;
@@ -460,7 +480,7 @@ class Keycloak {
     migrationStatus.migrated_at = new Date();
 
     await dbClient.db[collections.USER_MIGRATION].save(migrationStatus);
-    logger.info(`keycloak user migrated: ${migrationStatus.id} -> ${keycloakId}`);
+    logger.info(`keycloak user migrated: ${migrationStatus.id} -> ${keycloakId}`, meta);
 
     return migrationStatus.roles;
   }

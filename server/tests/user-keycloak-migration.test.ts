@@ -24,6 +24,11 @@ describe('Keycloak User Migration', () => {
   beforeAll(async () => {
     await startDB();
     await cacheUserRoles();
+    await Promise.all(
+      [employer, employerBceid, healthAuthority, ministryOfHealth, superuser].map((user) =>
+        approveUsers(user)
+      )
+    );
   });
 
   afterAll(closeDB);
@@ -40,12 +45,10 @@ describe('Keycloak User Migration', () => {
   it.each(testUsers)(`migrates keycloak user: $username`, async (testUser) => {
     const isParticipant = testUser.username.includes('participant');
     if (isParticipant) {
-      await makeParticipant(participantData({ emailAddress: 'cristiano.ronaldo@hcap.club' }));
-    } else {
-      await approveUsers(testUser);
+      await makeParticipant(participantData({ emailAddress: testUser.email }));
     }
 
-    const [migrationStatus] = await dbClient.db[collections.USER_MIGRATION].find({
+    const migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne({
       username: testUser.username,
     });
 
@@ -92,7 +95,6 @@ describe('Keycloak User Migration', () => {
   });
 
   it('maps business bceid to basic bceid', async () => {
-    await approveUsers(employerBceid);
     const { username } = employerBceid;
 
     // change username to standard bceid
@@ -129,8 +131,44 @@ describe('Keycloak User Migration', () => {
   });
 
   it.each(testUsers)(`ignores user with roles other than pending: $username`, async (user) => {
-    keycloak.migrateUser = jest.fn();
+    const { migrateUser } = keycloak;
+    const mock = jest.fn();
+    keycloak.migrateUser = mock;
     await triggerMiddlewareToMigrateUser(user);
-    expect(keycloak.migrateUser).not.toHaveBeenCalled();
+    keycloak.migrateUser = migrateUser;
+    expect(mock).not.toHaveBeenCalled();
+  });
+
+  it('records user with same username but different email', async () => {
+    await dbClient.db.query(`delete from ${collections.USER_MIGRATION}`);
+    await cacheUserRoles();
+
+    let migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne({
+      username: employer.username,
+    });
+    const { id, email } = migrationStatus;
+    await dbClient.db[collections.USER_MIGRATION].update(id, {
+      status: 'pending',
+      email: `test-${email}`,
+    });
+
+    await keycloak.deleteUserRoles(migrationStatus.id);
+    await triggerMiddlewareToMigrateUser(employer);
+    migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne({
+      username: employer.username,
+    });
+
+    expect(migrationStatus.message).toBeTruthy();
+
+    await dbClient.db[collections.USER_MIGRATION].update(id, {
+      status: 'pending',
+      email,
+    });
+
+    await triggerMiddlewareToMigrateUser(employer);
+    migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne({
+      username: employer.username,
+    });
+    expect(migrationStatus.status).toEqual('complete');
   });
 });

@@ -8,6 +8,7 @@ exports.up = async (pgm) => {
       email VARCHAR(255) NOT NULL,
       roles VARCHAR(30)[] NOT NULL,
       status VARCHAR(10) NOT NULL DEFAULT 'pending',
+      message VARCHAR(255),
       migrated_at timestamp with time zone
     )
   `);

@@ -1,6 +1,5 @@
 import * as csv from 'fast-csv';
 import { writeFileSync } from 'fs';
-import _ from 'lodash';
 import path from 'path';
 
 // convert array to csv format and file and add in table id

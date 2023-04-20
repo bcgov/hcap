@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import _ from 'lodash';
 
 import {
   archiveReasonOptions,
@@ -41,7 +40,7 @@ const partic_statuses = [
   'interviewing',
   'archived',
   'rejected',
-  'prospecting',
+  'peoi',
   'engaged',
   'unsuccessful_graduation',
 ];
@@ -212,7 +211,7 @@ const generateFullStatusEntry = (status: string) => {
       isCurrent = false;
     }
   } else if (status === 'rejected') {
-    randomize(6) % 2 === 0 ? (randomizeHiredSite = sites[randomize(sites.length)]) : '';
+    randomizeHiredSite = sites[randomize(sites.length)];
     if (randomizeHiredSite === site) {
       // participant hired at same site
       generatePreHireStatuses();
@@ -235,11 +234,6 @@ const generateFullStatusEntry = (status: string) => {
     partStatusArray.push(generateHiredEntry());
     cohortPartArray.push(generateCohortPartEntry());
     partPostHireArray.push(generatePartPostHireEntry(postHireStatuses.cohortUnsuccessful));
-    isCurrent = false;
-  } else {
-    // create prospecting status
-    isCurrent = true;
-    partStatusArray.push(generateProspectingEntry());
     isCurrent = false;
   }
 };

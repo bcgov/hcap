@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { faker } from '@faker-js/faker';
 import { convertToCsv } from './services/participant-seed';
 

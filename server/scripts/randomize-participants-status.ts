@@ -120,12 +120,9 @@ const generateFullStatusEntry = (status: string) => {
     randomizeHiredSite = sites[randomize(sites.length)];
     let chance = randomize(15);
     if (randomizeHiredSite === site) {
-      console.log('SAME SITE?????');
       generatePreHireStatuses();
       isCurrent = true;
-      const d = generateHiredEntry();
-      console.log(d);
-      partStatusArray.push(d);
+      partStatusArray.push(generateHiredEntry());
       cohortPartArray.push(generateCohortPartEntry(16));
       isCurrent = false;
     } else if (chance === 1) {

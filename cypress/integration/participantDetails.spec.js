@@ -25,7 +25,7 @@ describe('Participant details view', () => {
       cy.kcLogout();
     });
     it('Should only be able to track graduation', () => {
-      cy.visit('participant-details/participant/na/119');
+      cy.visit('participant-details/participant/na/337');
       cy.get('button.MuiTab-root').contains('Track Graduation');
       cy.get('button.MuiTab-root').contains('Assign Cohort').should('not.exist');
     });

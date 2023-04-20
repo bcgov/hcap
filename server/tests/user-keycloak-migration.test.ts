@@ -3,6 +3,7 @@ import request from 'supertest';
 import { v4 } from 'uuid';
 import { collections, dbClient } from '../db';
 import keycloak from '../keycloak';
+import { cacheUserRoles } from '../scripts/cache-user-roles';
 import { app } from '../server';
 import { makeParticipant } from '../services/participants';
 import { closeDB, startDB } from './util/db';
@@ -20,7 +21,10 @@ import {
 import { participantData } from './util/testData';
 
 describe('Keycloak User Migration', () => {
-  beforeAll(startDB);
+  beforeAll(async () => {
+    await startDB();
+    await cacheUserRoles();
+  });
 
   afterAll(closeDB);
 

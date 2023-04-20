@@ -123,6 +123,7 @@ class Keycloak {
 
       try {
         const { content } = req.kauth.grant.access_token;
+
         const keycloakId = content.sub;
         const { preferred_username: username, email } = content;
 

@@ -403,7 +403,7 @@
       "lastName": "Ronaldo",
       "email": "cristiano.ronaldo@hcap.club",
       "attributes": {
-        "bcsc_guid": ["ec3f8e58-55fd-447b-91c9-56d82e02fae9"]
+        "user_id": ["ec3f8e58-55fd-447b-91c9-56d82e02fae9"]
       },
       "disableableCredentialTypes": [],
       "requiredActions": [],

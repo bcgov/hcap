@@ -29,7 +29,6 @@ export default (req: Request & HasKauth, res: Response, next: () => void) => {
         preferred_username: userName = null,
         sub = null,
         user_id: userId = null,
-        bcsc_guid: bcscGuid = null,
       } = req.kauth?.grant?.access_token?.content || {};
       logger[logLevel]({
         context: 'access-log',
@@ -44,7 +43,6 @@ export default (req: Request & HasKauth, res: Response, next: () => void) => {
                 userName,
                 sub,
                 userId,
-                bcscGuid,
               }
             : null,
       });

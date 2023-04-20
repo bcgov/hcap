@@ -1,7 +1,7 @@
 describe('Participant details view', () => {
   before(() => {
-    cy.assignSitesToUser('test-employer', [1111]);
-    cy.assignSitesToUser('test-ha', [1111]);
+    cy.assignSitesToUser('test-employer', [4444]);
+    cy.assignSitesToUser('test-ha', [4444]);
   });
   describe('Health Authority', () => {
     beforeEach(() => {
@@ -11,7 +11,7 @@ describe('Participant details view', () => {
       cy.kcLogout();
     });
     it('Should be able to assign cohort and track graduation', () => {
-      cy.visit('participant-details/participant/na/27');
+      cy.visit('participant-details/participant/na/119');
       cy.get('button.MuiTab-root').contains('Track Graduation');
       cy.get('button.MuiTab-root').contains('Assign Cohort');
     });
@@ -25,7 +25,7 @@ describe('Participant details view', () => {
       cy.kcLogout();
     });
     it('Should only be able to track graduation', () => {
-      cy.visit('participant-details/participant/na/28');
+      cy.visit('participant-details/participant/na/119');
       cy.get('button.MuiTab-root').contains('Track Graduation');
       cy.get('button.MuiTab-root').contains('Assign Cohort').should('not.exist');
     });

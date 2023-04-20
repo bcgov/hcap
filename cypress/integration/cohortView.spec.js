@@ -90,7 +90,7 @@ describe('Tests the Cohort View', () => {
     cy.kcLogin('test-moh');
     visitsCohort('Fraser');
 
-    cy.get('tbody tr').should('have.length', 3);
+    cy.get('tbody tr').should('have.length', 8);
     // MOH can see all participants
     cy.get('.MuiAlert-standardInfo').should('not.exist');
   });
@@ -99,7 +99,7 @@ describe('Tests the Cohort View', () => {
     cy.kcLogin('test-ha');
     visitsCohort('Fraser');
 
-    cy.get('tr td').find('[type="checkbox"]').should('have.length', 1);
+    cy.get('tr td').find('[type="checkbox"]').should('have.length', 3);
     cy.get('.MuiAlert-standardInfo')
       .contains('Participants hired outside your region will not appear in this list')
       .should('be.visible');

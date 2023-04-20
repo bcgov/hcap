@@ -1,7 +1,7 @@
 describe('Return of Service Form', () => {
   before(() => {
     // assign site to test-ha as moh
-    cy.assignSitesToUser('test-ha', [1111]);
+    cy.assignSitesToUser('test-ha', [4444]);
   });
 
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe('Return of Service Form', () => {
   const futureInvalidDate = '2100/01/01';
 
   it('Should validate required fields', () => {
-    const participantId = 27;
+    const participantId = 297;
     // go to participant view
     cy.visit('participant-view');
 
@@ -44,7 +44,7 @@ describe('Return of Service Form', () => {
   });
 
   it('Should produce error when ROS date is past max valid date', () => {
-    const participantId = 27;
+    const participantId = 297;
     completeROSForm(participantId, futureInvalidDate);
 
     cy.get('.Mui-error').contains(
@@ -53,7 +53,7 @@ describe('Return of Service Form', () => {
   });
 
   it('Should be able to add ROS date in the future', () => {
-    const participantId = 26;
+    const participantId = 34;
 
     completeROSForm(participantId, maxValidDate);
 

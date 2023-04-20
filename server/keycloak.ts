@@ -445,6 +445,7 @@ class Keycloak {
     });
     if (user) {
       user.userInfo.username = username;
+      user.userInfo.id = keycloakId;
       await dbClient.db[collections.USERS].updateDoc(user.id, {
         sites: user.sites || [],
         userInfo: user.userInfo,

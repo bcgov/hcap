@@ -56,16 +56,17 @@ const employmentType = ['part-time', 'full-time'];
 const randomize = (n: number, reject?: boolean) => {
   let value = 0;
   // prevent duplicate participant ids from being used
+  // Sonarcloud complains about Math.random, ignoring as it's just being used for simple random numbers
   if (reject) {
-    value = Math.floor(Math.random() * n);
+    value = Math.floor(Math.random() * n); //NOSONAR
     while (usedIds.includes(value)) {
-      value = Math.floor(Math.random() * n);
+      value = Math.floor(Math.random() * n); //NOSONAR
     }
     usedIds.push(value);
 
     return value;
   }
-  return Math.floor(Math.random() * n);
+  return Math.floor(Math.random() * n); //NOSONAR
 };
 
 // create a random date based off the previous statuses date

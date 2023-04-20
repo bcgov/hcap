@@ -832,6 +832,21 @@
           }
         },
         {
+          "id": "b6b38cde-a138-4d86-a7fe-db9be27c724f",
+          "name": "user_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "user_id",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "user_id",
+            "jsonType.label": "String"
+          }
+        },
+        {
           "id": "4b546d98-1959-4ec2-9077-f96fd8651921",
           "name": "Client Host",
           "protocol": "openid-connect",

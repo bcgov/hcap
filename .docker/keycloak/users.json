@@ -218,6 +218,7 @@
       "emailVerified": false,
       "firstName": "Maximillion",
       "lastName": "Pegasus",
+      "email": "maximus@freshworks.club",
       "attributes": {
         "user_id": ["bc842519-8937-4206-be17-ff6b5c005d11"]
       },

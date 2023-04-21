@@ -7,7 +7,7 @@ import logger from './logger';
 import { getUser } from './services/user';
 
 const MAX_RETRY = 5;
-const options = ['bceid', 'idir'];
+const options = ['bceid', 'bceid_business', 'idir'];
 
 const regionMap = {
   region_fraser: 'Fraser',

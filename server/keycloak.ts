@@ -139,7 +139,7 @@ class Keycloak {
         req.hcapUserInfo = {
           name: content.name,
           username,
-          keycloakId: content.sub,
+          keycloakId,
           id: user?.id,
           sites: user?.sites || [],
           roles,

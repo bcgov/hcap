@@ -78,8 +78,44 @@
   },
   {
     "user": {
-      "id": "4f67ed77-9c58-440c-be8f-373d57c2a4e9",
-      "createdTimestamp": 1680795682860,
+      "id": "05c09d1a-2fd5-4423-8f46-e24f41594a11",
+      "username": "employer@bceid-basic-and-business",
+      "enabled": true,
+      "emailVerified": false,
+      "firstName": "Employer",
+      "lastName": "Bceid",
+      "email": "bceid@freshworks.io",
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": false,
+        "manage": true
+      }
+    },
+    "roles": [
+      {
+        "id": "ae9aae39-bd5b-4c8a-8543-e836b9fe4c62",
+        "name": "region_fraser",
+        "description": "Users with access to Fraser Health region data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      },
+      {
+        "id": "b1b6a9d7-ad35-423f-873b-96c2e146196b",
+        "name": "employer",
+        "description": "Employer users who interact with site and participant data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      }
+    ]
+  },
+  {
+    "user": {
+      "id": "44852cab-1c53-4460-af0d-0bd97d7010af",
+      "createdTimestamp": 1625597738468,
       "username": "test-employer-multi",
       "enabled": true,
       "totp": false,

@@ -7,27 +7,38 @@ import { collections, dbClient } from '../../db';
 import keycloak from '../../keycloak';
 import logger from '../../logger';
 
-export const superuser = {
+export interface TestUser {
+  username: string;
+  password: string;
+  email?: string;
+}
+
+export const superuser: TestUser = {
   username: 'test-superuser',
   password: process.env.KC_TEST_SUPER_USER_PWD || 'password',
 };
 
-export const employer = {
+export const employer: TestUser = {
   username: 'test-employer',
   password: process.env.KC_TEST_EMPLOYER_PWD || 'password',
 };
-
-export const participant = {
-  username: 'test.participant',
-  password: process.env.KC_TEST_PARTICIPANT_PWD || 'password',
+export const employerBceid: TestUser = {
+  username: 'employer@bceid-basic-and-business',
+  password: process.env.KC_TEST_EMPLOYER_PWD || 'password',
 };
 
-export const healthAuthority = {
+export const participant: TestUser = {
+  username: 'test.participant',
+  password: process.env.KC_TEST_PARTICIPANT_PWD || 'password',
+  email: 'cristiano.ronaldo@hcap.club',
+};
+
+export const healthAuthority: TestUser = {
   username: 'test-ha',
   password: process.env.KC_TEST_HA_PWD || 'password',
 };
 
-export const ministryOfHealth = {
+export const ministryOfHealth: TestUser = {
   username: 'test-moh',
   password: process.env.KC_TEST_MOH_PWD || 'password',
 };
@@ -53,7 +64,7 @@ const getAuthCodeFromLocation = (location) => {
   return '';
 };
 
-export const getKeycloakToken = async ({ username, password }) => {
+export const getKeycloakToken = async ({ username, password }: TestUser) => {
   try {
     const code_challenge = base64URLEncode(crypto.randomBytes(32));
     // this redirect uri is only used for server tests
@@ -146,7 +157,7 @@ export const getKeycloakToken = async ({ username, password }) => {
   }
 };
 
-export const approveUsers = async (...users: { username: string }[]) => {
+export const approveUsers = async (...users: TestUser[]) => {
   await Promise.all(
     users.map(async (user) => {
       const userInfo = await keycloak.getUser(user.username);

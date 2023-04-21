@@ -18,7 +18,7 @@ export const healthCheck = async () => {
   }
 
   try {
-    await keycloak.authenticateIfNeeded();
+    await keycloak.checkHealth();
     kc = true;
   } catch (excp) {
     logger.error('KC Health Check Failed!', {

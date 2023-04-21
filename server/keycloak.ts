@@ -1,7 +1,7 @@
-import _ from 'lodash';
 import querystring from 'querystring';
 import KeyCloakConnect from 'keycloak-connect';
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { UserRoles } from './constants';
 import { collections, dbClient } from './db';
 import logger from './logger';
@@ -60,14 +60,23 @@ class Keycloak {
   serviceAccountPassword: string;
   keycloakConnect: KeyCloakConnect.Keycloak;
   retryCount: number;
-  // eslint-disable-next-line camelcase
-  access_token?: string;
   clientIdMap; // These should be given stronger typing
   roleIdMap;
-  static instance: Keycloak;
+
+  axiosInstance: AxiosInstance;
+  expiresAt: number;
+  // eslint-disable-next-line camelcase
+  access_token?: string;
+
+  static instance = new Keycloak();
 
   // Wrapper class around keycloak-connect
-  constructor() {
+  private constructor() {
+    this.initialize();
+    this.setAxiosInstance();
+  }
+
+  initialize() {
     const isLocal = process.env.KEYCLOAK_AUTH_URL.includes('local');
     this.realm = process.env.KEYCLOAK_REALM;
     this.apiUrl = isLocal
@@ -93,6 +102,19 @@ class Keycloak {
     };
     this.keycloakConnect = new KeyCloakConnect({}, config);
     this.retryCount = 0;
+  }
+
+  setAxiosInstance() {
+    this.axiosInstance = axios.create({ baseURL: this.apiUrl });
+
+    this.axiosInstance.interceptors.request.use(async (config) => {
+      // refresh token if it expires in 30 seconds
+      if (!this.access_token || !this.expiresAt || this.expiresAt < Date.now() / 1000 + 30) {
+        await this.authenticateServiceAccount();
+      }
+      const headers = { Authorization: `Bearer ${this.access_token}` };
+      return { ...config, headers };
+    });
   }
 
   RealmInfoFrontend() {
@@ -204,13 +226,15 @@ class Keycloak {
     const url = `${this.authUrl}/realms/${this.realm}/protocol/openid-connect/token`;
     const config = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } };
     try {
+      // do not use axiosInstance because authUrl and apiUrl could be different, and it causes recursive call
       const response = await axios.post(url, data, config);
       this.access_token = response.data.access_token;
-    } catch (excp) {
+      this.expiresAt = (jwt.decode(this.access_token) as JwtPayload).exp;
+    } catch (error) {
       logger.error('KC Auth Failed', {
         context: 'kc-auth',
         retry: this.retryCount,
-        error: excp,
+        error,
       });
 
       if (MAX_RETRY > this.retryCount) {
@@ -224,70 +248,51 @@ class Keycloak {
     }
   }
 
-  async authenticateIfNeeded() {
-    // Race condition if token expires between this call and the desired authenticated call
-    const config = {
-      headers: {
-        Authorization: `Bearer ${this.access_token}`,
-      },
-    };
+  async checkHealth() {
     try {
-      await axios.get(
-        `${this.authUrl}/realms/${this.realm}/protocol/openid-connect/userinfo`,
-        config
-      );
+      await this.axiosInstance.get(`/realms/${this.realm}/protocol/openid-connect/userinfo`);
     } catch (error) {
       await this.authenticateServiceAccount();
     }
   }
 
   async buildInternalIdMap() {
-    await this.authenticateIfNeeded();
     // Creates maps of Keycloak role and client names to IDs
     // See Keycloak docs https://www.keycloak.org/docs-api/5.0/rest-api/index.html#_clients_resource
     try {
       logger.info('Building internal keycloak id map');
-      await this.authenticateIfNeeded();
-      const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
       {
         // Map of clients to their internal Keycloak ID
         const clientNames = [this.clientNameBackend, this.clientNameFrontend];
-        const url = `${this.apiUrl}/clients`;
-        const response = await axios.get(url, config);
+        const url = `/clients`;
+        const response = await this.axiosInstance.get(url);
         this.clientIdMap = response.data
           .filter((client) => clientNames.includes(client.clientId))
           .reduce((a, client) => ({ ...a, [client.clientId]: client.id }), {});
       }
       {
         // Map containing all roles a user can assume and their associated Keycloak IDs
-        const url = `${this.apiUrl}/clients/${this.clientIdMap[this.clientNameFrontend]}/roles`;
-        const response = await axios.get(url, config);
+        const url = `/clients/${this.clientIdMap[this.clientNameFrontend]}/roles`;
+        const response = await this.axiosInstance.get(url);
         this.roleIdMap = response.data.reduce((a, role) => ({ ...a, [role.name]: role.id }), {});
       }
-    } catch (excp) {
+    } catch (error) {
       logger.error('kc-buildInternalIdMap Failed', {
         context: 'kc-buildInternalIdMap',
-        error: excp,
+        error,
       });
-      throw excp;
+      throw error;
     }
   }
 
   async getUsers(roles = UserRoles) {
     try {
-      await this.authenticateIfNeeded();
-      const config = {
-        headers: {
-          Authorization: `Bearer ${this.access_token}`,
-        },
-      };
-
       const results = await Promise.all(
         roles.map(async (role) => {
           const url = `${this.apiUrl}/clients/${
             this.clientIdMap[this.clientNameFrontend]
           }/roles/${role}/users?briefRepresentation=true&max=1000000`;
-          const response = await axios.get(url, config);
+          const response = await this.axiosInstance.get(url);
           return response.data.filter((user) => user.username !== 'service-account');
         })
       );
@@ -303,14 +308,8 @@ class Keycloak {
 
   async getUser(userName: string) {
     try {
-      await this.authenticateIfNeeded();
-      const config = {
-        headers: {
-          Authorization: `Bearer ${this.access_token}`,
-        },
-      };
-      const url = `${this.apiUrl}/users?briefRepresentation=true&username=${userName}&exact=true`;
-      const response = await axios.get(url, config);
+      const url = `/users?briefRepresentation=true&username=${userName}&exact=true`;
+      const response = await this.axiosInstance.get(url);
       return response.data[0];
     } catch (error) {
       logger.error('KC getUser Failed', {
@@ -321,32 +320,23 @@ class Keycloak {
     }
   }
 
-  getUserUrl(userId = '') {
-    if (!userId) throw new Error('keycloak: User ID is required');
-    return `${this.apiUrl}/users/${userId}`;
-  }
-
   async deleteUserRoles(userId: string) {
-    await this.authenticateIfNeeded();
-
     const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-    const url = `${this.getUserUrl(userId)}/role-mappings/clients/${
+
+    const url = `/users/${userId}/role-mappings/clients/${
       this.clientIdMap[this.clientNameFrontend]
     }`;
-    {
-      const data = (await this.getUserRoles(userId)).map((item) => ({
-        name: item,
-        id: this.roleIdMap[item],
-      }));
-      await axios.delete(url, { ...config, data });
+    const data = (await this.getUserRoles(userId)).map((item) => ({
+      name: item,
+      id: this.roleIdMap[item],
+    }));
+    if (data.length) {
+      await this.axiosInstance.delete(url, { ...config, data });
     }
   }
 
   async setUserRoles(userId: string, roles: string[]) {
-    await this.authenticateIfNeeded();
-
-    const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-    const url = `${this.getUserUrl(userId)}/role-mappings/clients/${
+    const url = `/users/${userId}/role-mappings/clients/${
       this.clientIdMap[this.clientNameFrontend]
     }`;
 
@@ -354,21 +344,29 @@ class Keycloak {
       .filter((r) => this.roleIdMap[r])
       .map((role) => ({ name: role, id: this.roleIdMap[role] }));
 
-    await axios.post(url, data, config);
+    await this.axiosInstance.post(url, data);
   }
 
   async setUserRoleWithRegions(userId: string, role: string, regions: string[]) {
     try {
       if (!Object.keys(this.roleIdMap).includes(role)) throw Error(`Invalid role: ${role}`);
+      const regionToRole = (region) => {
+        const roleName = Object.keys(regionMap).find((k) => regionMap[k] === region);
+        if (!roleName || !this.roleIdMap[roleName]) return null;
+        return { name: roleName, id: this.roleIdMap[roleName] };
+      };
 
-      await this.authenticateIfNeeded();
+      const url = `/users/${userId}/role-mappings/clients/${
+        this.clientIdMap[this.clientNameFrontend]
+      }`;
+
       await this.deleteUserRoles(userId);
 
-      const regionalRoles = regions
-        .map((region) => _.findKey(regionMap, (v) => v === region))
-        .filter((v) => v);
-
-      await this.setUserRoles(userId, [role, ...regionalRoles]);
+      const data = [
+        ...regions.map(regionToRole).filter((x) => x),
+        { name: role, id: this.roleIdMap[role] },
+      ];
+      await this.axiosInstance.post(url, data);
     } catch (error) {
       logger.error('KC setUserRoles Failed', {
         context: 'kc-setUserRoles',
@@ -380,14 +378,11 @@ class Keycloak {
 
   async getUserRoles(userId: string) {
     try {
-      await this.authenticateIfNeeded();
-
-      const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-      const url = `${this.getUserUrl(userId)}/role-mappings/clients/${
+      const url = `/users/${userId}/role-mappings/clients/${
         this.clientIdMap[this.clientNameFrontend]
       }`;
 
-      const response = await axios.get(url, config);
+      const response = await this.axiosInstance.get(url);
 
       return response.data.map((item: { name: string }) => item.name);
     } catch (error) {
@@ -401,12 +396,10 @@ class Keycloak {
 
   async getPendingUsers() {
     try {
-      await this.authenticateIfNeeded();
-      const config = { headers: { Authorization: `Bearer ${this.access_token}` } };
-      const url = `${this.apiUrl}/clients/${
+      const url = `/clients/${
         this.clientIdMap[this.clientNameFrontend]
       }/roles/pending/users?briefRepresentation=true&max=1000000`;
-      const response = await axios.get(url, config);
+      const response = await this.axiosInstance.get(url);
       return response.data;
     } catch (error) {
       logger.error('KC getUserRoles Failed', {
@@ -497,6 +490,5 @@ class Keycloak {
     return migrationStatus.roles;
   }
 }
-Keycloak.instance = new Keycloak();
 
 export default Keycloak.instance;

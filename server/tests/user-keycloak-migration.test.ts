@@ -15,25 +15,20 @@ import {
   healthAuthority,
   ministryOfHealth,
   participant,
-  superuser,
   TestUser,
 } from './util/keycloak';
 import { participantData } from './util/testData';
 
 describe('Keycloak User Migration', () => {
+  const testUsers = [healthAuthority, employer, ministryOfHealth, participant];
+
   beforeAll(async () => {
     await startDB();
     await cacheUserRoles();
-    await Promise.all(
-      [employer, employerBceid, healthAuthority, ministryOfHealth, superuser].map((user) =>
-        approveUsers(user)
-      )
-    );
+    await Promise.all(testUsers.map((user) => approveUsers(user)));
   });
 
   afterAll(closeDB);
-
-  const testUsers = [healthAuthority, employer, ministryOfHealth, participant, superuser];
 
   const triggerMiddlewareToMigrateUser = async (user: TestUser) => {
     const header = await getKeycloakToken(user);
@@ -52,7 +47,7 @@ describe('Keycloak User Migration', () => {
       username: testUser.username,
     });
 
-    expect(migrationStatus).toBeDefined();
+    expect(migrationStatus?.id).toBeDefined();
 
     const keycloakId = migrationStatus.id;
 
@@ -95,6 +90,7 @@ describe('Keycloak User Migration', () => {
   });
 
   it('maps business bceid to basic bceid', async () => {
+    await approveUsers(employerBceid);
     const { username } = employerBceid;
 
     // change username to standard bceid
@@ -108,6 +104,7 @@ describe('Keycloak User Migration', () => {
     await dbClient.db[collections.USER_MIGRATION].update(keycloakId, { username: oldUserName });
 
     let [user] = await dbClient.db[collections.USERS].findDoc({ keycloakId });
+    expect(user).toBeDefined();
 
     user.userInfo.username = oldUserName;
     user.userInfo.id = oldKeycloakId;

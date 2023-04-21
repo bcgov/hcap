@@ -1,11 +1,12 @@
 import { PromisePool } from '@supercharge/promise-pool';
+import { AllRoles } from '../constants';
 import { collections, dbClient } from '../db';
 import keycloak from '../keycloak';
 
 export const cacheUserRoles = async () => {
   const users = [];
 
-  const keycloakUsers: { id: string }[] = await keycloak.getUsers();
+  const keycloakUsers: { id: string }[] = await keycloak.getUsers(AllRoles);
   await PromisePool.for(keycloakUsers)
     .withConcurrency(10)
     .process(async (user) => {

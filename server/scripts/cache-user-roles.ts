@@ -26,3 +26,11 @@ export const cacheUserRoles = async () => {
     await dbClient.db.query(query);
   }
 };
+
+(async function main() {
+  if (require.main === module) {
+    await keycloak.buildInternalIdMap();
+    await dbClient.connect();
+    await cacheUserRoles();
+  }
+})();

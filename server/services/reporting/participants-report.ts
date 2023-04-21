@@ -1,6 +1,5 @@
-import { dbClient, collections } from '../../db';
-import keycloak from '../../keycloak';
 import { DEFAULT_REGION_NAME, ParticipantStatus as ps } from '../../constants';
+import { dbClient, collections } from '../../db';
 
 type HistoryItem = {
   changes: { to: string; from: string; field: string }[];
@@ -149,24 +148,18 @@ export const getParticipantsReport = async () => {
     healthAuthorities[item.body.siteId] = item.body.healthAuthority;
   });
 
-  const users = await keycloak.getUsers();
-
-  const getFirst = (array) => array?.length > 0 && array[0];
-
   return inProgressEntries.map((entry) => ({
     participantId: entry.participant_id,
-    participantFsa: getFirst(entry.participantJoin)?.body.postalCodeFsa,
+    participantFsa: entry.participantJoin?.[0]?.body.postalCodeFsa,
     employerId: entry.employer_id,
-    employerEmail: users.find((user) => user.id === entry.employer_id)?.email,
+    employerEmail: entry.employerJoin?.[0]?.body.userInfo.email,
     employerhealthRegion: [
-      ...new Set(getFirst(entry.employerUserJoin)?.body?.sites.map((id) => healthAuthorities[id])),
+      ...new Set(entry.employerUserJoin?.[0]?.body?.sites.map((id) => healthAuthorities[id])),
     ].join('; '),
   }));
 };
 
 export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
-  const users = await keycloak.getUsers();
-
   const searchOptions = {
     status: [ps.HIRED],
     'duplicateArchivedJoin.status': null,
@@ -266,7 +259,6 @@ export const getRejectedParticipantsReport = async () => {
       'hiredJoin.status': null,
     });
 
-  const kcUser = await keycloak.getUsers();
   const sites = await dbClient.db[collections.EMPLOYER_SITES].findDoc({});
 
   return rejectedEntries
@@ -278,7 +270,7 @@ export const getRejectedParticipantsReport = async () => {
         participantInfo: entry.participantJoin[0].body,
         employerInfo: {
           ...user,
-          email: kcUser.find((item) => item.id === entry.employer_id)?.email,
+          email: entry.employerJoin?.[0]?.body.userInfo.email,
           regions: user.sites.map(
             (site) => sites.find((item) => item.siteId === site).healthAuthority
           ),

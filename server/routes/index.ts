@@ -1,6 +1,7 @@
 // Index route for /api/v1
 import dayjs from 'dayjs';
 import express from 'express';
+import { UserRoles } from '../constants';
 import { getSitesForUser } from '../services/employers';
 import { getUserNotifications } from '../services/user';
 import { validate, AccessRequestApproval } from '../validation';
@@ -104,7 +105,7 @@ apiRouter.get(
   `/users`,
   keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
-    const users = await keycloak.getUsers(true);
+    const users = await keycloak.getUsers(UserRoles);
     const scrubbed = users.map((user) => ({
       id: user.id,
       emailAddress: user.email,

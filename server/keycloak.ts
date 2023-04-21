@@ -2,6 +2,7 @@ import _ from 'lodash';
 import querystring from 'querystring';
 import KeyCloakConnect from 'keycloak-connect';
 import axios from 'axios';
+import { UserRoles } from './constants';
 import { collections, dbClient } from './db';
 import logger from './logger';
 import { getUser } from './services/user';
@@ -272,7 +273,7 @@ class Keycloak {
     }
   }
 
-  async getUsers(ignorePending?: boolean) {
+  async getUsers(roles = UserRoles) {
     try {
       await this.authenticateIfNeeded();
       const config = {
@@ -281,13 +282,8 @@ class Keycloak {
         },
       };
 
-      const rolesToRetrieve = ['ministry_of_health', 'employer', 'health_authority'];
-      if (!ignorePending) {
-        rolesToRetrieve.push('pending');
-      }
-
       const results = await Promise.all(
-        rolesToRetrieve.map(async (role) => {
+        roles.map(async (role) => {
           const url = `${this.apiUrl}/clients/${
             this.clientIdMap[this.clientNameFrontend]
           }/roles/${role}/users?briefRepresentation=true&max=1000000`;

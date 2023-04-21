@@ -281,24 +281,19 @@ class Keycloak {
         },
       };
 
-      const getData = async (url) => {
-        const response = await axios.get(url, config);
-        return response.data.filter((user) => user.username !== 'service-account');
-      };
-
       const rolesToRetrieve = ['ministry_of_health', 'employer', 'health_authority'];
       if (!ignorePending) {
         rolesToRetrieve.push('pending');
       }
 
       const results = await Promise.all(
-        rolesToRetrieve.map(async (role) =>
-          getData(
-            `${this.apiUrl}/clients/${
-              this.clientIdMap[this.clientNameFrontend]
-            }/roles/${role}/users?briefRepresentation=true&max=1000000`
-          )
-        )
+        rolesToRetrieve.map(async (role) => {
+          const url = `${this.apiUrl}/clients/${
+            this.clientIdMap[this.clientNameFrontend]
+          }/roles/${role}/users?briefRepresentation=true&max=1000000`;
+          const response = await axios.get(url, config);
+          return response.data.filter((user) => user.username !== 'service-account');
+        })
       );
       return results.flat();
     } catch (error) {

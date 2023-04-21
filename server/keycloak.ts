@@ -135,13 +135,13 @@ class Keycloak {
             : username,
         });
 
-        const type = email.split('@')[1];
+        const type = username.split('@')[1];
         const shouldSetRoles = !content?.resource_access && !existingUser && options.includes(type);
 
         if (shouldSetRoles) {
-          this.setUserRoles(keycloakId, roles);
+          await this.setUserRoles(keycloakId, roles);
         } else {
-          roles = content?.resource_access[this.clientNameFrontend]?.roles || [];
+          roles = content?.resource_access?.[this.clientNameFrontend]?.roles || [];
         }
 
         if (roles.length === 0 || (roles.length === 1 && roles.includes('pending'))) {

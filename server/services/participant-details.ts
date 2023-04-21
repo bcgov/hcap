@@ -21,11 +21,11 @@ export const checkUserHasAccessToParticipant = async (id: number, user: HcapUser
 
     // Get hired site to determine hired region
     const hiredSite = await dbClient.db[collections.EMPLOYER_SITES].findOne({
-      'body.siteId': hiredStatus.data.site,
+      'body.siteId': hiredStatus?.data.site,
     });
 
     // Allow access if requesting user has access to hired site
-    const participantIsInUserRegion = user.regions.includes(hiredSite.body.healthAuthority);
+    const participantIsInUserRegion = user.regions.includes(hiredSite?.body.healthAuthority);
 
     return participantIsInUserRegion;
   }

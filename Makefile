@@ -43,6 +43,14 @@ migrate-up:
 migrate-down:
 	@npm run migrate down --prefix server
 
+migrate-up-last:
+	@npm run migrate up 1 --prefix server
+
+migrate-down-last:
+	@npm run migrate down 1 --prefix server
+
+migrate-redo:
+	@npm run migrate redo --prefix server
 
 seed-participants:
 	@echo "Seeding participants from server/test-data"
@@ -73,15 +81,15 @@ local-kc-build:
 
 local-kc-run: local-kc-build
 	@echo "Starting test local app container"
-	@docker-compose -f docker-compose.test.yml up -d
+	@DOCKER_DEFAULT_PLATFORM=linux/amd64 docker-compose -f docker-compose.test.yml up -d
 
 local-kc-run-only:
 	@echo "Starting test local app container"
-	@docker-compose -f docker-compose.test.yml up -d 
+	@DOCKER_DEFAULT_PLATFORM=linux/amd64 docker-compose -f docker-compose.test.yml up -d
 
 local-kc-run-debug: local-kc-build
 	@echo "Starting test local app container in debug mode"
-	@docker-compose -f docker-compose.debug.yml up
+	@DOCKER_DEFAULT_PLATFORM=linux/amd64 docker-compose -f docker-compose.debug.yml up
 
 local-kc-down:
 	@echo "Stopping local app container"

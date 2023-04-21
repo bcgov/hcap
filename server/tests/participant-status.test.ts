@@ -1,6 +1,4 @@
 // Test execution code: npm run test:debug participant-status.test.js
-import { v4 } from 'uuid';
-
 import { dbClient, collections } from '../db';
 import { getParticipants } from '../services/participants';
 
@@ -10,6 +8,7 @@ import { startDB, closeDB } from './util/db';
 import { makeTestParticipant, makeTestSite } from './util/integrationTestData';
 
 import { ParticipantStatus } from '../constants';
+import { approveUsers, employer, healthAuthority, superuser } from './util/keycloak';
 
 const {
   PROSPECTING,
@@ -28,6 +27,7 @@ const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouv
 describe('Test Participant status data model and service', () => {
   beforeAll(async () => {
     await startDB();
+    await approveUsers(employer, healthAuthority, superuser);
   });
 
   afterAll(async () => {
@@ -44,8 +44,8 @@ describe('Test Participant status data model and service', () => {
       city: 'Test City 10001',
     });
 
-    const emp1 = { id: v4(), sites: [site.siteId] };
-    const emp2 = { id: v4(), sites: [site.siteId] };
+    const emp1 = { id: 1, sites: [site.siteId] };
+    const emp2 = { id: 2, sites: [site.siteId] };
 
     const ps1 = await setParticipantStatus(
       emp1.id,
@@ -165,9 +165,9 @@ describe('Test Participant status data model and service', () => {
       city: 'Test City 1030',
     });
 
-    const emp1 = { id: v4(), sites: [site1.siteId, site2.siteId] };
-    const emp2 = { id: v4(), sites: [site1.siteId] };
-    const emp3 = { id: v4(), sites: [site2.siteId] };
+    const emp1 = { id: 1, sites: [site1.siteId, site2.siteId] };
+    const emp2 = { id: 2, sites: [site1.siteId] };
+    const emp3 = { id: 3, sites: [site2.siteId] };
 
     const ps1 = await setParticipantStatus(
       emp1.id,
@@ -328,14 +328,14 @@ describe('Test Participant status data model and service', () => {
     });
 
     const emp1 = {
-      id: v4(),
+      id: 1,
       isEmployer: true,
       regions,
       sites: [site1.siteId],
     };
 
     const emp2 = {
-      id: v4(),
+      id: 2,
       isEmployer: true,
       regions,
       sites: [site1.siteId],
@@ -426,7 +426,7 @@ describe('Test Participant status data model and service', () => {
     });
 
     const emp1 = {
-      id: v4(),
+      id: 1,
       isEmployer: true,
       regions,
       sites: [site1.siteId],
@@ -455,7 +455,7 @@ describe('Test Participant status data model and service', () => {
 
     // Check for employer2
     const emp2 = {
-      id: v4(),
+      id: 2,
       isEmployer: true,
       regions,
       sites: [site1.siteId],
@@ -488,7 +488,7 @@ describe('Test Participant status data model and service', () => {
       city: 'Test City 20001',
       healthAuthority: siteLocation,
     });
-    const emp1 = { id: v4(), sites: [site.siteId] };
+    const emp1 = { id: 1, sites: [site.siteId] };
 
     const ps1 = await setParticipantStatus(
       emp1.id,

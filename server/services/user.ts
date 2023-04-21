@@ -10,10 +10,10 @@ export const userRegionQuery = (regions: string[], target: string) => {
   };
 };
 
-export const getUser = async (id: string) => {
-  const query = { keycloakId: id };
-  const options = { single: true };
-  return dbClient.db[collections.USERS].findDoc(query, options);
+export const getUser = async (keycloakId: string) => {
+  const query = { 'body.keycloakId': keycloakId };
+  const user = await dbClient.db[collections.USERS].findOne(query);
+  return user ? { ...user.body, id: user.id } : null;
 };
 
 /**

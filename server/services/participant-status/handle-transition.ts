@@ -105,7 +105,7 @@ export const handleStatusTransitions = async (context: {
   status: ps;
   hiredStatusItems;
   participantId: string;
-  employerId: string;
+  employerId: number;
   data;
   site;
   isRosComplete: boolean;

@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 // Test execution code: npm run test:debug return-of-service.test.js
 import { startDB, closeDB } from './util/db';
+import { approveUsers, employer } from './util/keycloak';
 import { participantData, siteData } from './util/testData';
 import { createTestParticipantStatus } from './util/integrationTestData';
 
@@ -14,9 +15,11 @@ describe('Test return of service', () => {
   let testSite;
   beforeAll(async () => {
     await startDB();
+    await approveUsers(employer);
 
     const { participant, site } = await createTestParticipantStatus({
       participantData: participantData({ emailAddress: 'test.srv.ros@hcap.io' }),
+      employerId: 1,
       siteData: siteData({
         siteId: 7,
         siteName: 'Test Create ROS Service Global',
@@ -34,6 +37,7 @@ describe('Test return of service', () => {
     // Create Participant
     const { participant, site } = await createTestParticipantStatus({
       participantData: participantData({ emailAddress: 'test.save.ros@hcap.io' }),
+      employerId: 1,
       siteData: siteData({
         siteId: 77,
         siteName: 'Test Create ROS Site 1',

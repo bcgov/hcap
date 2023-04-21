@@ -1,4 +1,3 @@
-import { v4 } from 'uuid';
 import { app } from '../server';
 import { ParticipantStatus as ps } from '../constants';
 
@@ -14,6 +13,7 @@ import {
 import { setParticipantStatus } from '../services/participant-status';
 
 import { startDB, closeDB } from './util/db';
+import { approveUsers, employer, healthAuthority } from './util/keycloak';
 
 describe('Employer Site Endpoints', () => {
   let server;
@@ -21,6 +21,7 @@ describe('Employer Site Endpoints', () => {
   beforeAll(async () => {
     await startDB();
     server = app.listen();
+    await approveUsers(employer, healthAuthority);
   });
 
   afterAll(async () => {
@@ -28,8 +29,8 @@ describe('Employer Site Endpoints', () => {
     server.close();
   });
 
-  const employerAId = v4();
-  const employerBId = v4();
+  const employerAId = 1;
+  const employerBId = 2;
   const participant1 = {
     maximusId: 648690,
     lastName: 'Extra',
@@ -162,7 +163,7 @@ describe('Employer Site Endpoints', () => {
       end_date: currentDayPlusOneYr,
     };
     const user = {
-      id: 'noid',
+      id: 0,
     };
     const phase = await createPhase(phaseData, user);
     expect(phase.id).toBeDefined();
@@ -219,6 +220,7 @@ describe('Employer Site Endpoints', () => {
   it('checks response from the site participants endpoint', async () => {
     await closeDB();
     await startDB();
+    await approveUsers(employer, healthAuthority);
 
     await expect(saveSingleSite(site)).resolves.not.toThrow();
 

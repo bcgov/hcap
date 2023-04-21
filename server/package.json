@@ -10,7 +10,7 @@
   },
   "scripts": {
     "parse-xml": "cd scripts && node parse-xml.ts xml",
-    "migrate": "node-pg-migrate",
+    "migrate": "npx ts-node node_modules/.bin/node-pg-migrate",
     "feed-participants": "npx ts-node scripts/feed-participants.ts",
     "feed-sites": "npx ts-node scripts/feed-sites.ts",
     "feed-data": "npx ts-node scripts/feed-data.ts",

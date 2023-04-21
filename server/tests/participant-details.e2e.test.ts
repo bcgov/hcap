@@ -4,13 +4,14 @@ import { app } from '../server';
 
 import { startDB, closeDB } from './util/db';
 import { makeTestParticipant, createTestParticipantStatus } from './util/integrationTestData';
-import { getKeycloakToken, healthAuthority, ministryOfHealth } from './util/keycloak';
+import { approveUsers, getKeycloakToken, healthAuthority, ministryOfHealth } from './util/keycloak';
 
 describe('e2e tests for /participant/details route', () => {
   let server;
   beforeAll(async () => {
     await startDB();
     server = app.listen();
+    await approveUsers(ministryOfHealth, healthAuthority);
   });
 
   afterAll(async () => {
@@ -38,6 +39,7 @@ describe('e2e tests for /participant/details route', () => {
   it('should not return participant for HA if participant is not in the same region', async () => {
     const { participant } = await createTestParticipantStatus({
       participantData: { emailAddress: 'test.e2e.participant.details.2@hcap.io' },
+      employerId: 2,
       siteData: { siteId: 1231, healthAuthority: 'Northern' },
       status: 'hired',
     });
@@ -51,6 +53,7 @@ describe('e2e tests for /participant/details route', () => {
   it('should return participant for HA if participant is in the same region', async () => {
     const { participant } = await createTestParticipantStatus({
       participantData: { emailAddress: 'test.e2e.participant.details.2@hcap.io' },
+      employerId: 2,
       siteData: { siteId: 1232, healthAuthority: 'Fraser' },
       status: 'hired',
     });

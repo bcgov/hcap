@@ -70,6 +70,13 @@ export default () => {
   const [keycloakInfo, setKeycloakInfo] = useState();
   const { dispatch } = AuthContext.useAuth();
 
+  const checkRolesAndRefreshToken = async (roles) => {
+    // if user's roles are updated on the keycloak by migration, refresh token
+    if (roles.some((role) => !keycloakInfo.hasResourceRole(role))) {
+      await keycloakInfo.updateToken(-1);
+    }
+  };
+
   const getUserInfo = async (token) => {
     dispatch({ action: AuthContext.USER_LOADING });
     const response = await fetch(`${API_URL}/api/v1/user`, {
@@ -79,7 +86,10 @@ export default () => {
       method: 'GET',
     });
     if (response.ok) {
-      dispatch({ type: AuthContext.USER_LOADED, payload: await response.json() });
+      const payload = await response.json();
+      await checkRolesAndRefreshToken(payload.roles);
+
+      dispatch({ type: AuthContext.USER_LOADED, payload });
     } else {
       // logout, remove token if it's invalid
       dispatch({ type: AuthContext.USER_LOADED, payload: null });

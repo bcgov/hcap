@@ -286,12 +286,13 @@ class Keycloak {
         return response.data.filter((user) => user.username !== 'service-account');
       };
 
+      const rolesToRetrieve = ['ministry_of_health', 'employer', 'health_authority'];
       if (!ignorePending) {
-        return getData(`${this.apiUrl}/users?briefRepresentation=true&max=1000000`);
+        rolesToRetrieve.push('pending');
       }
 
       const results = await Promise.all(
-        ['ministry_of_health', 'employer', 'health_authority'].map(async (role) =>
+        rolesToRetrieve.map(async (role) =>
           getData(
             `${this.apiUrl}/clients/${
               this.clientIdMap[this.clientNameFrontend]

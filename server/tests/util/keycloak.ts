@@ -1,8 +1,10 @@
+/* eslint-disable camelcase */
 import axios from 'axios';
 import crypto from 'crypto';
 import { JSDOM } from 'jsdom';
 import querystring from 'querystring';
-
+import { collections, dbClient } from '../../db';
+import keycloak from '../../keycloak';
 import logger from '../../logger';
 
 export const superuser = {
@@ -30,35 +32,32 @@ export const ministryOfHealth = {
   password: process.env.KC_TEST_MOH_PWD || 'password',
 };
 
-const base64URLEncode = (str) => {
-  return str.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-};
+const base64URLEncode = (str) =>
+  str.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 
 const getAuthCodeFromLocation = (location) => {
   try {
-    let url = new URL(location);
+    const url = new URL(location);
+    const params = url.search.substring(1).split('&');
 
-    let params = url.search.substring(1).split('&');
-    for (let _i = 0, params_1 = params; _i < params_1.length; _i++) {
-      let param = params_1[_i];
-      let _a = param.split('='),
-        key = _a[0],
-        value = _a[1];
+    for (let i = 0, p = params; i < p.length; i += 1) {
+      const param = p[i];
+      const [key, value] = param.split('=');
       if (key === 'code') {
         return value;
       }
     }
   } catch (e) {
     console.log(e);
-    return '';
   }
+  return '';
 };
 
 export const getKeycloakToken = async ({ username, password }) => {
   try {
     const code_challenge = base64URLEncode(crypto.randomBytes(32));
     // this redirect uri is only used for server tests
-    const redirect_uri = 'http://hcapemployers.local.freshworks.club:4000'; //NOSONAR
+    const redirect_uri = 'http://hcapemployers.local.freshworks.club:4000'; // NOSONAR
     const authBaseUrl = process.env.KEYCLOAK_AUTH_URL;
     const realm = process.env.KEYCLOAK_REALM;
     const client_id = process.env.KEYCLOAK_API_CLIENTID;
@@ -66,7 +65,7 @@ export const getKeycloakToken = async ({ username, password }) => {
 
     // begin process for getting keycloak token with user info
     const response = await axios
-      .get(authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/auth', {
+      .get(`${authBaseUrl}/realms/${realm}/protocol/openid-connect/auth`, {
         params: {
           scope: 'openid',
           response_type: 'code',
@@ -110,7 +109,7 @@ export const getKeycloakToken = async ({ username, password }) => {
       })
       .then((resp) => {
         // get code from location header response
-        const code = getAuthCodeFromLocation(resp.headers['location']);
+        const code = getAuthCodeFromLocation(resp.headers.location);
 
         const tokenUrl = `${authBaseUrl}/realms/${realm}/protocol/openid-connect/token`;
         const config = {
@@ -145,4 +144,17 @@ export const getKeycloakToken = async ({ username, password }) => {
     });
     throw error;
   }
+};
+
+export const approveUsers = async (...users: { username: string }[]) => {
+  await Promise.all(
+    users.map(async (user) => {
+      const userInfo = await keycloak.getUser(user.username);
+      await dbClient.db?.saveDoc(collections.USERS, {
+        keycloakId: userInfo.id,
+        sites: [1111, 4444, 7777],
+        userInfo,
+      });
+    })
+  );
 };

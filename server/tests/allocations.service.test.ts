@@ -1,7 +1,6 @@
 /**
  * Tests for services/allocation.js
  */
-import { v4 } from 'uuid';
 import { app } from '../server';
 import {
   getAllocation,
@@ -26,7 +25,7 @@ describe('Allocation Endpoints', () => {
     server.close();
   });
 
-  const user = { id: v4() };
+  const user = { id: 1 };
 
   it('Set new allocation, receive success', async () => {
     const { site, phase } = await makeTestFKAllocations(26356);

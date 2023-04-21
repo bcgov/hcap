@@ -10,6 +10,7 @@ import path from 'path';
 import { parseFile } from 'fast-csv';
 import { dbClient } from '../db';
 import { collections } from '../db/schema';
+import { approveUsers, employer, healthAuthority, ministryOfHealth } from '../tests/util/keycloak';
 import { logWithLevel, displayResultsTable, InsertResult, InsertStatus } from './services';
 
 /** Data found in a given CSV row. Key is the column a given value was found in. */
@@ -161,13 +162,12 @@ function logFinalErrors(errors: InsertError[]) {
  * The main logic of `feed-data`.
  */
 export async function feedData(targetTables: TargetTable[], skipMissingTables = false) {
-  await dbClient.connect();
-
   const errors: InsertError[] = [];
+  const tables = await dbClient.db.listTables();
 
   for (const table of targetTables) {
     // Check if table exists before trying to write to it
-    if (!(await dbClient.db.listTables()).includes(table.table)) {
+    if (!tables.includes(table.table)) {
       if (!skipMissingTables)
         throw new Error(`Table ${table.table} is missing in database. Cannot continue.`);
       // Otherwise just log and move on
@@ -215,7 +215,13 @@ export async function feedData(targetTables: TargetTable[], skipMissingTables = 
 }
 
 // Only run defaults if directly invoked, allowing other scripts to extend this one
-if (require.main === module) {
-  const skipMissingTables = process.argv.includes('--skip-missing-tables');
-  feedData(defaultTables, skipMissingTables);
-}
+(async function main() {
+  if (require.main === module) {
+    const skipMissingTables = process.argv.includes('--skip-missing-tables');
+    await dbClient.connect();
+
+    await approveUsers(employer, healthAuthority, ministryOfHealth);
+
+    await feedData(defaultTables, skipMissingTables);
+  }
+})();

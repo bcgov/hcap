@@ -1,5 +1,4 @@
 import request from 'supertest';
-import { v4 } from 'uuid';
 import { app } from '../server';
 
 import {
@@ -37,8 +36,8 @@ describe.skip('Server V1 Form Endpoints', () => {
 
   const formEndpoint = '/api/v1/employer-form';
 
-  const employerAId = v4();
-  const employerBId = v4();
+  const employerAId = 1;
+  const employerBId = 2;
   const participant1 = {
     maximusId: 648690,
     lastName: 'Extra',

@@ -134,7 +134,7 @@ export const getParticipantsReport = async () => {
         type: 'LEFT OUTER',
         relation: collections.USERS,
         on: {
-          'body.keycloakId': 'employer_id',
+          id: 'employer_id',
         },
       },
     })
@@ -247,7 +247,7 @@ export const getRejectedParticipantsReport = async () => {
         type: 'LEFT OUTER',
         relation: collections.USERS,
         on: {
-          'body.keycloakId': 'employer_id',
+          id: 'employer_id',
         },
       },
       hiredJoin: {

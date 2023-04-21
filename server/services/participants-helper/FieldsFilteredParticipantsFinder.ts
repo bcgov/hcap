@@ -49,7 +49,7 @@ export class FieldsFilteredParticipantsFinder {
             relation: collections.USERS,
             decomposeTo: 'object',
             on: {
-              'body.keycloakId': `${employerSpecificJoin}.employer_id`,
+              id: `${employerSpecificJoin}.employer_id`,
             },
           },
         }),

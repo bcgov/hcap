@@ -23,7 +23,7 @@ const getCurrentStatus = async (
   currentStatusId: string | number,
   tx,
   participantId: string,
-  employerId: string
+  employerId: number
 ) =>
   currentStatusId
     ? tx[collections.PARTICIPANTS_STATUS].findOne({ id: currentStatusId })
@@ -44,11 +44,11 @@ const getCurrentStatus = async (
  * @returns
  */
 export const setParticipantStatus = async (
-  employerId: string | UUID,
+  employerId: number,
   participantId: string | UUID,
   status: ParticipantStatus,
   data?, // JSONB on the status row
-  user: { isEmployer?: boolean; sites?: number[]; id?: string } = {
+  user: { isEmployer?: boolean; sites?: number[]; id?: number } = {
     isEmployer: true,
     sites: [],
     id: employerId,

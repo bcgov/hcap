@@ -151,12 +151,17 @@ class Keycloak {
         const keycloakId = content.sub;
         const { preferred_username: username, email } = content;
 
-        const existingUser = await dbClient.db[collections.USER_MIGRATION].findOne({
-          'email ilike': email,
-          'username ilike': username.includes('@bceid')
-            ? `${username.split('@')[0]}@bceid%`
-            : username,
-        });
+        const usernameCondition = username.includes('@bceid')
+          ? `${username.split('@')[0]}@bceid%`
+          : username;
+
+        // if no email, user should not be in user_migration table
+        const existingUser = email
+          ? await dbClient.db[collections.USER_MIGRATION].findOne({
+              'email ilike': email,
+              'username ilike': usernameCondition,
+            })
+          : null;
 
         const type = username.split('@')[1];
         const shouldSetRoles = !content?.resource_access && !existingUser && options.includes(type);
@@ -167,7 +172,8 @@ class Keycloak {
           roles = content?.resource_access?.[this.clientNameFrontend]?.roles || [];
         }
 
-        if (roles.length === 0 || (roles.length === 1 && roles.includes('pending'))) {
+        // if no email, don't migrate user
+        if (email && (roles.length === 0 || (roles.length === 1 && roles.includes('pending')))) {
           const cachedRoles = await this.migrateUser(keycloakId, email, username);
           if (cachedRoles) {
             roles = cachedRoles;
@@ -423,6 +429,7 @@ class Keycloak {
       ? `${username.split('@')[0]}@bceid%`
       : username;
 
+    let message = '';
     let migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne({
       'email ilike': email,
       'username ilike': usernameCondition,
@@ -433,10 +440,20 @@ class Keycloak {
         'username ilike': usernameCondition,
       });
       if (migrationStatus) {
-        const message = `user migration record with same username but different email found for ${keycloakId}`;
+        message = `user migration record with same username but different email found for ${keycloakId}`;
         migrationStatus.message = message;
         logger.error(message, meta);
         await dbClient.db[collections.USER_MIGRATION].save(migrationStatus);
+      } else {
+        migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne({
+          'email ilike': email,
+        });
+        if (migrationStatus) {
+          message = `user migration record with same email but different username found for ${keycloakId}`;
+          migrationStatus.message = message;
+          logger.error(message, meta);
+          await dbClient.db[collections.USER_MIGRATION].save(migrationStatus);
+        }
       }
       return null;
     }

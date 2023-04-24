@@ -16,7 +16,7 @@ describe('Return of Service Form', () => {
   const futureInvalidDate = '2100/01/01';
 
   it('Should validate required fields', () => {
-    const participantId = 297;
+    const participantId = 34;
     // go to participant view
     cy.visit('participant-view');
 
@@ -44,7 +44,7 @@ describe('Return of Service Form', () => {
   });
 
   it('Should produce error when ROS date is past max valid date', () => {
-    const participantId = 297;
+    const participantId = 34;
     completeROSForm(participantId, futureInvalidDate);
 
     cy.get('.Mui-error').contains(

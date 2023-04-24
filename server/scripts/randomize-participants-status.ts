@@ -9,7 +9,7 @@ import {
 import { convertToCsv } from './services/participant-seed';
 
 const NUM_LOOPS = 400;
-const EMPLOYER_ID = 'ef963828-37db-44b4-ae5d-1e65b5a9b588';
+const EMPLOYER_ID = '1';
 const START_DATE = '2020-01-01';
 
 // ids for participants whom already have added statuses

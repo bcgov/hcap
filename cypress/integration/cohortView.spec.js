@@ -99,7 +99,7 @@ describe('Tests the Cohort View', () => {
     cy.kcLogin('test-ha');
     visitsCohort('Fraser');
 
-    cy.get('tr td').find('[type="checkbox"]').should('have.length', 3);
+    cy.get('tr td').find('[type="checkbox"]').should('have.length', 5);
     cy.get('.MuiAlert-standardInfo')
       .contains('Participants hired outside your region will not appear in this list')
       .should('be.visible');

@@ -342,15 +342,20 @@ class Keycloak {
   }
 
   async setUserRoles(userId: string, roles: string[]) {
-    const url = `/users/${userId}/role-mappings/clients/${
-      this.clientIdMap[this.clientNameFrontend]
-    }`;
+    try {
+      const url = `/users/${userId}/role-mappings/clients/${
+        this.clientIdMap[this.clientNameFrontend]
+      }`;
 
-    const data = roles
-      .filter((r) => this.roleIdMap[r])
-      .map((role) => ({ name: role, id: this.roleIdMap[role] }));
+      const data = roles
+        .filter((r) => this.roleIdMap[r])
+        .map((role) => ({ name: role, id: this.roleIdMap[role] }));
 
-    await this.axiosInstance.post(url, data);
+      await this.axiosInstance.post(url, data);
+    } catch (e) {
+      logger.error(`failed to update user(${userId})'s role`);
+      throw e;
+    }
   }
 
   async setUserRoleWithRegions(userId: string, role: string, regions: string[]) {
@@ -441,19 +446,18 @@ class Keycloak {
       });
       if (migrationStatus) {
         message = `user migration record with same username but different email found for ${keycloakId}`;
-        migrationStatus.message = message;
-        logger.error(message, meta);
-        await dbClient.db[collections.USER_MIGRATION].save(migrationStatus);
       } else {
         migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne({
           'email ilike': email,
         });
         if (migrationStatus) {
           message = `user migration record with same email but different username found for ${keycloakId}`;
-          migrationStatus.message = message;
-          logger.error(message, meta);
-          await dbClient.db[collections.USER_MIGRATION].save(migrationStatus);
         }
+      }
+      if (message && migrationStatus) {
+        migrationStatus.message = message;
+        logger.error(message, meta);
+        await dbClient.db[collections.USER_MIGRATION].save(migrationStatus);
       }
       return null;
     }
@@ -470,31 +474,21 @@ class Keycloak {
       throw Error(msg);
     }
 
-    try {
-      await this.setUserRoles(keycloakId, migrationStatus.roles);
-    } catch (e) {
-      logger.error(`failed to update user(${keycloakId})'s role`, meta);
-      throw e;
-    }
+    await this.setUserRoles(keycloakId, migrationStatus.roles);
 
     const [user] = await dbClient.db[collections.USERS].findDoc({
-      'userInfo.username ilike': username.includes('@bceid')
-        ? `${username.split('@')[0]}@bceid%`
-        : username,
+      'userInfo.username ilike': usernameCondition,
       'userInfo.email ilike': email,
     });
+
     if (user) {
       user.userInfo.username = username;
       user.userInfo.id = keycloakId;
       await dbClient.db[collections.USERS].updateDoc(user.id, {
-        sites: user.sites || [],
+        sites: user.sites,
         userInfo: user.userInfo,
         keycloakId,
       });
-    } else {
-      const message = `no user record found for ${keycloakId}`;
-      migrationStatus.message = message;
-      logger.error(message, meta);
     }
 
     migrationStatus.username = username;

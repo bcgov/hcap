@@ -17,6 +17,7 @@ import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../../components/fields';
 import { useLocation } from 'react-router-dom';
 import { addEllipsisMask, sortObjects } from '../../utils';
+import { UserMigrationTable } from './UserMigrationTable';
 
 const columns = [
   { id: 'firstName', name: 'First Name' },
@@ -318,6 +319,14 @@ export default () => {
               />
             </Box>
           )}
+          <Box pt={4} pb={4} pl={2} pr={2}>
+            <Typography variant='subtitle1' gutterBottom>
+              Users to be migrated
+            </Typography>
+          </Box>
+          <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
+            <UserMigrationTable />
+          </Box>
         </Grid>
       </CheckPermissions>
     </Page>

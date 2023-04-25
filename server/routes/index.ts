@@ -1,9 +1,8 @@
 // Index route for /api/v1
-import dayjs from 'dayjs';
 import express from 'express';
 import { UserRoles } from '../constants';
 import { getSitesForUser } from '../services/employers';
-import { getUserNotifications } from '../services/user';
+import { getUserMigrations, getUserNotifications } from '../services/user';
 import { validate, AccessRequestApproval } from '../validation';
 import logger from '../logger';
 import { dbClient, collections } from '../db';
@@ -11,7 +10,7 @@ import { asyncMiddleware } from '../error-handler';
 import keycloak from '../keycloak';
 import { healthCheck } from '../services/health-check';
 import participantUserRoute from './participant-user';
-import { sanitize } from '../utils';
+import { sanitize, scrubUsers } from '../utils';
 import {
   participantRouter,
   participantsRouter,
@@ -88,15 +87,7 @@ apiRouter.get(
   keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
     const users = await keycloak.getPendingUsers();
-    const scrubbed = users.map((user) => ({
-      id: user.id,
-      emailAddress: user.email,
-      username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      createdAt: dayjs(user.createdTimestamp).format('YYYY-MM-DD HH:mm'),
-    }));
-    return res.json({ data: scrubbed });
+    return res.json({ data: scrubUsers(users) });
   })
 );
 
@@ -106,15 +97,17 @@ apiRouter.get(
   keycloak.allowRolesMiddleware('ministry_of_health'),
   asyncMiddleware(async (req, res) => {
     const users = await keycloak.getUsers(UserRoles);
-    const scrubbed = users.map((user) => ({
-      id: user.id,
-      emailAddress: user.email,
-      username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      createdAt: dayjs(user.createdTimestamp).format('YYYY-MM-DD HH:mm'),
-    }));
-    return res.json({ data: scrubbed });
+    return res.json({ data: scrubUsers(users) });
+  })
+);
+
+// Get users to be migrated
+apiRouter.get(
+  `/user-migrations`,
+  keycloak.allowRolesMiddleware('ministry_of_health'),
+  asyncMiddleware(async (req, res) => {
+    const users = await getUserMigrations();
+    return res.json({ data: users });
   })
 );
 

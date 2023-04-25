@@ -86,3 +86,23 @@ export const makeUser = async ({ keycloakId, sites }) => {
     sites,
   });
 };
+
+export const getUserMigrations = async () => {
+  const users = await dbClient.db[collections.USER_MIGRATION]
+    .join({
+      userJoin: {
+        type: 'LEFT',
+        relation: collections.USERS,
+        on: {
+          'body.keycloakId': 'id::TEXT',
+        },
+      },
+    })
+    .find({ 'status !': 'complete' });
+  return users.map((u) => ({
+    username: u.username,
+    email: u.email || '',
+    roles: u.roles.join(',') || '',
+    status: u.status,
+  }));
+};

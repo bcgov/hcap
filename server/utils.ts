@@ -27,3 +27,13 @@ export const sanitize = (input) => encodeURIComponent(input.toString().trim());
 
 export const formatDateSansTimezone = (date) =>
   date ? dayjs.utc(date).format('YYYY/MM/DD') : date; // strips time/timezone from date and formats it in short form
+
+export const scrubUsers = (users) =>
+  users.map((user) => ({
+    id: user.id,
+    emailAddress: user.email,
+    username: user.username,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    createdAt: dayjs(user.createdTimestamp).format('YYYY-MM-DD HH:mm'),
+  }));

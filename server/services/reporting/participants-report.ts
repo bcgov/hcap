@@ -83,6 +83,12 @@ interface ArchivedJoin extends HiredJoin {
   status: string;
 }
 
+interface UserJoin {
+  body: {
+    keycloakId: string;
+  };
+}
+
 type HiredEntry = {
   // eslint-disable-next-line camelcase
   created_at: Date;
@@ -106,6 +112,7 @@ type HiredEntry = {
   employerSiteJoin: [EmployerSiteJoin];
   duplicateArchivedJoin: [];
   archivedJoin: [ArchivedJoin];
+  userJoin: [UserJoin];
   // eslint-disable-next-line camelcase
   employer_id: string;
 };
@@ -206,6 +213,13 @@ export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) =
           'data.type <>': 'duplicate',
         },
       },
+      userJoin: {
+        type: 'LEFT OUTER',
+        relation: collections.USERS,
+        on: {
+          id: 'employer_id',
+        },
+      },
     })
     .find(searchOptions);
 
@@ -213,7 +227,7 @@ export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) =
     participantId: entry.participant_id,
     firstName: entry.participantJoin?.[0]?.body?.firstName,
     lastName: entry.participantJoin?.[0]?.body?.lastName,
-    employerId: entry.employer_id,
+    employerId: entry.userJoin?.[0]?.body.keycloakId,
     email: entry.participantJoin?.[0]?.body?.emailAddress,
     employerRegion: entry.employerSiteJoin?.[0]?.body?.healthAuthority,
     employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,

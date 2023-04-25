@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { dbClient, collections } from '../db';
 import { HcapUserInfo } from '../keycloak';
 import { dayjs } from '../utils';
@@ -88,6 +89,9 @@ export const makeUser = async ({ keycloakId, sites }) => {
 };
 
 export const getUserMigrations = async () => {
+  const sites = await dbClient.db[collections.EMPLOYER_SITES].find();
+  const siteNames = _.chain(sites).mapKeys('body.siteId').mapValues('body.siteName').value();
+
   const users = await dbClient.db[collections.USER_MIGRATION]
     .join({
       userJoin: {
@@ -99,10 +103,11 @@ export const getUserMigrations = async () => {
       },
     })
     .find({ 'status !': 'complete' });
+
   return users.map((u) => ({
     username: u.username,
     email: u.email || '',
-    roles: u.roles.join(',') || '',
-    status: u.status,
+    roles: u.roles.join(', '),
+    sites: u.userJoin?.[0]?.body.sites.map((siteId) => siteNames[siteId]).join(', ') || '',
   }));
 };

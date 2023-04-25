@@ -14,8 +14,8 @@ const columns = [
 export const UserMigrationTable = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [order, setOrder] = useState('desc');
-  const [orderBy, setOrderBy] = useState('status');
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('email');
 
   const fetchUserMigrations = async () => {
     setLoading(true);

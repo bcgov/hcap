@@ -88,6 +88,10 @@ export const makeUser = async ({ keycloakId, sites }) => {
   });
 };
 
+export const updateUserForMigration = async (id: string, { username, email }) => {
+  await dbClient.db[collections.USER_MIGRATION].update({ id }, { username, email });
+};
+
 export const getUserMigrations = async () => {
   const sites = await dbClient.db[collections.EMPLOYER_SITES].find();
   const siteNames = _.chain(sites).mapKeys('body.siteId').mapValues('body.siteName').value();
@@ -105,6 +109,7 @@ export const getUserMigrations = async () => {
     .find({ 'status !': 'complete' });
 
   return users.map((u) => ({
+    id: u.id,
     username: u.username,
     email: u.email || '',
     roles: u.roles.join(', '),

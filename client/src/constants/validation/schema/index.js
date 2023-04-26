@@ -26,6 +26,7 @@ export * from './schema-edit-ros-date';
 export * from './schema-edit-ros-site';
 export * from './schema-edit-ros-start-date';
 export * from './schema-allocation';
+export * from './schema-edit-user-migration-user';
 
 export const genericConfirm = yup.object().shape({
   confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),

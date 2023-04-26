@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import store from 'store';
-import { FastField, Formik, Form as FormikForm } from 'formik';
-import Grid from '@material-ui/core/Grid';
+import { FastField } from 'formik';
 import { Box } from '@material-ui/core';
 
 import { addEllipsisMask, sortObjects } from '../../utils';
 import { Button, Table, Dialog } from '../../components/generic';
 import { API_URL, EditUserMigrationUserFormSchema, ToastStatus } from '../../constants';
 import { RenderTextField } from '../../components/fields';
+import { UserManagementForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 
 const columns = [
@@ -21,7 +21,7 @@ const columns = [
 export const UserMigrationTable = () => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [userMigrationModalOpen, setUserMigrationModalOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState('asc');
@@ -42,7 +42,7 @@ export const UserMigrationTable = () => {
     });
 
     if (response.ok) {
-      setModalOpen(false);
+      setUserMigrationModalOpen(false);
       await fetchUserMigrations();
       openToast({
         status: ToastStatus.Success,
@@ -82,7 +82,7 @@ export const UserMigrationTable = () => {
           details: (
             <Button
               onClick={async () => {
-                setModalOpen(true);
+                setUserMigrationModalOpen(true);
                 setSelectedUser(row);
               }}
               variant='outlined'
@@ -116,39 +116,29 @@ export const UserMigrationTable = () => {
 
   return (
     <>
-      <Dialog title={'Edit User'} open={modalOpen} onClose={() => setModalOpen(false)}>
-        <Formik
+      <Dialog
+        title={'Edit User'}
+        open={userMigrationModalOpen}
+        onClose={() => setUserMigrationModalOpen(false)}
+      >
+        <UserManagementForm
+          handleSubmit={handleSubmit}
           initialValues={initialValues}
-          validationSchema={EditUserMigrationUserFormSchema}
-          onSubmit={handleSubmit}
+          onClose={() => setUserMigrationModalOpen(false)}
+          isLoading={loading}
+          schema={EditUserMigrationUserFormSchema}
         >
           {({ submitForm }) => (
-            <FormikForm>
+            <>
               <Box>
                 <FastField name='username' component={RenderTextField} label='* Username' />
               </Box>
               <Box mt={3}>
                 <FastField name='emailAddress' component={RenderTextField} label='* Email' />
               </Box>
-              <Box mt={3}>
-                <Grid container spacing={2} justify='flex-end'>
-                  <Grid item>
-                    <Button onClick={() => setModalOpen(false)} color='default' text='Cancel' />
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      onClick={submitForm}
-                      variant='contained'
-                      color='primary'
-                      text='Submit'
-                      disabled={loading}
-                    />
-                  </Grid>
-                </Grid>
-              </Box>
-            </FormikForm>
+            </>
           )}
-        </Formik>
+        </UserManagementForm>
       </Dialog>
 
       <Table

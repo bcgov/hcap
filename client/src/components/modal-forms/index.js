@@ -17,3 +17,4 @@ export * from './EditRosStartDateForm';
 export * from './EditRosSiteForm';
 export * from './PhaseDialog';
 export * from './BulkAllocationForm';
+export * from './UserManagementForm';

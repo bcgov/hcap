@@ -3,6 +3,8 @@ import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
+import { Field } from 'formik';
+
 import { useToast } from '../../hooks';
 import { Button, Page, Table, CheckPermissions, Dialog } from '../../components/generic';
 import {
@@ -13,11 +15,11 @@ import {
   API_URL,
   healthAuthorities,
 } from '../../constants';
-import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../../components/fields';
 import { useLocation } from 'react-router-dom';
 import { addEllipsisMask, sortObjects } from '../../utils';
 import { UserMigrationTable } from './UserMigrationTable';
+import { UserManagementForm } from '../../components/modal-forms';
 
 const columns = [
   { id: 'firstName', name: 'First Name' },
@@ -190,13 +192,15 @@ export default () => {
             Email address: <b>{rows?.find((i) => i.id === selectedUserId)?.emailAddress || ''}</b>
           </Typography>
         </Box>
-        <Formik
+        <UserManagementForm
+          handleSubmit={handleSubmit}
           initialValues={initialValues}
-          validationSchema={ApproveAccessRequestSchema}
-          onSubmit={handleSubmit}
+          onClose={() => setModalOpen(false)}
+          isLoading={isLoadingData}
+          schema={ApproveAccessRequestSchema}
         >
           {({ submitForm, values, handleChange, setFieldValue }) => (
-            <FormikForm>
+            <>
               <Box>
                 <Field
                   name='role'
@@ -269,26 +273,9 @@ export default () => {
                   />
                 </Box>
               )}
-
-              <Box mt={3}>
-                <Grid container spacing={2} justify='flex-end'>
-                  <Grid item>
-                    <Button onClick={() => setModalOpen(false)} color='default' text='Cancel' />
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      onClick={submitForm}
-                      variant='contained'
-                      color='primary'
-                      text='Submit'
-                      disabled={isLoadingData}
-                    />
-                  </Grid>
-                </Grid>
-              </Box>
-            </FormikForm>
+            </>
           )}
-        </Formik>
+        </UserManagementForm>
       </Dialog>
       <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
         <Grid

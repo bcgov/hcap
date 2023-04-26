@@ -474,6 +474,7 @@ class Keycloak {
       throw Error(msg);
     }
 
+    await this.deleteUserRoles(keycloakId);
     await this.setUserRoles(keycloakId, migrationStatus.roles);
 
     const [user] = await dbClient.db[collections.USERS].findDoc({

@@ -1,6 +1,6 @@
 import React, { useReducer } from 'react';
 
-import { rolePriority } from '../constants';
+import { RolePriority } from '../constants';
 
 const AuthContext = React.createContext();
 
@@ -23,7 +23,7 @@ const authReducer = (state, action) => {
         notifications: action.payload.notifications ?? state.notifications,
         isLoading: false,
         // find first role in above array that is included in the user object (highest permission role)
-        permissionRole: rolePriority.find((role) => action.payload?.roles.includes(role)),
+        permissionRole: RolePriority.find((role) => action.payload?.roles.includes(role)),
       };
 
     case USER_NOTIFICATIONS_UPDATED:

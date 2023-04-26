@@ -12,6 +12,7 @@ import {
   regionLabelsMap,
   API_URL,
   healthAuthorities,
+  Role,
 } from '../../constants';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../../components/fields';
@@ -162,9 +163,9 @@ export default () => {
   }, [history, location]);
 
   const roleOptions = [
-    { value: 'health_authority', label: 'Health Authority' },
-    { value: 'employer', label: 'Private Employer' },
-    { value: 'ministry_of_health', label: 'Ministry Of Health' },
+    { value: Role.HealthAuthority, label: 'Health Authority' },
+    { value: Role.Employer, label: 'Private Employer' },
+    { value: Role.MinistryOfHealth, label: 'Ministry Of Health' },
   ];
 
   const initialValues = {
@@ -211,7 +212,7 @@ export default () => {
                   }}
                 />
               </Box>
-              {values.role === 'health_authority' && (
+              {values.role === Role.HealthAuthority && (
                 <Box mt={3}>
                   <Field
                     name='regions'
@@ -230,8 +231,8 @@ export default () => {
                   />
                 </Box>
               )}
-              {((values.role === 'health_authority' && values.regions.length > 0) ||
-                values.role === 'employer') && (
+              {((values.role === Role.HealthAuthority && values.regions.length > 0) ||
+                values.role === Role.Employer) && (
                 <Box mt={3}>
                   <Field
                     name='sites'
@@ -239,7 +240,7 @@ export default () => {
                     label='* Employer Sites (allocation number) - select one or more'
                     options={sites
                       .filter((item) =>
-                        values.role === 'health_authority'
+                        values.role === Role.HealthAuthority
                           ? values.regions.includes(item.healthAuthority)
                           : true
                       )
@@ -258,7 +259,7 @@ export default () => {
                   />
                 </Box>
               )}
-              {values.role === 'ministry_of_health' && (
+              {values.role === Role.MinistryOfHealth && (
                 <Box mt={3}>
                   <Field
                     name='acknowledgement'
@@ -290,7 +291,7 @@ export default () => {
           )}
         </Formik>
       </Dialog>
-      <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
+      <CheckPermissions permittedRoles={[Role.MinistryOfHealth]} renderErrorMessage={true}>
         <Grid
           container
           alignContent='center'

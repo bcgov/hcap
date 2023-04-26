@@ -67,8 +67,6 @@ export const siteTypesOptions = [
   'Affiliate',
 ];
 
-export const userRoles = ['health_authority', 'employer', 'ministry_of_health'];
-
 export const participantStatuses = [
   'open',
   'prospecting',

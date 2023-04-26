@@ -4,7 +4,7 @@ import { Box, Typography, TextField, MenuItem, Checkbox, FormLabel } from '@mate
 import { CheckPermissions } from '../../components/generic';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { AuthContext, ParticipantsContext } from '../../providers';
-import { FILTERABLE_FIELDS } from '../../constants';
+import { FILTERABLE_FIELDS, Role } from '../../constants';
 
 export const ParticipantTableFilters = ({ loading, locations }) => {
   const {
@@ -16,7 +16,7 @@ export const ParticipantTableFilters = ({ loading, locations }) => {
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const hideLastNameAndEmailFilter = selectedTab === 'Archived Candidates';
 
-  const isMoH = roles.includes('ministry_of_health');
+  const isMoH = roles.includes(Role.MinistryOfHealth);
 
   const setFilter = (key, value) => {
     dispatch({
@@ -62,7 +62,7 @@ export const ParticipantTableFilters = ({ loading, locations }) => {
           </TextField>
         </Box>
       </Grid>
-      <CheckPermissions permittedRoles={['employer', 'health_authority']}>
+      <CheckPermissions permittedRoles={[Role.Employer, Role.HealthAuthority]}>
         <Grid item>
           <Box pl={2}>
             <DebounceTextField

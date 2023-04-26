@@ -5,7 +5,7 @@ import logger from '../logger';
 
 import { asyncMiddleware } from '../error-handler';
 import { getPSIPaticipantsReport } from '../services/reporting';
-import { DEFAULT_REGION_NAME } from '../constants';
+import { DEFAULT_REGION_NAME, Role } from '../constants';
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ router.use(keycloak.getUserInfoMiddleware());
 // download report for participants attending PSI
 router.get(
   '/csv/participants',
-  [keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority')],
+  [keycloak.allowRolesMiddleware(Role.MinistryOfHealth, Role.HealthAuthority)],
   asyncMiddleware(async (req, res) => {
     const { hcapUserInfo: user } = req;
     const isMoh = user.isMoH;

@@ -4,7 +4,7 @@ import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
 import { scrollUp, addEllipsisMask } from '../../utils';
-import { Routes, MAX_LABEL_LENGTH } from '../../constants';
+import { Routes, MAX_LABEL_LENGTH, Role } from '../../constants';
 import { EditSiteForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { ToastStatus, EditSiteSchema } from '../../constants';
@@ -194,7 +194,7 @@ export default ({ match }) => {
       </Dialog>
       <Page>
         <CheckPermissions
-          permittedRoles={['health_authority', 'ministry_of_health']}
+          permittedRoles={[Role.HealthAuthority, Role.MinistryOfHealth]}
           renderErrorMessage={true}
         >
           <SiteDetailTabContext.TabProvider site={site}>
@@ -211,7 +211,7 @@ export default ({ match }) => {
                     <Typography variant='h2'>
                       <b>{site.siteName}</b>
                     </Typography>
-                    <CheckPermissions permittedRoles={['ministry_of_health']}>
+                    <CheckPermissions permittedRoles={[Role.MinistryOfHealth]}>
                       <Box pl={2} pt={0.5}>
                         <Button
                           onClick={async () => {

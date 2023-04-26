@@ -4,7 +4,7 @@ import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import { Page, Button, CheckPermissions } from '../../components/generic';
-import { Routes } from '../../constants';
+import { Role, Routes, UserRoles } from '../../constants';
 import { AuthContext } from '../../providers';
 
 const useStyles = makeStyles((theme) => ({
@@ -26,7 +26,7 @@ export default () => {
   const name = auth.user?.name || '';
 
   useEffect(() => {
-    if (roles.includes('employer')) history.push(Routes.ParticipantView);
+    if (roles.includes(Role.Employer)) history.push(Routes.ParticipantView);
   }, [roles, history]);
 
   const renderAdminButton = (route, label) => (
@@ -44,10 +44,7 @@ export default () => {
 
   return (
     <Page centered>
-      <CheckPermissions
-        permittedRoles={['maximus', 'employer', 'health_authority', 'ministry_of_health']}
-        renderErrorMessage={true}
-      >
+      <CheckPermissions permittedRoles={[Role.Maximus, ...UserRoles]} renderErrorMessage={true}>
         <Grid
           container
           alignContent='center'
@@ -65,27 +62,25 @@ export default () => {
               >
                 Welcome, {name}
               </Typography>
-              <CheckPermissions
-                permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
-              >
+              <CheckPermissions permittedRoles={UserRoles}>
                 {renderAdminButton(Routes.ParticipantView, 'View Participants')}
               </CheckPermissions>
-              <CheckPermissions permittedRoles={['health_authority', 'ministry_of_health']}>
+              <CheckPermissions permittedRoles={[Role.HealthAuthority, Role.MinistryOfHealth]}>
                 {renderAdminButton(Routes.EOIView, 'View Employer EOIs')}
               </CheckPermissions>
-              <CheckPermissions permittedRoles={['health_authority', 'ministry_of_health']}>
+              <CheckPermissions permittedRoles={[Role.HealthAuthority, Role.MinistryOfHealth]}>
                 {renderAdminButton(Routes.SiteView, 'View Sites')}
               </CheckPermissions>
-              <CheckPermissions permittedRoles={['ministry_of_health']}>
+              <CheckPermissions permittedRoles={[Role.MinistryOfHealth]}>
                 {renderAdminButton(Routes.UserPending, 'View Access Requests')}
               </CheckPermissions>
-              <CheckPermissions permittedRoles={['ministry_of_health']}>
+              <CheckPermissions permittedRoles={[Role.MinistryOfHealth]}>
                 {renderAdminButton(Routes.UserEdit, 'Manage Users')}
               </CheckPermissions>
-              <CheckPermissions permittedRoles={['ministry_of_health', 'health_authority']}>
+              <CheckPermissions permittedRoles={[Role.MinistryOfHealth, Role.HealthAuthority]}>
                 {renderAdminButton(Routes.ReportingView, 'Reporting')}
               </CheckPermissions>
-              <CheckPermissions permittedRoles={['ministry_of_health', 'health_authority']}>
+              <CheckPermissions permittedRoles={[Role.MinistryOfHealth, Role.HealthAuthority]}>
                 {renderAdminButton(Routes.PSIView, 'Manage PSI')}
               </CheckPermissions>
             </Grid>

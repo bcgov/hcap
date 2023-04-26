@@ -42,7 +42,7 @@ import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
 import { expressRequestBodyValidator } from '../middleware/index';
 
-import { ParticipantStatus } from '../constants';
+import { ParticipantStatus, Role, UserRoles } from '../constants';
 
 export const participantRouter = express.Router();
 export const participantsRouter = express.Router();
@@ -55,7 +55,7 @@ const { ALREADY_HIRED, INVALID_STATUS, INVALID_STATUS_TRANSITION, INVALID_ARCHIV
 // Get details of a participant by ID
 participantRouter.get(
   '/details/:id',
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+  keycloak.allowRolesMiddleware(...UserRoles),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     const { id } = req.params;
@@ -87,7 +87,7 @@ participantRouter.get(
 // GET participant/
 participantRouter.get(
   `/`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+  keycloak.allowRolesMiddleware(...UserRoles),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantQuerySchema, req.query);
@@ -124,7 +124,7 @@ const patchableFields = [
 // PATCH participant/
 participantRouter.patch(
   `/`,
-  keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
   keycloak.getUserInfoMiddleware(),
 
   asyncMiddleware(async (req, res) => {
@@ -188,7 +188,7 @@ participantsRouter.post(
 // Get participant records
 participantsRouter.get(
   `/`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+  keycloak.allowRolesMiddleware(...UserRoles),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantQuerySchema, req.query);
@@ -275,7 +275,7 @@ if (process.env.APP_ENV === 'local') {
   participantsRouter.delete(
     '/',
     [
-      keycloak.allowRolesMiddleware('superuser'),
+      keycloak.allowRolesMiddleware(Role.Superuser),
       expressRequestBodyValidator(RemoveParticipantUser),
     ],
     asyncMiddleware(async (req, res) => {
@@ -298,7 +298,7 @@ if (process.env.APP_ENV === 'local') {
 // Add Hired Participant to Database
 newHiredParticipantRouter.post(
   `/`,
-  keycloak.allowRolesMiddleware('employer', 'health_authority'),
+  keycloak.allowRolesMiddleware(Role.HealthAuthority, Role.Employer),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ExternalHiredParticipantSchema, req.body);
@@ -345,7 +345,7 @@ newHiredParticipantRouter.post(
 // Withdraw a participant
 employerActionsRouter.post(
   '/archive',
-  keycloak.allowRolesMiddleware('health_authority'),
+  keycloak.allowRolesMiddleware(Role.HealthAuthority),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ArchiveRequest, req.body);
@@ -376,7 +376,7 @@ employerActionsRouter.post(
 // Engage participant
 employerActionsRouter.post(
   `/`,
-  keycloak.allowRolesMiddleware('health_authority', 'employer'),
+  keycloak.allowRolesMiddleware(Role.HealthAuthority, Role.Employer),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantStatusChange, req.body);
@@ -424,7 +424,7 @@ employerActionsRouter.post(
 
 employerActionsRouter.delete(
   '/acknowledgment',
-  keycloak.allowRolesMiddleware('employer', 'health_authority'),
+  keycloak.allowRolesMiddleware(Role.HealthAuthority, Role.Employer),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     // Get user
@@ -477,7 +477,7 @@ employerActionsRouter.delete(
  */
 employerActionsRouter.post(
   '/bulk-engage',
-  keycloak.allowRolesMiddleware('health_authority'),
+  keycloak.allowRolesMiddleware(Role.HealthAuthority),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     // Validate Body

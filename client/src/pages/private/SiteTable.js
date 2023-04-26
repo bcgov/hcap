@@ -8,7 +8,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Table, Button, CheckPermissions } from '../../components/generic';
 import { NewSiteDialog, PhaseDialog } from '../../components/modal-forms';
 
-import { Routes, regionLabelsMap, healthAuthoritiesFilter } from '../../constants';
+import { Routes, regionLabelsMap, healthAuthoritiesFilter, Role } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { sortObjects } from '../../utils';
 import { AuthContext } from '../../providers';
@@ -52,7 +52,7 @@ export default ({ sites }) => {
   const [healthAuthorities, setHealthAuthorities] = useState(healthAuthoritiesFilter);
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
-  const isHA = roles?.includes('health_authority') || false;
+  const isHA = roles?.includes(Role.HealthAuthority) || false;
 
   const history = useHistory();
   const location = useLocation();
@@ -82,7 +82,7 @@ export default ({ sites }) => {
 
   useEffect(() => {
     setHealthAuthorities(
-      roles.includes('superuser') || roles.includes('ministry_of_health')
+      roles.includes(Role.Superuser) || roles.includes(Role.MinistryOfHealth)
         ? Object.values(regionLabelsMap)
         : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
     );
@@ -159,7 +159,7 @@ export default ({ sites }) => {
           />
         </Grid>
 
-        <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+        <CheckPermissions roles={roles} permittedRoles={[Role.MinistryOfHealth]}>
           <Grid item xs={7} />
           <Grid className={classes.rootItem} item xs={3}>
             <Box px={2} display='flex' justifyContent='space-evenly'>
@@ -200,7 +200,7 @@ export default ({ sites }) => {
           </Grid>
         </CheckPermissions>
 
-        {roles.includes('superuser') && <Grid item xs={8} />}
+        {roles.includes(Role.Superuser) && <Grid item xs={8} />}
 
         {isPendingRequests && (
           <Grid className={classes.tableItem} item xs={12}>
@@ -210,7 +210,7 @@ export default ({ sites }) => {
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
               rows={sort(rows)}
-              isMultiSelect={roles.includes('ministry_of_health')}
+              isMultiSelect={roles.includes(Role.MinistryOfHealth)}
               selectedRows={selectedSites}
               updateSelectedRows={setSelectedSites}
               isLoading={isLoadingData}
@@ -222,7 +222,7 @@ export default ({ sites }) => {
                   return (
                     <CheckPermissions
                       roles={roles}
-                      permittedRoles={['health_authority', 'ministry_of_health']}
+                      permittedRoles={[Role.HealthAuthority, Role.MinistryOfHealth]}
                     >
                       <Button
                         onClick={() => history.push(Routes.SiteView + `/${row.id}`)}

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import minimist from 'minimist';
-import services from './services';
+import * as services from './services';
 import { processServiceConfig } from './services/common';
 import { dbClient } from '../db';
 

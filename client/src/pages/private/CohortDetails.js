@@ -3,16 +3,15 @@ import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { Box, Card, Grid, Typography, Link, Dialog } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { ManageGraduationForm } from '../../components/modal-forms/ManageGraduationForm';
-import { createPostHireStatus } from '../../services/participant';
+import Alert from '@material-ui/lab/Alert';
 
+import { ManageGraduationForm } from '../../components/modal-forms/ManageGraduationForm';
 import { AuthContext } from '../../providers';
 import { Page, CheckPermissions, Table, Button } from '../../components/generic';
-import { Routes, ToastStatus, postHireStatuses } from '../../constants';
+import { Role, Routes, ToastStatus, postHireStatuses } from '../../constants';
 import { useToast } from '../../hooks';
-import { fetchCohort, getPostHireStatusLabel } from '../../services';
+import { createPostHireStatus, fetchCohort, getPostHireStatusLabel } from '../../services';
 import { keyedString, formatCohortDate } from '../../utils';
-import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
@@ -34,7 +33,7 @@ export default ({ match }) => {
   const { openToast } = useToast();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
-  const isHA = roles?.includes('health_authority') || false;
+  const isHA = roles?.includes(Role.HealthAuthority) || false;
 
   const [cohort, setCohort] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -134,7 +133,7 @@ export default ({ match }) => {
       )}
 
       <CheckPermissions
-        permittedRoles={['health_authority', 'ministry_of_health']}
+        permittedRoles={[Role.HealthAuthority, Role.MinistryOfHealth]}
         renderErrorMessage={true}
       >
         <Card className={classes.cardRoot}>
@@ -188,7 +187,7 @@ export default ({ match }) => {
               )}
             </Grid>
 
-            <CheckPermissions permittedRoles={['health_authority']}>
+            <CheckPermissions permittedRoles={[Role.HealthAuthority]}>
               <>
                 <Grid item xs={2}>
                   <Button
@@ -220,7 +219,7 @@ export default ({ match }) => {
                   columns={columns}
                   rows={rows}
                   isLoading={isLoading}
-                  isMultiSelect={roles.includes('health_authority')}
+                  isMultiSelect={roles.includes(Role.HealthAuthority)}
                   selectedRows={selectedParticipants}
                   updateSelectedRows={setSelectedParticipants}
                   renderCell={(columnId, row) => {

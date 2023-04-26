@@ -12,6 +12,8 @@ import {
   participantStatus,
   participantEngageStatus,
   pageSizeOptions,
+  Role,
+  UserRoles,
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
@@ -198,11 +200,11 @@ const ParticipantTable = () => {
   const { auth, dispatch } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
 
-  const isMoH = roles.includes('ministry_of_health');
-  const isSuperUser = roles.includes('superuser');
+  const isMoH = roles.includes(Role.MinistryOfHealth);
+  const isSuperUser = roles.includes(Role.Superuser);
   const isAdmin = isMoH || isSuperUser;
-  const isHA = roles.includes('health_authority');
-  const isEmployer = roles.includes('employer');
+  const isHA = roles.includes(Role.HealthAuthority);
+  const isEmployer = roles.includes(Role.Employer);
 
   const fetchParticipants = async () => {
     if (!columns) return;
@@ -496,10 +498,7 @@ const ParticipantTable = () => {
         onClose={handleDialogueClose}
         handleUpdate={handleUpdate}
       />
-      <CheckPermissions
-        permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
-        renderErrorMessage={true}
-      >
+      <CheckPermissions permittedRoles={UserRoles} renderErrorMessage={true}>
         <Grid
           container
           alignContent='center'

@@ -20,6 +20,7 @@ import {
   participantStatus,
   Routes,
   fieldsLabelMap,
+  Role,
 } from '../../constants';
 import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
@@ -43,7 +44,7 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
     setActionMenuParticipant(null);
   };
 
-  const isEmployer = roles.includes('health_authority') || roles.includes('employer');
+  const isEmployer = roles.includes(Role.HealthAuthority) || roles.includes(Role.Employer);
 
   const {
     state: { columns, selectedTab, site },
@@ -238,7 +239,7 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
                 if (columnObj(columnId).isHidden) return;
                 if (columnId === 'details')
                   return (
-                    <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+                    <CheckPermissions roles={roles} permittedRoles={[Role.MinistryOfHealth]}>
                       <SetAllocation
                         isNew={row.allocation === null}
                         row={row}

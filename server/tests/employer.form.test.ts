@@ -19,7 +19,7 @@ import { setParticipantStatus } from '../services/participant-status';
 
 import { startDB, closeDB, cleanDB } from './util/db';
 
-import { ParticipantStatus as ps } from '../constants';
+import { ParticipantStatus as ps, Role } from '../constants';
 
 describe.skip('Server V1 Form Endpoints', () => {
   let server;
@@ -240,7 +240,7 @@ describe.skip('Server V1 Form Endpoints', () => {
 
     await expect(saveSingleSite(site)).resolves.not.toThrow();
 
-    const sites = await getSitesForUser({ roles: ['ministry_of_health'] });
+    const sites = await getSitesForUser({ roles: [Role.MinistryOfHealth] });
     const [siteData] = sites.filter((entry) => entry.siteId === site.siteId);
 
     const res = await getSiteByID(siteData.id);

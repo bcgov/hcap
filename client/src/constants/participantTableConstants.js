@@ -1,4 +1,5 @@
 import ToastStatus from './toast';
+import { Role } from './user-roles';
 export const pageSizeOptions = [10, 30, 50, 100];
 
 export const participantStatus = {
@@ -21,27 +22,27 @@ export const participantEngageStatus = {
 export const tabs = {
   // Tabs, associated allowed roles, displayed statuses
   'Available Participants': {
-    roles: ['employer', 'health_authority'],
+    roles: [Role.Employer, Role.HealthAuthority],
     statuses: ['open'],
   },
   'My Candidates': {
-    roles: ['employer', 'health_authority'],
+    roles: [Role.Employer, Role.HealthAuthority],
     statuses: ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
   },
   'Archived Candidates': {
-    roles: ['employer', 'health_authority'],
+    roles: [Role.Employer, Role.HealthAuthority],
     statuses: ['rejected', 'archived'],
   },
   'Hired Candidates': {
-    roles: ['employer', 'health_authority'],
+    roles: [Role.Employer, Role.HealthAuthority],
     statuses: ['hired', 'pending_acknowledgement'],
   },
   'Return Of Service': {
-    roles: ['employer', 'health_authority'],
+    roles: [Role.Employer, Role.HealthAuthority],
     statuses: ['ros', 'hired'],
   },
   Participants: {
-    roles: ['ministry_of_health', 'superuser'],
+    roles: [Role.MinistryOfHealth, Role.Superuser],
     statuses: [
       'open',
       'prospecting',

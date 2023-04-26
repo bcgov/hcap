@@ -8,6 +8,7 @@ import { CheckPermissions } from '../../components/generic';
 import { FetchMappedPhases } from '../../services/phases';
 import { DataTable } from '../../components/tables/DataTable';
 import { PhaseDialog } from '../../components/modal-forms';
+import { Role } from '../../constants';
 
 export default () => {
   const { auth } = AuthContext.useAuth();
@@ -32,7 +33,7 @@ export default () => {
         alignItems='center'
         direction='row'
       >
-        <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+        <CheckPermissions roles={roles} permittedRoles={[Role.MinistryOfHealth]}>
           <DataTable
             columns={columns}
             fetchData={FetchMappedPhases}

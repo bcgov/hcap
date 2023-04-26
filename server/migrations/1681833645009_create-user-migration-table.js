@@ -1,4 +1,5 @@
 import { collections } from '../db';
+import { Role } from '../constants';
 
 exports.up = async (pgm) => {
   await pgm.db.query(`
@@ -7,7 +8,7 @@ exports.up = async (pgm) => {
       username VARCHAR(255) NOT NULL,
       email VARCHAR(255) NOT NULL,
       roles VARCHAR(30)[] NOT NULL,
-      status VARCHAR(10) NOT NULL DEFAULT 'pending',
+      status VARCHAR(10) NOT NULL DEFAULT '${Role.Pending}',
       message VARCHAR(255),
       migrated_at timestamp with time zone
     )

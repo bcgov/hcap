@@ -5,7 +5,7 @@ import { Box } from '@material-ui/core';
 import { Formik, Form as FormikForm } from 'formik';
 import { Button } from '../generic';
 
-export const UserManagementForm = ({
+export const UserManagementViewForm = ({
   initialValues,
   handleSubmit,
   onClose,

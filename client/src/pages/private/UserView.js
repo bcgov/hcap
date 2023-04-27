@@ -3,23 +3,15 @@ import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
-import { Field } from 'formik';
 
 import { useToast } from '../../hooks';
-import { Button, Page, Table, CheckPermissions, Dialog } from '../../components/generic';
-import {
-  ApproveAccessRequestSchema,
-  Routes,
-  ToastStatus,
-  regionLabelsMap,
-  API_URL,
-  healthAuthorities,
-} from '../../constants';
-import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../../components/fields';
+import { Button, Page, Table, CheckPermissions } from '../../components/generic';
+import { Routes, ToastStatus, API_URL } from '../../constants';
 import { useLocation } from 'react-router-dom';
-import { addEllipsisMask, sortObjects } from '../../utils';
+import { sortObjects } from '../../utils';
 import { UserMigrationTable } from './UserMigrationTable';
-import { UserManagementForm } from '../../components/modal-forms';
+import { mapTableRows } from '../../utils/user-management-table-util';
+import { UserManagementDialog } from '../../components/modal-forms/UserManagementDialog';
 
 const columns = [
   { id: 'firstName', name: 'First Name' },
@@ -83,6 +75,35 @@ export default () => {
     }
   };
 
+  const userManagementOptionsButton = (row, pending) => {
+    return (
+      <Button
+        onClick={async () => {
+          setSelectedUserId(row.id);
+          setSelectedUserName(row.username);
+          if (!pending) {
+            setLoadingData(true);
+            const response = await fetch(`${API_URL}/api/v1/user-details?id=${row.id}`, {
+              headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+              method: 'GET',
+            });
+            setLoadingData(false);
+            if (response.ok) {
+              const details = await response.json();
+              setSelectedUserDetails(details);
+              setModalOpen(true);
+              return;
+            }
+          }
+          setModalOpen(true);
+        }}
+        variant='outlined'
+        size='small'
+        text='Options'
+      />
+    );
+  };
+
   const fetchUsers = async ({ pending }) => {
     setLoadingData(true);
     const response = await fetch(`${API_URL}/api/v1/${pending ? 'pending-users' : 'users'}`, {
@@ -93,45 +114,7 @@ export default () => {
     if (response.ok) {
       const { data } = await response.json();
       const rows = data.map((row) => {
-        // Pull all relevant props from row based on columns constant
-        const mappedRow = columns.reduce(
-          (accumulator, column) => ({
-            ...accumulator,
-            [column.id]: addEllipsisMask(row[column.id], 100),
-          }),
-          {}
-        );
-        // Add additional props (user ID, button) to row
-        return {
-          ...mappedRow,
-          id: row.id,
-          details: (
-            <Button
-              onClick={async () => {
-                setSelectedUserId(row.id);
-                setSelectedUserName(row.username);
-                if (!pending) {
-                  setLoadingData(true);
-                  const response = await fetch(`${API_URL}/api/v1/user-details?id=${row.id}`, {
-                    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-                    method: 'GET',
-                  });
-                  setLoadingData(false);
-                  if (response.ok) {
-                    const details = await response.json();
-                    setSelectedUserDetails(details);
-                    setModalOpen(true);
-                    return;
-                  }
-                }
-                setModalOpen(true);
-              }}
-              variant='outlined'
-              size='small'
-              text='Options'
-            />
-          ),
-        };
+        return mapTableRows(columns, row, userManagementOptionsButton(row, pending));
       });
       setRows(rows);
       setIsPendingRequests(rows.length > 0);
@@ -163,120 +146,8 @@ export default () => {
     fetchSites();
   }, [history, location]);
 
-  const roleOptions = [
-    { value: 'health_authority', label: 'Health Authority' },
-    { value: 'employer', label: 'Private Employer' },
-    { value: 'ministry_of_health', label: 'Ministry Of Health' },
-  ];
-
-  const initialValues = {
-    sites: selectedUserDetails?.sites.map((site) => site.siteId) || [],
-    regions:
-      [regionLabelsMap[selectedUserDetails?.roles.find((role) => role.includes('region_'))]] || [],
-    role: roleOptions.find((item) => selectedUserDetails?.roles.includes(item.value))?.value || '',
-    acknowledgement: false,
-  };
-
   return (
     <Page>
-      <Dialog
-        title={location.pathname === Routes.UserPending ? 'Approve Access Request' : 'Edit User'}
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-      >
-        <Box mb={4}>
-          <Typography variant='body1' gutterBottom>
-            Username: <b>{rows?.find((i) => i.id === selectedUserId)?.username || ''}</b>
-          </Typography>
-          <Typography variant='body1' gutterBottom>
-            Email address: <b>{rows?.find((i) => i.id === selectedUserId)?.emailAddress || ''}</b>
-          </Typography>
-        </Box>
-        <UserManagementForm
-          handleSubmit={handleSubmit}
-          initialValues={initialValues}
-          onClose={() => setModalOpen(false)}
-          isLoading={isLoadingData}
-          schema={ApproveAccessRequestSchema}
-        >
-          {({ submitForm, values, handleChange, setFieldValue }) => (
-            <>
-              <Box>
-                <Field
-                  name='role'
-                  component={RenderSelectField}
-                  label='* User Role'
-                  options={roleOptions}
-                  onChange={(e) => {
-                    setFieldValue('regions', []);
-                    setFieldValue('sites', []);
-                    setFieldValue('acknowledgement', false);
-                    handleChange(e);
-                  }}
-                />
-              </Box>
-              {values.role === 'health_authority' && (
-                <Box mt={3}>
-                  <Field
-                    name='regions'
-                    component={RenderSelectField}
-                    label='* Health Region'
-                    options={healthAuthorities}
-                    onChange={(e) => {
-                      setFieldValue('sites', []);
-                      // Wrap single region value in array
-                      const forcedArray = {
-                        ...e,
-                        target: { ...e.target, value: [e.target.value] },
-                      };
-                      handleChange(forcedArray);
-                    }}
-                  />
-                </Box>
-              )}
-              {((values.role === 'health_authority' && values.regions.length > 0) ||
-                values.role === 'employer') && (
-                <Box mt={3}>
-                  <Field
-                    name='sites'
-                    component={RenderMultiSelectField}
-                    label='* Employer Sites (allocation number) - select one or more'
-                    options={sites
-                      .filter((item) =>
-                        values.role === 'health_authority'
-                          ? values.regions.includes(item.healthAuthority)
-                          : true
-                      )
-                      .map((item) => ({
-                        value: item.siteId,
-                        label: `${item.siteName} (${item.allocation || 0})`,
-                      }))}
-                    onChange={(e) => {
-                      const regions = sites
-                        .filter((site) => e.target.value.includes(site.siteId))
-                        .map((site) => site.healthAuthority);
-                      const deduped = [...new Set(regions)];
-                      if (regions.length > 0) setFieldValue('regions', deduped);
-                      handleChange(e);
-                    }}
-                  />
-                </Box>
-              )}
-              {values.role === 'ministry_of_health' && (
-                <Box mt={3}>
-                  <Field
-                    name='acknowledgement'
-                    component={RenderCheckbox}
-                    type='checkbox'
-                    checked={values.acknowledgement}
-                    label='I understand that I am granting this user access to potentially sensitive personal information.'
-                  />
-                </Box>
-              )}
-            </>
-          )}
-        </UserManagementForm>
-      </Dialog>
       <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
         <Grid
           container
@@ -316,6 +187,17 @@ export default () => {
           </Box>
         </Grid>
       </CheckPermissions>
+
+      {/** Modals */}
+      <UserManagementDialog
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSubmit={handleSubmit}
+        isLoading={isLoadingData}
+        rows={rows}
+        selectedUserDetails={selectedUserDetails}
+        sites={sites}
+      />
     </Page>
   );
 };

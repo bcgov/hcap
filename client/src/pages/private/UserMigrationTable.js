@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import store from 'store';
-import { FastField } from 'formik';
-import { Box } from '@material-ui/core';
 
-import { addEllipsisMask, sortObjects } from '../../utils';
-import { Button, Table, Dialog } from '../../components/generic';
-import { API_URL, EditUserMigrationUserFormSchema, ToastStatus } from '../../constants';
-import { RenderTextField } from '../../components/fields';
-import { UserManagementForm } from '../../components/modal-forms';
+import { sortObjects } from '../../utils';
+import { Button, Table } from '../../components/generic';
+import { API_URL, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
+import { mapTableRows } from '../../utils/user-management-table-util';
+import { UserMigrationDialog } from '../../components/modal-forms/UserMigrationDialog';
 
 const columns = [
   { id: 'username', name: 'Username' },
@@ -57,6 +55,20 @@ export const UserMigrationTable = () => {
     setLoading(false);
   };
 
+  const userMigrationOptionsButton = (row) => {
+    return (
+      <Button
+        onClick={async () => {
+          setUserMigrationModalOpen(true);
+          setSelectedUser(row);
+        }}
+        variant='outlined'
+        size='small'
+        text='Options'
+      />
+    );
+  };
+
   const fetchUserMigrations = async () => {
     setLoading(true);
     const response = await fetch(`${API_URL}/api/v1/user-migrations`, {
@@ -67,30 +79,7 @@ export const UserMigrationTable = () => {
     if (response.ok) {
       const { data } = await response.json();
       const rows = data.map((row) => {
-        // Pull all relevant props from row based on columns constant
-        const mappedRow = columns.reduce(
-          (accumulator, column) => ({
-            ...accumulator,
-            [column.id]: addEllipsisMask(row[column.id], 100),
-          }),
-          {}
-        );
-        // Add additional props (user ID, button) to row
-        return {
-          ...mappedRow,
-          id: row.id,
-          details: (
-            <Button
-              onClick={async () => {
-                setUserMigrationModalOpen(true);
-                setSelectedUser(row);
-              }}
-              variant='outlined'
-              size='small'
-              text='Options'
-            />
-          ),
-        };
+        return mapTableRows(columns, row, userMigrationOptionsButton(row));
       });
       setUsers(rows);
     } else {
@@ -109,38 +98,8 @@ export const UserMigrationTable = () => {
     fetchUserMigrations();
   }, []);
 
-  const initialValues = {
-    username: selectedUser?.username,
-    emailAddress: selectedUser?.email,
-  };
-
   return (
     <>
-      <Dialog
-        title={'Edit User'}
-        open={userMigrationModalOpen}
-        onClose={() => setUserMigrationModalOpen(false)}
-      >
-        <UserManagementForm
-          handleSubmit={handleSubmit}
-          initialValues={initialValues}
-          onClose={() => setUserMigrationModalOpen(false)}
-          isLoading={loading}
-          schema={EditUserMigrationUserFormSchema}
-        >
-          {({ submitForm }) => (
-            <>
-              <Box>
-                <FastField name='username' component={RenderTextField} label='* Username' />
-              </Box>
-              <Box mt={3}>
-                <FastField name='emailAddress' component={RenderTextField} label='* Email' />
-              </Box>
-            </>
-          )}
-        </UserManagementForm>
-      </Dialog>
-
       <Table
         columns={columns}
         order={order}
@@ -148,6 +107,15 @@ export const UserMigrationTable = () => {
         onRequestSort={handleRequestSort}
         rows={sortObjects(users, orderBy, order)}
         isLoading={loading}
+      />
+
+      {/** Modals */}
+      <UserMigrationDialog
+        isOpen={userMigrationModalOpen}
+        onClose={() => setUserMigrationModalOpen(false)}
+        onSubmit={handleSubmit}
+        isLoading={loading}
+        selectedUser={selectedUser}
       />
     </>
   );

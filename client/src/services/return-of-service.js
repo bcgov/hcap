@@ -1,6 +1,5 @@
-import store from 'store';
 import dayjs from 'dayjs';
-import { API_URL } from '../constants';
+import { axiosInstance } from './api';
 
 export const createReturnOfServiceStatus = async ({ participantId, data, siteId }) => {
   const finalBody = {
@@ -9,48 +8,33 @@ export const createReturnOfServiceStatus = async ({ participantId, data, siteId 
     date: dayjs(data.date, 'YYYY/MM/DD').toDate(),
   };
 
-  const url = `${API_URL}/api/v1/ros/participant/${participantId}`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      data: finalBody,
-      status: 'assigned-same-site',
-      ...(siteId && { siteId }),
-    }),
-  });
-  if (response.ok) {
-    return response.json();
-  }
+  const payload = {
+    data: finalBody,
+    status: 'assigned-same-site',
+    ...(siteId && { siteId }),
+  };
+  try {
+    const { data } = await axiosInstance.post(`/ros/participant/${participantId}`, payload);
 
-  const message = (await response.text()) || 'Failed to create post-hire status';
-  throw new Error(message, response.error || response.statusText);
+    return data;
+  } catch (e) {
+    const { response } = e;
+    const message = (await response.text()) || 'Failed to create post-hire status';
+    throw new Error(message, response.error || response.statusText);
+  }
 };
 
 export const getAllSites = async () => {
-  const url = `${API_URL}/api/v1/employer-sites`;
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-  });
-
-  if (response.ok) {
-    return response.json();
-  } else {
+  try {
+    const { data } = await axiosInstance.get('/employer-sites');
+    return data;
+  } catch {
     throw new Error('Failed to fetch all sites');
   }
 };
 
 export const updateRosStatus = async (participantId, newValues, status) => {
-  let url = `${API_URL}/api/v1/ros/participant/${participantId}`;
+  let url = `/ros/participant/${participantId}`;
   if (status) {
     url += '/change-site';
   }
@@ -65,22 +49,14 @@ export const updateRosStatus = async (participantId, newValues, status) => {
   const dateTimestamp = date ? dayjs(date, 'YYYY/MM/DD').toDate() : undefined;
   const startDateTimestamp = startDate ? dayjs(startDate, 'YYYY/MM/DD').toDate() : undefined;
 
-  return fetch(url, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      data: {
-        site,
-        date: dateTimestamp,
-        startDate: startDateTimestamp,
-        employmentType,
-        positionType,
-        status,
-      },
-    }),
-  });
+  const data = {
+    site,
+    date: dateTimestamp,
+    startDate: startDateTimestamp,
+    employmentType,
+    positionType,
+    status,
+  };
+
+  return axiosInstance.patch(url, { data });
 };

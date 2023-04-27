@@ -9,7 +9,7 @@ import {
   healthAuthorities,
   regionLabelsMap,
 } from '../../constants';
-import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../../components/fields';
+import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../fields';
 import { Dialog } from '../generic';
 import { UserManagementViewForm } from './UserManagementViewForm';
 

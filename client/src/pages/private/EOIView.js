@@ -2,14 +2,17 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
-import store from 'store';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
-import { Routes, regionLabelsMap, API_URL, healthAuthoritiesFilter, Role } from '../../constants';
+import { Routes, regionLabelsMap, healthAuthoritiesFilter, Role } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { AuthContext } from '../../providers';
-import { sortObjects } from '../../utils';
+import { getErrorMessage, sortObjects } from '../../utils';
+import { axiosInstance } from '../../services/api';
+import { useToast } from '../../hooks';
 
 export default () => {
+  const { openToast } = useToast();
+
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
   const [fetchedRows, setFetchedRows] = useState([]);
@@ -82,19 +85,14 @@ export default () => {
 
     const getEOIs = async () => {
       setLoadingData(true);
-      const response = await fetch(`${API_URL}/api/v1/employer-form`, {
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-          Authorization: `Bearer ${store.get('TOKEN')}`,
-        },
-        method: 'GET',
-      });
 
       let rows = [];
-      if (response.ok) {
-        const { data } = await response.json();
-        rows = filterData(data);
+      try {
+        const { data } = await axiosInstance.get('/employer-form');
+
+        rows = filterData(data?.data);
+      } catch (e) {
+        openToast(getErrorMessage(e));
       }
 
       setFetchedRows(rows);

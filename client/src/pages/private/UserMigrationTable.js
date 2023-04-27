@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import store from 'store';
 
 import { sortObjects } from '../../utils';
 import { Button, Table } from '../../components/generic';
-import { API_URL, ToastStatus } from '../../constants';
+import { ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 import { mapTableRows } from '../../utils/user-management-table-util';
 import { UserMigrationDialog } from '../../components/modal-forms/UserMigrationDialog';
+import { axiosInstance } from '../../services/api';
 
 const columns = [
   { id: 'username', name: 'Username' },
@@ -29,24 +29,16 @@ export const UserMigrationTable = () => {
 
   const handleSubmit = async (values) => {
     setLoading(true);
-    const response = await fetch(`${API_URL}/api/v1/user-migrations/${selectedUser.id}`, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(values),
-    });
+    try {
+      await axiosInstance.patch(`/user-migrations/${selectedUser.id}`, values);
 
-    if (response.ok) {
       setUserMigrationModalOpen(false);
       await fetchUserMigrations();
       openToast({
         status: ToastStatus.Success,
         message: 'User to be migrated has been updated',
       });
-    } else {
+    } catch {
       openToast({
         status: ToastStatus.Error,
         message: 'User to be migrated has failed to update',
@@ -71,18 +63,15 @@ export const UserMigrationTable = () => {
 
   const fetchUserMigrations = async () => {
     setLoading(true);
-    const response = await fetch(`${API_URL}/api/v1/user-migrations`, {
-      headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      const { data } = await response.json();
+    try {
+      const {
+        data: { data },
+      } = await axiosInstance.get('/user-migrations');
       const rows = data.map((row) => {
         return mapTableRows(columns, row, userMigrationOptionsButton(row));
       });
       setUsers(rows);
-    } else {
+    } catch {
       setUsers([]);
     }
     setLoading(false);

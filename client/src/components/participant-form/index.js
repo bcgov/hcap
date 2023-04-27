@@ -4,20 +4,15 @@ import Grid from '@material-ui/core/Grid';
 import { Formik, Form as FormikForm } from 'formik';
 import { useHistory } from 'react-router-dom';
 
-import {
-  API_URL,
-  ParticipantFormSchema,
-  ParticipantEditFormSchema,
-  Routes,
-  ToastStatus,
-} from '../../constants';
+import { ParticipantFormSchema, ParticipantEditFormSchema, Routes } from '../../constants';
 import { useToast } from '../../hooks';
-import { scrollUp } from '../../utils';
+import { getErrorMessage, scrollUp } from '../../utils';
 
 import { Button } from '../generic';
 import { Summary } from './Summary';
 import { Fields } from './Fields';
 import { isNonPortalHire } from '../../utils/isNonPortalHire';
+import { axiosInstance } from '../../services/api';
 
 export const Form = ({
   initialValues,
@@ -52,22 +47,14 @@ export const Form = ({
       return;
     }
     setSubmitLoading(true);
-    const response = await fetch(`${API_URL}/api/v1/participants`, {
-      method: 'POST',
-      headers: { Accept: 'application/json', 'Content-type': 'application/json' },
-      body: JSON.stringify(values),
-    });
 
-    if (response.ok) {
-      const { id } = await response.json();
+    try {
+      const { id } = await axiosInstance.post('/participants', values);
+
       history.push(Routes.ParticipantConfirmation, { formValues: values, id });
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
-      });
+    } catch (e) {
+      openToast(getErrorMessage(e));
     }
-
     setSubmitLoading(false);
   };
 

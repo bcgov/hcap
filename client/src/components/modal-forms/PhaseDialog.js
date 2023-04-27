@@ -9,7 +9,7 @@ import { Field, Formik, Form as FormikForm } from 'formik';
 import { CreatePhaseSchema, ToastStatus } from '../../constants';
 import { createPhase, updatePhase, fetchPhases } from '../../services/phases';
 import { useToast } from '../../hooks';
-import { formatLongDate } from '../../utils/date';
+import { formatLongDate, getErrorMessage } from '../../utils';
 
 const useStyles = makeStyles(() => ({
   formButton: {
@@ -72,18 +72,15 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
       start_date: phase.startDate,
       end_date: phase.endDate,
     };
-    const response = await (isNew ? createPhase(phaseJson) : updatePhase(content.id, phaseJson));
-    if (response.ok) {
+    try {
+      await (isNew ? createPhase(phaseJson) : updatePhase(content.id, phaseJson));
       openToast({
         status: ToastStatus.Success,
         message: `Phase '${phase.phaseName}' ${isNew ? 'created' : 'updated'} successfully`,
       });
       await onSubmit();
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
-      });
+    } catch (e) {
+      openToast(getErrorMessage(e));
     }
   };
 

@@ -2,17 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
-import store from 'store';
 
 import { useToast } from '../../hooks';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
-import { Routes, ToastStatus, API_URL, Role } from '../../constants';
+import { Routes, ToastStatus, Role } from '../../constants';
 import { useLocation } from 'react-router-dom';
 import { sortObjects } from '../../utils';
 import { UserMigrationTable } from './UserMigrationTable';
 import { mapTableRows } from '../../utils/user-management-table-util';
 import { UserManagementDialog } from '../../components/modal-forms/UserManagementDialog';
 import { FeatureFlaggedComponent, flagKeys } from '../../services';
+import { axiosInstance } from '../../services/api';
 
 const columns = [
   { id: 'firstName', name: 'First Name' },
@@ -48,27 +48,24 @@ export default () => {
 
   const handleSubmit = async (values) => {
     setLoadingData(true);
+
     const isUserAccessRequest = location.pathname === Routes.UserPending;
-    const response = await fetch(
-      `${API_URL}/api/v1/${isUserAccessRequest ? 'approve-user' : 'user-details'}`,
-      {
-        headers: {
-          'Content-type': 'application/json',
-          Authorization: `Bearer ${store.get('TOKEN')}`,
-        },
-        method: isUserAccessRequest ? 'POST' : 'PATCH',
-        body: JSON.stringify({ ...values, userId: selectedUserId, username: selectedUserName }),
-      }
-    );
-    setLoadingData(false);
-    if (response.ok) {
+
+    try {
+      const method = isUserAccessRequest ? 'post' : 'patch';
+      const uri = isUserAccessRequest ? 'approve-user' : 'user-details';
+      const payload = { ...values, userId: selectedUserId, username: selectedUserName };
+
+      await axiosInstance[method](uri, payload);
+
+      setLoadingData(false);
       setModalOpen(false);
       fetchUsers({ pending: isUserAccessRequest });
       openToast({
         status: ToastStatus.Success,
         message: isUserAccessRequest ? 'Access request approved' : 'User updated',
       });
-    } else {
+    } catch {
       openToast({
         status: ToastStatus.Error,
         message: isUserAccessRequest ? 'Access request approval failed' : 'User update failed',
@@ -84,17 +81,14 @@ export default () => {
           setSelectedUserName(row.username);
           if (!pending) {
             setLoadingData(true);
-            const response = await fetch(`${API_URL}/api/v1/user-details?id=${row.id}`, {
-              headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-              method: 'GET',
-            });
-            setLoadingData(false);
-            if (response.ok) {
-              const details = await response.json();
+            try {
+              const { data: details } = await axiosInstance.get(`/user-details?id=${row.id}`);
+              setLoadingData(false);
               setSelectedUserDetails(details);
               setModalOpen(true);
               return;
-            }
+            } catch {}
+            setLoadingData(false);
           }
           setModalOpen(true);
         }}
@@ -107,19 +101,20 @@ export default () => {
 
   const fetchUsers = async ({ pending }) => {
     setLoadingData(true);
-    const response = await fetch(`${API_URL}/api/v1/${pending ? 'pending-users' : 'users'}`, {
-      headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-      method: 'GET',
-    });
 
-    if (response.ok) {
-      const { data } = await response.json();
+    try {
+      const uri = pending ? 'pending-users' : 'users';
+
+      const {
+        data: { data = [] },
+      } = await axiosInstance.get(uri);
+
       const rows = data.map((row) => {
         return mapTableRows(columns, row, userManagementOptionsButton(row, pending));
       });
       setRows(rows);
       setIsPendingRequests(rows.length > 0);
-    } else {
+    } catch {
       setRows([]);
       setIsPendingRequests(false);
     }
@@ -128,15 +123,10 @@ export default () => {
 
   const fetchSites = async () => {
     setLoadingData(true);
-    const response = await fetch(`${API_URL}/api/v1/employer-sites/user`, {
-      headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-      method: 'GET',
-    });
-
-    if (response.ok) {
-      const { data } = await response.json();
-      setSites(data);
-    }
+    try {
+      const { data } = await axiosInstance.get('/employer-sites/user');
+      setSites(data.data);
+    } catch {}
     setLoadingData(false);
   };
 

@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { Button, Dialog } from '../generic';
+import { Field, Formik, Form as FormikForm } from 'formik';
 import { Box, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core/styles';
+import { Button, Dialog } from '../generic';
 import { BulkAllocationSchema, ToastStatus } from '../../constants';
 import { RenderTextField, RenderSelectField, RenderCheckbox } from '../fields';
-import { Field, Formik, Form as FormikForm } from 'formik';
-import { formatLongDate } from '../../utils/date';
-import { addEllipsisMask } from '../../utils';
-import { bulkAllocation } from '../../services/allocations';
+import { addEllipsisMask, formatLongDate, getErrorMessage } from '../../utils';
+import { bulkAllocation } from '../../services';
 import { useToast } from '../../hooks';
 
 const useStyles = makeStyles(() => ({
@@ -69,18 +68,16 @@ export const BulkAllocationForm = ({ onClose, afterSubmit, open, sites, phases =
       allocation: values.allocation,
       phase_id: values.phase_id,
     };
-    const response = await bulkAllocation(payload);
-    if (response.ok) {
+    try {
+      await bulkAllocation(payload);
+
       await afterSubmit();
       openToast({
         status: ToastStatus.Success,
         message: `${sites.length} sites have been assigned allocations`,
       });
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
-      });
+    } catch (e) {
+      openToast(getErrorMessage(e));
     }
   };
 

@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo, lazy } from 'react';
-import store from 'store';
-
 import { Box, Typography } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
 import { Page, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { PSIForm, CohortForm } from '../../components/modal-forms';
-import { ToastStatus, API_URL, NewCohortSchema, Role } from '../../constants';
+import { ToastStatus, NewCohortSchema, Role } from '../../constants';
 import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
+import { getErrorMessage } from '../../utils';
+import { axiosInstance } from '../../services/api';
 
 const PSITable = lazy(() => import('./PSITable'));
 
@@ -50,37 +50,21 @@ export default () => {
   };
 
   const handleAddCohort = async (cohort) => {
-    const response = await fetch(`${API_URL}/api/v1/psi/${selectedPSI}/cohorts/`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(cohort),
-    });
-
-    if (response.ok) {
+    try {
+      await axiosInstance.post(`/psi/${selectedPSI}/cohorts`, cohort);
       setActiveModalForm(null);
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
-      });
+    } catch (e) {
+      openToast(getErrorMessage(e));
     }
   };
 
   // Hooks
   useEffect(() => {
     const fetchCohorts = async () => {
-      const response = await fetch(`${API_URL}/api/v1/cohorts`, {
-        headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-        method: 'GET',
-      });
-      if (response.ok) {
-        const data = await response.json();
+      try {
+        const { data } = await axiosInstance.get('/cohorts');
         setCohorts(data);
-      } else {
+      } catch (e) {
         setCohorts([]);
       }
     };
@@ -90,12 +74,9 @@ export default () => {
 
   useEffect(() => {
     const fetchPSIs = async () => {
-      const response = await fetch(`${API_URL}/api/v1/psi`, {
-        headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-        method: 'GET',
-      });
-      if (response.ok) {
-        const data = await response.json();
+      try {
+        const { data } = await axiosInstance.get('/psi');
+
         const mappedData = data.map((row) => {
           const rowCohorts = cohorts.filter((cohort) => cohort.psi_id === row.id);
           // To calculate available_seats, we filter out the expired cohorts and
@@ -111,7 +92,7 @@ export default () => {
           };
         });
         setPSIs(mappedData);
-      } else {
+      } catch {
         setPSIs([]);
       }
     };

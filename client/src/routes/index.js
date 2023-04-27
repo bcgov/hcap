@@ -5,9 +5,10 @@ import { useKeycloak, KeycloakProvider } from '@react-keycloak/web';
 import store from 'store';
 import Keycloak from 'keycloak-js';
 
-import { API_URL, Routes } from '../constants';
+import { Routes } from '../constants';
 import { AuthContext } from '../providers';
 import PhaseView from '../pages/private/PhaseView';
+import { axiosInstance } from '../services/api';
 const ParticipantLogin = lazy(() => import('../pages/public/ParticipantLogin'));
 const Admin = lazy(() => import('../pages/private/Admin'));
 const UserView = lazy(() => import('../pages/private/UserView'));
@@ -79,45 +80,34 @@ export default () => {
 
   const getUserInfo = async (token) => {
     dispatch({ action: AuthContext.USER_LOADING });
-    const response = await fetch(`${API_URL}/api/v1/user`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      method: 'GET',
-    });
-    if (response.ok) {
-      const payload = await response.json();
+    try {
+      const { data: payload } = await axiosInstance.get('/user');
+
       await checkRolesAndRefreshToken(payload.roles);
 
       dispatch({ type: AuthContext.USER_LOADED, payload });
-    } else {
+    } catch {
       // logout, remove token if it's invalid
       dispatch({ type: AuthContext.USER_LOADED, payload: null });
       store.remove('TOKEN');
       await keycloakInfo.logout({ redirectUri: window.location.origin });
     }
   };
-  const getKeycloakInfo = async () => {
-    const response = await fetch(`${API_URL}/api/v1/keycloak-realm-client-info`, {
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      method: 'GET',
-    });
 
-    const result = await response.json();
+  const getKeycloakInfo = async () => {
+    const { data } = await axiosInstance.get('/keycloak-realm-client-info');
+
     setKeycloakInfo(
       new Keycloak({
-        realm: result.realm,
-        url: result.url,
-        clientId: result.clientId,
+        realm: data.realm,
+        url: data.url,
+        clientId: data.clientId,
       })
     );
     // Saving all received env variables to store
-    if (result.envVariables && Object.keys(result.envVariables).length > 0) {
-      for (const key of Object.keys(result.envVariables)) {
-        store.set(key, result.envVariables[key]);
+    if (data.envVariables && Object.keys(data.envVariables).length > 0) {
+      for (const key of Object.keys(data.envVariables)) {
+        store.set(key, data.envVariables[key]);
       }
     }
   };

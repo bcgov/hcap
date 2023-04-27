@@ -1,90 +1,56 @@
-import store from 'store';
-import { API_URL } from '../constants';
+import { axiosInstance } from './api';
 
 export const fetchSite = async (siteId) => {
-  const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}`, {
-    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-    method: 'GET',
-  });
-  return response;
+  const { data } = await axiosInstance.get(`/employer-sites/${siteId}`);
+  return data;
 };
 
 export const fetchRegionSiteRows = async (columns) => {
-  const response = await fetch(`${API_URL}/api/v1/employer-sites/region`, {
-    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-    method: 'GET',
-  });
-  return mapSiteRowsResponse(response, columns);
+  const {
+    data: { data },
+  } = await axiosInstance.get('/employer-sites/region');
+  return mapSiteRowsResponse(data, columns);
 };
 
 export const fetchSiteRows = async (columns) => {
-  const response = await fetch(`${API_URL}/api/v1/employer-sites/user`, {
-    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-    method: 'GET',
-  });
-  return mapSiteRowsResponse(response, columns);
+  const {
+    data: { data },
+  } = await axiosInstance.get('/employer-sites/user');
+  return mapSiteRowsResponse(data, columns);
 };
 /**
  *
- * @param {*} response API Request response
+ * @param {*} data list of sites
  * @param {*} columns Which columns we're expected to map to
  * @returns
  */
-const mapSiteRowsResponse = async (response, columns) => {
-  if (response.ok) {
-    const { data } = await response.json();
-    const rowsData = data.map((row) => {
-      // Pull all relevant props from row based on columns constant
-      const mappedRow = columns.reduce(
-        (accumulator, column) => ({
-          ...accumulator,
-          [column.id]: row[column.id],
-        }),
-        {}
-      );
-      // Add additional props (user ID, button) to row
-      return {
-        ...mappedRow,
-        id: row.id,
-      };
-    });
-    return rowsData;
-  } else {
-    return [];
-  }
+const mapSiteRowsResponse = async (data, columns) => {
+  return data.map((row) => {
+    // Pull all relevant props from row based on columns constant
+    const mappedRow = columns.reduce(
+      (accumulator, column) => ({
+        ...accumulator,
+        [column.id]: row[column.id],
+      }),
+      {}
+    );
+    // Add additional props (user ID, button) to row
+    return {
+      ...mappedRow,
+      id: row.id,
+    };
+  });
 };
 
 export const createSite = async (siteJson) => {
-  const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify(siteJson),
-  });
-  return response;
+  return axiosInstance.post('/employer-sites', siteJson);
 };
 
 export const updateSite = async (payload, siteId) => {
-  const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
-  return response;
+  return axiosInstance.patch(`/employer-sites/${siteId}`, payload);
 };
 
 export const fetchSiteParticipants = async (columnIDs, siteId) => {
-  const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
-    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
-    method: 'GET',
-  });
-
-  return response;
+  const { data } = await axiosInstance.get(`/employer-sites/${siteId}/participants`);
+  return data;
 };

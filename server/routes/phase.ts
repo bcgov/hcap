@@ -12,7 +12,6 @@ import {
   checkDateOverlap,
 } from '../services/phase';
 import { getSitesForUser } from '../services/employers';
-import { FEATURE_PHASE_ALLOCATION } from '../services/feature-flags';
 import type { HcapUserInfo } from '../keycloak';
 
 const router = express.Router();
@@ -95,10 +94,6 @@ router.post(
       return resp
         .status(400)
         .send('Failed to create phase due to overlapping dates with existing phases');
-
-    if (!FEATURE_PHASE_ALLOCATION) {
-      return resp.status(501).send('Phase allocation feature not active');
-    }
     try {
       const { body, hcapUserInfo: user } = req;
       const response = await createPhase(body, user);
@@ -137,9 +132,6 @@ router.patch(
       return resp
         .status(400)
         .send('Failed to update phase due to overlapping dates with existing phases');
-    if (!FEATURE_PHASE_ALLOCATION) {
-      return resp.status(501).send('Phase allocation feature not active');
-    }
     try {
       const { body, hcapUserInfo: user } = req;
       const response = await updatePhase(req.params.id, body, user);

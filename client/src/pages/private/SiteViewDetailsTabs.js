@@ -11,7 +11,7 @@ import {
   CheckPermissions,
 } from '../../components/generic';
 import { AuthContext, SiteDetailTabContext } from '../../providers';
-import { FeatureFlaggedComponent, flagKeys, fetchUserNotifications } from '../../services';
+import { fetchUserNotifications } from '../../services';
 import { archiveParticipant, fetchParticipantById } from '../../services/participant';
 import {
   ToastStatus,
@@ -227,31 +227,29 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
             />
           )}
           {selectedTab === tabs.ALLOCATION && (
-            <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_PHASE_ALLOCATION}>
-              <Table
-                columns={columns}
-                order={order}
-                orderBy={orderBy}
-                onRequestSort={handleRequestSort}
-                rows={sort(rows)}
-                isLoading={isLoading}
-                renderCell={(columnId, row) => {
-                  if (columnObj(columnId).isHidden) return;
-                  if (columnId === 'details')
-                    return (
-                      <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
-                        <SetAllocation
-                          isNew={row.allocation === null}
-                          row={row}
-                          siteId={id}
-                          fetchDetails={fetchDetails}
-                        />
-                      </CheckPermissions>
-                    );
-                  return row[columnId] ?? 'N/A';
-                }}
-              />
-            </FeatureFlaggedComponent>
+            <Table
+              columns={columns}
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={handleRequestSort}
+              rows={sort(rows)}
+              isLoading={isLoading}
+              renderCell={(columnId, row) => {
+                if (columnObj(columnId).isHidden) return;
+                if (columnId === 'details')
+                  return (
+                    <CheckPermissions roles={roles} permittedRoles={['ministry_of_health']}>
+                      <SetAllocation
+                        isNew={row.allocation === null}
+                        row={row}
+                        siteId={id}
+                        fetchDetails={fetchDetails}
+                      />
+                    </CheckPermissions>
+                  );
+                return row[columnId] ?? 'N/A';
+              }}
+            />
           )}
         </Box>
       }

@@ -14,7 +14,6 @@ import {
   getAllocation,
   createBulkAllocation,
 } from '../services/allocations';
-import { FEATURE_PHASE_ALLOCATION } from '../services/feature-flags';
 
 const router = express.Router();
 
@@ -27,9 +26,6 @@ router.post(
     expressRequestBodyValidator(CreateAllocationSchema),
   ],
   asyncMiddleware(async (req, resp) => {
-    if (!FEATURE_PHASE_ALLOCATION) {
-      return resp.status(501).send('Phase allocation feature not active');
-    }
     // check if site_phase_allocation exists for site_id and phase_id, if not create one.
     const { body, hcapUserInfo: user } = req;
     const allocation = await getAllocation(body.site_id, body.phase_id);
@@ -64,9 +60,6 @@ router.patch(
     expressRequestBodyValidator(UpdateAllocationSchema),
   ],
   asyncMiddleware(async (req, resp) => {
-    if (!FEATURE_PHASE_ALLOCATION) {
-      return resp.status(501).send('Phase allocation feature not active');
-    }
     try {
       const { body, hcapUserInfo: user } = req;
       const response = await updateAllocation(req.params.id, body, user);
@@ -96,9 +89,6 @@ router.post(
     expressRequestBodyValidator(BulkAllocationSchema),
   ],
   asyncMiddleware(async (req, resp) => {
-    if (!FEATURE_PHASE_ALLOCATION) {
-      return resp.status(501).send('Phase allocation feature not active');
-    }
     const { body, hcapUserInfo: user } = req;
     try {
       const response = await createBulkAllocation(body, user);

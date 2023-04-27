@@ -1,6 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
-import { tabColumns } from '../constants';
-import { featureFlag, flagKeys } from '../services';
+import { Role, tabColumns } from '../constants';
 
 const SiteDetailTabContext = React.createContext();
 
@@ -14,7 +13,7 @@ const tabs = {
   SITE_DETAILS: 'Site Details',
   HIRED_PARTICIPANTS: 'Hired Participants',
   WITHDRAWN_PARTICIPANTS: 'Withdrawn Participants',
-  ...(featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION) ? { ALLOCATION: 'Allocation' } : {}),
+  ALLOCATION: 'Allocation',
 };
 
 const participantsReducer = (state, action) => {
@@ -27,7 +26,7 @@ const participantsReducer = (state, action) => {
   switch (type) {
     case SELECT_TAB: {
       let columns = tabColumns[tab]?.columns || [];
-      const isHA = roles?.includes('health_authority') || false;
+      const isHA = roles?.includes(Role.HealthAuthority) || false;
       if (!isHA) {
         columns = columns.filter((col) => col.id !== 'archive');
       }

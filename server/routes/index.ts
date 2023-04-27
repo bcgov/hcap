@@ -1,6 +1,6 @@
 // Index route for /api/v1
 import express from 'express';
-import { UserRoles } from '../constants';
+import { Role, UserRoles } from '../constants';
 import { getSitesForUser } from '../services/employers';
 import { getUserMigrations, getUserNotifications, updateUserForMigration } from '../services/user';
 import { validate, AccessRequestApproval } from '../validation';
@@ -84,7 +84,7 @@ apiRouter.get(`/keycloak-realm-client-info`, (req, res) =>
 // Get pending users from Keycloak
 apiRouter.get(
   `/pending-users`,
-  keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
   asyncMiddleware(async (req, res) => {
     const users = await keycloak.getPendingUsers();
     return res.json({ data: scrubUsers(users) });
@@ -94,7 +94,7 @@ apiRouter.get(
 // Get users from Keycloak
 apiRouter.get(
   `/users`,
-  keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
   asyncMiddleware(async (req, res) => {
     const users = await keycloak.getUsers(UserRoles);
     return res.json({ data: scrubUsers(users) });
@@ -126,7 +126,7 @@ apiRouter.patch(
 
 apiRouter.post(
   `/approve-user`,
-  keycloak.allowRolesMiddleware('ministry_of_health'),
+  keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(AccessRequestApproval, req.body);

@@ -6,7 +6,7 @@ import store from 'store';
 
 import { useToast } from '../../hooks';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
-import { Routes, ToastStatus, API_URL } from '../../constants';
+import { Routes, ToastStatus, API_URL, Role } from '../../constants';
 import { useLocation } from 'react-router-dom';
 import { sortObjects } from '../../utils';
 import { UserMigrationTable } from './UserMigrationTable';
@@ -149,7 +149,7 @@ export default () => {
 
   return (
     <Page>
-      <CheckPermissions permittedRoles={['ministry_of_health']} renderErrorMessage={true}>
+      <CheckPermissions permittedRoles={[Role.MinistryOfHealth]} renderErrorMessage={true}>
         <Grid
           container
           alignContent='center'

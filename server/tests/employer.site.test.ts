@@ -1,5 +1,5 @@
 import { app } from '../server';
-import { ParticipantStatus as ps } from '../constants';
+import { ParticipantStatus as ps, Role } from '../constants';
 
 import { saveSingleSite, getSitesForUser, getSiteByID, updateSite } from '../services/employers';
 import { createPhase } from '../services/phase';
@@ -125,7 +125,7 @@ describe('Employer Site Endpoints', () => {
   });
 
   it('Get sites, receive all successfully', async () => {
-    const res = await getSitesForUser({ roles: ['ministry_of_health'] });
+    const res = await getSitesForUser({ roles: [Role.MinistryOfHealth] });
     expect(res.length).toEqual(3); // dependent on previous tests
     expect(res).toEqual(
       expect.arrayContaining([

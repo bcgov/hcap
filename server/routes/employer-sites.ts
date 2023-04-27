@@ -1,4 +1,5 @@
 import express from 'express';
+import { Role, UserRoles } from '../constants';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
@@ -26,7 +27,7 @@ const router = express.Router();
 router.post(
   '/',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
     keycloak.getUserInfoMiddleware(),
     expressRequestBodyValidator(CreateSiteSchema),
   ],
@@ -56,7 +57,7 @@ router.post(
 router.patch(
   '/:id',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
     keycloak.getUserInfoMiddleware(),
     expressRequestBodyValidator(EditSiteSchema),
   ],
@@ -83,7 +84,7 @@ router.patch(
 router.get(
   '/',
   [
-    keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+    keycloak.allowRolesMiddleware(...UserRoles),
     keycloak.getUserInfoMiddleware(),
     routeRedirect({ redirect: '/api/v1/employer-sites/details', match: 'employer-sites-detail' }),
   ],
@@ -106,7 +107,7 @@ router.get(
 router.get(
   '/region',
   [
-    keycloak.allowRolesMiddleware('health_authority'),
+    keycloak.allowRolesMiddleware(Role.HealthAuthority),
     keycloak.getUserInfoMiddleware(),
     routeRedirect({ redirect: '/api/v1/employer-sites/details', match: 'employer-sites-detail' }),
   ],
@@ -133,7 +134,7 @@ router.get(
 router.get(
   '/user',
   [
-    keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
+    keycloak.allowRolesMiddleware(...UserRoles),
     keycloak.getUserInfoMiddleware(),
     routeRedirect({ redirect: '/api/v1/employer-sites/details', match: 'employer-sites-detail' }),
   ],
@@ -163,7 +164,7 @@ router.get(
 router.get(
   '/details',
   [
-    keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth, Role.HealthAuthority),
     keycloak.getUserInfoMiddleware(),
   ],
   (req, res) => {
@@ -184,7 +185,7 @@ router.get(
 router.get(
   '/:id',
   [
-    keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth, Role.HealthAuthority),
     keycloak.getUserInfoMiddleware(),
   ],
   asyncMiddleware(async (req, res) => {
@@ -216,7 +217,7 @@ router.get(
 router.get(
   '/:siteId/participants',
   [
-    keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth, Role.HealthAuthority),
     keycloak.getUserInfoMiddleware(),
   ],
   asyncMiddleware(async (req, res) => {

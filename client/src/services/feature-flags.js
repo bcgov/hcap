@@ -1,7 +1,6 @@
 import store from 'store';
 
 export const flagKeys = {
-  FEATURE_PHASE_ALLOCATION: 'FEATURE_PHASE_ALLOCATION',
   FEATURE_KEYCLOAK_MIGRATION: 'FEATURE_KEYCLOAK_MIGRATION',
 };
 

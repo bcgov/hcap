@@ -6,7 +6,7 @@ import { scrollUp } from '../../utils';
 import routes from '../../constants/routes';
 import { PSIForm, CohortForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
-import { ToastStatus, NewCohortSchema } from '../../constants';
+import { ToastStatus, NewCohortSchema, Role } from '../../constants';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -199,7 +199,7 @@ export default ({ match }) => {
         )}
       </Dialog>
       <CheckPermissions
-        permittedRoles={['ministry_of_health', 'health_authority']}
+        permittedRoles={[Role.MinistryOfHealth, Role.HealthAuthority]}
         renderErrorMessage={true}
       >
         {error && <MuiAlert severity='error'>{error}</MuiAlert>}
@@ -213,7 +213,7 @@ export default ({ match }) => {
               </Box>
               <Grid container direction='row'>
                 <Typography variant='h2'>{psi.instituteName}</Typography>
-                <CheckPermissions permittedRoles={['ministry_of_health', 'health_authority']}>
+                <CheckPermissions permittedRoles={[Role.MinistryOfHealth, Role.HealthAuthority]}>
                   <Box pl={2} pt={0.5}>
                     <Button
                       onClick={handleManagePSIClick}

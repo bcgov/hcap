@@ -6,7 +6,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
 import { Page, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { PSIForm, CohortForm } from '../../components/modal-forms';
-import { ToastStatus, API_URL, NewCohortSchema } from '../../constants';
+import { ToastStatus, API_URL, NewCohortSchema, Role } from '../../constants';
 import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
 
@@ -122,7 +122,7 @@ export default () => {
   return (
     <Page>
       <CheckPermissions
-        permittedRoles={['ministry_of_health', 'health_authority']}
+        permittedRoles={[Role.MinistryOfHealth, Role.HealthAuthority]}
         renderErrorMessage={true}
       >
         <Dialog
@@ -158,7 +158,7 @@ export default () => {
           <Box display='flex' flexDirection='column'>
             <CheckPermissions
               roles={roles}
-              permittedRoles={['ministry_of_health', 'health_authority']}
+              permittedRoles={[Role.MinistryOfHealth, Role.HealthAuthority]}
             >
               <Box alignSelf='flex-end' py={1}>
                 <Button

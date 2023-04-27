@@ -1,5 +1,3 @@
-import { flagKeys, featureFlag } from '../services';
-
 export const siteTypeOptions = [
   { value: 'Health Authority', label: 'Health Authority' },
   { value: 'Home Health', label: 'Home Health' },
@@ -70,11 +68,9 @@ export const fieldsLabelMap = {
     Region: 'healthAuthority',
     'Site Type': 'siteType',
   },
-  ...(featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION) && {
-    'Positions Overview (Current Phase)': {
-      Allocation: 'allocation',
-      'HCAP Hires': 'hcapHires',
-      'Non-HCAP Hires': 'nonHcapHires',
-    },
-  }),
+  'Positions Overview (Current Phase)': {
+    Allocation: 'allocation',
+    'HCAP Hires': 'hcapHires',
+    'Non-HCAP Hires': 'nonHcapHires',
+  },
 };

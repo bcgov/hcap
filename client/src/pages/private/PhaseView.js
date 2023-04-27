@@ -1,7 +1,7 @@
 import React, { lazy } from 'react';
 import { Page, CheckPermissions } from '../../components/generic';
 import { Box, Typography, Link } from '@material-ui/core';
-import { Routes } from '../../constants';
+import { Role, Routes } from '../../constants';
 
 const PhaseTable = lazy(() => import('./PhaseTable'));
 
@@ -9,7 +9,7 @@ export default () => {
   return (
     <Page>
       <CheckPermissions
-        permittedRoles={['health_authority', 'ministry_of_health']}
+        permittedRoles={[Role.HealthAuthority, Role.MinistryOfHealth]}
         renderErrorMessage={true}
       >
         <Box textAlign={0} width={1}>

@@ -1,4 +1,5 @@
 import express from 'express';
+import { Role, UserRoles } from '../constants';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
@@ -12,7 +13,6 @@ import {
   checkDateOverlap,
 } from '../services/phase';
 import { getSitesForUser } from '../services/employers';
-import { FEATURE_PHASE_ALLOCATION } from '../services/feature-flags';
 import type { HcapUserInfo } from '../keycloak';
 
 const router = express.Router();
@@ -20,10 +20,7 @@ const router = express.Router();
 // Read: Get phases/allocations for site
 router.get(
   '/:id',
-  [
-    keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
-    keycloak.getUserInfoMiddleware(),
-  ],
+  [keycloak.allowRolesMiddleware(...UserRoles), keycloak.getUserInfoMiddleware()],
   asyncMiddleware(async (req, res) => {
     const user: HcapUserInfo = req.hcapUserInfo;
     const siteId = parseInt(req.params.id, 10);
@@ -62,7 +59,7 @@ router.get(
 router.get(
   '/',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth, Role.HealthAuthority),
     keycloak.getUserInfoMiddleware(),
   ],
   asyncMiddleware(async (req, res) => {
@@ -85,7 +82,7 @@ router.get(
 router.post(
   '/',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
     keycloak.getUserInfoMiddleware(),
     expressRequestBodyValidator(CreatePhaseSchema),
   ],
@@ -95,10 +92,6 @@ router.post(
       return resp
         .status(400)
         .send('Failed to create phase due to overlapping dates with existing phases');
-
-    if (!FEATURE_PHASE_ALLOCATION) {
-      return resp.status(501).send('Phase allocation feature not active');
-    }
     try {
       const { body, hcapUserInfo: user } = req;
       const response = await createPhase(body, user);
@@ -123,7 +116,7 @@ router.post(
 router.patch(
   '/:id',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
     keycloak.getUserInfoMiddleware(),
     expressRequestBodyValidator(UpdatePhaseSchema),
   ],
@@ -137,9 +130,6 @@ router.patch(
       return resp
         .status(400)
         .send('Failed to update phase due to overlapping dates with existing phases');
-    if (!FEATURE_PHASE_ALLOCATION) {
-      return resp.status(501).send('Phase allocation feature not active');
-    }
     try {
       const { body, hcapUserInfo: user } = req;
       const response = await updatePhase(req.params.id, body, user);

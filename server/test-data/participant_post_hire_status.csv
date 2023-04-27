@@ -1,67 +1,100 @@
 id,participant_id,status,data,is_current
-1,91,post_secondary_education_completed,"{""graduationDate"": ""2021/04/26""}",True
-2,8,post_secondary_education_completed,"{""graduationDate"": ""2022/07/22""}",True
-3,71,post_secondary_education_completed,"{""graduationDate"": ""2020/08/11""}",True
-4,61,post_secondary_education_completed,"{""graduationDate"": ""2021/09/28""}",True
-5,14,post_secondary_education_completed,"{""graduationDate"": ""2022/04/28""}",True
-6,11,post_secondary_education_completed,"{""graduationDate"": ""2020/04/08""}",True
-7,84,post_secondary_education_completed,"{""graduationDate"": ""2021/10/28""}",True
-8,77,post_secondary_education_completed,"{""graduationDate"": ""2020/08/15""}",True
-9,14,post_secondary_education_completed,"{""graduationDate"": ""2021/11/19""}",True
-10,93,post_secondary_education_completed,"{""graduationDate"": ""2020/09/16""}",True
-11,44,post_secondary_education_completed,"{""graduationDate"": ""2021/11/26""}",True
-12,43,post_secondary_education_completed,"{""graduationDate"": ""2021/11/19""}",True
-13,29,post_secondary_education_completed,"{""graduationDate"": ""2020/12/07""}",True
-14,56,post_secondary_education_completed,"{""graduationDate"": ""2021/05/21""}",True
-15,46,post_secondary_education_completed,"{""graduationDate"": ""2022/07/01""}",True
-16,85,post_secondary_education_completed,"{""graduationDate"": ""2020/03/21""}",True
-17,88,post_secondary_education_completed,"{""graduationDate"": ""2020/06/02""}",True
-18,80,post_secondary_education_completed,"{""graduationDate"": ""2020/01/03""}",True
-19,10,post_secondary_education_completed,"{""graduationDate"": ""2020/07/26""}",True
-20,73,post_secondary_education_completed,"{""graduationDate"": ""2022/05/04""}",True
-21,42,post_secondary_education_completed,"{""graduationDate"": ""2022/05/20""}",True
-22,32,post_secondary_education_completed,"{""graduationDate"": ""2020/12/29""}",True
-23,7,post_secondary_education_completed,"{""graduationDate"": ""2022/05/28""}",True
-24,92,post_secondary_education_completed,"{""graduationDate"": ""2021/02/06""}",True
-25,28,post_secondary_education_completed,"{""graduationDate"": ""2020/02/09""}",True
-26,86,post_secondary_education_completed,"{""graduationDate"": ""2022/06/17""}",True
-27,66,post_secondary_education_completed,"{""graduationDate"": ""2022/08/26""}",True
-28,49,post_secondary_education_completed,"{""graduationDate"": ""2022/07/19""}",True
-29,11,post_secondary_education_completed,"{""graduationDate"": ""2021/11/14""}",True
-30,96,post_secondary_education_completed,"{""graduationDate"": ""2021/04/05""}",True
-31,49,post_secondary_education_completed,"{""graduationDate"": ""2022/06/19""}",True
-32,93,post_secondary_education_completed,"{""graduationDate"": ""2022/03/26""}",True
-33,11,post_secondary_education_completed,"{""graduationDate"": ""2021/04/13""}",True
-34,18,post_secondary_education_completed,"{""graduationDate"": ""2022/01/29""}",True
-35,33,post_secondary_education_completed,"{""graduationDate"": ""2022/04/07""}",True
-36,67,post_secondary_education_completed,"{""graduationDate"": ""2021/12/25""}",True
-37,52,post_secondary_education_completed,"{""graduationDate"": ""2021/11/20""}",True
-38,39,post_secondary_education_completed,"{""graduationDate"": ""2021/05/28""}",True
-39,63,post_secondary_education_completed,"{""graduationDate"": ""2022/11/15""}",True
-40,37,post_secondary_education_completed,"{""graduationDate"": ""2020/04/04""}",True
-41,14,post_secondary_education_completed,"{""graduationDate"": ""2022/03/25""}",True
-42,67,post_secondary_education_completed,"{""graduationDate"": ""2022/01/23""}",True
-43,39,post_secondary_education_completed,"{""graduationDate"": ""2022/10/24""}",True
-44,63,post_secondary_education_completed,"{""graduationDate"": ""2020/09/15""}",True
-45,67,post_secondary_education_completed,"{""graduationDate"": ""2020/02/11""}",True
-46,35,post_secondary_education_completed,"{""graduationDate"": ""2021/11/12""}",True
-47,19,post_secondary_education_completed,"{""graduationDate"": ""2021/08/22""}",True
-48,22,post_secondary_education_completed,"{""graduationDate"": ""2021/08/29""}",True
-49,31,post_secondary_education_completed,"{""graduationDate"": ""2021/03/28""}",True
-50,12,post_secondary_education_completed,"{""graduationDate"": ""2020/01/12""}",True
-51,80,post_secondary_education_completed,"{""graduationDate"": ""2020/07/23""}",True
-52,69,post_secondary_education_completed,"{""graduationDate"": ""2020/06/21""}",True
-53,77,post_secondary_education_completed,"{""graduationDate"": ""2022/10/24""}",True
-54,96,post_secondary_education_completed,"{""graduationDate"": ""2020/10/21""}",True
-55,62,post_secondary_education_completed,"{""graduationDate"": ""2020/06/02""}",True
-56,23,post_secondary_education_completed,"{""graduationDate"": ""2020/11/02""}",True
-57,32,post_secondary_education_completed,"{""graduationDate"": ""2022/06/29""}",True
-58,56,post_secondary_education_completed,"{""graduationDate"": ""2022/03/24""}",True
-59,58,post_secondary_education_completed,"{""graduationDate"": ""2021/02/28""}",True
-60,73,post_secondary_education_completed,"{""graduationDate"": ""2021/08/25""}",True
-61,17,post_secondary_education_completed,"{""graduationDate"": ""2021/10/14""}",True
-62,39,post_secondary_education_completed,"{""graduationDate"": ""2021/06/06""}",True
-63,25,post_secondary_education_completed,"{""graduationDate"": ""2022/03/07""}",True
-64,26,post_secondary_education_completed,"{""graduationDate"": ""2022/03/07""}",True
-65,27,post_secondary_education_completed,"{""graduationDate"": ""2022/03/07""}",True
-66,99,post_secondary_education_completed,"{""graduationDate"": ""2021/01/07""}",True
+1,6,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/12/30""}",true
+2,21,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/07/13""}",true
+3,139,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/10/25""}",true
+4,381,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/12/25""}",true
+5,381,post_secondary_education_completed,"{""graduationDate"":""2023/01/17""}",false
+6,311,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/04/24""}",true
+7,350,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/12/26""}",true
+8,184,post_secondary_education_completed,"{""graduationDate"":""2024/04/27""}",true
+9,71,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/07/19""}",true
+10,190,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/10/26""}",true
+11,17,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/11/04""}",true
+12,455,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/04/19""}",true
+13,268,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/08/06""}",true
+14,113,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/06/26""}",true
+15,119,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/09/06""}",true
+16,476,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/09/16""}",true
+17,476,post_secondary_education_completed,"{""graduationDate"":""2023/09/24""}",false
+18,336,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2024/01/07""}",true
+19,117,post_secondary_education_completed,"{""graduationDate"":""2022/11/18""}",true
+20,151,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/06/14""}",true
+21,151,post_secondary_education_completed,"{""graduationDate"":""2024/01/08""}",false
+22,210,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/08/12""}",true
+23,348,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/01/28""}",true
+24,42,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/04/10""}",true
+25,44,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/07/27""}",true
+26,44,post_secondary_education_completed,"{""graduationDate"":""2024/06/22""}",false
+27,214,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/01/08""}",true
+28,337,post_secondary_education_completed,"{""graduationDate"":""2022/09/28""}",true
+29,233,post_secondary_education_completed,"{""graduationDate"":""2022/10/05""}",true
+30,175,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/01/24""}",true
+31,312,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/05/02""}",true
+32,36,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/08/27""}",true
+33,251,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/09/02""}",true
+34,98,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/06/08""}",true
+35,18,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/04/24""}",true
+36,189,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/06/12""}",true
+37,361,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2021/10/10""}",true
+38,97,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/10/23""}",true
+39,97,post_secondary_education_completed,"{""graduationDate"":""2024/05/13""}",false
+40,334,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/11/30""}",true
+41,334,post_secondary_education_completed,"{""graduationDate"":""2024/03/16""}",false
+42,102,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/11/09""}",true
+43,435,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/03/16""}",true
+44,150,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/08/02""}",true
+45,150,post_secondary_education_completed,"{""graduationDate"":""2024/01/20""}",false
+46,24,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/02/20""}",true
+47,495,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/08/20""}",true
+48,217,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2021/08/03""}",true
+49,379,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/03/08""}",true
+50,379,post_secondary_education_completed,"{""graduationDate"":""2023/04/05""}",false
+51,377,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2024/03/09""}",true
+52,181,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/05/01""}",true
+53,471,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/08/15""}",true
+54,380,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/10/05""}",true
+55,404,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/01/29""}",true
+56,56,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/07/16""}",true
+57,165,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/10/14""}",true
+58,297,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/03/19""}",true
+59,297,post_secondary_education_completed,"{""graduationDate"":""2022/03/19""}",false
+60,434,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/12/06""}",true
+61,434,post_secondary_education_completed,"{""graduationDate"":""2023/11/20""}",false
+62,247,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/06/11""}",true
+63,449,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/09/03""}",true
+64,449,post_secondary_education_completed,"{""graduationDate"":""2023/05/28""}",false
+65,87,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/12/02""}",true
+66,390,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/04/18""}",true
+67,5,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/04/09""}",true
+68,392,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2021/12/12""}",true
+69,392,post_secondary_education_completed,"{""graduationDate"":""2022/10/18""}",false
+70,480,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/06/03""}",true
+71,354,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2021/07/29""}",true
+72,354,post_secondary_education_completed,"{""graduationDate"":""2022/06/05""}",false
+73,226,post_secondary_education_completed,"{""graduationDate"":""2023/08/18""}",true
+74,491,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/01/05""}",true
+75,491,post_secondary_education_completed,"{""graduationDate"":""2023/09/25""}",false
+76,395,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/04/16""}",true
+77,120,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/04/05""}",true
+78,120,post_secondary_education_completed,"{""graduationDate"":""2022/09/21""}",false
+79,144,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/06/29""}",true
+80,353,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/12/20""}",true
+81,207,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/02/22""}",true
+82,216,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/04/19""}",true
+83,169,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/07/31""}",true
+84,427,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/03/26""}",true
+85,427,post_secondary_education_completed,"{""graduationDate"":""2023/02/24""}",false
+86,269,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2021/09/15""}",true
+87,269,post_secondary_education_completed,"{""graduationDate"":""2022/07/15""}",false
+88,446,post_secondary_education_completed,"{""graduationDate"":""2024/02/22""}",true
+89,450,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/11/05""}",true
+90,438,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/02/26""}",true
+91,438,post_secondary_education_completed,"{""graduationDate"":""2023/06/17""}",false
+92,147,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/05/12""}",true
+93,323,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/06/14""}",true
+94,419,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/09/19""}",true
+95,149,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2022/07/13""}",true
+96,270,post_secondary_education_completed,"{""graduationDate"":""2023/03/07""}",true
+97,384,post_secondary_education_completed,"{""graduationDate"":""2025/01/18""}",true
+98,66,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/12/10""}",true
+99,398,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2024/02/13""}",true

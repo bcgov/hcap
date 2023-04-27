@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { Page, CheckPermissions, CustomTab, CustomTabs } from '../../components/generic';
 import { AuthContext, ParticipantsContext } from '../../providers';
+import { Role, UserRoles } from '../../constants';
 
 const ParticipantTable = lazy(() => import('./ParticipantTable'));
 const SiteTable = lazy(() => import('./SiteTable'));
@@ -26,14 +27,11 @@ export default () => {
 
   return (
     <Page>
-      <CheckPermissions
-        permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
-        renderErrorMessage={true}
-      >
+      <CheckPermissions permittedRoles={UserRoles} renderErrorMessage={true}>
         <Grid container justify='flex-start' alignItems='flex-start' direction='row'>
           <CustomTabs value={tabValue} onChange={handleTabChange} aria-label='tabs'>
             <CustomTab label='Participants' id='participantsTab' key='participants' />
-            {(roles.includes('employer') || roles.includes('health_authority')) && (
+            {(roles.includes(Role.Employer) || roles.includes(Role.HealthAuthority)) && (
               <CustomTab label='My Sites' id='sitesTab' key='sites' />
             )}
           </CustomTabs>

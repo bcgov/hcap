@@ -1,4 +1,5 @@
 import express from 'express';
+import { Role } from '../constants';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
@@ -14,7 +15,6 @@ import {
   getAllocation,
   createBulkAllocation,
 } from '../services/allocations';
-import { FEATURE_PHASE_ALLOCATION } from '../services/feature-flags';
 
 const router = express.Router();
 
@@ -22,14 +22,11 @@ const router = express.Router();
 router.post(
   '/',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
     keycloak.getUserInfoMiddleware(),
     expressRequestBodyValidator(CreateAllocationSchema),
   ],
   asyncMiddleware(async (req, resp) => {
-    if (!FEATURE_PHASE_ALLOCATION) {
-      return resp.status(501).send('Phase allocation feature not active');
-    }
     // check if site_phase_allocation exists for site_id and phase_id, if not create one.
     const { body, hcapUserInfo: user } = req;
     const allocation = await getAllocation(body.site_id, body.phase_id);
@@ -59,14 +56,11 @@ router.post(
 router.patch(
   '/:id',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
     keycloak.getUserInfoMiddleware(),
     expressRequestBodyValidator(UpdateAllocationSchema),
   ],
   asyncMiddleware(async (req, resp) => {
-    if (!FEATURE_PHASE_ALLOCATION) {
-      return resp.status(501).send('Phase allocation feature not active');
-    }
     try {
       const { body, hcapUserInfo: user } = req;
       const response = await updateAllocation(req.params.id, body, user);
@@ -91,14 +85,11 @@ router.patch(
 router.post(
   '/bulk-allocation',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
     keycloak.getUserInfoMiddleware(),
     expressRequestBodyValidator(BulkAllocationSchema),
   ],
   asyncMiddleware(async (req, resp) => {
-    if (!FEATURE_PHASE_ALLOCATION) {
-      return resp.status(501).send('Phase allocation feature not active');
-    }
     const { body, hcapUserInfo: user } = req;
     try {
       const response = await createBulkAllocation(body, user);

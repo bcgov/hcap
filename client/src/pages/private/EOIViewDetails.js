@@ -4,7 +4,7 @@ import { Page, CheckPermissions } from '../../components/generic';
 import { Form } from '../../components/employer-form';
 import { scrollUp } from '../../utils';
 import store from 'store';
-import { API_URL } from '../../constants';
+import { API_URL, Role } from '../../constants';
 
 export default ({ match }) => {
   const [user, setUser] = useState(undefined);
@@ -30,7 +30,7 @@ export default ({ match }) => {
   return (
     <Page>
       <CheckPermissions
-        permittedRoles={['health_authority', 'ministry_of_health']}
+        permittedRoles={[Role.HealthAuthority, Role.MinistryOfHealth]}
         renderErrorMessage={true}
       >
         <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>

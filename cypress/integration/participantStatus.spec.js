@@ -186,8 +186,8 @@ describe('Participants status suite', () => {
   };
 
   it('Flow test: available --> engage by HA --> hired --> archived & acknowledged', () => {
-    const participantId = 4;
-    const hireSite = 1111;
+    const participantId = 9;
+    const hireSite = 4444;
     // this needs to be an EXACT match- no "August 10" when we want participant 10!
     const participantIdRegex = new RegExp('^' + participantId + '$', 'g');
 

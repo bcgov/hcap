@@ -28,5 +28,3 @@ export const foundOutReasons = [
 ];
 
 export const siteTypes = ['Long-term care', 'Assisted living', 'Both', 'Other'];
-
-export const userRoles = ['health_authority', 'employer', 'ministry_of_health'];

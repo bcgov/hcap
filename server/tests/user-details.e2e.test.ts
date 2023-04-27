@@ -3,6 +3,7 @@
  * Test Standalone execution: npm run test:debug user-details.e2e.test
  */
 import request from 'supertest';
+import { Role } from '../constants';
 import { app } from '../server';
 
 import { startDB, closeDB } from './util/db';
@@ -54,7 +55,7 @@ describe('api-e2e tests for /api/v1/user-details', () => {
         .patch(`/api/v1/user-details?id=${employer.id}`)
         .set(header)
         .send({
-          role: 'employer',
+          role: Role.Employer,
           userId: employer.id,
           username: employer.username,
           sites: [site1.siteId],

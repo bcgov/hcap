@@ -4,7 +4,6 @@ import { Button } from '../generic';
 import { Box, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } from '../fields';
-import { flagKeys, featureFlag } from '../../services';
 import { fetchSitePhases } from '../../services/phases';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { getTodayDate } from '../../utils';
@@ -101,27 +100,25 @@ export const HireForm = ({ onSubmit, onClose, sites }) => {
               />
             </Box>
 
-            {!values.nonHcapOpportunity &&
-              currentPhase &&
-              featureFlag(flagKeys.FEATURE_PHASE_ALLOCATION) && (
-                <Box mt={2} gap={15}>
-                  <Alert severity='info'>
-                    <Typography variant='body2' gutterBottom>
-                      {currentPhase.allocation || currentPhase.allocation === 0 ? (
-                        <>
-                          This site has <b>{currentPhase.allocation}</b> allocations assigned and
-                          has <b>{currentPhase.remainingHires}</b> remaining slots.
-                        </>
-                      ) : (
-                        <>
-                          The site currenty has 0 allocations assigned. Please contact your Health
-                          Authority for further information.
-                        </>
-                      )}
-                    </Typography>
-                  </Alert>
-                </Box>
-              )}
+            {!values.nonHcapOpportunity && currentPhase && (
+              <Box mt={2} gap={15}>
+                <Alert severity='info'>
+                  <Typography variant='body2' gutterBottom>
+                    {currentPhase.allocation || currentPhase.allocation === 0 ? (
+                      <>
+                        This site has <b>{currentPhase.allocation}</b> allocations assigned and has{' '}
+                        <b>{currentPhase.remainingHires}</b> remaining slots.
+                      </>
+                    ) : (
+                      <>
+                        The site currenty has 0 allocations assigned. Please contact your Health
+                        Authority for further information.
+                      </>
+                    )}
+                  </Typography>
+                </Alert>
+              </Box>
+            )}
             <Box mt={3}>
               <Grid container spacing={2} justify='flex-end'>
                 <Grid item>

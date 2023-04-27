@@ -11,7 +11,7 @@ import keycloak from '../keycloak';
 import logger from '../logger';
 import { getParticipantByID } from '../services/participants';
 import { getAssignCohort } from '../services/cohorts';
-import { postHireStatuses } from '../constants';
+import { postHireStatuses, Role, UserRoles } from '../constants';
 
 const router = express.Router();
 
@@ -42,7 +42,7 @@ router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 
 router.post(
   '/',
-  applyMiddleware(keycloak.allowRolesMiddleware('health_authority', 'employer')),
+  applyMiddleware(keycloak.allowRolesMiddleware(Role.HealthAuthority, Role.Employer)),
   asyncMiddleware(async (req: postHireStatusBody, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const { body } = req;
@@ -130,9 +130,7 @@ router.post(
 
 router.get(
   '/participant/:participantId',
-  applyMiddleware(
-    keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer')
-  ),
+  applyMiddleware(keycloak.allowRolesMiddleware(...UserRoles)),
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;

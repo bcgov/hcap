@@ -11,7 +11,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { useToast } from '../../hooks';
 import { AuthContext } from '../../providers';
 import { Page, CheckPermissions, Alert, Button } from '../../components/generic';
-import { ToastStatus, Routes, keyLabelMap, rosKeyMap } from '../../constants';
+import { ToastStatus, Routes, keyLabelMap, rosKeyMap, UserRoles, Role } from '../../constants';
 import {
   assignParticipantWithCohort,
   updateParticipant,
@@ -102,7 +102,7 @@ export default () => {
   // Breadcrumb name
   const linkName = getParticipantPageLabel(page);
 
-  const isMoH = roles.includes('ministry_of_health');
+  const isMoH = roles.includes(Role.MinistryOfHealth);
 
   // UI Actions
   // 1. Show edit
@@ -241,10 +241,7 @@ export default () => {
   // Render
   return (
     <Page>
-      <CheckPermissions
-        permittedRoles={['employer', 'health_authority', 'ministry_of_health']}
-        renderErrorMessage
-      >
+      <CheckPermissions permittedRoles={UserRoles} renderErrorMessage>
         {error && <Alert severity='error'>{error}</Alert>}
         {!participant && !error && <Alert severity='info'>Loading participant details</Alert>}
         {participant && (
@@ -282,9 +279,7 @@ export default () => {
 
             {/* Participant RoS Info */}
             {participant.ros && (
-              <CheckPermissions
-                permittedRoles={['health_authority', 'employer', 'ministry_of_health']}
-              >
+              <CheckPermissions permittedRoles={UserRoles}>
                 <Typography variant='h2'>Return of Service</Typography>
                 <Grid container spacing={2} className={classes.gridSection}>
                   {Object.keys(rosKeyMap).map((key) => {
@@ -323,7 +318,7 @@ export default () => {
                 </Grid>
               </CheckPermissions>
             )}
-            <CheckPermissions permittedRoles={['ministry_of_health', 'superuser']}>
+            <CheckPermissions permittedRoles={[Role.MinistryOfHealth, Role.Superuser]}>
               <Button
                 test-id='editInfoButton'
                 text='Edit Info'
@@ -336,7 +331,7 @@ export default () => {
 
             {!disableAssign && !participant.ros && (
               <>
-                <CheckPermissions permittedRoles={['employer', 'health_authority']}>
+                <CheckPermissions permittedRoles={[Role.Employer, Role.HealthAuthority]}>
                   <PSICohortView
                     psiList={psiList}
                     assignAction={(cohort) => setSelectedCohort(cohort)}

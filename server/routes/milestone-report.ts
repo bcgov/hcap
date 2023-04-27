@@ -15,7 +15,7 @@ import {
   getHARosMilestonesReport,
   getMohRosMilestonesReport,
 } from '../services/reporting';
-import { reportType, DEFAULT_REGION_NAME } from '../constants';
+import { reportType, DEFAULT_REGION_NAME, Role } from '../constants';
 
 // Router
 const router = express.Router();
@@ -117,13 +117,13 @@ const generateReport = async (user, res, type, region = DEFAULT_REGION_NAME) => 
 
 router.get(
   '/',
-  [keycloak.allowRolesMiddleware('ministry_of_health')],
+  [keycloak.allowRolesMiddleware(Role.MinistryOfHealth)],
   asyncMiddleware(async (req, res) => res.status(200).json({ data: await getReport() }))
 );
 
 router.get(
   '/csv/hired',
-  [keycloak.allowRolesMiddleware('ministry_of_health')],
+  [keycloak.allowRolesMiddleware(Role.MinistryOfHealth)],
   asyncMiddleware(async (req, res) => {
     const { hcapUserInfo: user } = req;
     res.attachment('report.csv');
@@ -133,7 +133,7 @@ router.get(
 
 router.get(
   '/csv/hired/:regionId',
-  [keycloak.allowRolesMiddleware('health_authority')],
+  [keycloak.allowRolesMiddleware(Role.HealthAuthority)],
   asyncMiddleware(async (req, res) => {
     const { hcapUserInfo: user, params } = req;
     const { regionId } = params;
@@ -150,7 +150,7 @@ router.get(
 
 router.get(
   '/csv/ros',
-  [keycloak.allowRolesMiddleware('ministry_of_health')],
+  [keycloak.allowRolesMiddleware(Role.MinistryOfHealth)],
   asyncMiddleware(async (req, res) => {
     const { hcapUserInfo: user } = req;
     res.attachment('report.csv');
@@ -160,7 +160,7 @@ router.get(
 
 router.get(
   '/csv/ros/:regionId',
-  [keycloak.allowRolesMiddleware('health_authority')],
+  [keycloak.allowRolesMiddleware(Role.HealthAuthority)],
   asyncMiddleware(async (req, res) => {
     const { hcapUserInfo: user, params } = req;
     const { regionId } = params;

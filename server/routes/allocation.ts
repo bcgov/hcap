@@ -1,4 +1,5 @@
 import express from 'express';
+import { Role } from '../constants';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
@@ -21,7 +22,7 @@ const router = express.Router();
 router.post(
   '/',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
     keycloak.getUserInfoMiddleware(),
     expressRequestBodyValidator(CreateAllocationSchema),
   ],
@@ -55,7 +56,7 @@ router.post(
 router.patch(
   '/:id',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
     keycloak.getUserInfoMiddleware(),
     expressRequestBodyValidator(UpdateAllocationSchema),
   ],
@@ -84,7 +85,7 @@ router.patch(
 router.post(
   '/bulk-allocation',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
     keycloak.getUserInfoMiddleware(),
     expressRequestBodyValidator(BulkAllocationSchema),
   ],

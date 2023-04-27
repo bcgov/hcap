@@ -1,4 +1,5 @@
 import express from 'express';
+import { Role } from '../constants';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware, applyMiddleware } from '../error-handler';
@@ -11,7 +12,7 @@ const router = express.Router();
 router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 // Apply role middleware
 router.use(
-  applyMiddleware(keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority'))
+  applyMiddleware(keycloak.allowRolesMiddleware(Role.MinistryOfHealth, Role.HealthAuthority))
 );
 
 // Get all cohorts attached to the given PSI

@@ -1,4 +1,5 @@
 import express from 'express';
+import { Role, UserRoles } from '../constants';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
@@ -19,10 +20,7 @@ const router = express.Router();
 // Read: Get phases/allocations for site
 router.get(
   '/:id',
-  [
-    keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health', 'employer'),
-    keycloak.getUserInfoMiddleware(),
-  ],
+  [keycloak.allowRolesMiddleware(...UserRoles), keycloak.getUserInfoMiddleware()],
   asyncMiddleware(async (req, res) => {
     const user: HcapUserInfo = req.hcapUserInfo;
     const siteId = parseInt(req.params.id, 10);
@@ -61,7 +59,7 @@ router.get(
 router.get(
   '/',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth, Role.HealthAuthority),
     keycloak.getUserInfoMiddleware(),
   ],
   asyncMiddleware(async (req, res) => {
@@ -84,7 +82,7 @@ router.get(
 router.post(
   '/',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
     keycloak.getUserInfoMiddleware(),
     expressRequestBodyValidator(CreatePhaseSchema),
   ],
@@ -118,7 +116,7 @@ router.post(
 router.patch(
   '/:id',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
     keycloak.getUserInfoMiddleware(),
     expressRequestBodyValidator(UpdatePhaseSchema),
   ],

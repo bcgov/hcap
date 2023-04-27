@@ -11,7 +11,7 @@ import {
 } from 'react-router-dom';
 import { AuthContext } from '../../providers';
 
-import { postHireStatuses } from '../../constants';
+import { postHireStatuses, Role } from '../../constants';
 
 // Service
 import { sortPSI } from '../../services';
@@ -153,7 +153,7 @@ export const PSICohortView = ({ psiList = [], assignAction, participant, fetchDa
     path: '/track-graduation',
   };
   let tabDetails = { trackGraduation };
-  if (roles.includes('health_authority')) {
+  if (roles.includes(Role.HealthAuthority)) {
     tabDetails = { assignCohort, trackGraduation };
   }
   const tabKey = Object.keys(tabDetails)[0];

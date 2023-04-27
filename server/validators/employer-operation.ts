@@ -2,11 +2,12 @@ import * as yup from 'yup';
 import {
   archiveReasonOptions,
   healthRegions,
-  userRoles,
   archiveStatusOptions,
   ROSUnderwayStatus,
   ROSCompleteStatus,
   SuccessfulROSReason,
+  UserRoles,
+  Role,
 } from '../constants';
 
 import { validatePastDateString } from './helpers';
@@ -87,12 +88,12 @@ export const AccessRequestApproval = yup
     userId: yup.string().required('User ID is required'),
     username: yup.string().required('Username is required'),
     sites: yup.array().when('role', {
-      is: 'ministry_of_health',
+      is: Role.MinistryOfHealth,
       then: (arraySchema) => arraySchema.defined(),
       otherwise: (arraySchema) => arraySchema.required('Employer sites are required'),
     }),
     regions: yup.array().when('role', {
-      is: 'ministry_of_health',
+      is: Role.MinistryOfHealth,
       then: (arraySchema) => arraySchema.defined(),
       otherwise: (arraySchema) =>
         arraySchema
@@ -101,9 +102,9 @@ export const AccessRequestApproval = yup
           .min(1, 'At least 1 health region is required'),
     }),
 
-    role: yup.string().required('Role is required').oneOf(userRoles, 'Invalid role'),
+    role: yup.string().required('Role is required').oneOf(UserRoles, 'Invalid role'),
     acknowledgement: yup.boolean().when('role', {
-      is: 'ministry_of_health',
+      is: Role.MinistryOfHealth,
       then: (boolSchema) =>
         boolSchema.test('is-true', 'Must acknowledge admission of MoH user', (v) => v === true),
       otherwise: (boolSchema) =>

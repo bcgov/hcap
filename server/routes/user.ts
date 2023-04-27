@@ -9,6 +9,7 @@ import { expressRequestBodyValidator } from '../middleware';
 import { AccessRequestApproval } from '../validation';
 import { dbClient, collections } from '../db';
 import { sanitize } from '../utils';
+import { Role } from '../constants';
 // Services
 import { getUserSites } from '../services/user';
 
@@ -16,7 +17,7 @@ import { getUserSites } from '../services/user';
  * User details router
  */
 export const userDetailsRouter = express.Router();
-userDetailsRouter.use(keycloak.allowRolesMiddleware('ministry_of_health'));
+userDetailsRouter.use(keycloak.allowRolesMiddleware(Role.MinistryOfHealth));
 // Index: Get
 // Get user details - Different from /user, this returns the
 // full user sites and role specified in the query id
@@ -38,7 +39,7 @@ userDetailsRouter.get(
 userDetailsRouter.patch(
   '/',
   [
-    keycloak.allowRolesMiddleware('ministry_of_health'),
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
     keycloak.getUserInfoMiddleware(),
     expressRequestBodyValidator(AccessRequestApproval),
   ],

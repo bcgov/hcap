@@ -3,10 +3,9 @@ import { RenderDateField, RenderRadioGroup } from '../fields';
 import React, { useMemo } from 'react';
 import { Box, Grid, Typography } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
-import { Button } from '../../components/generic/Button';
+import { Button } from '../generic';
 import { AuthContext } from '../../providers';
-import { ParticipantPostHireStatusSchema } from '../../constants/validation';
-import { postHireStatuses } from '../../constants';
+import { ParticipantPostHireStatusSchema, postHireStatuses, Role } from '../../constants';
 
 export const ManageGraduationForm = ({
   initialValues,
@@ -110,7 +109,7 @@ export const ManageGraduationForm = ({
                   )}
                 {values?.continue === 'continue_yes' &&
                   values.status === postHireStatuses.cohortUnsuccessful &&
-                  !roles.includes('health_authority') && (
+                  !roles.includes(Role.HealthAuthority) && (
                     <Box>
                       <MuiAlert severity='warning'>
                         {

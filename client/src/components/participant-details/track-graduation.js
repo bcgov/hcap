@@ -1,20 +1,24 @@
 import { Grid, Typography, Dialog, Box } from '@material-ui/core';
 import { Button } from '../../components/generic/Button';
-import { ArchiveHiredParticipantForm } from '../../components/modal-forms';
+import { ArchiveHiredParticipantForm } from '../modal-forms';
 import store from 'store';
 import { ManageGraduationForm } from '../modal-forms/ManageGraduationForm';
 import { AssignCohortForm } from '../modal-forms/AssignCohort';
 import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
-import { createPostHireStatus } from '../../services/participant';
-import { fetchUserNotifications } from '../../services';
-import { ToastStatus, API_URL, ArchiveHiredParticipantSchema } from '../../constants';
-import { postHireStatuses } from '../../constants';
+import { createPostHireStatus, fetchUserNotifications } from '../../services';
+import {
+  postHireStatuses,
+  participantStatus,
+  ToastStatus,
+  API_URL,
+  ArchiveHiredParticipantSchema,
+  Role,
+} from '../../constants';
 import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
 import { formatCohortDate } from '../../utils';
-import { participantStatus } from '../../constants';
-import { CheckPermissions } from '../../components/generic';
+import { CheckPermissions } from '../generic';
 // Helper function to call archive participant service
 const handleArchive = async (
   participantId,
@@ -63,7 +67,7 @@ export const TrackGraduation = (props) => {
   const [showArchiveModel, setShowArchiveModal] = useState(false);
   const { openToast } = useToast();
 
-  const isEmployer = roles.includes('employer');
+  const isEmployer = roles.includes(Role.Employer);
 
   const cohortEndDate = props.participant?.cohort
     ? formatCohortDate(props.participant.cohort.end_date, { isForm: true })
@@ -106,7 +110,7 @@ export const TrackGraduation = (props) => {
               {props?.participant?.postHireStatusLabel || 'N/A'}
             </Typography>
           </Box>
-          <CheckPermissions permittedRoles={['employer', 'health_authority']}>
+          <CheckPermissions permittedRoles={[Role.Employer, Role.HealthAuthority]}>
             <Grid item xs={6}>
               <Button
                 color='default'

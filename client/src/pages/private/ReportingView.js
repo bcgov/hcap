@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Box, Container, Typography, List, ListItem, ListItemText } from '@material-ui/core';
 
 import { Page, Card, CheckPermissions, Button } from '../../components/generic';
-import { regionLabelsMap } from '../../constants';
+import { regionLabelsMap, Role } from '../../constants';
 import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
 import {
@@ -20,7 +20,7 @@ export default () => {
   const { openToast } = useToast();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
-  const isMoH = roles.includes('ministry_of_health');
+  const isMoH = roles.includes(Role.MinistryOfHealth);
   const [HARegion] = roles.map((loc) => regionLabelsMap[loc]).filter(Boolean);
 
   const reportStats = {
@@ -89,10 +89,10 @@ export default () => {
   return (
     <Page centered={!isMoH}>
       <CheckPermissions
-        permittedRoles={['ministry_of_health', 'health_authority']}
+        permittedRoles={[Role.MinistryOfHealth, Role.HealthAuthority]}
         renderErrorMessage={true}
       >
-        <CheckPermissions permittedRoles={['ministry_of_health']}>
+        <CheckPermissions permittedRoles={[Role.MinistryOfHealth]}>
           <Container maxWidth='md'>
             <Box py={2}>
               <Typography variant='subtitle1' gutterBottom>

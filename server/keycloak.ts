@@ -2,7 +2,7 @@ import querystring from 'querystring';
 import KeyCloakConnect from 'keycloak-connect';
 import axios, { AxiosInstance } from 'axios';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { UserRoles } from './constants';
+import { Role, UserRoles } from './constants';
 import { collections, dbClient } from './db';
 import logger from './logger';
 import { getUser } from './services/user';
@@ -135,7 +135,7 @@ class Keycloak {
     const allowRoles = (token) => {
       if (token.isExpired()) return false;
       if (roles.length === 1 && roles[0] === '*') return true; // Allows any role
-      if (token.hasRole('superuser')) return true;
+      if (token.hasRole(Role.Superuser)) return true;
       return roles.some((role) => token.hasRole(role));
     };
     return this.keycloakConnect.protect(allowRoles);
@@ -144,7 +144,7 @@ class Keycloak {
   getUserInfoMiddleware() {
     // Connect middleware for adding HCAP user info to request object
     return async (req, res, next) => {
-      let roles = ['pending'];
+      let roles: string[] = [Role.Pending];
 
       try {
         const { content } = req.kauth.grant.access_token;
@@ -173,7 +173,7 @@ class Keycloak {
         }
 
         // if no email, don't migrate user
-        if (email && (roles.length === 0 || (roles.length === 1 && roles.includes('pending')))) {
+        if (email && (roles.length === 0 || (roles.length === 1 && roles.includes(Role.Pending)))) {
           const cachedRoles = await this.migrateUser(keycloakId, email, username);
           if (cachedRoles) {
             roles = cachedRoles;
@@ -190,10 +190,10 @@ class Keycloak {
           sites: user?.sites || [],
           roles,
           regions: roles.map((role) => regionMap[role]).filter((region) => region),
-          isEmployer: roles.includes('employer'),
-          isHA: roles.includes('health_authority'),
-          isSuperUser: roles.includes('superuser'),
-          isMoH: roles.includes('ministry_of_health'),
+          isEmployer: roles.includes(Role.Employer),
+          isHA: roles.includes(Role.HealthAuthority),
+          isSuperUser: roles.includes(Role.Superuser),
+          isMoH: roles.includes(Role.MinistryOfHealth),
         };
         next();
       } catch (error) {
@@ -462,7 +462,7 @@ class Keycloak {
       return null;
     }
 
-    if (migrationStatus.status !== 'pending') {
+    if (migrationStatus.status !== Role.Pending) {
       return null;
     }
 

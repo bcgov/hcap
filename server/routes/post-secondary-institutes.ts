@@ -1,4 +1,5 @@
 import express from 'express';
+import { Role, UserRoles } from '../constants';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware, applyMiddleware } from '../error-handler';
@@ -20,11 +21,7 @@ const router = express.Router();
 // Apply setup user middleware
 router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 // Apply role middleware
-router.use(
-  applyMiddleware(
-    keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority', 'employer')
-  )
-);
+router.use(applyMiddleware(keycloak.allowRolesMiddleware(...UserRoles)));
 
 // Catch all requests for cohort and route them separately
 router.use(`/:id/cohorts`, cohortRoute);
@@ -70,7 +67,7 @@ router.get(
 //  Get a specific PSI by its ID
 router.get(
   '/:id',
-  keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority'),
+  keycloak.allowRolesMiddleware(Role.MinistryOfHealth, Role.HealthAuthority),
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;
@@ -94,7 +91,7 @@ router.get(
 // Post a new PSI
 router.post(
   '/',
-  keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority'),
+  keycloak.allowRolesMiddleware(Role.MinistryOfHealth, Role.HealthAuthority),
   asyncMiddleware(async (req, res) => {
     const { email, user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;
@@ -117,7 +114,7 @@ router.post(
 
 router.put(
   '/:id',
-  keycloak.allowRolesMiddleware('ministry_of_health', 'health_authority'),
+  keycloak.allowRolesMiddleware(Role.MinistryOfHealth, Role.HealthAuthority),
   asyncMiddleware(async (req, res) => {
     const { email, user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;

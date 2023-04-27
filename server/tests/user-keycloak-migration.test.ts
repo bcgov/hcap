@@ -1,6 +1,7 @@
 import { constants } from 'http2';
 import request from 'supertest';
 import { v4 } from 'uuid';
+import { Role } from '../constants';
 import { collections, dbClient } from '../db';
 import keycloak from '../keycloak';
 import { cacheUserRoles } from '../scripts/cache-user-roles';
@@ -38,7 +39,7 @@ describe('Keycloak User Migration', () => {
   };
 
   it.each(testUsers)(`migrates keycloak user: $username`, async (testUser) => {
-    const isParticipant = testUser.username.includes('participant');
+    const isParticipant = testUser.username.includes(Role.Participant);
     if (isParticipant) {
       await makeParticipant(participantData({ emailAddress: testUser.email }));
     }
@@ -145,7 +146,7 @@ describe('Keycloak User Migration', () => {
     });
     const { id, email } = migrationStatus;
     await dbClient.db[collections.USER_MIGRATION].update(id, {
-      status: 'pending',
+      status: Role.Pending,
       email: `test-${email}`,
     });
 
@@ -158,7 +159,7 @@ describe('Keycloak User Migration', () => {
     expect(migrationStatus.message).toBeTruthy();
 
     await dbClient.db[collections.USER_MIGRATION].update(id, {
-      status: 'pending',
+      status: Role.Pending,
       email,
     });
 

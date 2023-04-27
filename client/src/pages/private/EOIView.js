@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
 import store from 'store';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
-import { Routes, regionLabelsMap, API_URL, healthAuthoritiesFilter } from '../../constants';
+import { Routes, regionLabelsMap, API_URL, healthAuthoritiesFilter, Role } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
 import { AuthContext } from '../../providers';
 import { sortObjects } from '../../utils';
@@ -34,7 +34,7 @@ export default () => {
 
   useEffect(() => {
     setHealthAuthorities(
-      roles.includes('superuser') || roles.includes('ministry_of_health')
+      roles.includes(Role.Superuser) || roles.includes(Role.MinistryOfHealth)
         ? Object.values(regionLabelsMap)
         : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
     );
@@ -108,7 +108,7 @@ export default () => {
   return (
     <Page>
       <CheckPermissions
-        permittedRoles={['health_authority', 'ministry_of_health']}
+        permittedRoles={[Role.HealthAuthority, Role.MinistryOfHealth]}
         renderErrorMessage={true}
       >
         <Grid

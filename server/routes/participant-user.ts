@@ -15,7 +15,7 @@ import {
 import { patchObject, sanitize } from '../utils';
 
 import { UserParticipantEditSchema, validate } from '../validation';
-import { ParticipantStatus } from '../constants';
+import { ParticipantStatus, Role } from '../constants';
 
 // Router
 const router = express.Router();
@@ -23,7 +23,7 @@ const router = express.Router();
 // Apply setup user middleware
 router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 // Apply role middleware
-router.use(applyMiddleware(keycloak.allowRolesMiddleware('participant')));
+router.use(applyMiddleware(keycloak.allowRolesMiddleware(Role.Participant)));
 
 // Controller
 

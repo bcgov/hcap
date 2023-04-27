@@ -1,4 +1,5 @@
 import express from 'express';
+import { Role } from '../constants';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
@@ -27,7 +28,7 @@ router.post(
 // Get employer forms
 router.get(
   `/`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.allowRolesMiddleware(Role.MinistryOfHealth, Role.HealthAuthority),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;
@@ -38,7 +39,7 @@ router.get(
 
 router.get(
   `/:id`,
-  keycloak.allowRolesMiddleware('health_authority', 'ministry_of_health'),
+  keycloak.allowRolesMiddleware(Role.MinistryOfHealth, Role.HealthAuthority),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     const user = req.hcapUserInfo;

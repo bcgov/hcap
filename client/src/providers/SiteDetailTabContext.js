@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
-import { tabColumns } from '../constants';
+import { Role, tabColumns } from '../constants';
 
 const SiteDetailTabContext = React.createContext();
 
@@ -26,7 +26,7 @@ const participantsReducer = (state, action) => {
   switch (type) {
     case SELECT_TAB: {
       let columns = tabColumns[tab]?.columns || [];
-      const isHA = roles?.includes('health_authority') || false;
+      const isHA = roles?.includes(Role.HealthAuthority) || false;
       if (!isHA) {
         columns = columns.filter((col) => col.id !== 'archive');
       }

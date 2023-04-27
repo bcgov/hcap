@@ -12,6 +12,7 @@ import { sortObjects } from '../../utils';
 import { UserMigrationTable } from './UserMigrationTable';
 import { mapTableRows } from '../../utils/user-management-table-util';
 import { UserManagementDialog } from '../../components/modal-forms/UserManagementDialog';
+import { FeatureFlaggedComponent, flagKeys } from '../../services';
 
 const columns = [
   { id: 'firstName', name: 'First Name' },
@@ -177,14 +178,16 @@ export default () => {
               />
             </Box>
           )}
-          <Box pt={4} pb={4} pl={2} pr={2}>
-            <Typography variant='subtitle1' gutterBottom>
-              Users to be migrated
-            </Typography>
-          </Box>
-          <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
-            <UserMigrationTable />
-          </Box>
+          <FeatureFlaggedComponent featureKey={flagKeys.FEATURE_KEYCLOAK_MIGRATION}>
+            <Box pt={4} pb={4} pl={2} pr={2}>
+              <Typography variant='subtitle1' gutterBottom>
+                Users to be migrated
+              </Typography>
+            </Box>
+            <Box pt={2} pb={2} pl={2} pr={2} width='100%'>
+              <UserMigrationTable />
+            </Box>
+          </FeatureFlaggedComponent>
         </Grid>
       </CheckPermissions>
 

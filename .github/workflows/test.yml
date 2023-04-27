@@ -14,6 +14,7 @@ env:
   KEYCLOAK_LOCAL_AUTH_URL: 'http://keycloak.local.freshworks.club:8080/auth'
   KEYCLOAK_LOCAL_SECRET: ${{ secrets.KEYCLOAK_LOCAL_SECRET }}
   FEATURE_PHASE_ALLOCATION: true
+  FEATURE_KEYCLOAK_MIGRATION: true
   APP_ENV: local
 jobs:
   cypress-test:

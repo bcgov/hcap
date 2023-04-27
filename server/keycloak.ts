@@ -6,6 +6,7 @@ import { UserRoles } from './constants';
 import { collections, dbClient } from './db';
 import logger from './logger';
 import { getUser } from './services/user';
+import { FEATURE_KEYCLOAK_MIGRATION } from './services/feature-flags';
 
 const MAX_RETRY = 5;
 const options = ['bceid', 'bceid_business', 'idir'];
@@ -172,11 +173,13 @@ class Keycloak {
           roles = content?.resource_access?.[this.clientNameFrontend]?.roles || [];
         }
 
-        // if no email, don't migrate user
-        if (email && (roles.length === 0 || (roles.length === 1 && roles.includes('pending')))) {
-          const cachedRoles = await this.migrateUser(keycloakId, email, username);
-          if (cachedRoles) {
-            roles = cachedRoles;
+        if (FEATURE_KEYCLOAK_MIGRATION) {
+          // if no email, don't migrate user
+          if (email && (roles.length === 0 || (roles.length === 1 && roles.includes('pending')))) {
+            const cachedRoles = await this.migrateUser(keycloakId, email, username);
+            if (cachedRoles) {
+              roles = cachedRoles;
+            }
           }
         }
 

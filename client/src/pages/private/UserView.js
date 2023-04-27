@@ -145,6 +145,7 @@ export default () => {
   useEffect(() => {
     fetchUsers({ pending: location.pathname === Routes.UserPending });
     fetchSites();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history, location]);
 
   return (

@@ -116,3 +116,16 @@ export const getUserMigrations = async () => {
     sites: u.userJoin?.[0]?.body.sites.map((siteId) => siteNames[siteId]).join(', ') || '',
   }));
 };
+
+export const getUserMigration = async (username: string, email: string) => {
+  if (!username || !email) return null;
+
+  const usernameCondition = username.includes('@bceid')
+    ? `${username.split('@')[0]}@bceid%`
+    : username;
+
+  return dbClient.db[collections.USER_MIGRATION].findOne({
+    'email ilike': email,
+    'username ilike': usernameCondition,
+  });
+};

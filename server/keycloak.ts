@@ -5,7 +5,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Role, UserRoles } from './constants';
 import { collections, dbClient } from './db';
 import logger from './logger';
-import { getUser } from './services/user';
+import { getUser, getUserMigration } from './services/user';
 import { FEATURE_KEYCLOAK_MIGRATION } from './services/feature-flags';
 
 const MAX_RETRY = 5;
@@ -152,17 +152,8 @@ class Keycloak {
         const keycloakId = content.sub;
         const { preferred_username: username, email } = content;
 
-        const usernameCondition = username.includes('@bceid')
-          ? `${username.split('@')[0]}@bceid%`
-          : username;
-
         // if no email, user should not be in user_migration table
-        const existingUser = email
-          ? await dbClient.db[collections.USER_MIGRATION].findOne({
-              'email ilike': email,
-              'username ilike': usernameCondition,
-            })
-          : null;
+        const existingUser = await getUserMigration(username, email);
 
         const type = username.split('@')[1];
         const shouldSetRoles = !content?.resource_access && !existingUser && options.includes(type);
@@ -175,7 +166,10 @@ class Keycloak {
 
         if (FEATURE_KEYCLOAK_MIGRATION) {
           // if no email, don't migrate user
-          if (email && (roles.length === 0 || (roles.length === 1 && roles.includes(Role.Pending)))) {
+          if (
+            email &&
+            (roles.length === 0 || (roles.length === 1 && roles.includes(Role.Pending)))
+          ) {
             const cachedRoles = await this.migrateUser(keycloakId, email, username);
             if (cachedRoles) {
               roles = cachedRoles;
@@ -438,10 +432,7 @@ class Keycloak {
       : username;
 
     let message = '';
-    let migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne({
-      'email ilike': email,
-      'username ilike': usernameCondition,
-    });
+    let migrationStatus = await getUserMigration(username, email);
 
     if (!migrationStatus) {
       migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne({

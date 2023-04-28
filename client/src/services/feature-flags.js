@@ -1,6 +1,8 @@
 import store from 'store';
 
-export const flagKeys = {};
+export const flagKeys = {
+  FEATURE_KEYCLOAK_MIGRATION: 'FEATURE_KEYCLOAK_MIGRATION',
+};
 
 export const featureFlag = (featureKey) => {
   // Values come from the API as booleans, no need to check for === 'true'

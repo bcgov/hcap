@@ -88,6 +88,10 @@ export const makeUser = async ({ keycloakId, sites }) => {
   });
 };
 
+export const updateUserForMigration = async (id: string, { username, email }) => {
+  await dbClient.db[collections.USER_MIGRATION].update({ id }, { username, email });
+};
+
 export const getUserMigrations = async () => {
   const sites = await dbClient.db[collections.EMPLOYER_SITES].find();
   const siteNames = _.chain(sites).mapKeys('body.siteId').mapValues('body.siteName').value();
@@ -105,9 +109,23 @@ export const getUserMigrations = async () => {
     .find({ 'status !': 'complete' });
 
   return users.map((u) => ({
+    id: u.id,
     username: u.username,
     email: u.email || '',
     roles: u.roles.join(', '),
     sites: u.userJoin?.[0]?.body.sites.map((siteId) => siteNames[siteId]).join(', ') || '',
   }));
+};
+
+export const getUserMigration = async (username: string, email: string) => {
+  if (!username || !email) return null;
+
+  const usernameCondition = username.includes('@bceid')
+    ? `${username.split('@')[0]}@bceid%`
+    : username;
+
+  return dbClient.db[collections.USER_MIGRATION].findOne({
+    'email ilike': email,
+    'username ilike': usernameCondition,
+  });
 };

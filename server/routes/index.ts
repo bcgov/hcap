@@ -2,7 +2,7 @@
 import express from 'express';
 import { Role, UserRoles } from '../constants';
 import { getSitesForUser } from '../services/employers';
-import { getUserMigrations, getUserNotifications } from '../services/user';
+import { getUserMigrations, getUserNotifications, updateUserForMigration } from '../services/user';
 import { validate, AccessRequestApproval } from '../validation';
 import logger from '../logger';
 import { dbClient, collections } from '../db';
@@ -108,6 +108,19 @@ apiRouter.get(
   asyncMiddleware(async (req, res) => {
     const users = await getUserMigrations();
     return res.json({ data: users });
+  })
+);
+
+// Update user in user migration table
+apiRouter.patch(
+  `/user-migrations/:id`,
+  keycloak.allowRolesMiddleware('ministry_of_health'),
+  asyncMiddleware(async (req, res) => {
+    const { id } = req.params;
+    const { username, emailAddress: email } = req.body;
+
+    await updateUserForMigration(id, { username, email });
+    return res.json({});
   })
 );
 

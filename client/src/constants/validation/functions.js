@@ -37,6 +37,7 @@ export const errorMessage = ({ path }) => {
     postalCode: 'Postal code is required',
     startDate: 'Start Date is required',
     endDate: 'End Date is required',
+    username: 'Username is required',
 
     // Employer operator contact info
     registeredBusinessName: 'Business name is required',

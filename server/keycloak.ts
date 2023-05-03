@@ -7,6 +7,7 @@ import { collections, dbClient } from './db';
 import logger from './logger';
 import { getUser, getUserMigration } from './services/user';
 import { FEATURE_KEYCLOAK_MIGRATION } from './services/feature-flags';
+import { sanitize } from './utils';
 
 const MAX_RETRY = 5;
 const options = ['bceid', 'bceid_business', 'idir'];
@@ -472,8 +473,7 @@ class Keycloak {
     await this.setUserRoles(keycloakId, migrationStatus.roles);
 
     const [user] = await dbClient.db[collections.USERS].findDoc({
-      'userInfo.username ilike': usernameCondition,
-      'userInfo.email ilike': email,
+      keycloakId: sanitize(migrationStatus.id),
     });
 
     if (user) {

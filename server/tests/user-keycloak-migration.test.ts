@@ -102,7 +102,10 @@ describe('Keycloak User Migration', () => {
     const keycloakId = migrationStatus.id;
 
     const oldUserName = `${employerBceid.username.split('@')[0]}@bceid`;
-    await dbClient.db[collections.USER_MIGRATION].update(keycloakId, { username: oldUserName });
+    await dbClient.db[collections.USER_MIGRATION].update(keycloakId, {
+      id: oldKeycloakId,
+      username: oldUserName,
+    });
 
     let [user] = await dbClient.db[collections.USERS].findDoc({ keycloakId });
     expect(user).toBeDefined();
@@ -121,7 +124,7 @@ describe('Keycloak User Migration', () => {
     await triggerMiddlewareToMigrateUser(employerBceid);
 
     // verify
-    migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne(keycloakId);
+    migrationStatus = await dbClient.db[collections.USER_MIGRATION].findOne(oldKeycloakId);
     expect(migrationStatus.username).toEqual(username);
 
     [user] = await dbClient.db[collections.USERS].findDoc({ keycloakId });

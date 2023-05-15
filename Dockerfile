@@ -31,13 +31,13 @@ RUN mkdir -p ${HOME_SERVER}
 RUN mkdir -p ${HOME_CLIENT}
 RUN chown -R 1008111001 ${HOME_CLIENT}
 RUN chown -R 1008111001 ${HOME_SERVER}
-RUN chown -R 1008111001:0 "/opt/app-root/src/.npm"
 COPY --from=client /opt/app-root/src/app/client/build /opt/app-root/src/app/client/build/.
 
 USER 1008111001
 WORKDIR ${HOME_SERVER}
 COPY server/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
+RUN chown -R 1008111001:0 "/opt/app-root/src/.npm"
 COPY server/. .
 # Run app
 EXPOSE 8080

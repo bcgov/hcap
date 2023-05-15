@@ -6,11 +6,11 @@ ENV HOME_CLIENT /opt/app-root/src/app/client
 # Using root to transfer ownership of work dir
 USER root
 RUN mkdir -p ${HOME_CLIENT}
-RUN chown -R 1001 ${HOME_CLIENT}
+RUN chown -R 1008111001 ${HOME_CLIENT}
 WORKDIR ${HOME_CLIENT}
 COPY client/package*.json ./
-RUN chown -R 1001 .
-USER 1001
+RUN chown -R 1008111001 .
+USER 1008111001
 RUN npm set progress=false && npm ci --no-cache
 COPY client/. .
 RUN INLINE_RUNTIME_CHUNK=false npm run build
@@ -29,11 +29,12 @@ ENV HOME_CLIENT /opt/app-root/src/app/client
 USER root
 RUN mkdir -p ${HOME_SERVER}
 RUN mkdir -p ${HOME_CLIENT}
-RUN chown -R 1001 ${HOME_CLIENT}
-RUN chown -R 1001 ${HOME_SERVER}
+RUN chown -R 1008111001 ${HOME_CLIENT}
+RUN chown -R 1008111001 ${HOME_SERVER}
+RUN chown -R 1008111001:0 "/opt/app-root/src/.npm"
 COPY --from=client /opt/app-root/src/app/client/build /opt/app-root/src/app/client/build/.
 
-USER 1001
+USER 1008111001
 WORKDIR ${HOME_SERVER}
 COPY server/package*.json ./
 RUN npm set progress=false && npm ci --no-cache

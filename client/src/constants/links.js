@@ -13,7 +13,7 @@ export const VANCOUVER_COASTAL_GOV_LINK =
 export const VANCOUVER_ISLAND_GOV_LINK =
   'https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/4_vancouver_island_health_authority.pdf';
 export const NORTHERN_GOV_LINK =
-  'https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/4_vancouver_island_health_authority.pdf';
+  'https://www2.gov.bc.ca/assets/gov/data/geographic/land-use/administrative-boundaries/health-boundaries/5_northern_health_authority.pdf';
 
 // Employer Login
 export const HCAP_LINK =

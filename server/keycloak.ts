@@ -254,7 +254,9 @@ class Keycloak {
 
   async checkHealth() {
     try {
-      await this.axiosInstance.get(`/realms/${this.realm}/protocol/openid-connect/userinfo`);
+      await this.axiosInstance.get(`/realms/${this.realm}/protocol/openid-connect/userinfo`, {
+        baseURL: process.env.KEYCLOAK_AUTH_URL,
+      });
     } catch (error) {
       await this.authenticateServiceAccount();
     }

@@ -1,5 +1,4 @@
 import { dbClient, collections } from '../db';
-import keycloak from '../keycloak';
 import logger from '../logger';
 
 // Script method

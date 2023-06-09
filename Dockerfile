@@ -36,9 +36,9 @@ COPY --from=client /opt/app-root/src/app/client/build /opt/app-root/src/app/clie
 WORKDIR ${HOME_SERVER}
 COPY server/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
-USER 1001
 RUN chmod 777 "/opt/app-root/src/.npm"
 RUN chown -R 1001:0 "/opt/app-root/src/.npm"
+USER 1001
 COPY server/. .
 # Run app
 EXPOSE 8080

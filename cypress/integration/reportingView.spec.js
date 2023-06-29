@@ -84,9 +84,7 @@ describe('Reporting Download', () => {
 
     it('Should not allow employer to view the reporting view page', () => {
       cy.visit('/reporting-view');
-      cy.get('.MuiTypography-subtitle1')
-        .contains(`You don't have permission to view this content.`)
-        .should('be.visible');
+      cy.get('.MuiTypography-subtitle1').contains(`HCAPInfoQuery@gov.bc.ca`).should('be.visible');
     });
   });
 });

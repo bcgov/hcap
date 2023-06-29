@@ -1,11 +1,19 @@
 import React, { Fragment } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { Card } from '.';
 import { checkPermissions, checkPending } from '../../utils';
 import { AuthContext } from '../../providers';
 
+const useStyles = makeStyles(() => ({
+  message: {
+    textAlign: 'center',
+  },
+}));
+
 export const CheckPermissions = ({ permittedRoles, children, renderErrorMessage = false }) => {
+  const classes = useStyles();
   const { auth } = AuthContext.useAuth();
   const roles = auth.user?.roles || [];
   const isLoading = auth?.isLoading;
@@ -38,15 +46,25 @@ export const CheckPermissions = ({ permittedRoles, children, renderErrorMessage 
     </Fragment>
   );
 
-  const permissionDeniedMessage = <p>You don't have permission to view this content.</p>;
+  const permissionDeniedMessage = (
+    <>
+      <p>Thank you for your access request.</p>
+      <p>
+        Please contact&nbsp;
+        <a href='mailto:HCAPInfoQuery@gov.bc.ca'>HCAPInfoQuery@gov.bc.ca</a>&nbsp; with your user ID
+        and site(s) you require access to.
+      </p>
+      <p>Thank you.</p>
+    </>
+  );
 
   const message = isPending ? permissionPendingMessage : permissionDeniedMessage;
 
   // Optional message displayed if access not granted by role(s)
   return (
     <Grid container alignContent='center' justify='center' alignItems='center' direction='column'>
-      <Box pb={4} pl={4} pr={4} pt={2} maxWidth={800}>
-        <Card>
+      <Box pb={4} pl={4} pr={4} pt={2} maxWidth={600}>
+        <Card className={classes.message}>
           <Typography variant='subtitle1' gutterBottom>
             {message}
           </Typography>

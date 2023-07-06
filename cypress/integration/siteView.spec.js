@@ -6,13 +6,13 @@ describe('Tests the Site View', () => {
   it('visits siteView as employer', () => {
     cy.kcLogin('test-employer');
     cy.visit('/site-view');
-    cy.contains("You don't have permission to view this content.").should('exist');
+    cy.contains('HCAPInfoQuery@gov.bc.ca').should('exist');
   });
 
   it('visits siteView as maximus', () => {
     cy.kcLogin('test-maximus');
     cy.visit('/site-view');
-    cy.contains("You don't have permission to view this content.").should('exist');
+    cy.contains('HCAPInfoQuery@gov.bc.ca').should('exist');
   });
 
   it('visits siteView as MoH', () => {

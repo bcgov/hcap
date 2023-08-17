@@ -24,6 +24,8 @@ ENV NODE_ENV production
 ENV HOME_SERVER /opt/app-root/src/app/server
 ENV HOME_CLIENT /opt/app-root/src/app/client
 
+ENV NPM_CONFIG_CACHE /opt/app-root/.npm
+
 # Configure server
 # Using root to transfer ownership of work dir
 USER root
@@ -36,7 +38,6 @@ COPY --from=client /opt/app-root/src/app/client/build /opt/app-root/src/app/clie
 WORKDIR ${HOME_SERVER}
 COPY server/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
-RUN chmod 777 "/opt/app-root/src/.npm"
 RUN chown -R 1001:0 "/opt/app-root/src/.npm"
 USER 1001
 COPY server/. .

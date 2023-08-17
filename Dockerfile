@@ -9,8 +9,8 @@ RUN mkdir -p ${HOME_CLIENT}
 RUN chown -R 1008111001 ${HOME_CLIENT}
 WORKDIR ${HOME_CLIENT}
 COPY client/package*.json ./
-RUN chown -R 1008111001 .
-USER 1008111001
+RUN chown -R 1008040000 .
+USER 1008040000
 RUN npm set progress=false && npm ci --no-cache
 COPY client/. .
 RUN INLINE_RUNTIME_CHUNK=false npm run build
@@ -24,8 +24,6 @@ ENV NODE_ENV production
 ENV HOME_SERVER /opt/app-root/src/app/server
 ENV HOME_CLIENT /opt/app-root/src/app/client
 
-ENV NPM_CONFIG_CACHE /opt/app-root/.npm
-
 # Configure server
 # Using root to transfer ownership of work dir
 USER root
@@ -33,13 +31,17 @@ RUN mkdir -p ${HOME_SERVER}
 RUN mkdir -p ${HOME_CLIENT}
 RUN chown -R 1001 ${HOME_CLIENT}
 RUN chown -R 1001 ${HOME_SERVER}
+RUN chown -R 1008040000 ${HOME_CLIENT}
+RUN chown -R 1008040000 ${HOME_SERVER}
 COPY --from=client /opt/app-root/src/app/client/build /opt/app-root/src/app/client/build/.
 
 WORKDIR ${HOME_SERVER}
 COPY server/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 RUN chown -R 1001:0 "/opt/app-root/.npm"
+RUN chown -R 1008040000:0 "/opt/app-root/src/.npm"
 USER 1001
+
 COPY server/. .
 # Run app
 EXPOSE 8080

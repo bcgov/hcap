@@ -31,15 +31,13 @@ RUN mkdir -p ${HOME_SERVER}
 RUN mkdir -p ${HOME_CLIENT}
 RUN chown -R 1001 ${HOME_CLIENT}
 RUN chown -R 1001 ${HOME_SERVER}
-RUN chown -R 1008040000 ${HOME_CLIENT}
-RUN chown -R 1008040000 ${HOME_SERVER}
 COPY --from=client /opt/app-root/src/app/client/build /opt/app-root/src/app/client/build/.
 
 WORKDIR ${HOME_SERVER}
 COPY server/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 RUN chown -R 1001:0 "/opt/app-root/src/.npm"
-RUN chown -R 1008040000:0 "/opt/app-root/src/.npm"
+RUN chgrp -R 0 "/opt/app-root/src/.npm" && chmod -R g=u "/opt/app-root/src/.npm"
 USER 1001
 
 COPY server/. .

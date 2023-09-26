@@ -1,21 +1,14 @@
-import store from 'store';
-import { API_URL } from '../constants';
 import { formatCohortDate } from '../utils';
+import { axiosInstance } from './api';
 
 const getCohortAvailAbleSize = (cohort) =>
   cohort.cohort_size - (cohort.participantsCohorts?.length || 0);
 
 export const getPsi = async () => {
-  const response = await fetch(`${API_URL}/api/v1/psi/with-cohorts`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-  });
-  if (response.ok) {
-    const psiList = (await response.json()) || [];
+  try {
+    const { data } = await axiosInstance.get('/psi/with-cohorts');
+
+    const psiList = data || [];
     return psiList.map((psi) => ({
       ...psi,
       size:
@@ -27,23 +20,17 @@ export const getPsi = async () => {
           availableSize: getCohortAvailAbleSize(cohort),
         })) || [],
     }));
-  } else {
+  } catch {
     throw new Error('Unable to load post secondary institutes');
   }
 };
 
 export const assignParticipantWithCohort = async ({ participantId, cohortId }) => {
-  const response = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}/assign/${participantId}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
+  try {
+    const { data } = await axiosInstance.post(`/cohorts/${cohortId}/assign/${participantId}`);
+
+    return data;
+  } catch {
     throw new Error('Unable to assign cohort');
   }
 };
@@ -59,15 +46,9 @@ export const sortPSI = ({ psiList = [], cohort = {} }) =>
   });
 
 export const fetchPSI = async ({ psiId }) => {
-  const response = await fetch(`${API_URL}/api/v1/psi/${psiId}`, {
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-    },
-    method: 'GET',
-  });
+  try {
+    const { data: psi } = await axiosInstance.get(`/psi/${psiId}`);
 
-  if (response.ok) {
-    const psi = await response.json();
     return {
       id: psi.id,
       instituteName: psi.institute_name,
@@ -76,96 +57,68 @@ export const fetchPSI = async ({ psiId }) => {
       postalCode: psi.postal_code,
       city: psi.city,
     };
+  } catch (e) {
+    const { response } = e;
+    throw new Error(
+      response.error || response.statusText || 'Unable to load post secondary institutes'
+    );
   }
-
-  throw new Error(
-    response.error || response.statusText || 'Unable to load post secondary institutes'
-  );
 };
 
 export const fetchCohorts = async ({ psiId }) => {
-  const response = await fetch(`${API_URL}/api/v1/psi/${psiId}/cohorts/`, {
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-    },
-    method: 'GET',
-  });
+  try {
+    const { data } = await axiosInstance.get(`/psi/${psiId}/cohorts`);
 
-  if (response.ok) {
-    const cohortList = await response.json();
-    return cohortList;
+    return data;
+  } catch (e) {
+    const { response } = e;
+    throw new Error(response.error || response.statusText || 'Unable to load cohorts details');
   }
-
-  throw new Error(response.error || response.statusText || 'Unable to load cohorts details');
 };
 
 export const fetchCohort = async ({ cohortId }) => {
-  const response = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}`, {
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-    },
-    method: 'GET',
-  });
+  try {
+    const { data } = await axiosInstance.get(`/cohorts/${cohortId}`);
 
-  if (response.ok) {
-    const cohort = await response.json();
-    return cohort;
+    return data;
+  } catch (e) {
+    const { response } = e;
+    throw new Error(response.error || response.statusText || 'Unable to load cohorts details');
   }
-
-  throw new Error(response.error || response.statusText || 'Unable to load cohorts details');
 };
 
 export const fetchCohortParticipants = async ({ cohortId }) => {
-  const res = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}/participants`, {
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-    },
-    method: 'GET',
-  });
+  try {
+    const { data } = await axiosInstance.get(`/cohorts/${cohortId}/participants`);
 
-  if (res.ok) {
-    const participants = await res.json();
-    return participants;
+    return data;
+  } catch (e) {
+    const { response } = e;
+    throw new Error(response.error || response.statusText || 'Unable to load cohort participants');
   }
-
-  throw new Error(res.error || res.statusText || 'Unable to load cohort participants');
 };
 
 export const addCohort = async ({ psiId, cohort }) => {
-  const response = await fetch(`${API_URL}/api/v1/psi/${psiId}/cohorts/`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify(cohort),
-  });
+  try {
+    const { data } = await axiosInstance.post(`/psi/${psiId}/cohorts`, cohort);
 
-  if (response.ok) {
-    return await response.json();
+    return data;
+  } catch (e) {
+    const { response } = e;
+    throw new Error(`Unable to add cohort for error ${response.error || response.statusText}`);
   }
-
-  throw new Error(`Unable to add cohort for error ${response.error || response.statusText}`);
 };
 
 export const editCohort = async ({ cohort, cohortId }) => {
   // Remove id from cohort body
-  const response = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify(cohort),
-  });
+  try {
+    const { data } = await axiosInstance.patch(`/cohorts/${cohortId}`, cohort);
 
-  if (response.ok) {
-    return await response.json();
+    return data;
+  } catch (e) {
+    const { response } = e;
+    throw new Error(`Unable to edit cohort for error: ${response.error || response.statusText}`);
   }
-
-  throw new Error(`Unable to edit cohort for error: ${response.error || response.statusText}`);
 };
 
 export const mapCohortToFormData = (cohort) =>
@@ -185,54 +138,32 @@ export const mapCohortToFormData = (cohort) =>
  */
 export const createPSI = async ({ psi }) => {
   try {
-    const response = await fetch(`${API_URL}/api/v1/psi`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(psi),
-    });
+    await axiosInstance.post('/psi', psi);
 
-    if (response.ok) {
-      return [true, null];
-    } else {
-      if (response.status === 409) {
-        try {
-          const errorDetails = await response.json();
-          return [
-            false,
-            errorDetails.error ||
-              errorDetails.message ||
-              'Unable to create psi due to server error',
-          ];
-        } catch {
-          return [false, 'Unable to create psi due to server error'];
-        }
+    return [true, null];
+  } catch (e) {
+    if (e.response.status === 409) {
+      try {
+        const errorDetails = e.response.data;
+        return [
+          false,
+          errorDetails.error || errorDetails.message || 'Unable to create psi due to server error',
+        ];
+      } catch {
+        return [false, 'Unable to create psi due to server error'];
       }
-      return [false, (await response.text()) || 'Unable to create post secondary institute'];
     }
-  } catch (error) {
-    return [false, `Unable to create PSI due to error: ${error}`];
+    return [false, e.response.statusText || 'Unable to create post secondary institute'];
   }
 };
 
 export const updatePSI = async ({ id, psi }) => {
-  const resp = await fetch(`${API_URL}/api/v1/psi/${id}`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify(psi),
-  });
-
   // Decode response
-  const responseMessage = await resp.text();
-  if (resp.ok) {
+  try {
+    await axiosInstance.put(`/psi/${id}`, psi);
+
     return [true, null];
+  } catch (e) {
+    return [false, e.response.statusText];
   }
-  return [false, responseMessage];
 };

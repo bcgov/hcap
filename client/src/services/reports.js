@@ -1,6 +1,7 @@
 import store from 'store';
 import { API_URL } from '../constants';
 import { handleReportDownloadResult } from '../utils';
+import { axiosInstance } from './api';
 
 const reportTitleHash = {
   ros: 'return-of-service-milestones-',
@@ -20,16 +21,11 @@ const csvTitle = (reportType, region = null) => {
   return `${reportTitleHash[reportType]}${new Date().toJSON()}.csv`;
 };
 export const fetchMilestoneReports = async () => {
-  const response = await fetch(`${API_URL}/api/v1/milestone-report`, {
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-    },
-    method: 'GET',
-  });
+  try {
+    const { data } = await axiosInstance.get('/milestone-report');
 
-  if (response.ok) {
-    return response.json();
-  } else {
+    return data;
+  } catch {
     throw new Error('Failed to fetch milestone reports');
   }
 };

@@ -8,6 +8,7 @@ import { Field, Formik, Form as FormikForm } from 'formik';
 import Typography from '@material-ui/core/Typography';
 import { createSite } from '../../services/site';
 import { useToast } from '../../hooks';
+import { getErrorMessage } from '../../utils';
 
 const useStyles = makeStyles(() => ({
   formButton: {
@@ -44,25 +45,21 @@ export const NewSiteDialog = ({ onSubmit, onClose, open }) => {
       ...site,
       siteId: parseInt(site.siteId),
     };
-    const response = await createSite(siteJson);
-    if (response.ok) {
+    try {
+      await createSite(siteJson);
       openToast({
         status: ToastStatus.Success,
         message: `Site '${site.siteName}' added successfully`,
       });
       await onSubmit();
-    } else {
-      const error = await response.json();
-      if (error.status && error.status === 'Duplicate') {
+    } catch (e) {
+      if (e.response.data.status === 'Duplicate') {
         openToast({
           status: ToastStatus.Error,
           message: 'Duplicate site ID',
         });
       } else {
-        openToast({
-          status: ToastStatus.Error,
-          message: response.error || response.statusText || 'Server error',
-        });
+        openToast(getErrorMessage(e));
       }
     }
   };

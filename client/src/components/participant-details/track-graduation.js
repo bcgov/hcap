@@ -1,24 +1,22 @@
+import React, { useEffect, useState } from 'react';
 import { Grid, Typography, Dialog, Box } from '@material-ui/core';
-import { Button } from '../../components/generic/Button';
+import dayjs from 'dayjs';
 import { ArchiveHiredParticipantForm } from '../modal-forms';
-import store from 'store';
 import { ManageGraduationForm } from '../modal-forms/ManageGraduationForm';
 import { AssignCohortForm } from '../modal-forms/AssignCohort';
-import React, { useEffect, useState } from 'react';
-import dayjs from 'dayjs';
 import { createPostHireStatus, fetchUserNotifications } from '../../services';
 import {
+  Role,
+  ToastStatus,
+  ArchiveHiredParticipantSchema,
   postHireStatuses,
   participantStatus,
-  ToastStatus,
-  API_URL,
-  ArchiveHiredParticipantSchema,
-  Role,
 } from '../../constants';
 import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
 import { formatCohortDate } from '../../utils';
-import { CheckPermissions } from '../generic';
+import { Button, CheckPermissions } from '../generic';
+import { axiosInstance } from '../../services/api';
 // Helper function to call archive participant service
 const handleArchive = async (
   participantId,
@@ -28,29 +26,23 @@ const handleArchive = async (
   siteId = null,
   currentStatusId = null
 ) => {
-  const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      participantId,
-      status: 'archived',
-      data: additional,
-      site: siteId,
-      currentStatusId,
-    }),
-  });
-  if (response.ok) {
-    fetchUserNotifications(dispatchFunction);
+  const data = {
+    participantId,
+    status: 'archived',
+    data: additional,
+    site: siteId,
+    currentStatusId,
+  };
 
+  try {
+    await axiosInstance.post('/employer-actions', data);
+
+    fetchUserNotifications(dispatchFunction);
     openToast({
       status: ToastStatus.Info,
       message: 'Participant Archived',
     });
-  } else {
+  } catch (e) {
     openToast({
       status: ToastStatus.Error,
       message: 'Unable to archive participant',

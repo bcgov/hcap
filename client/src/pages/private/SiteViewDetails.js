@@ -3,11 +3,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
-import { scrollUp, addEllipsisMask } from '../../utils';
 import { Routes, MAX_LABEL_LENGTH, Role } from '../../constants';
+import { addEllipsisMask, getErrorMessage, scrollUp } from '../../utils';
 import { EditSiteForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
-import { ToastStatus, EditSiteSchema } from '../../constants';
+import { EditSiteSchema } from '../../constants';
 import { SiteDetailTabContext } from '../../providers';
 import { fetchSitePhases } from '../../services/phases';
 import { fetchSiteParticipants, updateSite, fetchSite } from '../../services/site';
@@ -74,46 +74,38 @@ export default ({ match }) => {
   const id = match.params.id;
 
   const handleSiteEdit = async (site) => {
-    const response = await updateSite(site, id);
-    setIsLoading(false);
-    if (response.ok) {
+    try {
+      await updateSite(site, id);
+      setIsLoading(false);
       setActiveModalForm(null);
       fetchDetails();
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
-      });
+    } catch (e) {
+      openToast(getErrorMessage(e));
     }
   };
 
   const fetchDetails = useCallback(async () => {
     setHasFetched(true);
     setIsLoading(true);
-    const response = await fetchSite(id);
-    if (response.ok) {
-      const site = await response.json();
+    try {
+      const site = await fetchSite(id);
       const phases = await fetchSitePhases(site.id);
-      const participants = await fetchSiteParticipants(columnIDs, site.siteId);
-      const { hired, withdrawn } = await participants.json();
+      const { hired, withdrawn } = await fetchSiteParticipants(columnIDs, site.siteId);
       const hiredParticipants = mapSiteParticipantsDataToRow(hired, columnIDs);
       const withdrawnParticipants = mapSiteParticipantsDataToRow(withdrawn, columnIDs);
       setIsLoading(false);
-      return setSite({
+      setSite({
         ...site,
         hiredParticipants,
         withdrawnParticipants,
         phases,
       });
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
-      });
-      setIsLoading(false);
-      return setSite({});
+    } catch (e) {
+      openToast(getErrorMessage(e));
+      setSite({});
     }
-  }, [id, setSite, openToast, setIsLoading]);
+    setIsLoading(false);
+  }, [id, openToast]);
 
   useEffect(() => {
     if (!hasFetched) fetchDetails();

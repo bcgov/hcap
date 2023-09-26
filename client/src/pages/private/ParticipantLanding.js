@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import dayjs from 'dayjs';
 import {
   Grid,
   Card,
@@ -11,18 +12,15 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import store from 'store';
-import { Page } from '../../components/generic';
-import { API_URL, Routes, ToastStatus } from '../../constants';
-import { PEOIWithdrawalDialogForm } from '../../components/modal-forms/PEOIWithdrawalDialogForm';
-import { genericConfirm } from '../../constants/validation';
-import { IndigenousDeclarationForm } from '../../components/modal-forms/IndigenousDeclarationForm';
 import isNil from 'lodash/isNil';
+import { Page } from '../../components/generic';
+import { PEOIWithdrawalDialogForm } from '../../components/modal-forms/PEOIWithdrawalDialogForm';
+import { genericConfirm, Routes } from '../../constants';
+import { IndigenousDeclarationForm } from '../../components/modal-forms/IndigenousDeclarationForm';
 import { useToast } from '../../hooks';
 import ParticipantLandingEmpty from './ParticipantLandingEmpty';
-import dayjs from 'dayjs';
-
-const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
+import { axiosInstance } from '../../services/api';
+import { getErrorMessage } from '../../utils';
 
 const useStyles = makeStyles(() => ({
   rootContainer: {
@@ -73,15 +71,8 @@ const useStyles = makeStyles(() => ({
 
 const getParticipants = async () => {
   try {
-    const response = await fetch(`${API_URL}/api/v1/participant-user/participants`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    return response.json();
+    const { data } = await axiosInstance.get(`/participant-user/participants`);
+    return data;
   } catch {
     return [];
   }
@@ -103,14 +94,7 @@ export default () => {
   };
   const submitWithdrawal = async (values) => {
     if (values.confirmed) {
-      await fetch(`${API_URL}/api/v1/participant-user/withdraw`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${store.get('TOKEN')}`,
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-        },
-      });
+      await axiosInstance.post(`/participant-user/withdraw`);
     }
     await getParticipants().then((items) => afterInterestFetch(items));
     setShowWithdrawDialog(false);
@@ -158,28 +142,20 @@ export default () => {
       .map(([identity, selected]) => (selected ? identity : null))
       .filter(Boolean);
 
-    const response = await fetch(`${rootUrl}/batch`, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
+    try {
+      const data = {
         isIndigenous: values.isIndigenous,
         indigenousIdentities: identities,
-      }),
-    });
-    if (response.ok) {
+      };
+
+      await axiosInstance.patch('/participant-user/participant/batch', data);
+
       await getParticipants().then((items) => {
         afterInterestFetch(items);
       });
       setHideIndigenousIdentityForm(true);
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
-      });
+    } catch (e) {
+      openToast(getErrorMessage(e));
     }
   };
 

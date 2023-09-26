@@ -31,7 +31,7 @@ import {
   EditRosStartDateDialog,
   EditRosSiteDialog,
 } from '../../components/participant-details';
-import { keyedString } from '../../utils';
+import { getErrorMessage, keyedString } from '../../utils';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -197,32 +197,24 @@ export default () => {
   const handleEditRosField = async (values) => {
     const EDIT_ERROR_MESSAGE = 'Unable to update the field';
     try {
-      const response = await updateRosStatus(actualParticipant?.id, values);
-      if (response.ok) {
-        openToast({
-          status: ToastStatus.Success,
-          message: `${rosKeyMap[editFormField]?.label} is successfully updated`,
-        });
-        fetchData({
-          setParticipant,
-          setPSIList,
-          setActualParticipant,
-          setDisableAssign,
-          setError,
-          id,
-        });
-      } else {
-        throw new Error(
-          response.message || response.error || response.statusText || EDIT_ERROR_MESSAGE
-        );
-      }
-    } catch (err) {
-      openToast({
-        status: ToastStatus.Error,
-        message: err?.message || EDIT_ERROR_MESSAGE,
-      });
-    }
+      await updateRosStatus(actualParticipant?.id, values);
 
+      openToast({
+        status: ToastStatus.Success,
+        message: `${rosKeyMap[editFormField]?.label} is successfully updated`,
+      });
+
+      fetchData({
+        setParticipant,
+        setPSIList,
+        setActualParticipant,
+        setDisableAssign,
+        setError,
+        id,
+      });
+    } catch (e) {
+      openToast(getErrorMessage(e, EDIT_ERROR_MESSAGE));
+    }
     handleEditRosFieldClose();
   };
 

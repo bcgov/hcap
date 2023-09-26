@@ -2,27 +2,27 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Page, CheckPermissions } from '../../components/generic';
 import { Form } from '../../components/employer-form';
-import { scrollUp } from '../../utils';
-import store from 'store';
-import { API_URL, Role } from '../../constants';
+import { Role } from '../../constants';
+import { getErrorMessage, scrollUp } from '../../utils';
+import { axiosInstance } from '../../services/api';
+import { useToast } from '../../hooks';
 
 export default ({ match }) => {
+  const { openToast } = useToast();
+
   const [user, setUser] = useState(undefined);
   const expressionID = match.params.id;
 
   useEffect(() => {
     const fetchDetails = async () => {
-      const response = await fetch(`${API_URL}/api/v1/employer-form/${expressionID}`, {
-        headers: {
-          Authorization: `Bearer ${store.get('TOKEN')}`,
-        },
-        method: 'GET',
-      });
-
-      if (response.ok) {
-        setUser(await response.json());
+      try {
+        const { data } = await axiosInstance.get(`/employer-form/${expressionID}`);
+        setUser(data);
+      } catch (e) {
+        openToast(getErrorMessage(e));
       }
     };
+
     fetchDetails();
   }, [expressionID]);
 

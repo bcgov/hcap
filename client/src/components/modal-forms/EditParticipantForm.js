@@ -1,13 +1,17 @@
 import React from 'react';
-import store from 'store';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box } from '@material-ui/core';
 import { RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { API_URL, EditParticipantFormSchema, participantStatus } from '../../constants';
+import { EditParticipantFormSchema, participantStatus } from '../../constants';
+import { axiosInstance } from '../../services/api';
+import { useToast } from '../../hooks';
+import { getErrorMessage } from '../../utils';
 
 export const EditParticipantForm = ({ initialValues, onClose, submissionCallback }) => {
+  const { openToast } = useToast();
+
   const participantIsHired = initialValues.latestStatuses.some(
     (status) => status.status === participantStatus.HIRED
   );
@@ -36,21 +40,15 @@ export const EditParticipantForm = ({ initialValues, onClose, submissionCallback
           }
         });
         values.history = initialValues.history ? [history, ...initialValues.history] : [history];
-        const response = await fetch(`${API_URL}/api/v1/participant`, {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${store.get('TOKEN')}`,
-            Accept: 'application/json',
-            'Content-type': 'application/json',
-          },
-          body: JSON.stringify(values),
-        });
 
-        if (response.ok) {
+        try {
+          await axiosInstance.patch('/participant', values);
           if (submissionCallback) {
             submissionCallback();
           }
           onClose();
+        } catch (e) {
+          openToast(getErrorMessage(e));
         }
       }}
     >

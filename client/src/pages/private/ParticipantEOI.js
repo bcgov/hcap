@@ -6,16 +6,13 @@ import { red } from '@material-ui/core/colors';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import store from 'store';
 import { Routes, ToastStatus } from '../../constants';
 
 import { Page } from '../../components/generic';
 import { Form } from '../../components/participant-form';
-import { API_URL } from '../../constants';
 import { useToast } from '../../hooks';
 import { Dialog } from '../../components/generic';
-
-const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
+import { axiosInstance } from '../../services/api';
 
 // Custom UI
 const DeleteButton = withStyles((theme) => ({
@@ -40,15 +37,8 @@ const useStyles = makeStyles((theme) => ({
 // Helper methods
 const fetchParticipant = async (id) => {
   try {
-    const response = await fetch(`${rootUrl}/${id}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const [participant] = await response.json();
+    const { data } = await axiosInstance.get(`/participant-user/participant/${id}`);
+    const [participant] = data;
     return participant || null;
   } catch {
     return null;
@@ -66,43 +56,31 @@ const updateParticipant = async (values, id) => {
     postalCode,
     postalCodeFsa,
   };
-  const resp = await fetch(`${rootUrl}/${id}`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
 
-  return resp.ok;
+  try {
+    await axiosInstance.patch(`/participant-user/participant/${id}`, body);
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 const withdrawParticipant = async (id) => {
-  const resp = await fetch(`${rootUrl}/${id}/withdraw`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify({}),
-  });
-  return resp.ok;
+  try {
+    await axiosInstance.post(`/participant-user/participant/${id}/withdraw`, {});
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 const submitConfirmInterestRequest = async (id) => {
-  const resp = await fetch(`${rootUrl}/${id}/reconfirm_interest`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify({}),
-  });
-  return resp.ok;
+  try {
+    await axiosInstance.post(`/participant-user/participant/${id}/reconfirm_interest`, {});
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 const isHiredParticipant = (participant) =>

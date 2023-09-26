@@ -5,8 +5,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { CreateAllocationSchema, ToastStatus } from '../../constants';
-import { createAllocation, updateAllocation } from '../../services/allocations';
+import { createAllocation, updateAllocation } from '../../services';
 import { useToast } from '../../hooks';
+import { getErrorMessage } from '../../utils';
 
 const useStyles = makeStyles(() => ({
   formButton: {
@@ -40,10 +41,12 @@ export const AllocationForm = ({ onSubmit, onClose, open, content, isNew, siteId
           site_id: parseInt(siteId, 10),
         }
       : { allocation: allocation.allocation };
-    const response = await (isNew
-      ? createAllocation(allocationJson)
-      : updateAllocation(content.allocationId, allocationJson));
-    if (response.ok) {
+
+    try {
+      await (isNew
+        ? createAllocation(allocationJson)
+        : updateAllocation(content.allocationId, allocationJson));
+
       openToast({
         status: ToastStatus.Success,
         message: isNew
@@ -51,11 +54,8 @@ export const AllocationForm = ({ onSubmit, onClose, open, content, isNew, siteId
           : `Phase allocation has been successfully updated`,
       });
       await onSubmit();
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || 'Server error',
-      });
+    } catch (e) {
+      openToast(getErrorMessage(e));
     }
   };
   return (

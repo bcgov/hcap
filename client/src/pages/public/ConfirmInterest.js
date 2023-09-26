@@ -1,21 +1,17 @@
-import { Page } from '../../components/generic';
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { API_URL } from '../../constants';
-
 import * as qs from 'querystring';
-
 import { Typography, Icon } from '@material-ui/core';
-import { Button } from '../../components/generic/Button';
-import { Card } from '../../components/generic/Card';
 import Box from '@material-ui/core/Box';
 
+import { Button, Card, Page } from '../../components/generic';
 import {
   confirmInterestDefault,
   confirmInterestError,
   confirmInterestSuccess,
   confirmInterestLoading,
 } from '../../constants/confirmInterestConstants';
+import { axiosInstance } from '../../services/api';
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -56,16 +52,13 @@ export default (props) => {
 
   useEffect(() => {
     const checkId = async () => {
-      const res = await fetch(`${API_URL}/api/v1/participants/confirm-interest?id=${query.id}`, {
-        method: 'GET',
-      });
-      setTimeout(() => {
-        if (res.ok) {
-          setState(confirmInterestDefault);
-        } else {
-          setState(confirmInterestError);
-        }
-      }, 500);
+      let confirm = confirmInterestDefault;
+      try {
+        await axiosInstance.get(`/participants/confirm-interest?id=${query.id}`);
+      } catch {
+        confirm = confirmInterestError;
+      }
+      setTimeout(() => setState(confirm), 500);
     };
     if (!query.id) {
       props.history.push('/');
@@ -76,16 +69,13 @@ export default (props) => {
 
   const handleCheckToken = async () => {
     setState(confirmInterestLoading);
-    const res = await fetch(`${API_URL}/api/v1/participants/confirm-interest?id=${query.id}`, {
-      method: 'POST',
-    });
-    setTimeout(() => {
-      if (res.ok) {
-        setState(confirmInterestSuccess);
-      } else {
-        setState(confirmInterestError);
-      }
-    }, 500);
+    let confirm = confirmInterestSuccess;
+    try {
+      await axiosInstance.post(`/participants/confirm-interest?id=${query.id}`);
+    } catch {
+      confirm = confirmInterestError;
+    }
+    setTimeout(() => setState(confirm), 500);
   };
 
   if (!state) return null;

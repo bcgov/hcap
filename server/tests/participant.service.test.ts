@@ -20,6 +20,7 @@ import { getReport } from '../services/reporting';
 import { evaluateBooleanAnswer, postHireStatuses } from '../validation';
 import { saveSingleSite } from '../services/employers';
 import { approveUsers, employer, healthAuthority } from './util/keycloak';
+import { participantFields } from '../constants/participant-fields';
 
 describe('Participants Service', () => {
   const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
@@ -171,23 +172,7 @@ describe('Participants Service', () => {
 
     expect(res.data.length).toBe(allParticipants.length);
     expect(res.data.map((item) => Object.keys(item))).toEqual(
-      allParticipants.map(() => [
-        'id',
-        'firstName',
-        'lastName',
-        'postalCodeFsa',
-        'preferredLocation',
-        'nonHCAP',
-        'interested',
-        'crcClear',
-        'callbackStatus',
-        'statusInfo',
-        'userUpdatedAt',
-        'distance',
-        'progressStats',
-        'postHireStatuses',
-        'rosStatuses',
-      ])
+      allParticipants.map(() => participantFields)
     );
   });
 
@@ -249,23 +234,7 @@ describe('Participants Service', () => {
     });
 
     const received = res.data.map((item) => Object.keys(item));
-    const expected = allParticipants.map(() => [
-      'id',
-      'firstName',
-      'lastName',
-      'postalCodeFsa',
-      'preferredLocation',
-      'nonHCAP',
-      'interested',
-      'crcClear',
-      'callbackStatus',
-      'statusInfo',
-      'userUpdatedAt',
-      'distance',
-      'progressStats',
-      'postHireStatuses',
-      'rosStatuses',
-    ]);
+    const expected = allParticipants.map(() => participantFields);
     expect(received).toEqual(expected);
   });
 
@@ -279,10 +248,17 @@ describe('Participants Service', () => {
     const mapRawToEmployerColumns = (a) => {
       const employerColumns = [
         // Fields expected to be returned to employers
+        'program',
+        'educationalRequirements',
         'firstName',
         'lastName',
         'postalCodeFsa',
+        'indigenous',
+        'driverLicense',
+        'experienceWithMentalHealthOrSubstanceUse',
         'preferredLocation',
+        'currentOrMostRecentIndustry',
+        'roleInvolvesMentalHealthOrSubstanceUse',
         'nonHCAP',
         'statusInfo',
         'userUpdatedAt',

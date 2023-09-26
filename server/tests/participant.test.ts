@@ -51,6 +51,13 @@ describe('Participants Endpoint', () => {
     const expectedRes = {
       ...newParticipant,
       preferredLocation: 'Fraser',
+      program: 'HCA',
+      educationalRequirements: 'Unknown',
+      driverLicense: 'Unknown',
+      indigenous: 'Unknown',
+      experienceWithMentalHealthOrSubstanceUse: 'Unknown',
+      currentOrMostRecentIndustry: 'Unknown',
+      roleInvolvesMentalHealthOrSubstanceUse: 'Unknown',
       nonHCAP: null,
       crcClear: null,
       maximusId: null,

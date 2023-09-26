@@ -10,7 +10,7 @@ import {
 // Utilities and helpers
 import { participantData } from './util/testData';
 import { makeParticipant } from '../services/participants';
-import { postHireStatuses } from '../validation';
+import { postHireStatuses } from '../constants';
 
 // Data Utility
 const makeTestPostHireStatus = async ({ email, status, data = {} }) => {

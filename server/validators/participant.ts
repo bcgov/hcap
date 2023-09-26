@@ -9,6 +9,9 @@ import {
   sortFields,
   orderDirections,
   ParticipantStatus,
+  programs,
+  yesOrNo,
+  yesOrNoOptional,
 } from '../constants';
 
 import {
@@ -97,12 +100,18 @@ export const ParticipantSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
+    program: yup.string().oneOf(programs, 'Program should be HCA or MHAW'),
+
     // Eligibility
     eligibility: yup
       .boolean()
       .typeError(errorMessage)
       .required(errorMessage)
       .test('is-true', errorMessage, (v) => v === true),
+
+    educationalRequirements: yup
+      .string()
+      .oneOf(yesOrNo, 'Educational requirements should be Yes, No'),
 
     // Contact info
     firstName: yup.string().required(errorMessage),
@@ -116,6 +125,24 @@ export const ParticipantSchema = yup
       .string()
       .required(errorMessage)
       .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Postal code must be in format A1A 1A1'),
+
+    indigenous: yup
+      .string()
+      .oneOf(yesOrNoOptional, 'Indigenous should be Yes, No, Prefer not to answer, or Unknown'),
+    driverLicense: yup.string().oneOf(yesOrNo, 'Driver License should be Yes or No'),
+
+    experienceWithMentalHealthOrSubstanceUse: yup
+      .string()
+      .oneOf(
+        yesOrNoOptional,
+        'Experience of MHSU should be Yes, No, Prefer not to answer, or Unknown'
+      ),
+
+    currentOrMostRecentIndustry: yup.string(),
+
+    roleInvolvesMentalHealthOrSubstanceUse: yup
+      .string()
+      .oneOf(yesOrNo, 'Involved in delivering MHSU service should be Yes, No, or Unknown'),
 
     // Preferred location
     preferredLocation: yup

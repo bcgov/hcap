@@ -35,7 +35,7 @@ export const ParticipantFormSchema = yup
       .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
 
     indigenous: yup.string(),
-    driverLicense: yup.boolean().required(errorMessage),
+    driverLicense: yup.string().required(errorMessage),
 
     experienceWithMentalHealthOrSubstanceUse: yup.string().when(['program'], {
       is: (program) => program === 'MHAW',

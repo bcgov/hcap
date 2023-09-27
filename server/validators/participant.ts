@@ -123,7 +123,7 @@ export const ParticipantSchema = yup
       .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Postal code must be in format A1A 1A1'),
 
     indigenous: yup.string(),
-    driverLicense: yup.boolean().required(errorMessage),
+    driverLicense: yup.string().required(errorMessage),
 
     experienceWithMentalHealthOrSubstanceUse: yup.string().when(['program'], {
       is: (program: string) => program === 'MHAW',

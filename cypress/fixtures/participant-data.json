@@ -8,7 +8,7 @@
   "preferredLocation": ["Fraser"],
   "reasonForFindingOut": ["Friend(s)"],
   "consent": true,
-  "driverLicense": true,
+  "driverLicense": "unknown",
   "educationalRequirements": "unknown",
   "program": "HCA"
 }

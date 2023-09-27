@@ -322,8 +322,8 @@ export const Fields = ({
               setTouched
               row
               options={[
-                { value: true, label: 'Yes' },
-                { value: false, label: 'No' },
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' },
               ]}
             />
           </Grid>

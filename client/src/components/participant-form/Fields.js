@@ -191,20 +191,11 @@ export const Fields = ({
         </Grid>
 
         {/** Q14 Background information */}
-        <Grid item xs={12}>
-          <Typography variant='subtitle2'>
-            Background Information
-            <Divider />
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography>
-            <b>
-              14. What industry do you currently or most recently work in? Please select the most
-              applicable option.
-            </b>
-          </Typography>
-        </Grid>
+        <SectionHeader text='Background Information' />
+        <Question
+          text='14. What industry do you currently or most recently work in? Please select the most
+              applicable option.'
+        />
         <Grid item xs={12}>
           <FastField
             name='currentOrMostRecentIndustry'
@@ -327,14 +318,10 @@ export const Fields = ({
             values.currentOrMostRecentIndustry === 'Continuing Care and Community Health Care' ||
             values.currentOrMostRecentIndustry === 'Community Social Services') && (
             <>
-              <Grid item xs={12}>
-                <Typography>
-                  <b>
-                    15. Does/did this role involve delivering mental health and/or substance use
-                    services?
-                  </b>
-                </Typography>
-              </Grid>
+              <Question
+                text='15. Does/did this role involve delivering mental health and/or substance use
+                    services?'
+              />
               <Grid item xs={12}>
                 <FastField
                   name='roleInvolvesMentalHealthOrSubstanceUse'

@@ -16,7 +16,7 @@ export const siteTypesOptions = [
 ];
 
 export const foundOutReasons = [
-  'Friend(s)',
+  'Friend(s) or family',
   'WorkBC',
   'Government announcement',
   'Colleague(s)',

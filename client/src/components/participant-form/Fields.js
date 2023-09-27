@@ -445,7 +445,10 @@ export const Fields = ({
             <>
               {/** Q13 How did you learn about HCAP */}
               <SectionHeader text='Marketing' />
-              <Question text='13. How did you learn about HCAP?' />
+              <Question text='13. * How did you learn about HCAP?' />
+              <Grid item xs={12}>
+                <Typography>* Please select how you learned about HCAP</Typography>
+              </Grid>
               <Grid item xs={12}>
                 <FastField
                   name='reasonForFindingOut'

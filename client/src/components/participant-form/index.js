@@ -91,7 +91,7 @@ export const Form = ({
         validationSchema={editMode ? ParticipantEditFormSchema : ParticipantFormSchema}
         onSubmit={handleSubmit}
       >
-        {({ submitForm, isValid, dirty, values }) => (
+        {({ submitForm, values }) => (
           <FormikForm>
             <Box hidden={hideSummary} pt={4} pb={2} pl={2} pr={2}>
               <Summary />
@@ -116,7 +116,8 @@ export const Form = ({
                   fullWidth={false}
                   loading={submitLoading}
                   text='Submit'
-                  disabled={!isValid || !dirty}
+                  // only disable on screen out message (Q2)
+                  disabled={values.eligibility === false}
                 />
               </Box>
             )}

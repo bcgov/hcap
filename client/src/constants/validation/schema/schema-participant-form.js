@@ -51,6 +51,7 @@ export const ParticipantFormSchema = yup
     // How did the participant find out about HCAP
     reasonForFindingOut: yup
       .array()
+      .required(errorMessage)
       .of(yup.string().oneOf(foundOutReasons, 'Invalid selection'))
       .test('is-unique-array', 'Each reason must be unique', validateUniqueArray),
 

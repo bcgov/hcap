@@ -35,15 +35,23 @@ export const Form = ({
   const formValues = initialValues
     ? initialValues
     : {
+        program: '',
         eligibility: '',
+        educationalRequirements: '',
         firstName: '',
         lastName: '',
         phoneNumber: '',
         emailAddress: '',
         postalCode: '',
+        indigenous: '',
         preferredLocation: [],
+        driverLicense: '',
+        experienceWithMentalHealthOrSubstanceUse: '',
         consent: '',
         reasonForFindingOut: [],
+        currentOrMostRecentIndustry: '',
+        roleInvolvesMentalHealthOrSubstanceUse: '',
+        otherIndustry: '',
       };
 
   const handleSubmit = async (values) => {
@@ -83,9 +91,9 @@ export const Form = ({
         validationSchema={editMode ? ParticipantEditFormSchema : ParticipantFormSchema}
         onSubmit={handleSubmit}
       >
-        {({ errors, submitForm, setTouched, values }) => (
+        {({ submitForm, isValid, dirty, values }) => (
           <FormikForm>
-            <Box hidden={hideSummary} pt={4} pb={4} pl={2} pr={2}>
+            <Box hidden={hideSummary} pt={4} pb={2} pl={2} pr={2}>
               <Summary />
             </Box>
 
@@ -99,7 +107,6 @@ export const Form = ({
                 isSubmitted={isSubmitted}
               />
             </Box>
-
             {!isDisabled && (
               <Box display='flex' justifyContent='center' pt={0} pb={4} pl={2} pr={2}>
                 <Button
@@ -109,6 +116,7 @@ export const Form = ({
                   fullWidth={false}
                   loading={submitLoading}
                   text='Submit'
+                  disabled={!isValid || !dirty}
                 />
               </Box>
             )}

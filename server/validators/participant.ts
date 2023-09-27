@@ -97,12 +97,17 @@ export const ParticipantSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
+    // HCAP program
+    program: yup.string().required(errorMessage),
+
     // Eligibility
     eligibility: yup
       .boolean()
       .typeError(errorMessage)
       .required(errorMessage)
       .test('is-true', errorMessage, (v) => v === true),
+
+    educationalRequirements: yup.string().required(errorMessage),
 
     // Contact info
     firstName: yup.string().required(errorMessage),
@@ -117,6 +122,13 @@ export const ParticipantSchema = yup
       .required(errorMessage)
       .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Postal code must be in format A1A 1A1'),
 
+    indigenous: yup.string(),
+    driverLicense: yup.boolean().required(errorMessage),
+
+    experienceWithMentalHealthOrSubstanceUse: yup.string().when(['program'], {
+      is: (program: string) => program === 'MHAW',
+      then: () => yup.string().required(errorMessage),
+    }),
     // Preferred location
     preferredLocation: yup
       .array()
@@ -127,9 +139,25 @@ export const ParticipantSchema = yup
     // How did the participant find out about HCAP
     reasonForFindingOut: yup
       .array()
-      .required(errorMessage)
       .of(yup.string().oneOf(foundOutReasons, 'Invalid selection'))
       .test('is-unique-array', 'Each reason must be unique', validateUniqueArray),
+
+    currentOrMostRecentIndustry: yup.string(),
+    otherIndustry: yup.string().when(['currentOrMostRecentIndustry'], {
+      is: (industry: string) => industry === 'Other, please specify:',
+      then: () => yup.string(),
+    }),
+
+    roleInvolvesMentalHealthOrSubstanceUse: yup
+      .string()
+      .when(['program', 'currentOrMostRecentIndustry'], {
+        is: (program: string, currentOrMostRecentIndustry: string) =>
+          program === 'MHAW' &&
+          (currentOrMostRecentIndustry === 'Health care and social assistance' ||
+            currentOrMostRecentIndustry === 'Continuing Care and Community Health Care' ||
+            currentOrMostRecentIndustry === 'Community Social Services'),
+        then: () => yup.boolean(),
+      }),
 
     // Consent
     consent: yup

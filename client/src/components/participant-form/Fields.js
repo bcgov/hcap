@@ -7,6 +7,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { FastField } from 'formik';
 import { SpeakerNotesOutlined } from '@material-ui/icons';
+import { Checkbox, FormControl, FormControlLabel } from '@material-ui/core';
+import { isNil } from 'lodash';
 
 import { Card, Divider } from '../generic';
 import { RenderCheckbox, RenderCheckboxGroup, RenderTextField, RenderRadioGroup } from '../fields';
@@ -22,9 +24,9 @@ import {
   INTERIOR_GOV_LINK,
   VANCOUVER_ISLAND_GOV_LINK,
   HCAP_INFO_EMAIL,
+  HEALTH_CARE_ASSISTANT_LINK,
+  MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK,
 } from '../../constants';
-import { Checkbox, FormControl, FormControlLabel } from '@material-ui/core';
-import { isNil } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
   info: {
@@ -83,12 +85,18 @@ export const Fields = ({
               </a>
             </Typography>
             <Typography variant='body2'>
-              Service is available from 8:00 am - 4:30 pm Pacific Time Monday through Friday
+              Service is available from 8:00 am - 4:30 pm Pacific Time Monday through Friday,
+              excluding statutory holidays.
             </Typography>
           </Box>
         </Box>
       )}
-
+      <Box mb={4} mt={3}>
+        <Typography>
+          <b>Please note:</b> The following information is shared with employers for the purposes of
+          recruitment.
+        </Typography>
+      </Box>
       <Card noShadow={isDisabled}>
         {/** Indigenous Identity - meant to be READ-ONLY, not set up for editing */}
         <Grid container spacing={2}>
@@ -150,9 +158,31 @@ export const Fields = ({
               </Box>
             </Grid>
           )}
+          {/** Q1 HCAP Program applying for */}
+          <Grid item xs={12}>
+            <Typography variant='subtitle2'>HCAP Program</Typography>
+            <Divider />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography>
+              <b>1. * Which program are you applying for:</b>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <FastField
+              name='program'
+              component={RenderRadioGroup}
+              disabled={checkFieldDisability('program')}
+              setTouched
+              row
+              options={[
+                { value: 'HCA', label: 'Health Care Assistant - HCAP' },
+                { value: 'MHAW', label: 'Mental Health and Addictions Worker - HCAP' },
+              ]}
+            />
+          </Grid>
 
           {/** Eligibility */}
-
           {isSubmitted && isNonPortalHire && isNil(values.eligibility) ? null : (
             <>
               <Grid item xs={12}>
@@ -161,13 +191,13 @@ export const Fields = ({
               </Grid>
               <Grid item xs={12}>
                 <Typography>
-                  <b>Please note:</b> A criminal record check is required for most positions in the
-                  health sector.
+                  <b>Please note:</b> For most positions in the health sector a criminal record
+                  check and full vaccination against COVID-19 is required.
                 </Typography>
               </Grid>
               <Grid item xs={12}>
                 <Typography>
-                  <b>* Are you a Canadian citizen or permanent resident?</b>
+                  <b>2. * Are you a Canadian citizen or permanent resident?</b>
                 </Typography>
               </Grid>
               <Grid item xs={12}>
@@ -183,6 +213,47 @@ export const Fields = ({
                   ]}
                 />
               </Grid>
+              {/** Q3 English language competency requirements */}
+              <Grid item xs={12}>
+                <Typography>
+                  <b>3. * Do you meet the educational requirements for the program?</b>
+                </Typography>
+                <Typography>
+                  <i>
+                    Please view{' '}
+                    <Link
+                      href={HEALTH_CARE_ASSISTANT_LINK}
+                      target='__blank'
+                      rel='noreferrer noopener'
+                    >
+                      Health Care Assistant
+                    </Link>{' '}
+                    or{' '}
+                    <Link
+                      href={MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK}
+                      target='__blank'
+                      rel='noreferrer noopener'
+                    >
+                      Mental Health and Addictions Worker
+                    </Link>{' '}
+                    pages for more information.
+                  </i>
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <FastField
+                  name='educationalRequirements'
+                  component={RenderRadioGroup}
+                  disabled={checkFieldDisability('educationalRequirements')}
+                  setTouched
+                  row
+                  options={[
+                    { value: 'yes', label: 'Yes' },
+                    { value: 'no', label: 'No' },
+                    { value: 'unknown', label: `I don't know` },
+                  ]}
+                />
+              </Grid>
             </>
           )}
 
@@ -195,7 +266,7 @@ export const Fields = ({
             <FastField
               name='firstName'
               component={RenderTextField}
-              label='* First Name'
+              label='4. * First Name'
               disabled={checkFieldDisability('firstName')}
             />
           </Grid>
@@ -203,7 +274,7 @@ export const Fields = ({
             <FastField
               name='lastName'
               component={RenderTextField}
-              label='* Last Name'
+              label='5. * Last Name'
               disabled={checkFieldDisability('lastName')}
             />
           </Grid>
@@ -212,7 +283,7 @@ export const Fields = ({
               name='phoneNumber'
               type='tel'
               component={RenderTextField}
-              label='* Phone Number'
+              label='6. * Phone Number'
               disabled={checkFieldDisability('phoneNumber')}
             />
           </Grid>
@@ -221,7 +292,7 @@ export const Fields = ({
               name='emailAddress'
               type='email'
               component={RenderTextField}
-              label='* Email Address'
+              label='7. * Email Address'
               disabled={checkFieldDisability('emailAddress')}
             />
           </Grid>
@@ -229,21 +300,112 @@ export const Fields = ({
             <FastField
               name='postalCode'
               component={RenderTextField}
-              label='* Postal Code'
+              label='8. * Postal Code'
               disabled={checkFieldDisability('postalCode')}
             />
           </Grid>
-
-          {/** Preferred Work Location */}
+          <Box mb={4} mt={3}>
+            <Typography>
+              <b>Please note:</b> The following information is collected as some employers may
+              prioritize hiring of indigenous candidates or candidates with a drivers license in
+              certain circumstances.
+            </Typography>
+          </Box>
+          {/** Q9 do you self identify as indigenous */}
+          <Grid item xs={12}>
+            <Typography>
+              <b>
+                9. Do you self-identify as First Nation, Métis, Inuk (Inuit) or Urban Indigenous?
+              </b>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <FastField
+              name='indigenous'
+              component={RenderRadioGroup}
+              disabled={checkFieldDisability('indigenous')}
+              setTouched
+              row
+              options={[
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' },
+                { value: 'unknown', label: 'Prefer not to answer' },
+              ]}
+            />
+          </Grid>
+          {/** Q10 do you have a valid BC drivers license */}
+          <Grid item xs={12}>
+            <Typography variant='subtitle2'>
+              Other
+              <Divider />
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography>
+              <b>10. * Do you have a valid BC Drivers Licence?</b>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <FastField
+              name='driverLicense'
+              component={RenderRadioGroup}
+              disabled={checkFieldDisability('driverLicense')}
+              setTouched
+              row
+              options={[
+                { value: true, label: 'Yes' },
+                { value: false, label: 'No' },
+              ]}
+            />
+          </Grid>
+          {/** Q11 lived or experienced mental health or substance use challenges */}
+          {/** only show if Q1 is Mental Health and Addictions Worker*/}
+          {values.program === 'MHAW' && (
+            <>
+              <Box mb={4} mt={3}>
+                <Typography>
+                  <b>Please note:</b> The following information is collected as some employers may
+                  prioritize hiring of candidates with lived/living experience.
+                </Typography>
+              </Box>
+              <Grid item xs={12}>
+                <Typography>
+                  <b>
+                    11. Do you have lived or living experience of mental health and/or substance use
+                    challenges?
+                  </b>
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <FastField
+                  name='experienceWithMentalHealthOrSubstanceUse'
+                  component={RenderRadioGroup}
+                  disabled={checkFieldDisability('experienceWithMentalHealthOrSubstanceUse')}
+                  setTouched
+                  row
+                  options={[
+                    { value: 'yes', label: 'Yes' },
+                    { value: 'no', label: 'No' },
+                    { value: 'unknown', label: 'Prefer not to answer' },
+                  ]}
+                />
+              </Grid>
+            </>
+          )}
+          {/** Q12 Preferred Work Location */}
           <Grid item xs={12}>
             <Typography variant='subtitle2'>Select Your Preferred Work Location(s)</Typography>
             <Divider />
           </Grid>
           <Grid item xs={12}>
+            <Typography>
+              <b>12. * Please select your preferred health region(s)</b>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
             <FastField
               name='preferredLocation'
               component={RenderCheckboxGroup}
-              label='* Please select your preferred health region(s)'
               disabled={checkFieldDisability('preferredLocation')}
               options={[
                 {
@@ -317,11 +479,28 @@ export const Fields = ({
               ]}
             />
           </Grid>
+
+          <Box mb={4} mt={3}>
+            <Typography>
+              <b>Please note:</b> The following information is not shared with potential employers.
+              It is collected to evaluate and identify improvements to the Health Career Access
+              Program as a whole.
+            </Typography>
+          </Box>
+
           {!hideReasonForFindingOut && (
             <>
+              {/** Q13 How did you learn about HCAP */}
               <Grid item xs={12}>
-                <Typography variant='subtitle2'>How did you learn about HCAP?</Typography>
-                <Divider />
+                <Typography variant='subtitle2'>
+                  Marketing
+                  <Divider />
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography>
+                  <b>13. How did you learn about HCAP?</b>
+                </Typography>
               </Grid>
               <Grid item xs={12}>
                 <FastField
@@ -330,8 +509,8 @@ export const Fields = ({
                   disabled={checkFieldDisability('reasonForFindingOut')}
                   options={[
                     {
-                      value: 'Friend(s)',
-                      label: 'Friend(s)',
+                      value: 'Friend(s) or family',
+                      label: 'Friend(s) or family',
                     },
                     {
                       value: 'WorkBC',
@@ -371,6 +550,167 @@ export const Fields = ({
             </>
           )}
         </Grid>
+
+        {/** Q14 Background information */}
+        <Grid item xs={12}>
+          <Typography variant='subtitle2'>
+            Background Information
+            <Divider />
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography>
+            <b>
+              14. What industry do you currently or most recently work in? Please select the most
+              applicable option.
+            </b>
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <FastField
+            name='currentOrMostRecentIndustry'
+            component={RenderRadioGroup}
+            disabled={checkFieldDisability('currentOrMostRecentIndustry')}
+            setTouched
+            options={[
+              {
+                value: 'Accommodation and food services',
+                label: 'Accommodation and food services',
+              },
+              {
+                value: 'Administrative and support, waste management and remediation services ',
+                label: 'Administrative and support, waste management and remediation services ',
+              },
+              {
+                value: 'Agriculture, forestry, fishing, and hunting',
+                label: 'Agriculture, forestry, fishing, and hunting',
+              },
+              {
+                value: 'Arts, entertainment, and recreation',
+                label: 'Arts, entertainment, and recreation',
+              },
+              {
+                value: 'Community Social Services',
+                label: 'Community Social Services',
+              },
+              {
+                value: 'Construction',
+                label: 'Construction',
+              },
+              {
+                value: 'Continuing Care and Community Health Care',
+                label: 'Continuing Care and Community Health Care',
+              },
+              {
+                value: 'Educational services',
+                label: 'Educational services',
+              },
+              {
+                value: 'Finance and insurance',
+                label: 'Finance and insurance',
+              },
+              {
+                value: 'Health care and social assistance',
+                label: 'Health care and social assistance',
+              },
+              {
+                value: 'Information and cultural industries',
+                label: 'Information and cultural industries',
+              },
+              {
+                value: 'Management of companies and enterprises',
+                label: 'Management of companies and enterprises',
+              },
+              {
+                value: 'Manufacturing',
+                label: 'Manufacturing',
+              },
+              {
+                value: 'Mining, quarrying, and oil and gas extraction',
+                label: 'Mining, quarrying, and oil and gas extraction',
+              },
+              {
+                value: 'Professional, scientific, and technical services',
+                label: 'Professional, scientific, and technical services',
+              },
+              {
+                value: 'Public administration',
+                label: 'Public administration',
+              },
+              {
+                value: 'Real estate and rental and leasing',
+                label: 'Real estate and rental and leasing',
+              },
+              {
+                value: 'Retail trade',
+                label: 'Retail trade',
+              },
+              {
+                value: 'Transportation and warehousing',
+                label: 'Transportation and warehousing',
+              },
+              {
+                value: 'Tourism & Hospitality',
+                label: 'Tourism & Hospitality',
+              },
+              {
+                value: 'Utilities',
+                label: 'Utilities',
+              },
+              {
+                value: 'Wholesale trade',
+                label: 'Wholesale trade',
+              },
+              {
+                value: 'None, not working previously',
+                label: 'None, not working previously',
+              },
+              {
+                value: 'Other, please specify:',
+                label: 'Other, please specify:',
+              },
+            ]}
+          />
+        </Grid>
+        {values.currentOrMostRecentIndustry === 'Other, please specify:' && (
+          <Grid item xs={6}>
+            <FastField
+              name='otherIndustry'
+              component={RenderTextField}
+              disabled={checkFieldDisability('otherIndustry')}
+            />
+          </Grid>
+        )}
+        {/** Q15 does/ did this rolee involve delivering mental health/ substance use services */}
+        {/** only show if Q1 is MHAW and Q14 is one of 3 below options */}
+        {values.program === 'MHAW' &&
+          (values.currentOrMostRecentIndustry === 'Health care and social assistance' ||
+            values.currentOrMostRecentIndustry === 'Continuing Care and Community Health Care' ||
+            values.currentOrMostRecentIndustry === 'Community Social Services') && (
+            <>
+              <Grid item xs={12}>
+                <Typography>
+                  <b>
+                    15. Does/did this role involve delivering mental health and/or substance use
+                    services?
+                  </b>
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <FastField
+                  name='roleInvolvesMentalHealthOrSubstanceUse'
+                  component={RenderRadioGroup}
+                  disabled={checkFieldDisability('roleInvolvesMentalHealthOrSubstanceUse')}
+                  setTouched
+                  row
+                  options={[
+                    { value: true, label: 'Yes' },
+                    { value: false, label: 'No' },
+                  ]}
+                />
+              </Grid>
+            </>
+          )}
 
         {/** Disclaimer and submission */}
         <Grid container spacing={2}>

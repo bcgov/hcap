@@ -238,7 +238,7 @@ export const Fields = ({
                   options={[
                     { value: 'yes', label: 'Yes' },
                     { value: 'no', label: 'No' },
-                    { value: 'unknown', label: `I don't know` },
+                    { value: 'doNotKnow', label: `I don't know` },
                   ]}
                 />
               </Grid>
@@ -307,7 +307,7 @@ export const Fields = ({
               options={[
                 { value: 'yes', label: 'Yes' },
                 { value: 'no', label: 'No' },
-                { value: 'unknown', label: 'Prefer not to answer' },
+                { value: 'preferNotToAnswer', label: 'Prefer not to answer' },
               ]}
             />
           </Grid>
@@ -349,7 +349,7 @@ export const Fields = ({
                   options={[
                     { value: 'yes', label: 'Yes' },
                     { value: 'no', label: 'No' },
-                    { value: 'unknown', label: 'Prefer not to answer' },
+                    { value: 'preferNotToAnswer', label: 'Prefer not to answer' },
                   ]}
                 />
               </Grid>

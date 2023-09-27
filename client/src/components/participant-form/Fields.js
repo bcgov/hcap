@@ -190,6 +190,167 @@ export const Fields = ({
           />
         </Grid>
 
+        {/** Q14 Background information */}
+        <Grid item xs={12}>
+          <Typography variant='subtitle2'>
+            Background Information
+            <Divider />
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography>
+            <b>
+              14. What industry do you currently or most recently work in? Please select the most
+              applicable option.
+            </b>
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <FastField
+            name='currentOrMostRecentIndustry'
+            component={RenderRadioGroup}
+            disabled={checkFieldDisability('currentOrMostRecentIndustry')}
+            setTouched
+            options={[
+              {
+                value: 'Accommodation and food services',
+                label: 'Accommodation and food services',
+              },
+              {
+                value: 'Administrative and support, waste management and remediation services ',
+                label: 'Administrative and support, waste management and remediation services ',
+              },
+              {
+                value: 'Agriculture, forestry, fishing, and hunting',
+                label: 'Agriculture, forestry, fishing, and hunting',
+              },
+              {
+                value: 'Arts, entertainment, and recreation',
+                label: 'Arts, entertainment, and recreation',
+              },
+              {
+                value: 'Community Social Services',
+                label: 'Community Social Services',
+              },
+              {
+                value: 'Construction',
+                label: 'Construction',
+              },
+              {
+                value: 'Continuing Care and Community Health Care',
+                label: 'Continuing Care and Community Health Care',
+              },
+              {
+                value: 'Educational services',
+                label: 'Educational services',
+              },
+              {
+                value: 'Finance and insurance',
+                label: 'Finance and insurance',
+              },
+              {
+                value: 'Health care and social assistance',
+                label: 'Health care and social assistance',
+              },
+              {
+                value: 'Information and cultural industries',
+                label: 'Information and cultural industries',
+              },
+              {
+                value: 'Management of companies and enterprises',
+                label: 'Management of companies and enterprises',
+              },
+              {
+                value: 'Manufacturing',
+                label: 'Manufacturing',
+              },
+              {
+                value: 'Mining, quarrying, and oil and gas extraction',
+                label: 'Mining, quarrying, and oil and gas extraction',
+              },
+              {
+                value: 'Professional, scientific, and technical services',
+                label: 'Professional, scientific, and technical services',
+              },
+              {
+                value: 'Public administration',
+                label: 'Public administration',
+              },
+              {
+                value: 'Real estate and rental and leasing',
+                label: 'Real estate and rental and leasing',
+              },
+              {
+                value: 'Retail trade',
+                label: 'Retail trade',
+              },
+              {
+                value: 'Transportation and warehousing',
+                label: 'Transportation and warehousing',
+              },
+              {
+                value: 'Tourism & Hospitality',
+                label: 'Tourism & Hospitality',
+              },
+              {
+                value: 'Utilities',
+                label: 'Utilities',
+              },
+              {
+                value: 'Wholesale trade',
+                label: 'Wholesale trade',
+              },
+              {
+                value: 'None, not working previously',
+                label: 'None, not working previously',
+              },
+              {
+                value: 'Other, please specify:',
+                label: 'Other, please specify:',
+              },
+            ]}
+          />
+        </Grid>
+        {values.currentOrMostRecentIndustry === 'Other, please specify:' && (
+          <Grid item xs={6}>
+            <FastField
+              name='otherIndustry'
+              component={RenderTextField}
+              disabled={checkFieldDisability('otherIndustry')}
+            />
+          </Grid>
+        )}
+        {/** Q15 does/ did this rolee involve delivering mental health/ substance use services */}
+        {/** only show if Q1 is MHAW and Q14 is one of 3 below options */}
+        {values.program === 'MHAW' &&
+          (values.currentOrMostRecentIndustry === 'Health care and social assistance' ||
+            values.currentOrMostRecentIndustry === 'Continuing Care and Community Health Care' ||
+            values.currentOrMostRecentIndustry === 'Community Social Services') && (
+            <>
+              <Grid item xs={12}>
+                <Typography>
+                  <b>
+                    15. Does/did this role involve delivering mental health and/or substance use
+                    services?
+                  </b>
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <FastField
+                  name='roleInvolvesMentalHealthOrSubstanceUse'
+                  component={RenderRadioGroup}
+                  disabled={checkFieldDisability('roleInvolvesMentalHealthOrSubstanceUse')}
+                  setTouched
+                  row
+                  options={[
+                    { value: true, label: 'Yes' },
+                    { value: false, label: 'No' },
+                  ]}
+                />
+              </Grid>
+            </>
+          )}
+
         {/** Disclaimer and submission */}
         <Grid container spacing={2}>
           {isSubmitted && isNonPortalHire && isNil(values.consent) ? null : (

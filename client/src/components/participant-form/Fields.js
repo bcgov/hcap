@@ -27,6 +27,9 @@ import {
   HEALTH_CARE_ASSISTANT_LINK,
   MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK,
 } from '../../constants';
+import { SectionHeader } from './SectionHeader';
+import { Question } from './Question';
+import { PleaseNoteBanner } from './PleaseNoteBanner';
 
 const useStyles = makeStyles((theme) => ({
   info: {
@@ -92,11 +95,12 @@ export const Fields = ({
         </Box>
       )}
       <Box mb={4} mt={3}>
-        <Typography>
-          <b>Please note:</b> The following information is shared with employers for the purposes of
-          recruitment.
-        </Typography>
+        <PleaseNoteBanner
+          text='The following information is shared with employers for the purposes of
+                recruitment.'
+        />
       </Box>
+
       <Card noShadow={isDisabled}>
         {/** Indigenous Identity - meant to be READ-ONLY, not set up for editing */}
         <Grid container spacing={2}>
@@ -159,15 +163,8 @@ export const Fields = ({
             </Grid>
           )}
           {/** Q1 HCAP Program applying for */}
-          <Grid item xs={12}>
-            <Typography variant='subtitle2'>HCAP Program</Typography>
-            <Divider />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography>
-              <b>1. * Which program are you applying for:</b>
-            </Typography>
-          </Grid>
+          <SectionHeader text='HCAP Program' />
+          <Question text='1. * Which program are you applying for:' />
           <Grid item xs={12}>
             <FastField
               name='program'
@@ -185,21 +182,13 @@ export const Fields = ({
           {/** Eligibility */}
           {isSubmitted && isNonPortalHire && isNil(values.eligibility) ? null : (
             <>
-              <Grid item xs={12}>
-                <Typography variant='subtitle2'>Check Your Eligibility</Typography>
-                <Divider />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography>
-                  <b>Please note:</b> For most positions in the health sector a criminal record
-                  check and full vaccination against COVID-19 is required.
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography>
-                  <b>2. * Are you a Canadian citizen or permanent resident?</b>
-                </Typography>
-              </Grid>
+              <SectionHeader text='Check Your Eligibility' />
+              <PleaseNoteBanner
+                text='For most positions in the health sector a criminal record
+                check and full vaccination against COVID-19 is required.'
+              />
+
+              <Question text='2. * Are you a Canadian citizen or permanent resident?' />
               <Grid item xs={12}>
                 <FastField
                   name='eligibility'
@@ -214,10 +203,9 @@ export const Fields = ({
                 />
               </Grid>
               {/** Q3 English language competency requirements */}
+              <Question text='3. * Do you meet the educational requirements for the program?' />
               <Grid item xs={12}>
-                <Typography>
-                  <b>3. * Do you meet the educational requirements for the program?</b>
-                </Typography>
+                {' '}
                 <Typography>
                   <i>
                     Please view{' '}
@@ -258,10 +246,7 @@ export const Fields = ({
           )}
 
           {/** Contact Info */}
-          <Grid item xs={12}>
-            <Typography variant='subtitle2'>Provide Your Contact Information</Typography>
-            <Divider />
-          </Grid>
+          <SectionHeader text='Provide Your Contact Information' />
           <Grid item xs={12} sm={6}>
             <FastField
               name='firstName'
@@ -304,21 +289,14 @@ export const Fields = ({
               disabled={checkFieldDisability('postalCode')}
             />
           </Grid>
-          <Box mb={4} mt={3}>
-            <Typography>
-              <b>Please note:</b> The following information is collected as some employers may
+          <PleaseNoteBanner
+            text='The following information is collected as some employers may
               prioritize hiring of indigenous candidates or candidates with a drivers license in
-              certain circumstances.
-            </Typography>
-          </Box>
+              certain circumstances.'
+          />
+
           {/** Q9 do you self identify as indigenous */}
-          <Grid item xs={12}>
-            <Typography>
-              <b>
-                9. Do you self-identify as First Nation, Métis, Inuk (Inuit) or Urban Indigenous?
-              </b>
-            </Typography>
-          </Grid>
+          <Question text='9. Do you self-identify as First Nation, Métis, Inuk (Inuit) or Urban Indigenous?' />
           <Grid item xs={12}>
             <FastField
               name='indigenous'
@@ -334,17 +312,8 @@ export const Fields = ({
             />
           </Grid>
           {/** Q10 do you have a valid BC drivers license */}
-          <Grid item xs={12}>
-            <Typography variant='subtitle2'>
-              Other
-              <Divider />
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography>
-              <b>10. * Do you have a valid BC Drivers Licence?</b>
-            </Typography>
-          </Grid>
+          <SectionHeader text='Other' />
+          <Question text='10. * Do you have a valid BC Drivers Licence?' />
           <Grid item xs={12}>
             <FastField
               name='driverLicense'
@@ -362,20 +331,14 @@ export const Fields = ({
           {/** only show if Q1 is Mental Health and Addictions Worker*/}
           {values.program === 'MHAW' && (
             <>
-              <Box mb={4} mt={3}>
-                <Typography>
-                  <b>Please note:</b> The following information is collected as some employers may
-                  prioritize hiring of candidates with lived/living experience.
-                </Typography>
-              </Box>
-              <Grid item xs={12}>
-                <Typography>
-                  <b>
-                    11. Do you have lived or living experience of mental health and/or substance use
-                    challenges?
-                  </b>
-                </Typography>
-              </Grid>
+              <PleaseNoteBanner
+                text='The following information is collected as some employers may
+            prioritize hiring of candidates with lived/living experience.'
+              />
+              <Question
+                text='11. Do you have lived or living experience of mental health and/or substance use
+                    challenges?'
+              />
               <Grid item xs={12}>
                 <FastField
                   name='experienceWithMentalHealthOrSubstanceUse'
@@ -393,15 +356,8 @@ export const Fields = ({
             </>
           )}
           {/** Q12 Preferred Work Location */}
-          <Grid item xs={12}>
-            <Typography variant='subtitle2'>Select Your Preferred Work Location(s)</Typography>
-            <Divider />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography>
-              <b>12. * Please select your preferred health region(s)</b>
-            </Typography>
-          </Grid>
+          <SectionHeader text='Select Your Preferred Work Location(s)' />
+          <Question text='12. * Please select your preferred health region(s)' />
           <Grid item xs={12}>
             <FastField
               name='preferredLocation'
@@ -479,29 +435,17 @@ export const Fields = ({
               ]}
             />
           </Grid>
-
-          <Box mb={4} mt={3}>
-            <Typography>
-              <b>Please note:</b> The following information is not shared with potential employers.
-              It is collected to evaluate and identify improvements to the Health Career Access
-              Program as a whole.
-            </Typography>
-          </Box>
+          <PleaseNoteBanner
+            text='The following information is not shared with potential employers.
+                It is collected to evaluate and identify improvements to the Health Career Access
+                Program as a whole.'
+          />
 
           {!hideReasonForFindingOut && (
             <>
               {/** Q13 How did you learn about HCAP */}
-              <Grid item xs={12}>
-                <Typography variant='subtitle2'>
-                  Marketing
-                  <Divider />
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography>
-                  <b>13. How did you learn about HCAP?</b>
-                </Typography>
-              </Grid>
+              <SectionHeader text='Marketing' />
+              <Question text='13. How did you learn about HCAP?' />
               <Grid item xs={12}>
                 <FastField
                   name='reasonForFindingOut'
@@ -552,20 +496,11 @@ export const Fields = ({
         </Grid>
 
         {/** Q14 Background information */}
-        <Grid item xs={12}>
-          <Typography variant='subtitle2'>
-            Background Information
-            <Divider />
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography>
-            <b>
-              14. What industry do you currently or most recently work in? Please select the most
-              applicable option.
-            </b>
-          </Typography>
-        </Grid>
+        <SectionHeader text='Background Information' />
+        <Question
+          text='14. What industry do you currently or most recently work in? Please select the most
+              applicable option.'
+        />
         <Grid item xs={12}>
           <FastField
             name='currentOrMostRecentIndustry'
@@ -688,14 +623,10 @@ export const Fields = ({
             values.currentOrMostRecentIndustry === 'Continuing Care and Community Health Care' ||
             values.currentOrMostRecentIndustry === 'Community Social Services') && (
             <>
-              <Grid item xs={12}>
-                <Typography>
-                  <b>
-                    15. Does/did this role involve delivering mental health and/or substance use
-                    services?
-                  </b>
-                </Typography>
-              </Grid>
+              <Question
+                text='15. Does/did this role involve delivering mental health and/or substance use
+                    services?'
+              />
               <Grid item xs={12}>
                 <FastField
                   name='roleInvolvesMentalHealthOrSubstanceUse'

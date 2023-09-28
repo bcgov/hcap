@@ -55,6 +55,8 @@ export const Form = ({
       };
 
   const handleSubmit = async (values) => {
+    delete values.otherIndustry;
+
     if (onSubmit) {
       onSubmit(values);
       return;
@@ -91,7 +93,7 @@ export const Form = ({
         validationSchema={editMode ? ParticipantEditFormSchema : ParticipantFormSchema}
         onSubmit={handleSubmit}
       >
-        {({ submitForm, values }) => (
+        {({ submitForm, values, setFieldValue }) => (
           <FormikForm>
             <Box hidden={hideSummary} pt={4} pb={2} pl={2} pr={2}>
               <Summary />
@@ -110,7 +112,12 @@ export const Form = ({
             {!isDisabled && (
               <Box display='flex' justifyContent='center' pt={0} pb={4} pl={2} pr={2}>
                 <Button
-                  onClick={() => handleSubmitButton(submitForm)}
+                  onClick={() => {
+                    if (values.otherIndustry !== '') {
+                      setFieldValue('currentOrMostRecentIndustry', values.otherIndustry);
+                    }
+                    handleSubmitButton(submitForm);
+                  }}
                   variant='contained'
                   color='primary'
                   fullWidth={false}

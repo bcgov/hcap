@@ -83,9 +83,9 @@ export const errorMessage = ({ path }) => {
     // Participant info
     eligibility:
       "We're sorry, but current eligibility to work in Canada is a requirement to submit this form.",
-    educationalRequirements: `We're sorry, but this question is a requirement to submit this form`,
+    educationalRequirements: 'This question is a requirement to submit this form',
     preferredLocation: "Please select at least one location you'd like to work in",
-    driverLicense: `We're sorry, but this question is a requirement to submit this form`,
+    driverLicense: 'This question is a requirement to submit this form',
     reasonForFindingOut: 'Please let us know how you found out about HCAP',
     otherIndustry: 'Please specify your industry',
     consent: "We're sorry, but we cannot process your request without permission",

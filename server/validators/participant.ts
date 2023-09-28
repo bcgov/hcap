@@ -144,10 +144,6 @@ export const ParticipantSchema = yup
       .test('is-unique-array', 'Each reason must be unique', validateUniqueArray),
 
     currentOrMostRecentIndustry: yup.string(),
-    otherIndustry: yup.string().when(['currentOrMostRecentIndustry'], {
-      is: (industry: string) => industry === 'Other, please specify:',
-      then: () => yup.string(),
-    }),
 
     roleInvolvesMentalHealthOrSubstanceUse: yup
       .string()

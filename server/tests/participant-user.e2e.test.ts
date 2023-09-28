@@ -19,7 +19,7 @@ describe('api e2e tests for /participant-user', () => {
     emailAddress: 'cristiano.ronaldo@hcap.club',
     postalCode: 'V1V 1V1',
     preferredLocation: ['Fraser'],
-    reasonForFindingOut: ['Friend(s)'],
+    reasonForFindingOut: ['Friend(s) or family'],
     consent: true,
   };
   beforeAll(async () => {

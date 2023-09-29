@@ -29,6 +29,8 @@ export const validateBlankOrPositiveInteger = (n) => (!!n ? Number.isInteger(n) 
 
 export const errorMessage = ({ path }) => {
   const errorMessages = {
+    // HCAP Program info
+    program: 'Must select one program',
     // Common fields
     firstName: 'First name is required',
     lastName: 'Last name is required',
@@ -81,14 +83,18 @@ export const errorMessage = ({ path }) => {
     // Participant info
     eligibility:
       "We're sorry, but current eligibility to work in Canada is a requirement to submit this form.",
-    preferredLocation: "Please select at least one location you'd like to work in.",
+    educationalRequirements: 'This question is a requirement to submit this form',
+    preferredLocation: "Please select at least one location you'd like to work in",
+    driverLicense: 'This question is a requirement to submit this form',
     reasonForFindingOut: 'Please let us know how you found out about HCAP',
-    consent: "We're sorry, but we cannot process your request without permission.",
+    otherIndustry: 'Please specify your industry',
+    consent: "We're sorry, but we cannot process your request without permission",
 
     // Cohort
     cohortName: 'Cohort Name is required',
     cohort: 'Cohort is required',
     institute: 'Institute is required',
+    screenOut: 'You do not meet the eligibility criteria to apply for HCAP at this time',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };

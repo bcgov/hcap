@@ -7,7 +7,7 @@ export const healthRegions = [
 ];
 
 export const foundOutReasons = [
-  'Friend(s)',
+  'Friend(s) or family',
   'WorkBC',
   'Government announcement',
   'Colleague(s)',

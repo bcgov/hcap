@@ -6,6 +6,9 @@
   "phoneNumber": "4038376268",
   "emailAddress": "cristiano.ronaldo@hcap.club",
   "preferredLocation": ["Fraser"],
-  "reasonForFindingOut": ["Friend(s)"],
-  "consent": true
+  "reasonForFindingOut": ["Friend(s) or family"],
+  "consent": true,
+  "driverLicense": "unknown",
+  "educationalRequirements": "unknown",
+  "program": "HCA"
 }

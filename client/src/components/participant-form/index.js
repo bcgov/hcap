@@ -35,18 +35,28 @@ export const Form = ({
   const formValues = initialValues
     ? initialValues
     : {
+        program: '',
         eligibility: '',
+        educationalRequirements: '',
         firstName: '',
         lastName: '',
         phoneNumber: '',
         emailAddress: '',
         postalCode: '',
+        indigenous: '',
         preferredLocation: [],
+        driverLicense: '',
+        experienceWithMentalHealthOrSubstanceUse: '',
         consent: '',
         reasonForFindingOut: [],
+        currentOrMostRecentIndustry: '',
+        roleInvolvesMentalHealthOrSubstanceUse: '',
+        otherIndustry: '',
       };
 
   const handleSubmit = async (values) => {
+    delete values.otherIndustry;
+
     if (onSubmit) {
       onSubmit(values);
       return;
@@ -83,9 +93,9 @@ export const Form = ({
         validationSchema={editMode ? ParticipantEditFormSchema : ParticipantFormSchema}
         onSubmit={handleSubmit}
       >
-        {({ errors, submitForm, setTouched, values }) => (
+        {({ submitForm, values, setFieldValue }) => (
           <FormikForm>
-            <Box hidden={hideSummary} pt={4} pb={4} pl={2} pr={2}>
+            <Box hidden={hideSummary} pt={4} pb={2} pl={2} pr={2}>
               <Summary />
             </Box>
 
@@ -99,16 +109,22 @@ export const Form = ({
                 isSubmitted={isSubmitted}
               />
             </Box>
-
             {!isDisabled && (
               <Box display='flex' justifyContent='center' pt={0} pb={4} pl={2} pr={2}>
                 <Button
-                  onClick={() => handleSubmitButton(submitForm)}
+                  onClick={() => {
+                    if (values.otherIndustry !== '') {
+                      setFieldValue('currentOrMostRecentIndustry', values.otherIndustry);
+                    }
+                    handleSubmitButton(submitForm);
+                  }}
                   variant='contained'
                   color='primary'
                   fullWidth={false}
                   loading={submitLoading}
                   text='Submit'
+                  // only disable on screen out message (Q2)
+                  disabled={values.eligibility === false}
                 />
               </Box>
             )}

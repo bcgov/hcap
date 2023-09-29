@@ -50,6 +50,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const contactFields = [
+  { name: 'firstName', label: '4. * First Name' },
+  { name: 'lastName', label: '5. * Last Name' },
+  { name: 'phoneNumber', label: '6. * Phone Number', type: 'tel' },
+  { name: 'emailAddress', label: '7. * Email Address', type: 'email' },
+  { name: 'postalCode', label: '8. * Postal Code' },
+];
+
 export const Fields = ({
   isDisabled,
   hideHelp,

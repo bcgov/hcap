@@ -111,7 +111,7 @@ export const ParticipantSchema = yup
 
     educationalRequirements: yup
       .string()
-      .oneOf(yesOrNo, 'Educational requirements should be Yes, No'),
+      .oneOf([...yesOrNo, `I don't know`], 'Educational requirements should be Yes, No'),
 
     // Contact info
     firstName: yup.string().required(errorMessage),
@@ -142,7 +142,7 @@ export const ParticipantSchema = yup
 
     roleInvolvesMentalHealthOrSubstanceUse: yup
       .string()
-      .oneOf(yesOrNo, 'Involved in delivering MHSU service should be Yes, No, or Unknown'),
+      .oneOf(yesOrNoOptional, 'Involved in delivering MHSU service should be Yes, No, or Unknown'),
 
     // Preferred location
     preferredLocation: yup

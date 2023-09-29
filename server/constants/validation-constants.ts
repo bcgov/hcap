@@ -125,4 +125,4 @@ export const programs = ['HCA', 'MHAW'];
 
 export const yesOrNo = ['Yes', 'No'];
 
-export const yesOrNoOptional = ['Yes', 'No', 'Prefer not to answer', 'Unknown'];
+export const yesOrNoOptional = ['Yes', 'No', 'Prefer not to answer', 'Unknown', ''];

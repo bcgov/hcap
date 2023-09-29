@@ -26,6 +26,9 @@ import {
   HCAP_INFO_EMAIL,
   HEALTH_CARE_ASSISTANT_LINK,
   MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK,
+  YesNo,
+  YesNoDontKnow,
+  YesNoPreferNot,
 } from '../../constants';
 import { SectionHeader } from './SectionHeader';
 import { Question } from './Question';
@@ -235,11 +238,7 @@ export const Fields = ({
                   disabled={checkFieldDisability('educationalRequirements')}
                   setTouched
                   row
-                  options={[
-                    { value: 'yes', label: 'Yes' },
-                    { value: 'no', label: 'No' },
-                    { value: 'do not know', label: `I don't know` },
-                  ]}
+                  options={YesNoDontKnow}
                 />
               </Grid>
             </>
@@ -304,11 +303,7 @@ export const Fields = ({
               disabled={checkFieldDisability('indigenous')}
               setTouched
               row
-              options={[
-                { value: 'yes', label: 'Yes' },
-                { value: 'no', label: 'No' },
-                { value: 'prefer not to answer', label: 'Prefer not to answer' },
-              ]}
+              options={YesNoPreferNot}
             />
           </Grid>
           {/** Q10 do you have a valid BC drivers license */}
@@ -321,10 +316,7 @@ export const Fields = ({
               disabled={checkFieldDisability('driverLicense')}
               setTouched
               row
-              options={[
-                { value: 'yes', label: 'Yes' },
-                { value: 'no', label: 'No' },
-              ]}
+              options={YesNo}
             />
           </Grid>
           {/** Q11 lived or experienced mental health or substance use challenges */}
@@ -346,11 +338,7 @@ export const Fields = ({
                   disabled={checkFieldDisability('experienceWithMentalHealthOrSubstanceUse')}
                   setTouched
                   row
-                  options={[
-                    { value: 'yes', label: 'Yes' },
-                    { value: 'no', label: 'No' },
-                    { value: 'prefer not to answer', label: 'Prefer not to answer' },
-                  ]}
+                  options={YesNoPreferNot}
                 />
               </Grid>
             </>
@@ -637,10 +625,7 @@ export const Fields = ({
                   disabled={checkFieldDisability('roleInvolvesMentalHealthOrSubstanceUse')}
                   setTouched
                   row
-                  options={[
-                    { value: true, label: 'Yes' },
-                    { value: false, label: 'No' },
-                  ]}
+                  options={YesNo}
                 />
               </Grid>
             </>

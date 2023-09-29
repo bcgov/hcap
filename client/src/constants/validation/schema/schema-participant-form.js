@@ -70,7 +70,7 @@ export const ParticipantFormSchema = yup
           (currentOrMostRecentIndustry === 'Health care and social assistance' ||
             currentOrMostRecentIndustry === 'Continuing Care and Community Health Care' ||
             currentOrMostRecentIndustry === 'Community Social Services'),
-        then: () => yup.boolean(),
+        then: () => yup.string().oneOf(['Yes', 'No']),
       }),
 
     // Consent

@@ -329,10 +329,7 @@ export const Fields = ({
                   disabled={checkFieldDisability('roleInvolvesMentalHealthOrSubstanceUse')}
                   setTouched
                   row
-                  options={[
-                    { value: true, label: 'Yes' },
-                    { value: false, label: 'No' },
-                  ]}
+                  options={YesNo}
                 />
               </Grid>
             </>

@@ -58,6 +58,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const contactFields = [
+  { name: 'firstName', label: '4. * First Name' },
+  { name: 'lastName', label: '5. * Last Name' },
+  { name: 'phoneNumber', label: '6. * Phone Number', type: 'tel' },
+  { name: 'emailAddress', label: '7. * Email Address', type: 'email' },
+  { name: 'postalCode', label: '8. * Postal Code' },
+];
+
 export const Fields = ({
   isDisabled,
   hideHelp,
@@ -246,48 +254,17 @@ export const Fields = ({
 
           {/** Contact Info */}
           <SectionHeader text='Provide Your Contact Information' />
-          <Grid item xs={12} sm={6}>
-            <FastField
-              name='firstName'
-              component={RenderTextField}
-              label='4. * First Name'
-              disabled={checkFieldDisability('firstName')}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FastField
-              name='lastName'
-              component={RenderTextField}
-              label='5. * Last Name'
-              disabled={checkFieldDisability('lastName')}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FastField
-              name='phoneNumber'
-              type='tel'
-              component={RenderTextField}
-              label='6. * Phone Number'
-              disabled={checkFieldDisability('phoneNumber')}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FastField
-              name='emailAddress'
-              type='email'
-              component={RenderTextField}
-              label='7. * Email Address'
-              disabled={checkFieldDisability('emailAddress')}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FastField
-              name='postalCode'
-              component={RenderTextField}
-              label='8. * Postal Code'
-              disabled={checkFieldDisability('postalCode')}
-            />
-          </Grid>
+          {contactFields.map(({ name, label, type }) => (
+            <Grid item xs={12} sm={6} key={name}>
+              <FastField
+                name={name}
+                component={RenderTextField}
+                label={label}
+                type={type ?? 'text'}
+                disabled={checkFieldDisability(name)}
+              />
+            </Grid>
+          ))}
           <PleaseNoteBanner
             text='The following information is collected as some employers may
               prioritize hiring of indigenous candidates or candidates with a drivers license in

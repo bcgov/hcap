@@ -5,6 +5,7 @@ import { Question } from '../Question';
 import { SectionHeader } from '../SectionHeader';
 import { RenderCheckboxGroup } from '../../fields';
 import { reasonForFindingOutOptions } from '../../../constants';
+import { formatOptions } from '../../../utils';
 
 export const MarketingSection = ({ checkFieldDisability }) => {
   return (
@@ -20,7 +21,7 @@ export const MarketingSection = ({ checkFieldDisability }) => {
           name='reasonForFindingOut'
           component={RenderCheckboxGroup}
           disabled={checkFieldDisability('reasonForFindingOut')}
-          options={reasonForFindingOutOptions}
+          options={formatOptions(reasonForFindingOutOptions)}
         />
       </Grid>
     </>

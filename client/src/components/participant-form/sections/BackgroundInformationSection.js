@@ -5,6 +5,7 @@ import { Question } from '../Question';
 import { SectionHeader } from '../SectionHeader';
 import { RenderRadioGroup, RenderTextField } from '../../fields';
 import { YesNo, currentOrMostRecentIndustryOptions } from '../../../constants';
+import { formatOptions } from '../../../utils';
 
 export const BackgroundInformationSection = ({ checkFieldDisability, isMHAW, selectedOption }) => {
   return (
@@ -20,7 +21,7 @@ export const BackgroundInformationSection = ({ checkFieldDisability, isMHAW, sel
           component={RenderRadioGroup}
           disabled={checkFieldDisability('currentOrMostRecentIndustry')}
           setTouched
-          options={currentOrMostRecentIndustryOptions}
+          options={formatOptions(currentOrMostRecentIndustryOptions)}
         />
       </Grid>
       {selectedOption === 'Other, please specify:' && (

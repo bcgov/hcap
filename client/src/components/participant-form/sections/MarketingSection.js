@@ -4,6 +4,7 @@ import { FastField } from 'formik';
 import { Question } from '../Question';
 import { SectionHeader } from '../SectionHeader';
 import { RenderCheckboxGroup } from '../../fields';
+import { reasonForFindingOutOptions } from '../../../constants';
 
 export const MarketingSection = ({ checkFieldDisability }) => {
   return (
@@ -19,44 +20,7 @@ export const MarketingSection = ({ checkFieldDisability }) => {
           name='reasonForFindingOut'
           component={RenderCheckboxGroup}
           disabled={checkFieldDisability('reasonForFindingOut')}
-          options={[
-            {
-              value: 'Friend(s) or family',
-              label: 'Friend(s) or family',
-            },
-            {
-              value: 'WorkBC',
-              label: 'WorkBC',
-            },
-            {
-              value: 'Government announcement',
-              label: 'Government announcement',
-            },
-            {
-              value: 'Colleague(s)',
-              label: 'Colleague(s)',
-            },
-            {
-              value: 'Job posting through Health Authority',
-              label: 'Job posting through Health Authority',
-            },
-            {
-              value: 'Job posting with employer',
-              label: 'Job posting with employer',
-            },
-            {
-              value: 'Web search',
-              label: 'Web search',
-            },
-            {
-              value: 'Social media',
-              label: 'Social media',
-            },
-            {
-              value: 'Other',
-              label: 'Other',
-            },
-          ]}
+          options={reasonForFindingOutOptions}
         />
       </Grid>
     </>

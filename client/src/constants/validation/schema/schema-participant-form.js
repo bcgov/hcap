@@ -9,12 +9,17 @@ export const ParticipantFormSchema = yup
     // Orbeon Id - only present for parsed XML files
     orbeonId: yup.string().typeError(errorMessage),
 
+    // HCAP program
+    program: yup.string().required(errorMessage),
+
     // Eligibility
     eligibility: yup
       .boolean()
       .typeError(errorMessage)
       .required(errorMessage)
-      .test('is-true', errorMessage, (v) => v === true),
+      .test('is-true', errorMessage({ path: 'screenOut' }), (v) => v === true),
+
+    educationalRequirements: yup.string().required(errorMessage),
 
     // Contact info
     firstName: yup.string().required(errorMessage),
@@ -29,6 +34,13 @@ export const ParticipantFormSchema = yup
       .required(errorMessage)
       .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
 
+    indigenous: yup.string(),
+    driverLicense: yup.string().required(errorMessage),
+
+    experienceWithMentalHealthOrSubstanceUse: yup.string().when(['program'], {
+      is: (program) => program === 'MHAW',
+      then: () => yup.string(),
+    }),
     // Preferred location
     preferredLocation: yup
       .array()
@@ -42,6 +54,24 @@ export const ParticipantFormSchema = yup
       .required(errorMessage)
       .of(yup.string().oneOf(foundOutReasons, 'Invalid selection'))
       .test('is-unique-array', 'Each reason must be unique', validateUniqueArray),
+
+    // background information
+    currentOrMostRecentIndustry: yup.string(),
+    otherIndustry: yup.string().when(['currentOrMostRecentIndustry'], {
+      is: (industry) => industry === 'Other, please specify:',
+      then: () => yup.string().required(errorMessage),
+    }),
+
+    roleInvolvesMentalHealthOrSubstanceUse: yup
+      .string()
+      .when(['program', 'currentOrMostRecentIndustry'], {
+        is: (program, currentOrMostRecentIndustry) =>
+          program === 'MHAW' &&
+          (currentOrMostRecentIndustry === 'Health care and social assistance' ||
+            currentOrMostRecentIndustry === 'Continuing Care and Community Health Care' ||
+            currentOrMostRecentIndustry === 'Community Social Services'),
+        then: () => yup.string().oneOf(['Yes', 'No']),
+      }),
 
     // Consent
     consent: yup

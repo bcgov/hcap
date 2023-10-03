@@ -245,6 +245,15 @@ participantsRouter.post(
 
     const participant = {
       ...req.body,
+      program: req.body.program ?? 'HCA',
+      educationalRequirements: req.body.educationalRequirements ?? 'Unknown',
+      driverLicense: req.body.driverLicense ?? 'Unknown',
+      indigenous: req.body.indigenous || 'Unknown',
+      experienceWithMentalHealthOrSubstanceUse:
+        req.body.experienceWithMentalHealthOrSubstanceUse || 'Unknown',
+      currentOrMostRecentIndustry: req.body.currentOrMostRecentIndustry || 'Unknown',
+      roleInvolvesMentalHealthOrSubstanceUse:
+        req.body.roleInvolvesMentalHealthOrSubstanceUse || 'Unknown',
       formVersion: 'v2',
       maximusId: null,
       postalCodeFsa: req.body.postalCode.substr(0, 3),

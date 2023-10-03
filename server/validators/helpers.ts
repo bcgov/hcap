@@ -46,6 +46,8 @@ export const validateUniqueArray = (a) => Array.isArray(a) && new Set(a).size ==
 
 export const errorMessage = ({ path }) => {
   const errorMessages = {
+    // HCAP Program info
+    program: 'Must select one program',
     // Common fields
     firstName: 'First name is required',
     lastName: 'Last name is required',
@@ -93,15 +95,18 @@ export const errorMessage = ({ path }) => {
 
     // Participant info
     eligibility:
-      "We're sorry, but current eligibility to work in Canada is a requirement to submit this form.",
-    preferredLocation: "Please select at least one location you'd like to work in.",
-    consent: "We're sorry, but we cannot process your request without permission.",
+      "We're sorry, but current eligibility to work in Canada is a requirement to submit this form",
+    educationalRequirements: 'This question is a requirement to submit this form',
+    preferredLocation: "Please select at least one location you'd like to work in",
+    driverLicense: 'This question is a requirement to submit this form',
+    consent: "We're sorry, but we cannot process your request without permission",
     reasonForFindingOut: 'Please let us know how you found out about HCAP',
 
     // PSI specific value
     instituteName: 'Institute name is required',
     cohortName: 'Cohort name is required',
     city: 'City is required',
+    screenOut: 'You do not meet the eligibility criteria to apply for HCAP at this time',
   };
   return errorMessages[path] || `Failed validation on ${path}`;
 };

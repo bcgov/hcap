@@ -7,24 +7,24 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { FastField } from 'formik';
 import { SpeakerNotesOutlined } from '@material-ui/icons';
+import { Checkbox, FormControl, FormControlLabel } from '@material-ui/core';
+import { isNil } from 'lodash';
 
 import { Card, Divider } from '../generic';
-import { RenderCheckbox, RenderCheckboxGroup, RenderTextField, RenderRadioGroup } from '../fields';
+import { RenderCheckbox, RenderRadioGroup } from '../fields';
 import {
   indigenousIdentities,
   indigenousIdentityLabels,
 } from '../modal-forms/IndigenousDeclarationForm';
-import {
-  BC_LAWS_LINK,
-  VANCOUVER_COASTAL_GOV_LINK,
-  NORTHERN_GOV_LINK,
-  FRASER_GOV_LINK,
-  INTERIOR_GOV_LINK,
-  VANCOUVER_ISLAND_GOV_LINK,
-  HCAP_INFO_EMAIL,
-} from '../../constants';
-import { Checkbox, FormControl, FormControlLabel } from '@material-ui/core';
-import { isNil } from 'lodash';
+import { BC_LAWS_LINK, HCAP_INFO_EMAIL } from '../../constants';
+import { PleaseNoteBanner } from './PleaseNoteBanner';
+import { HCAPProgramSection } from './sections/HCAPProgramSection';
+import { EligibilitySection } from './sections/EligibilitySection';
+import { ContactInformationSection } from './sections/ContactInformationSection';
+import { OtherSection } from './sections/OtherSection';
+import { PreferredWorkLocation } from './sections/PreferredWorkLocation';
+import { MarketingSection } from './sections/MarketingSection';
+import { BackgroundInformationSection } from './sections/BackgroundInformationSection';
 
 const useStyles = makeStyles((theme) => ({
   info: {
@@ -83,11 +83,18 @@ export const Fields = ({
               </a>
             </Typography>
             <Typography variant='body2'>
-              Service is available from 8:00 am - 4:30 pm Pacific Time Monday through Friday
+              Service is available from 8:00 am - 4:30 pm Pacific Time Monday through Friday,
+              excluding statutory holidays.
             </Typography>
           </Box>
         </Box>
       )}
+      <Box mb={4} mt={3}>
+        <PleaseNoteBanner
+          text='The following information is shared with employers for the purposes of
+                recruitment.'
+        />
+      </Box>
 
       <Card noShadow={isDisabled}>
         {/** Indigenous Identity - meant to be READ-ONLY, not set up for editing */}
@@ -150,226 +157,37 @@ export const Fields = ({
               </Box>
             </Grid>
           )}
+          {/** HCAP Program Section */}
+          <HCAPProgramSection checkFieldDisability={checkFieldDisability} />
 
-          {/** Eligibility */}
-
+          {/** Eligibility Section */}
           {isSubmitted && isNonPortalHire && isNil(values.eligibility) ? null : (
-            <>
-              <Grid item xs={12}>
-                <Typography variant='subtitle2'>Check Your Eligibility</Typography>
-                <Divider />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography>
-                  <b>Please note:</b> A criminal record check is required for most positions in the
-                  health sector.
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography>
-                  <b>* Are you a Canadian citizen or permanent resident?</b>
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <FastField
-                  name='eligibility'
-                  component={RenderRadioGroup}
-                  disabled={checkFieldDisability('eligibility')}
-                  setTouched
-                  row
-                  options={[
-                    { value: true, label: 'Yes' },
-                    { value: false, label: 'No' },
-                  ]}
-                />
-              </Grid>
-            </>
+            <EligibilitySection checkFieldDisability={checkFieldDisability} />
           )}
 
-          {/** Contact Info */}
-          <Grid item xs={12}>
-            <Typography variant='subtitle2'>Provide Your Contact Information</Typography>
-            <Divider />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FastField
-              name='firstName'
-              component={RenderTextField}
-              label='* First Name'
-              disabled={checkFieldDisability('firstName')}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FastField
-              name='lastName'
-              component={RenderTextField}
-              label='* Last Name'
-              disabled={checkFieldDisability('lastName')}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FastField
-              name='phoneNumber'
-              type='tel'
-              component={RenderTextField}
-              label='* Phone Number'
-              disabled={checkFieldDisability('phoneNumber')}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FastField
-              name='emailAddress'
-              type='email'
-              component={RenderTextField}
-              label='* Email Address'
-              disabled={checkFieldDisability('emailAddress')}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FastField
-              name='postalCode'
-              component={RenderTextField}
-              label='* Postal Code'
-              disabled={checkFieldDisability('postalCode')}
-            />
-          </Grid>
+          {/** Contact Info Section */}
+          <ContactInformationSection checkFieldDisability={checkFieldDisability} />
 
-          {/** Preferred Work Location */}
-          <Grid item xs={12}>
-            <Typography variant='subtitle2'>Select Your Preferred Work Location(s)</Typography>
-            <Divider />
-          </Grid>
-          <Grid item xs={12}>
-            <FastField
-              name='preferredLocation'
-              component={RenderCheckboxGroup}
-              label='* Please select your preferred health region(s)'
-              disabled={checkFieldDisability('preferredLocation')}
-              options={[
-                {
-                  value: 'Interior',
-                  label: (
-                    <span>
-                      Interior (
-                      <Link href={INTERIOR_GOV_LINK} target='__blank' rel='noreferrer noopener'>
-                        PDF map
-                      </Link>
-                      )
-                    </span>
-                  ),
-                },
-                {
-                  value: 'Fraser',
-                  label: (
-                    <span>
-                      Fraser (
-                      <Link href={FRASER_GOV_LINK} target='__blank' rel='noreferrer noopener'>
-                        PDF map
-                      </Link>
-                      )
-                    </span>
-                  ),
-                },
-                {
-                  value: 'Vancouver Coastal',
-                  label: (
-                    <span>
-                      Vancouver Coastal (
-                      <Link
-                        href={VANCOUVER_COASTAL_GOV_LINK}
-                        target='__blank'
-                        rel='noreferrer noopener'
-                      >
-                        PDF map
-                      </Link>
-                      )
-                    </span>
-                  ),
-                },
-                {
-                  value: 'Vancouver Island',
-                  label: (
-                    <span>
-                      Vancouver Island (
-                      <Link
-                        href={VANCOUVER_ISLAND_GOV_LINK}
-                        target='__blank'
-                        rel='noreferrer noopener'
-                      >
-                        PDF map
-                      </Link>
-                      )
-                    </span>
-                  ),
-                },
-                {
-                  value: 'Northern',
-                  label: (
-                    <span>
-                      Northern (
-                      <Link href={NORTHERN_GOV_LINK} target='__blank' rel='noreferrer noopener'>
-                        PDF map
-                      </Link>
-                      )
-                    </span>
-                  ),
-                },
-              ]}
-            />
-          </Grid>
+          {/** Other Section */}
+          <OtherSection
+            checkFieldDisability={checkFieldDisability}
+            isMHAWProgram={values.program === 'MHAW'}
+          />
+
+          {/** Preferred Work Location Section */}
+          <PreferredWorkLocation checkFieldDisability={checkFieldDisability} />
+
+          {/** Marketing Section */}
           {!hideReasonForFindingOut && (
-            <>
-              <Grid item xs={12}>
-                <Typography variant='subtitle2'>How did you learn about HCAP?</Typography>
-                <Divider />
-              </Grid>
-              <Grid item xs={12}>
-                <FastField
-                  name='reasonForFindingOut'
-                  component={RenderCheckboxGroup}
-                  disabled={checkFieldDisability('reasonForFindingOut')}
-                  options={[
-                    {
-                      value: 'Friend(s)',
-                      label: 'Friend(s)',
-                    },
-                    {
-                      value: 'WorkBC',
-                      label: 'WorkBC',
-                    },
-                    {
-                      value: 'Government announcement',
-                      label: 'Government announcement',
-                    },
-                    {
-                      value: 'Colleague(s)',
-                      label: 'Colleague(s)',
-                    },
-                    {
-                      value: 'Job posting through Health Authority',
-                      label: 'Job posting through Health Authority',
-                    },
-                    {
-                      value: 'Job posting with employer',
-                      label: 'Job posting with employer',
-                    },
-                    {
-                      value: 'Web search',
-                      label: 'Web search',
-                    },
-                    {
-                      value: 'Social media',
-                      label: 'Social media',
-                    },
-                    {
-                      value: 'Other',
-                      label: 'Other',
-                    },
-                  ]}
-                />
-              </Grid>
-            </>
+            <MarketingSection checkFieldDisability={checkFieldDisability} />
           )}
+
+          {/** Background Information Section */}
+          <BackgroundInformationSection
+            checkFieldDisability={checkFieldDisability}
+            isMHAWProgram={values.program === 'MHAW'}
+            selectedOption={values.currentOrMostRecentIndustry}
+          />
         </Grid>
 
         {/** Disclaimer and submission */}

@@ -7,7 +7,7 @@ export const healthRegions = [
 ];
 
 export const foundOutReasons = [
-  'Friend(s)',
+  'Friend(s) or family',
   'WorkBC',
   'Government announcement',
   'Colleague(s)',
@@ -119,3 +119,10 @@ export const ROSUnderwayStatus = 'Return of service underway';
 export const ROSCompleteStatus = 'Return of service complete';
 export const ROSCompletedType = { value: 'rosComplete', label: 'Return of service completed' };
 export const SuccessfulROSReason = 'Completed all HCAP requirements';
+
+// HCA(Health Care Assistant), MHAW(Mental Health and Addictions Worker)
+export const programs = ['HCA', 'MHAW'];
+
+export const yesOrNo = ['Yes', 'No'];
+
+export const yesOrNoOptional = ['Yes', 'No', 'Prefer not to answer', 'Unknown', ''];

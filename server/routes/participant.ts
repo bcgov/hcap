@@ -251,7 +251,7 @@ participantsRouter.post(
       indigenous: req.body.indigenous || 'Unknown',
       experienceWithMentalHealthOrSubstanceUse:
         req.body.experienceWithMentalHealthOrSubstanceUse || 'Unknown',
-      currentOrMostRecentIndustry: req.body.currentOrMostRecentIndustry ?? 'Unknown',
+      currentOrMostRecentIndustry: req.body.currentOrMostRecentIndustry || 'Unknown',
       roleInvolvesMentalHealthOrSubstanceUse:
         req.body.roleInvolvesMentalHealthOrSubstanceUse || 'Unknown',
       formVersion: 'v2',

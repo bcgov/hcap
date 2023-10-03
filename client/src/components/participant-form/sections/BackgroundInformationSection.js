@@ -7,7 +7,11 @@ import { RenderRadioGroup, RenderTextField } from '../../fields';
 import { YesNo, currentOrMostRecentIndustryOptions } from '../../../constants';
 import { formatOptions } from '../../../utils';
 
-export const BackgroundInformationSection = ({ checkFieldDisability, isMHAW, selectedOption }) => {
+export const BackgroundInformationSection = ({
+  checkFieldDisability,
+  isMHAWProgram,
+  selectedOption,
+}) => {
   return (
     <>
       <SectionHeader text='Background Information' />
@@ -35,7 +39,7 @@ export const BackgroundInformationSection = ({ checkFieldDisability, isMHAW, sel
       )}
       {/** Q15 does/ did this rolee involve delivering mental health/ substance use services */}
       {/** only show if Q1 is MHAW and Q14 is one of 3 below options */}
-      {isMHAW === 'MHAW' &&
+      {isMHAWProgram &&
         (selectedOption === 'Health care and social assistance' ||
           selectedOption === 'Continuing Care and Community Health Care' ||
           selectedOption === 'Community Social Services') && (

@@ -185,7 +185,7 @@ export const Fields = ({
           {/** Background Information Section */}
           <BackgroundInformationSection
             checkFieldDisability={checkFieldDisability}
-            isMHAW={values.program === 'MHAW'}
+            isMHAWProgram={values.program === 'MHAW'}
             selectedOption={values.currentOrMostRecentIndustry}
           />
         </Grid>

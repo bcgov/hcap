@@ -12,6 +12,8 @@ export const EmploymentEndedType = { value: 'employmentEnded', label: 'Employmen
 export const archiveReasonOptions = [
   'No longer interested in HCA/HCSW role',
   'No longer interested in a career in health care',
+  'No longer interested in a career in mental health and substance use sector',
+  'No longer interested in MHASW / MHAW role',
   'Terminated by employer',
   'Personal health concerns',
   'Moving out of province',
@@ -20,7 +22,6 @@ export const archiveReasonOptions = [
   'Did not meet program requirements',
   'Issue with mandatory vaccination',
   UnsuccessfulCohortReason,
-  'Other',
 ];
 
 export const archiveStatusOptions = [

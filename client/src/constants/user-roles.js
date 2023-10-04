@@ -6,8 +6,16 @@ export const Role = {
   Participant: 'participant',
   Pending: 'pending',
   Maximus: 'maximus',
+  MHSUEmployer: 'mhsu-employer',
 };
 
-export const UserRoles = [Role.MinistryOfHealth, Role.HealthAuthority, Role.Employer];
+export const UserRoles = [
+  Role.MinistryOfHealth,
+  Role.HealthAuthority,
+  Role.Employer,
+  Role.MHSUEmployer,
+];
+
+export const EmployerRoles = [Role.Employer, Role.MHSUEmployer];
 
 export const RolePriority = [Role.Superuser, ...UserRoles];

@@ -190,14 +190,6 @@ export const Fields = ({
           />
         </Grid>
 
-          {/** Background Information Section */}
-          <BackgroundInformationSection
-            checkFieldDisability={checkFieldDisability}
-            isMHAW={values.program === 'MHAW'}
-            selectedOption={values.currentOrMostRecentIndustry}
-          />
-        </Grid>
-
         {/** Disclaimer and submission */}
         <Grid container spacing={2}>
           {isSubmitted && isNonPortalHire && isNil(values.consent) ? null : (

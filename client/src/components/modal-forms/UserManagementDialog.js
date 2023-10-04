@@ -8,15 +8,18 @@ import {
   Routes,
   healthAuthorities,
   regionLabelsMap,
+  Role,
+  EmployerRoles,
 } from '../../constants';
-import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../../components/fields';
+import { RenderMultiSelectField, RenderSelectField, RenderCheckbox } from '../fields';
 import { Dialog } from '../generic';
 import { UserManagementViewForm } from './UserManagementViewForm';
 
 const roleOptions = [
-  { value: 'health_authority', label: 'Health Authority' },
-  { value: 'employer', label: 'Private Employer' },
-  { value: 'ministry_of_health', label: 'Ministry Of Health' },
+  { value: Role.HealthAuthority, label: 'Health Authority' },
+  { value: Role.Employer, label: 'Private Employer' },
+  { value: Role.MHSUEmployer, label: 'MHSU Employer' },
+  { value: Role.MinistryOfHealth, label: 'Ministry Of Health' },
 ];
 
 export const UserManagementDialog = ({
@@ -76,7 +79,7 @@ export const UserManagementDialog = ({
                 }}
               />
             </Box>
-            {values.role === 'health_authority' && (
+            {values.role === Role.HealthAuthority && (
               <Box mt={3}>
                 <Field
                   name='regions'
@@ -95,8 +98,8 @@ export const UserManagementDialog = ({
                 />
               </Box>
             )}
-            {((values.role === 'health_authority' && values.regions.length > 0) ||
-              values.role === 'employer') && (
+            {((values.role === Role.HealthAuthority && values.regions.length > 0) ||
+              EmployerRoles.includes(values.role)) && (
               <Box mt={3}>
                 <Field
                   name='sites'

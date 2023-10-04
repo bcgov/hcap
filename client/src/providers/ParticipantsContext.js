@@ -1,7 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
-import { pageSizeOptions } from '../constants';
-
-import { columnsByRole, tabStatuses, tabsByRole } from '../constants/participantTableConstants';
+import { pageSizeOptions, columnsByRole, tabStatuses, tabsByRole } from '../constants';
 
 const ParticipantsContext = React.createContext();
 

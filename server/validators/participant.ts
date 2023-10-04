@@ -158,7 +158,6 @@ export const ParticipantSchema = yup
       .of(yup.string().oneOf(foundOutReasons, 'Invalid selection'))
       .test('is-unique-array', 'Each reason must be unique', validateUniqueArray),
 
-
     // Consent
     consent: yup
       .boolean()

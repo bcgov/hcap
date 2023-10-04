@@ -2,6 +2,7 @@ import { collections, views } from '../../db';
 import { ParticipantStatus } from '../../constants';
 import { FilteredParticipantsFinder } from './FilteredParticipantsFinder';
 import { RunContext } from './core';
+import { isPrivateEmployerOrMHSUEmployerOrHA } from './check-valid-role';
 
 const {
   OPEN: open,
@@ -173,7 +174,7 @@ export class FieldsFilteredParticipantsFinder {
       this.context;
     this.context.siteIdDistance = siteIdDistance;
 
-    if (user.isEmployer || user.isHA) {
+    if (isPrivateEmployerOrMHSUEmployerOrHA(user)) {
       // Check fetching open status or not
       // Flags
       let criteria = { ...this.context.criteria };

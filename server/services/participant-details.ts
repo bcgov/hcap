@@ -30,7 +30,7 @@ export const checkUserHasAccessToParticipant = async (id: number, user: HcapUser
     return participantIsInUserRegion;
   }
 
-  if (user.isEmployer) {
+  if (user.isEmployer || user.isMHSUEmployer) {
     // Allow access to employers if they are the person who hired or archived the user
     // or they have access to the site the participant was hired to
     const statuses =

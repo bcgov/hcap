@@ -3,6 +3,7 @@ import { userRegionQuery } from './user';
 import type { HcapUserInfo } from '../keycloak';
 import { formatDateSansTimezone } from '../utils';
 import { Allocation } from '../services/allocations';
+import { isPrivateEmployerOrMHSUEmployerOrHA } from './participants-helper';
 
 export interface EmployerSite {
   id: number; // Internal ID for site
@@ -104,7 +105,7 @@ export const getSitesForUser = async (user: HcapUserInfo): Promise<EmployerSite[
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const additionalCriteriaParams: { userSites?: any[]; userRegions?: string[] } = {};
 
-  if ((user.isHA || user.isEmployer) && user.sites.length > 0) {
+  if (isPrivateEmployerOrMHSUEmployerOrHA(user) && user.sites.length > 0) {
     additionalCriteria.push(`(employer_sites.body ->> 'siteId')::INT IN ($(userSites:csv))`);
     additionalCriteriaParams.userSites = user.sites;
   }

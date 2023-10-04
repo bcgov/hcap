@@ -1,5 +1,6 @@
 import { HcapUserInfo } from '../../keycloak';
 import logger from '../../logger';
+import { isPrivateEmployerOrMHSUEmployerOrHA } from './check-valid-role';
 
 type sortDir = 'asc' | 'desc';
 
@@ -145,8 +146,8 @@ export const run = async (context: RunContext) => {
     participants = addDistanceToParticipantFields(participants, siteDistanceJoin);
     participants = scrubParticipantData(
       participants,
-      (user.isEmployer || user.isHA) && [employerSpecificJoin, hiredGlobalJoin],
-      (user.isEmployer || user.isHA) && (user.sites || [])
+      isPrivateEmployerOrMHSUEmployerOrHA(user) && [employerSpecificJoin, hiredGlobalJoin],
+      isPrivateEmployerOrMHSUEmployerOrHA(user) && (user.sites || [])
     );
     return participants;
   } catch (error) {

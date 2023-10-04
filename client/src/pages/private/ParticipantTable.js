@@ -14,6 +14,9 @@ import {
   pageSizeOptions,
   Role,
   UserRoles,
+  allPrograms,
+  programsPrivateEmployer,
+  programsMHAWEmployer,
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
@@ -184,6 +187,7 @@ const ParticipantTable = () => {
   const [anchorElement, setAnchorElement] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [locations, setLocations] = useState([]);
+  const [programs, setPrograms] = useState([]);
   const {
     state: {
       columns,
@@ -205,6 +209,7 @@ const ParticipantTable = () => {
   const isAdmin = isMoH || isSuperUser;
   const isHA = roles.includes(Role.HealthAuthority);
   const isEmployer = roles.includes(Role.Employer);
+  const isMHSUEmployer = roles.includes(Role.MHSUEmployer);
 
   const fetchParticipants = async () => {
     if (!columns) return;
@@ -365,14 +370,25 @@ const ParticipantTable = () => {
     setSelectedParticipants([]);
   };
 
-  // Set available locations
+  // Set available locations and programs
   useEffect(() => {
     // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
     const regions = Object.values(regionLabelsMap).filter((value) => value !== 'None');
     setLocations(
       isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
     );
-  }, [isMoH, isSuperUser, roles]);
+
+    if (isMoH || isHA || isSuperUser) {
+      // should be able to see all users in both MHAW/ HCA programs
+      setPrograms(allPrograms);
+    } else if (isEmployer) {
+      // private employers should only see HCA program
+      setPrograms(programsPrivateEmployer);
+    } else if (isMHSUEmployer) {
+      // MHAW employers should only see MHAW program
+      setPrograms(programsMHAWEmployer);
+    }
+  }, [isMoH, isSuperUser, roles, isEmployer, isHA, isMHSUEmployer]);
 
   useEffect(() => {
     setSelectedParticipants([]);
@@ -385,7 +401,8 @@ const ParticipantTable = () => {
       case 'lastName':
         if (
           isAdmin ||
-          ((isEmployer || isHA) && ['Hired Candidates', 'Return Of Service'].includes(selectedTab))
+          ((isEmployer || isMHSUEmployer || isHA) &&
+            ['Hired Candidates', 'Return Of Service'].includes(selectedTab))
         ) {
           return (
             <Link
@@ -517,6 +534,7 @@ const ParticipantTable = () => {
               fetchParticipants={fetchParticipants}
               loading={isLoadingData}
               locations={locations}
+              programs={programs}
             />
 
             {selectedTab === 'Hired Candidates' && (

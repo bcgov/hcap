@@ -1,7 +1,8 @@
 import { collections } from '../../db';
 import { HcapUserInfo } from '../../keycloak';
 import { userRegionQuery } from '../user';
-import { RegionsFilteredParticipantsFinder } from './RegionsFilteredParticipantsFinder';
+import { ProgramFilteredParticipantsFinder } from './ProgramFilteredParticipantsFinder';
+import { isPrivateEmployerOrMHSUEmployerOrHA } from './check-valid-role';
 
 export class ParticipantsFinder {
   dbClient;
@@ -25,7 +26,7 @@ export class ParticipantsFinder {
     this.siteJoin = 'siteJoin';
     this.siteDistanceJoin = 'siteDistanceJoin';
     // MoH/SU users query a view with ros_infos column
-    this.rosStatuses = user.isHA || user.isEmployer ? 'rosStatuses' : 'ros_infos[0]';
+    this.rosStatuses = isPrivateEmployerOrMHSUEmployerOrHA(user) ? 'rosStatuses' : 'ros_infos[0]';
   }
 
   filterRegion(regionFilter) {
@@ -43,6 +44,6 @@ export class ParticipantsFinder {
                 //  we handle in the upper OR array)
                 { or: [{ and: [userRegionQuery(this.user.regions, 'body.preferredLocation')] }] }),
           };
-    return new RegionsFilteredParticipantsFinder(this);
+    return new ProgramFilteredParticipantsFinder(this);
   }
 }

@@ -43,6 +43,8 @@ export interface HcapUserInfo {
   regions?: string[];
   /** True if the user is an employer */
   isEmployer?: boolean;
+  /** True if the user is a MHSU employer */
+  isMHSUEmployer?: boolean;
   /** True if the user is a health authority user */
   isHA?: boolean;
   /** True if the user is a superuser */
@@ -189,6 +191,7 @@ class Keycloak {
           roles,
           regions: roles.map((role) => regionMap[role]).filter((region) => region),
           isEmployer: roles.includes(Role.Employer),
+          isMHSUEmployer: roles.includes(Role.MHSUEmployer),
           isHA: roles.includes(Role.HealthAuthority),
           isSuperUser: roles.includes(Role.Superuser),
           isMoH: roles.includes(Role.MinistryOfHealth),

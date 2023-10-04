@@ -1,6 +1,7 @@
 import { Pagination, run } from './core';
 import { PaginatedParticipantsFinder } from './PaginatedParticipantsFinder';
 import type { RunContext } from './core';
+import { isPrivateEmployerOrMHSUEmployerOrHA } from './check-valid-role';
 
 export class FilteredParticipantsFinder {
   context: RunContext & { rosStatuses };
@@ -76,7 +77,7 @@ export class FilteredParticipantsFinder {
       }
 
       if (sortField === 'status') {
-        if (user.isEmployer || user.isHA) {
+        if (isPrivateEmployerOrMHSUEmployerOrHA(user)) {
           this.context.options.order.unshift({
             field: `${employerSpecificJoin}.status`,
             direction: pagination.direction || 'asc',

@@ -23,7 +23,10 @@ export const CheckPermissions = ({ permittedRoles, children, renderErrorMessage 
   if (isLoading) return null;
 
   // If user has a permitted role assigned, grant access to components
-  if (checkPermissions(roles, permittedRoles)) return children;
+  if (checkPermissions(roles, permittedRoles)) {
+    console.log(roles, permittedRoles, checkPermissions(roles, permittedRoles));
+    return children;
+  }
 
   // Default: return nothing if no access granted by role(s)
   if (!renderErrorMessage) return null;

@@ -6,7 +6,7 @@ import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { FILTERABLE_FIELDS, Role } from '../../constants';
 
-export const ParticipantTableFilters = ({ loading, locations }) => {
+export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   const {
     state: { columns, selectedTab, filter, siteSelector },
     dispatch,
@@ -54,6 +54,30 @@ export const ParticipantTableFilters = ({ loading, locations }) => {
               <MenuItem value=''>{locations[0]}</MenuItem>
             ) : (
               ['Preferred Location', ...locations].map((option, index) => (
+                <MenuItem key={option} value={index === 0 ? '' : option} aria-label={option}>
+                  {option}
+                </MenuItem>
+              ))
+            )}
+          </TextField>
+        </Box>
+      </Grid>
+      <Grid item>
+        <Box pl={2}>
+          <TextField
+            select
+            fullWidth
+            variant='filled'
+            inputProps={{ displayEmpty: true }}
+            disabled={loading || programs.length === 1}
+            value={filter[FILTERABLE_FIELDS.PROGRAM]?.value || ''}
+            onChange={({ target }) => setFilter(FILTERABLE_FIELDS.PROGRAM, target.value)}
+            aria-label='program filter'
+          >
+            {programs.length === 1 ? (
+              <MenuItem value=''>{programs[0]}</MenuItem>
+            ) : (
+              ['Program', ...programs].map((option, index) => (
                 <MenuItem key={option} value={index === 0 ? '' : option} aria-label={option}>
                   {option}
                 </MenuItem>

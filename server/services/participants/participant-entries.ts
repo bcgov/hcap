@@ -11,10 +11,12 @@ import type {
   LastNameFilter,
   Pagination,
   PostalCodeFsaFilter,
+  ProgramFilter,
   idFilter,
 } from '../participants-helper';
 import type { HcapUserInfo } from '../../keycloak';
 import { ParticipantStatus as ps } from '../../constants';
+import { isPrivateEmployerOrMHSUEmployerOrHA } from '../participants-helper/check-valid-role';
 
 export const makeParticipant = async (participantData) => {
   const res = await dbClient.db.saveDoc(collections.PARTICIPANTS, participantData);
@@ -183,13 +185,16 @@ export const getParticipants = async (
   emailFilter?: EmailAddressFilter,
   siteSelector?,
   statusFilters?: string[],
-  isIndigenousFilter?: IsIndigenousFilter
+  isIndigenousFilter?: IsIndigenousFilter,
+  programFilter?: ProgramFilter
 ) => {
   // Get user ids
   const participantsFinder = new ParticipantsFinder(dbClient, user);
-  const interestFilter = (user.isHA || user.isEmployer) && statusFilters?.includes('open');
+  const interestFilter =
+    isPrivateEmployerOrMHSUEmployerOrHA(user) && statusFilters?.includes('open');
   let participants = await participantsFinder
     .filterRegion(regionFilter)
+    .filterProgram(programFilter)
     .filterParticipantFields({
       id: idFilter,
       postalCodeFsa: fsaFilter,

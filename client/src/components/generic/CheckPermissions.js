@@ -24,7 +24,6 @@ export const CheckPermissions = ({ permittedRoles, children, renderErrorMessage 
 
   // If user has a permitted role assigned, grant access to components
   if (checkPermissions(roles, permittedRoles)) {
-    console.log(roles, permittedRoles, checkPermissions(roles, permittedRoles));
     return children;
   }
 

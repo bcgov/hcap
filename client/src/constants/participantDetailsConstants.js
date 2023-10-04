@@ -9,6 +9,13 @@ export const keyLabelMap = {
   postHireStatusLabel: 'Graduation Status',
   status: 'Employment Status',
   siteName: 'Site',
+  program: 'Program',
+  educationalRequirements: 'Educational Requirements',
+  experienceWithMentalHealthOrSubstanceUse: 'Experienced With MHSU',
+  currentOrMostRecentIndustry: 'Current or Most Recent Industry',
+  roleInvolvesMentalHealthOrSubstanceUse: 'Involved In Delivering MHSU Service',
+  indigenous: 'Indigenous',
+  driverLicense: `Driver's License`,
 };
 
 export const rosEditWarning =

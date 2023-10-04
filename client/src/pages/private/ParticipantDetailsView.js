@@ -331,7 +331,9 @@ export default () => {
 
             {!disableAssign && !participant.ros && (
               <>
-                <CheckPermissions permittedRoles={[Role.Employer, Role.HealthAuthority]}>
+                <CheckPermissions
+                  permittedRoles={[Role.Employer, Role.MHSUEmployer, Role.HealthAuthority]}
+                >
                   <PSICohortView
                     psiList={psiList}
                     assignAction={(cohort) => setSelectedCohort(cohort)}

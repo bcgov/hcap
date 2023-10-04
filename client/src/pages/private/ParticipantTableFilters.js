@@ -86,7 +86,7 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
           </TextField>
         </Box>
       </Grid>
-      <CheckPermissions permittedRoles={[Role.Employer, Role.HealthAuthority]}>
+      <CheckPermissions permittedRoles={[Role.Employer, Role.MHSUEmployer, Role.HealthAuthority]}>
         <Grid item>
           <Box pl={2}>
             <DebounceTextField

@@ -46,7 +46,7 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
 
   const isEmployer =
     roles.includes(Role.HealthAuthority) ||
-    roles.includes(Role.HealthAuthority) ||
+    roles.includes(Role.Employer) ||
     roles.includes(Role.MHSUEmployer);
 
   const {

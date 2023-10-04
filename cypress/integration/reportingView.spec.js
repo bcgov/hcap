@@ -69,7 +69,7 @@ describe('Reporting Download', () => {
     });
   });
 
-  describe('Employer', () => {
+  describe('Private Employer', () => {
     beforeEach(() => {
       cy.kcLogin('test-employer');
     });
@@ -77,12 +77,31 @@ describe('Reporting Download', () => {
       cy.kcLogout();
     });
 
-    it('Should not allow employer to view the reporting button', () => {
+    it('Should not allow private employer to view the reporting button', () => {
       cy.visit('/admin');
       cy.contains('button', 'Reporting').should('not.exist');
     });
 
-    it('Should not allow employer to view the reporting view page', () => {
+    it('Should not allow private employer to view the reporting view page', () => {
+      cy.visit('/reporting-view');
+      cy.get('.MuiTypography-subtitle1').contains(`HCAPInfoQuery@gov.bc.ca`).should('be.visible');
+    });
+  });
+
+  describe('MHSU Employer', () => {
+    beforeEach(() => {
+      cy.kcLogin('test-mhsu-employer');
+    });
+    afterEach(() => {
+      cy.kcLogout();
+    });
+
+    it('Should not allow mhsu employer to view the reporting button', () => {
+      cy.visit('/admin');
+      cy.contains('button', 'Reporting').should('not.exist');
+    });
+
+    it('Should not allow mhsu employer to view the reporting view page', () => {
       cy.visit('/reporting-view');
       cy.get('.MuiTypography-subtitle1').contains(`HCAPInfoQuery@gov.bc.ca`).should('be.visible');
     });

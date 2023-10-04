@@ -3,8 +3,14 @@ describe('Tests the Site View', () => {
     cy.kcLogout();
   });
 
-  it('visits siteView as employer', () => {
+  it('visits siteView as private employer', () => {
     cy.kcLogin('test-employer');
+    cy.visit('/site-view');
+    cy.contains('HCAPInfoQuery@gov.bc.ca').should('exist');
+  });
+
+  it('visits siteView as mhsu employer', () => {
+    cy.kcLogin('test-mhsu-employer');
     cy.visit('/site-view');
     cy.contains('HCAPInfoQuery@gov.bc.ca').should('exist');
   });

@@ -214,6 +214,92 @@
           "Hired By"
         ]
       }
+    },
+    {
+      "name": "mhsu-employer",
+      "fixture": "test-mhsu-employer",
+      "tabsWithMultiselect": [],
+      "tabsWithActions": [
+        "Available Participants",
+        "My Candidates",
+        "Archived Candidates",
+        "Hired Candidates",
+        "Return Of Service"
+      ],
+      "allTabs": [
+        "Participants",
+        "My Sites",
+        "Available Participants",
+        "My Candidates",
+        "Archived Candidates",
+        "Hired Candidates",
+        "Return Of Service"
+      ],
+      "tableTabs": {
+        "Available Participants": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "FSA",
+          "Phone Number",
+          "Email Address",
+          "Preferred Region(s)",
+          "Site Distance",
+          "Last Updated"
+        ],
+        "My Candidates": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "FSA",
+          "Phone Number",
+          "Email Address",
+          "Preferred Region(s)",
+          "Site Distance",
+          "Last Updated",
+          "Last Engaged By",
+          "Last Engaged Date",
+          "Site Name"
+        ],
+        "Archived Candidates": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "FSA",
+          "Preferred Region(s)",
+          "Site Distance",
+          "Non-HCAP",
+          "Last Updated",
+          "Site Name",
+          "Archive Reason"
+        ],
+        "Hired Candidates": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "Phone Number",
+          "Email Address",
+          "Site Name",
+          "Non-HCAP",
+          "Last Updated",
+          "Graduated",
+          "Hired By"
+        ],
+        "Return Of Service": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "Phone Number",
+          "Email Address",
+          "Return of Service Start Date",
+          "RoS Site Name",
+          "Hired By"
+        ]
+      }
     }
   ]
 }

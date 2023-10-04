@@ -39,8 +39,16 @@ describe('Login', () => {
     cy.contains('Manage PSI').should('exist');
   });
 
-  it('logs in as an employer and tests /admin redirection', () => {
+  it('logs in as a private employer and tests /admin redirection', () => {
     cy.kcLogin('test-employer');
+    cy.visit('/admin');
+    cy.location().should((loc) => {
+      expect(loc.pathname).to.eq('/participant-view');
+    });
+  });
+
+  it('logs in as a mhsu employer and tests /admin redirection', () => {
+    cy.kcLogin('test-mhsu-employer');
     cy.visit('/admin');
     cy.location().should((loc) => {
       expect(loc.pathname).to.eq('/participant-view');

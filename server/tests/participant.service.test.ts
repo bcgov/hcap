@@ -64,6 +64,7 @@ describe('Participants Service', () => {
       emailAddress: 'cindy@example.ca',
       postalCodeFsa: 'X2X',
       preferredLocation: 'Northern',
+      program: 'HCA',
     },
     {
       callbackStatus: false,
@@ -76,6 +77,7 @@ describe('Participants Service', () => {
       emailAddress: 'doug@test.bc.gov',
       postalCodeFsa: 'C9C',
       preferredLocation: 'Vancouver Coastal;Vancouver Island',
+      program: 'HCA',
     },
     {
       callbackStatus: false,
@@ -90,6 +92,7 @@ describe('Participants Service', () => {
       emailAddress: 'em1990@test.ca',
       postalCodeFsa: 'C9C',
       preferredLocation: 'Vancouver Island',
+      program: 'HCA',
     },
     {
       callbackStatus: false,
@@ -102,6 +105,7 @@ describe('Participants Service', () => {
       emailAddress: 'foo@test.com',
       postalCodeFsa: 'V1V',
       preferredLocation: 'Vancouver Island',
+      program: 'HCA',
     },
     {
       callbackStatus: false,
@@ -116,6 +120,7 @@ describe('Participants Service', () => {
       emailAddress: 'gem@gemma.gusto.ca',
       postalCodeFsa: 'X1X',
       preferredLocation: 'Vancouver Coastal',
+      program: 'HCA',
     },
     {
       callbackStatus: false,
@@ -130,6 +135,7 @@ describe('Participants Service', () => {
       emailAddress: 'jj@test.com',
       postalCodeFsa: 'X1X',
       preferredLocation: 'Northern',
+      program: 'HCA',
     },
     {
       callbackStatus: false,
@@ -141,6 +147,7 @@ describe('Participants Service', () => {
       emailAddress: 'isa@example.com',
       postalCodeFsa: 'Z0Z',
       preferredLocation: 'Interior',
+      program: 'HCA',
     },
     {
       callbackStatus: false,
@@ -154,6 +161,7 @@ describe('Participants Service', () => {
       emailAddress: 'hux123@example.com',
       postalCodeFsa: 'Z0Z',
       preferredLocation: 'Fraser;Vancouver Coastal',
+      program: 'HCA',
     },
   ];
 

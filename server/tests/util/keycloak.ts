@@ -22,6 +22,12 @@ export const employer: TestUser = {
   username: 'test-employer',
   password: process.env.KC_TEST_EMPLOYER_PWD || 'password',
 };
+
+export const mhsuEmployer: TestUser = {
+  username: 'test-mhsu-employer',
+  password: process.env.KC_TEST_EMPLOYER_PWD || 'password',
+};
+
 export const employerBceid: TestUser = {
   username: 'employer@bceid-basic-and-business',
   password: process.env.KC_TEST_EMPLOYER_PWD || 'password',

@@ -16,7 +16,7 @@ import {
   indigenousIdentities,
   indigenousIdentityLabels,
 } from '../modal-forms/IndigenousDeclarationForm';
-import { BC_LAWS_LINK, HCAP_INFO_EMAIL } from '../../constants';
+import { BC_LAWS_LINK, HCAP_INFO_EMAIL, Program } from '../../constants';
 import { PleaseNoteBanner } from './PleaseNoteBanner';
 import { HCAPProgramSection } from './sections/HCAPProgramSection';
 import { EligibilitySection } from './sections/EligibilitySection';
@@ -171,7 +171,7 @@ export const Fields = ({
           {/** Other Section */}
           <OtherSection
             checkFieldDisability={checkFieldDisability}
-            isMHAWProgram={values.program === 'MHAW'}
+            isMHAWProgram={values.program === Program.MHAW}
           />
 
           {/** Preferred Work Location Section */}
@@ -185,7 +185,7 @@ export const Fields = ({
           {/** Background Information Section */}
           <BackgroundInformationSection
             checkFieldDisability={checkFieldDisability}
-            isMHAWProgram={values.program === 'MHAW'}
+            isMHAWProgram={values.program === Program.MHAW}
             selectedOption={values.currentOrMostRecentIndustry}
           />
         </Grid>

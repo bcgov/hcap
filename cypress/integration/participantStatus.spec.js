@@ -86,8 +86,8 @@ describe('Participants status suite', () => {
     cy.get('#mui-component-select-status').click();
     cy.get('li[data-value="Not begun orientation or training"]').click();
 
-    // intend to rehire = Yes + acknowledge archiving irreversible
-    cy.get('input[name="rehire"][value="Yes"]').click();
+    // employee remaining in the MHSU / HCA sector, within this role or another = Yes + acknowledge archiving irreversible
+    cy.get('input[name="remainingInSectorOrRoleOrAnother"][value="Yes"]').click();
     cy.get('input[name="confirmed"]').click();
 
     cy.contains('button', 'Confirm').click();

@@ -33,24 +33,22 @@ export const ArchiveHiredParticipantSchema = yup.object().shape({
       ? schema.required('Please include a status').oneOf(typeValidationMap[type].statuses)
       : schema.optional().nullable();
   }),
-  endDate: yup.date().when('type', {
-    is: EmploymentEndedType.value,
-    then: yup
-      .date()
-      .test('is-present', 'Invalid entry. Date must be in the past.', validateDateIsInThePast)
-      .test(
-        'is-reasonable',
-        'Invalid entry. Date must be after December 31st 1899.',
-        validateDateIsReasonable
-      )
-      .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
-  }),
-  rehire: yup.string().when('type', {
+  endDate: yup
+    .date()
+    .test('is-present', 'Invalid entry. Date must be in the past.', validateDateIsInThePast)
+    .test(
+      'is-reasonable',
+      'Invalid entry. Date must be after December 31st 1899.',
+      validateDateIsReasonable
+    )
+    .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
+
+  remainingInSectorOrRoleOrAnother: yup.string().when('type', {
     is: (type) => [EmploymentEndedType.value, ROSCompletedType.value].includes(type),
     then: yup
       .string()
-      .oneOf(['Yes', 'No'], 'Must be either Yes or No.')
-      .required("Must be either 'Yes' or 'No'."),
+      .oneOf(['Yes', 'No', `I don't know`], `Must be either Yes, No or I don't know.`)
+      .required("Must be either Yes, No or I don't know."),
   }),
   confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
 });

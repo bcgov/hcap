@@ -72,7 +72,7 @@ interface ArchivedJoin extends HiredJoin {
     site: number;
     type: string;
     reason: string;
-    rehire: string;
+    remainingInSectorOrRoleOrAnother: string;
     status: string;
     /** YYYY/MM/DD format date string */
     endDate: string;

@@ -8,8 +8,7 @@
 import './load-env';
 import path from 'path';
 import { parseFile } from 'fast-csv';
-import { dbClient } from '../db';
-import { collections } from '../db/schema';
+import { dbClient, collections } from '../db';
 import { approveUsers, employer, healthAuthority, ministryOfHealth } from '../tests/util/keycloak';
 import { logWithLevel, displayResultsTable, InsertResult, InsertStatus } from './services';
 

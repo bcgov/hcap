@@ -114,6 +114,42 @@
   },
   {
     "user": {
+      "id": "fe20c528-d276-49d1-a72b-0f88e3970afc",
+      "username": "mhsu-employer",
+      "enabled": true,
+      "emailVerified": false,
+      "firstName": "Mhsu",
+      "lastName": "Employer",
+      "email": "test.mhsu@freshworks.io",
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": false,
+        "manage": true
+      }
+    },
+    "roles": [
+      {
+        "id": "ae9aae39-bd5b-4c8a-8543-e836b9fe4c62",
+        "name": "region_fraser",
+        "description": "Users with access to Fraser Health region data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      },
+      {
+        "id": "6a2abf60-d8dc-4de0-9ba8-f0719434d0af",
+        "name": "mhsu-employer",
+        "description": "Mental Health and Substance Use",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      }
+    ]
+  },
+  {
+    "user": {
       "id": "44852cab-1c53-4460-af0d-0bd97d7010af",
       "createdTimestamp": 1625597738468,
       "username": "test-employer-multi",

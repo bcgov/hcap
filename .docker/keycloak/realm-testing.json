@@ -378,6 +378,15 @@
           "attributes": {}
         },
         {
+          "id": "6a2abf60-d8dc-4de0-9ba8-f0719434d0af",
+          "name": "mhsu-employer",
+          "description": "Mental Health and Substance Use",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9",
+          "attributes": {}
+        },
+        {
           "id": "9238dddb-a541-4b82-87a9-438709259ad3",
           "name": "participant",
           "description": "Participant use role",

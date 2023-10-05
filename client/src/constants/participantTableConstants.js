@@ -124,23 +124,19 @@ export const tabStatuses = {
   ],
 };
 
+const EmployerTabs = [
+  'Available Participants',
+  'My Candidates',
+  'Archived Candidates',
+  'Hired Candidates',
+  'Return Of Service',
+];
 export const tabsByRole = {
-  superuser: ['Participants'],
-  ministry_of_health: ['Participants'],
-  health_authority: [
-    'Available Participants',
-    'My Candidates',
-    'Archived Candidates',
-    'Hired Candidates',
-    'Return Of Service',
-  ],
-  employer: [
-    'Available Participants',
-    'My Candidates',
-    'Archived Candidates',
-    'Hired Candidates',
-    'Return Of Service',
-  ],
+  [Role.Superuser]: ['Participants'],
+  [Role.MinistryOfHealth]: ['Participants'],
+  [Role.HealthAuthority]: EmployerTabs,
+  [Role.Employer]: EmployerTabs,
+  [Role.MHSUEmployer]: EmployerTabs,
 };
 
 const columns = {
@@ -200,7 +196,7 @@ const {
 } = columns;
 
 export const columnsByRole = {
-  superuser: {
+  [Role.Superuser]: {
     Participants: [
       id,
       lastName,
@@ -217,8 +213,7 @@ export const columnsByRole = {
       edit,
     ],
   },
-
-  ministry_of_health: {
+  [Role.MinistryOfHealth]: {
     Participants: [
       id,
       lastName,
@@ -233,7 +228,7 @@ export const columnsByRole = {
     ],
   },
 
-  health_authority: {
+  [Role.HealthAuthority]: {
     'Available Participants': [
       id,
       lastName,

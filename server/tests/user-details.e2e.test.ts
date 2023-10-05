@@ -67,7 +67,7 @@ describe('api-e2e tests for /api/v1/user-details', () => {
 
     it('should assign site to MHSU employer', async () => {
       const site1 = await makeTestSite({
-        siteId: 206758493211,
+        siteId: 206758493212,
         siteName: 'Test Site for User assignment',
         city: 'Test City 1030',
       });

@@ -302,7 +302,6 @@ class Keycloak {
             this.clientIdMap[this.clientNameFrontend]
           }/roles/${role}/users?briefRepresentation=true&max=1000000`;
           const response = await this.axiosInstance.get(url);
-          console.log(response);
           return response.data.filter((user) => user.username !== 'service-account');
         })
       );

@@ -39,7 +39,7 @@ describe('Participant View', () => {
   });
 
   it('Visits Participant View as a single-region mhsu employer', () => {
-    cy.kcLogin('test-mhsu-employer');
+    cy.kcLogin('mhsu-employer');
     cy.visit('/participant-view');
     cy.contains('Fraser').should('have.class', 'Mui-disabled');
     cy.get('ul.MuiMenu-list').should('not.be.visible');

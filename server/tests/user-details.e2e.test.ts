@@ -73,9 +73,7 @@ describe('api-e2e tests for /api/v1/user-details', () => {
       });
       const header = await getKeycloakToken(superuser);
       const usersRes = await request(app).get('/api/v1/users').set(header);
-      const [employer] = usersRes.body.data.filter(
-        (user) => user.username === 'test-mhsu-employer'
-      );
+      const [employer] = usersRes.body.data.filter((user) => user.username === 'mhsu-employer');
       expect(usersRes.status).toEqual(200);
       const res = await request(app)
         .patch(`/api/v1/user-details?id=${employer.id}`)

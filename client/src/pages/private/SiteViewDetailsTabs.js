@@ -44,7 +44,10 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
     setActionMenuParticipant(null);
   };
 
-  const isEmployer = roles.includes(Role.HealthAuthority) || roles.includes(Role.Employer);
+  const isEmployer =
+    roles.includes(Role.HealthAuthority) ||
+    roles.includes(Role.Employer) ||
+    roles.includes(Role.MHSUEmployer);
 
   const {
     state: { columns, selectedTab, site },

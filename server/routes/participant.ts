@@ -206,6 +206,7 @@ participantsRouter.get(
       siteSelector,
       statusFilters,
       isIndigenousFilter,
+      programFilter,
     } = req.query;
     const result = await getParticipants(
       user,
@@ -222,7 +223,8 @@ participantsRouter.get(
       emailFilter,
       siteSelector,
       statusFilters,
-      isIndigenousFilter
+      isIndigenousFilter,
+      programFilter
     );
     logger.info({
       action: 'participant_get',
@@ -307,7 +309,7 @@ if (process.env.APP_ENV === 'local') {
 // Add Hired Participant to Database
 newHiredParticipantRouter.post(
   `/`,
-  keycloak.allowRolesMiddleware(Role.HealthAuthority, Role.Employer),
+  keycloak.allowRolesMiddleware(Role.HealthAuthority, Role.Employer, Role.MHSUEmployer),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ExternalHiredParticipantSchema, req.body);
@@ -385,7 +387,7 @@ employerActionsRouter.post(
 // Engage participant
 employerActionsRouter.post(
   `/`,
-  keycloak.allowRolesMiddleware(Role.HealthAuthority, Role.Employer),
+  keycloak.allowRolesMiddleware(Role.HealthAuthority, Role.Employer, Role.MHSUEmployer),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     await validate(ParticipantStatusChange, req.body);
@@ -433,7 +435,7 @@ employerActionsRouter.post(
 
 employerActionsRouter.delete(
   '/acknowledgment',
-  keycloak.allowRolesMiddleware(Role.HealthAuthority, Role.Employer),
+  keycloak.allowRolesMiddleware(Role.HealthAuthority, Role.Employer, Role.MHSUEmployer),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
     // Get user

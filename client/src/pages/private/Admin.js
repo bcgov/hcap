@@ -26,7 +26,8 @@ export default () => {
   const name = auth.user?.name || '';
 
   useEffect(() => {
-    if (roles.includes(Role.Employer)) history.push(Routes.ParticipantView);
+    if (roles.includes(Role.Employer) || roles.includes(Role.MHSUEmployer))
+      history.push(Routes.ParticipantView);
   }, [roles, history]);
 
   const renderAdminButton = (route, label) => (

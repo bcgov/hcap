@@ -3,6 +3,7 @@ import { dbClient, collections } from '../db';
 import { HcapUserInfo } from '../keycloak';
 import { dayjs } from '../utils';
 import { ParticipantStatus as ps } from '../constants';
+import { isPrivateEmployerOrMHSUEmployerOrHA } from './participants-helper';
 
 export const userRegionQuery = (regions: string[], target: string) => {
   if (regions.length === 0) return null;
@@ -54,7 +55,7 @@ export const getUserNotifications = async (
   hcapUserInfo: HcapUserInfo & { sites: [id: number] }
 ) => {
   const notifications = [];
-  if (hcapUserInfo.isEmployer || hcapUserInfo.isHA) {
+  if (isPrivateEmployerOrMHSUEmployerOrHA(hcapUserInfo)) {
     const rosEndedNotifications = await getROSEndedNotifications(hcapUserInfo.sites);
     if (rosEndedNotifications.length > 0) {
       notifications.push({

@@ -7,6 +7,7 @@ export type EmailAddressFilter = { 'body.emailAddress ilike': string };
 export type InterestFilter = { 'body.interested <>': string[] } | string[];
 export type IsIndigenousFilter = { 'body.isIndigenous =': boolean };
 export type idFilter = { 'id =': string };
+export type ProgramFilter = { 'body.program =': string };
 
 export class RegionsFilteredParticipantsFinder {
   context;

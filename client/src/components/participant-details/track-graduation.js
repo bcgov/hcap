@@ -67,7 +67,7 @@ export const TrackGraduation = (props) => {
   const [showArchiveModel, setShowArchiveModal] = useState(false);
   const { openToast } = useToast();
 
-  const isEmployer = roles.includes(Role.Employer);
+  const isEmployer = roles.includes(Role.Employer) || roles.includes(Role.MHSUEmployer);
 
   const cohortEndDate = props.participant?.cohort
     ? formatCohortDate(props.participant.cohort.end_date, { isForm: true })
@@ -110,7 +110,9 @@ export const TrackGraduation = (props) => {
               {props?.participant?.postHireStatusLabel || 'N/A'}
             </Typography>
           </Box>
-          <CheckPermissions permittedRoles={[Role.Employer, Role.HealthAuthority]}>
+          <CheckPermissions
+            permittedRoles={[Role.Employer, Role.MHSUEmployer, Role.HealthAuthority]}
+          >
             <Grid item xs={6}>
               <Button
                 color='default'

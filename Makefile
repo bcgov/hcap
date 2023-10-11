@@ -64,6 +64,10 @@ seed-data:
 	@echo "Seeding additional data from server/test-data"
 	@docker-compose -f docker-compose.dev.yml exec server npm run feed-data
 
+archive-withdrawn-participants:
+	@echo "Archiving engaged withdrawn participants"
+	@docker exec $(APP_NAME)-server npm run archive-withdrawn-participants
+
 # Local Development
 
 local-build:

@@ -49,6 +49,7 @@ export const getParticipantPageLabel = (pageName) => {
 
 export const displayParticipantData = (inputData) => ({
   ...pick(inputData, Object.keys(keyLabelMap)),
+  program: inputData.program,
   fullName: `${inputData.firstName} ${inputData.lastName}`,
   interested: getInterestLabel(inputData.interested),
   status: getStatusLabel(inputData.status),

@@ -27,7 +27,7 @@
     "watch": "nodemon main.ts",
     "debug": "nodemon --exec 'node --inspect=0.0.0.0:9229 --require ts-node/register main.ts'",
     "start": "NODE_ENV=production ts-node -T main.ts",
-    "test:debug": "NODE_ENV=test jest --runInBand --detectOpenHandles",
+    "test:debug": "NODE_ENV=test node --inspect=0.0.0.0:9229 ./node_modules/jest/bin/jest.js --runInBand --detectOpenHandles",
     "test": "NODE_ENV=test jest --silent --colors --runInBand --forceExit --detectOpenHandles --coverage --verbose false"
   },
   "dependencies": {

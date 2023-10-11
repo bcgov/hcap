@@ -241,7 +241,7 @@ export default () => {
   // Render
   return (
     <Page>
-      <CheckPermissions permittedRoles={UserRoles} renderErrorMessage>
+      <CheckPermissions permittedRoles={UserRoles} participant={participant} renderErrorMessage>
         {error && <Alert severity='error'>{error}</Alert>}
         {!participant && !error && <Alert severity='info'>Loading participant details</Alert>}
         {participant && (

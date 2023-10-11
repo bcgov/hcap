@@ -21,149 +21,12 @@ import { evaluateBooleanAnswer, postHireStatuses } from '../validation';
 import { saveSingleSite } from '../services/employers';
 import { approveUsers, employer, healthAuthority } from './util/keycloak';
 import { participantFields } from '../constants/participant-fields';
+import { fakeParticipant } from './util/participant';
 
 describe('Participants Service', () => {
   const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
 
-  const allParticipants = [
-    {
-      callbackStatus: false,
-      nonHCAP: 'yes',
-      crcClear: 'yes',
-      lastName: 'Alex',
-      firstName: 'Alliteration',
-      maximusId: 6488690,
-      interested: 'yes',
-      postalCode: 'V1V2V3',
-      phoneNumber: '2502223333',
-      emailAddress: 'alli@example.com',
-      postalCodeFsa: 'V1V',
-      preferredLocation: 'Fraser',
-    },
-    {
-      callbackStatus: false,
-      crcClear: 'yes',
-      lastName: 'Bob',
-      firstName: 'Burger',
-      maximusId: 6488691,
-      interested: 'yes',
-      postalCode: 'X1X1X1',
-      phoneNumber: '7781234567',
-      emailAddress: 'bob.burger@test.com',
-      postalCodeFsa: 'X1X',
-      preferredLocation: 'Interior',
-    },
-    {
-      callbackStatus: false,
-      crcClear: 'yes',
-      lastName: 'Cindy',
-      firstName: 'Callback',
-      maximusId: 6488692,
-      postalCode: 'X2X2X2',
-      phoneNumber: '7780987654',
-      emailAddress: 'cindy@example.ca',
-      postalCodeFsa: 'X2X',
-      preferredLocation: 'Northern',
-      program: 'HCA',
-    },
-    {
-      callbackStatus: false,
-      lastName: 'Doug',
-      firstName: 'Douglas',
-      maximusId: 6488693,
-      interested: 'yes',
-      postalCode: 'C9C8C7',
-      phoneNumber: '6051234567',
-      emailAddress: 'doug@test.bc.gov',
-      postalCodeFsa: 'C9C',
-      preferredLocation: 'Vancouver Coastal;Vancouver Island',
-      program: 'HCA',
-    },
-    {
-      callbackStatus: false,
-      nonHCAP: 'yes',
-      crcClear: 'no',
-      lastName: 'Emily',
-      firstName: 'Everready',
-      maximusId: 6488694,
-      interested: 'yes',
-      postalCode: 'C9C8C7',
-      phoneNumber: '6050987654',
-      emailAddress: 'em1990@test.ca',
-      postalCodeFsa: 'C9C',
-      preferredLocation: 'Vancouver Island',
-      program: 'HCA',
-    },
-    {
-      callbackStatus: false,
-      lastName: 'Freddy',
-      firstName: 'Foo',
-      maximusId: 6488695,
-      interested: 'yes',
-      postalCode: 'V1V2V3',
-      phoneNumber: '2501112222',
-      emailAddress: 'foo@test.com',
-      postalCodeFsa: 'V1V',
-      preferredLocation: 'Vancouver Island',
-      program: 'HCA',
-    },
-    {
-      callbackStatus: false,
-      nonHCAP: 'yes',
-      crcClear: 'yes',
-      lastName: 'Gemma',
-      firstName: 'Gusto',
-      maximusId: 6488696,
-      interested: 'yes',
-      postalCode: 'X1X1X1',
-      phoneNumber: '7781112222',
-      emailAddress: 'gem@gemma.gusto.ca',
-      postalCodeFsa: 'X1X',
-      preferredLocation: 'Vancouver Coastal',
-      program: 'HCA',
-    },
-    {
-      callbackStatus: false,
-      nonHCAP: 'no',
-      crcClear: 'yes',
-      lastName: 'Jerry',
-      firstName: 'Jenkins',
-      maximusId: 6488699,
-      interested: 'no',
-      postalCode: 'X1X1X1',
-      phoneNumber: '7784445555',
-      emailAddress: 'jj@test.com',
-      postalCodeFsa: 'X1X',
-      preferredLocation: 'Northern',
-      program: 'HCA',
-    },
-    {
-      callbackStatus: false,
-      lastName: 'Isabelle',
-      firstName: 'Isaac',
-      maximusId: 6488698,
-      postalCode: 'Z0Z0Z0',
-      phoneNumber: '7783334444',
-      emailAddress: 'isa@example.com',
-      postalCodeFsa: 'Z0Z',
-      preferredLocation: 'Interior',
-      program: 'HCA',
-    },
-    {
-      callbackStatus: false,
-      crcClear: 'yes',
-      lastName: 'Hector',
-      firstName: 'Hux',
-      maximusId: 6488697,
-      interested: 'yes',
-      postalCode: 'Z0Z0Z0',
-      phoneNumber: '7782223333',
-      emailAddress: 'hux123@example.com',
-      postalCodeFsa: 'Z0Z',
-      preferredLocation: 'Fraser;Vancouver Coastal',
-      program: 'HCA',
-    },
-  ];
+  const allParticipants = [...Array(10)].map(() => fakeParticipant());
 
   beforeAll(async () => {
     await startDB();
@@ -312,6 +175,7 @@ describe('Participants Service', () => {
       nonHCAP: 'yes',
       crcClear: 'yes',
       preferredLocation: 'Fraser',
+      program: 'HCA',
     };
 
     await makeParticipant(participant);
@@ -638,47 +502,9 @@ describe('Participants Service', () => {
     const employerAId = 1;
     const employerBId = 2;
 
-    const participant1 = {
-      maximusId: 648690,
-      lastName: 'Extra',
-      firstName: 'Eddy',
-      postalCode: 'V1V2V3',
-      postalCodeFsa: 'V1V',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy@example.com',
-      interested: 'yes',
-      nonHCAP: 'yes',
-      crcClear: 'yes',
-      preferredLocation: 'Fraser',
-    };
-
-    const participant2 = {
-      maximusId: 648691,
-      lastName: 'Extra',
-      firstName: 'Eduardo',
-      postalCode: 'V1V2V3',
-      postalCodeFsa: 'V1V',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy@example.com',
-      interested: 'yes',
-      nonHCAP: 'yes',
-      crcClear: 'no',
-      preferredLocation: 'Fraser',
-    };
-
-    const participant3 = {
-      maximusId: 648692,
-      lastName: 'Extra',
-      firstName: 'Emanuel',
-      postalCode: 'V1V2V3',
-      postalCodeFsa: 'V1V',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy@example.com',
-      interested: 'no',
-      nonHCAP: 'yes',
-      crcClear: 'no',
-      preferredLocation: 'Fraser',
-    };
+    const participant1 = fakeParticipant();
+    const participant2 = fakeParticipant({ crcClear: 'no' });
+    const participant3 = fakeParticipant({ interested: 'no' });
 
     await makeParticipant(participant1);
     await makeParticipant(participant2);
@@ -713,17 +539,7 @@ describe('Participants Service', () => {
     await approveUsers(employer);
     const employerAId = 1;
 
-    const participant1 = {
-      lastName: 'Extra',
-      firstName: 'Eddy',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy@example.com',
-      interested: 'yes',
-      nonHCAP: 'yes',
-      crcClear: 'yes',
-      preferredLocation: 'Fraser',
-      contactedDate: '09/09/2020',
-    };
+    const participant1 = fakeParticipant({ preferredLocation: 'Fraser' });
 
     const response = await makeParticipant(participant1);
     await setParticipantStatus(employerAId, response.id, ps.PROSPECTING);
@@ -773,19 +589,7 @@ describe('Participants Service', () => {
   it("Tests functionality for updating a user's information", async () => {
     await closeDB();
     await startDB();
-    const participantData = {
-      maximusId: 648691,
-      lastName: 'Extra',
-      firstName: 'Eduardo',
-      postalCode: 'V1V2V3',
-      postalCodeFsa: 'V1V',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy@example.com',
-      interested: 'yes',
-      nonHCAP: 'yes',
-      crcClear: 'no',
-      preferredLocation: 'Fraser',
-    };
+    const participantData = fakeParticipant({ preferredLocation: 'Fraser' });
 
     const patchableFields = [
       'firstName',
@@ -834,17 +638,7 @@ describe('Participants Service', () => {
     await approveUsers(employer);
     const employerAId = 1;
 
-    const participant1 = {
-      lastName: 'Extra',
-      firstName: 'Eddy',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy@example.com',
-      interested: 'yes',
-      nonHCAP: 'yes',
-      crcClear: 'yes',
-      preferredLocation: 'Fraser',
-      contactedDate: '09/09/2020',
-    };
+    const participant1 = fakeParticipant({ preferredLocation: 'Fraser' });
 
     await saveSingleSite({
       siteId: 2,
@@ -884,117 +678,57 @@ describe('Participants Service', () => {
   });
 
   it('test participant user mapper methods', async () => {
-    const participant1 = {
-      lastName: 'Extra',
-      firstName: 'Eddy',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy1@example.com',
-      interested: 'yes',
-      nonHCAP: 'yes',
-      crcClear: 'yes',
-      preferredLocation: 'Fraser',
-      contactedDate: '09/09/2020',
-    };
+    const participant1 = fakeParticipant();
 
-    const participant2 = {
-      lastName: 'Extra',
-      firstName: 'Eddy-ss',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy1@example.com',
-      interested: 'yes',
-      nonHCAP: 'yes',
-      crcClear: 'yes',
-      preferredLocation: 'Interior',
-      contactedDate: '08/09/2020',
-    };
+    const participant2 = fakeParticipant({ emailAddress: participant1.emailAddress });
 
     await makeParticipant(participant1);
     await makeParticipant(participant2);
     const userId = v4();
 
-    const result2 = await getParticipantsForUser(userId, 'eddy1@example.com');
+    const result2 = await getParticipantsForUser(userId, participant1.emailAddress);
     expect(result2.length).toEqual(2);
-    expect(result2[0].emailAddress).toEqual('eddy1@example.com');
+    expect(result2[0].emailAddress).toEqual(participant1.emailAddress);
 
-    const participant3 = {
-      lastName: 'Extra',
-      firstName: 'Eddy-New',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy1@example.com',
-      interested: 'yes',
-      nonHCAP: 'yes',
-      crcClear: 'yes',
-      preferredLocation: 'Interior',
-      contactedDate: '07/09/2020',
-    };
-
+    const participant3 = fakeParticipant({ emailAddress: participant1.emailAddress });
     await makeParticipant(participant3);
 
-    const result3 = await getParticipantsForUser(userId, 'eddy1@example.com');
+    const result3 = await getParticipantsForUser(userId, participant1.emailAddress);
     expect(result3.length).toEqual(3);
   });
 
   it('should map participant with user', async () => {
-    const participant1 = {
-      lastName: 'Extra',
-      firstName: 'Eddy',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy2990@example.com',
-      interested: 'yes',
-      nonHCAP: 'yes',
-      crcClear: 'yes',
-      preferredLocation: 'Fraser',
-      contactedDate: '09/09/2020',
-    };
+    const participant1 = fakeParticipant();
 
     const resp = await makeParticipant(participant1);
     const userId = v4();
 
     await mapUserWithParticipant(userId, resp.id);
-    const result = await getParticipantsForUser(userId, 'eddy2990@example.com');
-    expect(result[0].emailAddress).toEqual('eddy2990@example.com');
+    const result = await getParticipantsForUser(userId, participant1.emailAddress);
+    expect(result[0].emailAddress).toEqual(participant1.emailAddress);
   });
+
   it('Should withdraw multiple participants', async () => {
     // Setup
-    const participantData = {
-      lastName: 'Extra',
-      firstName: 'Eddy',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy2990@example.com',
-      interested: 'yes',
-      nonHCAP: 'yes',
-      crcClear: 'yes',
-      preferredLocation: 'Fraser',
-      contactedDate: '09/09/2020',
-    };
+    const participant = fakeParticipant();
 
-    const resp1 = await makeParticipant(participantData);
-    const resp2 = await makeParticipant(participantData);
+    const resp1 = await makeParticipant(participant);
+    const resp2 = await makeParticipant(
+      fakeParticipant({ emailAddress: participant.emailAddress })
+    );
 
     const userId = v4();
 
     await mapUserWithParticipant(userId, resp1.id);
     await mapUserWithParticipant(userId, resp2.id);
 
-    await withdrawParticipantsByEmail(userId, participantData.emailAddress);
-    const finalParticipants = await getParticipantsForUser(userId, participantData.emailAddress);
-    finalParticipants.forEach((participant) => {
-      expect(participant.interested).toEqual('withdrawn');
-    });
+    await withdrawParticipantsByEmail(userId, participant.emailAddress);
+    const finalParticipants = await getParticipantsForUser(userId, participant.emailAddress);
+    finalParticipants.forEach(({ interested }) => expect(interested).toEqual('withdrawn'));
   });
   it('Getting participants should return hired data.', async () => {
-    const participantData = {
-      lastName: 'Extra',
-      firstName: 'Eddy',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy2990@example.com',
-      interested: 'yes',
-      nonHCAP: 'yes',
-      crcClear: 'yes',
-      preferredLocation: 'Fraser',
-      contactedDate: '09/09/2020',
-    };
-    const resp = await makeParticipant(participantData);
+    const participant = fakeParticipant();
+    const resp = await makeParticipant(participant);
 
     const userId = v4();
     const employerId = 1;
@@ -1005,10 +739,8 @@ describe('Participants Service', () => {
     await setParticipantStatus(employerId, resp.id, ps.INTERVIEWING);
     await setParticipantStatus(employerId, resp.id, ps.OFFER_MADE);
     await setParticipantStatus(employerId, resp.id, ps.HIRED);
-    const finalParticipants = await getParticipantsForUser(userId, participantData.emailAddress);
-    expect(Boolean(finalParticipants.find((participant) => participant.hired.length > 0))).toEqual(
-      true
-    );
+    const finalParticipants = await getParticipantsForUser(userId, participant.emailAddress);
+    expect(Boolean(finalParticipants.find(({ hired }) => hired.length > 0))).toEqual(true);
   });
 
   it('should returns post hire statuses', async () => {
@@ -1017,17 +749,7 @@ describe('Participants Service', () => {
     await approveUsers(employer);
     const employerAId = 1;
 
-    const participant1 = {
-      lastName: 'Extra',
-      firstName: 'Eddy',
-      phoneNumber: '2502223333',
-      emailAddress: 'eddy@example.com',
-      interested: 'yes',
-      nonHCAP: 'yes',
-      crcClear: 'yes',
-      preferredLocation: 'Fraser',
-      contactedDate: '09/09/2020',
-    };
+    const participant1 = fakeParticipant({ preferredLocation: 'Fraser' });
 
     const response = await makeParticipant(participant1);
 

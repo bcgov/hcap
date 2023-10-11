@@ -12,7 +12,7 @@ export const OtherSection = ({ checkFieldDisability, isMHAWProgram }) => {
     <>
       {/** Q10 do you have a valid BC drivers license */}
       <SectionHeader text='Other' />
-      <Question text='10. * Do you have a valid BC Drivers Licence?' />
+      <Question text='10. * Do you have a valid Class 5 BC Drivers Licence?' />
       <Grid item xs={12}>
         <FastField
           name='driverLicense'

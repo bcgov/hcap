@@ -30,10 +30,8 @@ export const getEmployers = async (user: HcapUserInfo): Promise<EmployerSite[]> 
 export const getEmployerByID = async (id: number) =>
   dbClient.db[collections.EMPLOYER_FORMS].findDoc({ id });
 
-export const saveSingleSite = async (sitePayload) => {
-  const res = await dbClient.db.saveDoc(collections.EMPLOYER_SITES, sitePayload);
-  return res;
-};
+export const saveSingleSite = async (sitePayload) =>
+  dbClient.db.saveDoc(collections.EMPLOYER_SITES, sitePayload);
 
 export const updateSite = async (id: number, site) => {
   const changes = site.history[0].changes.reduce(

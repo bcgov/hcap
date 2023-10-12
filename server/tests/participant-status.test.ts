@@ -1,16 +1,18 @@
 // Test execution code: npm run test:debug participant-status.test.js
-import { dbClient, collections } from '../db';
-import { getParticipants } from '../services/participants';
+import { collections, dbClient } from '../db';
+import { getParticipants, makeParticipant } from '../services/participants';
 
-import { setParticipantStatus, hideStatusForUser } from '../services/participant-status';
+import { hideStatusForUser, setParticipantStatus } from '../services/participant-status';
 
-import { startDB, closeDB } from './util/db';
-import { makeTestParticipant, makeTestSite } from './util/integrationTestData';
+import { closeDB, startDB } from './util/db';
+import { makeTestSite } from './util/integrationTestData';
 
 import { ParticipantStatus } from '../constants';
 import { approveUsers, employer, healthAuthority, superuser } from './util/keycloak';
+import { fakeParticipant, getParticipantsByStatus } from './util/participant';
 
 const {
+  OPEN,
   PROSPECTING,
   INTERVIEWING,
   OFFER_MADE,
@@ -35,24 +37,22 @@ describe('Test Participant status data model and service', () => {
   });
 
   it('should set participant statuses', async () => {
-    const participant = await makeTestParticipant({
-      emailAddress: 'test.set.status@hcap.io',
-    });
-    const site = await makeTestSite({
+    const participant = await makeParticipant(fakeParticipant());
+    const site1 = await makeTestSite({
       siteId: 202205061150,
       siteName: 'Test Site 10001',
       city: 'Test City 10001',
     });
 
-    const emp1 = { id: 1, sites: [site.siteId] };
-    const emp2 = { id: 2, sites: [site.siteId] };
+    const emp1 = { id: 1, sites: [site1.siteId] };
+    const emp2 = { id: 2, sites: [site1.siteId] };
 
     const ps1 = await setParticipantStatus(
       emp1.id,
       participant.id,
       PROSPECTING,
       {
-        site: site.siteId,
+        site: site1.siteId,
       },
       emp1
     );
@@ -60,7 +60,7 @@ describe('Test Participant status data model and service', () => {
     // Verify newly created status
     const prospectingStatus = await dbClient.db[collections.PARTICIPANTS_STATUS].findOne({
       participant_id: participant.id,
-      'data.site': site.siteId,
+      'data.site': site1.siteId,
     });
     expect(prospectingStatus).toBeDefined();
     expect(prospectingStatus.status).toBe(PROSPECTING);
@@ -70,7 +70,7 @@ describe('Test Participant status data model and service', () => {
       participant.id,
       INTERVIEWING,
       {
-        site: site.siteId,
+        site: site1.siteId,
       },
       emp2,
       ps1.id
@@ -80,7 +80,7 @@ describe('Test Participant status data model and service', () => {
     // Read participant status with sites
     const existingStatuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
       participant_id: participant.id,
-      'data.site': site.siteId,
+      'data.site': site1.siteId,
     });
     expect(existingStatuses.length).toBe(2);
 
@@ -90,7 +90,7 @@ describe('Test Participant status data model and service', () => {
       participant.id,
       OFFER_MADE,
       {
-        site: site.siteId,
+        site: site1.siteId,
       },
       emp2,
       result.id
@@ -99,7 +99,7 @@ describe('Test Participant status data model and service', () => {
       (
         await dbClient.db[collections.PARTICIPANTS_STATUS].find({
           participant_id: participant.id,
-          'data.site': site.siteId,
+          'data.site': site1.siteId,
         })
       ).length
     ).toBe(3);
@@ -108,7 +108,7 @@ describe('Test Participant status data model and service', () => {
       participant.id,
       HIRED,
       {
-        site: site.siteId,
+        site: site1.siteId,
       },
       emp2,
       ps2.id
@@ -117,7 +117,7 @@ describe('Test Participant status data model and service', () => {
       (
         await dbClient.db[collections.PARTICIPANTS_STATUS].find({
           participant_id: participant.id,
-          'data.site': site.siteId,
+          'data.site': site1.siteId,
         })
       ).length
     ).toBe(4);
@@ -149,94 +149,60 @@ describe('Test Participant status data model and service', () => {
   });
 
   it('should return multi org participant', async () => {
-    const participant = await makeTestParticipant({
-      emailAddress: 'test.site.participant.3@hcap.io',
-    });
+    const participant = await makeParticipant(fakeParticipant());
 
-    const site1 = await makeTestSite({
+    const site2 = await makeTestSite({
       siteId: 202204221211,
       siteName: 'Test Site 1030',
       city: 'Test City 1030',
     });
 
-    const site2 = await makeTestSite({
+    const site3 = await makeTestSite({
       siteId: 202204221212,
       siteName: 'Test Site 1030',
       city: 'Test City 1030',
     });
 
-    const emp1 = { id: 1, sites: [site1.siteId, site2.siteId] };
-    const emp2 = { id: 2, sites: [site1.siteId] };
-    const emp3 = { id: 3, sites: [site2.siteId] };
+    const emp1 = { id: 1, sites: [site2.siteId, site3.siteId] };
+    const emp2 = { id: 2, sites: [site2.siteId] };
+    const emp3 = { id: 3, sites: [site3.siteId] };
 
     const ps1 = await setParticipantStatus(
       emp1.id,
       participant.id,
       PROSPECTING,
       {
-        site: site1.siteId,
+        site: site2.siteId,
       },
       emp1
     );
 
     // Check with open status for emp1
-    const resultOpenWithEmp1 = await getParticipants(
+    const resultOpenWithEmp1 = await getParticipantsByStatus(
       { isEmployer: true, id: emp1.id, regions, sites: emp1.sites },
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      ['open']
+      OPEN
     );
     const filteredOpenForEmp1 = resultOpenWithEmp1.data.filter((p) => p.id === participant.id);
     expect(filteredOpenForEmp1.length).toBe(0);
 
     // Check with open status for emp2
-    const resultOpenWithEmp2 = await getParticipants(
+    const resultOpenWithEmp2 = await getParticipantsByStatus(
       { isEmployer: true, id: emp2.id, regions, sites: emp2.sites },
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      ['open']
+      OPEN
     );
     const filteredOpenForEmp2 = resultOpenWithEmp2.data.filter((p) => p.id === participant.id);
     expect(filteredOpenForEmp2.length).toBe(0);
 
-    const resultSuccess = await getParticipants(
+    const resultSuccess = await getParticipantsByStatus(
       { isEmployer: true, id: emp2.id, regions, sites: emp2.sites },
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      ['prospecting']
+      PROSPECTING
     );
     expect(resultSuccess.data.length).toBeGreaterThanOrEqual(1);
     expect(resultSuccess.data[0].id).toBe(participant.id);
 
-    const resultFailure = await getParticipants(
+    const resultFailure = await getParticipantsByStatus(
       { isEmployer: true, id: emp3.id, regions, sites: emp3.sites },
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      ['prospecting']
+      PROSPECTING
     );
 
     expect(resultFailure.data.length).toBe(0);
@@ -247,41 +213,25 @@ describe('Test Participant status data model and service', () => {
       participant.id,
       INTERVIEWING,
       {
-        site: site1.siteId,
+        site: site2.siteId,
       },
       emp2,
       ps1.id
     );
 
     // Read by multi org employer
-    const resultSuccess2 = await getParticipants(
+    const resultSuccess2 = await getParticipantsByStatus(
       { isEmployer: true, id: emp1.id, regions, sites: emp1.sites },
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      ['interviewing']
+      INTERVIEWING
     );
 
     expect(resultSuccess2.data.length).toBeGreaterThanOrEqual(1);
     expect(resultSuccess2.data[0].id).toBe(participant.id);
 
     // Test Open status
-    const resultOpen = await getParticipants(
+    const resultOpen = await getParticipantsByStatus(
       { isEmployer: true, id: emp3.id, regions, sites: emp3.sites },
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      ['open']
+      OPEN
     );
 
     // Check result for participant
@@ -294,34 +244,25 @@ describe('Test Participant status data model and service', () => {
       participant.id,
       PROSPECTING,
       {
-        site: site2.siteId,
+        site: site3.siteId,
       },
       emp3
     );
 
     // Get statuses with emp1 for Dual statuses for mult org employee
-    const resultDual = await getParticipants(
+    const resultDual = await getParticipantsByStatus(
       { isEmployer: true, id: emp1.id, regions, sites: emp1.sites },
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      ['prospecting', 'interviewing']
+      PROSPECTING,
+      INTERVIEWING
     );
     const dualStatuses = resultDual.data.filter((p) => p.id === participant.id);
     expect(dualStatuses.length).toBe(2);
   });
 
   it('should reject participant', async () => {
-    const participant = await makeTestParticipant({
-      emailAddress: 'test.site.participant.4@hcap.io',
-    });
+    const participant = await makeParticipant(fakeParticipant());
 
-    const site1 = await makeTestSite({
+    const site4 = await makeTestSite({
       siteId: 202205252325,
       siteName: 'Test Site 1040',
       city: 'Test City 1040',
@@ -331,14 +272,14 @@ describe('Test Participant status data model and service', () => {
       id: 1,
       isEmployer: true,
       regions,
-      sites: [site1.siteId],
+      sites: [site4.siteId],
     };
 
     const emp2 = {
       id: 2,
       isEmployer: true,
       regions,
-      sites: [site1.siteId],
+      sites: [site4.siteId],
     };
 
     const ps1 = await setParticipantStatus(
@@ -346,18 +287,18 @@ describe('Test Participant status data model and service', () => {
       participant.id,
       PROSPECTING,
       {
-        site: site1.siteId,
+        site: site4.siteId,
       },
       emp1
     );
-    expect(ps1.status).toBe('prospecting');
+    expect(ps1.status).toBe(PROSPECTING);
 
     const ps2 = await setParticipantStatus(
       emp1.id,
       participant.id,
       REJECTED,
       {
-        site: site1.siteId,
+        site: site4.siteId,
         final_status: 'withdrawn',
       },
       emp1,
@@ -365,10 +306,7 @@ describe('Test Participant status data model and service', () => {
     );
     expect(ps2.status).toBe(REJECTED);
 
-    const statuses = await getParticipants(emp2, null, null, null, null, null, null, null, null, [
-      'prospecting',
-      'interviewing',
-    ]);
+    const statuses = await getParticipantsByStatus(emp2, PROSPECTING, INTERVIEWING);
     expect(statuses.data.length).toBeGreaterThanOrEqual(1);
     const subject = statuses.data.find((p) => p.id === participant.id);
     expect(subject).toBeDefined();
@@ -379,18 +317,7 @@ describe('Test Participant status data model and service', () => {
     expect(statusInfo.data?.final_status).toBe('withdrawn');
 
     // Check reject status for employer1
-    const resultReject = await getParticipants(
-      emp1,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      [REJECTED]
-    );
+    const resultReject = await getParticipantsByStatus(emp1, REJECTED);
     expect(resultReject.data.length).toBeGreaterThanOrEqual(1);
     const filteredReject = resultReject.data.find((p) => p.id === participant.id);
     expect(filteredReject).toBeDefined();
@@ -415,11 +342,9 @@ describe('Test Participant status data model and service', () => {
   });
 
   it('should hide status for user', async () => {
-    const participant = await makeTestParticipant({
-      emailAddress: 'test.site.participant.5@hcap.io',
-    });
+    const participant = await makeParticipant(fakeParticipant());
 
-    const site1 = await makeTestSite({
+    const site5 = await makeTestSite({
       siteId: 202205270022,
       siteName: 'Test Site 1050',
       city: 'Test City 1050',
@@ -429,7 +354,7 @@ describe('Test Participant status data model and service', () => {
       id: 1,
       isEmployer: true,
       regions,
-      sites: [site1.siteId],
+      sites: [site5.siteId],
     };
 
     const ps1 = await setParticipantStatus(
@@ -437,20 +362,17 @@ describe('Test Participant status data model and service', () => {
       participant.id,
       PROSPECTING,
       {
-        site: site1.siteId,
+        site: site5.siteId,
       },
       emp1
     );
-    expect(ps1.status).toBe('prospecting');
+    expect(ps1.status).toBe(PROSPECTING);
 
     // Hide status for user
     await hideStatusForUser({ userId: emp1.id, statusId: ps1.id });
 
     // Get status and check
-    const statuses = await getParticipants(emp1, null, null, null, null, null, null, null, null, [
-      'prospecting',
-    ]);
-
+    const statuses = await getParticipantsByStatus(emp1, PROSPECTING);
     expect(statuses.data.length).toBe(0);
 
     // Check for employer2
@@ -458,12 +380,10 @@ describe('Test Participant status data model and service', () => {
       id: 2,
       isEmployer: true,
       regions,
-      sites: [site1.siteId],
+      sites: [site5.siteId],
     };
 
-    const statuses2 = await getParticipants(emp2, null, null, null, null, null, null, null, null, [
-      'prospecting',
-    ]);
+    const statuses2 = await getParticipantsByStatus(emp2, PROSPECTING);
 
     expect(statuses2.data.length).toBeGreaterThanOrEqual(1);
     const subject = statuses2.data.find((p) => p.id === participant.id);
@@ -478,24 +398,23 @@ describe('Test Participant status data model and service', () => {
     const initialPreferredLocation = 'Fraser';
     const siteLocation = 'Interior';
 
-    const participant = await makeTestParticipant({
-      emailAddress: 'test.set.status.preferred.location@hcap.io',
-      preferredLocation: initialPreferredLocation,
-    });
-    const site = await makeTestSite({
+    const participant = await makeParticipant(
+      fakeParticipant({ preferredLocation: initialPreferredLocation })
+    );
+    const site6 = await makeTestSite({
       siteId: '202303161650',
       siteName: 'Test Site 20001',
       city: 'Test City 20001',
       healthAuthority: siteLocation,
     });
-    const emp1 = { id: 1, sites: [site.siteId] };
+    const emp1 = { id: 1, sites: [site6.siteId] };
 
     const ps1 = await setParticipantStatus(
       emp1.id,
       participant.id,
       PROSPECTING,
       {
-        site: site.siteId,
+        site: site6.siteId,
       },
       emp1
     );
@@ -505,7 +424,7 @@ describe('Test Participant status data model and service', () => {
       participant.id,
       INTERVIEWING,
       {
-        site: site.siteId,
+        site: site6.siteId,
       },
       emp1,
       ps1.id
@@ -516,7 +435,7 @@ describe('Test Participant status data model and service', () => {
       participant.id,
       OFFER_MADE,
       {
-        site: site.siteId,
+        site: site6.siteId,
       },
       emp1,
       ps2.id
@@ -527,7 +446,7 @@ describe('Test Participant status data model and service', () => {
       participant.id,
       HIRED,
       {
-        site: site.siteId,
+        site: site6.siteId,
       },
       emp1,
       ps3.id

@@ -98,3 +98,4 @@ id,participant_id,status,data,is_current
 97,384,post_secondary_education_completed,"{""graduationDate"":""2025/01/18""}",true
 98,66,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/12/10""}",true
 99,398,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2024/02/13""}",true
+100,480,cohort_unsuccessful,"{""unsuccessfulCohortDate"":""2023/05/02""}",true

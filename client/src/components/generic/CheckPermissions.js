@@ -12,7 +12,12 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const CheckPermissions = ({ permittedRoles, children, renderErrorMessage = false }) => {
+export const CheckPermissions = ({
+  permittedRoles,
+  children,
+  participant,
+  renderErrorMessage = false,
+}) => {
   const classes = useStyles();
   const { auth } = AuthContext.useAuth();
   const roles = auth.user?.roles || [];
@@ -23,7 +28,7 @@ export const CheckPermissions = ({ permittedRoles, children, renderErrorMessage 
   if (isLoading) return null;
 
   // If user has a permitted role assigned, grant access to components
-  if (checkPermissions(roles, permittedRoles)) {
+  if (checkPermissions(roles, permittedRoles, participant)) {
     return children;
   }
 

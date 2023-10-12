@@ -41,7 +41,7 @@ describe('api-e2e tests for /api/v1/user-details', () => {
   });
 
   describe('PATCH /user-details', () => {
-    it('should assign site to employer', async () => {
+    it('should assign site to Private employer', async () => {
       const site1 = await makeTestSite({
         siteId: 206758493211,
         siteName: 'Test Site for User assignment',
@@ -56,6 +56,32 @@ describe('api-e2e tests for /api/v1/user-details', () => {
         .set(header)
         .send({
           role: Role.Employer,
+          userId: employer.id,
+          username: employer.username,
+          sites: [site1.siteId],
+          acknowledgement: false,
+          regions: ['Fraser', 'Northern', 'Vancouver Coastal'],
+        });
+      expect(res.status).toEqual(200);
+    });
+
+    it('should assign site to MHSU employer', async () => {
+      const site1 = await makeTestSite({
+        siteId: 206758493212,
+        siteName: 'Test Site for User assignment',
+        city: 'Test City 1030',
+      });
+      const header = await getKeycloakToken(superuser);
+      const usersRes = await request(app).get('/api/v1/users').set(header);
+      const [employer] = usersRes.body.data.filter(
+        (user) => user.username === 'test-mhsu-employer'
+      );
+      expect(usersRes.status).toEqual(200);
+      const res = await request(app)
+        .patch(`/api/v1/user-details?id=${employer.id}`)
+        .set(header)
+        .send({
+          role: Role.MHSUEmployer,
           userId: employer.id,
           username: employer.username,
           sites: [site1.siteId],

@@ -31,6 +31,7 @@ const generateParticipants = async (amount: number) => {
         preferredLocation: DEFAULT_PREF_LOCATION,
         interested: 'yes',
         crcClear: 'yes',
+        program: Math.floor(Math.random() * 2) === 0 && 'MHAW', //NOSONAR
       }),
     };
     participantsArray.push(participant);

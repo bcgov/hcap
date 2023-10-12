@@ -90,7 +90,7 @@ describe('Reporting Download', () => {
 
   describe('MHSU Employer', () => {
     beforeEach(() => {
-      cy.kcLogin('mhsu-employer');
+      cy.kcLogin('test-mhsu-employer');
     });
     afterEach(() => {
       cy.kcLogout();

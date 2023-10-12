@@ -2,7 +2,7 @@ describe('Participant details view', () => {
   before(() => {
     cy.assignSitesToUser('test-employer', [4444]);
     cy.assignSitesToUser('test-ha', [4444]);
-    cy.assignSitesToUser('mhsu-employer', [4444]);
+    cy.assignSitesToUser('test-mhsu-employer', [4444]);
   });
   describe('Health Authority', () => {
     beforeEach(() => {
@@ -34,7 +34,7 @@ describe('Participant details view', () => {
 
   describe('MHSU Employer', () => {
     beforeEach(() => {
-      cy.kcLogin('mhsu-employer');
+      cy.kcLogin('test-mhsu-employer');
     });
     afterEach(() => {
       cy.kcLogout();

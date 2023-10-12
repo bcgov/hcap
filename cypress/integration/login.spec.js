@@ -48,7 +48,7 @@ describe('Login', () => {
   });
 
   it('logs in as a mhsu employer and tests /admin redirection', () => {
-    cy.kcLogin('mhsu-employer');
+    cy.kcLogin('test-mhsu-employer');
     cy.visit('/admin');
     cy.location().should((loc) => {
       expect(loc.pathname).to.eq('/participant-view');

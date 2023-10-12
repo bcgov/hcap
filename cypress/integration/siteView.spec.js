@@ -10,7 +10,7 @@ describe('Tests the Site View', () => {
   });
 
   it('visits siteView as mhsu employer', () => {
-    cy.kcLogin('mhsu-employer');
+    cy.kcLogin('test-mhsu-employer');
     cy.visit('/site-view');
     cy.contains('HCAPInfoQuery@gov.bc.ca').should('exist');
   });

@@ -24,7 +24,7 @@ export const employer: TestUser = {
 };
 
 export const mhsuEmployer: TestUser = {
-  username: 'mhsu-employer',
+  username: 'test-mhsu-employer',
   password: process.env.KC_TEST_EMPLOYER_PWD || 'password',
 };
 

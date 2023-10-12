@@ -217,7 +217,7 @@
     },
     {
       "name": "mhsu-employer",
-      "fixture": "mhsu-employer",
+      "fixture": "test-mhsu-employer",
       "tabsWithMultiselect": [],
       "tabsWithActions": [
         "Available Participants",

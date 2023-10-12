@@ -38,7 +38,9 @@ export class RegionsFilteredParticipantsFinder {
       ...(lastName && { 'body.lastName ilike': `${lastName}%` }),
       ...(emailAddress && { 'body.emailAddress ilike': `${emailAddress}%` }),
       ...(interestFilter && { 'body.interested <>': ['no', 'withdrawn'] }),
-      ...(isIndigenousFilter && { 'body.isIndigenous =': true }),
+      ...(isIndigenousFilter && {
+        or: [{ 'body.isIndigenous =': true }, { 'body.indigenous =': 'Yes' }],
+      }),
     };
 
     return new FieldsFilteredParticipantsFinder(this.context);

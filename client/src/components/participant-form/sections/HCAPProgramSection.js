@@ -5,6 +5,7 @@ import { SectionHeader } from '../SectionHeader';
 import { FastField } from 'formik';
 import { RenderRadioGroup } from '../../fields';
 import { PleaseNoteBanner } from '../PleaseNoteBanner';
+import { Program } from '../../../constants';
 
 export const HCAPProgramSection = ({ checkFieldDisability }) => {
   return (

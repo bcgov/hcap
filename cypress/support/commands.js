@@ -147,13 +147,15 @@ const pipelineLogin = (user) => {
 };
 
 Cypress.Commands.add('kcLogin', (user) => {
-  Cypress.log({ name: 'Login' });
-  // Change isLocal to true to enable local
-  if (Cypress.env('isLocal')) {
-    localLogin(user);
-  } else {
-    pipelineLogin(user);
-  }
+  cy.session(user, () => {
+    Cypress.log({ name: 'Login' });
+    // Change isLocal to true to enable local
+    if (Cypress.env('isLocal')) {
+      localLogin(user);
+    } else {
+      pipelineLogin(user);
+    }
+  });
 });
 
 Cypress.Commands.add('kcLogout', function () {

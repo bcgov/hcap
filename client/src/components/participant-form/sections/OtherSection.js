@@ -10,8 +10,26 @@ import { PleaseNoteBanner } from '../PleaseNoteBanner';
 export const OtherSection = ({ checkFieldDisability, isMHAWProgram }) => {
   return (
     <>
-      {/** Q10 do you have a valid BC drivers license */}
       <SectionHeader text='Other' />
+      <PleaseNoteBanner
+        text='The following information is collected as some employers may
+              prioritize hiring of indigenous candidates or candidates with a drivers license in
+              certain circumstances.'
+      />
+
+      {/** Q9 do you self identify as indigenous */}
+      <Question text='9. Do you self-identify as First Nation, Métis, Inuk (Inuit) or Urban Indigenous?' />
+      <Grid item xs={12}>
+        <FastField
+          name='indigenous'
+          component={RenderRadioGroup}
+          disabled={checkFieldDisability('indigenous')}
+          setTouched
+          row
+          options={YesNoPreferNot}
+        />
+      </Grid>
+      {/** Q10 do you have a valid BC drivers license */}
       <Question text='10. * Do you have a valid Class 5 BC Drivers Licence?' />
       <Grid item xs={12}>
         <FastField

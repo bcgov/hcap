@@ -93,7 +93,7 @@ export const Form = ({
         validationSchema={editMode ? ParticipantEditFormSchema : ParticipantFormSchema}
         onSubmit={handleSubmit}
       >
-        {({ submitForm, values, setFieldValue }) => (
+        {({ submitForm, values, setFieldValue, isValid }) => (
           <FormikForm>
             <Box hidden={hideSummary} pt={4} pb={2} pl={2} pr={2}>
               <Summary />
@@ -113,7 +113,7 @@ export const Form = ({
               <Box display='flex' justifyContent='center' pt={0} pb={4} pl={2} pr={2}>
                 <Button
                   onClick={() => {
-                    if (values.otherIndustry !== '') {
+                    if (isValid && values.otherIndustry !== '') {
                       setFieldValue('currentOrMostRecentIndustry', values.otherIndustry);
                     }
                     handleSubmitButton(submitForm);

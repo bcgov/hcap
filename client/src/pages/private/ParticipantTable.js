@@ -34,6 +34,8 @@ import {
 } from '../../services';
 import { ParticipantStatus } from '../../components/generic/ParticipantStatus';
 
+const MHAW_ENABLED_REGIONS = ['region_vancouver_island', 'region_interior'];
+
 const mapRosData = (data) => ({
   rosSiteName: data?.rosStatuses?.[0]?.rosSite?.body.siteName,
   rosStartDate: dayUtils(data?.rosStatuses?.[0]?.data.date).format('MM/DD/YYYY'),
@@ -379,10 +381,7 @@ const ParticipantTable = () => {
     );
 
     if (isMoH || isHA || isSuperUser) {
-      if (
-        isHA &&
-        !['region_vancouver_island', 'region_interior'].some((region) => roles.includes(region))
-      ) {
+      if (isHA && !MHAW_ENABLED_REGIONS.some((region) => roles.includes(region))) {
         // MHAW program isn't open yet to other regions
         setPrograms(programsHCA);
       } else {

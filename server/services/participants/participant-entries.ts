@@ -1,10 +1,8 @@
 import dayjs from 'dayjs';
 import { dbClient, collections } from '../../db';
-import { postHireStatuses } from '../../validation';
 import { getAssignCohort } from '../cohorts';
 import { createPostHireStatus, getPostHireStatusesForParticipant } from '../post-hire-flow';
 import logger from '../../logger';
-import { ParticipantsFinder } from '../participants-helper';
 import type {
   EmailAddressFilter,
   IsIndigenousFilter,
@@ -15,8 +13,8 @@ import type {
   idFilter,
 } from '../participants-helper';
 import type { HcapUserInfo } from '../../keycloak';
-import { ParticipantStatus as ps } from '../../constants';
-import { isPrivateEmployerOrMHSUEmployerOrHA } from '../participants-helper/check-valid-role';
+import { MHAW_ENABLED_REGIONS, ParticipantStatus as ps, postHireStatuses } from '../../constants';
+import { isPrivateEmployerOrMHSUEmployerOrHA, ParticipantsFinder } from '../participants-helper';
 
 export const makeParticipant = async (participantData) => {
   const res = await dbClient.db.saveDoc(collections.PARTICIPANTS, participantData);
@@ -190,8 +188,7 @@ export const getParticipants = async (
 ) => {
   // MHAW program isn't open yet to other regions
   const hcaOnly =
-    user?.isHA &&
-    !['region_vancouver_island', 'region_interior'].some((region) => user?.roles.includes(region));
+    user?.isHA && !MHAW_ENABLED_REGIONS.some((region) => user?.roles.includes(region));
 
   // Get user ids
   const participantsFinder = new ParticipantsFinder(dbClient, user);

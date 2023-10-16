@@ -15,8 +15,8 @@ import {
   Role,
   UserRoles,
   allPrograms,
-  programsPrivateEmployer,
-  programsMHAWEmployer,
+  programsHCA,
+  programsMHAW,
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
@@ -379,14 +379,22 @@ const ParticipantTable = () => {
     );
 
     if (isMoH || isHA || isSuperUser) {
-      // should be able to see all users in both MHAW/ HCA programs
-      setPrograms(allPrograms);
+      if (
+        isHA &&
+        !['region_vancouver_island', 'region_interior'].some((region) => roles.includes(region))
+      ) {
+        // MHAW program isn't open yet to other regions
+        setPrograms(programsHCA);
+      } else {
+        // should be able to see all users in both MHAW/ HCA programs
+        setPrograms(allPrograms);
+      }
     } else if (isEmployer) {
       // private employers should only see HCA program
-      setPrograms(programsPrivateEmployer);
+      setPrograms(programsHCA);
     } else if (isMHSUEmployer) {
       // MHAW employers should only see MHAW program
-      setPrograms(programsMHAWEmployer);
+      setPrograms(programsMHAW);
     }
   }, [isMoH, isSuperUser, roles, isEmployer, isHA, isMHSUEmployer]);
 

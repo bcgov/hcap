@@ -14,7 +14,7 @@ export const MarketingSection = ({ checkFieldDisability }) => {
       <SectionHeader text='Marketing' />
       <Question text='13. * How did you learn about HCAP?' />
       <Grid item xs={12}>
-        <Typography>* Please select how you learned about HCAP</Typography>
+        <Typography>Please select all that apply</Typography>
       </Grid>
       <Grid item xs={12}>
         <FastField

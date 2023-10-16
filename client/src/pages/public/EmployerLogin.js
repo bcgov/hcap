@@ -68,28 +68,28 @@ export default () => {
 
           <Box my={2}>
             <Typography variant='body1' className={classes.mainText}>
-              The Health Career Access Program (HCAP) is a paid work and training initiative for
-              individuals seeking an entry point to employment in health. New hires will start as a
-              Health Care Support Worker providing non-direct care at a long-term care or assisted
-              living site and receive paid training to become a Health Care Assistant upon
-              successful completion of the program.
+              The Health Career Access Program (HCAP) provides a path for applicants with little to
+              no sector experience to get hired and receive paid training as part of their
+              employment. There are two pathways, one to train as a health care assistant and
+              another to train as a mental health and addictions worker. Both offer rewarding and
+              varied work with the opportunity to make a difference in the lives of others every
+              day.
             </Typography>
           </Box>
           <Box my={2}>
             <Typography variant='body1' className={classes.mainText}>
               HCAP has many benefits for employers who will have the opportunity to access new
               provincially funded staffing and training resources and play a key role in building
-              capacity in the BC health sector and economy.
+              capacity in the BC health sector and care economy. Participating employers will be
+              provided with funding to cover participant education and salary costs during the
+              program.
             </Typography>
           </Box>
           <Box my={2}>
             <Typography variant='body1' className={classes.mainText}>
-              Participating employers will be provided with funding to cover education and salary
-              costs for hire Health Care Support Workers who will provide critical non-clinical
-              support while enrolled in a new modular Health Care Assistant training program. The
               HCAP will roll out as a partnership between candidates and employers to work through
-              onboarding, orientation, employer-based training, and the HCA employer- sponsored
-              training program.
+              onboarding, orientation, employer-based training, and the employer- sponsored training
+              program.
             </Typography>
           </Box>
 

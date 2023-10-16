@@ -3,14 +3,17 @@ const fixture = require('../fixtures/participant-data.json');
 describe('e2e test for participant landing page', () => {
   before(() => {
     // Create one participant
+    cy.kcLogin('test-superuser');
     cy.callAPI({
       user: 'test-superuser',
       api: '/participants',
       body: fixture,
+      status: 201,
     });
   });
 
   after(() => {
+    cy.kcLogin('test-superuser');
     cy.callAPI({
       user: 'test-superuser',
       api: '/participants',
@@ -18,6 +21,7 @@ describe('e2e test for participant landing page', () => {
       body: {
         email: fixture.emailAddress,
       },
+      status: 200,
     });
   });
 

@@ -7,7 +7,6 @@ describe('Participants status suite', () => {
     });
     cy.kcLogin('test-moh');
     setBulkAllocationForm();
-    cy.kcLogout();
   });
 
   const setBulkAllocationForm = () => {
@@ -199,6 +198,5 @@ describe('Participants status suite', () => {
 
     // archive participant
     archiveParticipant(participantIdRegex, 'Hired Candidates');
-    cy.kcLogout();
   });
 });

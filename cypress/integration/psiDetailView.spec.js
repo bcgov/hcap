@@ -22,10 +22,6 @@ describe('Tests the PSI View', () => {
     cy.get('span.MuiButton-label').contains('Submit').click();
   });
 
-  beforeEach(() => {
-    cy.kcLogout();
-  });
-
   it('Visits a PSI details page with no cohorts', () => {
     cy.kcLogin('test-moh');
     cy.visit('/admin');

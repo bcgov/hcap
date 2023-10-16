@@ -21,14 +21,6 @@ describe('e2e test for participant landing page', () => {
     });
   });
 
-  beforeEach(() => {
-    cy.kcLogout();
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
-  });
-
   // Load
   it('should load participant page', () => {
     cy.kcLogin('test-participant');

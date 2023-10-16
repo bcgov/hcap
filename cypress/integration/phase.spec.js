@@ -4,10 +4,6 @@ describe('Phase functionality', () => {
     cy.kcLogin('test-moh');
   });
 
-  afterEach(() => {
-    cy.kcLogout();
-  });
-
   const completePhaseForm = ({ phaseName, startDate, endDate }) => {
     cy.get('[name=phaseName]').clear().type(phaseName);
     // the MUI date component does not allow users to type, so cypress needs to mock a copy/paste keyboard action

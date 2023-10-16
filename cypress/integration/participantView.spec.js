@@ -31,7 +31,7 @@ describe('Participant View', () => {
   it('Visits Participant View as a single-region private employer', () => {
     cy.kcLogin('test-employer');
     cy.visit('/participant-view');
-    cy.contains('Fraser').should('have.class', 'Mui-disabled');
+    cy.contains('Fraser').should('not.exist');
     cy.get('ul.MuiMenu-list').should('not.be.visible');
 
     // Testing Tabs
@@ -41,7 +41,7 @@ describe('Participant View', () => {
   it('Visits Participant View as a single-region mhsu employer', () => {
     cy.kcLogin('test-mhsu-employer');
     cy.visit('/participant-view');
-    cy.contains('Fraser').should('have.class', 'Mui-disabled');
+    cy.contains('Fraser').should('not.exist');
     cy.get('ul.MuiMenu-list').should('not.be.visible');
 
     // Testing Tabs

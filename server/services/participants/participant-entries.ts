@@ -188,13 +188,18 @@ export const getParticipants = async (
   isIndigenousFilter?: IsIndigenousFilter,
   programFilter?: ProgramFilter
 ) => {
+  // MHAW program isn't open yet to other regions
+  const hcaOnly =
+    user?.isHA &&
+    !['region_vancouver_island', 'region_interior'].some((region) => user?.roles.includes(region));
+
   // Get user ids
   const participantsFinder = new ParticipantsFinder(dbClient, user);
   const interestFilter =
     isPrivateEmployerOrMHSUEmployerOrHA(user) && statusFilters?.includes('open');
   let participants = await participantsFinder
     .filterRegion(regionFilter)
-    .filterProgram(programFilter)
+    .filterProgram(hcaOnly ? 'HCA' : programFilter)
     .filterParticipantFields({
       id: idFilter,
       postalCodeFsa: fsaFilter,

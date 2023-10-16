@@ -3,7 +3,8 @@ export const HEALTH_CAREERS_LINK = 'https://gov.bc.ca/careersinhealth';
 export const HEALTH_CARE_ASSISTANT_LINK =
   'https://www2.gov.bc.ca/gov/content/employment-business/job-seekers-employees/find-a-job/health-care#available-positions';
 // TODO: populate correct link when it becomes available
-export const MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK = '';
+export const MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK =
+  'https://www2.gov.bc.ca/gov/content/employment-business/job-seekers-employees/find-a-job/health-care';
 
 // Gov laws
 export const BC_LAWS_LINK =

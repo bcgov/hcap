@@ -31,27 +31,39 @@ export const checkUserHasAccessToParticipant = async (id: number, user: HcapUser
   }
 
   if (user.isEmployer || user.isMHSUEmployer) {
+    const program = user.isEmployer ? 'HCA' : 'MHAW';
     // Allow access to employers if they are the person who hired or archived the user
     // or they have access to the site the participant was hired to
     const statuses =
-      (await dbClient.db[collections.PARTICIPANTS_STATUS].find({
-        participant_id: id,
-        current: true,
-        'status IN': [HIRED, ARCHIVED],
-        or: [
-          {
-            and: [
-              {
-                employer_id: user.id,
-                'data.site': null,
-              },
-            ],
+      (await dbClient.db[collections.PARTICIPANTS_STATUS]
+        .join({
+          participantsJoin: {
+            type: 'INNER',
+            relation: collections.PARTICIPANTS,
+            on: {
+              id,
+            },
           },
-          {
-            'data.site IN': user.sites,
-          },
-        ],
-      })) || [];
+        })
+        .find({
+          participant_id: id,
+          'participantsJoin.body.program': program,
+          current: true,
+          'status IN': [HIRED, ARCHIVED],
+          or: [
+            {
+              and: [
+                {
+                  employer_id: user.id,
+                  'data.site': null,
+                },
+              ],
+            },
+            {
+              'data.site IN': user.sites,
+            },
+          ],
+        })) || [];
 
     return statuses.length > 0;
   }

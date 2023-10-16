@@ -1,8 +1,4 @@
 describe('Tests the PSI View', () => {
-  beforeEach(() => {
-    cy.kcLogout();
-  });
-
   it('Visits the PSI View page as a Health Authority', () => {
     cy.kcLogin('test-ha');
     cy.visit('/psi-view');

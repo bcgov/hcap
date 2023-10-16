@@ -8,9 +8,6 @@ describe('Participant details view', () => {
     beforeEach(() => {
       cy.kcLogin('test-ha');
     });
-    afterEach(() => {
-      cy.kcLogout();
-    });
     it('Should be able to assign cohort and track graduation', () => {
       cy.visit('participant-details/participant/na/119');
       cy.get('button.MuiTab-root').contains('Track Graduation');
@@ -22,9 +19,6 @@ describe('Participant details view', () => {
     beforeEach(() => {
       cy.kcLogin('test-employer');
     });
-    afterEach(() => {
-      cy.kcLogout();
-    });
     it('Should only be able to track graduation', () => {
       cy.visit('participant-details/participant/na/312');
       cy.get('button.MuiTab-root').contains('Track Graduation');
@@ -35,9 +29,6 @@ describe('Participant details view', () => {
   describe('MHSU Employer', () => {
     beforeEach(() => {
       cy.kcLogin('test-mhsu-employer');
-    });
-    afterEach(() => {
-      cy.kcLogout();
     });
     it('Should only be able to track graduation', () => {
       cy.visit('participant-details/participant/na/480');

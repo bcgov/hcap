@@ -275,8 +275,6 @@ Cypress.Commands.add('assignSitesToUser', (username, site_ids) => {
   cy.get('#menu-sites').click();
 
   cy.contains('button', 'Submit').click();
-
-  cy.kcLogout();
 });
 
 // Allows dev to use test data from csv files in the cypress test suites

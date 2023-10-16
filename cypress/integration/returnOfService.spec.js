@@ -8,10 +8,6 @@ describe('Return of Service Form', () => {
     cy.kcLogin('test-ha');
   });
 
-  afterEach(() => {
-    cy.kcLogout();
-  });
-
   const maxValidDate = '2099/12/31';
   const futureInvalidDate = '2100/01/01';
 

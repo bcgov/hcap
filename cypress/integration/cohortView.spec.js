@@ -1,7 +1,6 @@
 describe('Tests the Cohort View', () => {
   beforeEach(() => {
     setAlias();
-    cy.kcLogout();
   });
 
   const setAlias = () => {

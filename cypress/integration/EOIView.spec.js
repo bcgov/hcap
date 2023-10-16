@@ -1,8 +1,4 @@
 describe('EOI View', () => {
-  beforeEach(() => {
-    cy.kcLogout();
-  });
-
   it('Checks the filtering options on EOI View as a superuser', () => {
     cy.kcLogin('test-superuser');
     cy.visit('/eoi-view');

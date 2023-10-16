@@ -4,11 +4,13 @@ import { Question } from '../Question';
 import { SectionHeader } from '../SectionHeader';
 import { FastField } from 'formik';
 import { RenderRadioGroup } from '../../fields';
+import { PleaseNoteBanner } from '../PleaseNoteBanner';
 
 export const HCAPProgramSection = ({ checkFieldDisability }) => {
   return (
     <>
       <SectionHeader text='HCAP Program' />
+      <PleaseNoteBanner text='Please submit a separate application for each program if you are interested in both.' />
       <Question text='1. * Which program are you applying for:' />
       <Grid item xs={12}>
         <FastField

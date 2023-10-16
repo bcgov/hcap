@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Grid } from '@material-ui/core';
-import { FastField } from 'formik';
+import { FastField, useField } from 'formik';
 import { Question } from '../Question';
 import { SectionHeader } from '../SectionHeader';
 import { RenderRadioGroup, RenderTextField } from '../../fields';
@@ -12,6 +12,21 @@ export const BackgroundInformationSection = ({
   isMHAWProgram,
   selectedOption,
 }) => {
+  const [industry, , industryHelpers] = useField('currentOrMostRecentIndustry');
+  const [other, , otherHelpers] = useField('otherIndustry');
+
+  useEffect(() => {
+    if (
+      !other.value &&
+      industry.value &&
+      !currentOrMostRecentIndustryOptions.includes(industry.value)
+    ) {
+      const otherValue = industry.value;
+      industryHelpers.setValue('Other, please specify:');
+      otherHelpers.setValue(otherValue);
+    }
+  }, [industry, other]);
+
   return (
     <>
       <SectionHeader text='Background Information' />

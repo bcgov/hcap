@@ -40,50 +40,46 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
       </Grid>
       <Grid item>
         <Box>
-          <TextField
-            select
-            fullWidth
-            variant='filled'
-            inputProps={{ displayEmpty: true }}
-            disabled={loading || locations.length === 1}
-            value={filter[FILTERABLE_FIELDS.REGION]?.value || ''}
-            onChange={({ target }) => setFilter(FILTERABLE_FIELDS.REGION, target.value)}
-            aria-label='location filter'
-          >
-            {locations.length === 1 ? (
-              <MenuItem value=''>{locations[0]}</MenuItem>
-            ) : (
-              ['Preferred Location', ...locations].map((option, index) => (
+          {locations.length > 1 && (
+            <TextField
+              select
+              fullWidth
+              variant='filled'
+              inputProps={{ displayEmpty: true }}
+              disabled={loading}
+              value={filter[FILTERABLE_FIELDS.REGION]?.value || ''}
+              onChange={({ target }) => setFilter(FILTERABLE_FIELDS.REGION, target.value)}
+              aria-label='location filter'
+            >
+              {['Preferred Location', ...locations].map((option, index) => (
                 <MenuItem key={option} value={index === 0 ? '' : option} aria-label={option}>
                   {option}
                 </MenuItem>
-              ))
-            )}
-          </TextField>
+              ))}
+            </TextField>
+          )}
         </Box>
       </Grid>
       <Grid item>
         <Box pl={2}>
-          <TextField
-            select
-            fullWidth
-            variant='filled'
-            inputProps={{ displayEmpty: true }}
-            disabled={loading || programs.length === 1}
-            value={filter[FILTERABLE_FIELDS.PROGRAM]?.value || ''}
-            onChange={({ target }) => setFilter(FILTERABLE_FIELDS.PROGRAM, target.value)}
-            aria-label='program filter'
-          >
-            {programs.length === 1 ? (
-              <MenuItem value=''>{programs[0]}</MenuItem>
-            ) : (
-              ['Program', ...programs].map((option, index) => (
+          {programs.length > 1 && (
+            <TextField
+              select
+              fullWidth
+              variant='filled'
+              inputProps={{ displayEmpty: true }}
+              disabled={loading}
+              value={filter[FILTERABLE_FIELDS.PROGRAM]?.value || ''}
+              onChange={({ target }) => setFilter(FILTERABLE_FIELDS.PROGRAM, target.value)}
+              aria-label='program filter'
+            >
+              {['Program', ...programs].map((option, index) => (
                 <MenuItem key={option} value={index === 0 ? '' : option} aria-label={option}>
                   {option}
                 </MenuItem>
-              ))
-            )}
-          </TextField>
+              ))}
+            </TextField>
+          )}
         </Box>
       </Grid>
       <CheckPermissions permittedRoles={[Role.Employer, Role.MHSUEmployer, Role.HealthAuthority]}>

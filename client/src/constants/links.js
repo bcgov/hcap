@@ -1,10 +1,10 @@
 export const BC_SERVICES_CARD_LINK = 'https://gov.bc.ca/bcservicescard';
 export const HEALTH_CAREERS_LINK = 'https://gov.bc.ca/careersinhealth';
 export const HEALTH_CARE_ASSISTANT_LINK =
-  'https://www2.gov.bc.ca/gov/content/employment-business/job-seekers-employees/find-a-job/health-care#available-positions';
+  'https://www2.gov.bc.ca/gov/content?id=BE923EC2608540C4A266F94C76461B1A';
 // TODO: populate correct link when it becomes available
 export const MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK =
-  'https://www2.gov.bc.ca/gov/content/employment-business/job-seekers-employees/find-a-job/health-care';
+  'https://www2.gov.bc.ca/gov/content?id=A96A1E01C54141F2B4A289482793E5FD';
 
 // Gov laws
 export const BC_LAWS_LINK =

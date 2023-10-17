@@ -139,6 +139,14 @@
         "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
       },
       {
+        "id": "5b0ef26a-86d1-42a7-a028-acfa2d1c3ac8",
+        "name": "region_interior",
+        "description": "Users with access to Interior Health region data",
+        "composite": false,
+        "clientRole": true,
+        "containerId": "8661c12a-5269-47af-bdb9-4f9a4c21f3c9"
+      },
+      {
         "id": "6a2abf60-d8dc-4de0-9ba8-f0719434d0af",
         "name": "mhsu-employer",
         "description": "Mental Health and Substance Use",

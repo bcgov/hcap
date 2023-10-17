@@ -13,7 +13,7 @@ import type {
   idFilter,
 } from '../participants-helper';
 import type { HcapUserInfo } from '../../keycloak';
-import { MHAW_ENABLED_REGIONS, ParticipantStatus as ps, postHireStatuses } from '../../constants';
+import { ParticipantStatus as ps, postHireStatuses } from '../../constants';
 import { isPrivateEmployerOrMHSUEmployerOrHA, ParticipantsFinder } from '../participants-helper';
 
 export const makeParticipant = async (participantData) => {
@@ -186,17 +186,13 @@ export const getParticipants = async (
   isIndigenousFilter?: IsIndigenousFilter,
   programFilter?: ProgramFilter
 ) => {
-  // MHAW program isn't open yet to other regions
-  const hcaOnly =
-    user?.isHA && !MHAW_ENABLED_REGIONS.some((region) => user?.roles.includes(region));
-
   // Get user ids
   const participantsFinder = new ParticipantsFinder(dbClient, user);
   const interestFilter =
     isPrivateEmployerOrMHSUEmployerOrHA(user) && statusFilters?.includes('open');
   let participants = await participantsFinder
     .filterRegion(regionFilter)
-    .filterProgram(hcaOnly ? 'HCA' : programFilter)
+    .filterProgram(programFilter)
     .filterParticipantFields({
       id: idFilter,
       postalCodeFsa: fsaFilter,

@@ -94,7 +94,7 @@ export default () => {
               </Box>
               <Box mb={2}>
                 <Typography variant='body1'>
-                  To submit an application for the other stream, please click{' '}
+                  To submit an application for the other pathway, please click{' '}
                   <Link href='/'>
                     <b>here</b>
                   </Link>

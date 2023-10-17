@@ -4,7 +4,12 @@ import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { useLocation, Redirect } from 'react-router-dom';
-import { Routes, PEOI_LINK } from '../../constants';
+import {
+  Routes,
+  PEOI_LINK,
+  HEALTH_CARE_ASSISTANT_LINK,
+  MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK,
+} from '../../constants';
 
 import { PDFButton, Divider, Page } from '../../components/generic';
 import { Form } from '../../components/participant-form';
@@ -32,9 +37,24 @@ export default () => {
                 </Typography>
                 <Typography variant='body1' paragraph>
                   <b>
-                    Please do not submit any additional requests or expressions of interest as
-                    multiple submissions will not increase your chance of being selected and can
-                    slow down the hiring process.
+                    Please submit only one expression of interest per HCAP pathway:{' '}
+                    <Link
+                      href={HEALTH_CARE_ASSISTANT_LINK}
+                      target='__blank'
+                      rel='noreferrer noopener'
+                    >
+                      Health Care Assistant
+                    </Link>{' '}
+                    and{' '}
+                    <Link
+                      href={MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK}
+                      target='__blank'
+                      rel='noreferrer noopener'
+                    >
+                      Mental Health and Addictions Worker.
+                    </Link>{' '}
+                    Multiple submissions will not increase your chance of being selected and can
+                    slow down the process of hiring.
                   </b>
                 </Typography>
                 <Typography variant='body1' paragraph>
@@ -70,6 +90,14 @@ export default () => {
               <Box my={2}>
                 <Typography variant='body1' paragraph>
                   Your form has been submitted.
+                </Typography>
+              </Box>
+              <Box mb={2}>
+                <Typography variant='body1'>
+                  To submit an application for the other pathway, please click{' '}
+                  <Link href='/'>
+                    <b>here</b>
+                  </Link>
                 </Typography>
               </Box>
             </Grid>

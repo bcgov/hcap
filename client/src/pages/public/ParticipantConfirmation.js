@@ -45,7 +45,7 @@ export default () => {
                     >
                       Health Care Assistant
                     </Link>{' '}
-                    and{' '}
+                    and/or{' '}
                     <Link
                       href={MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK}
                       target='__blank'
@@ -53,8 +53,8 @@ export default () => {
                     >
                       Mental Health and Addictions Worker.
                     </Link>{' '}
-                    Multiple submissions will not increase your chance of being selected and can
-                    slow down the process of hiring.
+                    Multiple submissions per HCAP pathway will not increase your chances of being
+                    selected and can slow down the process of hiring.
                   </b>
                 </Typography>
                 <Typography variant='body1' paragraph>

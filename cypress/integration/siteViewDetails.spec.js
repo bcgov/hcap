@@ -1,8 +1,4 @@
 describe('Tests the Site Details View', () => {
-  beforeEach(() => {
-    cy.kcLogout();
-  });
-
   it('creates a new site as MoH, asserts that it has default functionality', () => {
     cy.kcLogin('test-moh');
     cy.visit('/site-view');

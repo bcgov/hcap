@@ -78,6 +78,9 @@ const localLogin = (user) => {
         });
       })
       .then(function (response) {
+        const { access_token } = response.body;
+        expect(!!access_token).to.be.true;
+        window.sessionStorage.setItem('accessToken', access_token);
         expect(response.status).equal(200);
       });
   });
@@ -141,19 +144,26 @@ const pipelineLogin = (user) => {
           },
           form: true,
           followRedirect: false,
-        }).its('body');
+        }).then(function (response) {
+          const { access_token } = response.body;
+          expect(!!access_token).to.be.true;
+          window.sessionStorage.setItem('accessToken', access_token);
+          expect(response.status).equal(200);
+        });
       });
   });
 };
 
 Cypress.Commands.add('kcLogin', (user) => {
-  Cypress.log({ name: 'Login' });
-  // Change isLocal to true to enable local
-  if (Cypress.env('isLocal')) {
-    localLogin(user);
-  } else {
-    pipelineLogin(user);
-  }
+  cy.session(user, () => {
+    Cypress.log({ name: 'Login' });
+    // Change isLocal to true to enable local
+    if (Cypress.env('isLocal')) {
+      localLogin(user);
+    } else {
+      pipelineLogin(user);
+    }
+  });
 });
 
 Cypress.Commands.add('kcLogout', function () {
@@ -164,82 +174,28 @@ Cypress.Commands.add('kcLogout', function () {
   });
 });
 
-Cypress.Commands.add('callAPI', ({ user, api, method = 'POST', body, followRedirect = false }) => {
-  Cypress.log({ name: 'call-api' });
-  cy.fixture('users/' + user).then((userData) => {
-    let realm = Cypress.env('KEYCLOAK_LOCAL_REALM');
-    let client_id = Cypress.env('KEYCLOAK_LOCAL_API_CLIENTID');
-    let client_secret = Cypress.env('KEYCLOAK_LOCAL_SECRET');
-
-    const base64URLEncode = (str) => {
-      return str.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-    };
-
-    const code_challenge = base64URLEncode(crypto.randomBytes(32));
-
-    cy.request({
-      url: authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/auth',
-      followRedirect,
-      qs: {
-        scope: 'openid',
-        response_type: 'code',
-        approval_prompt: 'auto',
-        redirect_uri: Cypress.config('baseUrl'),
-        client_id: client_id,
-        client_secret: client_secret,
-        code_challenge_method: 'plain',
-        code_challenge,
-      },
-    })
-      .then(function (response) {
-        let html = document.createElement('html');
-        html.innerHTML = response.body;
-        let form = html.getElementsByTagName('form')[0];
-        let url = form.action;
-        return cy.request({
-          method: 'POST',
-          url: url,
-          followRedirect,
-          form: true,
-          body: {
-            username: userData.username,
-            password: userData.password,
-          },
-        });
-      })
-      .then(function (response) {
-        let code = getAuthCodeFromLocation(response.headers['location']);
-        cy.request({
-          method: 'post',
-          url: authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/token',
-          body: {
-            client_id: client_id,
-            client_secret: client_secret,
-            redirect_uri: Cypress.config('baseUrl'),
-            code: code,
-            code_verifier: code_challenge,
-            grant_type: 'authorization_code',
-          },
-          form: true,
-          followRedirect,
-        }).then(({ body: respBody }) => {
-          const accessToken = respBody.access_token;
-          const apiBaseURL = Cypress.env('apiBaseURL');
-          cy.request({
-            url: `${apiBaseURL}${api}`,
-            method,
-            followRedirect,
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              Accept: 'application/json',
-              'Content-type': 'application/json',
-            },
-            body,
-          });
-        });
-      });
-  });
-});
+Cypress.Commands.add(
+  'callAPI',
+  ({ user, api, method = 'POST', body, status, followRedirect = false }) => {
+    Cypress.log({ name: 'call-api' });
+    cy.fixture('users/' + user).then((userData) => {
+      const accessToken = window.sessionStorage.getItem('accessToken');
+      expect(!!accessToken).to.be.true;
+      const apiBaseURL = Cypress.env('apiBaseURL');
+      cy.request({
+        url: `${apiBaseURL}${api}`,
+        method,
+        followRedirect,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: 'application/json',
+          'Content-type': 'application/json',
+        },
+        body,
+      }).then((response) => expect(response.status).eq(status));
+    });
+  }
+);
 
 // assigns the site_ids to the username, assuming the region is already correct
 // does not un-assign previous sites
@@ -273,8 +229,6 @@ Cypress.Commands.add('assignSitesToUser', (username, site_ids) => {
   cy.get('#menu-sites').click();
 
   cy.contains('button', 'Submit').click();
-
-  cy.kcLogout();
 });
 
 // Allows dev to use test data from csv files in the cypress test suites

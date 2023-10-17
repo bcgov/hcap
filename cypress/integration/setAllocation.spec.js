@@ -4,10 +4,6 @@ describe('Allocation functionality', () => {
     cy.kcLogin('test-moh');
   });
 
-  afterEach(() => {
-    cy.kcLogout();
-  });
-
   // create new phase to assign
   const createPhase = ({ phaseName, startDate, endDate }) => {
     cy.visit('site-view');

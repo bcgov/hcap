@@ -2,9 +2,6 @@ describe('EOI View', () => {
   beforeEach(() => {
     cy.kcLogin('test-moh');
   });
-  afterEach(() => {
-    cy.kcLogout();
-  });
   it('Should be able edit participant details', () => {
     cy.visit('participant-details/na/participant/1');
     cy.get('[test-id=editInfoButton]').click({ force: true });

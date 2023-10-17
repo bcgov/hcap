@@ -32,9 +32,9 @@ export default () => {
                 </Typography>
                 <Typography variant='body1' paragraph>
                   <b>
-                    Please do not submit any additional requests or expressions of interest as
-                    multiple submissions will not increase your chance of being selected and can
-                    slow down the hiring process.
+                    Please submit only one application or expression of interest per stream.
+                    Multiple submissions will not increase your chance of being selected and can
+                    slow down the process of hiring.
                   </b>
                 </Typography>
                 <Typography variant='body1' paragraph>
@@ -70,6 +70,14 @@ export default () => {
               <Box my={2}>
                 <Typography variant='body1' paragraph>
                   Your form has been submitted.
+                </Typography>
+              </Box>
+              <Box my={2}>
+                <Typography variant='body1'>
+                  To submit an application for the other stream, please click{' '}
+                  <Link href='/'>
+                    <b>here</b>
+                  </Link>
                 </Typography>
               </Box>
             </Grid>

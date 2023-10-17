@@ -113,7 +113,9 @@ describe('Participants Service', () => {
     const res = await getParticipants({
       isMoH: false,
       isSuperUser: false,
+      isHA: true,
       regions,
+      roles: ['region_fraser'],
     });
 
     const mapRawToEmployerColumns = (a) => {

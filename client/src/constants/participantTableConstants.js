@@ -110,8 +110,8 @@ export const FILTERABLE_FIELDS = {
 const HCA = 'HCA';
 const MHAW = 'MHAW';
 export const allPrograms = [HCA, MHAW];
-export const programsPrivateEmployer = [HCA];
-export const programsMHAWEmployer = [MHAW];
+export const programsHCA = [HCA];
+export const programsMHAW = [MHAW];
 
 export const tabStatuses = {
   'Available Participants': ['open'],

@@ -1,10 +1,8 @@
 import dayjs from 'dayjs';
 import { dbClient, collections } from '../../db';
-import { postHireStatuses } from '../../validation';
 import { getAssignCohort } from '../cohorts';
 import { createPostHireStatus, getPostHireStatusesForParticipant } from '../post-hire-flow';
 import logger from '../../logger';
-import { ParticipantsFinder } from '../participants-helper';
 import type {
   EmailAddressFilter,
   IsIndigenousFilter,
@@ -15,8 +13,8 @@ import type {
   idFilter,
 } from '../participants-helper';
 import type { HcapUserInfo } from '../../keycloak';
-import { ParticipantStatus as ps } from '../../constants';
-import { isPrivateEmployerOrMHSUEmployerOrHA } from '../participants-helper/check-valid-role';
+import { ParticipantStatus as ps, postHireStatuses } from '../../constants';
+import { isPrivateEmployerOrMHSUEmployerOrHA, ParticipantsFinder } from '../participants-helper';
 
 export const makeParticipant = async (participantData) => {
   const res = await dbClient.db.saveDoc(collections.PARTICIPANTS, participantData);

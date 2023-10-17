@@ -1,7 +1,30 @@
-import { RegionsFilteredParticipantsFinder } from './RegionsFilteredParticipantsFinder';
+import {
+  ProgramFilter,
+  RegionsFilteredParticipantsFinder,
+} from './RegionsFilteredParticipantsFinder';
+import { HcapUserInfo } from '../../keycloak';
+import { MHAW_ENABLED_REGIONS } from '../../constants';
 
 const HCA = 'HCA';
 const MHAW = 'MHAW';
+
+const getProgramFilterByUser = (user: HcapUserInfo, filter: ProgramFilter) => {
+  if (user.isSuperUser || user.isMoH) {
+    return filter;
+  }
+  if (user.isEmployer) {
+    return HCA;
+  }
+  // MHAW program isn't open yet to other regions
+  const regionAllowedForMHAW = MHAW_ENABLED_REGIONS.some((region) => user?.roles.includes(region));
+  if (user.isHA) {
+    return regionAllowedForMHAW ? filter : HCA;
+  }
+  if (user.isMHSUEmployer) {
+    return regionAllowedForMHAW ? MHAW : 'none';
+  }
+  return 'none';
+};
 
 export class ProgramFilteredParticipantsFinder {
   context;
@@ -14,16 +37,11 @@ export class ProgramFilteredParticipantsFinder {
   filterProgram(programFilter) {
     const { user } = this.context;
 
-    if (user.isSuperUser || user.isMoH || user.isHA) {
-      this.context.criteria = {
-        ...this.context.criteria,
-        ...(programFilter && { 'body.program =': `${programFilter}` }),
-      };
-    } else if (user.isEmployer) {
-      this.context.criteria = { ...this.context.criteria, ...{ 'body.program =': `${HCA}` } };
-    } else if (user.isMHSUEmployer) {
-      this.context.criteria = { ...this.context.criteria, ...{ 'body.program =': `${MHAW}` } };
-    }
+    const filter = getProgramFilterByUser(user, programFilter);
+    this.context.criteria = {
+      ...this.context.criteria,
+      ...(filter && { 'body.program =': `${filter}` }),
+    };
 
     return new RegionsFilteredParticipantsFinder(this.context);
   }

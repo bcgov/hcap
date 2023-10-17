@@ -7,6 +7,7 @@ import type {
   EmailAddressFilter,
   IsIndigenousFilter,
   LastNameFilter,
+  LivedLivingExperienceFilter,
   Pagination,
   PostalCodeFsaFilter,
   ProgramFilter,
@@ -184,7 +185,8 @@ export const getParticipants = async (
   siteSelector?,
   statusFilters?: string[],
   isIndigenousFilter?: IsIndigenousFilter,
-  programFilter?: ProgramFilter
+  programFilter?: ProgramFilter,
+  livedLivingExperienceFilter?: LivedLivingExperienceFilter
 ) => {
   // Get user ids
   const participantsFinder = new ParticipantsFinder(dbClient, user);
@@ -200,6 +202,7 @@ export const getParticipants = async (
       emailAddress: emailFilter,
       interestFilter: interestFilter && ['no', 'withdrawn'],
       isIndigenousFilter,
+      livedLivingExperienceFilter,
     })
     .filterExternalFields({
       statusFilters,

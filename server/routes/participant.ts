@@ -207,6 +207,7 @@ participantsRouter.get(
       statusFilters,
       isIndigenousFilter,
       programFilter,
+      livedLivingExperienceFilter,
     } = req.query;
     const result = await getParticipants(
       user,
@@ -224,7 +225,8 @@ participantsRouter.get(
       siteSelector,
       statusFilters,
       isIndigenousFilter,
-      programFilter
+      programFilter,
+      livedLivingExperienceFilter
     );
     logger.info({
       action: 'participant_get',

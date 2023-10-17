@@ -16,7 +16,16 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const hideLastNameAndEmailFilter = selectedTab === 'Archived Candidates';
 
+  const checkValidRegions = (roles) => {
+    return roles.some((r) => ['region_vancouver_island', 'region_interior'].includes(r));
+  };
+
   const isMoH = roles.includes(Role.MinistryOfHealth);
+  const isMhsuEmployer = roles.includes(Role.MHSUEmployer);
+  const isHA = roles.includes(Role.HealthAuthority);
+
+  const isValidMhsuRegion =
+    (isHA && checkValidRegions(roles)) || (isMhsuEmployer && checkValidRegions(roles));
 
   const setFilter = (key, value) => {
     dispatch({
@@ -175,19 +184,43 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
           </Box>
         </Grid>
       )}
-      {!isMoH && (
-        <Grid container item xs={2} style={{ paddingLeft: '10px' }}>
-          <Checkbox
-            id={'isIndigenousFilterCheckbox'}
-            color='primary'
-            disabled={loading}
-            onChange={({ target }) => setFilter(FILTERABLE_FIELDS.IS_INDIGENOUS, target.checked)}
-          />
-          <FormLabel htmlFor={'isIndigenousFilterCheckbox'} style={{ paddingTop: '13px' }}>
-            Indigenous participants only
-          </FormLabel>
-        </Grid>
-      )}
+      <Grid direction='column' item style={{ paddingLeft: '10px' }}>
+        <>
+          {!isMoH && (
+            <Box>
+              <Checkbox
+                id={'isIndigenousFilterCheckbox'}
+                color='primary'
+                disabled={loading}
+                onChange={({ target }) =>
+                  setFilter(FILTERABLE_FIELDS.IS_INDIGENOUS, target.checked)
+                }
+              />
+              <FormLabel htmlFor={'isIndigenousFilterCheckbox'} style={{ paddingTop: '13px' }}>
+                Indigenous participants only
+              </FormLabel>
+            </Box>
+          )}
+          {isValidMhsuRegion && (
+            <Box>
+              <Checkbox
+                id={'livedLivingExperienceFilterCheckbox'}
+                color='primary'
+                disabled={loading}
+                onChange={({ target }) =>
+                  setFilter(FILTERABLE_FIELDS.LIVED_LIVING_EXPERIENCE, target.checked)
+                }
+              />
+              <FormLabel
+                htmlFor={'livedLivingExperienceFilterCheckbox'}
+                style={{ paddingTop: '13px' }}
+              >
+                Lived/Living Experience participants only
+              </FormLabel>
+            </Box>
+          )}
+        </>
+      </Grid>
     </>
   );
 };

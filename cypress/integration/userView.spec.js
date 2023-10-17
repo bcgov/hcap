@@ -1,8 +1,4 @@
 describe('Tests the User View', () => {
-  beforeEach(() => {
-    cy.kcLogout();
-  });
-
   it('tests failed access request approval', () => {
     cy.kcLogin('test-moh');
     cy.visit('/user-pending');

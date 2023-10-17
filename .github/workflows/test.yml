@@ -80,7 +80,7 @@ jobs:
         run: cd server && POSTGRES_HOST=localhost npm run feed-data
 
       - name: Cypress run
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v6
         with:
           wait-on-timeout: 120
           wait-on: 'http://localhost:4000'

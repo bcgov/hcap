@@ -1,8 +1,4 @@
 describe('Tests the Site View', () => {
-  beforeEach(() => {
-    cy.kcLogout();
-  });
-
   it('visits siteView as private employer', () => {
     cy.kcLogin('test-employer');
     cy.visit('/site-view');

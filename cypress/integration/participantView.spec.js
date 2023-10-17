@@ -1,8 +1,4 @@
 describe('Participant View', () => {
-  beforeEach(() => {
-    cy.kcLogout();
-  });
-
   it('Visits Participant View as a multi-region employer', () => {
     cy.kcLogin('test-employer-multi');
     cy.visit('/participant-view');

@@ -1,12 +1,6 @@
 describe('Bulk Allocation functionality', () => {
-  before(() => {});
-
   beforeEach(() => {
     cy.kcLogin('test-moh');
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
   });
 
   const createPhase = ({ phaseName, startDate, endDate }) => {

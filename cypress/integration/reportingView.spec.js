@@ -14,9 +14,6 @@ describe('Reporting Download', () => {
       cy.kcLogin('test-ha');
       navigateToReportingView();
     });
-    afterEach(() => {
-      cy.kcLogout();
-    });
 
     it('Should be able to download Hiring report by region', () => {
       clickReportButton('Download hiring report');
@@ -44,9 +41,6 @@ describe('Reporting Download', () => {
       cy.kcLogin('test-moh');
       navigateToReportingView();
     });
-    afterEach(() => {
-      cy.kcLogout();
-    });
 
     it('Should be able to see additional reporting information on the reporting view', () => {
       cy.get('.MuiTypography-subtitle1').contains('Milestone Reporting').should('be.visible');
@@ -73,9 +67,6 @@ describe('Reporting Download', () => {
     beforeEach(() => {
       cy.kcLogin('test-employer');
     });
-    afterEach(() => {
-      cy.kcLogout();
-    });
 
     it('Should not allow private employer to view the reporting button', () => {
       cy.visit('/admin');
@@ -91,9 +82,6 @@ describe('Reporting Download', () => {
   describe('MHSU Employer', () => {
     beforeEach(() => {
       cy.kcLogin('test-mhsu-employer');
-    });
-    afterEach(() => {
-      cy.kcLogout();
     });
 
     it('Should not allow mhsu employer to view the reporting button', () => {

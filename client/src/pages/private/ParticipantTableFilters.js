@@ -5,6 +5,7 @@ import { CheckPermissions } from '../../components/generic';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { FILTERABLE_FIELDS, Role } from '../../constants';
+import { MHAW_ENABLED_REGIONS } from './ParticipantTable';
 
 export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   const {
@@ -17,7 +18,7 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   const hideLastNameAndEmailFilter = selectedTab === 'Archived Candidates';
 
   const checkValidRegions = (roles) => {
-    return roles.some((r) => ['region_vancouver_island', 'region_interior'].includes(r));
+    return roles.some((region) => MHAW_ENABLED_REGIONS.includes(region));
   };
 
   const isMoH = roles.includes(Role.MinistryOfHealth);
@@ -184,7 +185,7 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
           </Box>
         </Grid>
       )}
-      <Grid direction='column' item style={{ paddingLeft: '10px' }}>
+      <Grid item style={{ paddingLeft: '10px' }}>
         <>
           {!isMoH && (
             <Box>

@@ -4,12 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { useLocation, Redirect } from 'react-router-dom';
-import {
-  Routes,
-  PEOI_LINK,
-  HEALTH_CARE_ASSISTANT_LINK,
-  MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK,
-} from '../../constants';
+import { Routes, PEOI_LINK } from '../../constants';
 
 import { PDFButton, Divider, Page } from '../../components/generic';
 import { Form } from '../../components/participant-form';
@@ -38,19 +33,11 @@ export default () => {
                 <Typography variant='body1' paragraph>
                   <b>
                     Please submit only one expression of interest per HCAP pathway:{' '}
-                    <Link
-                      href={HEALTH_CARE_ASSISTANT_LINK}
-                      target='__blank'
-                      rel='noreferrer noopener'
-                    >
+                    <Link href={PEOI_LINK} target='__blank' rel='noreferrer noopener'>
                       Health Care Assistant
                     </Link>{' '}
                     and/or{' '}
-                    <Link
-                      href={MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK}
-                      target='__blank'
-                      rel='noreferrer noopener'
-                    >
+                    <Link href={PEOI_LINK} target='__blank' rel='noreferrer noopener'>
                       Mental Health and Addictions Worker.
                     </Link>{' '}
                     Multiple submissions per HCAP pathway will not increase your chances of being

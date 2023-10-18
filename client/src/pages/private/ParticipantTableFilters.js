@@ -17,16 +17,12 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const hideLastNameAndEmailFilter = selectedTab === 'Archived Candidates';
 
-  const checkValidRegions = (roles) => {
-    return roles.some((region) => MHAW_ENABLED_REGIONS.includes(region));
-  };
-
   const isMoH = roles.includes(Role.MinistryOfHealth);
   const isMhsuEmployer = roles.includes(Role.MHSUEmployer);
   const isHA = roles.includes(Role.HealthAuthority);
 
   const isValidMhsuRegion =
-    (isHA && checkValidRegions(roles)) || (isMhsuEmployer && checkValidRegions(roles));
+    (isHA || isMhsuEmployer) && roles.some((region) => MHAW_ENABLED_REGIONS.includes(region));
 
   const setFilter = (key, value) => {
     dispatch({

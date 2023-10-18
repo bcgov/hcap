@@ -1,8 +1,8 @@
 describe('Participant details view', () => {
   before(() => {
-    cy.assignSitesToUser('test-employer', [4444]);
+    cy.assignSitesToUser('test-employer', [4444]); // fraser
     cy.assignSitesToUser('test-ha', [4444]);
-    cy.assignSitesToUser('test-mhsu-employer', [4444]);
+    cy.assignSitesToUser('test-mhsu-employer', [4444, 6666]); // fraser, interior
   });
   describe('Health Authority', () => {
     beforeEach(() => {

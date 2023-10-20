@@ -25,7 +25,7 @@ export default () => {
                   Program. Your submission has been received and you can now login with your BC
                   Services Card anytime to manage your personal information, view your status, and
                   refresh or withdraw your interest. Go to{' '}
-                  <Link href={PEOI_LINK} target='_blank'>
+                  <Link href={'/'} target='_blank'>
                     {PEOI_LINK}
                   </Link>{' '}
                   and click "Login" on the top right of the page.
@@ -33,11 +33,11 @@ export default () => {
                 <Typography variant='body1' paragraph>
                   <b>
                     Please submit only one expression of interest per HCAP pathway:{' '}
-                    <Link href={PEOI_LINK} target='__blank' rel='noreferrer noopener'>
+                    <Link href={'/'} target='__blank' rel='noreferrer noopener'>
                       Health Care Assistant
                     </Link>{' '}
                     and/or{' '}
-                    <Link href={PEOI_LINK} target='__blank' rel='noreferrer noopener'>
+                    <Link href={'/'} target='__blank' rel='noreferrer noopener'>
                       Mental Health and Addictions Worker.
                     </Link>{' '}
                     Multiple submissions per HCAP pathway will not increase your chances of being
@@ -47,7 +47,7 @@ export default () => {
                 <Typography variant='body1' paragraph>
                   Please note, employers are hiring as they are able and continue to hire as new
                   education cohorts are introduced. We are unable to give a specific timeline when a
-                  potential employer may contact a participant, an not all interested participants
+                  potential employer may contact a participant, and not all interested participants
                   will be contacted.
                 </Typography>
                 <Typography variant='body1' paragraph>

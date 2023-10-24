@@ -5,6 +5,7 @@ import { CheckPermissions } from '../../components/generic';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { FILTERABLE_FIELDS, Role } from '../../constants';
+import { MHAW_ENABLED_REGIONS } from './ParticipantTable';
 
 export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   const {
@@ -17,6 +18,11 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   const hideLastNameAndEmailFilter = selectedTab === 'Archived Candidates';
 
   const isMoH = roles.includes(Role.MinistryOfHealth);
+  const isMhsuEmployer = roles.includes(Role.MHSUEmployer);
+  const isHA = roles.includes(Role.HealthAuthority);
+
+  const isValidMhsuRegion =
+    (isHA || isMhsuEmployer) && roles.some((region) => MHAW_ENABLED_REGIONS.includes(region));
 
   const setFilter = (key, value) => {
     dispatch({
@@ -175,19 +181,43 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
           </Box>
         </Grid>
       )}
-      {!isMoH && (
-        <Grid container item xs={2} style={{ paddingLeft: '10px' }}>
-          <Checkbox
-            id={'isIndigenousFilterCheckbox'}
-            color='primary'
-            disabled={loading}
-            onChange={({ target }) => setFilter(FILTERABLE_FIELDS.IS_INDIGENOUS, target.checked)}
-          />
-          <FormLabel htmlFor={'isIndigenousFilterCheckbox'} style={{ paddingTop: '13px' }}>
-            Indigenous participants only
-          </FormLabel>
-        </Grid>
-      )}
+      <Grid item style={{ paddingLeft: '10px' }}>
+        <>
+          {!isMoH && (
+            <Box>
+              <Checkbox
+                id={'isIndigenousFilterCheckbox'}
+                color='primary'
+                disabled={loading}
+                onChange={({ target }) =>
+                  setFilter(FILTERABLE_FIELDS.IS_INDIGENOUS, target.checked)
+                }
+              />
+              <FormLabel htmlFor={'isIndigenousFilterCheckbox'} style={{ paddingTop: '13px' }}>
+                Indigenous participants only
+              </FormLabel>
+            </Box>
+          )}
+          {isValidMhsuRegion && (
+            <Box>
+              <Checkbox
+                id={'livedLivingExperienceFilterCheckbox'}
+                color='primary'
+                disabled={loading}
+                onChange={({ target }) =>
+                  setFilter(FILTERABLE_FIELDS.LIVED_LIVING_EXPERIENCE, target.checked)
+                }
+              />
+              <FormLabel
+                htmlFor={'livedLivingExperienceFilterCheckbox'}
+                style={{ paddingTop: '13px' }}
+              >
+                Lived/Living Experience participants only
+              </FormLabel>
+            </Box>
+          )}
+        </>
+      </Grid>
     </>
   );
 };

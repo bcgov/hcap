@@ -105,6 +105,7 @@ export const FILTERABLE_FIELDS = {
   REGION: 'regionFilter',
   IS_INDIGENOUS: 'isIndigenousFilter',
   PROGRAM: 'programFilter',
+  LIVED_LIVING_EXPERIENCE: 'livedLivingExperienceFilter',
 };
 
 const HCA = 'HCA';

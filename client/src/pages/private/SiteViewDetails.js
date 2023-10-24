@@ -19,7 +19,7 @@ const columnIDs = [
   { id: 'participantName', name: 'Name' },
   { id: 'hiredDate', name: 'Hire Date' },
   { id: 'startDate', name: 'Start Date' },
-  { id: 'nonHCAP', name: 'Position' },
+  { id: 'program', name: 'Position' },
   { id: 'archive', name: 'Archive' },
   { id: 'withdrawnDate', name: 'Withdrawn Date' },
   { id: 'reason', name: 'Reason' },
@@ -46,7 +46,7 @@ const mapSiteParticipantsDataToRow = (response, columnIDs) => {
       startDate: row.data.startDate,
       withdrawnDate: row.data.endDate,
       reason: row.data.reason,
-      nonHCAP: row.data.nonHcapOpportunity ? 'Non-HCAP' : 'HCAP',
+      program: row.data.program,
     };
 
     const mappedRow = columnIDs.reduce(

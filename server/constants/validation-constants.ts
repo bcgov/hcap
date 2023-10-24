@@ -1,3 +1,5 @@
+import { Program } from './programs';
+
 export const healthRegions = [
   'Interior',
   'Fraser',
@@ -126,7 +128,7 @@ export const ROSCompletedType = { value: 'rosComplete', label: 'Return of servic
 export const SuccessfulROSReason = 'Completed all HCAP requirements';
 
 // HCA(Health Care Assistant), MHAW(Mental Health and Addictions Worker)
-export const programs = ['HCA', 'MHAW'];
+export const programs = [Program.HCA, Program.MHAW];
 
 export const yesOrNo = ['Yes', 'No'];
 

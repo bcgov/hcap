@@ -3,14 +3,20 @@ import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
-import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } from '../fields';
+import {
+  RenderDateField,
+  RenderCheckbox,
+  RenderTextField,
+  RenderSelectField,
+  RenderRadioGroup,
+} from '../fields';
 import { fetchSitePhases } from '../../services/phases';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { getTodayDate } from '../../utils';
-import { HireFormSchema } from '../../constants';
+import { HireFormSchema, Program } from '../../constants';
 
 const hireInitialValues = {
-  nonHcapOpportunity: false,
+  program: '',
   positionTitle: '',
   positionType: '',
   hiredDate: '',
@@ -19,10 +25,10 @@ const hireInitialValues = {
   acknowledge: false,
 };
 
-export const HireForm = ({ onSubmit, onClose, sites }) => {
+export const HireForm = ({ onSubmit, onClose, sites, participant }) => {
   const [phases, setPhases] = useState([]);
   const [currentPhase, setCurrentPhase] = useState(null);
-  const [formValues, setformValues] = useState(hireInitialValues);
+  const [formValues, setFormValues] = useState(hireInitialValues);
 
   const handleCurrentPhase = async (siteId) => {
     const site = sites.filter((site) => site.siteId === siteId)[0];
@@ -45,16 +51,30 @@ export const HireForm = ({ onSubmit, onClose, sites }) => {
   return (
     <Formik initialValues={hireInitialValues} validationSchema={HireFormSchema} onSubmit={onSubmit}>
       {({ submitForm, values, setFieldValue }) => {
-        setformValues(values);
+        setFormValues(values);
         return (
           <FormikForm>
             <Box>
               <Field
-                name='nonHcapOpportunity'
-                component={RenderCheckbox}
-                label='Non-HCAP Opportunity'
+                name='program'
+                label='* Program'
+                component={RenderRadioGroup}
+                options={[
+                  {
+                    value: Program.HCA,
+                    label: Program.HCA,
+                    disabled: participant?.program === Program.MHAW,
+                  },
+                  {
+                    value: Program.MHAW,
+                    label: Program.MHAW,
+                    disabled: participant?.program === Program.HCA,
+                  },
+                  { value: Program.NonHCAP, label: 'Non-HCAP Opportunity' },
+                ]}
+                row
               />
-              {values.nonHcapOpportunity && (
+              {values.program === Program.NonHCAP && (
                 <>
                   <Field
                     name='positionTitle'
@@ -100,7 +120,7 @@ export const HireForm = ({ onSubmit, onClose, sites }) => {
               />
             </Box>
 
-            {!values.nonHcapOpportunity && currentPhase && (
+            {values.program !== Program.NonHCAP && currentPhase && (
               <Box mt={2} gap={15}>
                 <Alert severity='info'>
                   <Typography variant='body2' gutterBottom>

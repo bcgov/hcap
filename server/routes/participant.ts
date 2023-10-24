@@ -332,7 +332,7 @@ newHiredParticipantRouter.post(
       await setParticipantStatus(user.id, response.id, ParticipantStatus.OFFER_MADE);
       await setParticipantStatus(user.id, response.id, ParticipantStatus.HIRED, {
         site: participantInfo.site,
-        nonHcapOpportunity: !participantInfo.hcapOpportunity,
+        program: participantInfo.program,
         positionTitle: participantInfo.positionTitle,
         positionType: participantInfo.positionType,
         hiredDate: participantInfo.hiredDate,

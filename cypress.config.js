@@ -19,4 +19,6 @@ module.exports = defineConfig({
     baseUrl: 'http://hcapemployers.local.freshworks.club:4000',
     experimentalSessionAndOrigin: true,
   },
+  viewportWidth: 1600,
+  viewportHeight: 1024,
 });

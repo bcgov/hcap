@@ -53,7 +53,7 @@ export const RenderRadioGroup = ({
                 label={option.label}
                 disabled={disabled}
                 labelPlacement='end'
-                control={<Radio color={option.color || 'primary'} />}
+                control={<Radio color={option.color || 'primary'} disabled={option.disabled} />}
               />
               {hiddenCheckbox?.fields.includes(field.value) &&
                 option.value === field.value &&

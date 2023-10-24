@@ -20,7 +20,7 @@ import {
 } from './util/integrationTestData';
 
 import { startDB, closeDB } from './util/db';
-import { ParticipantStatus } from '../constants';
+import { ParticipantStatus, Program } from '../constants';
 
 describe('Phase Allocation Endpoints', () => {
   let server;
@@ -98,7 +98,8 @@ describe('Phase Allocation Endpoints', () => {
   });
 
   it('getAllSitePhases, returns correct # of hires and remaining hires per phase', async () => {
-    const numAllocations = 30;
+    const hcaAllocation = 30;
+    const mhawAllocation = 20;
     const phaseMockYearOne = {
       name: '2015 Phase',
       start_date: '2015/01/01',
@@ -124,7 +125,8 @@ describe('Phase Allocation Endpoints', () => {
       {
         site_id: site.id,
         phase_id: phaseYearOne.id,
-        allocation: numAllocations,
+        allocation: hcaAllocation,
+        mhaw_allocation: mhawAllocation,
       },
       user
     );
@@ -132,20 +134,21 @@ describe('Phase Allocation Endpoints', () => {
       {
         site_id: site.id,
         phase_id: phaseYearTwo.id,
-        allocation: numAllocations,
+        allocation: hcaAllocation,
+        mhaw_allocation: mhawAllocation,
       },
       user
     );
 
     // Helper function for creating a participant with a hired status
     const makeHiredParticipant = async ({
-      emailAddress,
+      program = Program.HCA,
       employerId,
       siteId,
       hiredDate,
       startDate,
     }) => {
-      const participant = await makeTestParticipant({ emailAddress });
+      const participant = await makeTestParticipant({ program });
       await makeTestParticipantStatus({
         participantId: participant.id,
         employerId,
@@ -155,7 +158,7 @@ describe('Phase Allocation Endpoints', () => {
           site: siteId,
           hiredDate,
           startDate,
-          nonHcapOpportunity: false,
+          program,
         },
       });
     };
@@ -180,9 +183,16 @@ describe('Phase Allocation Endpoints', () => {
     ];
 
     await Promise.all(
-      hiredStartDates.map(async (hiredStartDate, i) => {
+      hiredStartDates.map(async (hiredStartDate) => {
         await makeHiredParticipant({
-          emailAddress: `participantemail${i}@test.com`,
+          program: Program.HCA,
+          employerId: 1,
+          siteId: site.siteId,
+          hiredDate: hiredStartDate.hiredDate,
+          startDate: hiredStartDate.startDate,
+        });
+        await makeHiredParticipant({
+          program: Program.MHAW,
           employerId: 1,
           siteId: site.siteId,
           hiredDate: hiredStartDate.hiredDate,
@@ -196,9 +206,13 @@ describe('Phase Allocation Endpoints', () => {
     const retrievedPhaseYearOne = sitePhases.find((phase) => phase.id === phaseYearOne.id);
     const retrievedPhaseYearTwo = sitePhases.find((phase) => phase.id === phaseYearTwo.id);
 
-    expect(retrievedPhaseYearOne.hcapHires).toEqual(2);
-    expect(retrievedPhaseYearOne.remainingHires).toEqual(numAllocations - 2);
-    expect(retrievedPhaseYearTwo.hcapHires).toEqual(1);
-    expect(retrievedPhaseYearTwo.remainingHires).toEqual(numAllocations - 1);
+    expect(retrievedPhaseYearOne.hcaHires).toEqual(2);
+    expect(retrievedPhaseYearOne.remainingHcaHires).toEqual(hcaAllocation - 2);
+    expect(retrievedPhaseYearOne.mhawHires).toEqual(2);
+    expect(retrievedPhaseYearOne.remainingMhawHires).toEqual(mhawAllocation - 2);
+    expect(retrievedPhaseYearTwo.hcaHires).toEqual(1);
+    expect(retrievedPhaseYearTwo.remainingHcaHires).toEqual(hcaAllocation - 1);
+    expect(retrievedPhaseYearTwo.mhawHires).toEqual(1);
+    expect(retrievedPhaseYearTwo.remainingMhawHires).toEqual(mhawAllocation - 1);
   });
 });

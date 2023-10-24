@@ -27,7 +27,7 @@ const columns = [
   { id: 'postalCode', name: 'Postal Code' },
   {
     id: 'allocation',
-    name: 'Allocation',
+    name: 'Allocation(HCA/MHAW)',
     customComponent: (row) => <SiteTableAllocation row={row} />,
   },
   { id: 'details' },

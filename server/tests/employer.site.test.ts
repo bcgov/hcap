@@ -1,5 +1,5 @@
 import { app } from '../server';
-import { ParticipantStatus as ps, Role } from '../constants';
+import { ParticipantStatus as ps, Program, Role } from '../constants';
 
 import { saveSingleSite, getSitesForUser, getSiteByID, updateSite } from '../services/employers';
 import { createPhase } from '../services/phase';
@@ -14,6 +14,7 @@ import { setParticipantStatus } from '../services/participant-status';
 
 import { startDB, closeDB } from './util/db';
 import { approveUsers, employer, healthAuthority } from './util/keycloak';
+import { fakeParticipant } from './util/participant';
 
 describe('Employer Site Endpoints', () => {
   let server;
@@ -31,33 +32,24 @@ describe('Employer Site Endpoints', () => {
 
   const employerAId = 1;
   const employerBId = 2;
-  const participant1 = {
-    maximusId: 648690,
-    lastName: 'Extra',
-    firstName: 'Eddy',
-    postalCode: 'V1V2V3',
-    postalCodeFsa: 'V1V',
-    phoneNumber: '2502223333',
-    emailAddress: 'eddy@example.com',
-    interested: 'yes',
+  const participant1 = fakeParticipant({
     nonHCAP: 'yes',
     crcClear: 'yes',
     preferredLocation: 'Fraser',
-  };
+  });
 
-  const participant2 = {
-    maximusId: 648691,
-    lastName: 'Finkleman',
-    firstName: 'Freduardo',
-    postalCode: 'V1V2V3',
-    postalCodeFsa: 'V1V',
-    phoneNumber: '2502223333',
-    emailAddress: 'freddy@example.com',
-    interested: 'yes',
+  const participant2 = fakeParticipant({
     nonHCAP: 'yes',
     crcClear: 'yes',
     preferredLocation: 'Fraser',
-  };
+  });
+
+  const participant3 = fakeParticipant({
+    program: Program.MHAW,
+    nonHCAP: 'no',
+    crcClear: 'yes',
+    preferredLocation: 'Vancouver Island',
+  });
 
   // Used for single site POST
   // siteId must be assigned by the test
@@ -154,7 +146,7 @@ describe('Employer Site Endpoints', () => {
     const currentDayPlusOneYr = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
 
     const res = await getSiteByID(1);
-    expect(res.hcapHires).toEqual('0');
+    expect(res.hcaHires).toEqual('0');
     expect(res.nonHcapHires).toEqual('0');
 
     const phaseData = {
@@ -170,15 +162,16 @@ describe('Employer Site Endpoints', () => {
 
     await makeParticipant(participant1);
     await makeParticipant(participant2);
+    await makeParticipant(participant3);
     const {
-      data: [ppt, ppt2],
+      data: [ppt, ppt2, ppt3],
     } = await getParticipants({ isMoH: true });
     await setParticipantStatus(employerAId, ppt.id, ps.PROSPECTING);
     await setParticipantStatus(employerAId, ppt.id, ps.INTERVIEWING);
     await setParticipantStatus(employerAId, ppt.id, ps.OFFER_MADE);
     await setParticipantStatus(employerAId, ppt.id, ps.HIRED, {
       site: res.siteId,
-      nonHcapOpportunity: false,
+      program: Program.HCA,
       positionTitle: 'title',
       positionType: 'posType',
       hiredDate: currentDayPlusOne,
@@ -189,16 +182,29 @@ describe('Employer Site Endpoints', () => {
     await setParticipantStatus(employerBId, ppt2.id, ps.OFFER_MADE);
     await setParticipantStatus(employerBId, ppt2.id, ps.HIRED, {
       site: res.siteId,
-      nonHcapOpportunity: true,
+      program: Program.NonHCAP,
+      positionTitle: 'title',
+      positionType: 'posType',
+      hiredDate: currentDayPlusOne,
+      startDate: currentDayPlusOne,
+    });
+    await setParticipantStatus(employerBId, ppt3.id, ps.PROSPECTING);
+    await setParticipantStatus(employerBId, ppt3.id, ps.INTERVIEWING);
+    await setParticipantStatus(employerBId, ppt3.id, ps.OFFER_MADE);
+    await setParticipantStatus(employerBId, ppt3.id, ps.HIRED, {
+      site: res.siteId,
+      program: Program.MHAW,
       positionTitle: 'title',
       positionType: 'posType',
       hiredDate: currentDayPlusOne,
       startDate: currentDayPlusOne,
     });
     const res1 = await getSiteByID(1);
-    expect(res1.hcapHires).toEqual('1');
+    expect(res1.hcaHires).toEqual('1');
+    expect(res1.mhawHires).toEqual('1');
     expect(res1.nonHcapHires).toEqual('1');
-    expect(res1.allocation).toBeDefined();
+    expect(res1.hcaAllocation).toBeDefined();
+    expect(res1.mhawAllocation).toBeDefined();
   });
 
   it('Create new site, receive duplicated', async () => {
@@ -235,7 +241,7 @@ describe('Employer Site Endpoints', () => {
     await setParticipantStatus(employerAId, ppt.id, ps.OFFER_MADE);
     await setParticipantStatus(employerAId, ppt.id, ps.HIRED, {
       site: res.siteId,
-      nonHcapOpportunity: false,
+      program: Program.HCA,
       positionTitle: 'title',
       positionType: 'posType',
       hiredDate: new Date(),
@@ -246,7 +252,7 @@ describe('Employer Site Endpoints', () => {
     await setParticipantStatus(employerBId, ppt2.id, ps.OFFER_MADE);
     await setParticipantStatus(employerBId, ppt2.id, ps.HIRED, {
       site: res.siteId,
-      nonHcapOpportunity: true,
+      program: Program.NonHCAP,
       positionTitle: 'title',
       positionType: 'posType',
       hiredDate: new Date(),

@@ -49,6 +49,7 @@ describe('Participants status suite', () => {
   const hireParticipantForm = (siteId) => {
     // Ensure dates used are within the phase range of phases[0]
     cy.get('@phases').then((phases) => {
+      cy.get('[type="radio"]').check('HCA');
       cy.formatDateWithOffset(phases[1].start_date, 2).then((formattedDate) => {
         cy.get('input[name=DateHired]').clear().type(`{ctrl+v}${formattedDate}`);
       });

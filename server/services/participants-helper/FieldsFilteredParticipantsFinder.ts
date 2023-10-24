@@ -191,7 +191,7 @@ export class FieldsFilteredParticipantsFinder {
       // Groups
       const inProgressStatuses = [prospecting, interviewing, offerMade];
 
-      // Attache external tables
+      // Attach external tables
       this.context.table = this.context.table.join(
         this.joinTables({ siteIdDistance, user, isOpen, isInProgress })
       );

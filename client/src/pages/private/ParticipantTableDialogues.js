@@ -222,7 +222,7 @@ export const ParticipantTableDialogues = ({
       )}
       {activeModalForm === 'return-of-service' && (
         <ReturnOfServiceForm
-          participantId={actionMenuParticipant.id}
+          participant={actionMenuParticipant}
           onClose={onClose}
           completionHandler={handleUpdate}
         />

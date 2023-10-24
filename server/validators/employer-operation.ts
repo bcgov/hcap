@@ -8,6 +8,7 @@ import {
   SuccessfulROSReason,
   UserRoles,
   Role,
+  yesOrNo,
 } from '../constants';
 
 import { validatePastDateString } from './helpers';
@@ -41,24 +42,21 @@ export const ArchiveRequestDataShape = (schema) =>
         then: (stringSchema) =>
           stringSchema.required('Please include a status').oneOf([ROSCompleteStatus]),
       }),
-    rehire: yup
+    remainingInSectorOrRoleOrAnother: yup
       .string()
       // See https://github.com/jquense/yup/issues/1901 for why this is needed
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .when('type', (type: any, stringSchema) =>
         ['employmentEnded', 'rosComplete'].includes(type)
           ? stringSchema
-              .required('Intent to rehire must not be empty')
-              .oneOf(['Yes', 'No'], 'Must be either Yes or No.')
+              .required(`Must be either Yes, No or I don't know.`)
+              .oneOf([...yesOrNo, `I don't know`], `Must be either Yes, No or I don't know.`)
           : stringSchema
       ),
-    endDate: yup.string().when('type', {
-      is: 'employmentEnded',
-      then: (stringSchema) =>
-        stringSchema
-          .test('is-present', 'Invalid entry. Date must be in the past.', validatePastDateString)
-          .required('Please enter the date this participant was removed'),
-    }),
+    endDate: yup
+      .string()
+      .test('is-present', 'Invalid entry. Date must be in the past.', validatePastDateString)
+      .required('Please enter the date this participant was removed'),
     confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
   });
 

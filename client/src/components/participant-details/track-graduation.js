@@ -194,7 +194,7 @@ export const TrackGraduation = (props) => {
                   reason: '',
                   status: '',
                   endDate: dayjs().format('YYYY/MM/DD'),
-                  rehire: '',
+                  remainingInSectorOrRoleOrAnother: '',
                   confirmed: false,
                 }}
                 validationSchema={ArchiveHiredParticipantSchema}

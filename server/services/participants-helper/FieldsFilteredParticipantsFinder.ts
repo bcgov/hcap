@@ -293,16 +293,29 @@ export class FieldsFilteredParticipantsFinder {
         const statuses = statusFilters.includes('open')
           ? [null, ...statusFilters]
           : statusFilters || [];
-        this.context.criteria = {
-          ...this.context.criteria,
-          or: statuses.map((status) =>
-            status
-              ? {
-                  'status_infos::text ilike': `%{%"status": "${status}"%}%`,
-                }
-              : { status_infos: null }
-          ),
-        };
+        const mappedStatuses = statuses.map((status) =>
+          status
+            ? {
+                'status_infos::text ilike': `%{%"status": "${status}"%}%`,
+              }
+            : { status_infos: null }
+        );
+
+        // need to add an 'and' as statuses map will overwrite the indigenous 'or' filter
+        // criteria.or checks if the indigenous 'or' filter is included in the query
+        this.context.criteria = this.context.criteria.or
+          ? {
+              ...this.context.criteria,
+              and: [
+                {
+                  or: mappedStatuses,
+                },
+              ],
+            }
+          : {
+              ...this.context.criteria,
+              or: mappedStatuses,
+            };
       }
     }
     return new FilteredParticipantsFinder(this.context);

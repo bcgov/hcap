@@ -18,7 +18,7 @@ export const tabColumns = {
       { id: 'participantName', name: 'Name' },
       { id: 'hiredDate', name: 'Hire Date' },
       { id: 'startDate', name: 'Start Date' },
-      { id: 'program', name: 'Position' },
+      { id: 'program', name: 'Program' },
       { id: 'archive', name: 'Archive' },
     ],
   },

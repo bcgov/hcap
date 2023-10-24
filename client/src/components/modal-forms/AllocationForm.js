@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { CreateAllocationSchema, ToastStatus } from '../../constants';
-import { createAllocation, updateAllocation } from '../../services/allocations';
+import { createAllocation, updateAllocation } from '../../services';
 import { useToast } from '../../hooks';
 
 const useStyles = makeStyles(() => ({
@@ -23,11 +23,13 @@ export const AllocationForm = ({ onSubmit, onClose, open, content, isNew, siteId
   const initialValues = content
     ? {
         allocation: content.allocation ?? '',
+        mhawAllocation: content.mhawAllocation ?? '',
         startDate: content.startDate ?? '',
         endDate: content.endDate ?? '',
       }
     : {
         allocation: '',
+        mhawAllocation: '',
         startDate: '',
         endDate: '',
       };
@@ -36,10 +38,14 @@ export const AllocationForm = ({ onSubmit, onClose, open, content, isNew, siteId
     const allocationJson = isNew
       ? {
           allocation: allocation.allocation,
+          mhaw_allocation: allocation.mhawAllocation,
           phase_id: content.id,
           site_id: parseInt(siteId, 10),
         }
-      : { allocation: allocation.allocation };
+      : {
+          allocation: allocation.allocation,
+          mhaw_allocation: allocation.mhawAllocation,
+        };
     const response = await (isNew
       ? createAllocation(allocationJson)
       : updateAllocation(content.allocationId, allocationJson));
@@ -86,13 +92,32 @@ export const AllocationForm = ({ onSubmit, onClose, open, content, isNew, siteId
                   <Field name='endDate' component={RenderDateField} label='End date' disabled />
                 </Box>
               </Box>
-              <Field
-                name='allocation'
-                component={RenderTextField}
-                type='number'
-                label='* Number of allocation'
-                placeholder='Type or select'
-              />
+              <Box
+                display='flex'
+                justifyContent='space-between'
+                my={3}
+                style={{ gap: '25px' }}
+                className={classes.formRow}
+              >
+                <Box flexGrow={1}>
+                  <Field
+                    name='allocation'
+                    component={RenderTextField}
+                    type='number'
+                    label='* HCA allocation'
+                    placeholder='Type HCA allocation'
+                  />
+                </Box>
+                <Box flexGrow={1}>
+                  <Field
+                    name='mhawAllocation'
+                    component={RenderTextField}
+                    type='number'
+                    label='* MHAW allocation'
+                    placeholder='Type MHAW allocation'
+                  />
+                </Box>
+              </Box>
             </Box>
 
             <Box display='flex' justifyContent='space-between' my={3}>

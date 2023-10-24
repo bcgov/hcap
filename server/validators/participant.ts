@@ -12,6 +12,7 @@ import {
   programs,
   yesOrNo,
   yesOrNoOptional,
+  Program,
 } from '../constants';
 
 import {
@@ -224,16 +225,17 @@ export const ParticipantStatusChange = yup
             .string()
             .required('Date hired is required')
             .test('is-date', 'Not a valid date', validateDateString),
-          nonHcapOpportunity: yup
-            .boolean()
-            .required('Non-Hcap Opportunity is required as true or false'),
-          positionTitle: yup.string().when('nonHcapOpportunity', {
-            is: true,
+          program: yup
+            .string()
+            .oneOf([...programs, Program.NonHCAP])
+            .required('Program must be one of HCA, MHAW, and Non-HCAP'),
+          positionTitle: yup.string().when('program', {
+            is: Program.NonHCAP,
             then: (stringSchema) => stringSchema.required('Position title is required'),
             otherwise: (stringSchema) => stringSchema.nullable(),
           }),
-          positionType: yup.string().when('nonHcapOpportunity', {
-            is: true,
+          positionType: yup.string().when('program', {
+            is: Program.NonHCAP,
             then: (stringSchema) =>
               stringSchema
                 .required('Position type is required')

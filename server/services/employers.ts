@@ -4,6 +4,7 @@ import type { HcapUserInfo } from '../keycloak';
 import { formatDateSansTimezone } from '../utils';
 import { Allocation } from '../services/allocations';
 import { isPrivateEmployerOrMHSUEmployerOrHA } from './participants-helper';
+import { Program } from '../constants';
 
 export interface EmployerSite {
   id: number; // Internal ID for site
@@ -14,10 +15,12 @@ export interface EmployerSite {
   healthAuthority: string; // Authority for the site
   siteType: string; // Type of site
   postalCode: string; // Postal code of site
-  allocation: number; // Number of allocations set
+  hcaAllocation: number; // Number of HCA allocations set,
+  mhawAllocation: number; // Number of MHAW allocations set,
   startDate: Date; // start date of current phase
   endDate: Date; // end date of current phase
-  hcapHires?: number;
+  hcaHires?: number;
+  mhawHires?: number;
   nonHcapHires?: number;
 }
 
@@ -71,6 +74,7 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
     employer_sites.body -> 'postalCode' as "postalCode",
     employer_sites.body -> 'siteType' as "siteType",
     spa.allocation,
+    spa.mhaw_allocation as "mhawAllocation",
     p.start_date as "startDate", 
     p.end_date as "endDate"
   FROM
@@ -149,9 +153,9 @@ export const getSiteByID = async (id: number): Promise<EmployerSite> => {
     throw new Error(`No site found with id ${id}`);
   }
 
-  const allocationResponse: Allocation[] = await dbClient.runRawQuery(
+  const allocations: Allocation[] = await dbClient.runRawQuery(
     `
-    SELECT spa.allocation
+    SELECT spa.allocation, spa.mhaw_allocation
       FROM site_phase_allocation spa
         JOIN (
           SELECT id FROM phase
@@ -164,12 +168,13 @@ export const getSiteByID = async (id: number): Promise<EmployerSite> => {
   );
 
   /* eslint-disable camelcase */
-  const [hireResponse]: { hcap_hires: number; non_hcap_hires: number }[] =
+  const [hireResponse]: { hca_hires: number; mhaw_hires: number; non_hcap_hires: number }[] =
     await dbClient.runRawQuery(
       `
     SELECT 
-      COUNT(ps.id) FILTER (WHERE ps.data->>'nonHcapOpportunity' = 'false') AS hcap_hires,
-      COUNT(ps.id) FILTER (WHERE ps.data->>'nonHcapOpportunity' = 'true') AS non_hcap_hires 
+      COUNT(ps.id) FILTER (WHERE ps.data->>'program' = '${Program.HCA}') AS hca_hires,
+      COUNT(ps.id) FILTER (WHERE ps.data->>'program' = '${Program.MHAW}') AS mhaw_hires,
+      COUNT(ps.id) FILTER (WHERE ps.data->>'program' = '${Program.NonHCAP}') AS non_hcap_hires
     FROM participants_status ps
     LEFT JOIN phase p ON CURRENT_DATE BETWEEN p.start_date AND p.end_date
       WHERE ps.data->>'site' = '$1'
@@ -180,12 +185,15 @@ export const getSiteByID = async (id: number): Promise<EmployerSite> => {
       [site[0].siteId]
     );
 
-  const currentAllocation = allocationResponse.length ? allocationResponse[0].allocation : null;
+  const hcaAllocation = allocations?.[0]?.allocation ?? 0;
+  const mhawAllocation = allocations?.[0]?.mhaw_allocation ?? 0;
 
   return {
     ...site[0],
     nonHcapHires: hireResponse.non_hcap_hires,
-    hcapHires: hireResponse.hcap_hires,
-    allocation: currentAllocation,
+    hcaHires: hireResponse.hca_hires,
+    mhawHires: hireResponse.mhaw_hires,
+    hcaAllocation,
+    mhawAllocation,
   };
 };

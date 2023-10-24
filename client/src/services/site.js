@@ -46,6 +46,7 @@ const mapSiteRowsResponse = async (response, columns) => {
       return {
         ...mappedRow,
         id: row.id,
+        allocation: `${row.allocation ?? 0} / ${row.mhawAllocation ?? 0}`,
       };
     });
     return rowsData;
@@ -81,10 +82,8 @@ export const updateSite = async (payload, siteId) => {
 };
 
 export const fetchSiteParticipants = async (columnIDs, siteId) => {
-  const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
+  return fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
     headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
     method: 'GET',
   });
-
-  return response;
 };

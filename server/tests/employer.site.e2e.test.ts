@@ -244,7 +244,8 @@ describe('api-e2e tests for /employer-sites route', () => {
       expect(res.status).toEqual(200);
       expect(res.body.id).toEqual(savedSite.id);
       expect(res.body.siteId).toEqual(site.siteId);
-      expect(res.body.allocation).toBeDefined();
+      expect(res.body.hcaAllocation).toBeDefined();
+      expect(res.body.mhawAllocation).toBeDefined();
     });
   });
 

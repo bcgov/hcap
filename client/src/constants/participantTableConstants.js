@@ -107,11 +107,15 @@ export const FILTERABLE_FIELDS = {
   PROGRAM: 'programFilter',
 };
 
-const HCA = 'HCA';
-const MHAW = 'MHAW';
-export const allPrograms = [HCA, MHAW];
-export const programsHCA = [HCA];
-export const programsMHAW = [MHAW];
+export const Program = {
+  HCA: 'HCA',
+  MHAW: 'MHAW',
+  NonHCAP: 'Non-HCAP',
+};
+
+export const allPrograms = [Program.HCA, Program.MHAW];
+export const programsHCA = [Program.HCA];
+export const programsMHAW = [Program.MHAW];
 
 export const tabStatuses = {
   'Available Participants': ['open'],
@@ -159,7 +163,7 @@ const columns = {
   preferredLocation: { id: 'preferredLocation', name: 'Preferred Region(s)', sortOrder: 10 },
   distance: { id: 'distance', name: 'Site Distance', sortOrder: 11 },
   interested: { id: 'interested', name: 'Interest', sortOrder: 12 },
-  nonHCAP: { id: 'nonHCAP', name: 'Non-HCAP', sortOrder: 13 },
+  program: { id: 'program', name: 'Program', sortOrder: 13 },
   callbackStatus: { id: 'callbackStatus', name: 'Callback Status', sortOrder: 14 },
   userUpdatedAt: { id: 'userUpdatedAt', name: 'Last Updated', sortOrder: 15 },
   engage: { id: 'engage', name: null, sortOrder: 50 },
@@ -187,7 +191,7 @@ const {
   preferredLocation,
   distance,
   interested,
-  nonHCAP,
+  program,
   userUpdatedAt,
   engage,
   edit,
@@ -239,7 +243,7 @@ const EmployerColumns = {
     postalCodeFsa,
     preferredLocation,
     distance,
-    nonHCAP,
+    program,
     userUpdatedAt,
     siteName,
     archiveReason,
@@ -253,7 +257,7 @@ const EmployerColumns = {
     phoneNumber,
     emailAddress,
     siteName,
-    nonHCAP,
+    program,
     userUpdatedAt,
     postHireStatuses,
     employerName,

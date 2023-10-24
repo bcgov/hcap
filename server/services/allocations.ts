@@ -11,6 +11,7 @@ export interface Allocation {
   phase_id: number;
   /** Number of allocations available */
   allocation: number;
+  mhaw_allocation: number;
   /** FK for employer_site */
   site_id: number;
 }
@@ -78,8 +79,7 @@ export const createAllocation = async (allocation, user: HcapUserInfo) => {
  */
 export const updateAllocation = async (allocationId: number, allocation, user: HcapUserInfo) => {
   const data = { ...allocation, updated_by: user.id };
-  const res = await dbClient.db[collections.SITE_PHASE_ALLOCATION].update(allocationId, data);
-  return res;
+  return dbClient.db[collections.SITE_PHASE_ALLOCATION].update(allocationId, data);
 };
 
 /**

@@ -59,7 +59,6 @@ export const IndigenousDeclarationForm = ({ handleSubmit }) => {
                       Do you identify as an Indigenous Person?
                     </Typography>
                   </FormControl>
-
                   <Field
                     id='isIndigenous'
                     name='isIndigenous'

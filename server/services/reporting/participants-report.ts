@@ -95,7 +95,7 @@ type HiredEntry = {
     startDate: string;
     positionType: string;
     positionTitle: string;
-    nonHcapOpportunity: string;
+    program: string;
   };
   employer: string;
   id: number;

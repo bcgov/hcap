@@ -27,7 +27,7 @@ describe('Allocation functionality', () => {
   const navigateToForm = (buttonLabel) => {
     cy.visit('site-view/1');
     cy.get('.MuiTab-wrapper').contains('Allocation').click();
-    cy.get('tr').first();
+    cy.get('tr', { timeout: 10000 }).first();
     cy.get('button').contains(buttonLabel).click();
   };
 

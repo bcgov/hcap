@@ -98,6 +98,7 @@ export const getPSIPaticipantsReport = async (region: string) => {
       participantId: entry.participant_id,
       firstName: participantData?.firstName,
       lastName: participantData?.lastName,
+      program: participantData?.program,
       psi:
         entry.psiJoin?.find((psi) => psi.id === cohortData.psiId)?.institute_name || DEFAULT_STATUS,
       cohort: cohortData.name,

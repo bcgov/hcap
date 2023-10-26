@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import _ from 'lodash';
 import { convertToCsv } from './services/participant-seed';
 import { Program } from '../constants';
 
@@ -16,7 +17,7 @@ const participantsArray = [];
  * Generate X amount of random participants
  */
 const generateParticipants = async (amount: number) => {
-  for (let i = 0; i < amount; i++) {
+  for (let i = 0; i < amount; i += 1) {
     const pc = faker.address.zipCode();
     const fn = faker.name.lastName();
     const ln = faker.name.firstName();
@@ -32,7 +33,7 @@ const generateParticipants = async (amount: number) => {
         preferredLocation: DEFAULT_PREF_LOCATION,
         interested: 'yes',
         crcClear: 'yes',
-        program: Math.floor(Math.random() * 2) === 0 && Program.MHAW, // NOSONAR
+        program: _.sample([Program.HCA, Program.MHAW]),
       }),
     };
     participantsArray.push(participant);

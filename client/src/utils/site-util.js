@@ -6,6 +6,5 @@ export const getSiteProgramFromAllocation = (phases) => {
   if (hca && mhaw) {
     return `${Program.HCA} + ${Program.MHAW}`;
   }
-  if (mhaw) return Program.MHAW;
-  return Program.HCA;
+  return mhaw ? Program.MHAW : Program.HCA;
 };

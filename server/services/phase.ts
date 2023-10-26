@@ -26,11 +26,11 @@ type sitePhase = {
   remainingHcaHires: number;
   /** Number of remaining MHAW hires */
   remainingMhawHires: number;
-  /** Number of HCA employees hired (as a string) */
+  /** Number of HCA employees hired */
   hcaHires: number;
-  /** Number of MHAW employees hired (as a string) */
+  /** Number of MHAW employees hired */
   mhawHires: number;
-  /** Number of Non-HCAP employees hired (as a string) */
+  /** Number of Non-HCAP employees hired */
   nonHcapHires: number;
 };
 

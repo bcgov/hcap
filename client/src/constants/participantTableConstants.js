@@ -1,5 +1,6 @@
 import ToastStatus from './toast';
 import { Role } from './user-roles';
+import { Program } from './programs';
 export const pageSizeOptions = [10, 30, 50, 100];
 
 export const participantStatus = {
@@ -106,12 +107,6 @@ export const FILTERABLE_FIELDS = {
   IS_INDIGENOUS: 'isIndigenousFilter',
   PROGRAM: 'programFilter',
   LIVED_LIVING_EXPERIENCE: 'livedLivingExperienceFilter',
-};
-
-export const Program = {
-  HCA: 'HCA',
-  MHAW: 'MHAW',
-  NonHCAP: 'Non-HCAP',
 };
 
 export const allPrograms = [Program.HCA, Program.MHAW];

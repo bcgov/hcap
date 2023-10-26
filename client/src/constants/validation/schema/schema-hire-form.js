@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import { validateDateString, validatePastDateString } from '../functions';
-import { Program } from '../../participantTableConstants';
+import { Program } from '../../programs';
 
 export const HireFormSchema = yup
   .object()

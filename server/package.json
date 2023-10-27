@@ -24,6 +24,7 @@
     "clean-stale-cronjob": "npx ts-node scripts/clean-up.ts",
     "clean-stale-open-cronjob": "npx ts-node scripts/withdraw-stale-open-participants.ts",
     "archive-withdrawn-participants": "npx ts-node scripts/archive-withdrawn-participants.ts",
+    "generate-participants": "npx ts-node scripts/randomize-participants.ts",
     "export": "npx ts-node scripts/export.ts",
     "watch": "nodemon main.ts",
     "debug": "nodemon --exec 'node --inspect=0.0.0.0:9229 --require ts-node/register main.ts'",

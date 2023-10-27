@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import { dbClient, collections } from '../../db';
 import { getAssignCohort } from '../cohorts';
 import { createPostHireStatus, getPostHireStatusesForParticipant } from '../post-hire-flow';
@@ -14,7 +15,12 @@ import type {
   idFilter,
 } from '../participants-helper';
 import type { HcapUserInfo } from '../../keycloak';
-import { ParticipantStatus as ps, postHireStatuses } from '../../constants';
+import {
+  participantFields,
+  participantFieldsForEmployer,
+  ParticipantStatus as ps,
+  postHireStatuses,
+} from '../../constants';
 import { isPrivateEmployerOrMHSUEmployerOrHA, ParticipantsFinder } from '../participants-helper';
 
 export const makeParticipant = async (participantData) => {
@@ -227,7 +233,7 @@ export const getParticipants = async (
     })
   );
 
-  if (user.isSuperUser || user.isMoH) {
+  if (user.isSuperUser) {
     return {
       data: participants.map((item) => {
         // Only return relevant fields
@@ -253,25 +259,8 @@ export const getParticipants = async (
           returnStatus = total === 1 ? 'In Progress' : `In Progress (${progressStats.total})`;
         if (hired) returnStatus = 'Hired';
         return {
-          id: item.id,
-          program: item.program,
-          educationalRequirements: item.educationalRequirements,
-          firstName: item.firstName,
-          lastName: item.lastName,
-          postalCodeFsa: item.postalCodeFsa,
-          indigenous: item.indigenous,
-          driverLicense: item.driverLicense,
-          experienceWithMentalHealthOrSubstanceUse: item.experienceWithMentalHealthOrSubstanceUse,
-          preferredLocation: item.preferredLocation,
-          currentOrMostRecentIndustry: item.currentOrMostRecentIndustry,
-          roleInvolvesMentalHealthOrSubstanceUse: item.roleInvolvesMentalHealthOrSubstanceUse,
-          nonHCAP: item.nonHCAP,
-          interested: item.interested,
-          crcClear: item.crcClear,
-          callbackStatus: item.callbackStatus,
+          ..._.pick(item, participantFields),
           statusInfo: returnStatus,
-          userUpdatedAt: item.userUpdatedAt,
-          distance: item.distance,
           progressStats,
           postHireStatuses: item.postHireStatuses || [],
           rosStatuses: item.rosStatuses || [],
@@ -285,22 +274,7 @@ export const getParticipants = async (
   return {
     data: participants.map((item) => {
       let participant = {
-        id: item.id,
-        program: item.program,
-        educationalRequirements: item.educationalRequirements,
-        firstName: item.firstName,
-        lastName: item.lastName,
-        postalCodeFsa: item.postalCodeFsa,
-        indigenous: item.indigenous,
-        driverLicense: item.driverLicense,
-        experienceWithMentalHealthOrSubstanceUse: item.experienceWithMentalHealthOrSubstanceUse,
-        preferredLocation: item.preferredLocation,
-        currentOrMostRecentIndustry: item.currentOrMostRecentIndustry,
-        roleInvolvesMentalHealthOrSubstanceUse: item.roleInvolvesMentalHealthOrSubstanceUse,
-        nonHCAP: item.nonHCAP,
-        userUpdatedAt: item.userUpdatedAt,
-        callbackStatus: item.callbackStatus,
-        distance: item.distance,
+        ..._.pick(item, participantFieldsForEmployer),
         postHireStatuses: item.postHireStatuses || [],
         rosStatuses: item.rosStatuses || [],
         statusInfos: undefined, // This gets set later. Should probably get stronger typing.
@@ -316,7 +290,7 @@ export const getParticipants = async (
       const currentStatusInfo = item.statusInfos[0] || {};
       const currentStatusInProgress = ![ps.HIRED, ps.ARCHIVED].includes(currentStatusInfo.status);
       // The participant is hired in a site which is not associated with user
-      const hiredByOtherOrg = hiredStatus && !hiredForAssociatedSites;
+      const hiredByOtherOrg = !user.isMoH && hiredStatus && !hiredForAssociatedSites;
       // The participant is hired by some other user but site associated by user
       const hiredBySomeoneInSameOrgStatus =
         hiredStatus &&

@@ -21,7 +21,7 @@ export const getParticipantStatusData = (status, tabValue, isMoH, participantInf
   const isRejectedByPeer = statusValue === 'reject_ack';
   const isROS = statusValue === 'ros';
   const isHiredByPeer = status[1] === 'hired_by_peer';
-  const isHiredByOther = status.includes('already_hired');
+  const isHiredByOther = !isMoH && status.includes('already_hired');
   const isPendingAcknowledgement = status.includes('pending_acknowledgement');
   const isWithdrawn = status.includes('withdrawn');
   const isArchived = status.includes('archived');

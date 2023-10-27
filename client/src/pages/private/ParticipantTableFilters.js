@@ -22,7 +22,8 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   const hideLastNameAndEmailFilter = !isMoH && selectedTab === 'Archived Candidates';
 
   const isValidMhsuRegion =
-    (isHA || isMhsuEmployer) && roles.some((region) => MHAW_ENABLED_REGIONS.includes(region));
+    (isMoH || isHA || isMhsuEmployer) &&
+    roles.some((region) => MHAW_ENABLED_REGIONS.includes(region));
 
   const setFilter = (key, value) => {
     dispatch({

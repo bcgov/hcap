@@ -25,6 +25,7 @@ export const BackgroundInformationSection = ({
       industryHelpers.setValue('Other, please specify:');
       otherHelpers.setValue(otherValue);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [industry, other]);
 
   return (

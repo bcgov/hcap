@@ -144,13 +144,8 @@ const filterData = (data, columns, isMoH = false) => {
     } else if (item.progressStats) {
       if (isMoH) {
         row.mohStatus = getStatusForMoH(item.interested, item.progressStats);
-        row.status = ['open'];
-      } else {
-        row.status = [
-          'open',
-          ...Object.keys(item.progressStats).filter((key) => key === 'archived'),
-        ];
       }
+      row.status = ['open', ...Object.keys(item.progressStats).filter((key) => key === 'archived')];
     } else {
       row.status = ['open'];
     }
@@ -612,7 +607,7 @@ const ParticipantTable = () => {
           </Box>
         </Grid>
 
-        {!isAdmin && (
+        {!isSuperUser && (
           <Menu
             keepMounted
             open={actionMenuParticipant != null && activeModalForm == null}

@@ -1,6 +1,7 @@
 import ToastStatus from './toast';
 import { Role } from './user-roles';
 import { Program } from './programs';
+import _ from 'lodash';
 export const pageSizeOptions = [10, 30, 50, 100];
 
 export const participantStatus = {
@@ -115,6 +116,7 @@ export const programsMHAW = [Program.MHAW];
 
 export const tabStatuses = {
   'Available Participants': ['open'],
+  Candidates: ['open', 'prospecting', 'interviewing', 'offer_made', 'unavailable'], // for MoH
   'My Candidates': ['prospecting', 'interviewing', 'offer_made', 'unavailable'],
   'Archived Candidates': ['rejected', 'archived'],
   'Hired Candidates': ['hired', 'pending_acknowledgement'],
@@ -129,21 +131,6 @@ export const tabStatuses = {
     'archived',
     'ros',
   ],
-};
-
-const EmployerTabs = [
-  'Available Participants',
-  'My Candidates',
-  'Archived Candidates',
-  'Hired Candidates',
-  'Return Of Service',
-];
-export const tabsByRole = {
-  [Role.Superuser]: ['Participants'],
-  [Role.MinistryOfHealth]: ['Participants'],
-  [Role.HealthAuthority]: EmployerTabs,
-  [Role.Employer]: EmployerTabs,
-  [Role.MHSUEmployer]: EmployerTabs,
 };
 
 const columns = {
@@ -351,9 +338,16 @@ export const columnsByRole = {
       rosStartDate,
       edit,
     ],
+    Candidates: EmployerColumns['My Candidates'],
+    ..._.omit(EmployerColumns, ['Available Participants', 'My Candidates']),
   },
 
   [Role.HealthAuthority]: EmployerColumns,
   [Role.Employer]: EmployerColumns,
   [Role.MHSUEmployer]: EmployerColumns,
 };
+
+export const tabsByRole = _.transform(
+  columnsByRole,
+  (a, columns, role) => (a[role] = _.keys(columns))
+);

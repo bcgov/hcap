@@ -18,16 +18,16 @@ describe('Allocation functionality', () => {
     cy.contains('button', 'Create').click();
   };
 
-  const setAllocationForm = ({ allocation }) => {
+  const setAllocationForm = ({ allocation, mhawAllocation }) => {
     cy.get('[name=allocation]').clear().type(allocation);
-
+    cy.get('[name=mhawAllocation]').clear().type(allocation);
     cy.contains('button', 'Set').click();
   };
 
   const navigateToForm = (buttonLabel) => {
     cy.visit('site-view/1');
     cy.get('.MuiTab-wrapper').contains('Allocation').click();
-    cy.get('tr').first();
+    cy.get('tr', { timeout: 10000 }).first();
     cy.get('button').contains(buttonLabel).click();
   };
 
@@ -43,6 +43,7 @@ describe('Allocation functionality', () => {
     navigateToForm('set');
     const formValues = {
       allocation: '90',
+      mhawAllocation: '80',
     };
     setAllocationForm(formValues);
 
@@ -92,6 +93,7 @@ describe('Allocation functionality', () => {
 
     const formValues = {
       allocation: '30',
+      mhawAllocation: '40',
     };
     setAllocationForm(formValues);
 

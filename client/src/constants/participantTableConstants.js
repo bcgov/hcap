@@ -1,5 +1,6 @@
 import ToastStatus from './toast';
 import { Role } from './user-roles';
+import { Program } from './programs';
 export const pageSizeOptions = [10, 30, 50, 100];
 
 export const participantStatus = {
@@ -108,11 +109,9 @@ export const FILTERABLE_FIELDS = {
   LIVED_LIVING_EXPERIENCE: 'livedLivingExperienceFilter',
 };
 
-const HCA = 'HCA';
-const MHAW = 'MHAW';
-export const allPrograms = [HCA, MHAW];
-export const programsHCA = [HCA];
-export const programsMHAW = [MHAW];
+export const allPrograms = [Program.HCA, Program.MHAW];
+export const programsHCA = [Program.HCA];
+export const programsMHAW = [Program.MHAW];
 
 export const tabStatuses = {
   'Available Participants': ['open'],
@@ -177,7 +176,7 @@ const columns = {
     sortOrder: 11.4,
   },
   interested: { id: 'interested', name: 'Interest', sortOrder: 12 },
-  nonHCAP: { id: 'nonHCAP', name: 'Non-HCAP', sortOrder: 13 },
+  program: { id: 'program', name: 'Program', sortOrder: 13 },
   callbackStatus: { id: 'callbackStatus', name: 'Callback Status', sortOrder: 14 },
   userUpdatedAt: { id: 'userUpdatedAt', name: 'Last Updated', sortOrder: 15 },
   engage: { id: 'engage', name: null, sortOrder: 50 },
@@ -210,7 +209,7 @@ const {
   experienceWithMentalHealthOrSubstanceUse,
   roleInvolvesMentalHealthOrSubstanceUse,
   interested,
-  nonHCAP,
+  program,
   userUpdatedAt,
   engage,
   edit,
@@ -277,7 +276,7 @@ const EmployerColumns = {
     indigenous,
     experienceWithMentalHealthOrSubstanceUse,
     roleInvolvesMentalHealthOrSubstanceUse,
-    nonHCAP,
+    program,
     userUpdatedAt,
     siteName,
     archiveReason,
@@ -291,7 +290,7 @@ const EmployerColumns = {
     phoneNumber,
     emailAddress,
     siteName,
-    nonHCAP,
+    program,
     userUpdatedAt,
     postHireStatuses,
     employerName,

@@ -1,5 +1,7 @@
 import { faker } from '@faker-js/faker';
+import _ from 'lodash';
 import { convertToCsv } from './services/participant-seed';
+import { Program } from '../constants';
 
 // this is for canadian postal codes
 faker.locale = 'en_CA';
@@ -8,14 +10,14 @@ const DEFAULT_PREF_LOCATION = 'Fraser';
 const NUM_PARTICIPANTS_TO_GENERATE = 500;
 
 // increment id for table
-let pId = 1;
-let participantsArray = [];
+const pId = 1;
+const participantsArray = [];
 
-/***
+/** *
  * Generate X amount of random participants
  */
 const generateParticipants = async (amount: number) => {
-  for (let i = 0; i < amount; i++) {
+  for (let i = 0; i < amount; i += 1) {
     const pc = faker.address.zipCode();
     const fn = faker.name.lastName();
     const ln = faker.name.firstName();
@@ -31,7 +33,7 @@ const generateParticipants = async (amount: number) => {
         preferredLocation: DEFAULT_PREF_LOCATION,
         interested: 'yes',
         crcClear: 'yes',
-        program: Math.floor(Math.random() * 2) === 0 && 'MHAW', //NOSONAR
+        program: _.sample([Program.HCA, Program.MHAW]),
       }),
     };
     participantsArray.push(participant);

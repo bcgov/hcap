@@ -11,7 +11,7 @@ import {
   mapUserWithParticipant,
   withdrawParticipantsByEmail,
 } from '../services/participants';
-import { ParticipantStatus as ps } from '../constants';
+import { ParticipantStatus as ps, Program, participantFields } from '../constants';
 
 import { setParticipantStatus } from '../services/participant-status';
 
@@ -20,7 +20,6 @@ import { getReport } from '../services/reporting';
 import { evaluateBooleanAnswer, postHireStatuses } from '../validation';
 import { saveSingleSite } from '../services/employers';
 import { approveUsers, employer, healthAuthority } from './util/keycloak';
-import { participantFields } from '../constants/participant-fields';
 import { fakeParticipant } from './util/participant';
 
 describe('Participants Service', () => {
@@ -550,7 +549,7 @@ describe('Participants Service', () => {
     });
     await setParticipantStatus(employerAId, response.id, ps.OFFER_MADE);
     await setParticipantStatus(employerAId, response.id, ps.HIRED, {
-      nonHcapOpportunity: 'no',
+      program: Program.HCA,
       contactedDate: '09/09/2020',
       hiredDate: '10/10/2020',
       startDate: '11/11/2020',
@@ -657,7 +656,7 @@ describe('Participants Service', () => {
     });
     await setParticipantStatus(employerAId, response.id, ps.OFFER_MADE);
     await setParticipantStatus(employerAId, response.id, ps.HIRED, {
-      nonHcapOpportunity: 'no',
+      program: Program.HCA,
       contactedDate: '09/09/2020',
       hiredDate: '10/10/2020',
       startDate: '11/11/2020',

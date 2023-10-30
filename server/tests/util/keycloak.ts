@@ -74,7 +74,7 @@ export const getKeycloakToken = async ({ username, password }: TestUser) => {
   try {
     const code_challenge = base64URLEncode(crypto.randomBytes(32));
     // this redirect uri is only used for server tests
-    const redirect_uri = 'http://hcapemployers.local.freshworks.club:4000'; // NOSONAR
+    const redirect_uri = 'http://hcapemployers.localhost:4000'; // NOSONAR
     const authBaseUrl = process.env.KEYCLOAK_AUTH_URL;
     const realm = process.env.KEYCLOAK_REALM;
     const client_id = process.env.KEYCLOAK_API_CLIENTID;

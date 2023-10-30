@@ -6,8 +6,8 @@ module.exports = defineConfig({
   video: false,
   isLocal: false,
   env: {
-    apiBaseURL: 'http://hcapemployers.local.freshworks.club:8081/api/v1',
-    participantBaseUrl: 'http://hcapparticipants.local.freshworks.club:4000',
+    apiBaseURL: 'http://hcapemployers.localhost:8081/api/v1',
+    participantBaseUrl: 'http://hcapparticipants.localhost:4000',
   },
   e2e: {
     // We've imported your old cypress plugins here.
@@ -16,7 +16,7 @@ module.exports = defineConfig({
       return require('./cypress/plugins/index.js')(on, config);
     },
     specPattern: 'cypress/integration/**/*.spec.js',
-    baseUrl: 'http://hcapemployers.local.freshworks.club:4000',
+    baseUrl: 'http://hcapemployers.localhost:4000',
   },
   viewportWidth: 1600,
   viewportHeight: 1024,

@@ -55,7 +55,7 @@ To set up your development environment:
 - Run `make local-build` within the root folder of the project to build the application
 - Run `make local-run` within the root folder of the project to run the application
 
-You should see the application running at `http://hcapemployers.local.freshworks.club:4000/` and `http://hcapparticipants.local.freshworks.club:4000/`.
+You should see the application running at `http://hcapemployers.localhost:4000/` and `http://hcapparticipants.localhost:4000/`.
 
 See [*Development*](docs/development.md) for more details.
 

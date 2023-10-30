@@ -1088,9 +1088,9 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
       "redirectUris": [
-        "http://hcapemployers.local.freshworks.club:4000/*",
+        "http://hcapemployers.localhost:4000/*",
         "*",
-        "http://hcapparticipants.local.freshworks.club:4000/*"
+        "http://hcapparticipants.localhost:4000/*"
       ],
       "webOrigins": ["*"],
       "notBefore": 0,

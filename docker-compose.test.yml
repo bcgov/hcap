@@ -5,7 +5,7 @@ services:
     image: ${APP_NAME}-client
     container_name: ${APP_NAME}-client
     environment:
-      - REACT_APP_API_URL=http://hcapemployers.local.freshworks.club:8081
+      - REACT_APP_API_URL=http://hcapemployers.localhost:8081
     build:
       context: ./client
       dockerfile: Dockerfile.test
@@ -13,7 +13,7 @@ services:
       - 4000:4000
     volumes:
       - ./client:/client # Use client dir in host for hot reloading
-      - /client/node_modules # Use node_modules in container
+      - ./client/node_modules:/client/node_modules # Use node_modules in container
     depends_on:
       - server
     networks:
@@ -103,9 +103,9 @@ services:
     networks:
       backend:
         aliases:
-          - keycloak.local.freshworks.club
+          - keycloak.localhost
     healthcheck:
-      test: ['CMD-SHELL', 'curl -f http://keycloak.local.freshworks.club:8080/auth']
+      test: ['CMD-SHELL', 'curl -f http://keycloak.localhost:8080/auth']
       interval: 10s
       timeout: 10s
       retries: 20

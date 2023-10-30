@@ -26,7 +26,7 @@
 - Run `make local-build` within the root folder of the project to build the application
 - Run `make local-run` within the root folder of the project to run the application
 
-You should see the application running at `http://hcapemployers.local.freshworks.club:4000/` and `http://hcapparticipants.local.freshworks.club:4000/`.
+You should see the application running at `http://hcapemployers.localhost:4000/` and `http://hcapparticipants.localhost:4000/`.
 
 ### To run the server with debugging enabled:
 
@@ -52,7 +52,7 @@ The project will run inside your terminal (without detaching) and be open to loc
 - Run `make local-kc-build`
 - Run `make local-kc-run`
 - Run `make kc-import-users`
-Go to `http://keycloak.local.freshworks.club:8080/auth` console and add users/assign roles under the client `hcap-fe-local`
+Go to `http://keycloak.localhost:8080/auth` console and add users/assign roles under the client `hcap-fe-local`
 - Run `make kc-export-users` to save your changes
 `409 Conflict` errors are ok if the user already exists, only the role change will be applied
 
@@ -89,9 +89,9 @@ As a side note, the architecture linux/amd64 is also for x86 Intel chips and tho
 
 ## Using the Application
 
-The application's public routes can be accessed at http://hcapparticipants.local.freshworks.club:4000.
+The application's public routes can be accessed at http://hcapparticipants.localhost:4000.
 
-The application's private routes are located at http://hcapparticipants.local.freshworks.club:4000.
+The application's private routes are located at http://hcapparticipants.localhost:4000.
 To access these, you'll need an account on the [BCeID test environment](https://www.test.bceid.ca/register/basic/account_details.aspx?type=regular&eServiceType=basic).
 When you first log in, an access request will be created, which can be accepted by a teammate through `View Access Requests` or manually through Keycloak.
 The access request will need to be approved separately on each environment.

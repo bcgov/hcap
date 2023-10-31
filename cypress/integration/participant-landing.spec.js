@@ -4,6 +4,7 @@ describe('e2e test for participant landing page', () => {
   before(() => {
     // Create one participant
     cy.kcLogin('test-superuser');
+    cy.visit('/'); // without this, session might not be restored completely
     cy.callAPI({
       user: 'test-superuser',
       api: '/participants',
@@ -14,6 +15,7 @@ describe('e2e test for participant landing page', () => {
 
   after(() => {
     cy.kcLogin('test-superuser');
+    cy.visit('/');
     cy.callAPI({
       user: 'test-superuser',
       api: '/participants',

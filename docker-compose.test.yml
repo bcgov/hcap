@@ -13,7 +13,7 @@ services:
       - 4000:4000
     volumes:
       - ./client:/client # Use client dir in host for hot reloading
-      - ./client/node_modules:/client/node_modules # Use node_modules in container
+      - /client/node_modules # Use node_modules in container
     depends_on:
       - server
     networks:

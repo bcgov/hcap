@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 
 const getConfirmMessage = (hasMultipleParticipants, isMoH) => {
   let message = hasMultipleParticipants ? ` participants have` : ' has';
-  message += ` been engaged.`;
+  message += ` been engaged. `;
   if (!isMoH) {
     message += 'These candidates can now be found in the My Candidates Tab.';
   }

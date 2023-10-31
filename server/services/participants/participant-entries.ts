@@ -16,7 +16,7 @@ import type {
 } from '../participants-helper';
 import type { HcapUserInfo } from '../../keycloak';
 import {
-  participantFields,
+  participantFieldsForSuper,
   participantFieldsForEmployer,
   ParticipantStatus as ps,
   postHireStatuses,
@@ -232,40 +232,41 @@ export const getParticipants = async (
       };
     })
   );
+  if (user.isSuperUser || user.isMoH) {
+    participants = participants.map((item) => {
+      // Only return relevant fields
+      let returnStatus = 'Pending';
+      const progressStats = {
+        prospecting: 0,
+        interviewing: 0,
+        offer_made: 0,
+        hired: 0,
+        total: 0,
+      };
+
+      if (item.interested === 'no') returnStatus = 'Withdrawn';
+      if (item.interested === 'yes') returnStatus = 'Available';
+
+      item.statusInfos.forEach((entry) => {
+        progressStats[entry.status] += 1;
+        progressStats.total += 1;
+      });
+
+      const { total, hired } = progressStats;
+      if (total > 0)
+        returnStatus = total === 1 ? 'In Progress' : `In Progress (${progressStats.total})`;
+      if (hired) returnStatus = 'Hired';
+      return { ...item, statusInfo: returnStatus, progressStats };
+    });
+  }
 
   if (user.isSuperUser) {
     return {
-      data: participants.map((item) => {
-        // Only return relevant fields
-        let returnStatus = 'Pending';
-        const progressStats = {
-          prospecting: 0,
-          interviewing: 0,
-          offer_made: 0,
-          hired: 0,
-          total: 0,
-        };
-
-        if (item.interested === 'no') returnStatus = 'Withdrawn';
-        if (item.interested === 'yes') returnStatus = 'Available';
-
-        item.statusInfos.forEach((entry) => {
-          progressStats[entry.status] += 1;
-          progressStats.total += 1;
-        });
-
-        const { total, hired } = progressStats;
-        if (total > 0)
-          returnStatus = total === 1 ? 'In Progress' : `In Progress (${progressStats.total})`;
-        if (hired) returnStatus = 'Hired';
-        return {
-          ..._.pick(item, participantFields),
-          statusInfo: returnStatus,
-          progressStats,
-          postHireStatuses: item.postHireStatuses || [],
-          rosStatuses: item.rosStatuses || [],
-        };
-      }),
+      data: participants.map((item) => ({
+        ..._.pick(item, participantFieldsForSuper),
+        postHireStatuses: item.postHireStatuses || [],
+        rosStatuses: item.rosStatuses || [],
+      })),
       ...(pagination && { pagination: paginationData }),
     };
   }
@@ -274,7 +275,7 @@ export const getParticipants = async (
   return {
     data: participants.map((item) => {
       let participant = {
-        ..._.pick(item, participantFieldsForEmployer),
+        ..._.pick(item, user.isMoH ? participantFieldsForSuper : participantFieldsForEmployer),
         postHireStatuses: item.postHireStatuses || [],
         rosStatuses: item.rosStatuses || [],
         statusInfos: undefined, // This gets set later. Should probably get stronger typing.
@@ -284,7 +285,7 @@ export const getParticipants = async (
 
       // Get hired status
       const hiredStatus = item.statusInfos?.find((statusInfo) => statusInfo.status === ps.HIRED);
-      const hiredForAssociatedSites = hiredStatus && user.sites.includes(hiredStatus?.data.site);
+      const hiredForAssociatedSites = hiredStatus && user.sites?.includes(hiredStatus?.data.site);
 
       // Current Status
       const currentStatusInfo = item.statusInfos[0] || {};
@@ -332,9 +333,7 @@ export const getParticipants = async (
       }
 
       if (computedStatus) {
-        participant.statusInfos = participant.statusInfos
-          ? [...participant.statusInfos, computedStatus]
-          : [computedStatus];
+        participant.statusInfos = [computedStatus];
       }
 
       const statusInfos = item.statusInfos?.find(

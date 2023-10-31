@@ -34,7 +34,7 @@ router.get(
         'Participant ID': result.participantId,
         'First Name': result.firstName,
         'Last Name': result.lastName,
-        Program: result.program,
+        Pathway: result.program,
         PSI: result.psi,
         'PSI region': result.psiRegion,
         Cohort: result.cohort,

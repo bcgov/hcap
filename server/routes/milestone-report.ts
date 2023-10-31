@@ -36,7 +36,12 @@ const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
       'Last Name': result.lastName,
       'Employer ID': result.employerId,
       Email: result.email,
-      Program: result.program,
+      Pathway: result.program,
+      'Valid BC Driver License': result.driverLicense,
+      Indigenous: result.indigenous,
+      Marketing: result.reasonForFindingOut,
+      'Work Experience': result.currentOrMostRecentIndustry,
+      'MHSU Sector Experience': result.experienceWithMentalHealthOrSubstanceUse,
       'Employer Site Region': result.employerRegion,
       'Employer Site ID': result.employerSiteId,
       'Employer Site': result.employerSite,
@@ -63,7 +68,7 @@ const generateRosReport = async (csvStream, region) => {
       'Participant ID': result.participantId,
       'First Name': result.firstName,
       'Last Name': result.lastName,
-      Program: result.program,
+      Pathway: result.program,
       'ROS Start Date': result.startDate,
       'ROS End Date': result.endDate,
       'Start Date at a Site': result.siteStartDate,
@@ -72,6 +77,8 @@ const generateRosReport = async (csvStream, region) => {
       'Site of ROS': result.site,
       'Health Region': result.healthRegion,
       'Return of Service Completed': result.rosCompleted,
+      'Intends to Continue as HCA/MHAW Following ROS Completion':
+        result.remainingInSectorOrRoleOrAnother,
     });
   });
 };

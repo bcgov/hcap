@@ -5,3 +5,4 @@ export * from './milestones-report';
 export * from './participant';
 export * from './participants-report';
 export * from './psi-report';
+export * from './program-monitoring-report';

@@ -9,6 +9,7 @@ import {
   fetchMilestoneReports,
   downloadMilestoneReports,
   downloadPSIReports,
+  downloadProgramMonitoringReports,
 } from '../../services/reports';
 import {
   ToastStatus,
@@ -47,10 +48,7 @@ export default () => {
     }
   };
 
-  const handleDownloadMilestoneReports = async (reportType) => {
-    setLoadingReport(reportType);
-    const region = isMoH ? null : HARegion;
-    const response = await downloadMilestoneReports(reportType, region);
+  const checkResponse = (response) => {
     if (response.ok) {
       openToast({
         status: ToastStatus.Success,
@@ -65,21 +63,23 @@ export default () => {
     setLoadingReport('');
   };
 
+  const handleDownloadMilestoneReports = async (reportType) => {
+    setLoadingReport(reportType);
+    const region = isMoH ? null : HARegion;
+    const response = await downloadMilestoneReports(reportType, region);
+    checkResponse(response);
+  };
+
+  const handleDownloadProgramMonitoringReports = async (reportType) => {
+    setLoadingReport(reportType);
+    const response = await downloadProgramMonitoringReports(reportType);
+    checkResponse(response);
+  };
+
   const handleDownloadPSIReports = async (reportType) => {
     setLoadingReport(reportType);
     const response = await downloadPSIReports(reportType);
-    if (response.ok) {
-      openToast({
-        status: ToastStatus.Success,
-        message: response.message || DOWNLOAD_DEFAULT_SUCCESS_MESSAGE,
-      });
-    } else {
-      openToast({
-        status: ToastStatus.Error,
-        message: response.error || response.statusText || DOWNLOAD_DEFAULT_ERROR_MESSAGE,
-      });
-    }
-    setLoadingReport('');
+    checkResponse(response);
   };
 
   useEffect(() => {
@@ -145,6 +145,16 @@ export default () => {
                 text='Download return of service milestones report'
               />
             </Box>
+            {isMoH && (
+              <Box py={1} display='flex' justifyContent='center'>
+                <Button
+                  fullWidth={false}
+                  loading={isLoadingReport === 'monitoring'}
+                  onClick={() => handleDownloadProgramMonitoringReports('monitoring')}
+                  text='Download program monitoring report'
+                />
+              </Box>
+            )}
             <Box py={1} display='flex' justifyContent='center'>
               <Button
                 fullWidth={false}

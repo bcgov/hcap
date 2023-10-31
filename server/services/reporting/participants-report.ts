@@ -28,6 +28,11 @@ interface ParticipantJoin extends HiredJoin {
     firstName: string;
     maximusId: number;
     program: Program;
+    driverLicense: string;
+    indigenous: string;
+    reasonForFindingOut: string[];
+    currentOrMostRecentIndustry: string;
+    experienceWithMentalHealthOrSubstanceUse: string;
     interested: string;
     postalCode: string;
     phoneNumber: string;
@@ -217,6 +222,12 @@ export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) =
     employerId: entry.employer_id,
     email: entry.participantJoin?.[0]?.body?.emailAddress,
     program: entry.participantJoin?.[0].body?.program,
+    driverLicense: entry.participantJoin?.[0].body?.driverLicense,
+    indigenous: entry.participantJoin?.[0].body?.indigenous,
+    reasonForFindingOut: entry.participantJoin?.[0].body?.reasonForFindingOut?.join(','),
+    currentOrMostRecentIndustry: entry.participantJoin?.[0].body?.currentOrMostRecentIndustry,
+    experienceWithMentalHealthOrSubstanceUse:
+      entry.participantJoin?.[0].body?.experienceWithMentalHealthOrSubstanceUse,
     employerRegion: entry.employerSiteJoin?.[0]?.body?.healthAuthority,
     employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,
     employerCity: entry.employerSiteJoin?.[0]?.body.city,

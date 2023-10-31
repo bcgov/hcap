@@ -55,24 +55,8 @@ export const downloadMilestoneReports = async (reportType, region = null) => {
   }
 };
 
-export const downloadProgramMonitoringReports = async (reportType) => {
-  const url = `${API_URL}/api/v1/${reportURLHash[reportType]}`;
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
-    },
-    method: 'GET',
-  });
-
-  if (response.ok) {
-    await handleReportDownloadResult(response, csvTitle(reportType));
-    return response;
-  } else {
-    throw new Error('Failed to download report');
-  }
-};
-
-export const downloadPSIReports = async (reportType) => {
+// generic report download
+export const downloadReport = async (reportType) => {
   const url = `${API_URL}/api/v1/${reportURLHash[reportType]}`;
   const response = await fetch(url, {
     headers: {

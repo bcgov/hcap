@@ -8,8 +8,7 @@ import { useToast } from '../../hooks';
 import {
   fetchMilestoneReports,
   downloadMilestoneReports,
-  downloadPSIReports,
-  downloadProgramMonitoringReports,
+  downloadReport,
 } from '../../services/reports';
 import {
   ToastStatus,
@@ -70,15 +69,9 @@ export default () => {
     checkResponse(response);
   };
 
-  const handleDownloadProgramMonitoringReports = async (reportType) => {
+  const handleDownloadReport = async (reportType) => {
     setLoadingReport(reportType);
-    const response = await downloadProgramMonitoringReports(reportType);
-    checkResponse(response);
-  };
-
-  const handleDownloadPSIReports = async (reportType) => {
-    setLoadingReport(reportType);
-    const response = await downloadPSIReports(reportType);
+    const response = await downloadReport(reportType);
     checkResponse(response);
   };
 
@@ -150,7 +143,7 @@ export default () => {
                 <Button
                   fullWidth={false}
                   loading={isLoadingReport === 'monitoring'}
-                  onClick={() => handleDownloadProgramMonitoringReports('monitoring')}
+                  onClick={() => handleDownloadReport('monitoring')}
                   text='Download program monitoring report'
                 />
               </Box>
@@ -159,7 +152,7 @@ export default () => {
               <Button
                 fullWidth={false}
                 loading={isLoadingReport === 'psi'}
-                onClick={() => handleDownloadPSIReports('psi')}
+                onClick={() => handleDownloadReport('psi')}
                 text='Download participants attending PSI report'
               />
             </Box>

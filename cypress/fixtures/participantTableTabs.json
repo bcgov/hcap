@@ -31,9 +31,22 @@
     {
       "name": "ministry_of_health",
       "fixture": "test-moh",
-      "tabsWithMultiselect": [],
-      "tabsWithActions": ["Participants"],
-      "allTabs": ["Participants", "Participants"],
+      "tabsWithMultiselect": ["Candidates"],
+      "tabsWithActions": [
+        "Participants",
+        "Candidates",
+        "Archived Candidates",
+        "Hired Candidates",
+        "Return Of Service"
+      ],
+      "allTabs": [
+        "Participants",
+        "Participants",
+        "Candidates",
+        "Archived Candidates",
+        "Hired Candidates",
+        "Return Of Service"
+      ],
       "tableTabs": {
         "Participants": [
           "ID",
@@ -50,6 +63,68 @@
           "Last Updated",
           "Graduated",
           "Return of Service Start Date"
+        ],
+        "Candidates": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "FSA",
+          "Phone Number",
+          "Email Address",
+          "Preferred Region(s)",
+          "Driver's License",
+          "Site Distance",
+          "Language Requirements",
+          "Indigenous",
+          "Lived/Living MHSU experience",
+          "Peer Roles",
+          "Last Updated",
+          "Last Engaged By",
+          "Last Engaged Date",
+          "Site Name"
+        ],
+        "Archived Candidates": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "FSA",
+          "Preferred Region(s)",
+          "Driver's License",
+          "Site Distance",
+          "Language Requirements",
+          "Indigenous",
+          "Lived/Living MHSU experience",
+          "Peer Roles",
+          "Program",
+          "Last Updated",
+          "Site Name",
+          "Archive Reason"
+        ],
+        "Hired Candidates": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "Phone Number",
+          "Email Address",
+          "Site Name",
+          "Program",
+          "Last Updated",
+          "Graduated",
+          "Hired By"
+        ],
+        "Return Of Service": [
+          "ID",
+          "Last Name",
+          "First Name",
+          "Status",
+          "Phone Number",
+          "Email Address",
+          "Return of Service Start Date",
+          "RoS Site Name",
+          "Hired By"
         ]
       }
     },

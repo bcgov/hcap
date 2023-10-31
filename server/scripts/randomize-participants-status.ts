@@ -55,8 +55,6 @@ const employmentType = ['part-time', 'full-time'];
 
 const randomize = (n: number, reject?: boolean) => {
   let value = _.random(1, n);
-  // prevent duplicate participant ids from being used
-  // Sonarcloud complains about Math.random, ignoring as it's just being used for simple random numbers
   if (reject) {
     while (usedIds.includes(value)) {
       value = _.random(1, n);

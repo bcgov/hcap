@@ -42,7 +42,7 @@ const flattenParticipants = (participants) => {
   participants.forEach((participant) => {
     const { employerSpecificJoin = [], ...participantInfo } = participant;
     // Single or No employerSpecific statuses
-    if (employerSpecificJoin.length === 0 || employerSpecificJoin.length === 1) {
+    if (employerSpecificJoin.length < 2) {
       flattenedParticipantList.push(participant);
     } else {
       employerSpecificJoin.forEach((status) => {

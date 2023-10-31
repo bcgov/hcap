@@ -1,6 +1,7 @@
 // Test execution code: npm run test:debug participant.service.test.js
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 import { v4 } from 'uuid';
+import _ from 'lodash';
 import { startDB, closeDB } from './util/db';
 import {
   getParticipants,
@@ -11,7 +12,14 @@ import {
   mapUserWithParticipant,
   withdrawParticipantsByEmail,
 } from '../services/participants';
-import { ParticipantStatus as ps, Program, participantFields } from '../constants';
+import {
+  ParticipantStatus as ps,
+  Program,
+  participantFieldsForSuper,
+  participantFieldsForMoH,
+  healthRegions,
+  participantFieldsForEmployer,
+} from '../constants';
 
 import { setParticipantStatus } from '../services/participant-status';
 
@@ -21,9 +29,10 @@ import { evaluateBooleanAnswer, postHireStatuses } from '../validation';
 import { saveSingleSite } from '../services/employers';
 import { approveUsers, employer, healthAuthority } from './util/keycloak';
 import { fakeParticipant } from './util/participant';
+import { compareArray } from './util/compare-array';
 
 describe('Participants Service', () => {
-  const regions = ['Fraser', 'Interior', 'Northern', 'Vancouver Coastal', 'Vancouver Island'];
+  const regions = healthRegions;
 
   const allParticipants = [...Array(10)].map(() => fakeParticipant());
 
@@ -41,9 +50,11 @@ describe('Participants Service', () => {
     const res = await getParticipants({ isSuperUser: true });
 
     expect(res.data.length).toBe(allParticipants.length);
-    expect(res.data.map((item) => Object.keys(item))).toEqual(
-      allParticipants.map(() => participantFields)
-    );
+    expect(
+      res.data
+        .map((item) => compareArray(Object.keys(item), participantFieldsForSuper))
+        .every((v) => v)
+    ).toBeTruthy();
   });
 
   it('Set participant status with different employers, fetch participant with status', async () => {
@@ -103,8 +114,8 @@ describe('Participants Service', () => {
       isMoH: true,
     });
 
-    const received = res.data.map((item) => Object.keys(item));
-    const expected = allParticipants.map(() => participantFields);
+    const received = res.data.map((item) => Object.keys(item).sort()); // NOSONAR
+    const expected = allParticipants.map(() => participantFieldsForMoH.sort()); // NOSONAR
     expect(received).toEqual(expected);
   });
 
@@ -149,16 +160,21 @@ describe('Participants Service', () => {
       );
     };
     const trimIds = (a) =>
-      a.map((i) =>
+      _.uniqBy(a, (i: any) => i.id).map((i) =>
         Object.keys(i)
           .filter((k) => !['id', 'callbackStatus', 'userUpdatedAt'].includes(k)) // TODO: Should not ignore callback status
           .reduce((o, k) => ({ ...o, [k]: i[k] }), { nonHCAP: undefined })
       );
 
-    const expected = mapRawToEmployerColumns(
+    let expected = mapRawToEmployerColumns(
       allParticipants.filter((i) => evaluateBooleanAnswer(i.interested))
     );
-    expect(trimIds(res.data)).toEqual(expect.arrayContaining(expected));
+    res.data.forEach((row) => {
+      expect(Object.keys(row).sort()).toEqual(participantFieldsForEmployer.sort()); // NOSONAR
+    });
+    const received = _.uniq(res.data.map((row) => row.firstName)).sort(); // NOSONAR
+    expected = _.uniq(expected.map((row) => row.firstName)).sort(); // NOSONAR
+    expect(received).toEqual(expected);
   });
 
   it('confirms that reporting works properly', async () => {

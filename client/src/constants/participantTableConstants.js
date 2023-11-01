@@ -1,5 +1,6 @@
 import ToastStatus from './toast';
 import { Role } from './user-roles';
+import { Program } from './programs';
 export const pageSizeOptions = [10, 30, 50, 100];
 
 export const participantStatus = {
@@ -105,13 +106,12 @@ export const FILTERABLE_FIELDS = {
   REGION: 'regionFilter',
   IS_INDIGENOUS: 'isIndigenousFilter',
   PROGRAM: 'programFilter',
+  LIVED_LIVING_EXPERIENCE: 'livedLivingExperienceFilter',
 };
 
-const HCA = 'HCA';
-const MHAW = 'MHAW';
-export const allPrograms = [HCA, MHAW];
-export const programsHCA = [HCA];
-export const programsMHAW = [MHAW];
+export const allPrograms = [Program.HCA, Program.MHAW];
+export const programsHCA = [Program.HCA];
+export const programsMHAW = [Program.MHAW];
 
 export const tabStatuses = {
   'Available Participants': ['open'],
@@ -157,9 +157,26 @@ const columns = {
   phoneNumber: { id: 'phoneNumber', name: 'Phone Number', sortOrder: 8 },
   emailAddress: { id: 'emailAddress', name: 'Email Address', sortOrder: 9 },
   preferredLocation: { id: 'preferredLocation', name: 'Preferred Region(s)', sortOrder: 10 },
+  driverLicense: { id: 'driverLicense', name: `Driver's License`, sortOrder: 10.1 },
   distance: { id: 'distance', name: 'Site Distance', sortOrder: 11 },
+  educationalRequirements: {
+    id: 'educationalRequirements',
+    name: 'Language Requirements',
+    sortOrder: 11.1,
+  },
+  indigenous: { id: 'indigenous', name: 'Indigenous', sortOrder: 11.2 },
+  experienceWithMentalHealthOrSubstanceUse: {
+    id: 'experienceWithMentalHealthOrSubstanceUse',
+    name: 'Lived/Living MHSU experience',
+    sortOrder: 11.3,
+  },
+  roleInvolvesMentalHealthOrSubstanceUse: {
+    id: 'roleInvolvesMentalHealthOrSubstanceUse',
+    name: 'Peer Roles',
+    sortOrder: 11.4,
+  },
   interested: { id: 'interested', name: 'Interest', sortOrder: 12 },
-  nonHCAP: { id: 'nonHCAP', name: 'Non-HCAP', sortOrder: 13 },
+  program: { id: 'program', name: 'Program', sortOrder: 13 },
   callbackStatus: { id: 'callbackStatus', name: 'Callback Status', sortOrder: 14 },
   userUpdatedAt: { id: 'userUpdatedAt', name: 'Last Updated', sortOrder: 15 },
   engage: { id: 'engage', name: null, sortOrder: 50 },
@@ -185,9 +202,14 @@ const {
   phoneNumber,
   emailAddress,
   preferredLocation,
+  driverLicense,
   distance,
+  educationalRequirements,
+  indigenous,
+  experienceWithMentalHealthOrSubstanceUse,
+  roleInvolvesMentalHealthOrSubstanceUse,
   interested,
-  nonHCAP,
+  program,
   userUpdatedAt,
   engage,
   edit,
@@ -211,7 +233,12 @@ const EmployerColumns = {
     phoneNumber,
     emailAddress,
     preferredLocation,
+    driverLicense,
     distance,
+    educationalRequirements,
+    indigenous,
+    experienceWithMentalHealthOrSubstanceUse,
+    roleInvolvesMentalHealthOrSubstanceUse,
     userUpdatedAt,
     engage,
   ],
@@ -224,7 +251,12 @@ const EmployerColumns = {
     phoneNumber,
     emailAddress,
     preferredLocation,
+    driverLicense,
     distance,
+    educationalRequirements,
+    indigenous,
+    experienceWithMentalHealthOrSubstanceUse,
+    roleInvolvesMentalHealthOrSubstanceUse,
     userUpdatedAt,
     engage,
     siteName,
@@ -238,8 +270,13 @@ const EmployerColumns = {
     status,
     postalCodeFsa,
     preferredLocation,
+    driverLicense,
     distance,
-    nonHCAP,
+    educationalRequirements,
+    indigenous,
+    experienceWithMentalHealthOrSubstanceUse,
+    roleInvolvesMentalHealthOrSubstanceUse,
+    program,
     userUpdatedAt,
     siteName,
     archiveReason,
@@ -253,7 +290,7 @@ const EmployerColumns = {
     phoneNumber,
     emailAddress,
     siteName,
-    nonHCAP,
+    program,
     userUpdatedAt,
     postHireStatuses,
     employerName,
@@ -283,7 +320,12 @@ export const columnsByRole = {
       phoneNumber,
       emailAddress,
       preferredLocation,
+      driverLicense,
       distance,
+      educationalRequirements,
+      indigenous,
+      experienceWithMentalHealthOrSubstanceUse,
+      roleInvolvesMentalHealthOrSubstanceUse,
       interested,
       userUpdatedAt,
       postHireStatuses,
@@ -298,6 +340,11 @@ export const columnsByRole = {
       firstName,
       mohStatus,
       preferredLocation,
+      driverLicense,
+      educationalRequirements,
+      indigenous,
+      experienceWithMentalHealthOrSubstanceUse,
+      roleInvolvesMentalHealthOrSubstanceUse,
       interested,
       userUpdatedAt,
       postHireStatuses,

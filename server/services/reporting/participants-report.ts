@@ -1,4 +1,4 @@
-import { DEFAULT_REGION_NAME, ParticipantStatus as ps } from '../../constants';
+import { DEFAULT_REGION_NAME, ParticipantStatus as ps, Program } from '../../constants';
 import { dbClient, collections } from '../../db';
 
 type HistoryItem = {
@@ -27,6 +27,7 @@ interface ParticipantJoin extends HiredJoin {
     location: location;
     firstName: string;
     maximusId: number;
+    program: Program;
     interested: string;
     postalCode: string;
     phoneNumber: string;
@@ -72,7 +73,7 @@ interface ArchivedJoin extends HiredJoin {
     site: number;
     type: string;
     reason: string;
-    rehire: string;
+    remainingInSectorOrRoleOrAnother: string;
     status: string;
     /** YYYY/MM/DD format date string */
     endDate: string;
@@ -95,7 +96,7 @@ type HiredEntry = {
     startDate: string;
     positionType: string;
     positionTitle: string;
-    nonHcapOpportunity: string;
+    program: string;
   };
   employer: string;
   id: number;
@@ -215,6 +216,7 @@ export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) =
     lastName: entry.participantJoin?.[0]?.body?.lastName,
     employerId: entry.employer_id,
     email: entry.participantJoin?.[0]?.body?.emailAddress,
+    program: entry.participantJoin?.[0].body?.program,
     employerRegion: entry.employerSiteJoin?.[0]?.body?.healthAuthority,
     employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,
     employerCity: entry.employerSiteJoin?.[0]?.body.city,

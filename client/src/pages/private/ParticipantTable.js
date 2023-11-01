@@ -34,7 +34,7 @@ import {
 } from '../../services';
 import { ParticipantStatus } from '../../components/generic/ParticipantStatus';
 
-const MHAW_ENABLED_REGIONS = ['region_vancouver_island', 'region_interior'];
+export const MHAW_ENABLED_REGIONS = ['region_vancouver_island', 'region_interior'];
 
 const mapRosData = (data) => ({
   rosSiteName: data?.rosStatuses?.[0]?.rosSite?.body.siteName,

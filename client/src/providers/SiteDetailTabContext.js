@@ -1,5 +1,6 @@
 import React, { useEffect, useReducer } from 'react';
 import { Role, tabColumns } from '../constants';
+import { getSiteProgramFromAllocation } from '../utils/site-util';
 
 const SiteDetailTabContext = React.createContext();
 
@@ -76,6 +77,9 @@ const TabProvider = ({ selectedTab, site, children }) => {
   }, [selectedTab]);
 
   useEffect(() => {
+    if (site.phases) {
+      site.program = getSiteProgramFromAllocation(site.phases);
+    }
     dispatch({
       type: types.UPDATE_SITE,
       payload: { site: site },

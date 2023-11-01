@@ -19,7 +19,7 @@ import { setParticipantStatus } from '../services/participant-status';
 
 import { startDB, closeDB, cleanDB } from './util/db';
 
-import { ParticipantStatus as ps, Role } from '../constants';
+import { ParticipantStatus as ps, Program, Role } from '../constants';
 
 describe.skip('Server V1 Form Endpoints', () => {
   let server;
@@ -254,7 +254,7 @@ describe.skip('Server V1 Form Endpoints', () => {
     await setParticipantStatus(employerAId, ppt.id, ps.OFFER_MADE);
     await setParticipantStatus(employerAId, ppt.id, ps.HIRED, {
       site: res.siteId,
-      nonHcapOpportunity: false,
+      program: Program.HCA,
       positionTitle: 'title',
       positionType: 'posType',
       hiredDate: new Date(),
@@ -265,7 +265,7 @@ describe.skip('Server V1 Form Endpoints', () => {
     await setParticipantStatus(employerBId, ppt2.id, ps.OFFER_MADE);
     await setParticipantStatus(employerBId, ppt2.id, ps.HIRED, {
       site: res.siteId,
-      nonHcapOpportunity: true,
+      program: Program.NonHCAP,
       positionTitle: 'title',
       positionType: 'posType',
       hiredDate: new Date(),

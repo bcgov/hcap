@@ -82,7 +82,7 @@ export const ReturnOfServiceForm = ({
     ha: '',
   },
   onClose,
-  participantId,
+  participant,
   completionHandler,
 }) => {
   // Style Classes
@@ -112,7 +112,7 @@ export const ReturnOfServiceForm = ({
         initialValues={initialValues}
         validationSchema={ReturnOfServiceSchema}
         onSubmit={async (values) => {
-          const success = await postRoS({ values, participantId, setError });
+          const success = await postRoS({ values, participantId: participant.id, setError });
           if (success) {
             onClose();
             completionHandler(true, 'Successfully updated Return of Service status!');
@@ -207,7 +207,7 @@ export const ReturnOfServiceForm = ({
                   <Field
                     name='confirm'
                     component={RenderCheckbox}
-                    label='I acknowledge that this participant has been registered as HCA.'
+                    label={`I acknowledge that this participant has been registered as ${participant.program}.`}
                   />
                 </Box>
               </Box>

@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
+import _ from 'lodash';
 import {
   InterviewingFormSchema,
   EditRosSiteSchema,
@@ -185,16 +186,10 @@ export const ParticipantTableDialogues = ({
         <HireForm
           sites={sites}
           onSubmit={(values) => {
-            handleEngage(actionMenuParticipant.id, 'hired', {
-              nonHcapOpportunity: values.nonHcapOpportunity,
-              positionTitle: values.positionTitle,
-              positionType: values.positionType,
-              hiredDate: values.hiredDate,
-              startDate: values.startDate,
-              site: values.site,
-            });
+            handleEngage(actionMenuParticipant.id, 'hired', _.omit(values, 'acknowledge'));
           }}
           onClose={onClose}
+          participant={actionMenuParticipant}
         />
       )}
       {activeModalForm === 'edit-participant' && (
@@ -222,7 +217,7 @@ export const ParticipantTableDialogues = ({
       )}
       {activeModalForm === 'return-of-service' && (
         <ReturnOfServiceForm
-          participantId={actionMenuParticipant.id}
+          participant={actionMenuParticipant}
           onClose={onClose}
           completionHandler={handleUpdate}
         />

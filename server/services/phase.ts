@@ -7,6 +7,7 @@ import { HcapUserInfo } from '../keycloak';
 import { getSiteByID } from './employers';
 import { Allocation } from './allocations';
 import { formatDateSansTimezone } from '../utils';
+import { Program } from '../constants';
 
 dayjs.extend(isBetween);
 
@@ -21,11 +22,15 @@ type sitePhase = {
   endDate: string;
   /** Number of allocations available */
   allocation: number;
-  /** Number of remaining hires */
-  remainingHires: number;
-  /** Number of hires from HCAP */
-  hcapHires: number;
-  /** Number of hires from outside HCAP */
+  /** Number of remaining HCA hires */
+  remainingHcaHires: number;
+  /** Number of remaining MHAW hires */
+  remainingMhawHires: number;
+  /** Number of HCA employees hired */
+  hcaHires: number;
+  /** Number of MHAW employees hired */
+  mhawHires: number;
+  /** Number of Non-HCAP employees hired */
   nonHcapHires: number;
 };
 
@@ -60,13 +65,17 @@ export const getAllSitePhases = async (siteId: number): Promise<sitePhase[]> => 
     start_date: Date;
     /** End date of the phase */
     end_date: Date;
-    /** Number of employees allocated for this phase at this site */
+    /** Number of HCA employees allocated for this phase at this site */
     allocation: number;
+    /** Number of MHAW employees allocated for this phase at this site */
+    mhaw_allocation: number;
     /** Internal ID of the allocation connected to the site/phase */
     allocation_id: number;
-    /** Number of HCAP employees hired (as a string) */
-    hcap_hires: string;
-    /** Number of non-HCAP employees hired (as a string) */
+    /** Number of HCA employees hired (as a string) */
+    hca_hires: string;
+    /** Number of MHAW employees hired (as a string) */
+    mhaw_hires: string;
+    /** Number of Non-HCAP employees hired (as a string) */
     non_hcap_hires: string;
   };
 
@@ -87,14 +96,19 @@ export const getAllSitePhases = async (siteId: number): Promise<sitePhase[]> => 
       phase.start_date, 
       phase.end_date, 
       spa.allocation, 
+      spa.mhaw_allocation,
       spa.id as allocation_id,
       count(ps.id) FILTER (
         WHERE 
-          ps.data ->> 'nonHcapOpportunity' = 'false'
-      ) AS hcap_hires, 
+          ps.data ->> 'program' = '${Program.HCA}'
+      ) AS hca_hires, 
       count(ps.id) FILTER (
         WHERE 
-          ps.data ->> 'nonHcapOpportunity' = 'true'
+          ps.data ->> 'program' = '${Program.MHAW}'
+      ) AS mhaw_hires, 
+      count(ps.id) FILTER (
+        WHERE 
+          ps.data ->> 'program' = '${Program.NonHCAP}'
       ) AS non_hcap_hires 
     FROM 
       phase 
@@ -120,9 +134,12 @@ export const getAllSitePhases = async (siteId: number): Promise<sitePhase[]> => 
     startDate: formatDateSansTimezone(phase.start_date),
     endDate: formatDateSansTimezone(phase.end_date),
     allocation: phase.allocation,
-    remainingHires: (phase.allocation ?? 0) - Number(phase.hcap_hires),
-    hcapHires: Number(phase.hcap_hires),
+    mhawAllocation: phase.mhaw_allocation,
+    hcaHires: Number(phase.hca_hires),
+    mhawHires: Number(phase.mhaw_hires),
     nonHcapHires: Number(phase.non_hcap_hires),
+    remainingHcaHires: (phase.allocation ?? 0) - Number(phase.hca_hires),
+    remainingMhawHires: (phase.mhaw_allocation ?? 0) - Number(phase.mhaw_hires),
   }));
 };
 

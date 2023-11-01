@@ -207,6 +207,7 @@ participantsRouter.get(
       statusFilters,
       isIndigenousFilter,
       programFilter,
+      livedLivingExperienceFilter,
     } = req.query;
     const result = await getParticipants(
       user,
@@ -224,7 +225,8 @@ participantsRouter.get(
       siteSelector,
       statusFilters,
       isIndigenousFilter,
-      programFilter
+      programFilter,
+      livedLivingExperienceFilter
     );
     logger.info({
       action: 'participant_get',
@@ -330,7 +332,7 @@ newHiredParticipantRouter.post(
       await setParticipantStatus(user.id, response.id, ParticipantStatus.OFFER_MADE);
       await setParticipantStatus(user.id, response.id, ParticipantStatus.HIRED, {
         site: participantInfo.site,
-        nonHcapOpportunity: !participantInfo.hcapOpportunity,
+        program: participantInfo.program,
         positionTitle: participantInfo.positionTitle,
         positionType: participantInfo.positionType,
         hiredDate: participantInfo.hiredDate,

@@ -2,8 +2,8 @@ import { dbClient, collections } from '../../db';
 import { withdrawParticipant } from './participant-entries';
 import { ParticipantStatus as ps } from '../../constants';
 
-export const getHiredParticipantsBySite = async (siteID) => {
-  const participants = await dbClient.db[collections.PARTICIPANTS_STATUS]
+export const getHiredParticipantsBySite = async (siteID: number) =>
+  dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
       participantJoin: {
         type: 'LEFT OUTER',
@@ -17,8 +17,6 @@ export const getHiredParticipantsBySite = async (siteID) => {
       status: ps.HIRED,
       'data.site': String(siteID),
     });
-  return participants;
-};
 
 export const archiveParticipantBySite = async (siteId, participantId, data, userId) => {
   const hiredParticipants = await getHiredParticipantsBySite(siteId);

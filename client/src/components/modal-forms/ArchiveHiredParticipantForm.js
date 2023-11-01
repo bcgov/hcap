@@ -18,15 +18,24 @@ import {
   SuccessfulROSReason,
   ROSUnderwayStatus,
   ROSCompleteStatus,
+  YesNoDontKnow,
+  Program,
 } from '../../constants';
 
 const reasonOptions = formatOptions(archiveReasonOptions);
+
+const employeeRemainingLabel = {
+  [Program.HCA]: 'Is the employee remaining in the HCA sector, within this role or another?',
+  [Program.MHAW]: 'Is the employee remaining in the MHSU sector, within this role or another?',
+  [Program.Unknown]:
+    'Is the employee remaining in the MHSU / HCA sector, within this role or another?',
+};
 
 const archiveHiredParticipantInitialValues = {
   type: '',
   reason: '',
   status: '',
-  rehire: '',
+  remainingInSectorOrRoleOrAnother: '',
   endDate: dayjs().subtract(1, 'days').format('YYYY/MM/DD'),
   confirmed: false,
 };
@@ -97,8 +106,7 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participant }) 
                 <Field
                   name='endDate'
                   component={RenderDateField}
-                  maxDate={values.type === ROSCompletedType.value ? null : getTodayDate()}
-                  disabled={values.type === ROSCompletedType.value}
+                  maxDate={getTodayDate()}
                   label='End Date'
                 />
                 <Field
@@ -118,13 +126,10 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participant }) 
                   label='Status'
                 />
                 <Field
-                  name='rehire'
+                  name='remainingInSectorOrRoleOrAnother'
                   component={RenderRadioGroup}
-                  options={[
-                    { value: 'Yes', label: 'Yes' },
-                    { value: 'No', label: 'No' },
-                  ]}
-                  label='I intend to rehire this position'
+                  options={YesNoDontKnow}
+                  label={employeeRemainingLabel[participant.program]}
                 />
               </>
             )}

@@ -1,6 +1,7 @@
 import * as yup from 'yup';
 import { healthRegions, foundOutReasons } from '../constants';
 import { validateUniqueArray, errorMessage } from '../functions';
+import { Program } from '../../programs';
 
 export const ParticipantFormSchema = yup
   .object()
@@ -38,7 +39,7 @@ export const ParticipantFormSchema = yup
     driverLicense: yup.string().required(errorMessage),
 
     experienceWithMentalHealthOrSubstanceUse: yup.string().when(['program'], {
-      is: (program) => program === 'MHAW',
+      is: (program) => program === Program.MHAW,
       then: () => yup.string(),
     }),
     // Preferred location
@@ -66,7 +67,7 @@ export const ParticipantFormSchema = yup
       .string()
       .when(['program', 'currentOrMostRecentIndustry'], {
         is: (program, currentOrMostRecentIndustry) =>
-          program === 'MHAW' &&
+          program === Program.MHAW &&
           (currentOrMostRecentIndustry === 'Health care and social assistance' ||
             currentOrMostRecentIndustry === 'Continuing Care and Community Health Care' ||
             currentOrMostRecentIndustry === 'Community Social Services'),

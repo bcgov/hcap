@@ -307,7 +307,7 @@ const generateRejectedAcknowledgedEntry = (current: boolean = false, s?: number)
 };
 
 const generateArchivedEntry = (current: boolean = false, t?: string) => {
-  const willRehire = randomize(2) % 2 === 0;
+  const remainingInSectorOrRoleOrAnother = randomize(2) % 2 === 0;
   const type = t || archivedType[randomize(archivedType.length)];
   const isDuplicateType = type === 'duplicate';
   return {
@@ -318,7 +318,7 @@ const generateArchivedEntry = (current: boolean = false, t?: string) => {
     data: JSON.stringify({
       type,
       reason: !isDuplicateType ? archiveReasonOptions[randomize(archiveReasonOptions.length)] : '',
-      rehire: willRehire ? 'Yes' : 'No',
+      remainingInSectorOrRoleOrAnother: remainingInSectorOrRoleOrAnother ? 'Yes' : 'No',
       status: !isDuplicateType ? archiveStatusOptions[randomize(archiveStatusOptions.length)] : '',
       endDate: randomizeDate(incrementedDate),
       confirmed: 'true',

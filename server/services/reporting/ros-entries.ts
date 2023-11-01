@@ -54,5 +54,5 @@ export const mapRosEntries = (rosEntries: RosEntry[]) =>
       entry.participantStatusJoin?.current &&
       entry.participantStatusJoin?.data?.confirmed,
     remainingInSectorOrRoleOrAnother:
-      entry.participantStatusJoin?.data?.remainingInSectorOrRoleOrAnother || 'Unknown',
+      entry.participantStatusJoin?.data?.remainingInSectorOrRoleOrAnother ?? 'Unknown',
   }));

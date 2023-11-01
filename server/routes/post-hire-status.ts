@@ -11,7 +11,7 @@ import keycloak from '../keycloak';
 import logger from '../logger';
 import { getParticipantByID } from '../services/participants';
 import { getAssignCohort } from '../services/cohorts';
-import { postHireStatuses, Role, UserRoles } from '../constants';
+import { postHireStatuses, UserRoles } from '../constants';
 
 const router = express.Router();
 

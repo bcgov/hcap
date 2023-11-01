@@ -20,6 +20,7 @@ import {
   participantFieldsForEmployer,
   ParticipantStatus as ps,
   postHireStatuses,
+  participantFieldsForMoH,
 } from '../../constants';
 import { isPrivateEmployerOrMHSUEmployerOrHA, ParticipantsFinder } from '../participants-helper';
 
@@ -275,7 +276,7 @@ export const getParticipants = async (
   return {
     data: participants.map((item) => {
       let participant = {
-        ..._.pick(item, user.isMoH ? participantFieldsForSuper : participantFieldsForEmployer),
+        ..._.pick(item, user.isMoH ? participantFieldsForMoH : participantFieldsForEmployer),
         postHireStatuses: item.postHireStatuses || [],
         rosStatuses: item.rosStatuses || [],
         statusInfos: undefined, // This gets set later. Should probably get stronger typing.

@@ -654,7 +654,7 @@ const ParticipantTable = () => {
               </MenuItem>
             )}
             {actionMenuParticipant?.status === 'hired' &&
-              actionMenuParticipant?.rosStatuses.length === 0 &&
+              actionMenuParticipant?.rosStatuses?.length === 0 &&
               getGraduationStatus(actionMenuParticipant.postHireStatuses) !== 'No' && (
                 <MenuItem
                   onClick={() =>

@@ -159,12 +159,6 @@ describe('Participants Service', () => {
           })
       );
     };
-    const trimIds = (a) =>
-      _.uniqBy(a, (i: any) => i.id).map((i) =>
-        Object.keys(i)
-          .filter((k) => !['id', 'callbackStatus', 'userUpdatedAt'].includes(k)) // TODO: Should not ignore callback status
-          .reduce((o, k) => ({ ...o, [k]: i[k] }), { nonHCAP: undefined })
-      );
 
     let expected = mapRawToEmployerColumns(
       allParticipants.filter((i) => evaluateBooleanAnswer(i.interested))

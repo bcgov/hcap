@@ -76,15 +76,11 @@ const PSIRouteTabs = ({
   const disabled = !canAssignCohort(participant);
 
   useEffect(() => {
-    let unsubscribe = history.listen((location) => {
-      const { pathname: path } = location;
-      const { tabKey } = tabKeyForPath(tabDetails, path);
-      if (tabKey !== tab) {
-        setTab(tabKey);
-      }
-    });
-
-    return () => unsubscribe();
+    const { pathname: path } = history.location;
+    const { tabKey } = tabKeyForPath(tabDetails, path);
+    if (tabKey !== tab) {
+      setTab(tabKey);
+    }
   }, [tab, setTab, tabDetails, history]);
 
   return (
@@ -153,7 +149,7 @@ export const PSICohortView = ({ psiList = [], assignAction, participant, fetchDa
     path: '/track-graduation',
   };
   let tabDetails = { trackGraduation };
-  if (roles.includes(Role.HealthAuthority)) {
+  if (roles.includes(Role.HealthAuthority) || roles.includes(Role.MinistryOfHealth)) {
     tabDetails = { assignCohort, trackGraduation };
   }
   const tabKey = Object.keys(tabDetails)[0];

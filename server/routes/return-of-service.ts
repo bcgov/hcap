@@ -26,7 +26,7 @@ router.use(applyMiddleware(keycloak.setupUserMiddleware()));
 // Create a new return of service status
 router.post(
   '/participant/:participantId',
-  applyMiddleware(keycloak.allowRolesMiddleware(Role.HealthAuthority, Role.Employer)),
+  applyMiddleware(keycloak.allowRolesMiddleware(...UserRoles)),
   asyncMiddleware(async (req, res) => {
     const actionName = 'ros-status-create';
     const { participantId } = req.params;
@@ -68,7 +68,7 @@ router.post(
 // Change return of service status site
 router.patch(
   '/participant/:participantId/change-site',
-  applyMiddleware(keycloak.allowRolesMiddleware(Role.HealthAuthority, Role.Employer)),
+  applyMiddleware(keycloak.allowRolesMiddleware(...UserRoles)),
   asyncMiddleware(async (req, res) => {
     const actionName = 'ros-change-site';
     const { participantId } = req.params;

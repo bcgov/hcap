@@ -96,7 +96,7 @@ router.get(
 // Assign participant
 router.post(
   '/:id/assign/:participantId',
-  [applyMiddleware(keycloak.allowRolesMiddleware(Role.HealthAuthority, Role.Employer))],
+  [applyMiddleware(keycloak.allowRolesMiddleware(...UserRoles))],
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, sub: localUserId } = req.user;
     const user = userId || localUserId;

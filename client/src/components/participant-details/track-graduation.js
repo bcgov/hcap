@@ -14,6 +14,7 @@ import {
   API_URL,
   ArchiveHiredParticipantSchema,
   Role,
+  UserRoles,
 } from '../../constants';
 import { AuthContext } from '../../providers';
 import { useToast } from '../../hooks';
@@ -110,9 +111,7 @@ export const TrackGraduation = (props) => {
               {props?.participant?.postHireStatusLabel || 'N/A'}
             </Typography>
           </Box>
-          <CheckPermissions
-            permittedRoles={[Role.Employer, Role.MHSUEmployer, Role.HealthAuthority]}
-          >
+          <CheckPermissions permittedRoles={UserRoles}>
             <Grid item xs={6}>
               <Button
                 color='default'

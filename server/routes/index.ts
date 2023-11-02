@@ -26,6 +26,7 @@ import employerFormRouter from './employer-form';
 import psiRouter from './post-secondary-institutes';
 import cohortRouter from './cohorts';
 import psiReportRouter from './psi-report';
+import programMonitoringReportRouter from './program-monitoring-report';
 import milestoneReportRouter from './milestone-report';
 import postHireStatusRouter from './post-hire-status';
 import rosRouter from './return-of-service';
@@ -56,6 +57,9 @@ apiRouter.use('/allocation/bulk-allocation', allocationRouter);
 apiRouter.use(`/psi`, psiRouter);
 apiRouter.use(`/cohorts`, cohortRouter);
 apiRouter.use(`/psi-report`, psiReportRouter);
+
+// Program Monitoring Report
+apiRouter.use(`/program-monitoring-report`, programMonitoringReportRouter);
 
 // Employer-form
 apiRouter.use('/employer-form', employerFormRouter);

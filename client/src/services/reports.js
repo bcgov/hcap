@@ -6,12 +6,14 @@ const reportTitleHash = {
   ros: 'return-of-service-milestones-',
   hired: 'participant-stats-hired-',
   psi: 'participants-attending-psi-',
+  monitoring: 'program-monitoring-',
 };
 
 const reportURLHash = {
   ros: 'milestone-report/csv/ros',
   hired: 'milestone-report/csv/hired',
   psi: 'psi-report/csv/participants',
+  monitoring: 'program-monitoring-report/csv/monitoring',
 };
 
 const csvTitle = (reportType, region = null) => {
@@ -53,7 +55,8 @@ export const downloadMilestoneReports = async (reportType, region = null) => {
   }
 };
 
-export const downloadPSIReports = async (reportType) => {
+// generic report download
+export const downloadReport = async (reportType) => {
   const url = `${API_URL}/api/v1/${reportURLHash[reportType]}`;
   const response = await fetch(url, {
     headers: {

@@ -24,6 +24,7 @@ interface RosEntry {
     data: {
       type: string;
       confirmed: boolean;
+      remainingInSectorOrRoleOrAnother: string;
     };
   };
   data: {
@@ -52,4 +53,6 @@ export const mapRosEntries = (rosEntries: RosEntry[]) =>
       entry.participantStatusJoin?.data?.type === 'rosComplete' &&
       entry.participantStatusJoin?.current &&
       entry.participantStatusJoin?.data?.confirmed,
+    remainingInSectorOrRoleOrAnother:
+      entry.participantStatusJoin?.data?.remainingInSectorOrRoleOrAnother ?? 'Unknown',
   }));

@@ -108,7 +108,14 @@ const filterData = (data, columns, isMoH = false) => {
     const row = mapItemToColumns(item, columns);
 
     row.engage = item;
-    row.siteName = item?.statusInfos?.[0].data?.siteName || 'Not Available';
+    if (!isMoH) {
+      row.siteName = item?.statusInfos?.[0].data?.siteName || 'Not Available';
+    } else {
+      const statusInfo = item?.statusInfos?.find(
+        ({ status }) => status === item.statusInfo?.toLowerCase()
+      );
+      row.siteName = statusInfo?.data?.siteName || 'Not Available';
+    }
     row.archiveReason = capitalizedString(
       item?.statusInfos?.[0].data?.final_status ||
         item?.statusInfos?.[0].data?.reason ||

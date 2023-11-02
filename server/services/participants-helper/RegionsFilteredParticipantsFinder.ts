@@ -44,7 +44,11 @@ export class RegionsFilteredParticipantsFinder {
       ...(emailAddress && { 'body.emailAddress ilike': `${emailAddress}%` }),
       ...(interestFilter && { 'body.interested <>': ['no', 'withdrawn'] }),
       ...(isIndigenousFilter && {
-        or: [{ 'body.isIndigenous =': true }, { 'body.indigenous =': 'Yes' }],
+        and: [
+          {
+            or: [{ 'body.isIndigenous =': true }, { 'body.indigenous =': 'Yes' }],
+          },
+        ],
       }),
       ...(livedLivingExperienceFilter && {
         'body.experienceWithMentalHealthOrSubstanceUse =': 'Yes',

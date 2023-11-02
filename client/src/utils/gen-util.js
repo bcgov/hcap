@@ -3,7 +3,6 @@ export const keyedString = (str, keyValues) =>
     (incoming, key) => incoming.replace(`:${key}`, keyValues[key]),
     str
   );
-export const capitalizedString = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
 /**
  * Sorts a list of objects based on the values of a given key

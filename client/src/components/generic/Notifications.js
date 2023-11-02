@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core/styles';
-import { capitalizedString } from '../../utils';
+import _ from 'lodash';
 
 // style guide: https://developer.gov.bc.ca/Design-System/Alert-Banners
 const useStyles = makeStyles((theme) => ({
@@ -32,7 +32,7 @@ export const Notifications = ({ notifications }) => {
     return severityPriority[a.severity] - severityPriority[b.severity];
   })[0];
 
-  const alertSeverityClass = `alert${capitalizedString(displayedNotification.severity)}`;
+  const alertSeverityClass = `alert${_.capitalize(displayedNotification.severity)}`;
 
   return (
     <Box m={1}>

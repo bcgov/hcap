@@ -216,6 +216,24 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
               </FormLabel>
             </Box>
           )}
+          {isMoH && (
+            <Box>
+              <Checkbox
+                id={'withdrawnParticipantsFilterCheckbox'}
+                color='primary'
+                disabled={loading}
+                onChange={({ target }) =>
+                  setFilter(FILTERABLE_FIELDS.WITHDRAWN_PARTICIPANTS, target.checked)
+                }
+              />
+              <FormLabel
+                htmlFor={'withdrawnParticipantsFilterCheckbox'}
+                style={{ paddingTop: '13px' }}
+              >
+                Hide withdrawn participants
+              </FormLabel>
+            </Box>
+          )}
         </>
       </Grid>
     </>

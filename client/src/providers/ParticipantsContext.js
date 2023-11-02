@@ -86,10 +86,14 @@ const participantsReducer = (state, action) => {
         ...state,
         filter: {
           ...state.filter,
-          [payload.key]: {
+          [key]: {
             key,
             value: typeof value === 'string' ? value.trim() : value,
           },
+        },
+        pagination: {
+          ...state.pagination,
+          page: 0, // reset the page back to first
         },
       };
     }

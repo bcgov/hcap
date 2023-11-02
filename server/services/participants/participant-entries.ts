@@ -279,7 +279,7 @@ export const getParticipants = async (
         ..._.pick(item, user.isMoH ? participantFieldsForMoH : participantFieldsForEmployer),
         postHireStatuses: item.postHireStatuses || [],
         rosStatuses: item.rosStatuses || [],
-        statusInfos: undefined, // This gets set later. Should probably get stronger typing.
+        statusInfos: user.isMoH ? item.statusInfos : undefined, // This gets set later. Should probably get stronger typing.
         phoneNumber: undefined,
         emailAddress: undefined,
       };
@@ -312,53 +312,54 @@ export const getParticipants = async (
         (statusInfo) => statusInfo.status === ps.ARCHIVED && statusInfo.employerId !== user.id
       );
 
-      // Handling withdrawn and already hired, putting withdrawn as higher priority
-      let computedStatus;
-      if (item.interested === 'withdrawn' || item.interested === 'no') {
-        computedStatus = {
-          createdAt: new Date(),
-          status: 'withdrawn',
-        };
-      } else if (hiredByOtherOrg) {
-        computedStatus = {
-          createdAt: hiredStatus.createdAt,
-          status: 'already_hired',
-        };
-      } else if (hiredBySomeoneInSameOrgStatus || hiredForOtherSite) {
-        computedStatus = {
-          createdAt: hiredStatus.createdAt,
-          status: 'hired_by_peer',
-        };
-      } else if (archivedByOrgStatus) {
-        computedStatus = archivedByOrgStatus;
-      }
-
-      if (computedStatus) {
-        participant.statusInfos = [computedStatus];
-      }
-
-      const statusInfos = item.statusInfos?.find(
-        (statusInfo) =>
-          statusInfo.employerId === user.id ||
-          (statusInfo.data && user.sites?.includes(statusInfo.data.site))
-      );
-
-      if (statusInfos) {
-        if (!participant.statusInfos) participant.statusInfos = [];
-
-        participant.statusInfos.unshift(statusInfos);
-        const showContactInfo = participant.statusInfos.find((statusInfo) =>
-          [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, ps.HIRED].includes(statusInfo.status)
-        );
-        if (showContactInfo && !hiredByOtherOrg) {
-          participant = {
-            ...participant,
-            phoneNumber: item.phoneNumber,
-            emailAddress: item.emailAddress,
+      if (!user.isMoH) {
+        // Handling withdrawn and already hired, putting withdrawn as higher priority
+        let computedStatus;
+        if (item.interested === 'withdrawn' || item.interested === 'no') {
+          computedStatus = {
+            createdAt: new Date(),
+            status: 'withdrawn',
           };
+        } else if (hiredByOtherOrg) {
+          computedStatus = {
+            createdAt: hiredStatus.createdAt,
+            status: 'already_hired',
+          };
+        } else if (hiredBySomeoneInSameOrgStatus || hiredForOtherSite) {
+          computedStatus = {
+            createdAt: hiredStatus.createdAt,
+            status: 'hired_by_peer',
+          };
+        } else if (archivedByOrgStatus) {
+          computedStatus = archivedByOrgStatus;
+        }
+
+        if (computedStatus) {
+          participant.statusInfos = [computedStatus];
+        }
+
+        const statusInfos = item.statusInfos?.find(
+          (statusInfo) =>
+            statusInfo.employerId === user.id ||
+            (statusInfo.data && user.sites?.includes(statusInfo.data.site))
+        );
+
+        if (statusInfos) {
+          if (!participant.statusInfos) participant.statusInfos = [];
+
+          participant.statusInfos.unshift(statusInfos);
+          const showContactInfo = participant.statusInfos.find((statusInfo) =>
+            [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, ps.HIRED].includes(statusInfo.status)
+          );
+          if (showContactInfo && !hiredByOtherOrg) {
+            participant = {
+              ...participant,
+              phoneNumber: item.phoneNumber,
+              emailAddress: item.emailAddress,
+            };
+          }
         }
       }
-
       return participant;
     }),
     ...(pagination && { pagination: paginationData }),

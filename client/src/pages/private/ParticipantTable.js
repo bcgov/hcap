@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import _ from 'lodash';
 
 import Grid from '@material-ui/core/Grid';
 import { Box, Menu, MenuItem, Link } from '@material-ui/core';
@@ -20,7 +21,7 @@ import {
 } from '../../constants';
 import { Table, CheckPermissions, Button, CustomTab, CustomTabs } from '../../components/generic';
 import { useToast } from '../../hooks';
-import { dayUtils, addEllipsisMask, keyedString, capitalizedString } from '../../utils';
+import { dayUtils, addEllipsisMask, keyedString } from '../../utils';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { ParticipantTableFilters } from './ParticipantTableFilters';
 import { ParticipantTableDialogues } from './ParticipantTableDialogues';
@@ -108,10 +109,17 @@ const filterData = (data, columns, isMoH = false) => {
     const row = mapItemToColumns(item, columns);
 
     row.engage = item;
-    row.siteName = item?.statusInfos?.[0].data?.siteName || 'Not Available';
-    row.archiveReason = capitalizedString(
-      item?.statusInfos?.[0].data?.final_status ||
-        item?.statusInfos?.[0].data?.reason ||
+    if (!isMoH) {
+      row.siteName = item?.statusInfos?.[0]?.data?.siteName || 'Not Available';
+    } else {
+      const statusInfo = item?.statusInfos?.find(
+        ({ status }) => status === item.statusInfo?.toLowerCase()
+      );
+      row.siteName = statusInfo?.data?.siteName || 'Not Available';
+    }
+    row.archiveReason = _.capitalize(
+      item?.statusInfos?.[0]?.data?.final_status ||
+        item?.statusInfos?.[0]?.data?.reason ||
         'Not Available'
     );
 

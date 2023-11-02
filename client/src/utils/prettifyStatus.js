@@ -1,4 +1,4 @@
-import { capitalizedString } from './gen-util';
+import _ from 'lodash';
 import { addYearToDate } from './date';
 
 /**
@@ -139,7 +139,7 @@ const getToolTipText = ({
 
   if (isRejectedByPeer) {
     return finalStatus
-      ? `Participant not available. ${capitalizedString(finalStatus)}`
+      ? `Participant not available. ${_.capitalize(finalStatus)}`
       : 'Participant is no longer available. ';
   }
 
@@ -182,6 +182,6 @@ const getParticipantStatus = (isMoH, status) => {
     case 'offer_made':
       return 'Offer Made';
     default:
-      return capitalizedString(status);
+      return _.capitalize(status);
   }
 };

@@ -200,7 +200,7 @@ export const Table = ({
   orderBy,
   renderCell,
   onRequestSort,
-  initialColumns,
+  columns,
   rows,
   usePagination,
   isLoading,
@@ -216,18 +216,18 @@ export const Table = ({
   multiSelectAction,
   filter,
 }) => {
-  const [columns, setColumns] = useState(initialColumns);
-
-  // lived/living MHSU experience column should be hidden if use filters program by HCA
+  const [columnState, setColumnState] = useState(columns);
+  // living checkbox should be hidden if use filters program by HCA
+  // remove checked box if user selects living experience filter and switches to HCA
   useEffect(() => {
     if (filter?.programFilter?.value === Program.HCA) {
-      setColumns((prevColumns) =>
+      setColumnState((prevColumns) =>
         prevColumns.filter((i) => i.id !== 'experienceWithMentalHealthOrSubstanceUse')
       );
     } else {
-      setColumns(initialColumns);
+      setColumnState(columns);
     }
-  }, [filter, initialColumns]);
+  }, [filter, columns]);
 
   const rowsOnPage = rows.length;
   const createSortHandler = (property) => (event) => {
@@ -292,7 +292,7 @@ export const Table = ({
                 />
               </StyledHeaderTableCell>
             )}
-            {columns.map((column, index) => (
+            {columnState.map((column, index) => (
               <StyledHeaderTableCell key={index}>
                 {column.name && (
                   <TableSortLabel // Disable sorting if column has no header
@@ -317,7 +317,7 @@ export const Table = ({
                       <Checkbox color='primary' disabled />
                     </StyledTableCell>
                   )}
-                  {[...Array(columns.length)].map((_, i) => (
+                  {[...Array(columnState.length)].map((_, i) => (
                     <StyledTableCell key={i}>
                       <Skeleton animation='wave' />
                     </StyledTableCell>
@@ -339,7 +339,7 @@ export const Table = ({
                         />
                       </StyledHeaderTableCell>
                     )}
-                    {columns.map((column) => (
+                    {columnState.map((column) => (
                       <StyledTableCell key={column.id}>
                         {renderCell ? renderCell(column.id, row) : row[column.id] || ''}
                       </StyledTableCell>

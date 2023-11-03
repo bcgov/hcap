@@ -576,7 +576,7 @@ const ParticipantTable = () => {
 
             <Table
               usePagination={true}
-              initialColumns={columns}
+              columns={columns}
               order={order.direction}
               orderBy={order.field}
               totalRowsCount={pagination.total}

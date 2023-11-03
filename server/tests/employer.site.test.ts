@@ -117,7 +117,7 @@ describe('Employer Site Endpoints', () => {
   });
 
   it('Get sites, receive all successfully', async () => {
-    const res = await getSitesForUser({ roles: [Role.MinistryOfHealth] });
+    const res = await getSitesForUser({ isMoH: true });
     expect(res.length).toEqual(3); // dependent on previous tests
     expect(res).toEqual(
       expect.arrayContaining([

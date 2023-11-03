@@ -107,6 +107,7 @@ export const FILTERABLE_FIELDS = {
   IS_INDIGENOUS: 'isIndigenousFilter',
   PROGRAM: 'programFilter',
   LIVED_LIVING_EXPERIENCE: 'livedLivingExperienceFilter',
+  WITHDRAWN_PARTICIPANTS: 'withdrawnParticipantsFilter',
 };
 
 export const allPrograms = [Program.HCA, Program.MHAW];

@@ -11,6 +11,7 @@ import type {
   Pagination,
   PostalCodeFsaFilter,
   ProgramFilter,
+  WithdrawnParticipantsFilter,
   idFilter,
 } from '../participants-helper';
 import type { HcapUserInfo } from '../../keycloak';
@@ -186,7 +187,8 @@ export const getParticipants = async (
   statusFilters?: string[],
   isIndigenousFilter?: IsIndigenousFilter,
   programFilter?: ProgramFilter,
-  livedLivingExperienceFilter?: LivedLivingExperienceFilter
+  livedLivingExperienceFilter?: LivedLivingExperienceFilter,
+  withdrawnParticipantsFilter?: WithdrawnParticipantsFilter
 ) => {
   // Get user ids
   const participantsFinder = new ParticipantsFinder(dbClient, user);
@@ -203,6 +205,7 @@ export const getParticipants = async (
       interestFilter: interestFilter && ['no', 'withdrawn'],
       isIndigenousFilter,
       livedLivingExperienceFilter,
+      withdrawnParticipantsFilter,
     })
     .filterExternalFields({
       statusFilters,

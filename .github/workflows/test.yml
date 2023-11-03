@@ -11,7 +11,7 @@ on:
 env:
   KEYCLOAK_LOCAL_USERNAME: 'test-admin'
   KEYCLOAK_LOCAL_PASSWORD: ${{ secrets.KEYCLOAK_LOCAL_PASSWORD}}
-  KEYCLOAK_LOCAL_AUTH_URL: 'http://keycloak.local.freshworks.club:8080/auth'
+  KEYCLOAK_LOCAL_AUTH_URL: 'http://keycloak.localhost:8080/auth'
   KEYCLOAK_LOCAL_SECRET: ${{ secrets.KEYCLOAK_LOCAL_SECRET }}
   FEATURE_KEYCLOAK_MIGRATION: true
   APP_ENV: local
@@ -56,6 +56,8 @@ jobs:
         run: |
           cat > .env << EOF
           ${{ secrets.ENVFILE }}
+          NODE_ENV=test
+          KEYCLOAK_AUTH_URL=${{ secrets.KEYCLOAK_LOCAL_AUTH_URL }}
           KEYCLOAK_LOCAL_SECRET=${{ secrets.KEYCLOAK_LOCAL_SECRET }}
           KEYCLOAK_LOCAL_REALM=${{ secrets.KEYCLOAK_LOCAL_REALM }}
           KEYCLOAK_LOCAL_API_CLIENTID=${{ secrets.KEYCLOAK_LOCAL_API_CLIENTID }}
@@ -68,14 +70,6 @@ jobs:
       - name: Import Users
         run: make kc-import-users
 
-      - name: Check the deployed service URL
-        uses: jtalk/url-health-check-action@v2
-        with:
-          url: localhost:4000
-          max-attempts: 12
-          retry-delay: 5s
-          retry-all: false
-
       - name: Add Test Data
         run: cd server && POSTGRES_HOST=localhost npm run feed-data
 
@@ -83,7 +77,14 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           wait-on-timeout: 120
-          wait-on: 'http://localhost:4000'
+          wait-on: 'http://hcapemployers.localhost:4000'
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: screenshots
+          path: cypress/screenshots/
 
   jest-test:
     name: Jest

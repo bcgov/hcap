@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import _ from 'lodash';
 
 import {
   archiveReasonOptions,
@@ -16,10 +17,10 @@ const START_DATE = '2020-01-01';
 const usedIds = [];
 
 // table data
-let partStatusArray = [];
-let cohortPartArray = [];
-let partPostHireArray = [];
-let returnOfServiceArray = [];
+const partStatusArray = [];
+const cohortPartArray = [];
+const partPostHireArray = [];
+const returnOfServiceArray = [];
 
 let participantId = 0;
 let status = '';
@@ -28,12 +29,12 @@ let incrementedDate = '';
 let randomizeHiredSite: number;
 
 // increment table ids
-let psId = 1;
-let cId = 1;
-let pphId = 1;
-let rosId = 1;
+const psId = 1;
+const cId = 1;
+const pphId = 1;
+const rosId = 1;
 
-const partic_statuses = [
+const particStatuses = [
   'offer_made',
   'hired',
   'interviewing',
@@ -53,19 +54,14 @@ const positionType = ['casual', 'permanent'];
 const employmentType = ['part-time', 'full-time'];
 
 const randomize = (n: number, reject?: boolean) => {
-  let value = 0;
-  // prevent duplicate participant ids from being used
-  // Sonarcloud complains about Math.random, ignoring as it's just being used for simple random numbers
+  let value = _.random(1, n);
   if (reject) {
-    value = Math.floor(Math.random() * n); //NOSONAR
     while (usedIds.includes(value)) {
-      value = Math.floor(Math.random() * n); //NOSONAR
+      value = _.random(1, n);
     }
     usedIds.push(value);
-
-    return value;
   }
-  return Math.floor(Math.random() * n); //NOSONAR
+  return value;
 };
 
 // create a random date based off the previous statuses date
@@ -78,14 +74,14 @@ const randomizeDate = (d?: string) => {
   return addedDate;
 };
 
-/***
+/** *
  * Generate random amount of participant statuses and all relating statuses
  */
 export const randomizeParticipantStatus = async () => {
   for (let i = 0; i < NUM_LOOPS; i++) {
     participantId = randomize(499, true) + 1;
-    const randomIndex = randomize(partic_statuses.length);
-    status = partic_statuses[randomIndex];
+    const randomIndex = randomize(particStatuses.length);
+    status = particStatuses[randomIndex];
     site = sites[randomize(sites.length)];
 
     randomizeDate();
@@ -97,6 +93,151 @@ export const randomizeParticipantStatus = async () => {
   await convertToCsv(cId, cohortPartArray, 'cohort_participants.csv');
   await convertToCsv(pphId, partPostHireArray, 'participant_post_hire_status.csv');
   await convertToCsv(rosId, returnOfServiceArray, 'return_of_service_status.csv');
+};
+
+// generate 3 statuses required for a participant to get hired
+const generatePreHireStatuses = () => {
+  partStatusArray.push(generateProspectingEntry());
+  partStatusArray.push(generateInterviewingEntry());
+  partStatusArray.push(generateOfferMadeEntry());
+};
+
+/**
+ * functions for generating each status and their expected data body
+ */
+const generateProspectingEntry = (current = false) => ({
+  employer_id: EMPLOYER_ID,
+  participant_id: participantId,
+  status: ParticipantStatus.PROSPECTING,
+  current,
+  data: JSON.stringify({ site }),
+});
+
+const generateInterviewingEntry = (current = false) => ({
+  employer_id: EMPLOYER_ID,
+  participant_id: participantId,
+  status: ParticipantStatus.INTERVIEWING,
+  current,
+  data: JSON.stringify({ site, contacted_at: randomizeDate(incrementedDate) }),
+});
+
+const generateOfferMadeEntry = (current = false, s?: number) => ({
+  employer_id: EMPLOYER_ID,
+  participant_id: participantId,
+  status: ParticipantStatus.OFFER_MADE,
+  current,
+  data: JSON.stringify({ site: s || site, contacted_at: randomizeDate(incrementedDate) }),
+});
+
+const generateHiredEntry = (current = false, s?: number) => ({
+  employer_id: EMPLOYER_ID,
+  participant_id: participantId,
+  status: ParticipantStatus.HIRED,
+  current,
+  data: JSON.stringify({
+    site: s || site,
+    hiredDate: randomizeDate(incrementedDate),
+    startDate: randomizeDate(incrementedDate),
+    positionType: '',
+    positionTitle: '',
+  }),
+});
+
+const generateRejectedEntry = (current = false) => ({
+  employer_id: EMPLOYER_ID,
+  participant_id: participantId,
+  status: ParticipantStatus.REJECTED,
+  current,
+  data: JSON.stringify({
+    site,
+    final_status: rejectedStatuses[randomize(rejectedStatuses.length)],
+  }),
+});
+
+const generateRejectedAcknowledgedEntry = (current = false, s?: number) => ({
+  employer_id: EMPLOYER_ID,
+  participant_id: participantId,
+  status: ParticipantStatus.REJECT_ACKNOWLEDGEMENT,
+  current,
+  data: JSON.stringify({
+    site: s || site,
+    refStatus: partStatusArray[partStatusArray.length - 1].status,
+    refStatusId: partStatusArray.length,
+    final_status: rejectAckStatuses[randomize(rejectAckStatuses.length)],
+  }),
+});
+
+const generateArchivedEntry = (current = false, t?: string) => {
+  const remainingInSectorOrRoleOrAnother = randomize(2) % 2 === 0;
+  const type = t || archivedType[randomize(archivedType.length)];
+  const isDuplicateType = type === 'duplicate';
+  return {
+    employer_id: EMPLOYER_ID,
+    participant_id: participantId,
+    status: ParticipantStatus.ARCHIVED,
+    current,
+    data: JSON.stringify({
+      type,
+      reason: !isDuplicateType ? archiveReasonOptions[randomize(archiveReasonOptions.length)] : '',
+      remainingInSectorOrRoleOrAnother: remainingInSectorOrRoleOrAnother ? 'Yes' : 'No',
+      status: !isDuplicateType ? archiveStatusOptions[randomize(archiveStatusOptions.length)] : '',
+      endDate: randomizeDate(incrementedDate),
+      confirmed: 'true',
+    }),
+  };
+};
+
+const generateCohortPartEntry = (current = false, cohortId?: number) => {
+  if (!cohortId) {
+    cohortId = randomize(60) + 1;
+    while (cohortId === 16) {
+      cohortId = randomize(60) + 1;
+    }
+  }
+  return {
+    cohort_id: cohortId,
+    participant_id: participantId,
+    is_current: current,
+  };
+};
+
+const generatePartPostHireEntry = (current = false, s?: string) => {
+  let rowData: {};
+
+  if (!s || s === postHireStatuses.postSecondaryEducationCompleted) {
+    rowData = {
+      graduationDate: randomizeDate(incrementedDate),
+    };
+  } else if (!s || s === postHireStatuses.cohortUnsuccessful) {
+    rowData = {
+      unsuccessfulCohortDate: randomizeDate(incrementedDate),
+    };
+  }
+
+  return {
+    participant_id: participantId,
+    status: s || postHireStatuses.postSecondaryEducationCompleted,
+    data: JSON.stringify(rowData),
+    is_current: current,
+  };
+};
+
+const generateReturnOfServiceEntry = (current = false, s?: string) => {
+  const rosStatus = returnOfServiceStatuses[randomize(returnOfServiceStatuses.length)];
+  const isSameSite = (s || rosStatus) === 'assigned-same-site';
+
+  return {
+    participant_id: participantId,
+    status: s || returnOfServiceStatuses[1],
+    data: JSON.stringify({
+      sameSite: isSameSite,
+      date: randomizeDate(incrementedDate),
+      positionType: positionType[randomize(positionType.length)],
+      employmentType: employmentType[randomize(employmentType.length)],
+    }),
+    site_id: sites.indexOf(site) + 1,
+    is_current: current,
+  };
 };
 
 // loop through a status and add any related pre-statuses
@@ -115,7 +256,7 @@ const generateFullStatusEntry = (status: string) => {
     partStatusArray.push(generateOfferMadeEntry(true));
   } else if (status === 'hired') {
     randomizeHiredSite = sites[randomize(sites.length)];
-    let chance = randomize(15);
+    const chance = randomize(15);
     if (randomizeHiredSite === site) {
       generatePreHireStatuses();
       // assign current statuses
@@ -147,7 +288,7 @@ const generateFullStatusEntry = (status: string) => {
       partPostHireArray.push(
         generatePartPostHireEntry(true, postHireStatuses.postSecondaryEducationCompleted)
       );
-      let secondChance = randomize(3);
+      const secondChance = randomize(3);
       if (secondChance === 2) {
         // assign changed site after return of service
         returnOfServiceArray.push(
@@ -220,163 +361,6 @@ const generateFullStatusEntry = (status: string) => {
     cohortPartArray.push(generateCohortPartEntry(true));
     partPostHireArray.push(generatePartPostHireEntry(true, postHireStatuses.cohortUnsuccessful));
   }
-};
-
-// generate 3 statuses required for a participant to get hired
-const generatePreHireStatuses = () => {
-  partStatusArray.push(generateProspectingEntry());
-  partStatusArray.push(generateInterviewingEntry());
-  partStatusArray.push(generateOfferMadeEntry());
-};
-
-/**
- * functions for generating each status and their expected data body
- */
-const generateProspectingEntry = (current: boolean = false) => {
-  return {
-    employer_id: EMPLOYER_ID,
-    participant_id: participantId,
-    status: ParticipantStatus.PROSPECTING,
-    current: current,
-    data: JSON.stringify({ site }),
-  };
-};
-
-const generateInterviewingEntry = (current: boolean = false) => {
-  return {
-    employer_id: EMPLOYER_ID,
-    participant_id: participantId,
-    status: ParticipantStatus.INTERVIEWING,
-    current: current,
-    data: JSON.stringify({ site, contacted_at: randomizeDate(incrementedDate) }),
-  };
-};
-
-const generateOfferMadeEntry = (current: boolean = false, s?: number) => {
-  return {
-    employer_id: EMPLOYER_ID,
-    participant_id: participantId,
-    status: ParticipantStatus.OFFER_MADE,
-    current: current,
-    data: JSON.stringify({ site: s || site, contacted_at: randomizeDate(incrementedDate) }),
-  };
-};
-
-const generateHiredEntry = (current: boolean = false, s?: number) => {
-  return {
-    employer_id: EMPLOYER_ID,
-    participant_id: participantId,
-    status: ParticipantStatus.HIRED,
-    current: current,
-    data: JSON.stringify({
-      site: s || site,
-      hiredDate: randomizeDate(incrementedDate),
-      startDate: randomizeDate(incrementedDate),
-      positionType: '',
-      positionTitle: '',
-    }),
-  };
-};
-
-const generateRejectedEntry = (current: boolean = false) => {
-  return {
-    employer_id: EMPLOYER_ID,
-    participant_id: participantId,
-    status: ParticipantStatus.REJECTED,
-    current: current,
-    data: JSON.stringify({
-      site,
-      final_status: rejectedStatuses[randomize(rejectedStatuses.length)],
-    }),
-  };
-};
-
-const generateRejectedAcknowledgedEntry = (current: boolean = false, s?: number) => {
-  return {
-    employer_id: EMPLOYER_ID,
-    participant_id: participantId,
-    status: ParticipantStatus.REJECT_ACKNOWLEDGEMENT,
-    current: current,
-    data: JSON.stringify({
-      site: s || site,
-      refStatus: partStatusArray[partStatusArray.length - 1].status,
-      refStatusId: partStatusArray.length,
-      final_status: rejectAckStatuses[randomize(rejectAckStatuses.length)],
-    }),
-  };
-};
-
-const generateArchivedEntry = (current: boolean = false, t?: string) => {
-  const remainingInSectorOrRoleOrAnother = randomize(2) % 2 === 0;
-  const type = t || archivedType[randomize(archivedType.length)];
-  const isDuplicateType = type === 'duplicate';
-  return {
-    employer_id: EMPLOYER_ID,
-    participant_id: participantId,
-    status: ParticipantStatus.ARCHIVED,
-    current: current,
-    data: JSON.stringify({
-      type,
-      reason: !isDuplicateType ? archiveReasonOptions[randomize(archiveReasonOptions.length)] : '',
-      remainingInSectorOrRoleOrAnother: remainingInSectorOrRoleOrAnother ? 'Yes' : 'No',
-      status: !isDuplicateType ? archiveStatusOptions[randomize(archiveStatusOptions.length)] : '',
-      endDate: randomizeDate(incrementedDate),
-      confirmed: 'true',
-    }),
-  };
-};
-
-const generateCohortPartEntry = (current: boolean = false, cohortId?: number) => {
-  if (!cohortId) {
-    cohortId = randomize(60) + 1;
-    while (cohortId === 16) {
-      cohortId = randomize(60) + 1;
-    }
-  }
-  return {
-    cohort_id: cohortId,
-    participant_id: participantId,
-    is_current: current,
-  };
-};
-
-const generatePartPostHireEntry = (current: boolean = false, s?: string) => {
-  let rowData: {};
-
-  if (!s || s === postHireStatuses.postSecondaryEducationCompleted) {
-    rowData = {
-      graduationDate: randomizeDate(incrementedDate),
-    };
-  } else if (!s || s === postHireStatuses.cohortUnsuccessful) {
-    rowData = {
-      unsuccessfulCohortDate: randomizeDate(incrementedDate),
-    };
-  }
-
-  return {
-    participant_id: participantId,
-    status: s || postHireStatuses.postSecondaryEducationCompleted,
-    data: JSON.stringify(rowData),
-    is_current: current,
-  };
-};
-
-const generateReturnOfServiceEntry = (current: boolean = false, s?: string) => {
-  const rosStatus = returnOfServiceStatuses[randomize(returnOfServiceStatuses.length)];
-  const isSameSite = (s || rosStatus) === 'assigned-same-site' ? true : false;
-
-  return {
-    participant_id: participantId,
-    status: s || returnOfServiceStatuses[1],
-    data: JSON.stringify({
-      sameSite: isSameSite,
-      date: randomizeDate(incrementedDate),
-      positionType: positionType[randomize(positionType.length)],
-      employmentType: employmentType[randomize(employmentType.length)],
-    }),
-    site_id: sites.indexOf(site) + 1,
-    is_current: current,
-  };
 };
 
 (async () => {

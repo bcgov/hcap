@@ -1,6 +1,7 @@
 import { HcapUserInfo } from '../../keycloak';
 import logger from '../../logger';
 import { isPrivateEmployerOrMHSUEmployerOrHA } from './check-valid-role';
+import { collections, dbClient } from '../../db';
 
 type sortDir = 'asc' | 'desc';
 
@@ -42,7 +43,7 @@ const flattenParticipants = (participants) => {
   participants.forEach((participant) => {
     const { employerSpecificJoin = [], ...participantInfo } = participant;
     // Single or No employerSpecific statuses
-    if (employerSpecificJoin.length === 0 || employerSpecificJoin.length === 1) {
+    if (employerSpecificJoin.length < 2) {
       flattenedParticipantList.push(participant);
     } else {
       employerSpecificJoin.forEach((status) => {
@@ -56,8 +57,8 @@ const flattenParticipants = (participants) => {
   return flattenedParticipantList;
 };
 
-const scrubParticipantData = (raw, joinNames, sites) =>
-  raw.map((participant) => {
+const scrubParticipantData = (participants, joinNames, sites) =>
+  participants.map((participant) => {
     const statusInfos = [];
     let rosStatuses = participant.rosStatuses ?? [];
 
@@ -101,8 +102,22 @@ const scrubParticipantData = (raw, joinNames, sites) =>
     };
   });
 
-const addSiteNameToStatusData = (raw, employerSpecificJoin) =>
-  raw.map((participant) => ({
+const addSiteNameToStatusDataForMoH = async (participants) => {
+  const sites = await dbClient.db[collections.EMPLOYER_SITES].findDoc();
+  return participants?.map((participant) => ({
+    ...participant,
+    status_infos: participant.status_infos?.map((info) => ({
+      ...info,
+      data: {
+        ...info?.data,
+        siteName: sites.find((site) => site.siteId === info?.data?.site)?.siteName,
+      },
+    })),
+  }));
+};
+
+const addSiteNameToStatusData = (participants, employerSpecificJoin) =>
+  participants.map((participant) => ({
     ...participant,
     [employerSpecificJoin]: participant[employerSpecificJoin]?.map((item) => ({
       ...item,
@@ -113,8 +128,8 @@ const addSiteNameToStatusData = (raw, employerSpecificJoin) =>
     })),
   }));
 
-const addDistanceToParticipantFields = (raw, siteDistanceJoin) =>
-  raw.map((participant) => ({
+const addDistanceToParticipantFields = (participants, siteDistanceJoin) =>
+  participants.map((participant) => ({
     ...participant,
     ...(participant[siteDistanceJoin] && {
       body: {
@@ -142,7 +157,11 @@ export const run = async (context: RunContext) => {
   try {
     let participants = await table.find(criteria, options);
     participants = flattenParticipants(participants);
-    participants = addSiteNameToStatusData(participants, employerSpecificJoin);
+    if (user.isMoH) {
+      participants = await addSiteNameToStatusDataForMoH(participants);
+    } else {
+      participants = addSiteNameToStatusData(participants, employerSpecificJoin);
+    }
     participants = addDistanceToParticipantFields(participants, siteDistanceJoin);
     participants = scrubParticipantData(
       participants,

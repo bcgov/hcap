@@ -44,7 +44,7 @@ const localLogin = (user) => {
     const authCompleteUrl = authBaseUrl + '/realms/' + realm + '/protocol/openid-connect/auth';
     const queryObject = {
       client_id: client_id,
-      redirect_uri: 'http%3A%2F%2Fhcapemployers.local.freshworks.club%3A4000%2Fkeycloak',
+      redirect_uri: 'http%3A%2F%2Fhcapemployers.localhost%3A4000%2Fkeycloak',
       response_mode: 'fragment',
       response_type: 'code',
       scope: 'openid',

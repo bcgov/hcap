@@ -1,4 +1,4 @@
-import { capitalizedString } from './gen-util';
+import _ from 'lodash';
 import { addYearToDate } from './date';
 
 /**
@@ -21,7 +21,7 @@ export const getParticipantStatusData = (status, tabValue, isMoH, participantInf
   const isRejectedByPeer = statusValue === 'reject_ack';
   const isROS = statusValue === 'ros';
   const isHiredByPeer = status[1] === 'hired_by_peer';
-  const isHiredByOther = status.includes('already_hired');
+  const isHiredByOther = !isMoH && status.includes('already_hired');
   const isPendingAcknowledgement = status.includes('pending_acknowledgement');
   const isWithdrawn = status.includes('withdrawn');
   const isArchived = status.includes('archived');
@@ -139,7 +139,7 @@ const getToolTipText = ({
 
   if (isRejectedByPeer) {
     return finalStatus
-      ? `Participant not available. ${capitalizedString(finalStatus)}`
+      ? `Participant not available. ${_.capitalize(finalStatus)}`
       : 'Participant is no longer available. ';
   }
 
@@ -182,6 +182,6 @@ const getParticipantStatus = (isMoH, status) => {
     case 'offer_made':
       return 'Offer Made';
     default:
-      return capitalizedString(status);
+      return _.capitalize(status);
   }
 };

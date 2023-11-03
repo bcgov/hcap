@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import { dbClient, collections } from '../../db';
 import { getAssignCohort } from '../cohorts';
 import { createPostHireStatus, getPostHireStatusesForParticipant } from '../post-hire-flow';
@@ -15,7 +16,13 @@ import type {
   idFilter,
 } from '../participants-helper';
 import type { HcapUserInfo } from '../../keycloak';
-import { ParticipantStatus as ps, postHireStatuses } from '../../constants';
+import {
+  participantFieldsForSuper,
+  participantFieldsForEmployer,
+  ParticipantStatus as ps,
+  postHireStatuses,
+  participantFieldsForMoH,
+} from '../../constants';
 import { isPrivateEmployerOrMHSUEmployerOrHA, ParticipantsFinder } from '../participants-helper';
 
 export const makeParticipant = async (participantData) => {
@@ -229,57 +236,41 @@ export const getParticipants = async (
       };
     })
   );
-
   if (user.isSuperUser || user.isMoH) {
+    participants = participants.map((item) => {
+      // Only return relevant fields
+      let returnStatus = 'Pending';
+      const progressStats = {
+        prospecting: 0,
+        interviewing: 0,
+        offer_made: 0,
+        hired: 0,
+        total: 0,
+      };
+
+      if (item.interested === 'no') returnStatus = 'Withdrawn';
+      if (item.interested === 'yes') returnStatus = 'Available';
+
+      item.statusInfos.forEach((entry) => {
+        progressStats[entry.status] += 1;
+        progressStats.total += 1;
+      });
+
+      const { total, hired } = progressStats;
+      if (total > 0)
+        returnStatus = total === 1 ? 'In Progress' : `In Progress (${progressStats.total})`;
+      if (hired) returnStatus = 'Hired';
+      return { ...item, statusInfo: returnStatus, progressStats };
+    });
+  }
+
+  if (user.isSuperUser) {
     return {
-      data: participants.map((item) => {
-        // Only return relevant fields
-        let returnStatus = 'Pending';
-        const progressStats = {
-          prospecting: 0,
-          interviewing: 0,
-          offer_made: 0,
-          hired: 0,
-          total: 0,
-        };
-
-        if (item.interested === 'no') returnStatus = 'Withdrawn';
-        if (item.interested === 'yes') returnStatus = 'Available';
-
-        item.statusInfos.forEach((entry) => {
-          progressStats[entry.status] += 1;
-          progressStats.total += 1;
-        });
-
-        const { total, hired } = progressStats;
-        if (total > 0)
-          returnStatus = total === 1 ? 'In Progress' : `In Progress (${progressStats.total})`;
-        if (hired) returnStatus = 'Hired';
-        return {
-          id: item.id,
-          program: item.program,
-          educationalRequirements: item.educationalRequirements,
-          firstName: item.firstName,
-          lastName: item.lastName,
-          postalCodeFsa: item.postalCodeFsa,
-          indigenous: item.indigenous,
-          driverLicense: item.driverLicense,
-          experienceWithMentalHealthOrSubstanceUse: item.experienceWithMentalHealthOrSubstanceUse,
-          preferredLocation: item.preferredLocation,
-          currentOrMostRecentIndustry: item.currentOrMostRecentIndustry,
-          roleInvolvesMentalHealthOrSubstanceUse: item.roleInvolvesMentalHealthOrSubstanceUse,
-          nonHCAP: item.nonHCAP,
-          interested: item.interested,
-          crcClear: item.crcClear,
-          callbackStatus: item.callbackStatus,
-          statusInfo: returnStatus,
-          userUpdatedAt: item.userUpdatedAt,
-          distance: item.distance,
-          progressStats,
-          postHireStatuses: item.postHireStatuses || [],
-          rosStatuses: item.rosStatuses || [],
-        };
-      }),
+      data: participants.map((item) => ({
+        ..._.pick(item, participantFieldsForSuper),
+        postHireStatuses: item.postHireStatuses || [],
+        rosStatuses: item.rosStatuses || [],
+      })),
       ...(pagination && { pagination: paginationData }),
     };
   }
@@ -288,38 +279,23 @@ export const getParticipants = async (
   return {
     data: participants.map((item) => {
       let participant = {
-        id: item.id,
-        program: item.program,
-        educationalRequirements: item.educationalRequirements,
-        firstName: item.firstName,
-        lastName: item.lastName,
-        postalCodeFsa: item.postalCodeFsa,
-        indigenous: item.indigenous,
-        driverLicense: item.driverLicense,
-        experienceWithMentalHealthOrSubstanceUse: item.experienceWithMentalHealthOrSubstanceUse,
-        preferredLocation: item.preferredLocation,
-        currentOrMostRecentIndustry: item.currentOrMostRecentIndustry,
-        roleInvolvesMentalHealthOrSubstanceUse: item.roleInvolvesMentalHealthOrSubstanceUse,
-        nonHCAP: item.nonHCAP,
-        userUpdatedAt: item.userUpdatedAt,
-        callbackStatus: item.callbackStatus,
-        distance: item.distance,
+        ..._.pick(item, user.isMoH ? participantFieldsForMoH : participantFieldsForEmployer),
         postHireStatuses: item.postHireStatuses || [],
         rosStatuses: item.rosStatuses || [],
-        statusInfos: undefined, // This gets set later. Should probably get stronger typing.
+        statusInfos: user.isMoH ? item.statusInfos : undefined, // This gets set later. Should probably get stronger typing.
         phoneNumber: undefined,
         emailAddress: undefined,
       };
 
       // Get hired status
       const hiredStatus = item.statusInfos?.find((statusInfo) => statusInfo.status === ps.HIRED);
-      const hiredForAssociatedSites = hiredStatus && user.sites.includes(hiredStatus?.data.site);
+      const hiredForAssociatedSites = hiredStatus && user.sites?.includes(hiredStatus?.data.site);
 
       // Current Status
       const currentStatusInfo = item.statusInfos[0] || {};
       const currentStatusInProgress = ![ps.HIRED, ps.ARCHIVED].includes(currentStatusInfo.status);
       // The participant is hired in a site which is not associated with user
-      const hiredByOtherOrg = hiredStatus && !hiredForAssociatedSites;
+      const hiredByOtherOrg = !user.isMoH && hiredStatus && !hiredForAssociatedSites;
       // The participant is hired by some other user but site associated by user
       const hiredBySomeoneInSameOrgStatus =
         hiredStatus &&
@@ -339,55 +315,54 @@ export const getParticipants = async (
         (statusInfo) => statusInfo.status === ps.ARCHIVED && statusInfo.employerId !== user.id
       );
 
-      // Handling withdrawn and already hired, putting withdrawn as higher priority
-      let computedStatus;
-      if (item.interested === 'withdrawn' || item.interested === 'no') {
-        computedStatus = {
-          createdAt: new Date(),
-          status: 'withdrawn',
-        };
-      } else if (hiredByOtherOrg) {
-        computedStatus = {
-          createdAt: hiredStatus.createdAt,
-          status: 'already_hired',
-        };
-      } else if (hiredBySomeoneInSameOrgStatus || hiredForOtherSite) {
-        computedStatus = {
-          createdAt: hiredStatus.createdAt,
-          status: 'hired_by_peer',
-        };
-      } else if (archivedByOrgStatus) {
-        computedStatus = archivedByOrgStatus;
-      }
-
-      if (computedStatus) {
-        participant.statusInfos = participant.statusInfos
-          ? [...participant.statusInfos, computedStatus]
-          : [computedStatus];
-      }
-
-      const statusInfos = item.statusInfos?.find(
-        (statusInfo) =>
-          statusInfo.employerId === user.id ||
-          (statusInfo.data && user.sites?.includes(statusInfo.data.site))
-      );
-
-      if (statusInfos) {
-        if (!participant.statusInfos) participant.statusInfos = [];
-
-        participant.statusInfos.unshift(statusInfos);
-        const showContactInfo = participant.statusInfos.find((statusInfo) =>
-          [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, ps.HIRED].includes(statusInfo.status)
-        );
-        if (showContactInfo && !hiredByOtherOrg) {
-          participant = {
-            ...participant,
-            phoneNumber: item.phoneNumber,
-            emailAddress: item.emailAddress,
+      if (!user.isMoH) {
+        // Handling withdrawn and already hired, putting withdrawn as higher priority
+        let computedStatus;
+        if (item.interested === 'withdrawn' || item.interested === 'no') {
+          computedStatus = {
+            createdAt: new Date(),
+            status: 'withdrawn',
           };
+        } else if (hiredByOtherOrg) {
+          computedStatus = {
+            createdAt: hiredStatus.createdAt,
+            status: 'already_hired',
+          };
+        } else if (hiredBySomeoneInSameOrgStatus || hiredForOtherSite) {
+          computedStatus = {
+            createdAt: hiredStatus.createdAt,
+            status: 'hired_by_peer',
+          };
+        } else if (archivedByOrgStatus) {
+          computedStatus = archivedByOrgStatus;
+        }
+
+        if (computedStatus) {
+          participant.statusInfos = [computedStatus];
+        }
+
+        const statusInfos = item.statusInfos?.find(
+          (statusInfo) =>
+            statusInfo.employerId === user.id ||
+            (statusInfo.data && user.sites?.includes(statusInfo.data.site))
+        );
+
+        if (statusInfos) {
+          if (!participant.statusInfos) participant.statusInfos = [];
+
+          participant.statusInfos.unshift(statusInfos);
+          const showContactInfo = participant.statusInfos.find((statusInfo) =>
+            [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, ps.HIRED].includes(statusInfo.status)
+          );
+          if (showContactInfo && !hiredByOtherOrg) {
+            participant = {
+              ...participant,
+              phoneNumber: item.phoneNumber,
+              emailAddress: item.emailAddress,
+            };
+          }
         }
       }
-
       return participant;
     }),
     ...(pagination && { pagination: paginationData }),

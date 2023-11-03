@@ -15,14 +15,15 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
-  const hideLastNameAndEmailFilter = selectedTab === 'Archived Candidates';
 
   const isMoH = roles.includes(Role.MinistryOfHealth);
   const isMhsuEmployer = roles.includes(Role.MHSUEmployer);
   const isHA = roles.includes(Role.HealthAuthority);
+  const hideLastNameAndEmailFilter = !isMoH && selectedTab === 'Archived Candidates';
 
   const isValidMhsuRegion =
-    (isHA || isMhsuEmployer) && roles.some((region) => MHAW_ENABLED_REGIONS.includes(region));
+    (isMoH || isHA || isMhsuEmployer) &&
+    roles.some((region) => MHAW_ENABLED_REGIONS.includes(region));
 
   const setFilter = (key, value) => {
     dispatch({

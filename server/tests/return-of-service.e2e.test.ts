@@ -210,7 +210,7 @@ describe('api e2e tests for /ros routes', () => {
       expect(res.status).toEqual(201);
     });
 
-    it('should fail to update ros status with new site for MOH', async () => {
+    it('should update ros status with new site for MOH', async () => {
       const site = await makeTestSite({
         siteId: 2006705444302001,
         siteName: 'Test E2E ROS Service Global - 2',
@@ -228,7 +228,7 @@ describe('api e2e tests for /ros routes', () => {
           },
         })
         .set(header);
-      expect(res.status).toEqual(403);
+      expect(res.status).toEqual(201);
     });
   });
 });

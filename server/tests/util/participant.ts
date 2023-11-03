@@ -2,7 +2,8 @@ import dayjs from 'dayjs';
 import { faker } from '@faker-js/faker';
 import _ from 'lodash';
 import { getParticipants } from '../../services/participants';
-import { ParticipantStatus } from '../../constants';
+import { healthRegions, ParticipantStatus, yesOrNo } from '../../constants';
+import { industryOptions } from '../../constants/industry-options';
 
 let maximusId = 5555555;
 
@@ -22,10 +23,18 @@ export const fakeParticipant = (options?: object) => ({
   nonHCAP: 'yes',
   crcClear: 'yes',
   contactedDate: dayjs(faker.date.between('2022/01/01', '2022/12/31')).format('MM/DD/YYYY'),
+  postalCode: 'A1A 1A1',
+  postalCodeFsa: 'A1A',
+  userUpdatedAt: '',
+  distance: '',
   program: 'HCA',
-  preferredLocation: ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'][
-    _.random(0, 4)
-  ],
+  driverLicense: _.sample(yesOrNo),
+  indigenous: _.sample(yesOrNo),
+  educationalRequirements: _.sample(yesOrNo),
+  currentOrMostRecentIndustry: _.sample(industryOptions),
+  roleInvolvesMentalHealthOrSubstanceUse: _.sample(yesOrNo),
+  experienceWithMentalHealthOrSubstanceUse: _.sample(yesOrNo),
+  preferredLocation: _.sample(healthRegions),
   ...options,
 });
 

@@ -12,13 +12,36 @@ export const participantFields = [
   'currentOrMostRecentIndustry',
   'roleInvolvesMentalHealthOrSubstanceUse',
   'nonHCAP',
-  'interested',
-  'crcClear',
-  'callbackStatus',
-  'statusInfo',
   'userUpdatedAt',
   'distance',
-  'progressStats',
   'postHireStatuses',
   'rosStatuses',
+];
+
+export const participantFieldsForSuper = [
+  ...participantFields,
+  'callbackStatus',
+  'interested',
+  'crcClear',
+  'statusInfo',
+  'progressStats',
+];
+
+export const participantFieldsForMoH = [
+  ...participantFields,
+  'callbackStatus',
+  'interested',
+  'crcClear',
+  'statusInfo',
+  'statusInfos',
+  'progressStats',
+  'emailAddress',
+  'phoneNumber',
+];
+
+export const participantFieldsForEmployer = [
+  ...participantFields,
+  'statusInfos',
+  'emailAddress',
+  'phoneNumber',
 ];

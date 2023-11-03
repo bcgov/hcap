@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Box, Typography, TextField, MenuItem, Checkbox, FormLabel } from '@material-ui/core';
 import { CheckPermissions } from '../../components/generic';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { AuthContext, ParticipantsContext } from '../../providers';
-import { FILTERABLE_FIELDS, Role } from '../../constants';
+import { FILTERABLE_FIELDS, Program, Role } from '../../constants';
 import { MHAW_ENABLED_REGIONS } from './ParticipantTable';
 
 export const ParticipantTableFilters = ({ loading, locations, programs }) => {
@@ -34,6 +34,17 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
       },
     });
   };
+
+  // living checkbox should be hidden if use filters program by HCA
+  // remove checked box if user selects living experience filter and switches to HCA
+  useEffect(() => {
+    if (
+      filter?.programFilter?.value === Program.HCA &&
+      filter?.livedLivingExperienceFilter?.value === true
+    ) {
+      filter.livedLivingExperienceFilter.value = false;
+    }
+  }, [filter]);
 
   if (!columns) return null;
   return (
@@ -199,7 +210,7 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
               </FormLabel>
             </Box>
           )}
-          {isValidMhsuRegion && (
+          {isValidMhsuRegion && filter?.programFilter?.value !== Program.HCA && (
             <Box>
               <Checkbox
                 id={'livedLivingExperienceFilterCheckbox'}

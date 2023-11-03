@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import dayjs from 'dayjs';
-import { addYearToDate, formatOptions, getTodayDate } from '../../utils';
+import { addYearToDate, formatOptions } from '../../utils';
 import { Button } from '../generic';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderSelectField, RenderDateField, RenderCheckbox, RenderRadioGroup } from '../fields';
@@ -25,10 +25,9 @@ import {
 const reasonOptions = formatOptions(archiveReasonOptions);
 
 const employeeRemainingLabel = {
-  [Program.HCA]: 'Is the employee remaining in the HCA sector, within this role or another?',
-  [Program.MHAW]: 'Is the employee remaining in the MHSU sector, within this role or another?',
-  [Program.Unknown]:
-    'Is the employee remaining in the MHSU / HCA sector, within this role or another?',
+  [Program.HCA]: 'Is the participant continuing to work as a HCA, within this role or another?',
+  [Program.MHAW]:
+    'Is the participant continuing to work in the MHSU sector, within this role or another?',
 };
 
 const archiveHiredParticipantInitialValues = {
@@ -103,12 +102,7 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participant }) 
             />
             {[EmploymentEndedType.value, ROSCompletedType.value].includes(values.type) && (
               <>
-                <Field
-                  name='endDate'
-                  component={RenderDateField}
-                  maxDate={getTodayDate()}
-                  label='End Date'
-                />
+                <Field name='endDate' component={RenderDateField} label='End Date' />
                 <Field
                   name='reason'
                   component={RenderSelectField}

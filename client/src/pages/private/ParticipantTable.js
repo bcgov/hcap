@@ -576,7 +576,7 @@ const ParticipantTable = () => {
 
             <Table
               usePagination={true}
-              columns={columns}
+              initialColumns={columns}
               order={order.direction}
               orderBy={order.field}
               totalRowsCount={pagination.total}
@@ -614,6 +614,7 @@ const ParticipantTable = () => {
               selectedRows={selectedParticipants}
               updateSelectedRows={setSelectedParticipants}
               multiSelectAction={bulkEngage}
+              filter={filter}
             />
           </Box>
         </Grid>

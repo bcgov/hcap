@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { FixedSizeList } from 'react-window';
 
 import Box from '@material-ui/core/Box';
@@ -21,6 +21,7 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 
 import { Button } from './';
+import { Program } from '../../constants';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -199,7 +200,7 @@ export const Table = ({
   orderBy,
   renderCell,
   onRequestSort,
-  columns,
+  initialColumns,
   rows,
   usePagination,
   isLoading,
@@ -213,7 +214,21 @@ export const Table = ({
   selectedRows = [],
   updateSelectedRows,
   multiSelectAction,
+  filter,
 }) => {
+  const [columns, setColumns] = useState(initialColumns);
+
+  // lived/living MHSU experience column should be hidden if use filters program by HCA
+  useEffect(() => {
+    if (filter?.programFilter?.value === Program.HCA) {
+      setColumns((prevColumns) =>
+        prevColumns.filter((i) => i.id !== 'experienceWithMentalHealthOrSubstanceUse')
+      );
+    } else {
+      setColumns(initialColumns);
+    }
+  }, [filter, initialColumns]);
+
   const rowsOnPage = rows.length;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);

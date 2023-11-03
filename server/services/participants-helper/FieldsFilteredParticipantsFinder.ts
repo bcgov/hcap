@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { collections, views } from '../../db';
 import { ParticipantStatus } from '../../constants';
 import { FilteredParticipantsFinder } from './FilteredParticipantsFinder';
@@ -242,7 +243,7 @@ export class FieldsFilteredParticipantsFinder {
         ? {
             ...criteria,
             and: [
-              ...criteria.and,
+              ...(criteria.and ?? []),
               {
                 or: [hiredQuery, pendingAckQuery],
               },
@@ -302,22 +303,23 @@ export class FieldsFilteredParticipantsFinder {
             : { status_infos: null }
         );
 
-        // need to add an 'and' as statuses map will overwrite the indigenous 'or' filter
-        // criteria.or checks if the indigenous 'or' filter is included in the query
-        this.context.criteria = this.context.criteria.or
-          ? {
-              ...this.context.criteria,
-              and: [
-                ...this.context.criteria.and,
+        this.context.criteria = {
+          ...this.context.criteria,
+          and: [
+            ...(this.context.criteria.and ?? []),
+            {
+              or: mappedStatuses,
+            },
+            {
+              or: [
+                { 'withdrawn_at IS': null },
                 {
-                  or: mappedStatuses,
+                  'withdrawn_at >': dayjs().subtract(4, 'month'),
                 },
               ],
-            }
-          : {
-              ...this.context.criteria,
-              or: mappedStatuses,
-            };
+            },
+          ],
+        };
       }
     }
     return new FilteredParticipantsFinder(this.context);

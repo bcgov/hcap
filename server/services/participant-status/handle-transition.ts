@@ -33,7 +33,11 @@ const handleArchivedTransition = async ({
   }
 
   // Hire Status owner is not same employer or peer
-  if (hiredStatus.employer_id !== employerId && !user.sites.includes(hiredStatus.data?.site)) {
+  if (
+    hiredStatus.employer_id !== employerId &&
+    !user.sites.includes(hiredStatus.data?.site) &&
+    !user.isMoh
+  ) {
     return { result: { status: ps.INVALID_ARCHIVE } };
   }
 

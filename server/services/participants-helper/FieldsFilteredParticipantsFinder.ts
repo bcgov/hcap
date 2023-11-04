@@ -242,6 +242,7 @@ export class FieldsFilteredParticipantsFinder {
         ? {
             ...criteria,
             and: [
+              ...criteria.and,
               {
                 or: [hiredQuery, pendingAckQuery],
               },
@@ -307,6 +308,7 @@ export class FieldsFilteredParticipantsFinder {
           ? {
               ...this.context.criteria,
               and: [
+                ...this.context.criteria.and,
                 {
                   or: mappedStatuses,
                 },

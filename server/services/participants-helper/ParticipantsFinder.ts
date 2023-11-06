@@ -14,7 +14,7 @@ export class ParticipantsFinder {
   siteJoin: string;
   siteDistanceJoin: string;
   rosStatuses: string;
-  criteria: { 'body.preferredLocation ilike': string } | { or: { and: { or }[] }[] };
+  criteria: { 'body.preferredLocation ilike': string } | { and: { or }[] };
 
   constructor(dbClient, user: HcapUserInfo) {
     this.dbClient = dbClient;
@@ -42,7 +42,7 @@ export class ParticipantsFinder {
 
                 //  and statuses (unless when the status is 'unavailable', in this case
                 //  we handle in the upper OR array)
-                { or: [{ and: [userRegionQuery(this.user.regions, 'body.preferredLocation')] }] }),
+                { and: [userRegionQuery(this.user.regions, 'body.preferredLocation')] }),
           };
     return new ProgramFilteredParticipantsFinder(this);
   }

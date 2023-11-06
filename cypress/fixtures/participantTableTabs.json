@@ -30,7 +30,7 @@
     {
       "name": "ministry_of_health",
       "fixture": "test-moh",
-      "tabsWithMultiselect": ["Candidates"],
+      "tabsWithMultiselect": [],
       "tabsWithActions": [
         "Participants",
         "Candidates",

@@ -17,7 +17,7 @@ exports.up = async (pgm) => {
           select
           h.timestamp
           from jsonb_to_recordset(p.body->'history') as h(timestamp timestamp, changes jsonb )
-          where h.changes[0]->>'to' = 'withdrawn'
+          where (select * from jsonb_array_elements(h.changes) limit 1)->>'to' = 'withdrawn'
           order by h.timestamp desc
           limit 1
         )

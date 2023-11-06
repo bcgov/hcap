@@ -63,7 +63,7 @@ services:
     restart: 'always'
 
   postgres:
-    image: postgis/postgis:13-3.1-alpine
+    image: kartoza/postgis:11.5-2.8
     container_name: ${APP_NAME}-postgres
     restart: always
     expose:

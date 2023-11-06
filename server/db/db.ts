@@ -31,7 +31,7 @@ class DBClient {
     try {
       const results = await migrationRunner({
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        log: () => {}, // Silence migrations for test suites
+        log: console.log, // Silence migrations for test suites
         databaseUrl: `postgres://${user}:${password}@${host}:${port}/${database}`,
         direction: 'up',
         migrationsTable: 'pgmigrations', // default, do not change

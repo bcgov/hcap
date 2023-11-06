@@ -614,6 +614,7 @@ const ParticipantTable = () => {
               selectedRows={selectedParticipants}
               updateSelectedRows={setSelectedParticipants}
               multiSelectAction={bulkEngage}
+              filter={filter}
             />
           </Box>
         </Grid>

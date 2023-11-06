@@ -141,7 +141,6 @@ describe('Participants Service', () => {
         'experienceWithMentalHealthOrSubstanceUse',
         'preferredLocation',
         'currentOrMostRecentIndustry',
-        'roleInvolvesMentalHealthOrSubstanceUse',
         'nonHCAP',
         'statusInfo',
         'userUpdatedAt',

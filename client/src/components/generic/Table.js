@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { FixedSizeList } from 'react-window';
 
 import Box from '@material-ui/core/Box';
@@ -21,6 +21,7 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 
 import { Button } from './';
+import { Program } from '../../constants';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -213,7 +214,21 @@ export const Table = ({
   selectedRows = [],
   updateSelectedRows,
   multiSelectAction,
+  filter,
 }) => {
+  const [columnState, setColumnState] = useState(columns);
+  // living checkbox should be hidden if use filters program by HCA
+  // remove checked box if user selects living experience filter and switches to HCA
+  useEffect(() => {
+    if (filter?.programFilter?.value === Program.HCA) {
+      setColumnState((prevColumns) =>
+        prevColumns.filter((i) => i.id !== 'experienceWithMentalHealthOrSubstanceUse')
+      );
+    } else {
+      setColumnState(columns);
+    }
+  }, [filter, columns]);
+
   const rowsOnPage = rows.length;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -277,7 +292,7 @@ export const Table = ({
                 />
               </StyledHeaderTableCell>
             )}
-            {columns.map((column, index) => (
+            {columnState.map((column, index) => (
               <StyledHeaderTableCell key={index}>
                 {column.name && (
                   <TableSortLabel // Disable sorting if column has no header
@@ -302,7 +317,7 @@ export const Table = ({
                       <Checkbox color='primary' disabled />
                     </StyledTableCell>
                   )}
-                  {[...Array(columns.length)].map((_, i) => (
+                  {[...Array(columnState.length)].map((_, i) => (
                     <StyledTableCell key={i}>
                       <Skeleton animation='wave' />
                     </StyledTableCell>
@@ -324,7 +339,7 @@ export const Table = ({
                         />
                       </StyledHeaderTableCell>
                     )}
-                    {columns.map((column) => (
+                    {columnState.map((column) => (
                       <StyledTableCell key={column.id}>
                         {renderCell ? renderCell(column.id, row) : row[column.id] || ''}
                       </StyledTableCell>

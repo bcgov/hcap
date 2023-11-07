@@ -50,7 +50,7 @@ export class RegionsFilteredParticipantsFinder {
       ...(interestFilter && { 'body.interested <>': ['no', 'withdrawn'] }),
       ...(isIndigenousFilter && {
         and: [
-          ...this.context.criteria.and,
+          ...(this.context.criteria.and ?? []),
           {
             or: [{ 'body.isIndigenous =': true }, { 'body.indigenous =': 'Yes' }],
           },

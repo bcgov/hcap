@@ -607,10 +607,7 @@ const ParticipantTable = () => {
               }}
               rows={rows}
               isLoading={isLoadingData}
-              isMultiSelect={
-                (selectedTab === 'Available Participants' && isHA) ||
-                (selectedTab === 'Candidates' && isMoH)
-              }
+              isMultiSelect={selectedTab === 'Available Participants' && isHA}
               selectedRows={selectedParticipants}
               updateSelectedRows={setSelectedParticipants}
               multiSelectAction={bulkEngage}

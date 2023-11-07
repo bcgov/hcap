@@ -25,8 +25,11 @@ describe('Allocation functionality', () => {
   };
 
   const navigateToForm = (buttonLabel) => {
+    cy.intercept(`${Cypress.env('apiBaseURL')}/phase/*`).as('phaseGet');
     cy.visit('site-view/1');
-    cy.get('.MuiTab-wrapper').contains('Allocation').click({ force: true });
+    cy.wait('@phaseGet');
+    cy.get('.MuiTab-wrapper').contains('Allocation').click();
+    cy.contains('Phase name');
     cy.get('tr', { timeout: 10000 }).first();
     cy.get('button').contains(buttonLabel).click();
   };

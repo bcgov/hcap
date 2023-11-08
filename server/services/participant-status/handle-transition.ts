@@ -36,7 +36,7 @@ const handleArchivedTransition = async ({
   if (
     hiredStatus.employer_id !== employerId &&
     !user.sites.includes(hiredStatus.data?.site) &&
-    !user.isMoh
+    !user.isMoH
   ) {
     return { result: { status: ps.INVALID_ARCHIVE } };
   }

@@ -268,6 +268,7 @@ export class FieldsFilteredParticipantsFinder {
       const inProgressStatusQuery = {
         [`${employerSpecificJoin}.status IN`]: [...inProgressStatuses, rejectAcknowledgement],
         and: [
+          ...(criteria.and ?? []),
           {
             ...employerFilteringCriteria,
           },

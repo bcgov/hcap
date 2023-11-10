@@ -18,6 +18,7 @@ import {
   rosEmploymentType,
   ROS_SITE_INFO_MESSAGE,
   rosMaxStartDate,
+  Program,
 } from '../../constants';
 import { createReturnOfServiceStatus, getAllSites } from '../../services';
 
@@ -202,15 +203,17 @@ export const ReturnOfServiceForm = ({
                 )}
               </>
               <br />
-              <Box className={classes.bg}>
-                <Box p={1}>
-                  <Field
-                    name='confirm'
-                    component={RenderCheckbox}
-                    label={`I acknowledge that this participant has been registered as ${participant.program}.`}
-                  />
+              {participant.program !== Program.MHAW && (
+                <Box className={classes.bg}>
+                  <Box p={1}>
+                    <Field
+                      name='confirm'
+                      component={RenderCheckbox}
+                      label={`I acknowledge that this participant has been registered as ${participant.program}.`}
+                    />
+                  </Box>
                 </Box>
-              </Box>
+              )}
             </Box>
             <Box mt={3}>
               <Grid container spacing={2} justify='flex-end'>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import dayjs from 'dayjs';
-import { addYearToDate, formatOptions } from '../../utils';
+import { addYearToDate, formatOptions, getTodayDate } from '../../utils';
 import { Button } from '../generic';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderSelectField, RenderDateField, RenderCheckbox, RenderRadioGroup } from '../fields';
@@ -102,7 +102,12 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participant }) 
             />
             {[EmploymentEndedType.value, ROSCompletedType.value].includes(values.type) && (
               <>
-                <Field name='endDate' component={RenderDateField} label='End Date' />
+                <Field
+                  name='endDate'
+                  component={RenderDateField}
+                  maxDate={getTodayDate()}
+                  label='End Date'
+                />
                 <Field
                   name='reason'
                   component={RenderSelectField}

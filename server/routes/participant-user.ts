@@ -83,7 +83,7 @@ router.patch(
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, email } = req.user;
 
-    const changes = { ...patchObject(req.body, patchableFields) };
+    const changes: any = { ...patchObject(req.body, patchableFields) };
     await validate(UserParticipantEditSchema, changes);
 
     // get users PEOIs
@@ -94,6 +94,12 @@ router.patch(
       // Make batch updates
       await Promise.all(
         participants.map(async (participant) => {
+          if (changes.isIndigenous !== undefined) {
+            const indigenous = changes.isIndigenous ? 'Yes' : 'No';
+            if (participant.indigenous !== indigenous) {
+              changes.indigenous = indigenous;
+            }
+          }
           const participantBody = createChangeHistory(participant, changes);
           updateResults.push(await updateParticipant({ ...participantBody, id: participant.id }));
         })

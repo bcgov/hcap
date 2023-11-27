@@ -203,17 +203,15 @@ export const ReturnOfServiceForm = ({
                 )}
               </>
               <br />
-              {participant.program !== Program.MHAW && (
-                <Box className={classes.bg}>
-                  <Box p={1}>
-                    <Field
-                      name='confirm'
-                      component={RenderCheckbox}
-                      label={`I acknowledge that this participant has been registered as ${participant.program}.`}
-                    />
-                  </Box>
+              <Box className={classes.bg}>
+                <Box p={1}>
+                  <Field
+                    name='confirm'
+                    component={RenderCheckbox}
+                    label={`I acknowledge that this participant has been registered as ${participant.program}.`}
+                  />
                 </Box>
-              )}
+              </Box>
             </Box>
             <Box mt={3}>
               <Grid container spacing={2} justify='flex-end'>

@@ -18,7 +18,6 @@ import {
   rosEmploymentType,
   ROS_SITE_INFO_MESSAGE,
   rosMaxStartDate,
-  Program,
 } from '../../constants';
 import { createReturnOfServiceStatus, getAllSites } from '../../services';
 

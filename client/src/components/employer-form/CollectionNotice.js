@@ -50,9 +50,6 @@ const CollectionNotice = ({ isDisabled }) => {
             <br />
             Address: 1515 Blanshard Street Victoria BC V8W 3C8
             <br />
-            Telephone:&nbsp;
-            <Link href='tel:+2364783520'>236-478-3520</Link>
-            <br />
             Email:&nbsp;
             <Link href={`mailto:${HCAP_INFO_EMAIL}`}>{HCAP_INFO_EMAIL}</Link>
           </Typography>

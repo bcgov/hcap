@@ -228,8 +228,7 @@ export const Fields = ({
               <Typography variant='body2' paragraph>
                 If you have any questions about our collection or use of personal information,
                 please direct your inquiries to the Director, Planning, Integration and
-                Partnerships, 1515 Blanshard Street, Victoria, British Columbia, V8W 3C8. Telephone:{' '}
-                <Link href='tel:+12364783520'>236-478-3520</Link>, Email:{' '}
+                Partnerships, 1515 Blanshard Street, Victoria, British Columbia, V8W 3C8. Email:{' '}
                 <Link href={`mailto:${HCAP_INFO_EMAIL}`}>{HCAP_INFO_EMAIL}</Link>.
               </Typography>
             </Collapse>

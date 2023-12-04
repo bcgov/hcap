@@ -304,23 +304,22 @@ export class FieldsFilteredParticipantsFinder {
             : { status_infos: null }
         );
 
-        this.context.criteria = {
-          ...this.context.criteria,
-          and: [
-            ...(this.context.criteria.and ?? []),
-            {
-              or: mappedStatuses,
-            },
-            {
-              or: [
-                { 'withdrawn_at IS': null },
+        // need to add an 'and' as statuses map will overwrite the indigenous 'or' filter
+        // criteria.or checks if the indigenous 'or' filter is included in the query
+        this.context.criteria = this.context.criteria.or
+          ? {
+              ...this.context.criteria,
+              and: [
+                ...this.context.criteria.and,
                 {
-                  'withdrawn_at >': dayjs().subtract(4, 'month'),
+                  or: mappedStatuses,
                 },
               ],
-            },
-          ],
-        };
+            }
+          : {
+              ...this.context.criteria,
+              or: mappedStatuses,
+            };
       }
     }
     return new FilteredParticipantsFinder(this.context);

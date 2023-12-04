@@ -138,16 +138,6 @@ export default () => {
                 text='Download return of service milestones report'
               />
             </Box>
-            {isMoH && (
-              <Box py={1} display='flex' justifyContent='center'>
-                <Button
-                  fullWidth={false}
-                  loading={isLoadingReport === 'monitoring'}
-                  onClick={() => handleDownloadReport('monitoring')}
-                  text='Download program monitoring report'
-                />
-              </Box>
-            )}
             <Box py={1} display='flex' justifyContent='center'>
               <Button
                 fullWidth={false}

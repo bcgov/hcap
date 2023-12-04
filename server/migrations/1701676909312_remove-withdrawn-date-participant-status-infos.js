@@ -1,7 +1,5 @@
 /* eslint-disable camelcase */
 
-exports.shorthands = undefined;
-
 exports.up = async (pgm) => {
   await pgm.sql(`
     CREATE VIEW public.participants_status_infos

@@ -25,6 +25,25 @@ export const ExternalHiredParticipantSchema = yup
         .test('is-null', 'Other origin must be null', (v) => v == null || v === ''),
     }),
     hcapOpportunity: yup.boolean().test('is-true', 'Must be HCAP opportunity', (v) => v === true),
+    pathway: yup.string().required('Requires pathway').oneOf(['hca', 'mhaw']),
+    driversLicense: yup
+      .string()
+      .required("Requires driver's license")
+      .oneOf(['yes', 'no', 'unknown']),
+    indigenous: yup.string().required('Requires indigenous').oneOf(['yes', 'no', 'preferNotTOSay']),
+    educationalRequirements: yup
+      .string()
+      .required('Requires educational requirements')
+      .oneOf(['yes', 'no', 'dontknow']),
+    currentOrMostRecentIndustry: yup.string(),
+    roleInvolvesMentalHealthOrSubstanceUse: yup
+      .string()
+      .required('Requires whether last role involved Mental Health or Substance Use')
+      .oneOf(['yes', 'no', 'unknown']),
+    experienceWithMentalHealthOrSubstanceUse: yup
+      .string()
+      .required('Requires Lived Experience')
+      .oneOf(['yes', 'no', 'preferNotTOSay', 'unknown']),
     contactedDate: yup
       .string()
       .required('Date of contact is required')

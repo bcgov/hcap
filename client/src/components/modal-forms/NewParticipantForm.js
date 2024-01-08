@@ -23,6 +23,13 @@ const newParticipantInitialValues = {
   startDate: '',
   site: '',
   acknowledge: false,
+  pathway: '',
+  driversLicense: '',
+  indigenous: '',
+  educationalRequirements: '',
+  currentOrMostRecentIndustry: '',
+  roleInvolvesMentalHealthOrSubstanceUse: '',
+  experienceWithMentalHealthOrSubstanceUse: '',
 };
 
 export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
@@ -64,6 +71,15 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
               label='HCAP Opportunity'
               checked
               disabled
+            />
+            <Field
+              name='pathway'
+              component={RenderSelectField}
+              label='* Pathway'
+              options={[
+                { value: 'hca', label: 'HCA' },
+                { value: 'mhaw', label: 'MHAW' },
+              ]}
             />
             <Field name='firstName' component={RenderTextField} label='* First Name' />
             <Field name='lastName' component={RenderTextField} label='* Last Name' />
@@ -118,6 +134,62 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
                   label: siteDetail.siteName,
                 }))
                 .sort((a, b) => a.label.localeCompare(b.label))}
+            />
+            <Field
+              name='driversLicense'
+              component={RenderSelectField}
+              label='* Class 5 Drivers License'
+              options={[
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' },
+                { value: 'unknown', label: 'Unknown' },
+              ]}
+            />
+            <Field
+              name='indigenous'
+              component={RenderSelectField}
+              label='Self-identifies as First Nation, Métis, Inuk (Inuit) or Urban Indigenous?'
+              options={[
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' },
+                { value: 'preferNotTOSay', label: 'Prefer not to say' },
+              ]}
+            />
+            <Field
+              name='educationalRequirements'
+              component={RenderSelectField}
+              label='Meets educational requirements'
+              options={[
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' },
+                { value: 'dontknow', label: 'Does not know' },
+              ]}
+            />
+            <Field
+              name='currentOrMostRecentIndustry'
+              component={RenderTextField}
+              label='What industry did they most recently work in?'
+            />
+            <Field
+              name='roleInvolvesMentalHealthOrSubstanceUse'
+              component={RenderSelectField}
+              label='Did their last role involve Mental Health or Substance Use?'
+              options={[
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' },
+                { value: 'unknown', label: 'Unknown' },
+              ]}
+            />
+            <Field
+              name='experienceWithMentalHealthOrSubstanceUse'
+              component={RenderSelectField}
+              label='Do they have lived or living experience with Mental Health or Substance Use?'
+              options={[
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' },
+                { value: 'preferNotTOSay', label: 'Prefer not to say' },
+                { value: 'unknown', label: 'Unknown' },
+              ]}
             />
             <Field
               name='acknowledge'

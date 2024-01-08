@@ -11,26 +11,9 @@ export const OtherSection = ({ checkFieldDisability, isMHAWProgram }) => {
   return (
     <>
       <SectionHeader text='Other' />
-      <PleaseNoteBanner
-        text='The following information is collected as some employers may
-              prioritize hiring of indigenous candidates or candidates with a drivers license in
-              certain circumstances.'
-      />
 
-      {/** Q9 do you self identify as indigenous */}
-      <Question text='9. Do you self-identify as First Nation, Métis, Inuk (Inuit) or Urban Indigenous?' />
-      <Grid item xs={12}>
-        <FastField
-          name='indigenous'
-          component={RenderRadioGroup}
-          disabled={checkFieldDisability('indigenous')}
-          setTouched
-          row
-          options={YesNoPreferNot}
-        />
-      </Grid>
       {/** Q10 do you have a valid BC drivers license */}
-      <Question text='10. * Do you have a valid Class 5 BC Drivers Licence?' />
+      <Question text='9. * Do you have a valid Class 5 BC Drivers Licence?' />
       <Grid item xs={12}>
         <FastField
           name='driverLicense'
@@ -41,14 +24,26 @@ export const OtherSection = ({ checkFieldDisability, isMHAWProgram }) => {
           options={YesNo}
         />
       </Grid>
+      {/** Q9 do you self identify as indigenous */}
+      <PleaseNoteBanner
+        text='The following information is collected as some employers may
+              prioritize hiring of indigenous candidates and/or lived or living experience.'
+      />
+      <Question text='10. Do you self-identify as First Nation, Métis, Inuk (Inuit) or Urban Indigenous?' />
+      <Grid item xs={12}>
+        <FastField
+          name='indigenous'
+          component={RenderRadioGroup}
+          disabled={checkFieldDisability('indigenous')}
+          setTouched
+          row
+          options={YesNoPreferNot}
+        />
+      </Grid>
       {/** Q11 lived or experienced mental health or substance use challenges */}
       {/** only show if Q1 is Mental Health and Addictions Worker*/}
       {isMHAWProgram && (
         <>
-          <PleaseNoteBanner
-            text='The following information is collected as some employers may
-            prioritize hiring of candidates with lived/living experience.'
-          />
           <Question
             text='11. Do you have lived or living experience of mental health and/or substance use
                     challenges?'

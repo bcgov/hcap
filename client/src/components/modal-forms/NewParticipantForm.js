@@ -23,7 +23,7 @@ const newParticipantInitialValues = {
   startDate: '',
   site: '',
   acknowledge: false,
-  pathway: '',
+  program: '',
   driversLicense: '',
   indigenous: '',
   educationalRequirements: '',
@@ -73,7 +73,7 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
               disabled
             />
             <Field
-              name='pathway'
+              name='program'
               component={RenderSelectField}
               label='* Pathway'
               options={[

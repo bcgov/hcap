@@ -77,8 +77,8 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
               component={RenderSelectField}
               label='* Pathway'
               options={[
-                { value: 'hca', label: 'HCA' },
-                { value: 'mhaw', label: 'MHAW' },
+                { value: 'HCA', label: 'HCA' },
+                { value: 'MHAW', label: 'MHAW' },
               ]}
             />
             <Field name='firstName' component={RenderTextField} label='* First Name' />

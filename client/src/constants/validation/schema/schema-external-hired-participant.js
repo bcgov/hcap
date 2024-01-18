@@ -25,7 +25,7 @@ export const ExternalHiredParticipantSchema = yup
         .test('is-null', 'Other origin must be null', (v) => v == null || v === ''),
     }),
     hcapOpportunity: yup.boolean().test('is-true', 'Must be HCAP opportunity', (v) => v === true),
-    program: yup.string().required('Requires pathway').oneOf(['hca', 'mhaw']),
+    program: yup.string().required('Requires pathway').oneOf(['HCA', 'MHAW']),
     driversLicense: yup
       .string()
       .required("Requires driver's license")

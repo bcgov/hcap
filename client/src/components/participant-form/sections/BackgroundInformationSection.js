@@ -5,8 +5,11 @@ import { Question } from '../Question';
 import { SectionHeader } from '../SectionHeader';
 import { RenderRadioGroup, RenderTextField } from '../../fields';
 import { YesNo, currentOrMostRecentIndustryOptions } from '../../../constants';
-import { formatOptions } from '../../../utils';
-import { showRoleInvolvesMentalHealthOrSubstanceUse, isOtherSelected } from '../../../utils';
+import {
+  formatOptions,
+  showRoleInvolvesMentalHealthOrSubstanceUse,
+  isOtherSelected,
+} from '../../../utils';
 
 export const BackgroundInformationSection = ({
   checkFieldDisability,

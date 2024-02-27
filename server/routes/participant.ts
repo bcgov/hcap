@@ -319,12 +319,15 @@ newHiredParticipantRouter.post(
     await validate(ExternalHiredParticipantSchema, req.body);
     try {
       const user = req.hcapUserInfo;
-      const participantInfo = req.body;
-      [participantInfo.preferredLocation] = user.regions;
-      participantInfo.crcClear = 'yes';
-      participantInfo.interested = 'yes';
-      participantInfo.callbackStatus = false;
-      participantInfo.userUpdatedAt = new Date().toJSON();
+      const participantInfo = {
+        ...req.body,
+        crcClear: 'yes',
+        interested: 'yes',
+        callbackStatus: false,
+        userUpdatedAt: new Date().toJSON(),
+        postalCodeFsa: req.body.postalCode.substr(0, 3),
+        preferredLocation: req.body.preferredLocation.join(';'),
+      };
 
       const response = await makeParticipant(participantInfo);
       await setParticipantStatus(user.id, response.id, ParticipantStatus.PROSPECTING);

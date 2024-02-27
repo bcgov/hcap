@@ -48,3 +48,11 @@ export const reasonForFindingOutOptions = [
   'Social media',
   'Other',
 ];
+
+export const healthAuthorityOptions = [
+  { value: 'Interior', label: 'Interior' },
+  { value: 'Fraser', label: 'Fraser' },
+  { value: 'Vancouver Coastal', label: 'Vancouver Coastal' },
+  { value: 'Vancouver Island', label: 'Vancouver Island' },
+  { value: 'Northern', label: 'Northern' },
+];

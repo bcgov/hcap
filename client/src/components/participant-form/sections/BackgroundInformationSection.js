@@ -6,6 +6,7 @@ import { SectionHeader } from '../SectionHeader';
 import { RenderRadioGroup, RenderTextField } from '../../fields';
 import { YesNo, currentOrMostRecentIndustryOptions } from '../../../constants';
 import { formatOptions } from '../../../utils';
+import { showRoleInvolvesMentalHealthOrSubstanceUse, isOtherSelected } from '../../../utils';
 
 export const BackgroundInformationSection = ({
   checkFieldDisability,
@@ -14,6 +15,7 @@ export const BackgroundInformationSection = ({
 }) => {
   const [industry, , industryHelpers] = useField('currentOrMostRecentIndustry');
   const [other, , otherHelpers] = useField('otherIndustry');
+  const [, , involvesMentalHealthHelpers] = useField('roleInvolvesMentalHealthOrSubstanceUse');
 
   useEffect(() => {
     if (
@@ -42,9 +44,23 @@ export const BackgroundInformationSection = ({
           disabled={checkFieldDisability('currentOrMostRecentIndustry')}
           setTouched
           options={formatOptions(currentOrMostRecentIndustryOptions)}
+          onChange={(e) => {
+            const selectedValue = e.target.value;
+            // reset the value of otherIndustry if user changes currentOrMostRecentIndustry selection
+            if (selectedValue !== 'Other, please specify:') {
+              otherHelpers.setValue('');
+              otherHelpers.setTouched(false);
+            }
+            // reset the value of roleInvolvesMentalHealthOrSubstanceUse if user changes currentOrMostRecentIndustry selection
+            // to a value that should not show the question
+            if (!showRoleInvolvesMentalHealthOrSubstanceUse(isMHAWProgram, selectedValue)) {
+              involvesMentalHealthHelpers.setValue('');
+              involvesMentalHealthHelpers.setTouched(false);
+            }
+          }}
         />
       </Grid>
-      {selectedOption === 'Other, please specify:' && (
+      {isOtherSelected(selectedOption) && (
         <Grid item xs={6}>
           <FastField
             name='otherIndustry'
@@ -55,27 +71,24 @@ export const BackgroundInformationSection = ({
       )}
       {/** Q15 does/ did this rolee involve delivering mental health/ substance use services */}
       {/** only show if Q1 is MHAW and Q14 is one of 3 below options */}
-      {isMHAWProgram &&
-        (selectedOption === 'Health care and social assistance' ||
-          selectedOption === 'Continuing Care and Community Health Care' ||
-          selectedOption === 'Community Social Services') && (
-          <>
-            <Question
-              text='15. Does/did this role involve delivering mental health and/or substance use
+      {showRoleInvolvesMentalHealthOrSubstanceUse(isMHAWProgram, selectedOption) && (
+        <>
+          <Question
+            text='15. Does/did this role involve delivering mental health and/or substance use
                     services?'
+          />
+          <Grid item xs={12}>
+            <FastField
+              name='roleInvolvesMentalHealthOrSubstanceUse'
+              component={RenderRadioGroup}
+              disabled={checkFieldDisability('roleInvolvesMentalHealthOrSubstanceUse')}
+              setTouched
+              row
+              options={YesNo}
             />
-            <Grid item xs={12}>
-              <FastField
-                name='roleInvolvesMentalHealthOrSubstanceUse'
-                component={RenderRadioGroup}
-                disabled={checkFieldDisability('roleInvolvesMentalHealthOrSubstanceUse')}
-                setTouched
-                row
-                options={YesNo}
-              />
-            </Grid>
-          </>
-        )}
+          </Grid>
+        </>
+      )}
     </>
   );
 };

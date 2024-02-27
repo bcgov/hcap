@@ -319,6 +319,16 @@ newHiredParticipantRouter.post(
     await validate(ExternalHiredParticipantSchema, req.body);
     try {
       const user = req.hcapUserInfo;
+      // due to console warning with Select dropdown in MaterialUI need to handle this on BE
+      const industry =
+        req.body.currentOrMostRecentIndustry === 'Other, please specify:' &&
+        req.body.otherIndustry !== ''
+          ? req.body.otherIndustry
+          : req.body.currentOrMostRecentIndustry;
+
+      // no need to save otherIndustry, we replace currentOrMostRecentIndustry with value if exists
+      delete req.body.otherIndustry;
+
       const participantInfo = {
         ...req.body,
         crcClear: 'yes',
@@ -327,6 +337,7 @@ newHiredParticipantRouter.post(
         userUpdatedAt: new Date().toJSON(),
         postalCodeFsa: req.body.postalCode.substr(0, 3),
         preferredLocation: req.body.preferredLocation.join(';'),
+        currentOrMostRecentIndustry: industry,
       };
 
       const response = await makeParticipant(participantInfo);

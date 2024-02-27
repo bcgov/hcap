@@ -11,7 +11,13 @@ import {
   RenderSelectField,
   RenderMultiSelectField,
 } from '../fields';
-import { getTodayDate, formatOptions, checkForFieldResets } from '../../utils';
+import {
+  getTodayDate,
+  formatOptions,
+  checkForFieldResets,
+  showRoleInvolvesMentalHealthOrSubstanceUse,
+  isOtherSelected,
+} from '../../utils';
 import { RenderAutocomplete } from '../fields/RenderAutocomplete';
 import {
   API_URL,
@@ -22,9 +28,9 @@ import {
   YesNoPreferNot,
   healthAuthorityOptions,
   reasonForFindingOutOptions,
+  currentOrMostRecentIndustryOptions,
 } from '../../constants';
 import { useToast } from '../../hooks';
-import { BackgroundInformationForm } from './BackgroundInformationForm';
 
 const newParticipantInitialValues = {
   firstName: '',
@@ -56,11 +62,6 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
   const { openToast } = useToast();
 
   const handleExternalHire = async (participantInfo) => {
-    // remove otherIndustry from being sent back
-    // it gets set to currentOrMostRecentIndustry on submit if a value exists
-    // keeps question to a single value
-    delete participantInfo.otherIndustry;
-
     const response = await fetch(`${API_URL}/api/v1/new-hired-participant`, {
       method: 'POST',
       headers: {
@@ -87,7 +88,7 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
       onSubmit={handleExternalHire}
       validationSchema={ExternalHiredParticipantSchema}
     >
-      {({ submitForm, values, isValid, setFieldValue, handleChange, setTouched }) => (
+      {({ submitForm, values, setFieldValue, handleChange, setFieldTouched }) => (
         <FormikForm>
           <Box>
             <Field
@@ -111,8 +112,7 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
                   e.target.value,
                   'experienceWithMentalHealthOrSubstanceUse',
                   'MHAW',
-                  setFieldValue,
-                  setTouched
+                  setFieldValue
                 );
                 handleChange(e);
               }}
@@ -171,10 +171,51 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
               label='* How did they learn about HCAP?'
               options={formatOptions(reasonForFindingOutOptions)}
             />
-            <BackgroundInformationForm
-              isMHAWProgram={values.program === 'MHAW'}
-              selectedOption={values.currentOrMostRecentIndustry}
+            <Field
+              name='currentOrMostRecentIndustry'
+              component={RenderSelectField}
+              label='* What industry do they currently or most recently work in? Please select the most applicable option.'
+              options={formatOptions(currentOrMostRecentIndustryOptions)}
+              onChange={(e) => {
+                // check for valid selections to prevent conditional values being sent back when conditions aren't truthy
+                const selectedValue = e.target.value;
+                // reset the value of otherIndustry if user changes currentOrMostRecentIndustry selection from Other
+                checkForFieldResets(
+                  e.target.value,
+                  'otherIndustry',
+                  'Other, please specify:',
+                  setFieldValue,
+                  setFieldTouched
+                );
+                // reset the value of roleInvolvesMentalHealthOrSubstanceUse if user changes currentOrMostRecentIndustry selection
+                // from a valid selection to show this question
+                if (
+                  !showRoleInvolvesMentalHealthOrSubstanceUse(
+                    values.program === 'MHAW',
+                    selectedValue
+                  )
+                ) {
+                  setFieldValue('roleInvolvesMentalHealthOrSubstanceUse', '');
+                  setFieldTouched('roleInvolvesMentalHealthOrSubstanceUse', false);
+                }
+                handleChange(e);
+              }}
             />
+            {isOtherSelected(values.currentOrMostRecentIndustry) && (
+              <Field name='otherIndustry' component={RenderTextField} />
+            )}
+            {showRoleInvolvesMentalHealthOrSubstanceUse(
+              values.program === 'MHAW',
+              values.currentOrMostRecentIndustry
+            ) && (
+              <Field
+                name='roleInvolvesMentalHealthOrSubstanceUse'
+                component={RenderSelectField}
+                label='Does/did this role involve delivering mental health and/or substance use
+                  services?'
+                options={YesNo}
+              />
+            )}
             <Field
               name='origin'
               component={RenderSelectField}
@@ -185,13 +226,7 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
               ]}
               onChange={(e) => {
                 // reset the value of otherOrigin if user changes origin selection from other to internal
-                checkForFieldResets(
-                  e.target.value,
-                  'otherOrigin',
-                  'origin',
-                  setFieldValue,
-                  setTouched
-                );
+                checkForFieldResets(e.target.value, 'otherOrigin', 'origin', setFieldValue);
                 handleChange(e);
               }}
             />
@@ -238,17 +273,7 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
                 <Button onClick={onClose} color='default' text='Cancel' />
               </Grid>
               <Grid item>
-                <Button
-                  onClick={() => {
-                    if (isValid && values.otherIndustry !== '') {
-                      setFieldValue('currentOrMostRecentIndustry', values.otherIndustry);
-                    }
-                    submitForm();
-                  }}
-                  variant='contained'
-                  color='primary'
-                  text='Submit'
-                />
+                <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />
               </Grid>
             </Grid>
           </Box>

@@ -17,10 +17,10 @@ export const checkForFieldResets = (
   fieldToUpdate,
   fieldValueCheck,
   setFieldValue,
-  setTouched
+  setFieldTouched
 ) => {
   if (selectedValue !== fieldValueCheck) {
     setFieldValue(fieldToUpdate, '');
-    setTouched(false);
+    setFieldTouched && setFieldTouched(fieldToUpdate, false);
   }
 };

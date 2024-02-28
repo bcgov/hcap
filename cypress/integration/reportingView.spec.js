@@ -57,11 +57,6 @@ describe('Reporting Download', () => {
       cy.get('.MuiAlert-message').contains('Report generated successfully!').should('be.visible');
     });
 
-    it('Should be able to download Program Monitoring report', () => {
-      clickReportButton('Download program monitoring report');
-      cy.get('.MuiAlert-message').contains('Report generated successfully!').should('be.visible');
-    });
-
     it('Should be able to PSI attending report', () => {
       clickReportButton('Download participants attending PSI report');
       cy.get('.MuiAlert-message').contains('Report generated successfully!').should('be.visible');

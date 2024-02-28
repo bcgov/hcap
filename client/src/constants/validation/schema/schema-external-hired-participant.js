@@ -1,10 +1,13 @@
 import * as yup from 'yup';
 import { validateDateString, validatePastDateString } from '../functions';
+import { healthRegions, foundOutReasons } from '../constants';
+import { Program } from '../../programs';
 
 export const ExternalHiredParticipantSchema = yup
   .object()
   .noUnknown('Unknown field in form')
   .shape({
+    educationalRequirements: yup.string().required('Educational requirements is required'),
     firstName: yup.string().required('First Name is required'),
     lastName: yup.string().required('Last Name is required'),
     phoneNumber: yup
@@ -12,6 +15,39 @@ export const ExternalHiredParticipantSchema = yup
       .required('Phone number is required')
       .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
     emailAddress: yup.string().required('Email address is required').email('Invalid email address'),
+    postalCode: yup
+      .string()
+      .required('Postal code is required')
+      .matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/, 'Format as A1A 1A1'),
+    driverLicense: yup.string().required('This question is required'),
+    indigenous: yup.string(),
+    experienceWithMentalHealthOrSubstanceUse: yup.string().when(['program'], {
+      is: (program) => program === Program.MHAW,
+      then: () => yup.string(),
+    }),
+    preferredLocation: yup
+      .array()
+      .required(`Please select at least one location they'd like to work in`)
+      .of(yup.string().oneOf(healthRegions, 'Invalid location')),
+    reasonForFindingOut: yup
+      .array()
+      .required('Please let us know how they found out about HCAP')
+      .of(yup.string().oneOf(foundOutReasons, 'Invalid selection')),
+    currentOrMostRecentIndustry: yup.string(),
+    otherIndustry: yup.string().when(['currentOrMostRecentIndustry'], {
+      is: (industry) => industry === 'Other, please specify:',
+      then: () => yup.string().required('Please specify your industry'),
+    }),
+    roleInvolvesMentalHealthOrSubstanceUse: yup
+      .string()
+      .when(['program', 'currentOrMostRecentIndustry'], {
+        is: (program, currentOrMostRecentIndustry) =>
+          program === Program.MHAW &&
+          (currentOrMostRecentIndustry === 'Health care and social assistance' ||
+            currentOrMostRecentIndustry === 'Continuing Care and Community Health Care' ||
+            currentOrMostRecentIndustry === 'Community Social Services'),
+        then: () => yup.string().oneOf(['Yes', 'No']),
+      }),
     origin: yup
       .string()
       .required('Must indicate origin of offer')

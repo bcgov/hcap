@@ -1,13 +1,35 @@
 import React from 'react';
 import store from 'store';
+import { Field, Formik, Form as FormikForm } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
 import { Box } from '@material-ui/core';
-import { RenderDateField, RenderCheckbox, RenderTextField, RenderSelectField } from '../fields';
-import { Field, Formik, Form as FormikForm } from 'formik';
-import { getTodayDate } from '../../utils';
+import {
+  RenderDateField,
+  RenderCheckbox,
+  RenderTextField,
+  RenderSelectField,
+  RenderMultiSelectField,
+} from '../fields';
+import {
+  getTodayDate,
+  formatOptions,
+  checkForFieldResets,
+  showRoleInvolvesMentalHealthOrSubstanceUse,
+  isOtherSelected,
+} from '../../utils';
 import { RenderAutocomplete } from '../fields/RenderAutocomplete';
-import { API_URL, ExternalHiredParticipantSchema, ToastStatus } from '../../constants';
+import {
+  API_URL,
+  ToastStatus,
+  ExternalHiredParticipantSchema,
+  YesNoDontKnow,
+  YesNo,
+  YesNoPreferNot,
+  healthAuthorityOptions,
+  reasonForFindingOutOptions,
+  currentOrMostRecentIndustryOptions,
+} from '../../constants';
 import { useToast } from '../../hooks';
 
 const newParticipantInitialValues = {
@@ -24,6 +46,16 @@ const newParticipantInitialValues = {
   site: '',
   acknowledge: false,
   program: '',
+  educationalRequirements: '',
+  postalCode: '',
+  driverLicense: '',
+  indigenous: '',
+  experienceWithMentalHealthOrSubstanceUse: '',
+  preferredLocation: [],
+  reasonForFindingOut: [],
+  currentOrMostRecentIndustry: '',
+  roleInvolvesMentalHealthOrSubstanceUse: '',
+  otherIndustry: '',
 };
 
 export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
@@ -56,7 +88,7 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
       onSubmit={handleExternalHire}
       validationSchema={ExternalHiredParticipantSchema}
     >
-      {({ submitForm, values }) => (
+      {({ submitForm, values, setFieldValue, handleChange, setFieldTouched }) => (
         <FormikForm>
           <Box>
             <Field
@@ -74,6 +106,22 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
                 { value: 'HCA', label: 'HCA' },
                 { value: 'MHAW', label: 'MHAW' },
               ]}
+              onChange={(e) => {
+                // reset the value of experienceWithMentalHealthOrSubstanceUse if user changes program selection
+                checkForFieldResets(
+                  e.target.value,
+                  'experienceWithMentalHealthOrSubstanceUse',
+                  'MHAW',
+                  setFieldValue
+                );
+                handleChange(e);
+              }}
+            />
+            <Field
+              name='educationalRequirements'
+              component={RenderSelectField}
+              label='* Do they meet the educational requirements for the program?'
+              options={YesNoDontKnow}
             />
             <Field name='firstName' component={RenderTextField} label='* First Name' />
             <Field name='lastName' component={RenderTextField} label='* Last Name' />
@@ -89,6 +137,85 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
               label='* Email Address'
               type='email'
             />
+            <Field name='postalCode' component={RenderTextField} label='* Postal Code' />
+            <Field
+              name='driverLicense'
+              component={RenderSelectField}
+              label='* Do they have a valid Class 5 BC Drivers Licence?'
+              options={YesNo}
+            />
+            <Field
+              name='indigenous'
+              component={RenderSelectField}
+              label='Do they self-identify as First Nation, Métis, Inuk (Inuit) or Urban Indigenous?'
+              options={YesNoPreferNot}
+            />
+            {values.program === 'MHAW' && (
+              <Field
+                name='experienceWithMentalHealthOrSubstanceUse'
+                component={RenderSelectField}
+                label='Do they have lived or living experience of mental health and/or substance use
+              challenges?'
+                options={YesNoPreferNot}
+              />
+            )}
+            <Field
+              name='preferredLocation'
+              component={RenderMultiSelectField}
+              label='* Please select their preferred health region(s)'
+              options={healthAuthorityOptions}
+            />
+            <Field
+              name='reasonForFindingOut'
+              component={RenderMultiSelectField}
+              label='* How did they learn about HCAP?'
+              options={formatOptions(reasonForFindingOutOptions)}
+            />
+            <Field
+              name='currentOrMostRecentIndustry'
+              component={RenderSelectField}
+              label='* What industry do they currently or most recently work in? Please select the most applicable option.'
+              options={formatOptions(currentOrMostRecentIndustryOptions)}
+              onChange={(e) => {
+                // check for valid selections to prevent conditional values being sent back when conditions aren't truthy
+                const selectedValue = e.target.value;
+                // reset the value of otherIndustry if user changes currentOrMostRecentIndustry selection from Other
+                checkForFieldResets(
+                  e.target.value,
+                  'otherIndustry',
+                  'Other, please specify:',
+                  setFieldValue,
+                  setFieldTouched
+                );
+                // reset the value of roleInvolvesMentalHealthOrSubstanceUse if user changes currentOrMostRecentIndustry selection
+                // from a valid selection to show this question
+                if (
+                  !showRoleInvolvesMentalHealthOrSubstanceUse(
+                    values.program === 'MHAW',
+                    selectedValue
+                  )
+                ) {
+                  setFieldValue('roleInvolvesMentalHealthOrSubstanceUse', '');
+                  setFieldTouched('roleInvolvesMentalHealthOrSubstanceUse', false);
+                }
+                handleChange(e);
+              }}
+            />
+            {isOtherSelected(values.currentOrMostRecentIndustry) && (
+              <Field name='otherIndustry' component={RenderTextField} />
+            )}
+            {showRoleInvolvesMentalHealthOrSubstanceUse(
+              values.program === 'MHAW',
+              values.currentOrMostRecentIndustry
+            ) && (
+              <Field
+                name='roleInvolvesMentalHealthOrSubstanceUse'
+                component={RenderSelectField}
+                label='Does/did this role involve delivering mental health and/or substance use
+                  services?'
+                options={YesNo}
+              />
+            )}
             <Field
               name='origin'
               component={RenderSelectField}
@@ -97,6 +224,11 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
                 { value: 'internal', label: 'Internal' },
                 { value: 'other', label: 'Other' },
               ]}
+              onChange={(e) => {
+                // reset the value of otherOrigin if user changes origin selection from other to internal
+                checkForFieldResets(e.target.value, 'otherOrigin', 'origin', setFieldValue);
+                handleChange(e);
+              }}
             />
             {values.origin === 'other' && (
               <Field

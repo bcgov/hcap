@@ -336,7 +336,7 @@ newHiredParticipantRouter.post(
         callbackStatus: false,
         userUpdatedAt: new Date().toJSON(),
         postalCodeFsa: req.body.postalCode.substr(0, 3),
-        preferredLocation: req.body.preferredLocation.join(';'),
+        preferredLocation: req.body.preferredLocation,
         currentOrMostRecentIndustry: industry,
       };
 

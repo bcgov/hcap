@@ -26,11 +26,12 @@ import {
   YesNoDontKnow,
   YesNo,
   YesNoPreferNot,
-  healthAuthorityOptions,
   reasonForFindingOutOptions,
   currentOrMostRecentIndustryOptions,
+  regionLabelsMap,
 } from '../../constants';
 import { useToast } from '../../hooks';
+import { useAuth } from '../../providers/AuthContext';
 
 const newParticipantInitialValues = {
   firstName: '',
@@ -51,7 +52,7 @@ const newParticipantInitialValues = {
   driverLicense: '',
   indigenous: '',
   experienceWithMentalHealthOrSubstanceUse: '',
-  preferredLocation: [],
+  preferredLocation: '',
   reasonForFindingOut: [],
   currentOrMostRecentIndustry: '',
   roleInvolvesMentalHealthOrSubstanceUse: '',
@@ -59,7 +60,14 @@ const newParticipantInitialValues = {
 };
 
 export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
+  const { auth } = useAuth();
+
   const { openToast } = useToast();
+
+  // filter only regions contained in users role
+  const haOptions = auth?.user.roles
+    .map((r) => ({ value: regionLabelsMap[r], label: regionLabelsMap[r] }))
+    .filter(({ label }) => label);
 
   const handleExternalHire = async (participantInfo) => {
     const response = await fetch(`${API_URL}/api/v1/new-hired-participant`, {
@@ -161,9 +169,9 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
             )}
             <Field
               name='preferredLocation'
-              component={RenderMultiSelectField}
+              component={RenderSelectField}
               label='* Please select their preferred health region(s)'
-              options={healthAuthorityOptions}
+              options={haOptions || []}
             />
             <Field
               name='reasonForFindingOut'

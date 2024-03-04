@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import { validateDateString, validatePastDateString } from '../functions';
-import { healthRegions, foundOutReasons } from '../constants';
+import { foundOutReasons } from '../constants';
 import { Program } from '../../programs';
 
 export const ExternalHiredParticipantSchema = yup
@@ -26,9 +26,8 @@ export const ExternalHiredParticipantSchema = yup
       then: () => yup.string(),
     }),
     preferredLocation: yup
-      .array()
-      .required(`Please select at least one location they'd like to work in`)
-      .of(yup.string().oneOf(healthRegions, 'Invalid location')),
+      .string()
+      .required(`Please select at least one location they'd like to work in`),
     reasonForFindingOut: yup
       .array()
       .required('Please let us know how they found out about HCAP')

@@ -11,11 +11,12 @@ export const keyLabelMap = {
   siteName: 'Site',
   program: 'Program',
   educationalRequirements: 'Educational Requirements',
-  experienceWithMentalHealthOrSubstanceUse: 'Experienced With MHSU',
+  experienceWithMentalHealthOrSubstanceUse: 'Lived/Living Experienced With MHSU',
   currentOrMostRecentIndustry: 'Current or Most Recent Industry',
   roleInvolvesMentalHealthOrSubstanceUse: 'Involved In Delivering MHSU Service',
   indigenous: 'Indigenous',
   driverLicense: `Driver's License`,
+  reasonForFindingOut: 'How did they learn about HCAP?',
 };
 
 export const rosEditWarning =

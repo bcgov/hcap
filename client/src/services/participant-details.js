@@ -57,4 +57,5 @@ export const displayParticipantData = (inputData) => ({
     inputData.rosStatus && Object.keys(inputData.rosStatus).length
       ? mapRosData(inputData.rosStatus)
       : null,
+  reasonForFindingOut: inputData.reasonForFindingOut?.join(', '),
 });

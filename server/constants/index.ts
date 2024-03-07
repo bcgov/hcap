@@ -1,4 +1,3 @@
-export * from './mhaw-enabled-regions';
 export * from './milestone-report-type';
 export * from './participant-fields';
 export * from './participant-status';

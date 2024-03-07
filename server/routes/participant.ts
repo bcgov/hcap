@@ -338,6 +338,8 @@ newHiredParticipantRouter.post(
         postalCodeFsa: req.body.postalCode.substr(0, 3),
         preferredLocation: req.body.preferredLocation,
         currentOrMostRecentIndustry: industry,
+        // select dropdown doesnt like true false values, so handle that on BE
+        eligibility: req.body.eligibility === 'Yes',
       };
 
       const response = await makeParticipant(participantInfo);

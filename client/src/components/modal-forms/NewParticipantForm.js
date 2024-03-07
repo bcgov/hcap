@@ -57,6 +57,7 @@ const newParticipantInitialValues = {
   currentOrMostRecentIndustry: '',
   roleInvolvesMentalHealthOrSubstanceUse: '',
   otherIndustry: '',
+  eligibility: '',
 };
 
 export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
@@ -96,7 +97,7 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
       onSubmit={handleExternalHire}
       validationSchema={ExternalHiredParticipantSchema}
     >
-      {({ submitForm, values, setFieldValue, handleChange, setFieldTouched }) => (
+      {({ submitForm, values, setFieldValue, handleChange, setFieldTouched, touched, isValid }) => (
         <FormikForm>
           <Box>
             <Field
@@ -124,6 +125,12 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
                 );
                 handleChange(e);
               }}
+            />
+            <Field
+              name='eligibility'
+              component={RenderSelectField}
+              label='* Are they a Canadian citizen or permanent resident?'
+              options={YesNo}
             />
             <Field
               name='educationalRequirements'
@@ -182,7 +189,7 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
             <Field
               name='currentOrMostRecentIndustry'
               component={RenderSelectField}
-              label='* What industry do they currently or most recently work in? Please select the most applicable option.'
+              label='What industry do they currently or most recently work in? Please select the most applicable option.'
               options={formatOptions(currentOrMostRecentIndustryOptions)}
               onChange={(e) => {
                 // check for valid selections to prevent conditional values being sent back when conditions aren't truthy
@@ -281,7 +288,13 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
                 <Button onClick={onClose} color='default' text='Cancel' />
               </Grid>
               <Grid item>
-                <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />
+                <Button
+                  onClick={submitForm}
+                  disabled={touched.eligibility && values.eligibility === 'No'}
+                  variant='contained'
+                  color='primary'
+                  text='Submit'
+                />
               </Grid>
             </Grid>
           </Box>

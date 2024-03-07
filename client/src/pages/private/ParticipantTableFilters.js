@@ -5,7 +5,6 @@ import { CheckPermissions } from '../../components/generic';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { FILTERABLE_FIELDS, Program, Role } from '../../constants';
-import { MHAW_ENABLED_REGIONS } from './ParticipantTable';
 
 export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   const {
@@ -17,13 +16,7 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
 
   const isMoH = roles.includes(Role.MinistryOfHealth);
-  const isMhsuEmployer = roles.includes(Role.MHSUEmployer);
-  const isHA = roles.includes(Role.HealthAuthority);
   const hideLastNameAndEmailFilter = !isMoH && selectedTab === 'Archived Candidates';
-
-  const isValidMhsuRegion =
-    (isMoH || isHA || isMhsuEmployer) &&
-    roles.some((region) => MHAW_ENABLED_REGIONS.includes(region));
 
   const setFilter = (key, value) => {
     dispatch({
@@ -210,7 +203,7 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
               </FormLabel>
             </Box>
           )}
-          {isValidMhsuRegion && filter?.programFilter?.value !== Program.HCA && (
+          {filter?.programFilter?.value !== Program.HCA && (
             <Box>
               <Checkbox
                 id={'livedLivingExperienceFilterCheckbox'}

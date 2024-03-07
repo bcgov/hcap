@@ -3,22 +3,18 @@ import {
   RegionsFilteredParticipantsFinder,
 } from './RegionsFilteredParticipantsFinder';
 import { HcapUserInfo } from '../../keycloak';
-import { MHAW_ENABLED_REGIONS, Program } from '../../constants';
+import { Program } from '../../constants';
 
 const getProgramFilterByUser = (user: HcapUserInfo, filter: ProgramFilter) => {
-  if (user.isSuperUser || user.isMoH) {
+  if (user.isSuperUser || user.isMoH || user.isHA) {
     return filter;
   }
   if (user.isEmployer) {
     return Program.HCA;
   }
-  // MHAW program isn't open yet to other regions
-  const regionAllowedForMHAW = MHAW_ENABLED_REGIONS.some((region) => user?.roles.includes(region));
-  if (user.isHA) {
-    return regionAllowedForMHAW ? filter : Program.HCA;
-  }
+
   if (user.isMHSUEmployer) {
-    return regionAllowedForMHAW ? Program.MHAW : 'none';
+    return Program.MHAW;
   }
   return 'none';
 };

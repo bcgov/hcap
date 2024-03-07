@@ -3,6 +3,11 @@ import { validatePastDateString, validateDateString, errorMessage } from './help
 import { Program, foundOutReasons } from '../constants';
 
 export const ExternalHiredParticipantSchema = yup.object().shape({
+  eligibility: yup
+    .string()
+    .required(
+      "We're sorry, but current eligibility to work in Canada is a requirement to submit this form."
+    ),
   educationalRequirements: yup.string().required('Educational requirements is required'),
   firstName: yup.string().required('First Name is required'),
   lastName: yup.string().required('Last Name is required'),

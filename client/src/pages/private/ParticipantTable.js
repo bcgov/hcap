@@ -35,8 +35,6 @@ import {
 } from '../../services';
 import { ParticipantStatus } from '../../components/generic/ParticipantStatus';
 
-export const MHAW_ENABLED_REGIONS = ['region_vancouver_island', 'region_interior'];
-
 const mapRosData = (data) => ({
   rosSiteName: data?.rosStatuses?.[0]?.rosSite?.body.siteName,
   rosStartDate: dayUtils(data?.rosStatuses?.[0]?.data.date).format('MM/DD/YYYY'),
@@ -383,13 +381,9 @@ const ParticipantTable = () => {
       isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
     );
 
-    if (isMoH || isSuperUser) {
+    if (isMoH || isSuperUser || isHA) {
       // should be able to see all users in both MHAW/ HCA programs
       setPrograms(allPrograms);
-    } else if (isHA) {
-      // MHAW program isn't open yet to other regions
-      const allowedForMHAW = MHAW_ENABLED_REGIONS.some((region) => roles.includes(region));
-      setPrograms(allowedForMHAW ? allPrograms : programsHCA);
     } else if (isEmployer) {
       // private employers should only see HCA program
       setPrograms(programsHCA);

@@ -27,6 +27,7 @@ if (
 app.use((req, res, next) => {
   const nonce = Buffer.from(uuidv4()).toString('base64');
   res.locals.cspNonce = nonce;
+  res.locals.googleVerificationContent = process.env.REACT_APP_GOOGLE_SITE_VERIFICATION;
   next();
 });
 
@@ -86,6 +87,7 @@ app.use((req, res, next) => {
     '<script': `<script nonce='${res.locals.cspNonce}'`,
     '<style': `<style nonce='${res.locals.cspNonce}'`,
     __CSP_NONCE__: res.locals.cspNonce,
+    __GOOGLE_VERIFICATION_CONTENT__: res.locals.googleVerificationContent,
   })(req, res, next);
 });
 

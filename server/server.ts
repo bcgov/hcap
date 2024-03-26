@@ -52,7 +52,7 @@ app.use(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         'script-src': [
           "'self'",
-          "'https://www2.gov.bc.ca'",
+          'https://www2.gov.bc.ca',
           (req, res: any) => `'nonce-${res.locals.cspNonce}'`,
         ],
         'script-src-attr': ["'none'"],

@@ -41,6 +41,7 @@ app.use(
           'https://orgbook.gov.bc.ca',
           'https://common-logon-test.hlth.gov.bc.ca',
           'https://common-logon.hlth.gov.bc.ca',
+          'https://spm.apps.gov.bc.ca',
         ],
         'base-uri': ["'self'"],
         'block-all-mixed-content': [],

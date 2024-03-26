@@ -37,6 +37,13 @@
     <meta name="google-site-verification" content="__GOOGLE_VERIFICATION_CONTENT__" />
     <script src="%PUBLIC_URL%/ie.js"></script>
     <script src="%PUBLIC_URL%/snowplow-tracker.js"></script>
+    <!-- refresh the snowplow link tracker once page is loaded -->
+    <!-- Causes issues with heavy javascript apps and SPA's, main problem here is to wait for anchor tags to load in -->
+    <script>
+      window.addEventListener('load', function () {
+        window.snowplow('refreshLinkClickTracking');
+      });
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

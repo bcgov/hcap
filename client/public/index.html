@@ -36,7 +36,10 @@
     />
     <meta name="google-site-verification" content="__GOOGLE_VERIFICATION_CONTENT__" />
     <script src="%PUBLIC_URL%/ie.js"></script>
-    <script src="%PUBLIC_URL%/snowplow-tracker.js"></script>
+    <script
+      src="%PUBLIC_URL%/snowplow-tracker.js"
+      collectorvariable="__COLLECTOR_VARIABLE__"
+    ></script>
     <!-- refresh the snowplow link tracker once page is loaded -->
     <!-- Causes issues with heavy javascript apps and SPA's, main problem here is to wait for anchor tags to load in -->
     <script>

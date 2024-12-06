@@ -4,7 +4,6 @@ import { Box, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import {
-  HCAP_INFO_EMAIL,
   ACCESSABILITY_LINK,
   HOME_LINK,
   ABOUT_GOV_BC_LINK,
@@ -56,10 +55,6 @@ export const Footer = () => {
     {
       name: 'Copyright',
       href: COPYRIGHT_LINK,
-    },
-    {
-      name: 'Contact Us',
-      href: `mailto:${HCAP_INFO_EMAIL}`,
     },
   ];
 

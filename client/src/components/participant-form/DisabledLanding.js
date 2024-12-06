@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import heroBackground from '../../assets/images/disabled-peoi-hero.png';
 import { EmailSubmissionForm, EmailSubmissionHeader } from './EmailSubmissionForm';
-import { HEALTH_CAREERS_LINK, HCAP_INFO_EMAIL } from '../../constants';
+import { HEALTH_CAREERS_LINK } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -109,12 +109,7 @@ export const DisabledLanding = () => {
           .
         </Typography>
         <Typography variant='body1' className={classes.infoBoxParagraph}>
-          Eligible employers will continue to reach out to those who are currently in the system. If
-          you have any questions, please email{' '}
-          <a href={`mailto:${HCAP_INFO_EMAIL}`} target='_blank' rel='noreferrer'>
-            {HCAP_INFO_EMAIL}
-          </a>
-          .
+          Eligible employers will continue to reach out to those who are currently in the system.
         </Typography>
       </Box>
 

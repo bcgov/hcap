@@ -1,11 +1,11 @@
 import React from 'react';
-import { Grid, Typography, Icon, Link } from '@material-ui/core';
+import { Grid, Typography, Icon } from '@material-ui/core';
 import { Button } from '../../components/generic';
 import { Page } from '../../components/generic';
 import { makeStyles } from '@material-ui/core/styles';
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import { useHistory } from 'react-router-dom';
-import { Routes, HCAP_INFO_EMAIL } from '../../constants';
+import { Routes } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   rootContainer: {
@@ -70,13 +70,6 @@ export default () => {
         <Grid item container spacing={2} className={classes.info}>
           <Grid item xs={2}>
             <Icon mx={2} component={MailOutlineIcon} className={classes.icon} />
-          </Grid>
-          <Grid item xs={10}>
-            <Typography variant={'h5'}>Need Help?</Typography>
-            <Typography>
-              Contact a Health Career Access Program agent. <br />
-              <Link href={`mailto:${HCAP_INFO_EMAIL}`}>{HCAP_INFO_EMAIL}</Link>
-            </Typography>
           </Grid>
         </Grid>
       </Grid>

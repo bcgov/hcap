@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Paper, Grid, Icon, Link } from '@material-ui/core';
 import { Button } from '../../components/generic';
-import { Routes, HCAP_LINK, HCAP_INFO_EMAIL } from '../../constants';
+import { Routes, HCAP_LINK } from '../../constants';
 import FindInPageOutlinedIcon from '@material-ui/icons/FindInPageOutlined';
 
 const useStyles = makeStyles(() => ({
@@ -41,10 +41,8 @@ export default () => {
             You haven't submitted your <br /> Participant Expression of Interest
           </Typography>
           <Typography align={'center'} className={classes.text_block}>
-            If you think this is a mistake please contact us at{' '}
-            <Link href={`mailto:${HCAP_INFO_EMAIL}`}>{HCAP_INFO_EMAIL}</Link>. If you haven't
-            submitted an Expression of Interest form, please click on the button below to submit
-            one. For more information, please visit the{' '}
+            If you haven't submitted an Expression of Interest form, please click on the button
+            below to submit one. For more information, please visit the{' '}
             <Link href={HCAP_LINK}>Health Career Access Program website.</Link>
           </Typography>
         </Grid>

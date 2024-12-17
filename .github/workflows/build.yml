@@ -135,7 +135,7 @@ jobs:
           # Retry all errors, including 404
           retry-all: no # Optional, defaults to "no"
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.2.0
+        uses: zaproxy/action-full-scan@v0.12.0
         with:
           target: ${{ env.DEV_URL }}
           cmd_options: '-I'

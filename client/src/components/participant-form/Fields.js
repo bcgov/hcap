@@ -6,7 +6,6 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { FastField } from 'formik';
-import { SpeakerNotesOutlined } from '@material-ui/icons';
 import { Checkbox, FormControl, FormControlLabel } from '@material-ui/core';
 import { isNil } from 'lodash';
 
@@ -16,7 +15,7 @@ import {
   indigenousIdentities,
   indigenousIdentityLabels,
 } from '../modal-forms/IndigenousDeclarationForm';
-import { BC_LAWS_LINK, HCAP_INFO_EMAIL, Program } from '../../constants';
+import { BC_LAWS_LINK, Program } from '../../constants';
 import { PleaseNoteBanner } from './PleaseNoteBanner';
 import { HCAPProgramSection } from './sections/HCAPProgramSection';
 import { EligibilitySection } from './sections/EligibilitySection';
@@ -69,27 +68,7 @@ export const Fields = ({
     !values?.reasonForFindingOut && checkFieldDisability('reasonForFindingOut');
   return (
     <>
-      {!hideHelp && (
-        <Box mb={2} py={1} px={2} display='flex' alignItems='center' className={classes.info}>
-          <SpeakerNotesOutlined className={classes.infoIcon} />
-          <Box py={1}>
-            <Typography className={classes.infoHeader} component='h3'>
-              Need Help?
-            </Typography>
-            <Typography variant='body2'>
-              Contact a Health Career Access Program agent at{' '}
-              <a rel='noreferrer' target='_blank' href={`mailto:${HCAP_INFO_EMAIL}`}>
-                {HCAP_INFO_EMAIL}
-              </a>
-            </Typography>
-            <Typography variant='body2'>
-              Service is available from 8:00 am - 4:30 pm Pacific Time Monday through Friday,
-              excluding statutory holidays.
-            </Typography>
-          </Box>
-        </Box>
-      )}
-      <Box mb={4} mt={3}>
+      <Box mb={4}>
         <PleaseNoteBanner
           text='The following information is shared with employers for the purposes of
                 recruitment.'
@@ -228,8 +207,7 @@ export const Fields = ({
               <Typography variant='body2' paragraph>
                 If you have any questions about our collection or use of personal information,
                 please direct your inquiries to the Director, Planning, Integration and
-                Partnerships, 1515 Blanshard Street, Victoria, British Columbia, V8W 3C8. Email:{' '}
-                <Link href={`mailto:${HCAP_INFO_EMAIL}`}>{HCAP_INFO_EMAIL}</Link>.
+                Partnerships, 1515 Blanshard Street, Victoria, British Columbia, V8W 3C8.
               </Typography>
             </Collapse>
             {!isDisabled && (

@@ -5,7 +5,7 @@ import { SectionHeader } from '../SectionHeader';
 import { FastField } from 'formik';
 import { RenderRadioGroup } from '../../fields';
 import { PleaseNoteBanner } from '../PleaseNoteBanner';
-import { Program } from '../../../constants';
+import { Program, ProgramLabel } from '../../../constants';
 
 export const HCAPProgramSection = ({ checkFieldDisability }) => {
   return (
@@ -21,8 +21,8 @@ export const HCAPProgramSection = ({ checkFieldDisability }) => {
           setTouched
           row
           options={[
-            { value: Program.HCA, label: 'Health Care Assistant - HCAP' },
-            { value: Program.MHAW, label: 'Mental Health and Addictions Worker - HCAP' },
+            { value: Program.HCA, label: ProgramLabel.HCA },
+            { value: Program.MHAW, label: ProgramLabel.MHAW },
           ]}
         />
       </Grid>

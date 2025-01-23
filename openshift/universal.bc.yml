@@ -1,7 +1,7 @@
 # Generalized template for building from Dockerfile in a git repo.
 # Includes importing the base image as an image stream.
 # Support 4 build arg and customizable
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   name: ${NAME}

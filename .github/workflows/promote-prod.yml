@@ -27,11 +27,11 @@ jobs:
       SA_TOKEN: ${{ secrets.SA_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Cache OpenShift CLI
         id: cache-oc
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /usr/local/bin/oc
           key: ${{ runner.os }}-oc

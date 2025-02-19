@@ -12,7 +12,7 @@ export const OtherSection = ({ checkFieldDisability, isMHAWProgram }) => {
     <>
       <SectionHeader text='Other' />
 
-      {/** Q10 do you have a valid BC drivers license */}
+      {/** Q09 do you have a valid BC drivers license */}
       <Question text='9. * Do you have a valid Class 5 BC Drivers Licence?' />
       <Grid item xs={12}>
         <FastField
@@ -24,7 +24,7 @@ export const OtherSection = ({ checkFieldDisability, isMHAWProgram }) => {
           options={YesNo}
         />
       </Grid>
-      {/** Q9 do you self identify as indigenous */}
+      {/** Q10 do you self identify as indigenous */}
       <PleaseNoteBanner
         text='The following information is collected as some employers may
               prioritize hiring of indigenous candidates and/or lived or living experience.'
@@ -53,6 +53,23 @@ export const OtherSection = ({ checkFieldDisability, isMHAWProgram }) => {
               name='experienceWithMentalHealthOrSubstanceUse'
               component={RenderRadioGroup}
               disabled={checkFieldDisability('experienceWithMentalHealthOrSubstanceUse')}
+              setTouched
+              row
+              options={YesNoPreferNot}
+            />
+          </Grid>
+        </>
+      )}
+      {/** Q11A Interest in working in a peer support role */}
+      {/** only show if Q1 is Mental Health and Addictions Worker*/}
+      {isMHAWProgram && (
+        <>
+          <Question text='11A. Are you interested working in a peer support role?' />
+          <Grid item xs={12}>
+            <FastField
+              name='interestedWorkingPeerSupportRole'
+              component={RenderRadioGroup}
+              disabled={checkFieldDisability('interestedWorkingPeerSupportRole')}
               setTouched
               row
               options={YesNoPreferNot}

@@ -37,6 +37,12 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
     ) {
       filter.livedLivingExperienceFilter.value = false;
     }
+    if (
+      filter?.programFilter?.value === Program.HCA &&
+      filter?.interestedWorkingPeerSupportRoleFilter?.value === true
+    ) {
+      filter.interestedWorkingPeerSupportRoleFilter.value = false;
+    }
   }, [filter]);
 
   if (!columns) return null;
@@ -218,6 +224,24 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
                 style={{ paddingTop: '13px' }}
               >
                 Lived/Living Experience participants only
+              </FormLabel>
+            </Box>
+          )}
+          {filter?.programFilter?.value !== Program.HCA && (
+            <Box>
+              <Checkbox
+                id={'interestedWorkingPeerSupportRoleFilterCheckbox'}
+                color='primary'
+                disabled={loading}
+                onChange={({ target }) =>
+                  setFilter(FILTERABLE_FIELDS.PEER_SUPPORT_ROLE, target.checked)
+                }
+              />
+              <FormLabel
+                htmlFor={'interestedWorkingPeerSupportRoleFilterCheckbox'}
+                style={{ paddingTop: '13px' }}
+              >
+                Interested Working in Peer Support Role participants only
               </FormLabel>
             </Box>
           )}

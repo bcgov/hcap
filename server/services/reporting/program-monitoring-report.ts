@@ -10,6 +10,7 @@ type MonitoringReportEntry = {
   body: {
     preferredLocation: string;
     experienceWithMentalHealthOrSubstanceUse: string;
+    interestedWorkingPeerSupportRole: string;
     currentOrMostRecentIndustry: string;
     reasonForFindingOut: string[];
     indigenous: string;
@@ -28,6 +29,7 @@ export const getProgramMonitoringReport = async () => {
         preferredLocation: region,
         experienceWithMentalHealthOrSubstanceUse:
           entry.body?.experienceWithMentalHealthOrSubstanceUse,
+        interestedWorkingPeerSupportRole: entry.body?.interestedWorkingPeerSupportRole,
         currentOrMostRecentIndustry: entry.body?.currentOrMostRecentIndustry,
         reasonForFindingOut: entry.body?.reasonForFindingOut,
         indigenous: entry.body?.indigenous,

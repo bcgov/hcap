@@ -12,6 +12,7 @@ export const keyLabelMap = {
   program: 'Program',
   educationalRequirements: 'Educational Requirements',
   experienceWithMentalHealthOrSubstanceUse: 'Lived/Living Experienced With MHSU',
+  interestedWorkingPeerSupportRole: 'Interested Working In Peer Support Role',
   currentOrMostRecentIndustry: 'Current or Most Recent Industry',
   roleInvolvesMentalHealthOrSubstanceUse: 'Involved In Delivering MHSU Service',
   indigenous: 'Indigenous',

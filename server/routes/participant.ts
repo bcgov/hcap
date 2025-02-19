@@ -208,6 +208,7 @@ participantsRouter.get(
       isIndigenousFilter,
       programFilter,
       livedLivingExperienceFilter,
+      interestedWorkingPeerSupportRoleFilter,
       withdrawnParticipantsFilter,
     } = req.query;
     const result = await getParticipants(
@@ -228,6 +229,7 @@ participantsRouter.get(
       isIndigenousFilter,
       programFilter,
       livedLivingExperienceFilter,
+      interestedWorkingPeerSupportRoleFilter,
       withdrawnParticipantsFilter
     );
     logger.info({
@@ -257,6 +259,7 @@ participantsRouter.post(
       indigenous: req.body.indigenous || 'Unknown',
       experienceWithMentalHealthOrSubstanceUse:
         req.body.experienceWithMentalHealthOrSubstanceUse || 'Unknown',
+      interestedWorkingPeerSupportRole: req.body.interestedWorkingPeerSupportRole || 'Unknown',
       currentOrMostRecentIndustry: req.body.currentOrMostRecentIndustry || 'Unknown',
       roleInvolvesMentalHealthOrSubstanceUse:
         req.body.roleInvolvesMentalHealthOrSubstanceUse || 'Unknown',

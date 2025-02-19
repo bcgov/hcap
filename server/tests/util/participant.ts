@@ -34,6 +34,7 @@ export const fakeParticipant = (options?: object) => ({
   currentOrMostRecentIndustry: _.sample(industryOptions),
   roleInvolvesMentalHealthOrSubstanceUse: _.sample(yesOrNo),
   experienceWithMentalHealthOrSubstanceUse: _.sample(yesOrNo),
+  interestedWorkingPeerSupportRole: _.sample(yesOrNo),
   preferredLocation: _.sample(healthRegions),
   ...options,
 });

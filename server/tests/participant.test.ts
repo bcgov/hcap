@@ -56,6 +56,7 @@ describe('Participants Endpoint', () => {
       driverLicense: 'Unknown',
       indigenous: 'Unknown',
       experienceWithMentalHealthOrSubstanceUse: 'Unknown',
+      interestedWorkingPeerSupportRole: 'Unknown',
       currentOrMostRecentIndustry: 'Unknown',
       roleInvolvesMentalHealthOrSubstanceUse: 'Unknown',
       nonHCAP: null,

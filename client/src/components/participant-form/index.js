@@ -47,6 +47,7 @@ export const Form = ({
         preferredLocation: [],
         driverLicense: '',
         experienceWithMentalHealthOrSubstanceUse: '',
+        interestedWorkingPeerSupportRole: '',
         consent: '',
         reasonForFindingOut: [],
         currentOrMostRecentIndustry: '',

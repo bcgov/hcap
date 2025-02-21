@@ -42,6 +42,7 @@ const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
       Marketing: result.reasonForFindingOut,
       'Work Experience': result.currentOrMostRecentIndustry,
       'MHSU Sector Experience': result.experienceWithMentalHealthOrSubstanceUse,
+      'Interested Working In Peer Support Role': result.interestedWorkingPeerSupportRole,
       'Employer Site Region': result.employerRegion,
       'Employer Site ID': result.employerSiteId,
       'Employer Site': result.employerSite,

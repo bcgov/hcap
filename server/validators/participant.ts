@@ -139,6 +139,13 @@ export const ParticipantSchema = yup
         'Experience of MHSU should be Yes, No, Prefer not to answer, or Unknown'
       ),
 
+    interestedWorkingPeerSupportRole: yup
+      .string()
+      .oneOf(
+        yesOrNoOptional,
+        'Interested working as Peer Support Role should be Yes, No, Prefer not to answer, or Unknown'
+      ),
+
     currentOrMostRecentIndustry: yup.string(),
 
     roleInvolvesMentalHealthOrSubstanceUse: yup

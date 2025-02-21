@@ -26,6 +26,7 @@ const generateProgramMonitoringReport = async (csvStream) => {
       Marketing: result.reasonForFindingOut,
       'Work Experience': result.currentOrMostRecentIndustry,
       'MHSU Sector Experience': result.experienceWithMentalHealthOrSubstanceUse,
+      'Interested Working In Peer Support Role': result.interestedWorkingPeerSupportRole,
       Indigenous: result.indigenous,
       Pathway: result.program,
     });

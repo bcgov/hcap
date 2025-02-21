@@ -222,7 +222,11 @@ export const Table = ({
   useEffect(() => {
     if (filter?.programFilter?.value === Program.HCA) {
       setColumnState((prevColumns) =>
-        prevColumns.filter((i) => i.id !== 'experienceWithMentalHealthOrSubstanceUse')
+        prevColumns.filter(
+          (i) =>
+            i.id !== 'experienceWithMentalHealthOrSubstanceUse' &&
+            i.id !== 'interestedWorkingPeerSupportRole'
+        )
       );
     } else {
       setColumnState(columns);

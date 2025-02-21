@@ -42,6 +42,10 @@ export const ParticipantFormSchema = yup
       is: (program) => program === Program.MHAW,
       then: () => yup.string(),
     }),
+    interestedWorkingPeerSupportRole: yup.string().when(['program'], {
+      is: (program) => program === Program.MHAW,
+      then: () => yup.string(),
+    }),
     // Preferred location
     preferredLocation: yup
       .array()

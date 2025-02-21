@@ -11,6 +11,9 @@ export type ProgramFilter = { 'body.program =': string };
 export type LivedLivingExperienceFilter = {
   'body.experienceWithMentalHealthOrSubstanceUse =': string;
 };
+export type InterestedWorkingPeerSupportRoleFilter = {
+  'body.interestedWorkingPeerSupportRole =': string;
+};
 export type WithdrawnParticipantsFilter = {
   'body.interested <>': string;
 };
@@ -30,6 +33,7 @@ export class RegionsFilteredParticipantsFinder {
     interestFilter,
     isIndigenousFilter,
     livedLivingExperienceFilter,
+    interestedWorkingPeerSupportRoleFilter,
     withdrawnParticipantsFilter,
   }: {
     id?: idFilter;
@@ -39,6 +43,7 @@ export class RegionsFilteredParticipantsFinder {
     interestFilter?: InterestFilter;
     isIndigenousFilter?: IsIndigenousFilter;
     livedLivingExperienceFilter?: LivedLivingExperienceFilter;
+    interestedWorkingPeerSupportRoleFilter?: InterestedWorkingPeerSupportRoleFilter;
     withdrawnParticipantsFilter?: WithdrawnParticipantsFilter;
   }) {
     this.context.criteria = {
@@ -58,6 +63,9 @@ export class RegionsFilteredParticipantsFinder {
       }),
       ...(livedLivingExperienceFilter && {
         'body.experienceWithMentalHealthOrSubstanceUse =': 'Yes',
+      }),
+      ...(interestedWorkingPeerSupportRoleFilter && {
+        'body.interestedWorkingPeerSupportRole =': 'Yes',
       }),
       ...(withdrawnParticipantsFilter && {
         'body.interested <>': 'withdrawn',

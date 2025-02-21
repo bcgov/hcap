@@ -9,6 +9,7 @@ import type {
   IsIndigenousFilter,
   LastNameFilter,
   LivedLivingExperienceFilter,
+  InterestedWorkingPeerSupportRoleFilter,
   Pagination,
   PostalCodeFsaFilter,
   ProgramFilter,
@@ -195,6 +196,7 @@ export const getParticipants = async (
   isIndigenousFilter?: IsIndigenousFilter,
   programFilter?: ProgramFilter,
   livedLivingExperienceFilter?: LivedLivingExperienceFilter,
+  interestedWorkingPeerSupportRoleFilter?: InterestedWorkingPeerSupportRoleFilter,
   withdrawnParticipantsFilter?: WithdrawnParticipantsFilter
 ) => {
   // Get user ids
@@ -212,6 +214,7 @@ export const getParticipants = async (
       interestFilter: interestFilter && ['no', 'withdrawn'],
       isIndigenousFilter,
       livedLivingExperienceFilter,
+      interestedWorkingPeerSupportRoleFilter,
       withdrawnParticipantsFilter,
     })
     .filterExternalFields({

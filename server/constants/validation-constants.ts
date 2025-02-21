@@ -32,6 +32,7 @@ export const sortFields = [
   'educationalRequirements',
   'indigenous',
   'experienceWithMentalHealthOrSubstanceUse',
+  'interestedWorkingPeerSupportRole',
   'roleInvolvesMentalHealthOrSubstanceUse',
   'phoneNumber',
   'emailAddress',

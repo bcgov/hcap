@@ -26,6 +26,10 @@ export const ExternalHiredParticipantSchema = yup.object().shape({
     is: (program) => program === Program.MHAW,
     then: () => yup.string(),
   }),
+  interestedWorkingPeerSupportRole: yup.string().when(['program'], {
+    is: (program) => program === Program.MHAW,
+    then: () => yup.string(),
+  }),
   preferredLocation: yup
     .string()
     .required(`Please select at least one location they'd like to work in`),

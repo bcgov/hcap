@@ -52,6 +52,7 @@ const newParticipantInitialValues = {
   driverLicense: '',
   indigenous: '',
   experienceWithMentalHealthOrSubstanceUse: '',
+  interestedWorkingPeerSupportRole: '',
   preferredLocation: '',
   reasonForFindingOut: [],
   currentOrMostRecentIndustry: '',
@@ -116,13 +117,16 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
                 { value: 'MHAW', label: 'MHAW' },
               ]}
               onChange={(e) => {
-                // reset the value of experienceWithMentalHealthOrSubstanceUse if user changes program selection
-                checkForFieldResets(
-                  e.target.value,
+                // Reset both fields when program changes
+                const fieldsToReset = [
                   'experienceWithMentalHealthOrSubstanceUse',
-                  'MHAW',
-                  setFieldValue
-                );
+                  'interestedWorkingPeerSupportRole',
+                ];
+
+                fieldsToReset.forEach((field) => {
+                  checkForFieldResets(e.target.value, field, 'MHAW', setFieldValue);
+                });
+
                 handleChange(e);
               }}
             />
@@ -171,6 +175,14 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
                 component={RenderSelectField}
                 label='Do they have lived or living experience of mental health and/or substance use
               challenges?'
+                options={YesNoPreferNot}
+              />
+            )}
+            {values.program === 'MHAW' && (
+              <Field
+                name='interestedWorkingPeerSupportRole'
+                component={RenderSelectField}
+                label='Are you interested working in a peer support role?'
                 options={YesNoPreferNot}
               />
             )}

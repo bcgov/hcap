@@ -56,6 +56,7 @@ const generateParticipants = async (amount: number) => {
         currentOrMostRecentIndustry: _.sample(industryOptions),
         roleInvolvesMentalHealthOrSubstanceUse: _.sample(yesOrNo),
         experienceWithMentalHealthOrSubstanceUse: _.sample(preferNotOptions),
+        interestedWorkingPeerSupportRole: _.sample(preferNotOptions),
       }),
     };
     participantsArray.push(participant);

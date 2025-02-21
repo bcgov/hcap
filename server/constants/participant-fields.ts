@@ -8,6 +8,7 @@ export const participantFields = [
   'indigenous',
   'driverLicense',
   'experienceWithMentalHealthOrSubstanceUse',
+  'interestedWorkingPeerSupportRole',
   'preferredLocation',
   'currentOrMostRecentIndustry',
   'roleInvolvesMentalHealthOrSubstanceUse',

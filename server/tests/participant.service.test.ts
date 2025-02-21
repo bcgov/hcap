@@ -139,6 +139,7 @@ describe('Participants Service', () => {
         'indigenous',
         'driverLicense',
         'experienceWithMentalHealthOrSubstanceUse',
+        'interestedWorkingPeerSupportRole',
         'preferredLocation',
         'currentOrMostRecentIndustry',
         'nonHCAP',

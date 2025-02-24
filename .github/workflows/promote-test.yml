@@ -20,7 +20,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
         id: changes
         with:
@@ -53,7 +53,7 @@ jobs:
     needs: confirm
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
         id: changes
         with:
@@ -79,11 +79,11 @@ jobs:
       OS_NAMESPACE_SUFFIX: test
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Cache OpenShift CLI
         id: cache-oc
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /usr/local/bin/oc
           key: ${{ runner.os }}-oc

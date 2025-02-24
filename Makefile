@@ -54,15 +54,15 @@ migrate-redo:
 
 seed-participants:
 	@echo "Seeding participants from server/test-data"
-	@docker-compose -f docker-compose.dev.yml exec server npm run feed-participants $$SHEET
+	@docker compose -f docker-compose.dev.yml exec server npm run feed-participants $$SHEET
 
 seed-sites:
 	@echo "Seeding sites from server/test-data"
-	@docker-compose -f docker-compose.dev.yml exec server npm run feed-sites $$SHEET
+	@docker compose -f docker-compose.dev.yml exec server npm run feed-sites $$SHEET
 
 seed-data:
 	@echo "Seeding additional data from server/test-data"
-	@docker-compose -f docker-compose.dev.yml exec server npm run feed-data
+	@docker compose -f docker-compose.dev.yml exec server npm run feed-data
 
 archive-withdrawn-participants:
 	@echo "Archiving engaged withdrawn participants"
@@ -72,48 +72,48 @@ archive-withdrawn-participants:
 
 local-build:
 	@echo "Building local app image"
-	@docker-compose -f docker-compose.dev.yml build
+	@docker compose -f docker-compose.dev.yml build
 
 local-run: local-build
 	@echo "Running local app container"
 	npm run update-apps
-	@docker-compose -f docker-compose.dev.yml up
+	@docker compose -f docker-compose.dev.yml up
 
 local-kc-build:
 	@echo "Building test local app container"
-	@docker-compose -f docker-compose.test.yml build
+	@docker compose -f docker-compose.test.yml build
 
 local-kc-run: local-kc-build
 	@echo "Starting test local app container"
-	@DOCKER_DEFAULT_PLATFORM=linux/amd64 docker-compose -f docker-compose.test.yml up -d
+	@DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose -f docker-compose.test.yml up -d
 
 local-kc-run-only:
 	@echo "Starting test local app container"
-	@DOCKER_DEFAULT_PLATFORM=linux/amd64 docker-compose -f docker-compose.test.yml up -d
+	@DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose -f docker-compose.test.yml up -d
 
 local-kc-run-debug: local-kc-build
 	@echo "Starting test local app container in debug mode"
-	@DOCKER_DEFAULT_PLATFORM=linux/amd64 docker-compose -f docker-compose.debug.yml up
+	@DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose -f docker-compose.debug.yml up
 
 local-kc-down:
 	@echo "Stopping local app container"
-	@docker-compose -f docker-compose.test.yml down --remove-orphans
+	@docker compose -f docker-compose.test.yml down --remove-orphans
 
 local-run-db:
 	@echo "Running local DB container"
-	@docker-compose -f docker-compose.dev.yml up postgres
+	@docker compose -f docker-compose.dev.yml up postgres
 
 local-close:
 	@echo "Stopping local app container"
-	@docker-compose -f docker-compose.dev.yml down
+	@docker compose -f docker-compose.dev.yml down
 
 local-clean:
 	@echo "Cleaning local app"
-	@docker-compose -f docker-compose.dev.yml down -v --remove-orphans
+	@docker compose -f docker-compose.dev.yml down -v --remove-orphans
 
 local-kc-clean:
 	@echo "Cleaning local app"
-	@docker-compose -f docker-compose.test.yml down -v --remove-orphans
+	@docker compose -f docker-compose.test.yml down -v --remove-orphans
 
 local-server-tests:
 	@/bin/bash .docker/keycloak/import-users.sh
@@ -125,13 +125,13 @@ local-cypress-tests:
 	@npx cypress run --headless
 
 clear-data:
-	@docker-compose -f docker-compose.test.yml exec server npm run clear-data
+	@docker compose -f docker-compose.test.yml exec server npm run clear-data
 
 local-testing-setup:
 	@docker stop ${APP_NAME}-server
-	@NODE_ENV="test" docker-compose -f docker-compose.test.yml up -d
-	@docker-compose -f docker-compose.test.yml exec server npm run clear-data
-	@docker-compose -f docker-compose.test.yml exec server npm run feed-data
+	@NODE_ENV="test" docker compose -f docker-compose.test.yml up -d
+	@docker compose -f docker-compose.test.yml exec server npm run clear-data
+	@docker compose -f docker-compose.test.yml exec server npm run feed-data
 
 local-testing-teardown:
 	@docker stop ${APP_NAME}-server
@@ -139,28 +139,28 @@ local-testing-teardown:
 database: ## <Helper> :: Executes into database container.
 	@echo "Make: Shelling into local database container ..."
 	@export PGPASSWORD=$(POSTGRES_PASSWORD)
-	@docker-compose -f docker-compose.dev.yml exec postgres psql -U $(POSTGRES_USER) $(POSTGRES_DB)
+	@docker compose -f docker-compose.dev.yml exec postgres psql -U $(POSTGRES_USER) $(POSTGRES_DB)
 
 app: ## Bash into App container
 	@echo "Make: Shelling into local application container"
-	@docker-compose -f docker-compose.dev.yml exec server /bin/bash
+	@docker compose -f docker-compose.dev.yml exec server /bin/bash
 
 run-local-db: local-build
-	@docker-compose -f docker-compose.dev.yml up postgres
+	@docker compose -f docker-compose.dev.yml up postgres
 
 # Local Development for Apple Silicon computers
 
 local-kc-arm-build:
 	@echo "Building test local app container"
-	@docker-compose -f docker-compose.arm.test.yml build
+	@docker compose -f docker-compose.arm.test.yml build
 
 local-kc-arm-run:
 	@echo "Starting test local app container"
-	@docker-compose -f docker-compose.arm.test.yml up -d
+	@docker compose -f docker-compose.arm.test.yml up -d
 
 local-kc-arm-down:
 	@echo "Stopping local app container"
-	@docker-compose -f docker-compose.arm.test.yml down --remove-orphans
+	@docker compose -f docker-compose.arm.test.yml down --remove-orphans
 
 # Git Tagging Aliases
 

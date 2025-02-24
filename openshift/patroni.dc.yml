@@ -12,19 +12,19 @@ parameters:
     required: true
   - name: CPU_REQUEST
     description: Starting amount of CPU the container can use
-    value: 250m
+    value: 500m
     required: true
   - name: CPU_LIMIT
     description: Maximum amount of CPU the container can use
-    value: 500m
+    value: '2'
     required: true
   - name: MEMORY_REQUEST
     description: Starting amount of memory the container can use
-    value: 1Gi
+    value: 2Gi
     required: true
   - name: MEMORY_LIMIT
     description: Maximum amount of memory the container can use
-    value: 2Gi
+    value: 4Gi
     required: true
   - name: IMAGE_NAMESPACE
     description: Namespace from which to pull the image

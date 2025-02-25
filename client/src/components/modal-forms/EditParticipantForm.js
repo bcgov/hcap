@@ -88,6 +88,16 @@ export const EditParticipantForm = ({ initialValues, onClose, submissionCallback
               type='text'
             />
             <Field
+              name='educationalRequirements'
+              component={RenderSelectField}
+              label='* Do they meet the educational requirements for the program?'
+              options={[
+                { value: 'Yes', label: 'Yes' },
+                { value: 'No', label: 'No' },
+                { value: 'Unknown', label: 'Unknown' },
+              ]}
+            />
+            <Field
               test-id={'editParticipantInterested'}
               name='interested'
               component={RenderSelectField}

@@ -93,6 +93,12 @@ objects:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: status.podIP
+                - name: PATRONI_POSTGRESQL_PARAMETERS
+                  value: |
+                    wal_level: replica
+                    max_wal_senders: 5
+                    wal_keep_segments: 32
+                    synchronous_commit: on
                 - name: PATRONI_KUBERNETES_NAMESPACE
                   valueFrom:
                     fieldRef:

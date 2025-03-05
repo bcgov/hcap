@@ -1,5 +1,6 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { FastField } from 'formik';
 import { Question } from '../Question';
 import { SectionHeader } from '../SectionHeader';
@@ -65,6 +66,16 @@ export const OtherSection = ({ checkFieldDisability, isMHAWProgram }) => {
       {isMHAWProgram && (
         <>
           <Question text='11A. Are you interested working in a peer support role?' />
+          <Grid item xs={12}>
+            {' '}
+            <Typography>
+              <i>
+                In a peer support role, a person uses their lived or living experience of mental
+                health and/or substance use challenges, to inform how they carry out their job
+                duties.
+              </i>
+            </Typography>
+          </Grid>
           <Grid item xs={12}>
             <FastField
               name='interestedWorkingPeerSupportRole'

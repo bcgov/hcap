@@ -272,6 +272,34 @@ export const assignCohort = async ({ id, participantId }) => {
   return newParticipantCohort;
 };
 
+export const removeCohortParticipant = async (cohortId, participantId, meta = {}) => {
+  // Checking if the participant is assigned to a cohort
+  const participantCohort = await dbClient.db[collections.COHORT_PARTICIPANTS].findOne({
+    cohort_id: cohortId,
+    participant_id: participantId,
+  });
+
+  if (!participantCohort) {
+    throw new Error('Participant not found in cohort');
+  }
+
+  const result = await dbClient.db.withTransaction(async (tnx) => {
+    // Remove participant from a cohort
+    await tnx[collections.COHORT_PARTICIPANTS].destroy({
+      cohort_id: cohortId,
+      participant_id: participantId,
+    });
+
+    // Update participant status
+    await tnx[collections.PARTICIPANT_POST_HIRE_STATUS].update(
+      { participant_id: participantId },
+      { is_current: false }
+    );
+  });
+
+  return result;
+};
+
 export const getCountOfAllocation = async ({ cohortId } = { cohortId: null }) =>
   dbClient.db[collections.COHORT_PARTICIPANTS].count({
     cohort_id: cohortId,

@@ -1,16 +1,44 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { Box, Card, Grid, Typography, Link, Dialog } from '@material-ui/core';
+import {
+  Box,
+  Card,
+  Grid,
+  Typography,
+  Link,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  List,
+  ListItem,
+  ListItemText,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
+import TablePagination from '@material-ui/core/TablePagination';
 
 import { ManageGraduationForm } from '../../components/modal-forms/ManageGraduationForm';
 import { AuthContext } from '../../providers';
-import { Page, CheckPermissions, Table, Button } from '../../components/generic';
+import {
+  Page,
+  CheckPermissions,
+  Table,
+  Button,
+  Table as GenericTable,
+} from '../../components/generic';
 import { Role, Routes, ToastStatus, postHireStatuses } from '../../constants';
 import { useToast } from '../../hooks';
-import { createPostHireStatus, fetchCohort, getPostHireStatusLabel } from '../../services';
+import {
+  createPostHireStatus,
+  fetchCohort,
+  getPostHireStatusLabel,
+  removeCohortParticipantPSI,
+  fetchParticipantsToAssign,
+  fetchParticipant,
+  getPsi,
+} from '../../services';
 import { keyedString, formatCohortDate } from '../../utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -40,15 +68,54 @@ export default ({ match }) => {
   const [selectedParticipants, setSelectedParticipants] = useState([]);
   const [rows, setRows] = useState([]);
   const [showGraduationModal, setShowGraduationModal] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [participantToRemove, setParticipantToRemove] = useState(null);
+  const [participantsToAssign, setParticipantsToAssign] = useState(null);
+  const [activeModalForm, setActiveModalForm] = useState(null);
+  const [transferModalOpen, setTransferModalOpen] = useState(false);
+  const [selectedParticipant, setSelectedParticipant] = useState(null);
+  const [allCohorts, setAllCohorts] = useState([]);
+  const [totalParticipants, setTotalParticipants] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0); // Current page number
+  const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
+  const rowsPerPageOptions = [5, 10, 25];
+
+  // eslint-disable-next-line no-unused-vars
+  const [disableAssign, setDisableAssign] = useState(false);
+
+  const addParticipantColumns = [
+    {
+      id: 'firstName',
+      name: 'First Name',
+      sortable: true,
+    },
+    {
+      id: 'lastName',
+      name: 'Last Name',
+      sortable: true,
+    },
+    {
+      id: 'addButton',
+      name: 'Add',
+      sortable: false,
+    },
+  ];
+
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: 'ascending',
+  });
 
   const columns = [
     { id: 'lastName', name: 'Last Name', sortable: false },
     { id: 'firstName', name: 'First Name', sortable: false },
     { id: 'siteName', name: 'Site Name', sortable: false },
     { id: 'graduationStatus', name: 'Graduation Status', sortable: false },
+    { id: 'removeButton', name: 'Action', sortable: false },
+    { id: 'transferButton', name: 'Transfer', sortable: false },
   ];
 
-  const fetchCohortDetails = async () => {
+  const fetchCohortDetails = useCallback(async () => {
     try {
       setIsLoading(true);
       const cohortData = await fetchCohort({ cohortId });
@@ -62,7 +129,7 @@ export default ({ match }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [cohortId, openToast]);
 
   const getParticipantGraduationStatus = (participantStatuses) => {
     if (!participantStatuses || participantStatuses.length === 0) return 'Not recorded';
@@ -90,6 +157,48 @@ export default ({ match }) => {
     fetchCohortDetails();
   };
 
+  const closeModal = () => {
+    setCohort(null);
+    setActiveModalForm(null);
+  };
+
+  const handleTransferParticipant = (participantId) => {
+    setTransferModalOpen(true);
+    fetchTransferData(participantId);
+  };
+
+  const fetchTransferData = useCallback(
+    async (participantId) => {
+      try {
+        setIsLoading(true);
+        // Fetch participant details
+        const participant = await fetchParticipant(participantId);
+        setSelectedParticipant(participant);
+
+        if (
+          participant.interested?.toLowerCase() === 'withdrawn' ||
+          participant.interested?.toLowerCase() === 'no'
+        ) {
+          setDisableAssign(true);
+          return;
+        }
+
+        getPsi().then((list) => {
+          setAllCohorts(list);
+        });
+      } catch (error) {
+        console.error('Error fetching transfer data:', error);
+        openToast({
+          status: ToastStatus.Error,
+          message: 'Failed to fetch participant details or cohorts',
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [openToast]
+  );
+
   const handleOpenParticipantDetails = (participantId) => {
     const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
       id: participantId,
@@ -99,10 +208,100 @@ export default ({ match }) => {
     history.push(participantDetailsPath);
   };
 
+  const handleRemoveParticipant = async (participantId) => {
+    setParticipantToRemove(participantId);
+    setOpenConfirmDialog(true);
+  };
+
+  const confirmRemoveParticipant = async () => {
+    try {
+      await removeCohortParticipantPSI(cohortId, participantToRemove);
+      openToast({
+        status: ToastStatus.Success,
+        message: 'Participant removed from cohort successfully',
+      });
+      fetchCohortDetails();
+    } catch (error) {
+      openToast({
+        status: ToastStatus.Error,
+        message: error.message || 'Failed to remove participant from cohort',
+      });
+    } finally {
+      setOpenConfirmDialog(false);
+      setParticipantToRemove(null);
+    }
+  };
+
+  const handleAddParticipantClick = async () => {
+    setActiveModalForm('add-participant');
+    try {
+      // Calculate offset based on current page and rows per page
+      const offset = currentPage * rowsPerPage;
+      const response = await fetchParticipantsToAssign(rowsPerPage, offset);
+      const participants = response.participants;
+      const total = response.total;
+      setParticipantsToAssign(participants);
+      setTotalParticipants(total);
+    } catch (error) {
+      openToast({ status: ToastStatus.Error, message: 'Failed to fetch participants to assign' });
+    }
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
+    setCurrentPage(0); // Reset to the first page when changing rows per page
+  };
+
+  useEffect(() => {
+    console.log('participantsToAssign has changed:', participantsToAssign);
+  }, [participantsToAssign]);
+
+  const handleRequestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({
+      key,
+      direction,
+    });
+  };
+
+  const sortedParticipantsToAssign = useMemo(() => {
+    // Ensure participantsToAssign is an array before attempting to sort
+    if (!Array.isArray(participantsToAssign)) {
+      console.log('Exit');
+      return [];
+    }
+    let sortableItems = [...participantsToAssign];
+    if (sortConfig !== null) {
+      sortableItems.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableItems;
+  }, [participantsToAssign, sortConfig]);
+
   useEffect(() => {
     fetchCohortDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (activeModalForm === 'add-participant') {
+      handleAddParticipantClick();
+    }
+  }, [currentPage, rowsPerPage, activeModalForm]);
 
   const cohortEndDate = formatCohortDate(cohort?.end_date, { isForm: true });
   const hasSelectedParticipantGraduated = selectedParticipants
@@ -131,6 +330,89 @@ export default ({ match }) => {
           />
         </Dialog>
       )}
+
+      <Dialog
+        open={activeModalForm === 'add-participant'}
+        onClose={closeModal}
+        aria-labelledby='add-participant-dialog-title'
+        fullWidth
+        maxWidth='md'
+      >
+        <DialogTitle id='add-participant-dialog-title'> Add Participants to Cohort </DialogTitle>{' '}
+        <DialogContent>
+          <Box>
+            <Typography> Select Participants to Add: </Typography>{' '}
+            <GenericTable
+              columns={addParticipantColumns}
+              rows={sortedParticipantsToAssign}
+              order={sortConfig.direction}
+              orderBy={sortConfig.key}
+              onRequestSort={handleRequestSort}
+              renderCell={(columnId, row) => {
+                switch (columnId) {
+                  case 'firstName':
+                    return row?.body?.firstName;
+                  case 'lastName':
+                    return row?.body?.lastName;
+                  case 'addButton':
+                    return (
+                      <Button variant='contained' color='primary' onClick={() => {}}>
+                        Add
+                      </Button>
+                    );
+                  default:
+                    return null;
+                }
+              }}
+            />
+            <TablePagination
+              rowsPerPageOptions={rowsPerPageOptions}
+              component='div'
+              count={parseInt(totalParticipants, 10)}
+              rowsPerPage={rowsPerPage}
+              page={currentPage}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+          </Box>{' '}
+        </DialogContent>{' '}
+      </Dialog>
+
+      <Dialog open={transferModalOpen} onClose={() => setTransferModalOpen(false)}>
+        <DialogTitle> Transfer Participant </DialogTitle>{' '}
+        <DialogContent>
+          {' '}
+          {selectedParticipant ? (
+            <>
+              <Typography>
+                Transfer: {selectedParticipant.firstName} {selectedParticipant.lastName}{' '}
+              </Typography>{' '}
+              {allCohorts.length > 0 ? (
+                <List>
+                  {' '}
+                  {allCohorts.map((cohort) => (
+                    <ListItem button key={cohort.id}>
+                      <ListItemText primary={cohort.cohort_name} />{' '}
+                    </ListItem>
+                  ))}{' '}
+                </List>
+              ) : (
+                <Typography> Loading cohorts... </Typography>
+              )}{' '}
+            </>
+          ) : (
+            <Typography> Loading participant details... </Typography>
+          )}{' '}
+        </DialogContent>{' '}
+        <DialogActions>
+          <Button onClick={() => setTransferModalOpen(false)} color='primary'>
+            Cancel{' '}
+          </Button>{' '}
+          <Button onClick={() => {}} color='primary'>
+            Transfer{' '}
+          </Button>{' '}
+        </DialogActions>{' '}
+      </Dialog>
 
       <CheckPermissions
         permittedRoles={[Role.HealthAuthority, Role.MinistryOfHealth]}
@@ -187,6 +469,21 @@ export default ({ match }) => {
               )}
             </Grid>
 
+            <Grid item xs={12} sm={3}>
+              <CheckPermissions permittedRoles={[Role.MinistryOfHealth]}>
+                <Box>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    onClick={handleAddParticipantClick}
+                    text={'Add Participant'}
+                  >
+                    Add Participant
+                  </Button>
+                </Box>
+              </CheckPermissions>
+            </Grid>
+
             <CheckPermissions permittedRoles={[Role.HealthAuthority]}>
               <>
                 <Grid item xs={2}>
@@ -214,7 +511,11 @@ export default ({ match }) => {
             </CheckPermissions>
 
             <Box>
-              {rows.length > 0 ? (
+              {isLoading ? (
+                <Typography variant='subtitle1' className={classes.notFoundBox}>
+                  Loading Participants...
+                </Typography>
+              ) : rows.length > 0 ? (
                 <Table
                   columns={columns}
                   rows={rows}
@@ -240,6 +541,25 @@ export default ({ match }) => {
                         return row.siteJoin?.body[columnId];
                       case 'graduationStatus':
                         return getParticipantGraduationStatus(row.postHireJoin);
+                      case 'removeButton':
+                        return (
+                          <Button
+                            size='small'
+                            variant='outlined'
+                            color='secondary'
+                            onClick={() => handleRemoveParticipant(row.id)}
+                            text='Remove'
+                          />
+                        );
+                      case 'transferButton':
+                        return (
+                          <Button
+                            size='small'
+                            variant='outlined'
+                            onClick={() => handleTransferParticipant(row.id)}
+                            text='Transfer'
+                          />
+                        );
                       default:
                         return row[columnId];
                     }
@@ -253,6 +573,26 @@ export default ({ match }) => {
             </Box>
           </Box>
         </Card>
+        <Dialog open={openConfirmDialog} onClose={() => setOpenConfirmDialog(false)}>
+          <DialogTitle>Confirm Removal</DialogTitle>
+          <DialogContent>
+            Are you sure you want to remove this participant from the cohort?
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setOpenConfirmDialog(false)}
+              variant='outlined'
+              text='Cancel'
+              color='primary'
+            />
+            <Button
+              onClick={confirmRemoveParticipant}
+              variant='outlined'
+              text='Confirm'
+              color='secondary'
+            />
+          </DialogActions>
+        </Dialog>
       </CheckPermissions>
     </Page>
   );

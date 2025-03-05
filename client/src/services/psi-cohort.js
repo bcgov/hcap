@@ -131,6 +131,27 @@ export const fetchCohortParticipants = async ({ cohortId }) => {
   throw new Error(res.error || res.statusText || 'Unable to load cohort participants');
 };
 
+export const fetchParticipantsToAssign = async (pageSize = 5, page = 0) => {
+  const res = await fetch(
+    `${API_URL}/api/v1/cohorts/participants-to-assign?pageSize=${pageSize}&page=${page}`,
+    {
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      method: 'GET',
+    }
+  );
+
+  if (res.ok) {
+    const result = await res.json();
+    return result;
+  }
+
+  throw new Error(res.error || res.statusText || 'Failed to fetch participants');
+};
+
 export const addCohort = async ({ psiId, cohort }) => {
   const response = await fetch(`${API_URL}/api/v1/psi/${psiId}/cohorts/`, {
     method: 'POST',
@@ -235,4 +256,40 @@ export const updatePSI = async ({ id, psi }) => {
     return [true, null];
   }
   return [false, responseMessage];
+};
+
+/**
+ * removeCohortParticipantPSI: Removes a participant from a cohort
+ * @param {string} cohortId - The ID of the cohort
+ * @param {string} participantId - The ID of the participant to be removed
+ * @returns {Promise<Object>} The response data from the server
+ * @throws {Error} If unable to remove the participant from the cohort
+ */
+export const removeCohortParticipantPSI = async (cohortId, participantId) => {
+  const response = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}/remove/${participantId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+  });
+
+  if (response.ok) {
+    return {
+      ...(await response.json()),
+      success: true,
+    };
+  }
+  if (response.status === 400) {
+    return {
+      ...(await response.json()),
+      success: false,
+    };
+  }
+
+  throw new Error(
+    'Failed to remove participant from cohort',
+    response.error || response.statusText
+  );
 };

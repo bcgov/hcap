@@ -1,5 +1,5 @@
 import express from 'express';
-import { Role, UserRoles } from '../constants';
+import { Role, UserRoles, postHireStatuses } from '../constants';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware, applyMiddleware } from '../error-handler';
@@ -13,8 +13,9 @@ import {
   getCohortParticipants,
   filterCohortParticipantsForUser,
   getCohortWithCalculatedFields,
+  removeCohortParticipant,
 } from '../services/cohorts';
-import { getParticipantByID } from '../services/participants';
+import { getParticipantByID, getParticipantsToAssign } from '../services/participants';
 import { EditCohortSchema, validate } from '../validation';
 
 // Router
@@ -43,6 +44,33 @@ router.get(
       res.status(200).json(response);
     } else {
       res.status(401).send('Unauthorized user');
+    }
+  })
+);
+
+// GET /participants-to-assign
+router.get(
+  '/participants-to-assign',
+  [applyMiddleware(keycloak.allowRolesMiddleware(...UserRoles))],
+  asyncMiddleware(async (req, res) => {
+    const user = req.hcapUserInfo;
+    const limit = parseInt(req.query.pageSize, 10) || 5;
+    const offset = (parseInt(req.query.page, 10) || 0) * limit;
+    try {
+      const { participants, total } = await getParticipantsToAssign(limit, offset);
+      logger.info({
+        action: 'get_participants_to_assign',
+        performed_by: {
+          user,
+        },
+      });
+      return res.status(200).json({
+        participants,
+        total,
+      });
+    } catch (error) {
+      logger.error('Failed to get participants to assign:', error);
+      return res.status(500).send('Failed to get participants to assign');
     }
   })
 );
@@ -187,6 +215,38 @@ router.patch(
       return res.status(200).json(response);
     }
     return res.status(401).send('Unauthorized user');
+  })
+);
+
+// Remove participant from cohort
+router.delete(
+  '/:id/remove/:participantId',
+  [applyMiddleware(keycloak.allowRolesMiddleware(...UserRoles))],
+  asyncMiddleware(async (req, res) => {
+    const { user_id: userId, sub: localUserId } = req.user;
+    const user = userId || localUserId;
+    const { id, participantId } = req.params;
+    if (id && participantId) {
+      const [participant] = await getParticipantByID(participantId);
+      if (!participant) {
+        return res.status(400).send('Invalid participant id');
+      }
+      const [cohort] = await getCohort(+id);
+      if (!cohort) {
+        return res.status(400).send('Invalid cohort id');
+      }
+      const response = await removeCohortParticipant(cohort.id, participant.id);
+      logger.info({
+        action: 'cohort_participant_remove',
+        performed_by: {
+          user,
+        },
+        cohortId: cohort.id || '',
+        participantId: participant.id,
+      });
+      return res.status(200).json({ success: true, message: 'Participant removed successfully' });
+    }
+    return res.status(400).send('Cohort id and participant id required');
   })
 );
 

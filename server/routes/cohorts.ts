@@ -56,8 +56,9 @@ router.get(
     const user = req.hcapUserInfo;
     const limit = parseInt(req.query.pageSize, 10) || 5;
     const offset = (parseInt(req.query.page, 10) || 0) * limit;
+    const lastName = req.query.lastName || '';
     try {
-      const { participants, total } = await getParticipantsToAssign(limit, offset);
+      const { participants, total } = await getParticipantsToAssign(limit, offset, lastName);
       logger.info({
         action: 'get_participants_to_assign',
         performed_by: {

@@ -20,6 +20,7 @@ import Alert from '@material-ui/lab/Alert';
 import TablePagination from '@material-ui/core/TablePagination';
 
 import { ManageGraduationForm } from '../../components/modal-forms/ManageGraduationForm';
+import { ParticipantCohortTableFilters } from './ParticipantCohortTableFilters';
 import { AuthContext } from '../../providers';
 import {
   Page,
@@ -79,6 +80,7 @@ export default ({ match }) => {
   const [currentPage, setCurrentPage] = useState(0); // Current page number
   const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
   const rowsPerPageOptions = [5, 10, 25];
+  const [filter, setFilter] = useState({ lastName: '' });
 
   // eslint-disable-next-line no-unused-vars
   const [disableAssign, setDisableAssign] = useState(false);
@@ -234,17 +236,6 @@ export default ({ match }) => {
 
   const handleAddParticipantClick = async () => {
     setActiveModalForm('add-participant');
-    try {
-      // Calculate offset based on current page and rows per page
-      const offset = currentPage * rowsPerPage;
-      const response = await fetchParticipantsToAssign(rowsPerPage, offset);
-      const participants = response.participants;
-      const total = response.total;
-      setParticipantsToAssign(participants);
-      setTotalParticipants(total);
-    } catch (error) {
-      openToast({ status: ToastStatus.Error, message: 'Failed to fetch participants to assign' });
-    }
   };
 
   const handleChangePage = (event, newPage) => {
@@ -256,10 +247,6 @@ export default ({ match }) => {
     setRowsPerPage(newRowsPerPage);
     setCurrentPage(0); // Reset to the first page when changing rows per page
   };
-
-  useEffect(() => {
-    console.log('participantsToAssign has changed:', participantsToAssign);
-  }, [participantsToAssign]);
 
   const handleRequestSort = (key) => {
     let direction = 'ascending';
@@ -279,6 +266,7 @@ export default ({ match }) => {
       return [];
     }
     let sortableItems = [...participantsToAssign];
+
     if (sortConfig !== null) {
       sortableItems.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -298,10 +286,24 @@ export default ({ match }) => {
   }, []);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Calculate offset based on current page and rows per page
+        const offset = currentPage * rowsPerPage;
+        const response = await fetchParticipantsToAssign(rowsPerPage, offset, filter.lastName);
+        const participants = response.participants;
+        const total = response.total;
+        setParticipantsToAssign(participants);
+        setTotalParticipants(total);
+      } catch (error) {
+        openToast({ status: ToastStatus.Error, message: 'Failed to fetch participants to assign' });
+      }
+    };
+
     if (activeModalForm === 'add-participant') {
-      handleAddParticipantClick();
+      fetchData();
     }
-  }, [currentPage, rowsPerPage, activeModalForm]);
+  }, [currentPage, rowsPerPage, filter, activeModalForm]);
 
   const cohortEndDate = formatCohortDate(cohort?.end_date, { isForm: true });
   const hasSelectedParticipantGraduated = selectedParticipants
@@ -342,6 +344,7 @@ export default ({ match }) => {
         <DialogContent>
           <Box>
             <Typography> Select Participants to Add: </Typography>{' '}
+            <ParticipantCohortTableFilters filter={filter} setFilter={setFilter} />
             <GenericTable
               columns={addParticipantColumns}
               rows={sortedParticipantsToAssign}
@@ -356,9 +359,7 @@ export default ({ match }) => {
                     return row?.body?.lastName;
                   case 'addButton':
                     return (
-                      <Button variant='contained' color='primary' onClick={() => {}}>
-                        Add
-                      </Button>
+                      <Button variant='contained' color='primary' onClick={() => {}} text='Add' />
                     );
                   default:
                     return null;

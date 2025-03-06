@@ -131,18 +131,22 @@ export const fetchCohortParticipants = async ({ cohortId }) => {
   throw new Error(res.error || res.statusText || 'Unable to load cohort participants');
 };
 
-export const fetchParticipantsToAssign = async (pageSize = 5, page = 0) => {
-  const res = await fetch(
-    `${API_URL}/api/v1/cohorts/participants-to-assign?pageSize=${pageSize}&page=${page}`,
-    {
-      headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      method: 'GET',
-    }
-  );
+export const fetchParticipantsToAssign = async (pageSize = 5, page = 0, lastName = '') => {
+  let url = `${API_URL}/api/v1/cohorts/participants-to-assign?pageSize=${pageSize}&page=${page}`;
+
+  // Add last name filter if provided
+  if (lastName) {
+    url += `&lastName=${lastName}`;
+  }
+
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    method: 'GET',
+  });
 
   if (res.ok) {
     const result = await res.json();

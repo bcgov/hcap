@@ -81,20 +81,23 @@ export const deleteParticipant = async ({ email }) => {
   });
 };
 
-export const getParticipantsToAssign = async (limit: number, offset: number) => {
+export const getParticipantsToAssign = async (
+  limit: number,
+  offset: number,
+  lastName: string = ''
+) => {
   try {
     const result = await dbClient.db.withTransaction(async (tnx) => {
-      const participantsQuery = `
+      let participantsQuery = `
         SELECT participants.*
         FROM ${collections.PARTICIPANTS} participants
         LEFT OUTER JOIN ${collections.COHORT_PARTICIPANTS} cohortParticipant ON cohortParticipant.participant_id = participants.id
         LEFT OUTER JOIN ${collections.PARTICIPANT_POST_HIRE_STATUS} postHireStatus ON postHireStatus.participant_id = participants.id
         WHERE cohortParticipant.cohort_id IS NULL
           OR postHireStatus.status = $1
-        LIMIT $2 OFFSET $3
       `;
 
-      const countQuery = `
+      let countQuery = `
         SELECT COUNT(participants.id) as total
         FROM ${collections.PARTICIPANTS} participants
         LEFT OUTER JOIN ${collections.COHORT_PARTICIPANTS} cohortParticipant ON cohortParticipant.participant_id = participants.id
@@ -103,13 +106,24 @@ export const getParticipantsToAssign = async (limit: number, offset: number) => 
           OR postHireStatus.status = $1
       `;
 
-      const participantsResult = await tnx.query(participantsQuery, [
-        postHireStatuses.cohortUnsuccessful,
-        limit,
-        offset,
-      ]);
-      const totalCount = await tnx.query(countQuery, [postHireStatuses.cohortUnsuccessful]);
-      const total = totalCount && totalCount[0] ? totalCount[0].total : 0;
+      const queryParams: any[] = [postHireStatuses.cohortUnsuccessful];
+
+      if (lastName) {
+        participantsQuery += ` AND LOWER(participants.body->>'lastName') LIKE $${
+          queryParams.length + 1
+        }`;
+        countQuery += ` AND LOWER(participants.body->>'lastName') LIKE $${queryParams.length + 1}`;
+        queryParams.push(`%${lastName.toLowerCase()}%`);
+      }
+
+      const totalCountResult = await tnx.query(countQuery, queryParams);
+      const total = totalCountResult[0]?.total || 0;
+
+      participantsQuery += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+      queryParams.push(limit, offset);
+
+      const participantsResult = await tnx.query(participantsQuery, queryParams);
+
       const participants = participantsResult;
 
       return {

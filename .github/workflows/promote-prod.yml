@@ -31,7 +31,7 @@ jobs:
 
       - name: Cache OpenShift CLI
         id: cache-oc
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /usr/local/bin/oc
           key: ${{ runner.os }}-oc

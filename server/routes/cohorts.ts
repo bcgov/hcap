@@ -57,8 +57,14 @@ router.get(
     const limit = parseInt(req.query.pageSize, 10) || 5;
     const offset = (parseInt(req.query.page, 10) || 0) * limit;
     const lastName = req.query.lastName || '';
+    const emailAddress = req.query.emailAddress || '';
     try {
-      const { participants, total } = await getParticipantsToAssign(limit, offset, lastName);
+      const { participants, total } = await getParticipantsToAssign(
+        limit,
+        offset,
+        lastName,
+        emailAddress
+      );
       logger.info({
         action: 'get_participants_to_assign',
         performed_by: {

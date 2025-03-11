@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
 import {
@@ -11,34 +11,26 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  List,
-  ListItem,
-  ListItemText,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
-import TablePagination from '@material-ui/core/TablePagination';
 
-import { ManageGraduationForm } from '../../components/modal-forms/ManageGraduationForm';
-import { ParticipantCohortTableFilters } from './ParticipantCohortTableFilters';
-import { AuthContext } from '../../providers';
 import {
-  Page,
-  CheckPermissions,
-  Table,
-  Button,
-  Table as GenericTable,
-} from '../../components/generic';
-import { Role, Routes, ToastStatus, postHireStatuses } from '../../constants';
-import { useToast } from '../../hooks';
+  BulkGraduationDialog,
+  AddParticipantDialog,
+  TransferParticipantDialog,
+} from '../../components/dialogs';
+import { AuthContext } from '../../providers';
+import { Page, CheckPermissions, Table, Button } from '../../components/generic';
+import { Role, Routes, ToastStatus } from '../../constants';
+import { useToast, useCohortData } from '../../hooks';
 import {
   createPostHireStatus,
-  fetchCohort,
   getPostHireStatusLabel,
   removeCohortParticipantPSI,
-  fetchParticipantsToAssign,
   fetchParticipant,
   getPsi,
+  assignParticipantWithCohort,
 } from '../../services';
 import { keyedString, formatCohortDate } from '../../utils';
 
@@ -57,6 +49,22 @@ const useStyles = makeStyles((theme) => ({
 
 export default ({ match }) => {
   const cohortId = parseInt(match.params.id);
+  const {
+    cohort,
+    rows,
+    isLoading,
+    participantsToAssign,
+    totalParticipants,
+    currentPage,
+    rowsPerPage,
+    filter,
+    setFilter,
+    setCurrentPage,
+    setRowsPerPage,
+    setIsLoading,
+    fetchCohortDetails,
+    fetchDataAddParticipantModal,
+  } = useCohortData(cohortId);
   const classes = useStyles();
   const history = useHistory();
   const { openToast } = useToast();
@@ -64,44 +72,19 @@ export default ({ match }) => {
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const isHA = roles?.includes(Role.HealthAuthority) || false;
 
-  const [cohort, setCohort] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedParticipants, setSelectedParticipants] = useState([]);
-  const [rows, setRows] = useState([]);
   const [showGraduationModal, setShowGraduationModal] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [participantToRemove, setParticipantToRemove] = useState(null);
-  const [participantsToAssign, setParticipantsToAssign] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
-  const [allCohorts, setAllCohorts] = useState([]);
-  const [totalParticipants, setTotalParticipants] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0); // Current page number
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
+  const [allCohorts, setAllCohorts] = useState([]); // Current page number // Number of rows per page
   const rowsPerPageOptions = [5, 10, 25];
-  const [filter, setFilter] = useState({ lastName: '' });
+  const prevFilter = useRef({ lastName: '', emailAddress: '' });
 
   // eslint-disable-next-line no-unused-vars
   const [disableAssign, setDisableAssign] = useState(false);
-
-  const addParticipantColumns = [
-    {
-      id: 'firstName',
-      name: 'First Name',
-      sortable: true,
-    },
-    {
-      id: 'lastName',
-      name: 'Last Name',
-      sortable: true,
-    },
-    {
-      id: 'addButton',
-      name: 'Add',
-      sortable: false,
-    },
-  ];
 
   const [sortConfig, setSortConfig] = useState({
     key: null,
@@ -116,22 +99,6 @@ export default ({ match }) => {
     { id: 'removeButton', name: 'Action', sortable: false },
     { id: 'transferButton', name: 'Transfer', sortable: false },
   ];
-
-  const fetchCohortDetails = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const cohortData = await fetchCohort({ cohortId });
-      setCohort(cohortData.cohort);
-      setRows(cohortData.participants);
-    } catch (err) {
-      openToast({
-        status: ToastStatus.Error,
-        message: err.message || 'Failed to fetch cohort details',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [cohortId, openToast]);
 
   const getParticipantGraduationStatus = (participantStatuses) => {
     if (!participantStatuses || participantStatuses.length === 0) return 'Not recorded';
@@ -159,8 +126,7 @@ export default ({ match }) => {
     fetchCohortDetails();
   };
 
-  const closeModal = () => {
-    setCohort(null);
+  const closeAddParticipantModal = () => {
     setActiveModalForm(null);
   };
 
@@ -198,7 +164,7 @@ export default ({ match }) => {
         setIsLoading(false);
       }
     },
-    [openToast]
+    [openToast, setIsLoading]
   );
 
   const handleOpenParticipantDetails = (participantId) => {
@@ -238,6 +204,23 @@ export default ({ match }) => {
     setActiveModalForm('add-participant');
   };
 
+  const handleAssignParticipant = async (participantId) => {
+    try {
+      await assignParticipantWithCohort({ participantId: participantId, cohortId: cohortId }); // Use the service to assign
+      openToast({
+        status: ToastStatus.Success,
+        message: `Participant ${participantId} assigned to cohort ${cohortId} successfully`,
+      });
+      fetchDataAddParticipantModal();
+      fetchCohortDetails();
+    } catch (error) {
+      openToast({
+        status: ToastStatus.Error,
+        message: `Failed to assign participant ${participantId} to cohort ${cohortId}: ${error}`,
+      });
+    }
+  };
+
   const handleChangePage = (event, newPage) => {
     setCurrentPage(newPage);
   };
@@ -262,7 +245,6 @@ export default ({ match }) => {
   const sortedParticipantsToAssign = useMemo(() => {
     // Ensure participantsToAssign is an array before attempting to sort
     if (!Array.isArray(participantsToAssign)) {
-      console.log('Exit');
       return [];
     }
     let sortableItems = [...participantsToAssign];
@@ -281,27 +263,20 @@ export default ({ match }) => {
     return sortableItems;
   }, [participantsToAssign, sortConfig]);
 
-  useEffect(() => {
-    fetchCohortDetails();
-  }, []);
+  const resetPage = () => {
+    setCurrentPage(0);
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Calculate offset based on current page and rows per page
-        const offset = currentPage * rowsPerPage;
-        const response = await fetchParticipantsToAssign(rowsPerPage, offset, filter.lastName);
-        const participants = response.participants;
-        const total = response.total;
-        setParticipantsToAssign(participants);
-        setTotalParticipants(total);
-      } catch (error) {
-        openToast({ status: ToastStatus.Error, message: 'Failed to fetch participants to assign' });
-      }
-    };
-
     if (activeModalForm === 'add-participant') {
-      fetchData();
+      if (
+        filter.lastName !== prevFilter.current.lastName ||
+        filter.emailAddress !== prevFilter.current.emailAddress
+      ) {
+        resetPage();
+      }
+      fetchDataAddParticipantModal();
+      prevFilter.current = { ...filter };
     }
   }, [currentPage, rowsPerPage, filter, activeModalForm]);
 
@@ -313,107 +288,43 @@ export default ({ match }) => {
   return (
     <Page>
       {showGraduationModal && (
-        <Dialog title={'Set Bulk Graduation Status'} open={showGraduationModal}>
-          <ManageGraduationForm
-            cohortEndDate={cohortEndDate}
-            initialValues={{
-              status: postHireStatuses.postSecondaryEducationCompleted,
-              data: {
-                date: cohortEndDate,
-              },
-              continue: 'continue_yes',
-              participantIds: selectedParticipants.map(({ id }) => id),
-            }}
-            onClose={() => {
-              setShowGraduationModal(false);
-            }}
-            onSubmit={handleBulkGraduate}
-            isBulkGraduate
-          />
-        </Dialog>
+        <BulkGraduationDialog
+          open={showGraduationModal}
+          onClose={() => setShowGraduationModal(false)}
+          cohortEndDate={cohortEndDate}
+          onSubmit={handleBulkGraduate}
+          participantIds={selectedParticipants.map(({ id }) => id)}
+        />
       )}
 
-      <Dialog
-        open={activeModalForm === 'add-participant'}
-        onClose={closeModal}
-        aria-labelledby='add-participant-dialog-title'
-        fullWidth
-        maxWidth='md'
-      >
-        <DialogTitle id='add-participant-dialog-title'> Add Participants to Cohort </DialogTitle>{' '}
-        <DialogContent>
-          <Box>
-            <Typography> Select Participants to Add: </Typography>{' '}
-            <ParticipantCohortTableFilters filter={filter} setFilter={setFilter} />
-            <GenericTable
-              columns={addParticipantColumns}
-              rows={sortedParticipantsToAssign}
-              order={sortConfig.direction}
-              orderBy={sortConfig.key}
-              onRequestSort={handleRequestSort}
-              renderCell={(columnId, row) => {
-                switch (columnId) {
-                  case 'firstName':
-                    return row?.body?.firstName;
-                  case 'lastName':
-                    return row?.body?.lastName;
-                  case 'addButton':
-                    return (
-                      <Button variant='contained' color='primary' onClick={() => {}} text='Add' />
-                    );
-                  default:
-                    return null;
-                }
-              }}
-            />
-            <TablePagination
-              rowsPerPageOptions={rowsPerPageOptions}
-              component='div'
-              count={parseInt(totalParticipants, 10)}
-              rowsPerPage={rowsPerPage}
-              page={currentPage}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-            />
-          </Box>{' '}
-        </DialogContent>{' '}
-      </Dialog>
+      {activeModalForm === 'add-participant' && (
+        <AddParticipantDialog
+          open={true}
+          onClose={closeAddParticipantModal}
+          filter={filter}
+          setFilter={setFilter}
+          sortedParticipantsToAssign={sortedParticipantsToAssign}
+          sortConfig={sortConfig}
+          handleRequestSort={handleRequestSort}
+          handleAssignParticipant={handleAssignParticipant}
+          rowsPerPageOptions={rowsPerPageOptions}
+          totalParticipants={totalParticipants}
+          rowsPerPage={rowsPerPage}
+          currentPage={currentPage}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+          cohort={cohort}
+        />
+      )}
 
-      <Dialog open={transferModalOpen} onClose={() => setTransferModalOpen(false)}>
-        <DialogTitle> Transfer Participant </DialogTitle>{' '}
-        <DialogContent>
-          {' '}
-          {selectedParticipant ? (
-            <>
-              <Typography>
-                Transfer: {selectedParticipant.firstName} {selectedParticipant.lastName}{' '}
-              </Typography>{' '}
-              {allCohorts.length > 0 ? (
-                <List>
-                  {' '}
-                  {allCohorts.map((cohort) => (
-                    <ListItem button key={cohort.id}>
-                      <ListItemText primary={cohort.cohort_name} />{' '}
-                    </ListItem>
-                  ))}{' '}
-                </List>
-              ) : (
-                <Typography> Loading cohorts... </Typography>
-              )}{' '}
-            </>
-          ) : (
-            <Typography> Loading participant details... </Typography>
-          )}{' '}
-        </DialogContent>{' '}
-        <DialogActions>
-          <Button onClick={() => setTransferModalOpen(false)} color='primary'>
-            Cancel{' '}
-          </Button>{' '}
-          <Button onClick={() => {}} color='primary'>
-            Transfer{' '}
-          </Button>{' '}
-        </DialogActions>{' '}
-      </Dialog>
+      {transferModalOpen && (
+        <TransferParticipantDialog
+          open={true}
+          onClose={() => setTransferModalOpen(false)}
+          selectedParticipant={selectedParticipant}
+          allCohorts={allCohorts}
+        />
+      )}
 
       <CheckPermissions
         permittedRoles={[Role.HealthAuthority, Role.MinistryOfHealth]}
@@ -470,19 +381,34 @@ export default ({ match }) => {
               )}
             </Grid>
 
-            <Grid item xs={12} sm={3}>
-              <CheckPermissions permittedRoles={[Role.MinistryOfHealth]}>
-                <Box>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    onClick={handleAddParticipantClick}
-                    text={'Add Participant'}
-                  >
-                    Add Participant
-                  </Button>
-                </Box>
-              </CheckPermissions>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={3}>
+                <CheckPermissions permittedRoles={[Role.MinistryOfHealth]}>
+                  <Box>
+                    <Button
+                      variant='contained'
+                      color='primary'
+                      onClick={handleAddParticipantClick}
+                      text={'Add Participant'}
+                      disabled={cohort?.availableCohortSeats === 0}
+                    >
+                      Add Participant
+                    </Button>
+                  </Box>
+                </CheckPermissions>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <CheckPermissions permittedRoles={[Role.MinistryOfHealth]}>
+                  <Box>
+                    {cohort?.availableCohortSeats === 0 && (
+                      <Alert severity='error'>
+                        No available seats in the cohort. Cannot add participants.
+                      </Alert>
+                    )}
+                  </Box>
+                </CheckPermissions>
+              </Grid>
             </Grid>
 
             <CheckPermissions permittedRoles={[Role.HealthAuthority]}>

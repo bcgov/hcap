@@ -84,7 +84,8 @@ export const deleteParticipant = async ({ email }) => {
 export const getParticipantsToAssign = async (
   limit: number,
   offset: number,
-  lastName: string = ''
+  lastName = '',
+  emailAddress = ''
 ) => {
   try {
     const result = await dbClient.db.withTransaction(async (tnx) => {
@@ -93,18 +94,18 @@ export const getParticipantsToAssign = async (
         FROM ${collections.PARTICIPANTS} participants
         LEFT OUTER JOIN ${collections.COHORT_PARTICIPANTS} cohortParticipant ON cohortParticipant.participant_id = participants.id
         LEFT OUTER JOIN ${collections.PARTICIPANT_POST_HIRE_STATUS} postHireStatus ON postHireStatus.participant_id = participants.id
-        WHERE cohortParticipant.cohort_id IS NULL
-          OR postHireStatus.status = $1
-      `;
+        WHERE (cohortParticipant.cohort_id IS NULL
+          OR postHireStatus.status = $1)
+    `;
 
       let countQuery = `
         SELECT COUNT(participants.id) as total
         FROM ${collections.PARTICIPANTS} participants
         LEFT OUTER JOIN ${collections.COHORT_PARTICIPANTS} cohortParticipant ON cohortParticipant.participant_id = participants.id
         LEFT OUTER JOIN ${collections.PARTICIPANT_POST_HIRE_STATUS} postHireStatus ON postHireStatus.participant_id = participants.id
-        WHERE cohortParticipant.cohort_id IS NULL
-          OR postHireStatus.status = $1
-      `;
+        WHERE (cohortParticipant.cohort_id IS NULL
+          OR postHireStatus.status = $1)
+    `;
 
       const queryParams: any[] = [postHireStatuses.cohortUnsuccessful];
 
@@ -116,10 +117,22 @@ export const getParticipantsToAssign = async (
         queryParams.push(`%${lastName.toLowerCase()}%`);
       }
 
+      if (emailAddress) {
+        participantsQuery += ` AND LOWER(participants.body->>'emailAddress') LIKE $${
+          queryParams.length + 1
+        }`;
+        countQuery += ` AND LOWER(participants.body->>'emailAddress') LIKE $${
+          queryParams.length + 1
+        }`;
+        queryParams.push(`%${emailAddress.toLowerCase()}%`);
+      }
+
       const totalCountResult = await tnx.query(countQuery, queryParams);
       const total = totalCountResult[0]?.total || 0;
 
-      participantsQuery += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+      participantsQuery += ` ORDER BY participants.id LIMIT $${queryParams.length + 1} OFFSET $${
+        queryParams.length + 2
+      }`;
       queryParams.push(limit, offset);
 
       const participantsResult = await tnx.query(participantsQuery, queryParams);

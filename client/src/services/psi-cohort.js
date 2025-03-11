@@ -131,12 +131,22 @@ export const fetchCohortParticipants = async ({ cohortId }) => {
   throw new Error(res.error || res.statusText || 'Unable to load cohort participants');
 };
 
-export const fetchParticipantsToAssign = async (pageSize = 5, page = 0, lastName = '') => {
+export const fetchParticipantsToAssign = async (
+  pageSize = 5,
+  page = 0,
+  lastName = '',
+  emailAddress = ''
+) => {
   let url = `${API_URL}/api/v1/cohorts/participants-to-assign?pageSize=${pageSize}&page=${page}`;
 
   // Add last name filter if provided
   if (lastName) {
     url += `&lastName=${lastName}`;
+  }
+
+  // Add email address filter if provided
+  if (emailAddress) {
+    url += `&emailAddress=${emailAddress}`;
   }
 
   const res = await fetch(url, {

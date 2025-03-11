@@ -223,7 +223,7 @@ server-config:
 
 server-build-config-test:
 	@echo "Testing Building config in $(TOOLS_NAMESPACE) namespace"
-	@oc -n $(TOOLS_NAMESPACE) process -f openshift/server.bc.yml -p REF=$(BUILD_REF) -p APP_NAME=$(APP_NAME) | oc apply -n $(TOOLS_NAMESPACE) -f -
+	@oc -n $(TOOLS_NAMESPACE) process -f openshift/server.bc.yml -p REF=$(BUILD_REF) -p APP_NAME=$(APP_NAME) | oc apply -n $(TOOLS_NAMESPACE) -f - --dry-run=server
 
 build-config: server-build-config-test
 	@echo "Processiong and applying Building config in $(TOOLS_NAMESPACE) namespace"

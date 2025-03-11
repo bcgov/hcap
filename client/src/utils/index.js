@@ -10,3 +10,4 @@ export * from './csvReports';
 export * from './keycloak-util';
 export * from './formatOptions';
 export * from './form-conditionals';
+export * from './snowplowCallEvent';

@@ -10,9 +10,10 @@ import {
   ParticipantEditFormSchema,
   Routes,
   ToastStatus,
+  ProgramLabel,
 } from '../../constants';
 import { useToast } from '../../hooks';
-import { scrollUp } from '../../utils';
+import { snowplowCallEventSelectPathway, scrollUp } from '../../utils';
 
 import { Button } from '../generic';
 import { Summary } from './Summary';
@@ -70,6 +71,9 @@ export const Form = ({
     });
 
     if (response.ok) {
+      // call snowplow integration with selected pathway value
+      snowplowCallEventSelectPathway(ProgramLabel[values.program]);
+
       const { id } = await response.json();
       history.push(Routes.ParticipantConfirmation, { formValues: values, id });
     } else {

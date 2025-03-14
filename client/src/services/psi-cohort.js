@@ -48,6 +48,25 @@ export const assignParticipantWithCohort = async ({ participantId, cohortId }) =
   }
 };
 
+export const transferParticipantToNewCohort = async ({ participantId, cohortId, newCohortId }) => {
+  const response = await fetch(
+    `${API_URL}/api/v1/cohorts/${cohortId}/transfer/${participantId}/${newCohortId}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+    }
+  );
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error('Unable to transfer participant to new cohort');
+  }
+};
+
 export const sortPSI = ({ psiList = [], cohort = {} }) =>
   psiList.sort((item1, item2) => {
     if (item1.institute_name === cohort.psi?.institute_name) {

@@ -160,6 +160,38 @@ router.post(
   })
 );
 
+// Transfer participant from current cohort to a new one
+router.post(
+  '/:id/assign/:participantId',
+  [applyMiddleware(keycloak.allowRolesMiddleware(...UserRoles))],
+  asyncMiddleware(async (req, res) => {
+    const { user_id: userId, sub: localUserId } = req.user;
+    const user = userId || localUserId;
+    const { id, participantId } = req.params;
+    if (id && participantId) {
+      const [participant] = await getParticipantByID(participantId);
+      if (!participant) {
+        return res.status(400).send('Invalid participant id');
+      }
+      const [cohort] = await getCohort(+id);
+      if (!cohort) {
+        return res.status(400).send('Invalid cohort id');
+      }
+      const response = await assignCohort({ id: cohort.id, participantId: participant.id });
+      logger.info({
+        action: 'cohort_participant_assign',
+        performed_by: {
+          user,
+        },
+        cohortId: cohort.id || '',
+        participantId: participant.id,
+      });
+      return res.status(201).json(response);
+    }
+    return res.status(400).send('Cohort id and participant id required');
+  })
+);
+
 // Get Assigned cohort for participant
 router.get(
   '/assigned-participant/:id',

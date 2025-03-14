@@ -140,7 +140,7 @@ export default ({ match }) => {
       try {
         setIsLoading(true);
         // Fetch participant details
-        const participant = await fetchParticipant(participantId);
+        const participant = await fetchParticipant({ id: participantId });
         setSelectedParticipant(participant);
 
         if (
@@ -151,9 +151,13 @@ export default ({ match }) => {
           return;
         }
 
-        getPsi().then((list) => {
+        try {
+          const list = await getPsi();
+          console.log('PSI retrieved:', list);
           setAllCohorts(list);
-        });
+        } catch (error) {
+          console.error('Error while trying to retrieve PSI:', error);
+        }
       } catch (error) {
         console.error('Error fetching transfer data:', error);
         openToast({

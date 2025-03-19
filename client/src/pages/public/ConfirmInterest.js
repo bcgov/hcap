@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { API_URL } from '../../constants';
 
-import * as qs from 'querystring';
+import * as qs from 'querystring-es3';
 
 import { Typography, Icon } from '@material-ui/core';
 import { Button } from '../../components/generic/Button';

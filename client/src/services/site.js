@@ -87,3 +87,22 @@ export const fetchSiteParticipants = async (columnIDs, siteId) => {
     method: 'GET',
   });
 };
+
+export const updateSiteParticipants = async (payload) => {
+  const response = await fetch(`${API_URL}/api/v1/employer-sites/participant_status`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorResponse = await response.json();
+    console.error('Error response:', errorResponse);
+  }
+
+  return response;
+};

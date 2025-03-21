@@ -111,7 +111,7 @@ class Keycloak {
   setAxiosInstance() {
     const isDevEnvironment =
       ['development', 'local'].includes(process.env.NODE_ENV?.toLowerCase()) ||
-      ['development', 'local'].includes(process.env.APP_ENV?.toLowerCase());
+      ['dev', 'local'].includes(process.env.APP_ENV?.toLowerCase());
 
     if (isDevEnvironment) {
       const https = require('https');

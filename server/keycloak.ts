@@ -109,20 +109,19 @@ class Keycloak {
   }
 
   setAxiosInstance() {
-    // Deactivate certificate verification on LOCAL and DEV environments
-    const https = require('https');
     const isDevEnvironment =
       ['development', 'local'].includes(process.env.NODE_ENV?.toLowerCase()) ||
       ['development', 'local'].includes(process.env.APP_ENV?.toLowerCase());
 
-    const httpsAgentConfig = {
-      rejectUnauthorized: !isDevEnvironment,
-    };
-
-    this.axiosInstance = axios.create({
-      baseURL: this.apiUrl,
-      httpsAgent: new https.Agent(httpsAgentConfig),
-    });
+    if (isDevEnvironment) {
+      const https = require('https');
+      this.axiosInstance = axios.create({
+        baseURL: this.apiUrl,
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+      });
+    } else {
+      this.axiosInstance = axios.create({ baseURL: this.apiUrl });
+    }
 
     this.axiosInstance.interceptors.request.use(async (config) => {
       // refresh token if it expires in 30 seconds

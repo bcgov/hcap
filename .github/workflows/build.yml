@@ -62,7 +62,7 @@ jobs:
       - name: Dry run - Dev
         env:
           OS_NAMESPACE_SUFFIX: dev
-        #if: steps.changes.outputs.src == 'true'
+        if: steps.changes.outputs.src == 'true'
         run: |
           oc login --token="$SA_TOKEN" --server="$CLUSTER"
           cd "$GITHUB_WORKSPACE"
@@ -99,7 +99,7 @@ jobs:
       - name: Apply Changes
         env:
           OS_NAMESPACE_SUFFIX: dev
-        #if: steps.changes.outputs.src == 'true'
+        if: steps.changes.outputs.src == 'true'
         run: |
           oc login --token="$SA_TOKEN" --server="$CLUSTER"
           cd "$GITHUB_WORKSPACE"

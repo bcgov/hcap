@@ -255,6 +255,14 @@ export const CreateSiteSchema = yup
     siteContactEmail: yup.string().required(errorMessage).email('Invalid email address'),
   });
 
+export const EditSiteHiredParticipantSchema = yup
+  .object()
+  .noUnknown('Unknown field in entry')
+  .shape({
+    hiredDate: yup.string().required('Please enter the hired date'),
+    participant_id: yup.number().required('Participant ID is required'),
+  });
+
 export const EditSiteSchema = yup
   .object()
   .noUnknown('Unknown field in entry')

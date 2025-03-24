@@ -65,11 +65,11 @@ objects:
     spec:
       resources:
         requests:
-          cpu: 500m
-          memory: 2Gi
-        limits:
           cpu: '2'
           memory: 4Gi
+        limits:
+          cpu: '3'
+          memory: 6Gi
       output:
         to:
           kind: ImageStreamTag

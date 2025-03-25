@@ -8,23 +8,23 @@ parameters:
     required: true
   - name: REPLICAS
     description: The number of stateful set replicas to use
-    value: '3'
+    value: '2'
     required: true
   - name: CPU_REQUEST
     description: Starting amount of CPU the container can use
-    value: '2'
+    value: '1'
     required: true
   - name: CPU_LIMIT
     description: Maximum amount of CPU the container can use
-    value: '3'
+    value: '2'
     required: true
   - name: MEMORY_REQUEST
     description: Starting amount of memory the container can use
-    value: 4Gi
+    value: 2Gi
     required: true
   - name: MEMORY_LIMIT
     description: Maximum amount of memory the container can use
-    value: 6Gi
+    value: 10Gi
     required: true
   - name: IMAGE_NAMESPACE
     description: Namespace from which to pull the image

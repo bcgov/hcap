@@ -15,3 +15,4 @@ export * from './participantDetailsConstants';
 export * from './user-roles';
 export * from './form-options';
 export * from './programs';
+export * from './cohortDetailsConstants';

@@ -70,7 +70,7 @@ export const AddParticipantDialog = ({
                 No available seats in the cohort. Cannot add participants.
               </Alert>
             )}
-            {isEndDatePassed && (
+            {isEndDatePassed(cohort?.end_date) && (
               <Alert severity='error'>
                 The cohort end date has passed. Cannot add participants.
               </Alert>
@@ -98,7 +98,9 @@ export const AddParticipantDialog = ({
                       color='primary'
                       onClick={() => handleAssignParticipant(row.id)}
                       text='Add'
-                      disabled={cohort?.availableCohortSeats === 0 || isEndDatePassed}
+                      disabled={
+                        cohort?.availableCohortSeats === 0 || isEndDatePassed(cohort?.end_date)
+                      }
                     />
                   );
                 default:

@@ -191,6 +191,54 @@ router.post(
     return res.status(400).send('Cohort id and participant id required');
   })
 );
+// Transfer participant from current cohort to a new one - V2
+router.post(
+  '/:cohortId/transfer/:participantId/:newCohortId',
+  [applyMiddleware(keycloak.allowRolesMiddleware(...UserRoles))],
+  asyncMiddleware(async (req, res) => {
+    const { user_id: userId, sub: localUserId } = req.user;
+    const user = userId || localUserId;
+    const { cohortId, participantId, newCohortId } = req.params;
+    if (cohortId && participantId && newCohortId) {
+      const [participant] = await getParticipantByID(participantId);
+      if (!participant) {
+        return res.status(400).send('Invalid participant id');
+      }
+      // Checking if current cohort is loaded
+      const [oldCohort] = await getCohort(+cohortId);
+      if (!oldCohort) {
+        return res.status(400).send('Invalid cohort id - Current cohort');
+      }
+      // Checking if current cohort is loaded
+      const [newCohort] = await getCohort(+newCohortId);
+      if (!newCohort) {
+        return res.status(400).send('Invalid cohort id - New cohort');
+      }
+      // Remove user from current cohort
+      await removeCohortParticipant(oldCohort.id, participant.id);
+      logger.info({
+        action: 'cohort_participant_remove',
+        performed_by: {
+          user,
+        },
+        cohortId: oldCohort.id || '',
+        participantId: participant.id,
+      });
+      // Assign participant to new cohort
+      const response = await assignCohort({ id: newCohort.id, participantId: participant.id });
+      logger.info({
+        action: 'cohort_participant_assign',
+        performed_by: {
+          user,
+        },
+        cohortId: newCohort.id || '',
+        participantId: participant.id,
+      });
+      return res.status(201).json(response);
+    }
+    return res.status(400).send('Cohorts id and participant id required');
+  })
+);
 
 // Get Assigned cohort for participant
 router.get(

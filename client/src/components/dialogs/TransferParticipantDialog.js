@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle, DialogContent } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 import { PSICohortTable } from '../participant-details/psi-cohort-table';
-import { sortPSI } from '../../services';
+import { sortPSI, transferParticipantToNewCohort } from '../../services';
 import { useToast } from '../../hooks';
 
 export const TransferParticipantDialog = ({
@@ -13,15 +13,33 @@ export const TransferParticipantDialog = ({
   fetchCohortDetails,
 }) => {
   const { openToast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+  const [sortedCohorts, setSortedCohorts] = useState([]);
+
+  useEffect(() => {
+    if (selectedParticipant && allCohorts.length > 0) {
+      const sorted = sortPSI({
+        psiList: allCohorts,
+        cohort: selectedParticipant.cohort || {},
+      });
+      setSortedCohorts(sorted);
+      setIsLoading(false);
+    }
+  }, [selectedParticipant, allCohorts]);
 
   const handleTransfer = async (selectedCohort) => {
+    await transferParticipantToNewCohort({
+      participantId: selectedParticipant.id,
+      cohortId: selectedParticipant.cohort.id,
+      newCohortId: selectedCohort.id,
+    });
     try {
       openToast({
         status: 'success',
         message: `Participant successfully transferred to ${selectedCohort.cohort_name}`,
       });
 
-      fetchCohortDetails(); // Rafraîchir les détails de la cohorte
+      fetchCohortDetails();
       onClose();
     } catch (error) {
       openToast({
@@ -31,16 +49,15 @@ export const TransferParticipantDialog = ({
     }
   };
 
-  const sortedCohorts = sortPSI({
-    psiList: allCohorts,
-    cohort: selectedParticipant?.cohort || {},
-  });
-
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth='lg'>
       <DialogTitle>Transfer Participant</DialogTitle>
       <DialogContent>
-        {selectedParticipant ? (
+        {isLoading ? (
+          <Typography variant='body1'>
+            Loading participant details and available cohorts...
+          </Typography>
+        ) : (
           <>
             <Typography variant='h6' gutterBottom>
               Transfer {selectedParticipant.firstName} {selectedParticipant.lastName} to:
@@ -49,11 +66,9 @@ export const TransferParticipantDialog = ({
             {sortedCohorts.length > 0 ? (
               <PSICohortTable rows={sortedCohorts} assignAction={handleTransfer} disabled={false} />
             ) : (
-              <Typography variant='body1'>Loading available cohorts...</Typography>
+              <Typography variant='body1'>No available cohorts found.</Typography>
             )}
           </>
-        ) : (
-          <Typography variant='body1'>Loading participant details...</Typography>
         )}
       </DialogContent>
     </Dialog>

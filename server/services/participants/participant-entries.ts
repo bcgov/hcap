@@ -198,6 +198,24 @@ export const updateParticipant = async (participantInfo) => {
   }
 };
 
+export const updateSiteParticipants = async (participantStatusInfo) => {
+  try {
+    const participant = await dbClient.db[collections.PARTICIPANTS_STATUS].updateDoc(
+      {
+        participant_id: participantStatusInfo.participant_id,
+        status: 'hired',
+      },
+      { hiredDate: participantStatusInfo.hiredDate },
+      { body: 'data' }
+    );
+
+    return participant;
+  } catch (error) {
+    logger.error(`updateParticipant: fail to update participant: ${error}`);
+    throw error;
+  }
+};
+
 export const setParticipantLastUpdated = async (id) => {
   // Find participants
   let [participant] = await getParticipantByID(id);

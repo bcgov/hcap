@@ -27,6 +27,18 @@ import { useToast } from '../../hooks';
 import dayjs from 'dayjs';
 import { keyedString, getDialogTitle, sortObjects } from '../../utils';
 import { SetAllocation } from './SetAllocation';
+import { updateSiteParticipants } from '../../services/site';
+import { EditHiredParticipantForm } from '../../components/modal-forms/EditHiredParticipantForm';
+import { EditSiteHiredParticipantSchema } from '../../constants/validation/schema/schema-edit-site-hired-date';
+
+const hiredColumns = [
+  { id: 'participantId', name: 'ID' },
+  { id: 'participantName', name: 'Name' },
+  { id: 'hiredDate', name: 'Hire Date' },
+  { id: 'startDate', name: 'Start Date' },
+  { id: 'program', name: 'Program' },
+  { id: 'edit', name: '' },
+];
 
 const tabs = SiteDetailTabContext.tabs;
 
@@ -35,6 +47,9 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
   const [order, setOrder] = useState('asc');
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
+  const [activeModalHiredParticipants, setActiveModalHiredParticipants] = useState(null);
+  const [isHiredModalLoading, setIsHiredModalLoading] = useState(false);
+  const [currentSiteHiredParticipantRow, setCurrentSiteHiredParticipantRow] = useState(null);
   const [rows, setRows] = useState([]);
   const { auth, dispatch: authDispatch } = AuthContext.useAuth();
   const { openToast } = useToast();
@@ -42,6 +57,7 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
   const defaultOnClose = () => {
     setActiveModalForm(null);
     setActionMenuParticipant(null);
+    setActiveModalHiredParticipants(null);
   };
 
   const isEmployer =
@@ -60,6 +76,20 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
+  };
+
+  const handleSiteHiredParticipantEdit = async (payload) => {
+    const response = await updateSiteParticipants(payload);
+    setIsHiredModalLoading(false);
+    if (response.ok) {
+      setActiveModalHiredParticipants(null);
+      fetchDetails();
+    } else {
+      openToast({
+        status: ToastStatus.Error,
+        message: response.error || response.statusText || 'Server error',
+      });
+    }
   };
 
   const sort = (array) => sortObjects(array, orderBy, order);
@@ -192,7 +222,7 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
               ))}
             </Grid>
           )}
-          {[tabs.HIRED_PARTICIPANTS, tabs.WITHDRAWN_PARTICIPANTS].includes(selectedTab) && (
+          {selectedTab === tabs.WITHDRAWN_PARTICIPANTS && (
             <Table
               columns={columns}
               order={order}
@@ -222,6 +252,56 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
                         variant='outlined'
                         size='small'
                         text='Archive'
+                      />
+                    );
+                  default:
+                    return row[columnId] ?? 'N/A';
+                }
+              }}
+            />
+          )}
+          {selectedTab === tabs.HIRED_PARTICIPANTS && (
+            <Table
+              columns={hiredColumns}
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={handleRequestSort}
+              rows={sort(rows)}
+              isLoading={isLoading}
+              renderCell={(columnId, row) => {
+                switch (columnId) {
+                  case 'participantName':
+                    if (isEmployer && selectedTab === tabs.HIRED_PARTICIPANTS) {
+                      return (
+                        <Link
+                          component='button'
+                          variant='body2'
+                          onClick={() => participantOnClick(row.participantId)}
+                        >
+                          {row[columnId]}
+                        </Link>
+                      );
+                    }
+                    return row[columnId];
+                  case 'archive':
+                    return (
+                      <Button
+                        onClick={() => archiveOnClick(row.participantId)}
+                        variant='outlined'
+                        size='small'
+                        text='Archive'
+                      />
+                    );
+                  case 'edit':
+                    return (
+                      <Button
+                        onClick={async () => {
+                          setCurrentSiteHiredParticipantRow(row);
+                          setActiveModalHiredParticipants('edit-site');
+                        }}
+                        variant='outlined'
+                        size='small'
+                        text='Edit'
                       />
                     );
                   default:
@@ -278,6 +358,30 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
             }}
             onClose={defaultOnClose}
             participant={actionMenuParticipant}
+          />
+        )}
+      </Dialog>
+      <Dialog
+        title={`Edit Particpant Hired Date`}
+        open={activeModalHiredParticipants != null}
+        onClose={defaultOnClose}
+      >
+        {activeModalHiredParticipants === 'edit-site' && (
+          <EditHiredParticipantForm
+            initialValues={{
+              hiredDate: currentSiteHiredParticipantRow.hiredDate,
+              participant_id: currentSiteHiredParticipantRow.participantId,
+            }}
+            validationSchema={EditSiteHiredParticipantSchema}
+            isHiredModalLoading={isHiredModalLoading}
+            onSubmit={(values) => {
+              setIsHiredModalLoading(true);
+              handleSiteHiredParticipantEdit({
+                participant_id: currentSiteHiredParticipantRow.participantId,
+                hiredDate: values.hiredDate,
+              });
+            }}
+            onClose={defaultOnClose}
           />
         )}
       </Dialog>

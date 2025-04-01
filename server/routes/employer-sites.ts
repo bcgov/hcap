@@ -3,7 +3,7 @@ import { Role, UserRoles } from '../constants';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
-import { CreateSiteSchema, EditSiteSchema } from '../validation';
+import { CreateSiteSchema, EditSiteSchema, EditSiteHiredParticipantSchema } from '../validation';
 import { expressRequestBodyValidator, routeRedirect } from '../middleware';
 import {
   saveSingleSite,
@@ -16,6 +16,7 @@ import {
 import {
   getHiredParticipantsBySite,
   getWithdrawnParticipantsBySite,
+  updateSiteParticipants,
 } from '../services/participants';
 import { sanitize } from '../utils';
 // Main router
@@ -49,6 +50,45 @@ router.post(
         return resp.status(400).send({ siteId: sanitize(req.body.siteId), status: 'Duplicate' });
       }
       return resp.status(400).send(`${excp}`);
+    }
+  })
+);
+
+router.patch(
+  '/participant_status',
+  [
+    keycloak.allowRolesMiddleware(Role.MinistryOfHealth),
+    keycloak.getUserInfoMiddleware(),
+    expressRequestBodyValidator(EditSiteHiredParticipantSchema),
+  ],
+  asyncMiddleware(async (req, res) => {
+    const { body, hcapUserInfo: user } = req;
+    const { participantId, status } = body;
+    try {
+      logger.info({
+        action: 'participant-status_patch',
+        performed_by: {
+          username: user.username,
+          id: user.id,
+        },
+        participant_id: participantId,
+        new_status: status,
+      });
+
+      const response = await updateSiteParticipants(body);
+
+      return res.json(response);
+    } catch (error) {
+      logger.error({
+        action: 'participant-status_patch_error',
+        performed_by: {
+          username: user.username,
+          id: user.id,
+        },
+        participant_id: participantId,
+        error_message: error.message,
+      });
+      return res.status(400).send(`Error: ${error.message}`);
     }
   })
 );

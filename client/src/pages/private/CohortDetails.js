@@ -1,17 +1,39 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
-import dayjs from 'dayjs';
-import { Box, Card, Grid, Typography, Link, Dialog } from '@material-ui/core';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
+import {
+  Box,
+  Card,
+  Grid,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 
-import { ManageGraduationForm } from '../../components/modal-forms/ManageGraduationForm';
+import {
+  BulkGraduationDialog,
+  AddParticipantDialog,
+  TransferParticipantDialog,
+} from '../../components/dialogs';
 import { AuthContext } from '../../providers';
-import { Page, CheckPermissions, Table, Button } from '../../components/generic';
-import { Role, Routes, ToastStatus, postHireStatuses } from '../../constants';
-import { useToast } from '../../hooks';
-import { createPostHireStatus, fetchCohort, getPostHireStatusLabel } from '../../services';
-import { keyedString, formatCohortDate } from '../../utils';
+import { Page, CheckPermissions, Button } from '../../components/generic';
+import CohortParticipantsTable from '../../components/tables/CohortParticipantsTable';
+import CohortHeader from './CohortHeader';
+import { createPostHireStatus, assignParticipantWithCohort } from '../../services';
+
+import {
+  Role,
+  ToastStatus,
+  ROWS_PER_PAGE_OPTIONS,
+  COLUMNS,
+  DIALOG_TITLES,
+  ALERT_MESSAGES,
+  BUTTON_TEXTS,
+} from '../../constants';
+import { useToast, useCohortData, useCohortActions, useCohortParticipantsTable } from '../../hooks';
+import { formatCohortDate } from '../../utils';
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
@@ -28,49 +50,51 @@ const useStyles = makeStyles((theme) => ({
 
 export default ({ match }) => {
   const cohortId = parseInt(match.params.id);
+  const {
+    handleOpenParticipantDetails,
+    handleTransferParticipant,
+    selectedParticipant,
+    allCohorts,
+    transferModalOpen,
+    setTransferModalOpen,
+  } = useCohortActions(cohortId);
+
+  const {
+    openConfirmDialog,
+    setOpenConfirmDialog,
+    confirmRemoveParticipant,
+    handleRemoveParticipant,
+    cohort,
+    rows,
+    isLoading,
+    participantsToAssign,
+    totalParticipants,
+    currentPage,
+    rowsPerPage,
+    filter,
+    setFilter,
+    handleChangePage,
+    handleChangeRowsPerPage,
+    fetchCohortDetails,
+    fetchDataAddParticipantModal,
+    setCurrentPage,
+  } = useCohortData(cohortId);
+
+  const { selectedParticipants, setSelectedParticipants, sortConfig, handleRequestSort } =
+    useCohortParticipantsTable(rows);
+
   const classes = useStyles();
-  const history = useHistory();
   const { openToast } = useToast();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const isHA = roles?.includes(Role.HealthAuthority) || false;
 
-  const [cohort, setCohort] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedParticipants, setSelectedParticipants] = useState([]);
-  const [rows, setRows] = useState([]);
   const [showGraduationModal, setShowGraduationModal] = useState(false);
+  const [activeModalForm, setActiveModalForm] = useState(null);
+  const rowsPerPageOptions = ROWS_PER_PAGE_OPTIONS;
+  const prevFilter = useRef({ lastName: '', emailAddress: '' });
 
-  const columns = [
-    { id: 'lastName', name: 'Last Name', sortable: false },
-    { id: 'firstName', name: 'First Name', sortable: false },
-    { id: 'siteName', name: 'Site Name', sortable: false },
-    { id: 'graduationStatus', name: 'Graduation Status', sortable: false },
-  ];
-
-  const fetchCohortDetails = async () => {
-    try {
-      setIsLoading(true);
-      const cohortData = await fetchCohort({ cohortId });
-      setCohort(cohortData.cohort);
-      setRows(cohortData.participants);
-    } catch (err) {
-      openToast({
-        status: ToastStatus.Error,
-        message: err.message || 'Failed to fetch cohort details',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getParticipantGraduationStatus = (participantStatuses) => {
-    if (!participantStatuses || participantStatuses.length === 0) return 'Not recorded';
-    const graduationStatus = participantStatuses.find(
-      (postHireStatus) => postHireStatus.is_current === true
-    );
-    return getPostHireStatusLabel(graduationStatus);
-  };
+  const columns = COLUMNS;
 
   // Bulk Graduation only allows the successful graduation path
   const handleBulkGraduate = async (values) => {
@@ -90,19 +114,68 @@ export default ({ match }) => {
     fetchCohortDetails();
   };
 
-  const handleOpenParticipantDetails = (participantId) => {
-    const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
-      id: participantId,
-      page: 'cohort-details',
-      pageId: cohortId,
-    });
-    history.push(participantDetailsPath);
+  const handleAddParticipantClick = async () => {
+    setActiveModalForm('add-participant');
+  };
+
+  const closeAddParticipantModal = () => {
+    setActiveModalForm(null);
+  };
+
+  const handleAssignParticipant = async (participantId) => {
+    try {
+      await assignParticipantWithCohort({ participantId: participantId, cohortId: cohortId }); // Use the service to assign
+      openToast({
+        status: ToastStatus.Success,
+        message: `Participant ${participantId} assigned to cohort ${cohortId} successfully`,
+      });
+      fetchDataAddParticipantModal();
+      fetchCohortDetails();
+    } catch (error) {
+      openToast({
+        status: ToastStatus.Error,
+        message: `Failed to assign participant ${participantId} to cohort ${cohortId}: ${error}`,
+      });
+    }
+  };
+
+  const sortedParticipantsToAssign = useMemo(() => {
+    // Ensure participantsToAssign is an array before attempting to sort
+    if (!Array.isArray(participantsToAssign)) {
+      return [];
+    }
+    let sortableItems = [...participantsToAssign];
+
+    if (sortConfig !== null) {
+      sortableItems.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableItems;
+  }, [participantsToAssign, sortConfig]);
+
+  const resetPage = () => {
+    setCurrentPage(0);
   };
 
   useEffect(() => {
-    fetchCohortDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (activeModalForm === 'add-participant') {
+      if (
+        filter.lastName !== prevFilter.current.lastName ||
+        filter.emailAddress !== prevFilter.current.emailAddress
+      ) {
+        resetPage();
+      }
+      fetchDataAddParticipantModal();
+      prevFilter.current = { ...filter };
+    }
+  }, [currentPage, rowsPerPage, filter, activeModalForm]);
 
   const cohortEndDate = formatCohortDate(cohort?.end_date, { isForm: true });
   const hasSelectedParticipantGraduated = selectedParticipants
@@ -112,24 +185,43 @@ export default ({ match }) => {
   return (
     <Page>
       {showGraduationModal && (
-        <Dialog title={'Set Bulk Graduation Status'} open={showGraduationModal}>
-          <ManageGraduationForm
-            cohortEndDate={cohortEndDate}
-            initialValues={{
-              status: postHireStatuses.postSecondaryEducationCompleted,
-              data: {
-                date: cohortEndDate,
-              },
-              continue: 'continue_yes',
-              participantIds: selectedParticipants.map(({ id }) => id),
-            }}
-            onClose={() => {
-              setShowGraduationModal(false);
-            }}
-            onSubmit={handleBulkGraduate}
-            isBulkGraduate
-          />
-        </Dialog>
+        <BulkGraduationDialog
+          open={showGraduationModal}
+          onClose={() => setShowGraduationModal(false)}
+          cohortEndDate={cohortEndDate}
+          onSubmit={handleBulkGraduate}
+          participantIds={selectedParticipants.map(({ id }) => id)}
+        />
+      )}
+
+      {activeModalForm === 'add-participant' && (
+        <AddParticipantDialog
+          open={true}
+          onClose={closeAddParticipantModal}
+          filter={filter}
+          setFilter={setFilter}
+          sortedParticipantsToAssign={sortedParticipantsToAssign}
+          sortConfig={sortConfig}
+          handleRequestSort={handleRequestSort}
+          handleAssignParticipant={handleAssignParticipant}
+          rowsPerPageOptions={rowsPerPageOptions}
+          totalParticipants={totalParticipants}
+          rowsPerPage={rowsPerPage}
+          currentPage={currentPage}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+          cohort={cohort}
+        />
+      )}
+
+      {transferModalOpen && (
+        <TransferParticipantDialog
+          open={true}
+          onClose={() => setTransferModalOpen(false)}
+          selectedParticipant={selectedParticipant}
+          allCohorts={allCohorts}
+          fetchCohortDetails={fetchCohortDetails}
+        />
       )}
 
       <CheckPermissions
@@ -138,53 +230,33 @@ export default ({ match }) => {
       >
         <Card className={classes.cardRoot}>
           <Box py={8} px={10}>
-            <Typography variant='body1'>
-              <Link href={Routes.PSIView}>PSI</Link> / Cohorts / {cohort?.cohort_name}
-            </Typography>
-
-            <Box py={2}>
-              <Typography variant='h2'>{cohort?.cohort_name}</Typography>
-            </Box>
-
-            <Grid container spacing={2} className={classes.gridRoot}>
-              <Grid item xs={12} sm={6}>
-                <Typography variant='subtitle2'>Start Date</Typography>
-                <Typography variant='body1'>
-                  {dayjs.utc(cohort?.start_date).format('MMM DD, YYYY')}
-                </Typography>
+            <CohortHeader cohort={cohort} isHA={isHA} />
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={3}>
+                <CheckPermissions permittedRoles={[Role.MinistryOfHealth]}>
+                  <Box>
+                    <Button
+                      variant='contained'
+                      color='primary'
+                      onClick={handleAddParticipantClick}
+                      text={BUTTON_TEXTS.ADD_PARTICIPANT}
+                      disabled={cohort?.availableCohortSeats === 0}
+                    >
+                      {DIALOG_TITLES.ADD_PARTICIPANT}
+                    </Button>
+                  </Box>
+                </CheckPermissions>
               </Grid>
 
               <Grid item xs={12} sm={6}>
-                <Typography variant='subtitle2'>End Date</Typography>
-                <Typography variant='body1'>
-                  {dayjs.utc(cohort?.end_date).format('MMM DD, YYYY')}
-                </Typography>
+                <CheckPermissions permittedRoles={[Role.MinistryOfHealth]}>
+                  <Box>
+                    {cohort?.availableCohortSeats === 0 && (
+                      <Alert severity='error'>{ALERT_MESSAGES.NO_SEATS}</Alert>
+                    )}
+                  </Box>
+                </CheckPermissions>
               </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Typography variant='subtitle2'>Total Seats</Typography>
-                <Typography variant='body1'>{cohort?.cohort_size ?? '...'}</Typography>
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Typography variant='subtitle2'>Total Available Seats</Typography>
-                <Typography variant='body1'>{cohort?.availableCohortSeats ?? '...'}</Typography>
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Typography variant='subtitle2'>Number of Unsuccessful Participants</Typography>
-                <Typography variant='body1'>{cohort?.unsuccessfulParticipants ?? '...'}</Typography>
-              </Grid>
-
-              {isHA && (
-                <Grid item xs={12}>
-                  <Alert severity='info'>
-                    <Typography variant='body2' gutterBottom>
-                      Participants hired outside your region will not appear in this list
-                    </Typography>
-                  </Alert>
-                </Grid>
-              )}
             </Grid>
 
             <CheckPermissions permittedRoles={[Role.HealthAuthority]}>
@@ -193,7 +265,7 @@ export default ({ match }) => {
                   <Button
                     size='small'
                     variant='outlined'
-                    text='Bulk Graduate'
+                    text={BUTTON_TEXTS.BULK_GRADUATE}
                     disabled={
                       selectedParticipants.length < 1 || hasSelectedParticipantGraduated.length > 0
                     }
@@ -204,46 +276,27 @@ export default ({ match }) => {
                 </Grid>
                 <br />
                 {hasSelectedParticipantGraduated.length > 0 && (
-                  <Alert severity='warning'>
-                    Bulk Graduation is only available for participants with no graduation status.
-                    Please deselect participants who have had a successful or unsuccessful
-                    graduation.
-                  </Alert>
+                  <Alert severity='warning'>{ALERT_MESSAGES.BULK_GRADUATION}</Alert>
                 )}
               </>
             </CheckPermissions>
 
             <Box>
-              {rows.length > 0 ? (
-                <Table
+              {isLoading ? (
+                <Typography variant='subtitle1' className={classes.notFoundBox}>
+                  Loading Participants...
+                </Typography>
+              ) : rows.length > 0 ? (
+                <CohortParticipantsTable
                   columns={columns}
                   rows={rows}
                   isLoading={isLoading}
-                  isMultiSelect={roles.includes(Role.HealthAuthority)}
-                  selectedRows={selectedParticipants}
-                  updateSelectedRows={setSelectedParticipants}
-                  renderCell={(columnId, row) => {
-                    switch (columnId) {
-                      case 'firstName':
-                        return row.body[columnId];
-                      case 'lastName':
-                        return (
-                          <Link
-                            component='button'
-                            variant='body2'
-                            onClick={() => handleOpenParticipantDetails(row.id)}
-                          >
-                            {row.body[columnId]}
-                          </Link>
-                        );
-                      case 'siteName':
-                        return row.siteJoin?.body[columnId];
-                      case 'graduationStatus':
-                        return getParticipantGraduationStatus(row.postHireJoin);
-                      default:
-                        return row[columnId];
-                    }
-                  }}
+                  selectedParticipants={selectedParticipants}
+                  setSelectedParticipants={setSelectedParticipants}
+                  handleOpenParticipantDetails={handleOpenParticipantDetails}
+                  handleRemoveParticipant={handleRemoveParticipant}
+                  handleTransferParticipant={handleTransferParticipant}
+                  roles={roles}
                 />
               ) : (
                 <Typography variant='subtitle1' className={classes.notFoundBox}>
@@ -253,6 +306,26 @@ export default ({ match }) => {
             </Box>
           </Box>
         </Card>
+        <Dialog open={openConfirmDialog} onClose={() => setOpenConfirmDialog(false)}>
+          <DialogTitle>{DIALOG_TITLES.CONFIRM_REMOVAL}</DialogTitle>
+          <DialogContent>
+            Are you sure you want to remove this participant from the cohort?
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setOpenConfirmDialog(false)}
+              variant='outlined'
+              text={BUTTON_TEXTS.CANCEL}
+              color='primary'
+            />
+            <Button
+              onClick={confirmRemoveParticipant}
+              variant='outlined'
+              text={BUTTON_TEXTS.CONFIRM}
+              color='secondary'
+            />
+          </DialogActions>
+        </Dialog>
       </CheckPermissions>
     </Page>
   );

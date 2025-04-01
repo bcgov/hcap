@@ -25,6 +25,7 @@ import {
   participantFieldsForMoH,
 } from '../../constants';
 import { isPrivateEmployerOrMHSUEmployerOrHA, ParticipantsFinder } from '../participants-helper';
+import { response } from 'express';
 
 export const makeParticipant = async (participantData) => {
   const res = await dbClient.db.saveDoc(collections.PARTICIPANTS, participantData);
@@ -80,6 +81,76 @@ export const deleteParticipant = async ({ email }) => {
   });
 };
 
+export const getParticipantsToAssign = async (
+  limit: number,
+  offset: number,
+  lastName = '',
+  emailAddress = ''
+) => {
+  try {
+    const result = await dbClient.db.withTransaction(async (tnx) => {
+      let participantsQuery = `
+        SELECT participants.*
+        FROM ${collections.PARTICIPANTS} participants
+        LEFT OUTER JOIN ${collections.COHORT_PARTICIPANTS} cohortParticipant ON cohortParticipant.participant_id = participants.id
+        LEFT OUTER JOIN ${collections.PARTICIPANT_POST_HIRE_STATUS} postHireStatus ON postHireStatus.participant_id = participants.id
+        WHERE (cohortParticipant.cohort_id IS NULL
+          OR postHireStatus.status = $1)
+    `;
+
+      let countQuery = `
+        SELECT COUNT(participants.id) as total
+        FROM ${collections.PARTICIPANTS} participants
+        LEFT OUTER JOIN ${collections.COHORT_PARTICIPANTS} cohortParticipant ON cohortParticipant.participant_id = participants.id
+        LEFT OUTER JOIN ${collections.PARTICIPANT_POST_HIRE_STATUS} postHireStatus ON postHireStatus.participant_id = participants.id
+        WHERE (cohortParticipant.cohort_id IS NULL
+          OR postHireStatus.status = $1)
+    `;
+
+      const queryParams: any[] = [postHireStatuses.cohortUnsuccessful];
+
+      if (lastName) {
+        participantsQuery += ` AND LOWER(participants.body->>'lastName') LIKE $${
+          queryParams.length + 1
+        }`;
+        countQuery += ` AND LOWER(participants.body->>'lastName') LIKE $${queryParams.length + 1}`;
+        queryParams.push(`%${lastName.toLowerCase()}%`);
+      }
+
+      if (emailAddress) {
+        participantsQuery += ` AND LOWER(participants.body->>'emailAddress') LIKE $${
+          queryParams.length + 1
+        }`;
+        countQuery += ` AND LOWER(participants.body->>'emailAddress') LIKE $${
+          queryParams.length + 1
+        }`;
+        queryParams.push(`%${emailAddress.toLowerCase()}%`);
+      }
+
+      const totalCountResult = await tnx.query(countQuery, queryParams);
+      const total = totalCountResult[0]?.total || 0;
+
+      participantsQuery += ` ORDER BY participants.id LIMIT $${queryParams.length + 1} OFFSET $${
+        queryParams.length + 2
+      }`;
+      queryParams.push(limit, offset);
+
+      const participantsResult = await tnx.query(participantsQuery, queryParams);
+
+      const participants = participantsResult;
+
+      return {
+        participants,
+        total,
+      };
+    });
+    return result;
+  } catch (error) {
+    logger.error('Failed to get participants to assign:', error);
+    throw error;
+  }
+};
+
 export const updateParticipant = async (participantInfo) => {
   try {
     // The below reduce function unpacks the most recent changes in the history
@@ -118,6 +189,24 @@ export const updateParticipant = async (participantInfo) => {
         id: participantInfo.id,
       },
       changes
+    );
+
+    return participant;
+  } catch (error) {
+    logger.error(`updateParticipant: fail to update participant: ${error}`);
+    throw error;
+  }
+};
+
+export const updateSiteParticipants = async (participantStatusInfo) => {
+  try {
+    const participant = await dbClient.db[collections.PARTICIPANTS_STATUS].updateDoc(
+      {
+        participant_id: participantStatusInfo.participant_id,
+        status: 'hired',
+      },
+      { hiredDate: participantStatusInfo.hiredDate },
+      { body: 'data' }
     );
 
     return participant;

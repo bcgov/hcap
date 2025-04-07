@@ -4,7 +4,7 @@ import { Button } from '../generic';
 import { Box, makeStyles } from '@material-ui/core';
 import { RenderTextField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import Typography from '@material-ui/core/Typography';
+//import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles((theme) => ({
@@ -29,13 +29,8 @@ export const EditHiredParticipantForm = ({
       {({ submitForm }) => (
         <FormikForm>
           <Box>
-            <Box pt={1} pb={1}>
-              <Typography variant='body1'>
-                <b>Site Hired Participant</b>
-              </Typography>
-            </Box>
             {/* Add Participant ID */}
-            <Field name='participant_id' component={RenderTextField} label='* Participant ID' />
+            <Field name='participant_id' component={RenderTextField} style={{ display: 'none' }} />
             <Field name='hiredDate' component={RenderTextField} label='* Hire Date' />
           </Box>
           <Box mt={3}>

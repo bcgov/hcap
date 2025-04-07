@@ -79,8 +79,6 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
   };
 
   const handleSiteHiredParticipantEdit = async (payload) => {
-    console.log('test payload');
-    console.log(payload);
     const response = await updateSiteParticipants(payload);
     setIsHiredModalLoading(false);
     if (response.ok) {

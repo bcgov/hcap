@@ -167,56 +167,113 @@ export const getParticipantsReport = async () => {
 };
 
 export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
-  const searchOptions = {
-    status: [ps.HIRED],
-    'duplicateArchivedJoin.status': null,
-    // 'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
+  const batchSize = 1000;
+
+  const fetchBatch = async (
+    lastParticipantId = 0,
+    accumulator: HiredEntry[] = []
+  ): Promise<HiredEntry[]> => {
+    const searchOptions = {
+      status: [ps.HIRED],
+      'duplicateArchivedJoin.status': null,
+      // 'employerSiteJoin.body.siteId::int >': 0, // Ensures that at least one site is found
+      'participant_id >': lastParticipantId,
+    };
+
+    if (region !== DEFAULT_REGION_NAME) {
+      searchOptions['employerSiteJoin.body.healthAuthority'] = region;
+    }
+
+    const hiredEntries: HiredEntry[] = await dbClient.db[collections.PARTICIPANTS_STATUS]
+      .join({
+        participantJoin: {
+          type: 'INNER',
+          relation: collections.PARTICIPANTS,
+          on: {
+            id: 'participant_id',
+          },
+          options: {
+            cardinality: {
+              parentReadable: true,
+            },
+          },
+        },
+        employerSiteJoin: {
+          type: 'INNER',
+          relation: collections.EMPLOYER_SITES,
+          on: { 'body.siteId::int': 'data.site::int', 'body.siteId::int >': 0 },
+          options: {
+            cardinality: {
+              parentReadable: true,
+            },
+          },
+        },
+        duplicateArchivedJoin: {
+          type: 'LEFT OUTER',
+          relation: collections.PARTICIPANTS_STATUS,
+          on: {
+            participant_id: 'participant_id',
+            status: ps.ARCHIVED,
+            current: true,
+            'data.type': 'duplicate',
+          },
+        },
+        archivedJoin: {
+          type: 'LEFT OUTER',
+          relation: collections.PARTICIPANTS_STATUS,
+          on: {
+            participant_id: 'participant_id',
+            status: ps.ARCHIVED,
+            current: true,
+            'data.type <>': 'duplicate',
+          },
+        },
+      })
+      .find(
+        {
+          ...searchOptions,
+          'employerSiteJoin.body.siteId::int >': 0, // Décommenter pour validation
+        },
+        [
+          'participant_id',
+          'participantJoin.body.firstName',
+          'participantJoin.body.lastName',
+          'employer_id',
+          'participantJoin.body.emailAddress',
+          'participantJoin.body.program',
+          'participantJoin.body.driverLicense',
+          'participantJoin.body.indigenous',
+          'participantJoin.body.reasonForFindingOut',
+          'participantJoin.body.currentOrMostRecentIndustry',
+          'participantJoin.body.experienceWithMentalHealthOrSubstanceUse',
+          'participantJoin.body.interestedWorkingPeerSupportRole',
+          'employerSiteJoin.body.healthAuthority',
+          'employerSiteJoin.body.siteName',
+          'employerSiteJoin.body.city',
+          'employerSiteJoin.body.siteId',
+          'data.startDate',
+          'data.hiredDate',
+          'archivedJoin.data.reason',
+          'archivedJoin.data.endDate',
+        ],
+        {
+          limit: batchSize,
+          order: [{ field: 'participant_id', direction: 'ASC' }],
+          distinct: ['participant_id'],
+        }
+      );
+
+    if (hiredEntries.length === 0) return accumulator;
+
+    return fetchBatch(
+      hiredEntries[hiredEntries.length - 1].participant_id,
+      accumulator.concat(hiredEntries)
+    );
   };
 
-  if (region !== DEFAULT_REGION_NAME) {
-    searchOptions['employerSiteJoin.body.healthAuthority'] = region;
-  }
+  const allResults = await fetchBatch();
 
-  const hiredEntries: HiredEntry[] = await dbClient.db[collections.PARTICIPANTS_STATUS]
-    .join({
-      participantJoin: {
-        type: 'LEFT OUTER',
-        relation: collections.PARTICIPANTS,
-        on: {
-          id: 'participant_id',
-        },
-      },
-      employerSiteJoin: {
-        type: 'LEFT OUTER',
-        relation: collections.EMPLOYER_SITES,
-        on: {
-          'body.siteId': 'data.site',
-        },
-      },
-      duplicateArchivedJoin: {
-        type: 'LEFT OUTER',
-        relation: collections.PARTICIPANTS_STATUS,
-        on: {
-          participant_id: 'participant_id',
-          status: ps.ARCHIVED,
-          current: true,
-          'data.type': 'duplicate',
-        },
-      },
-      archivedJoin: {
-        type: 'LEFT OUTER',
-        relation: collections.PARTICIPANTS_STATUS,
-        on: {
-          participant_id: 'participant_id',
-          status: ps.ARCHIVED,
-          current: true,
-          'data.type <>': 'duplicate',
-        },
-      },
-    })
-    .find(searchOptions);
-
-  return hiredEntries.map((entry) => ({
+  return allResults.map((entry) => ({
     participantId: entry.participant_id,
     firstName: entry.participantJoin?.[0]?.body?.firstName,
     lastName: entry.participantJoin?.[0]?.body?.lastName,

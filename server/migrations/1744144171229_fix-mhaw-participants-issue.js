@@ -1,5 +1,4 @@
-const knownFields = ['interestedWorkingPeerSupportRole'];
-
+/* eslint-disable camelcase */
 exports.up = async (pgm) => {
   const ids = [
     57042, 56344, 47415, 64310, 56346, 61897, 57047, 56349, 56350, 52749, 52751, 52752, 52785,
@@ -731,7 +730,6 @@ exports.up = async (pgm) => {
 };
 
 exports.down = async (pgm) => {
-  // Liste des IDs concernés
   const ids = [
     57042, 56344, 47415, 64310, 56346, 61897, 57047, 56349, 56350, 52749, 52751, 52752, 52785,
     52814, 57051, 52764, 52823, 52866, 52987, 52772, 52988, 52830, 56354, 52994, 56355, 57057,

@@ -34,6 +34,11 @@ export const useCohortActions = (cohortId) => {
     async (participantId) => {
       try {
         setIsLoading(true);
+
+        // Fetch all cohorts
+        const list = await getPsi();
+        setAllCohorts(list);
+
         // Fetch participant details
         const participant = await fetchParticipant({ id: participantId });
         setSelectedParticipant(participant);
@@ -44,13 +49,6 @@ export const useCohortActions = (cohortId) => {
         ) {
           setDisableAssign(true);
           return;
-        }
-
-        try {
-          const list = await getPsi();
-          setAllCohorts(list);
-        } catch (error) {
-          console.error('Error while trying to retrieve PSI:', error);
         }
       } catch (error) {
         console.error('Error fetching transfer data:', error);

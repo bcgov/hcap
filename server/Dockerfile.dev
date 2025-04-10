@@ -1,3 +1,4 @@
+# This Dockerfile is optimized for local development, it includes hot reloading and uses ts-node for direct TypeScript execution
 FROM public.ecr.aws/bitnami/node:18.15.0
 
 # Allow node modules to be called directly
@@ -12,4 +13,5 @@ EXPOSE 4000
 ARG VERSION
 ENV VERSION $VERSION
 
+# Development mode - uses hot reloading
 CMD [ "npm", "run", "watch" ]

@@ -192,21 +192,11 @@ export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) =
           on: {
             id: 'participant_id',
           },
-          options: {
-            cardinality: {
-              parentReadable: true,
-            },
-          },
         },
         employerSiteJoin: {
           type: 'INNER',
           relation: collections.EMPLOYER_SITES,
           on: { 'body.siteId::int': 'data.site::int', 'body.siteId::int >': 0 },
-          options: {
-            cardinality: {
-              parentReadable: true,
-            },
-          },
         },
         duplicateArchivedJoin: {
           type: 'LEFT OUTER',

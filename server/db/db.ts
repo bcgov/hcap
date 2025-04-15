@@ -8,7 +8,15 @@ import logger from '../logger';
  * to easily interact with a Postgres database
  */
 class DBClient {
-  settings: { host: string; port: number; database: string; user: string; password: string };
+  settings: {
+    host: string;
+    port: number;
+    database: string;
+    user: string;
+    password: string;
+    connectionTimeoutMillis: number;
+    idleTimeoutMillis: number;
+  };
 
   db?: massive.Database;
 
@@ -21,6 +29,8 @@ class DBClient {
       database: process.env.NODE_ENV === 'test' ? 'db_test' : process.env.POSTGRES_DB,
       user: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
+      connectionTimeoutMillis: 30000,
+      idleTimeoutMillis: 5000,
     };
     this.db = null;
   }

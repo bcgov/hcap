@@ -18,7 +18,7 @@ const CohortParticipantsTable = ({
   // Filtering columns to display depending on user roles
   const filteredColumns = columns.filter((column) => {
     if (column.id === 'removeButton') {
-      // Don't display Transfer or Delete columns for non admin users
+      // Don't display Delete columns for non admin users
       return roles.includes(Role.MinistryOfHealth);
     }
     return true;

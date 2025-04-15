@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useCallback, useState, useMemo, useRef } from 'react';
 import {
   Box,
   Card,
@@ -160,9 +160,9 @@ export default ({ match }) => {
     return sortableItems;
   }, [participantsToAssign, sortConfig]);
 
-  const resetPage = () => {
+  const resetPage = useCallback(() => {
     setCurrentPage(0);
-  };
+  }, [setCurrentPage]);
 
   useEffect(() => {
     if (activeModalForm === 'add-participant') {
@@ -175,7 +175,7 @@ export default ({ match }) => {
       fetchDataAddParticipantModal();
       prevFilter.current = { ...filter };
     }
-  }, [currentPage, rowsPerPage, filter, activeModalForm]);
+  }, [currentPage, rowsPerPage, filter, activeModalForm, fetchDataAddParticipantModal, resetPage]);
 
   const cohortEndDate = formatCohortDate(cohort?.end_date, { isForm: true });
   const hasSelectedParticipantGraduated = selectedParticipants

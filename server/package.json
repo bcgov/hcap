@@ -5,7 +5,7 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": ">=14.0",
+    "node": ">=20.0.0",
     "npm": ">=7.0.0"
   },
   "scripts": {
@@ -64,6 +64,7 @@
     "express": "4.18.2",
     "fast-csv": "4.3.6",
     "fast-xml-parser": "3.17.4",
+    "hcap": "file:..",
     "helmet": "4.1.1",
     "inquirer": "7.3.3",
     "jsdom": "21.1.1",

@@ -1,11 +1,11 @@
 {
   "scripts": {
     "check-format": "run-p 'check:*'",
-    "check:prettier": "prettier --check .",
+    "check:prettier": "prettier --check \"./client/**/*.{js,jsx,json,css,scss,md}\" \"./server/**/*.{js,jsx,json,css,scss,md}\" \"*.{js,jsx,json,css,scss,md}\"",
     "check:lint-client": "eslint --ext js,jsx -c ./client/.eslintrc ./client",
     "check:lint-server": "eslint --ext js,jsx -c ./server/.eslintrc ./server",
     "format": "run-s 'format:*'",
-    "format:prettier": "prettier --write .",
+    "format:prettier": "prettier --write \"./client/**/*.{js,jsx,json,css,scss,md}\" \"./server/**/*.{js,jsx,json,css,scss,md}\" \"*.{js,jsx,json,css,scss,md}\"",
     "format:lint-client": "eslint --ext js,jsx -c ./client/.eslintrc ./client --fix",
     "format:lint-server": "eslint --ext js,jsx -c ./server/.eslintrc ./server --fix",
     "update-all": "npm i && run-p 'update:*'",
@@ -18,7 +18,7 @@
     "cypress-e2e": "cypress run --headless"
   },
   "engines": {
-    "node": ">=14.0",
+    "node": ">=20.0.0",
     "npm": ">=7.0.0"
   },
   "devDependencies": {

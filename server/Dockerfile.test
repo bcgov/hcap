@@ -1,5 +1,5 @@
 # This Dockerfile is optimized for production-like environments (the dev&test&prod OpenShift), it compiles TypeScript to JavaScript and minimize image size
-FROM public.ecr.aws/bitnami/node:18.15.0 AS builder
+FROM node:20-slim AS builder
 
 # Configure server
 WORKDIR /server
@@ -19,10 +19,10 @@ COPY main.ts ./
 RUN npm run build
 
 # Production image
-FROM public.ecr.aws/bitnami/node:18.15.0
+FROM node:20-slim
 
 # Allow node modules to be called directly
-ENV PATH $PATH:/usr/src/app/node_modules/.bin
+ENV PATH=$PATH:/usr/src/app/node_modules/.bin
 
 # Configure server
 WORKDIR /server
@@ -36,8 +36,8 @@ COPY --from=builder /server/build ./build
 
 # Static env vars
 ARG VERSION
-ENV VERSION $VERSION
-ENV NODE_ENV production
+ENV VERSION=$VERSION
+ENV NODE_ENV=production
 
 # Run the compiled JavaScript
 CMD [ "npm", "run", "start:openshift" ]

@@ -1,8 +1,8 @@
 # Client
-FROM registry.access.redhat.com/ubi8/nodejs-18:1 AS client
+FROM node:20-slim AS client
 
 # Build client
-ENV HOME_CLIENT /opt/app-root/src/app/client
+ENV HOME_CLIENT=/opt/app-root/src/app/client
 # Using root to transfer ownership of work dir
 USER root
 RUN mkdir -p ${HOME_CLIENT}
@@ -16,13 +16,13 @@ COPY client/. .
 RUN INLINE_RUNTIME_CHUNK=false npm run build
 
 # Server
-FROM registry.access.redhat.com/ubi8/nodejs-18:1 AS server
+FROM node:20-slim AS server
 # Static env vars
 ARG VERSION
-ENV VERSION $VERSION
-ENV NODE_ENV production
-ENV HOME_SERVER /opt/app-root/src/app/server
-ENV HOME_CLIENT /opt/app-root/src/app/client
+ENV VERSION=$VERSION
+ENV NODE_ENV=production
+ENV HOME_SERVER=/opt/app-root/src/app/server
+ENV HOME_CLIENT=/opt/app-root/src/app/client
 
 # Configure server
 # Using root to transfer ownership of work dir

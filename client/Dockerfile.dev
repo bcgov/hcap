@@ -1,7 +1,8 @@
-FROM public.ecr.aws/bitnami/node:14.17.3
+# Used for local development
+FROM node:20-slim
 
 # Allow node modules to be called directly
-ENV PATH $PATH:/client/node_modules/.bin
+ENV PATH=$PATH:/client/node_modules/.bin
 
 # Configure client container
 WORKDIR /client

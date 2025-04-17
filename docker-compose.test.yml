@@ -1,5 +1,4 @@
-version: '2.4' # Depending on service condition was removed in v3+
-
+# This docker-compose.dev.yml is used for local testing environment with Keycloak
 services:
   client:
     image: ${APP_NAME}-client

@@ -1,13 +1,14 @@
-FROM public.ecr.aws/bitnami/node:14.17.3
+# Used for local testing with Keycloak
+FROM node:20-slim
 
 # Allow node modules to be called directly
-ENV PATH $PATH:/client/node_modules/.bin
+ENV PATH=$PATH:/client/node_modules/.bin
 
 # Build client
 WORKDIR /client
 COPY package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 
-# Run dev client
+# Run client
 EXPOSE 4000
 CMD [ "npm", "run", "start" ]

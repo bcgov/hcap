@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useCallback, useState, useMemo, useRef } from 'react';
 import {
   Box,
   Card,
@@ -160,9 +160,9 @@ export default ({ match }) => {
     return sortableItems;
   }, [participantsToAssign, sortConfig]);
 
-  const resetPage = () => {
+  const resetPage = useCallback(() => {
     setCurrentPage(0);
-  };
+  }, [setCurrentPage]);
 
   useEffect(() => {
     if (activeModalForm === 'add-participant') {
@@ -175,12 +175,42 @@ export default ({ match }) => {
       fetchDataAddParticipantModal();
       prevFilter.current = { ...filter };
     }
-  }, [currentPage, rowsPerPage, filter, activeModalForm]);
+  }, [currentPage, rowsPerPage, filter, activeModalForm, fetchDataAddParticipantModal, resetPage]);
 
   const cohortEndDate = formatCohortDate(cohort?.end_date, { isForm: true });
   const hasSelectedParticipantGraduated = selectedParticipants
     .map(({ id, postHireJoin }) => ({ id, graduated: postHireJoin.length !== 0 }))
     .filter(({ graduated }) => graduated);
+
+  const renderParticipantsContent = () => {
+    if (isLoading) {
+      return (
+        <Typography variant='subtitle1' className={classes.notFoundBox}>
+          Loading Participants...
+        </Typography>
+      );
+    } else if (rows.length > 0) {
+      return (
+        <CohortParticipantsTable
+          columns={columns}
+          rows={rows}
+          isLoading={isLoading}
+          selectedParticipants={selectedParticipants}
+          setSelectedParticipants={setSelectedParticipants}
+          handleOpenParticipantDetails={handleOpenParticipantDetails}
+          handleRemoveParticipant={handleRemoveParticipant}
+          handleTransferParticipant={handleTransferParticipant}
+          roles={roles}
+        />
+      );
+    } else {
+      return (
+        <Typography variant='subtitle1' className={classes.notFoundBox}>
+          No Participants in this Cohort
+        </Typography>
+      );
+    }
+  };
 
   return (
     <Page>
@@ -281,29 +311,7 @@ export default ({ match }) => {
               </>
             </CheckPermissions>
 
-            <Box>
-              {isLoading ? (
-                <Typography variant='subtitle1' className={classes.notFoundBox}>
-                  Loading Participants...
-                </Typography>
-              ) : rows.length > 0 ? (
-                <CohortParticipantsTable
-                  columns={columns}
-                  rows={rows}
-                  isLoading={isLoading}
-                  selectedParticipants={selectedParticipants}
-                  setSelectedParticipants={setSelectedParticipants}
-                  handleOpenParticipantDetails={handleOpenParticipantDetails}
-                  handleRemoveParticipant={handleRemoveParticipant}
-                  handleTransferParticipant={handleTransferParticipant}
-                  roles={roles}
-                />
-              ) : (
-                <Typography variant='subtitle1' className={classes.notFoundBox}>
-                  No Participants in this Cohort
-                </Typography>
-              )}
-            </Box>
+            <Box>{renderParticipantsContent()}</Box>
           </Box>
         </Card>
         <Dialog open={openConfirmDialog} onClose={() => setOpenConfirmDialog(false)}>

@@ -1,5 +1,4 @@
-version: '3.7'
-
+# This docker-compose.dev.yml is used for local development.
 services:
   client:
     image: ${APP_NAME}-client
@@ -21,7 +20,7 @@ services:
       - network
 
   server:
-    image: node:14-alpine
+    image: ${APP_NAME}-server
     container_name: ${APP_NAME}-server
     build:
       context: ./server

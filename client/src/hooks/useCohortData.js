@@ -42,7 +42,7 @@ export const useCohortData = (cohortId) => {
     }
   }, [cohortId, openToast]);
 
-  const fetchDataAddParticipantModal = async () => {
+  const fetchDataAddParticipantModal = useCallback(async () => {
     try {
       const response = await fetchParticipantsToAssign(
         rowsPerPage,
@@ -60,7 +60,7 @@ export const useCohortData = (cohortId) => {
         message: 'Failed to fetch participants to assign',
       });
     }
-  };
+  }, [rowsPerPage, currentPage, filter.lastName, filter.emailAddress, openToast]);
 
   const handleRemoveParticipant = useCallback((participantId) => {
     setParticipantToRemove(participantId);
@@ -88,13 +88,13 @@ export const useCohortData = (cohortId) => {
 
   useEffect(() => {
     fetchCohortDetails();
-  }, []);
+  }, [fetchCohortDetails]);
 
   useEffect(() => {
     if (cohortId) {
       fetchDataAddParticipantModal();
     }
-  }, [cohortId, currentPage, rowsPerPage, filter]);
+  }, [cohortId, currentPage, rowsPerPage, filter, fetchDataAddParticipantModal]);
 
   return {
     openConfirmDialog,

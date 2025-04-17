@@ -15,9 +15,18 @@ const CohortParticipantsTable = ({
   handleTransferParticipant,
   roles,
 }) => {
+  // Filtering columns to display depending on user roles
+  const filteredColumns = columns.filter((column) => {
+    if (column.id === 'removeButton') {
+      // Don't display Delete columns for non admin users
+      return roles.includes(Role.MinistryOfHealth);
+    }
+    return true;
+  });
+
   return (
     <Table
-      columns={columns}
+      columns={filteredColumns}
       rows={rows}
       isLoading={isLoading}
       isMultiSelect={roles.includes(Role.HealthAuthority)}

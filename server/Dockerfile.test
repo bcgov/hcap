@@ -1,24 +1,4 @@
-# This Dockerfile is optimized for production-like environments (the dev&test&prod OpenShift), it compiles TypeScript to JavaScript and minimize image size
-FROM node:20-slim AS builder
-
-# Configure server
-WORKDIR /server
-
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm set progress=false && npm ci --no-cache
-
-# Copy source code
-COPY tsconfig.json ./
-COPY src/ ./src/
-COPY scripts/ ./scripts/
-COPY migrations/ ./migrations/
-COPY main.ts ./
-
-# Build TypeScript to JavaScript
-RUN npm run build
-
-# Production image
+# Used for local testing with Keycloak, it includes hot reloading and uses ts-node for direct TypeScript execution
 FROM node:20-slim
 
 # Allow node modules to be called directly
@@ -26,18 +6,12 @@ ENV PATH=$PATH:/usr/src/app/node_modules/.bin
 
 # Configure server
 WORKDIR /server
-
-# Copy package files and install production dependencies only
 COPY package*.json ./
-RUN npm set progress=false && npm ci --production --no-cache
-
-# Copy built JavaScript files from builder stage
-COPY --from=builder /server/build ./build
+RUN npm set progress=false && npm ci --no-cache
 
 # Static env vars
 ARG VERSION
 ENV VERSION=$VERSION
-ENV NODE_ENV=production
 
-# Run the compiled JavaScript
-CMD [ "npm", "run", "start:openshift" ]
+# Development mode - uses hot reloading
+CMD [ "npm", "run", "watch" ]

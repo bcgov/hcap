@@ -1,4 +1,4 @@
-# This Dockerfile is optimized for local development, it includes hot reloading and uses ts-node for direct TypeScript execution
+# Used for local development, it includes hot reloading and uses ts-node for direct TypeScript execution
 FROM node:20-slim
 
 # Allow node modules to be called directly

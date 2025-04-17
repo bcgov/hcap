@@ -1,3 +1,4 @@
+# This docker-compose.dev.yml is used for local development.
 services:
   client:
     image: ${APP_NAME}-client

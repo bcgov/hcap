@@ -44,6 +44,7 @@ export const useCohortData = (cohortId) => {
 
   const fetchDataAddParticipantModal = useCallback(async () => {
     try {
+      setIsLoading(true);
       const response = await fetchParticipantsToAssign(
         rowsPerPage,
         currentPage,
@@ -55,10 +56,15 @@ export const useCohortData = (cohortId) => {
       setParticipantsToAssign(participants);
       setTotalParticipants(total);
     } catch (error) {
+      setParticipantsToAssign([]);
+      setTotalParticipants(0);
+      console.error('Error fetching participants to assign:', error);
       openToast({
         status: ToastStatus.Error,
-        message: 'Failed to fetch participants to assign',
+        message: error.message || 'Failed to fetch participants to assign',
       });
+    } finally {
+      setIsLoading(false);
     }
   }, [rowsPerPage, currentPage, filter.lastName, filter.emailAddress, openToast]);
 

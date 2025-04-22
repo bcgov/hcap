@@ -15,7 +15,7 @@ env:
   AUTH_TOKEN: ${{ secrets.AUTH_TOKEN_OCP4 }}
   SA_TOKEN: ${{ secrets.SA_TOKEN_CONFIG }}
   PROJECT: hcap
-  HEALTH_CHECK_URL: https://hcap-server-f047a2-dev.apps.silver.devops.gov.bc.ca/api/v1/version
+  HEALTH_CHECK_URL: https://hcap-server-f047a2-dev.apps.silver.devops.gov.bc.ca/api/v1/healthcheck
   DEV_URL: https://hcapemployers.dev.freshworks.club
 
 jobs:

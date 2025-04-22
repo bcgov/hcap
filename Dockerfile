@@ -6,13 +6,17 @@ ENV HOME_CLIENT=/opt/app-root/src/app/client
 # Using root to transfer ownership of work dir
 USER root
 
-# Set npm cache to a location the user can write to
+# Set npm configuration to use directories the user can write to
 ENV npm_config_cache=/tmp/.npm
+ENV npm_config_userconfig=/tmp/.npmrc
+ENV HOME=/tmp
 
 # Create directories and set permissions
 RUN mkdir -p ${HOME_CLIENT} \
     && mkdir -p ${npm_config_cache} \
+    && touch ${npm_config_userconfig} \
     && chmod -R 777 ${npm_config_cache} \
+    && chmod 777 ${npm_config_userconfig} \
     && chown -R 1008111001 ${HOME_CLIENT}
 
 WORKDIR ${HOME_CLIENT}
@@ -20,7 +24,9 @@ COPY client/package*.json ./
 RUN chown -R 1008040000 .
 
 USER 1008040000
-RUN npm set progress=false && npm ci --no-cache
+# Use --no-update-notifier to avoid npm trying to write to the home directory
+RUN npm set progress=false --userconfig ${npm_config_userconfig} \
+    && npm ci --no-cache --no-update-notifier
 COPY client/. .
 RUN INLINE_RUNTIME_CHUNK=false npm run build
 
@@ -28,10 +34,23 @@ RUN INLINE_RUNTIME_CHUNK=false npm run build
 FROM node:20-slim AS server-builder
 ENV HOME_SERVER=/opt/app-root/src/app/server
 USER root
-RUN mkdir -p ${HOME_SERVER}
+
+# Set npm configuration for server build
+ENV npm_config_cache=/tmp/.npm-server
+ENV npm_config_userconfig=/tmp/.npmrc-server
+ENV HOME=/tmp
+
+# Create directories and set permissions
+RUN mkdir -p ${HOME_SERVER} \
+    && mkdir -p ${npm_config_cache} \
+    && touch ${npm_config_userconfig} \
+    && chmod -R 777 ${npm_config_cache} \
+    && chmod 777 ${npm_config_userconfig}
+
 WORKDIR ${HOME_SERVER}
 COPY server/package*.json ./
-RUN npm set progress=false && npm ci --no-cache
+RUN npm set progress=false --userconfig ${npm_config_userconfig} \
+    && npm ci --no-cache --no-update-notifier
 COPY server/. .
 # Build TypeScript to JavaScript
 RUN npm run build
@@ -48,18 +67,33 @@ ENV HOME_CLIENT=/opt/app-root/src/app/client
 # Configure server
 # Using root to transfer ownership of work dir
 USER root
-RUN mkdir -p ${HOME_SERVER}
-RUN mkdir -p ${HOME_CLIENT}
-RUN chown -R 1001 ${HOME_CLIENT}
-RUN chown -R 1001 ${HOME_SERVER}
+
+# Set npm configuration for server runtime
+ENV npm_config_cache=/tmp/.npm-runtime
+ENV npm_config_userconfig=/tmp/.npmrc-runtime
+ENV HOME=/tmp
+
+RUN mkdir -p ${HOME_SERVER} \
+    && mkdir -p ${HOME_CLIENT} \
+    && mkdir -p ${npm_config_cache} \
+    && touch ${npm_config_userconfig} \
+    && chmod -R 777 ${npm_config_cache} \
+    && chmod 777 ${npm_config_userconfig} \
+    && chown -R 1001 ${HOME_CLIENT} \
+    && chown -R 1001 ${HOME_SERVER}
+
 COPY --from=client /opt/app-root/src/app/client/build /opt/app-root/src/app/client/build/.
 
 WORKDIR ${HOME_SERVER}
 COPY server/package*.json ./
 # Install only production dependencies
-RUN npm set progress=false && npm ci --only=production
-RUN chown -R 1001:0 "/opt/app-root/src/.npm"
-RUN chgrp -R 0 "/opt/app-root/src/.npm" && chmod -R g=u "/opt/app-root/src/.npm"
+RUN npm set progress=false --userconfig ${npm_config_userconfig} \
+    && npm ci --only=production --no-update-notifier
+
+# Set permissions for the user that will run the application
+RUN chown -R 1001:0 ${HOME_SERVER} \
+    && chmod -R g=u ${HOME_SERVER}
+
 USER 1001
 
 # Copy compiled JavaScript from builder stage

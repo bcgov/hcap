@@ -5,14 +5,19 @@ FROM node:20-slim AS client
 ENV HOME_CLIENT=/opt/app-root/src/app/client
 # Using root to transfer ownership of work dir
 USER root
-RUN mkdir -p ${HOME_CLIENT}
-RUN chown -R 1008111001 ${HOME_CLIENT}
+
+# Set npm cache to a location the user can write to
+ENV npm_config_cache=/tmp/.npm
+
+# Create directories and set permissions
+RUN mkdir -p ${HOME_CLIENT} \
+    && mkdir -p ${npm_config_cache} \
+    && chmod -R 777 ${npm_config_cache} \
+    && chown -R 1008111001 ${HOME_CLIENT}
+
 WORKDIR ${HOME_CLIENT}
 COPY client/package*.json ./
 RUN chown -R 1008040000 .
-
-# update npm cache permissions
-RUN mkdir -p /.npm && chown -R 1008040000:0 /.npm
 
 USER 1008040000
 RUN npm set progress=false && npm ci --no-cache

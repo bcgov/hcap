@@ -73,6 +73,7 @@ COPY --from=server-builder /opt/app-root/src/app/server/build ./build
 COPY server/migrations ./migrations
 COPY server/scripts ./scripts
 COPY server/test-data ./test-data
+COPY server/db ./db
 # Add any other directories with non-TypeScript files that are needed at runtime
 
 # Run app

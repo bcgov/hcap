@@ -10,6 +10,10 @@ RUN chown -R 1008111001 ${HOME_CLIENT}
 WORKDIR ${HOME_CLIENT}
 COPY client/package*.json ./
 RUN chown -R 1008040000 .
+
+# update npm cache permissions
+RUN mkdir -p /.npm && chown -R 1008040000:0 /.npm
+
 USER 1008040000
 RUN npm set progress=false && npm ci --no-cache
 COPY client/. .

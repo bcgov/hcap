@@ -16,7 +16,7 @@ COPY client/package*.json ./
 RUN chown -R 1008040000 .
 
 USER 1008040000
-# Use --cache /dev/null directly with the npm command
+# Use --cache /tmp/.npm directly with the npm command
 RUN npm set progress=false && npm ci --cache=/tmp/.npm --no-update-notifier --ignore-scripts
 COPY client/. .
 RUN INLINE_RUNTIME_CHUNK=false npm run build
@@ -32,8 +32,7 @@ ENV HOME=/tmp
 RUN mkdir -p ${HOME_SERVER}
 WORKDIR ${HOME_SERVER}
 COPY server/package*.json ./
-# Use --cache /tmp/.npm-server directly with the npm command
-RUN npm set progress=false && npm ci --cache=/tmp/.npm-server --no-update-notifier --ignore-scripts
+RUN npm set progress=false && npm install --cache=/tmp/.npm-server --no-update-notifier --ignore-scripts
 COPY server/. .
 # Build TypeScript to JavaScript
 RUN npm run build
@@ -62,9 +61,7 @@ COPY --from=client /opt/app-root/src/app/client/build /opt/app-root/src/app/clie
 
 WORKDIR ${HOME_SERVER}
 COPY server/package*.json ./
-# Install only production dependencies
-# Use --cache /tmp/.npm-runtime directly with the npm command
-RUN npm set progress=false && npm ci --only=production --cache=/tmp/.npm-runtime --no-update-notifier --ignore-scripts
+RUN npm set progress=false && npm install --only=production --cache=/tmp/.npm-runtime --no-update-notifier --ignore-scripts
 RUN mkdir -p /tmp/.npm
 RUN chown -R 1001:0 "/tmp/.npm"
 RUN chgrp -R 0 "/tmp/.npm" && chmod -R g=u "/tmp/.npm"

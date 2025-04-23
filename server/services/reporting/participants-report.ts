@@ -117,6 +117,36 @@ type HiredEntry = {
   employer_id: string;
 };
 
+/**
+ * Maps a hired entry to the report format
+ * @param entry The hired entry from the database
+ * @returns Formatted report entry
+ */
+const mapHiredEntryToReport = (entry: HiredEntry) => ({
+  participantId: entry.participant_id,
+  firstName: entry.participantJoin?.[0]?.body?.firstName,
+  lastName: entry.participantJoin?.[0]?.body?.lastName,
+  employerId: entry.employer_id,
+  email: entry.participantJoin?.[0]?.body?.emailAddress,
+  program: entry.participantJoin?.[0].body?.program,
+  driverLicense: entry.participantJoin?.[0].body?.driverLicense,
+  indigenous: entry.participantJoin?.[0].body?.indigenous,
+  reasonForFindingOut: entry.participantJoin?.[0].body?.reasonForFindingOut?.join(','),
+  currentOrMostRecentIndustry: entry.participantJoin?.[0].body?.currentOrMostRecentIndustry,
+  experienceWithMentalHealthOrSubstanceUse:
+    entry.participantJoin?.[0].body?.experienceWithMentalHealthOrSubstanceUse,
+  interestedWorkingPeerSupportRole:
+    entry.participantJoin?.[0].body?.interestedWorkingPeerSupportRole,
+  employerRegion: entry.employerSiteJoin?.[0]?.body?.healthAuthority,
+  employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,
+  employerCity: entry.employerSiteJoin?.[0]?.body.city,
+  employerSiteId: entry.employerSiteJoin?.[0]?.body?.siteId,
+  startDate: entry.data?.startDate,
+  hiredDate: entry.data?.hiredDate,
+  withdrawReason: entry.archivedJoin?.[0]?.data?.reason,
+  withdrawDate: entry.archivedJoin?.[0]?.data?.endDate,
+});
+
 export const getParticipantsReport = async () => {
   const inProgressEntries = await dbClient.db[collections.PARTICIPANTS_STATUS]
     .join({
@@ -234,58 +264,11 @@ export const getHiredParticipantsReport = async (
     // Execute the query with pagination
     const hiredEntries: HiredEntry[] = await query.find(searchOptions).page(offset, limit);
 
-    return hiredEntries.map((entry) => ({
-      participantId: entry.participant_id,
-      firstName: entry.participantJoin?.[0]?.body?.firstName,
-      lastName: entry.participantJoin?.[0]?.body?.lastName,
-      employerId: entry.employer_id,
-      email: entry.participantJoin?.[0]?.body?.emailAddress,
-      program: entry.participantJoin?.[0].body?.program,
-      driverLicense: entry.participantJoin?.[0].body?.driverLicense,
-      indigenous: entry.participantJoin?.[0].body?.indigenous,
-      reasonForFindingOut: entry.participantJoin?.[0].body?.reasonForFindingOut?.join(','),
-      currentOrMostRecentIndustry: entry.participantJoin?.[0].body?.currentOrMostRecentIndustry,
-      experienceWithMentalHealthOrSubstanceUse:
-        entry.participantJoin?.[0].body?.experienceWithMentalHealthOrSubstanceUse,
-      interestedWorkingPeerSupportRole:
-        entry.participantJoin?.[0].body?.interestedWorkingPeerSupportRole,
-      employerRegion: entry.employerSiteJoin?.[0]?.body?.healthAuthority,
-      employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,
-      employerCity: entry.employerSiteJoin?.[0]?.body.city,
-      employerSiteId: entry.employerSiteJoin?.[0]?.body?.siteId,
-      startDate: entry.data?.startDate,
-      hiredDate: entry.data?.hiredDate,
-      withdrawReason: entry.archivedJoin?.[0]?.data?.reason,
-      withdrawDate: entry.archivedJoin?.[0]?.data?.endDate,
-    }));
+    return hiredEntries.map(mapHiredEntryToReport);
   } else {
     // Original implementation without pagination
     const hiredEntries: HiredEntry[] = await query.find(searchOptions);
-
-    return hiredEntries.map((entry) => ({
-      participantId: entry.participant_id,
-      firstName: entry.participantJoin?.[0]?.body?.firstName,
-      lastName: entry.participantJoin?.[0]?.body?.lastName,
-      employerId: entry.employer_id,
-      email: entry.participantJoin?.[0]?.body?.emailAddress,
-      program: entry.participantJoin?.[0].body?.program,
-      driverLicense: entry.participantJoin?.[0].body?.driverLicense,
-      indigenous: entry.participantJoin?.[0].body?.indigenous,
-      reasonForFindingOut: entry.participantJoin?.[0].body?.reasonForFindingOut?.join(','),
-      currentOrMostRecentIndustry: entry.participantJoin?.[0].body?.currentOrMostRecentIndustry,
-      experienceWithMentalHealthOrSubstanceUse:
-        entry.participantJoin?.[0].body?.experienceWithMentalHealthOrSubstanceUse,
-      interestedWorkingPeerSupportRole:
-        entry.participantJoin?.[0].body?.interestedWorkingPeerSupportRole,
-      employerRegion: entry.employerSiteJoin?.[0]?.body?.healthAuthority,
-      employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,
-      employerCity: entry.employerSiteJoin?.[0]?.body.city,
-      employerSiteId: entry.employerSiteJoin?.[0]?.body?.siteId,
-      startDate: entry.data?.startDate,
-      hiredDate: entry.data?.hiredDate,
-      withdrawReason: entry.archivedJoin?.[0]?.data?.reason,
-      withdrawDate: entry.archivedJoin?.[0]?.data?.endDate,
-    }));
+    return hiredEntries.map(mapHiredEntryToReport);
   }
 };
 

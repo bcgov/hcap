@@ -44,17 +44,15 @@ export const getMohRosMilestonesReport = async () => {
         }
       );
 
+    // If no entries found, return empty array
+    if (!entries || entries.length === 0) {
+      return [];
+    }
     // Get the ROS completion status for each participant
     const participantIds = entries.map((entry) => entry.participant_id);
 
-    // If no participants found, return empty array
-    if (participantIds.length === 0) {
-      logger.info('No participants found for ROS milestone report');
-      return [];
-    }
-
     const rosCompletionStatuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
-      participant_id: { $in: participantIds },
+      participant_id: participantIds,
       status: 'archived',
       'data.type': 'rosComplete',
       'data.confirmed': 'true',
@@ -136,9 +134,8 @@ export const getHARosMilestonesReport = async (region: string) => {
         }
       );
 
-    // If no participants found in the region, return empty array
-    if (sameSiteRosEntries.length === 0) {
-      logger.info(`No participants found for ROS milestone report in region: ${region}`);
+    // If no entries found in the region, return empty array
+    if (!sameSiteRosEntries || sameSiteRosEntries.length === 0) {
       return [];
     }
 
@@ -191,7 +188,7 @@ export const getHARosMilestonesReport = async (region: string) => {
 
     // Get ROS completion statuses for these participants
     const rosCompletionStatuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
-      participant_id: { $in: participantIds },
+      participant_id: participantIds,
       status: 'archived',
       'data.type': 'rosComplete',
       'data.confirmed': 'true',

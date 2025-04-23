@@ -166,7 +166,18 @@ export const getParticipantsReport = async () => {
   }));
 };
 
-export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) => {
+/**
+ * Get hired participants report with optional pagination
+ * @param {string} region health region
+ * @param {number} offset pagination offset (optional)
+ * @param {number} limit pagination limit (optional)
+ * @returns {Promise<Array>} hired participants data
+ */
+export const getHiredParticipantsReport = async (
+  region = DEFAULT_REGION_NAME,
+  offset = null,
+  limit = null
+) => {
   const searchOptions = {
     status: [ps.HIRED],
     'duplicateArchivedJoin.status': null,
@@ -177,69 +188,105 @@ export const getHiredParticipantsReport = async (region = DEFAULT_REGION_NAME) =
     searchOptions['employerSiteJoin.body.healthAuthority'] = region;
   }
 
-  const hiredEntries: HiredEntry[] = await dbClient.db[collections.PARTICIPANTS_STATUS]
-    .join({
-      participantJoin: {
-        type: 'LEFT OUTER',
-        relation: collections.PARTICIPANTS,
-        on: {
-          id: 'participant_id',
-        },
+  // Create a query builder
+  let query = dbClient.db[collections.PARTICIPANTS_STATUS].join({
+    participantJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.PARTICIPANTS,
+      on: {
+        id: 'participant_id',
       },
-      employerSiteJoin: {
-        type: 'LEFT OUTER',
-        relation: collections.EMPLOYER_SITES,
-        on: {
-          'body.siteId': 'data.site',
-        },
+    },
+    employerSiteJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.EMPLOYER_SITES,
+      on: {
+        'body.siteId': 'data.site',
       },
-      duplicateArchivedJoin: {
-        type: 'LEFT OUTER',
-        relation: collections.PARTICIPANTS_STATUS,
-        on: {
-          participant_id: 'participant_id',
-          status: ps.ARCHIVED,
-          current: true,
-          'data.type': 'duplicate',
-        },
+    },
+    duplicateArchivedJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.PARTICIPANTS_STATUS,
+      on: {
+        participant_id: 'participant_id',
+        status: ps.ARCHIVED,
+        current: true,
+        'data.type': 'duplicate',
       },
-      archivedJoin: {
-        type: 'LEFT OUTER',
-        relation: collections.PARTICIPANTS_STATUS,
-        on: {
-          participant_id: 'participant_id',
-          status: ps.ARCHIVED,
-          current: true,
-          'data.type <>': 'duplicate',
-        },
+    },
+    archivedJoin: {
+      type: 'LEFT OUTER',
+      relation: collections.PARTICIPANTS_STATUS,
+      on: {
+        participant_id: 'participant_id',
+        status: ps.ARCHIVED,
+        current: true,
+        'data.type <>': 'duplicate',
       },
-    })
-    .find(searchOptions);
+    },
+  });
 
-  return hiredEntries.map((entry) => ({
-    participantId: entry.participant_id,
-    firstName: entry.participantJoin?.[0]?.body?.firstName,
-    lastName: entry.participantJoin?.[0]?.body?.lastName,
-    employerId: entry.employer_id,
-    email: entry.participantJoin?.[0]?.body?.emailAddress,
-    program: entry.participantJoin?.[0].body?.program,
-    driverLicense: entry.participantJoin?.[0].body?.driverLicense,
-    indigenous: entry.participantJoin?.[0].body?.indigenous,
-    reasonForFindingOut: entry.participantJoin?.[0].body?.reasonForFindingOut?.join(','),
-    currentOrMostRecentIndustry: entry.participantJoin?.[0].body?.currentOrMostRecentIndustry,
-    experienceWithMentalHealthOrSubstanceUse:
-      entry.participantJoin?.[0].body?.experienceWithMentalHealthOrSubstanceUse,
-    interestedWorkingPeerSupportRole:
-      entry.participantJoin?.[0].body?.interestedWorkingPeerSupportRole,
-    employerRegion: entry.employerSiteJoin?.[0]?.body?.healthAuthority,
-    employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,
-    employerCity: entry.employerSiteJoin?.[0]?.body.city,
-    employerSiteId: entry.employerSiteJoin?.[0]?.body?.siteId,
-    startDate: entry.data?.startDate,
-    hiredDate: entry.data?.hiredDate,
-    withdrawReason: entry.archivedJoin?.[0]?.data?.reason,
-    withdrawDate: entry.archivedJoin?.[0]?.data?.endDate,
-  }));
+  // If pagination is requested, use it
+  if (limit !== null && offset !== null) {
+    // Add order by to ensure consistent pagination
+    query = query.order('participant_id');
+
+    // Execute the query with pagination
+    const hiredEntries: HiredEntry[] = await query.find(searchOptions).page(offset, limit);
+
+    return hiredEntries.map((entry) => ({
+      participantId: entry.participant_id,
+      firstName: entry.participantJoin?.[0]?.body?.firstName,
+      lastName: entry.participantJoin?.[0]?.body?.lastName,
+      employerId: entry.employer_id,
+      email: entry.participantJoin?.[0]?.body?.emailAddress,
+      program: entry.participantJoin?.[0].body?.program,
+      driverLicense: entry.participantJoin?.[0].body?.driverLicense,
+      indigenous: entry.participantJoin?.[0].body?.indigenous,
+      reasonForFindingOut: entry.participantJoin?.[0].body?.reasonForFindingOut?.join(','),
+      currentOrMostRecentIndustry: entry.participantJoin?.[0].body?.currentOrMostRecentIndustry,
+      experienceWithMentalHealthOrSubstanceUse:
+        entry.participantJoin?.[0].body?.experienceWithMentalHealthOrSubstanceUse,
+      interestedWorkingPeerSupportRole:
+        entry.participantJoin?.[0].body?.interestedWorkingPeerSupportRole,
+      employerRegion: entry.employerSiteJoin?.[0]?.body?.healthAuthority,
+      employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,
+      employerCity: entry.employerSiteJoin?.[0]?.body.city,
+      employerSiteId: entry.employerSiteJoin?.[0]?.body?.siteId,
+      startDate: entry.data?.startDate,
+      hiredDate: entry.data?.hiredDate,
+      withdrawReason: entry.archivedJoin?.[0]?.data?.reason,
+      withdrawDate: entry.archivedJoin?.[0]?.data?.endDate,
+    }));
+  } else {
+    // Original implementation without pagination
+    const hiredEntries: HiredEntry[] = await query.find(searchOptions);
+
+    return hiredEntries.map((entry) => ({
+      participantId: entry.participant_id,
+      firstName: entry.participantJoin?.[0]?.body?.firstName,
+      lastName: entry.participantJoin?.[0]?.body?.lastName,
+      employerId: entry.employer_id,
+      email: entry.participantJoin?.[0]?.body?.emailAddress,
+      program: entry.participantJoin?.[0].body?.program,
+      driverLicense: entry.participantJoin?.[0].body?.driverLicense,
+      indigenous: entry.participantJoin?.[0].body?.indigenous,
+      reasonForFindingOut: entry.participantJoin?.[0].body?.reasonForFindingOut?.join(','),
+      currentOrMostRecentIndustry: entry.participantJoin?.[0].body?.currentOrMostRecentIndustry,
+      experienceWithMentalHealthOrSubstanceUse:
+        entry.participantJoin?.[0].body?.experienceWithMentalHealthOrSubstanceUse,
+      interestedWorkingPeerSupportRole:
+        entry.participantJoin?.[0].body?.interestedWorkingPeerSupportRole,
+      employerRegion: entry.employerSiteJoin?.[0]?.body?.healthAuthority,
+      employerSite: entry.employerSiteJoin?.[0]?.body?.siteName,
+      employerCity: entry.employerSiteJoin?.[0]?.body.city,
+      employerSiteId: entry.employerSiteJoin?.[0]?.body?.siteId,
+      startDate: entry.data?.startDate,
+      hiredDate: entry.data?.hiredDate,
+      withdrawReason: entry.archivedJoin?.[0]?.data?.reason,
+      withdrawDate: entry.archivedJoin?.[0]?.data?.endDate,
+    }));
+  }
 };
 
 export const getRejectedParticipantsReport = async () => {

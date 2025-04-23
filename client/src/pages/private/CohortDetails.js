@@ -57,6 +57,7 @@ export default ({ match }) => {
     allCohorts,
     transferModalOpen,
     setTransferModalOpen,
+    isLoading: isTransferLoading,
   } = useCohortActions(cohortId);
 
   const {
@@ -66,7 +67,7 @@ export default ({ match }) => {
     handleRemoveParticipant,
     cohort,
     rows,
-    isLoading,
+    isLoading: isCohortLoading,
     participantsToAssign,
     totalParticipants,
     currentPage,
@@ -93,7 +94,7 @@ export default ({ match }) => {
   const [activeModalForm, setActiveModalForm] = useState(null);
   const rowsPerPageOptions = ROWS_PER_PAGE_OPTIONS;
   const prevFilter = useRef({ lastName: '', emailAddress: '' });
-
+  const isLoading = isCohortLoading || isTransferLoading;
   const columns = COLUMNS;
 
   // Bulk Graduation only allows the successful graduation path
@@ -114,30 +115,39 @@ export default ({ match }) => {
     fetchCohortDetails();
   };
 
-  const handleAddParticipantClick = async () => {
+  const resetPage = useCallback(() => {
+    setCurrentPage(0);
+  }, [setCurrentPage]);
+
+  const handleAddParticipantClick = useCallback(() => {
     setActiveModalForm('add-participant');
-  };
+    // Request to fetch participants when opening the modal
+    fetchDataAddParticipantModal();
+  }, [fetchDataAddParticipantModal]);
 
-  const closeAddParticipantModal = () => {
+  const closeAddParticipantModal = useCallback(() => {
     setActiveModalForm(null);
-  };
+  }, []);
 
-  const handleAssignParticipant = async (participantId) => {
-    try {
-      await assignParticipantWithCohort({ participantId: participantId, cohortId: cohortId }); // Use the service to assign
-      openToast({
-        status: ToastStatus.Success,
-        message: `Participant ${participantId} assigned to cohort ${cohortId} successfully`,
-      });
-      fetchDataAddParticipantModal();
-      fetchCohortDetails();
-    } catch (error) {
-      openToast({
-        status: ToastStatus.Error,
-        message: `Failed to assign participant ${participantId} to cohort ${cohortId}: ${error}`,
-      });
-    }
-  };
+  const handleAssignParticipant = useCallback(
+    async (participantId) => {
+      try {
+        await assignParticipantWithCohort({ participantId: participantId, cohortId: cohortId });
+        openToast({
+          status: ToastStatus.Success,
+          message: `Participant ${participantId} assigned to cohort ${cohortId} successfully`,
+        });
+        fetchDataAddParticipantModal();
+        fetchCohortDetails();
+      } catch (error) {
+        openToast({
+          status: ToastStatus.Error,
+          message: `Failed to assign participant ${participantId} to cohort ${cohortId}: ${error}`,
+        });
+      }
+    },
+    [cohortId, openToast, fetchDataAddParticipantModal, fetchCohortDetails]
+  );
 
   const sortedParticipantsToAssign = useMemo(() => {
     // Ensure participantsToAssign is an array before attempting to sort
@@ -160,10 +170,7 @@ export default ({ match }) => {
     return sortableItems;
   }, [participantsToAssign, sortConfig]);
 
-  const resetPage = useCallback(() => {
-    setCurrentPage(0);
-  }, [setCurrentPage]);
-
+  // Effect for filter changes
   useEffect(() => {
     if (activeModalForm === 'add-participant') {
       if (
@@ -171,11 +178,21 @@ export default ({ match }) => {
         filter.emailAddress !== prevFilter.current.emailAddress
       ) {
         resetPage();
+        fetchDataAddParticipantModal();
       }
-      fetchDataAddParticipantModal();
       prevFilter.current = { ...filter };
     }
-  }, [currentPage, rowsPerPage, filter, activeModalForm, fetchDataAddParticipantModal, resetPage]);
+  }, [filter, activeModalForm, resetPage, fetchDataAddParticipantModal]);
+
+  // Effect for pagination changes
+  useEffect(() => {
+    if (
+      activeModalForm === 'add-participant' &&
+      (prevFilter.current.lastName !== '' || prevFilter.current.emailAddress !== '')
+    ) {
+      fetchDataAddParticipantModal();
+    }
+  }, [currentPage, rowsPerPage, activeModalForm, fetchDataAddParticipantModal]);
 
   const cohortEndDate = formatCohortDate(cohort?.end_date, { isForm: true });
   const hasSelectedParticipantGraduated = selectedParticipants

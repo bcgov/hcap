@@ -219,7 +219,7 @@ export const getHiredParticipantsReport = async (
   }
 
   // Create a query builder
-  let query = dbClient.db[collections.PARTICIPANTS_STATUS].join({
+  const query = dbClient.db[collections.PARTICIPANTS_STATUS].join({
     participantJoin: {
       type: 'LEFT OUTER',
       relation: collections.PARTICIPANTS,
@@ -256,20 +256,21 @@ export const getHiredParticipantsReport = async (
     },
   });
 
+  let hiredEntries: HiredEntry[];
+
   // If pagination is requested, use it
   if (limit !== null && offset !== null) {
-    // Add order by to ensure consistent pagination
-    query = query.order('participant_id');
-
-    // Execute the query with pagination
-    const hiredEntries: HiredEntry[] = await query.find(searchOptions).page(offset, limit);
-
-    return hiredEntries.map(mapHiredEntryToReport);
+    hiredEntries = await query.find(searchOptions, {
+      limit: limit,
+      offset: offset,
+      order: [{ field: 'participant_id', direction: 'asc' }],
+    });
   } else {
     // Original implementation without pagination
-    const hiredEntries: HiredEntry[] = await query.find(searchOptions);
-    return hiredEntries.map(mapHiredEntryToReport);
+    hiredEntries = await query.find(searchOptions);
   }
+
+  return hiredEntries.map(mapHiredEntryToReport);
 };
 
 export const getRejectedParticipantsReport = async () => {

@@ -23,35 +23,72 @@ const router = express.Router();
 router.use(keycloak.getUserInfoMiddleware());
 
 /**
- * Generate hired milestone report
+ * Generate hired milestone report with streaming
  * @param csvStream output stream
  * @param {string} region health region; optional - defaults to ''
  */
 const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
-  const results = await getHiredParticipantsReport(region);
-  results.forEach((result) => {
-    csvStream.write({
-      'Participant ID': result.participantId,
-      'First Name': result.firstName,
-      'Last Name': result.lastName,
-      'Employer ID': result.employerId,
-      Email: result.email,
-      Pathway: result.program,
-      'Valid BC Driver License': result.driverLicense,
-      Indigenous: result.indigenous,
-      Marketing: result.reasonForFindingOut,
-      'Work Experience': result.currentOrMostRecentIndustry,
-      'MHSU Sector Experience': result.experienceWithMentalHealthOrSubstanceUse,
-      'Interested Working In Peer Support Role': result.interestedWorkingPeerSupportRole,
-      'Employer Site Region': result.employerRegion,
-      'Employer Site ID': result.employerSiteId,
-      'Employer Site': result.employerSite,
-      'Employer City': result.employerCity,
-      'Hire Date': result.hiredDate,
-      'Start Date': result.startDate,
-      'Withdraw Date': result.withdrawDate,
-      'Withdraw Reason': result.withdrawReason,
-    });
+  const batchSize = 500;
+  let offset = 0;
+  let hasMore = true;
+  let totalProcessed = 0;
+
+  // Process data in batches
+  while (hasMore) {
+    // Get one batch of data using pagination
+    const results = await getHiredParticipantsReport(region, offset, batchSize);
+
+    // If no results, we're done
+    if (results.length === 0) {
+      hasMore = false;
+      break;
+    }
+
+    // Process this batch and write to CSV stream
+    for (const result of results) {
+      csvStream.write({
+        'Participant ID': result.participantId,
+        'First Name': result.firstName,
+        'Last Name': result.lastName,
+        'Employer ID': result.employerId,
+        Email: result.email,
+        Pathway: result.program,
+        'Valid BC Driver License': result.driverLicense,
+        Indigenous: result.indigenous,
+        Marketing: result.reasonForFindingOut,
+        'Work Experience': result.currentOrMostRecentIndustry,
+        'MHSU Sector Experience': result.experienceWithMentalHealthOrSubstanceUse,
+        'Interested Working In Peer Support Role': result.interestedWorkingPeerSupportRole,
+        'Employer Site Region': result.employerRegion,
+        'Employer Site ID': result.employerSiteId,
+        'Employer Site': result.employerSite,
+        'Employer City': result.employerCity,
+        'Hire Date': result.hiredDate,
+        'Start Date': result.startDate,
+        'Withdraw Date': result.withdrawDate,
+        'Withdraw Reason': result.withdrawReason,
+      });
+    }
+
+    // Update counters
+    totalProcessed += results.length;
+    offset += batchSize;
+
+    // Log progress for large reports
+    if (totalProcessed % 2000 === 0) {
+      logger.info({
+        action: `report-progress`,
+        message: `Processed ${totalProcessed} records for hired report`,
+      });
+    }
+
+    // Add a small delay to prevent CPU hogging
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+
+  logger.info({
+    action: `report-complete`,
+    message: `Completed hired report with ${totalProcessed} total records`,
   });
 };
 
@@ -94,6 +131,15 @@ const generateRosReport = async (csvStream, region) => {
 const generateReport = async (user, res, type, region = DEFAULT_REGION_NAME) => {
   const csvStream = csv.format({ headers: true });
   csvStream.pipe(res);
+
+  // Log start of report generation
+  logger.info({
+    action: `start-report-csv-${type}`,
+    performed_by: {
+      username: user.username,
+      id: user.id,
+    },
+  });
 
   switch (type) {
     case reportType.HIRED:

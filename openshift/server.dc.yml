@@ -97,6 +97,8 @@ objects:
                     secretKeyRef:
                       key: db-password
                       name: ${APP_NAME}-patroni
+                - name: POSTGRES_QUERY_TIMEOUT
+                  value: '60000' # 60 seconds
                 - name: KEYCLOAK_REALM
                   valueFrom:
                     secretKeyRef:

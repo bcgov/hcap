@@ -37,6 +37,10 @@ COPY server/. .
 # Build TypeScript to JavaScript
 RUN npm run build
 
+# Copy non-TypeScript assets to build directory
+RUN mkdir -p build/migrations/assets && \
+    cp -r migrations/assets/* build/migrations/assets/ 2>/dev/null || true
+
 # Server runtime stage
 FROM node:20-slim AS server
 # Static env vars
@@ -67,14 +71,11 @@ RUN chown -R 1001:0 "/tmp/.npm"
 RUN chgrp -R 0 "/tmp/.npm" && chmod -R g=u "/tmp/.npm"
 USER 1001
 
-# Copy compiled JavaScript from builder stage
+# Copy only the compiled JavaScript and assets from builder stage
 COPY --from=server-builder /opt/app-root/src/app/server/build ./build
-# Copy any non-TypeScript files needed at runtime
-COPY server/migrations ./migrations
-COPY server/scripts ./scripts
-COPY server/test-data ./test-data
-COPY server/db ./db
-# Add any other directories with non-TypeScript files that are needed at runtime
+# Create a symbolic link so that /migrations points to /build/migrations
+RUN ln -sf /opt/app-root/src/app/server/build/migrations /opt/app-root/src/app/server/migrations
+
 
 # Run app
 EXPOSE 8080

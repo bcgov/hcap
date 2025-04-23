@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Routes, ToastStatus } from '../constants';
 import { keyedString } from '../utils';
-import { useCohortData, useToast } from './';
+import { useToast } from './';
 import { fetchParticipant, getPsi } from '../services';
 
 export const useCohortActions = (cohortId) => {
@@ -13,8 +13,8 @@ export const useCohortActions = (cohortId) => {
   const [allCohorts, setAllCohorts] = useState([]);
   // eslint-disable-next-line no-unused-vars
   const [disableAssign, setDisableAssign] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { setIsLoading } = useCohortData(cohortId);
   const { openToast } = useToast();
 
   const handleOpenParticipantDetails = useCallback(
@@ -60,7 +60,7 @@ export const useCohortActions = (cohortId) => {
         setIsLoading(false);
       }
     },
-    [openToast, setIsLoading]
+    [openToast]
   );
 
   const handleTransferParticipant = useCallback(
@@ -79,5 +79,6 @@ export const useCohortActions = (cohortId) => {
     transferModalOpen,
     setTransferModalOpen,
     disableAssign,
+    isLoading,
   };
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { fetchCohort, fetchParticipantsToAssign, removeCohortParticipantPSI } from '../services';
 import { useToast } from '../hooks';
 import { ToastStatus, ROWS_PER_PAGE_OPTIONS } from '../constants';
@@ -15,24 +15,32 @@ export const useCohortData = (cohortId) => {
   const [rows, setRows] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(ROWS_PER_PAGE_OPTIONS[0]);
+  const hasInitiallyFetched = useRef(false);
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = useCallback((event, newPage) => {
     setCurrentPage(newPage);
-  };
+  }, []);
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = useCallback((event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setCurrentPage(0);
-  };
+  }, []);
 
   const fetchCohortDetails = useCallback(async () => {
+    if (hasInitiallyFetched.current) {
+      console.log('Skipping redundant fetchCohortDetails call');
+      return;
+    }
+
     try {
       setIsLoading(true);
       const cohortData = await fetchCohort({ cohortId });
       setCohort(cohortData.cohort);
       setRows(cohortData.participants);
+      hasInitiallyFetched.current = true;
     } catch (err) {
+      console.error('Error fetching cohort details:', err);
       openToast({
         status: ToastStatus.Error,
         message: err.message || 'Failed to fetch cohort details',
@@ -56,9 +64,9 @@ export const useCohortData = (cohortId) => {
       setParticipantsToAssign(participants);
       setTotalParticipants(total);
     } catch (error) {
+      console.error('Error fetching participants to assign:', error);
       setParticipantsToAssign([]);
       setTotalParticipants(0);
-      console.error('Error fetching participants to assign:', error);
       openToast({
         status: ToastStatus.Error,
         message: error.message || 'Failed to fetch participants to assign',
@@ -73,13 +81,15 @@ export const useCohortData = (cohortId) => {
     setOpenConfirmDialog(true);
   }, []);
 
-  const confirmRemoveParticipant = async () => {
+  const confirmRemoveParticipant = useCallback(async () => {
     try {
       await removeCohortParticipantPSI(cohortId, participantToRemove);
       openToast({
         status: ToastStatus.Success,
         message: 'Participant removed from cohort successfully',
       });
+      // Manually fetch updated data
+      hasInitiallyFetched.current = false;
       fetchCohortDetails();
     } catch (error) {
       openToast({
@@ -90,17 +100,14 @@ export const useCohortData = (cohortId) => {
       setOpenConfirmDialog(false);
       setParticipantToRemove(null);
     }
-  };
+  }, [cohortId, participantToRemove, openToast, fetchCohortDetails]);
 
+  // Initial fetch of cohort details - ONLY ONCE
   useEffect(() => {
-    fetchCohortDetails();
-  }, [fetchCohortDetails]);
-
-  useEffect(() => {
-    if (cohortId) {
-      fetchDataAddParticipantModal();
+    if (!hasInitiallyFetched.current) {
+      fetchCohortDetails();
     }
-  }, [cohortId, currentPage, rowsPerPage, filter, fetchDataAddParticipantModal]);
+  }, [fetchCohortDetails]);
 
   return {
     openConfirmDialog,

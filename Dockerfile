@@ -67,7 +67,7 @@ COPY --from=client /opt/app-root/src/app/client/build /opt/app-root/src/app/serv
 
 WORKDIR ${HOME_SERVER}
 COPY server/package*.json ./
-RUN npm set progress=false && npm install --only=production --cache=/tmp/.npm-runtime --no-update-notifier --ignore-scripts
+RUN npm set progress=false && npm ci --omit=dev --cache=/tmp/.npm-runtime --no-update-notifier --ignore-scripts
 RUN mkdir -p /tmp/.npm
 RUN chown -R 1001:0 "/tmp/.npm"
 RUN chgrp -R 0 "/tmp/.npm" && chmod -R g=u "/tmp/.npm"

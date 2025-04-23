@@ -76,6 +76,7 @@ COPY --from=server-builder /opt/app-root/src/app/server/build ./build
 # Create a symbolic link so that /migrations points to /build/migrations
 RUN ln -sf /opt/app-root/src/app/server/build/migrations /opt/app-root/src/app/server/migrations
 
+
 # Run app
 EXPOSE 8080
 # Use the compiled JavaScript with the existing start:prod script

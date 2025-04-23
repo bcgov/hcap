@@ -61,7 +61,9 @@ RUN mkdir -p ${HOME_SERVER}
 RUN mkdir -p ${HOME_CLIENT}
 RUN chown -R 1001 ${HOME_CLIENT}
 RUN chown -R 1001 ${HOME_SERVER}
-COPY --from=client /opt/app-root/src/app/client/build /opt/app-root/src/app/client/build/.
+
+# Copy client build files to where the server expects them
+COPY --from=client /opt/app-root/src/app/client/build /opt/app-root/src/app/server/client/build/
 
 WORKDIR ${HOME_SERVER}
 COPY server/package*.json ./

@@ -96,29 +96,59 @@ const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
  * Generate ROS milestone report
  * @param csvStream output stream
  */
+// Update the generateRosReport function to handle errors better
 const generateRosReport = async (csvStream, region) => {
-  const results =
-    region === DEFAULT_REGION_NAME
-      ? await getMohRosMilestonesReport()
-      : await getHARosMilestonesReport(region);
-  results.forEach((result) => {
-    csvStream.write({
-      'Participant ID': result.participantId,
-      'First Name': result.firstName,
-      'Last Name': result.lastName,
-      Pathway: result.program,
-      'ROS Start Date': result.startDate,
-      'ROS End Date': result.endDate,
-      'Start Date at a Site': result.siteStartDate,
-      'Position Type': result.positionType,
-      'Specific Position Type': result.employmentType,
-      'Site of ROS': result.site,
-      'Health Region': result.healthRegion,
-      'Return of Service Completed': result.rosCompleted,
-      'Intends to Continue as HCA/MHAW Following ROS Completion':
-        result.remainingInSectorOrRoleOrAnother,
+  try {
+    const results =
+      region === DEFAULT_REGION_NAME
+        ? await getMohRosMilestonesReport()
+        : await getHARosMilestonesReport(region);
+
+    if (results.length === 0) {
+      // Write a header row even if there's no data
+      csvStream.write({
+        'Participant ID': '',
+        'First Name': '',
+        'Last Name': '',
+        Pathway: '',
+        'ROS Start Date': '',
+        'ROS End Date': '',
+        'Start Date at a Site': '',
+        'Position Type': '',
+        'Specific Position Type': '',
+        'Site of ROS': '',
+        'Health Region': '',
+        'Return of Service Completed': '',
+        'Intends to Continue as HCA/MHAW Following ROS Completion': '',
+      });
+      return;
+    }
+
+    results.forEach((result) => {
+      csvStream.write({
+        'Participant ID': result.participantId,
+        'First Name': result.firstName,
+        'Last Name': result.lastName,
+        Pathway: result.program,
+        'ROS Start Date': result.startDate,
+        'ROS End Date': result.endDate,
+        'Start Date at a Site': result.siteStartDate,
+        'Position Type': result.positionType,
+        'Specific Position Type': result.employmentType,
+        'Site of ROS': result.site,
+        'Health Region': result.healthRegion,
+        'Return of Service Completed': result.rosCompleted,
+        'Intends to Continue as HCA/MHAW Following ROS Completion':
+          result.remainingInSectorOrRoleOrAnother,
+      });
     });
-  });
+  } catch (error) {
+    logger.error(`Error generating ROS report: ${error.message}`);
+    // Write an error message to the CSV
+    csvStream.write({
+      Error: `Failed to generate report: ${error.message}`,
+    });
+  }
 };
 
 /**

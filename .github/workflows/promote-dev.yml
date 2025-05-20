@@ -1,12 +1,18 @@
 # Build and Deploy to dev env.
-# Trigger with tag dev
+# Trigger with branch dev-env or tag dev
 # Connected with repo environment 'dev'
-name: OpenShift Build and Deploy to Dev with OWSAP ZAP SCAN
+name: OpenShift Deploy/Promotion to Dev with OWSAP ZAP SCAN
 
 on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual deployment'
+        required: false
+        default: 'Manual deployment'
   push:
     branches:
-      - master
+      - dev-env
     tags:
       - dev
 

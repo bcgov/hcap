@@ -1,10 +1,18 @@
 # Promotion to test env.
-# Trigger with tag push
+# Trigger with branch test-env, tag test, or manual dispatch
 # Connected with repo environment 'test'
 name: OpenShift Deploy/Promotion to Test
 
 on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual deployment to test'
+        required: false
+        default: 'Manual test deployment'
   push:
+    branches:
+      - test-env
     tags:
       - test
 
@@ -50,7 +58,7 @@ jobs:
           filters: |
             src:
               - 'openshift/**'
-          base: 'refs/tags/test'
+          base: ${{ github.ref }}
 
       - name: Dry run - Test
         env:
@@ -83,7 +91,7 @@ jobs:
           filters: |
             src:
               - 'openshift/**'
-          base: 'refs/tags/test'
+          base: ${{ github.ref }}
       - name: Apply Changes
         env:
           OS_NAMESPACE_SUFFIX: test

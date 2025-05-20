@@ -1,5 +1,5 @@
 # Build and Deploy to dev env.
-# Trigger with branch dev-env or tag dev
+# Trigger with branch dev-env, tag dev, or manual dispatch
 # Connected with repo environment 'dev'
 name: OpenShift Deploy/Promotion to Dev with OWSAP ZAP SCAN
 

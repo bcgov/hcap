@@ -1,14 +1,12 @@
 # Promotion to test env.
-# Trigger with manual dispatch
-
-# Example Scenarios
-#   Manual Deployment from Feature Branch:
-#     User manually triggers workflow
-#     Provides ticket number in the reason field
-#     Selects "feature/feature-name" in the ref input
-#     Code is checked out from "feature/feature-name"
-#     Deployment proceeds with that code
-
+# Trigger with manual dispatch only
+#
+# Deployment Process:
+#   User manually triggers workflow
+#   Provides ticket number in the reason field
+#   Workflow checks for OpenShift config changes
+#   Requires approval from environment protection rules
+#   Deploys the selected branch to test environment
 name: OpenShift Deploy/Promotion to Test
 
 on:
@@ -38,6 +36,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.ref }}
+          fetch-depth: 0
 
       - name: Cache OpenShift CLI
         id: cache-oc
@@ -67,7 +66,7 @@ jobs:
           filters: |
             src:
               - 'openshift/**'
-          base: 'refs/heads/test-env~1' #Compare against previous commit on test-env branch
+          base: 'HEAD~1' #The commit right before the latest commit on test-env
 
       - name: Dry run - Test
         env:
@@ -96,13 +95,15 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.ref }}
+          fetch-depth: 0
       - uses: dorny/paths-filter@v2
         id: changes
         with:
           filters: |
             src:
               - 'openshift/**'
-          base: 'refs/heads/test-env~1' #Compare against previous commit on test-env branch
+          base: 'HEAD~1' #The commit right before the latest commit on test-env
+
       - name: Apply Changes
         env:
           OS_NAMESPACE_SUFFIX: test

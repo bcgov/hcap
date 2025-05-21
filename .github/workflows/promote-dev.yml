@@ -1,6 +1,18 @@
 # Build and Deploy to dev env.
-# Trigger with branch dev-env, tag dev, or manual dispatch
-# Connected with repo environment 'dev'
+# Trigger with branch dev-env or manual dispatch
+
+# Example Scenarios
+#   Automatic Deployment:
+#     Someone pushes to dev-env
+#     Workflow triggers automatically
+#     github.event.inputs.ref is empty
+#     Code is checked out from github.ref (dev-env branch)
+#   Manual Deployment from Feature Branch:
+#     User manually triggers workflow
+#     Selects "feature/feature-name" in the ref input
+#     Code is checked out from "feature/feature-name"
+#     Deployment proceeds with that code
+
 name: OpenShift Deploy/Promotion to Dev with OWSAP ZAP SCAN
 
 on:
@@ -8,13 +20,15 @@ on:
     inputs:
       reason:
         description: 'Reason for manual deployment'
+        required: true
+        default: 'Manual dev deployment'
+      ref:
+        description: 'Branch to deploy (default: dev-env)'
         required: false
-        default: 'Manual deployment'
+        default: 'dev-env'
   push:
     branches:
       - dev-env
-    tags:
-      - dev
 
 env:
   CLUSTER: https://api.silver.devops.gov.bc.ca:6443
@@ -31,6 +45,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
 
       - name: Install OpenShift CLI
         uses: redhat-actions/openshift-tools-installer@v1
@@ -52,6 +68,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
 
       - name: Install OpenShift CLI
         uses: redhat-actions/openshift-tools-installer@v1
@@ -64,7 +82,7 @@ jobs:
           filters: |
             src:
               - 'openshift/**'
-          base: ${{ github.ref }}
+          base: 'refs/heads/dev-env~1' #Compare against previous commit on dev-env branch
       - name: Dry run - Dev
         env:
           OS_NAMESPACE_SUFFIX: dev
@@ -91,6 +109,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
       - name: Install OpenShift CLI
         uses: redhat-actions/openshift-tools-installer@v1
         with:
@@ -101,7 +121,7 @@ jobs:
           filters: |
             src:
               - 'openshift/**'
-          base: ${{ github.ref}}
+          base: 'refs/heads/dev-env~1' #Compare against previous commit on dev-env branch
       - name: Apply Changes
         env:
           OS_NAMESPACE_SUFFIX: dev
@@ -121,6 +141,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
       - name: Install OpenShift CLI
         uses: redhat-actions/openshift-tools-installer@v1
         with:

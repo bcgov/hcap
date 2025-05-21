@@ -1,5 +1,5 @@
 # Promotion to test env.
-# Trigger with branch test-env, tag test, or manual dispatch
+# Trigger with manual dispatch or tag test
 # Connected with repo environment 'test'
 name: OpenShift Deploy/Promotion to Test
 
@@ -7,12 +7,10 @@ on:
   workflow_dispatch:
     inputs:
       reason:
-        description: 'Reason for manual deployment to test'
-        required: false
-        default: 'Manual test deployment'
+        description: 'Reason for deployment to test (include ticket number)'
+        required: true
+        default: 'BCMOHAM-XXXXX: Test deployment'
   push:
-    branches:
-      - test-env
     tags:
       - test
 

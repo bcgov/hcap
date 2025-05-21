@@ -162,27 +162,25 @@ local-kc-arm-down:
 	@echo "Stopping local app container"
 	@docker-compose -f docker-compose.arm.test.yml down --remove-orphans
 
-# Git Tagging Aliases
-
-tag-dev:
+# Branch-based deployment commands
+deploy-to-dev: #deploy the code on dev-env branch to DEV env on OpenShift
 ifdef ticket
-	@git tag -fa dev -m "Deploy $(ticket) to DEV env"
+	@echo "Creating branch dev-env from current branch with ticket $(ticket)"
+	@git checkout -B dev-env
+	@git push -f origin dev-env
 else
-	@echo -e '\nTicket name missing - Example :: make tag-dev ticket=HCAP-ABC \n'
-	@echo -e 'Falling Back to using branch name \n'
-	@git tag -fa dev -m "Deploy $(git rev-parse --abbrev-ref HEAD) to DEV env"
+	@echo -e '\nTicket name missing - Example :: make deploy-to-dev ticket=HCAP-ABC \n'
 endif
-	@git push --force origin refs/tags/dev:refs/tags/dev
 
-tag-test:
+prepare-test-branch: #For test, we don't automatically deploy, just prepare the branch
 ifdef ticket
-	@git tag -fa test -m "Deploy $(ticket) to TEST env"
+	@echo "Creating branch test-env from current branch with ticket $(ticket)"
+	@git checkout -B test-env
+	@git push -f origin test-env
+	@echo "Branch test-env updated. Use GitHub Actions workflow to deploy with proper RFC."
 else
-	@echo -e '\nTicket name missing - Example :: make tag-test ticket=HCAP-ABC \n'
-	@echo -e 'Falling Back to using branch name\n'
-	@git tag -fa test -m "Deploy $(git rev-parse --abbrev-ref HEAD) to TEST env"
+	@echo -e '\nTicket name missing - Example :: make prepare-test-branch ticket=HCAP-ABC \n'
 endif
-	@git push --force origin refs/tags/test:refs/tags/test
 
 tag-prod:
 ifdef ticket

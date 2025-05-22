@@ -1,6 +1,5 @@
 # Deployment
 
-
 ## OpenShift Application
 
 The Dockerized application is deployed to OpenShift using Makefile targets and YAML templates defined in the `openshift` directory.
@@ -19,6 +18,62 @@ Route | Exposes a service to the Internet. Routes differ from services in that t
 Deployment Config | Defines how a new version of an application is to be deployed. Additionally, triggers for redeployment are defined within this object. For the HCAP application, we've used a rolling deployment triggered by new images pushed to the image stream and tagged with the `latest` tag.
 Secret |Defines values that can be used by pods within in the same namespace. While there are no secrets defined in our server application, there is a reference to a secret defined by the [MongoDB database template](openshift/mongo.yml). In order for the server to access the DB, it must be provided with `MONGODB_DATABASE` and `MONGODB_URI` environment variables. The definition for these environment variables can be found in the [server deployment config template](openshift/server.dc.yml). Note that they are referencing the `${APP_NAME}-mongodb` (resolves to `hcap-mongodb`) secret and the `mongo-url` and `database` keys within this secret.
 
+## Deployment Process
+
+The application uses a branch-based deployment strategy for development and test environments, and a tag-based approach for production.
+
+### Development Environment
+
+Deployments to the development environment can be triggered by these 3 approaches:
+
+1. Creating and merging a PR to the `dev-env` branch
+2. Manually triggering the "OpenShift Deploy/Promotion to Dev" workflow in GitHub Actions
+3. Using the Makefile command for quick deployments without a PR:
+
+```bash
+# Deploy your current branch to dev
+make deploy-to-dev ticket=BCMOHAM-12345
+```
+
+This command will:
+- Get your current branch name
+- Force push your current branch to the remote `dev-env` branch
+- Trigger the GitHub Actions workflow for deployment to dev
+
+### Test Environment
+
+Deployments to the test environment follow a more controlled process:
+
+1. Create a PR from `dev-env` to `test-env`
+2. Get the PR reviewed and approved by the team
+3. Merge the approved PR to update the `test-env` branch
+4. Go to GitHub Actions
+5. Select "OpenShift Deploy/Promotion to Test" workflow
+6. Click "Run workflow"
+7. Enter the ticket number (e.g., BCMOHAM-12345) in the reason field
+8. Select the branch (`test-env`)
+9. Submit the workflow
+10. Wait for environment approval and deployment completion
+
+Test deployments require:
+- The ticket number
+- PR approval from authorized team members
+- Manual workflow trigger with proper documentation
+- Final environment approval in GitHub Actions
+
+### Production Environment (TODO)
+
+Production deployments use a tag-based approach:
+
+```bash
+# Use the Makefile command
+make tag-prod ticket=HCAP-123
+```
+
+This command will:
+- Create a tag named `prod` pointing to your current commit
+- Push it to the remote repository
+- Trigger the GitHub Actions workflow for deployment to production
 
 ## Dev/Test Certificate Creation
 

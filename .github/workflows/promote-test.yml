@@ -1,12 +1,25 @@
 # Promotion to test env.
-# Trigger with tag push
-# Connected with repo environment 'test'
+# Trigger with manual dispatch only
+#
+# Deployment Process:
+#   User manually triggers workflow
+#   Provides ticket number in the reason field
+#   Workflow checks for OpenShift config changes
+#   Requires approval from environment protection rules
+#   Deploys the selected branch to test environment
 name: OpenShift Deploy/Promotion to Test
 
 on:
-  push:
-    tags:
-      - test
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for deployment to test (include ticket number)'
+        required: true
+        default: 'BCMOHAM-XXXXX: Test deployment'
+      ref:
+        description: 'Branch to deploy (default: test-env)'
+        required: false
+        default: 'test-env'
 
 env:
   CLUSTER: https://api.silver.devops.gov.bc.ca:6443
@@ -21,6 +34,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref }}
+          fetch-depth: 0
 
       - name: Cache OpenShift CLI
         id: cache-oc
@@ -50,7 +66,7 @@ jobs:
           filters: |
             src:
               - 'openshift/**'
-          base: 'refs/tags/test'
+          base: 'HEAD~1' #The commit right before the latest commit on test-env
 
       - name: Dry run - Test
         env:
@@ -77,13 +93,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref }}
+          fetch-depth: 0
       - uses: dorny/paths-filter@v2
         id: changes
         with:
           filters: |
             src:
               - 'openshift/**'
-          base: 'refs/tags/test'
+          base: 'HEAD~1' #The commit right before the latest commit on test-env
+
       - name: Apply Changes
         env:
           OS_NAMESPACE_SUFFIX: test
@@ -103,6 +123,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref }}
 
       - name: Cache OpenShift CLI
         id: cache-oc

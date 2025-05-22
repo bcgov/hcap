@@ -1,14 +1,34 @@
 # Build and Deploy to dev env.
-# Trigger with tag dev
-# Connected with repo environment 'dev'
-name: OpenShift Build and Deploy to Dev with OWSAP ZAP SCAN
+# Trigger with branch dev-env or manual dispatch
+
+# Example Scenarios
+#   Automatic Deployment:
+#     Someone pushes to dev-env
+#     Workflow triggers automatically
+#     github.event.inputs.ref is empty
+#     Code is checked out from github.ref (dev-env branch)
+#   Manual Deployment from Feature Branch:
+#     User manually triggers workflow
+#     Selects "feature/feature-name" in the ref input
+#     Code is checked out from "feature/feature-name"
+#     Deployment proceeds with that code
+
+name: OpenShift Deploy/Promotion to Dev with OWSAP ZAP SCAN
 
 on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual deployment'
+        required: true
+        default: 'Manual dev deployment'
+      ref:
+        description: 'Branch to deploy (default: dev-env)'
+        required: false
+        default: 'dev-env'
   push:
     branches:
-      - master
-    tags:
-      - dev
+      - dev-env
 
 env:
   CLUSTER: https://api.silver.devops.gov.bc.ca:6443
@@ -25,6 +45,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
 
       - name: Install OpenShift CLI
         uses: redhat-actions/openshift-tools-installer@v1
@@ -46,6 +68,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
+          fetch-depth: 0
 
       - name: Install OpenShift CLI
         uses: redhat-actions/openshift-tools-installer@v1
@@ -58,7 +83,9 @@ jobs:
           filters: |
             src:
               - 'openshift/**'
-          base: ${{ github.ref }}
+          #github.event.before is the SHA of the commit before the push event (only available during push events)
+          #HEAD~1 is the commit right before the latest commit on dev-env
+          base: ${{ github.event.before || 'HEAD~1' }}
       - name: Dry run - Dev
         env:
           OS_NAMESPACE_SUFFIX: dev
@@ -85,6 +112,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
+          fetch-depth: 0
       - name: Install OpenShift CLI
         uses: redhat-actions/openshift-tools-installer@v1
         with:
@@ -95,7 +125,9 @@ jobs:
           filters: |
             src:
               - 'openshift/**'
-          base: ${{ github.ref}}
+          #github.event.before is the SHA of the commit before the push event (only available during push events)
+          #HEAD~1 is the commit right before the latest commit on dev-env
+          base: ${{ github.event.before || 'HEAD~1' }}
       - name: Apply Changes
         env:
           OS_NAMESPACE_SUFFIX: dev
@@ -115,6 +147,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
       - name: Install OpenShift CLI
         uses: redhat-actions/openshift-tools-installer@v1
         with:

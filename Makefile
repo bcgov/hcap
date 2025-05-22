@@ -163,23 +163,13 @@ local-kc-arm-down:
 	@docker-compose -f docker-compose.arm.test.yml down --remove-orphans
 
 # Branch-based deployment commands
-deploy-to-dev: #deploy the code on dev-env branch to DEV env on OpenShift
+deploy-to-dev: #deploy the code on current branch to DEV env via dev-env branch
 ifdef ticket
-	@echo "Creating branch dev-env from current branch with ticket $(ticket)"
-	@git checkout -B dev-env
-	@git push -f origin dev-env
+	@echo "Deploying current branch to DEV with ticket $(ticket)"
+	@CURRENT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD) && \
+	git push origin $$CURRENT_BRANCH:dev-env -f
 else
-	@echo -e '\nTicket name missing - Example :: make deploy-to-dev ticket=HCAP-ABC \n'
-endif
-
-prepare-test-branch: #For test, we don't automatically deploy, just prepare the branch
-ifdef ticket
-	@echo "Creating branch test-env from current branch with ticket $(ticket)"
-	@git checkout -B test-env
-	@git push -f origin test-env
-	@echo "Branch test-env updated. Use GitHub Actions workflow to deploy with proper RFC."
-else
-	@echo -e '\nTicket name missing - Example :: make prepare-test-branch ticket=HCAP-ABC \n'
+	@echo -e '\nTicket name missing - Example :: make deploy-to-dev ticket=BCMOHAM-12345 \n'
 endif
 
 tag-prod:

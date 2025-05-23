@@ -84,8 +84,8 @@ jobs:
             src:
               - 'openshift/**'
           #github.event.before is the SHA of the commit before the push event (only available during push events)
-          #HEAD~1 is the commit right before the latest commit on dev-env
-          base: ${{ github.event.before || 'HEAD~1' }}
+          #format('{0}~1', github.sha) is  the commit that is one before the current commit that triggered this workflow.
+          base: ${{ github.event.before || format('{0}~1', github.sha) }}
       - name: Dry run - Dev
         env:
           OS_NAMESPACE_SUFFIX: dev
@@ -126,8 +126,8 @@ jobs:
             src:
               - 'openshift/**'
           #github.event.before is the SHA of the commit before the push event (only available during push events)
-          #HEAD~1 is the commit right before the latest commit on dev-env
-          base: ${{ github.event.before || 'HEAD~1' }}
+          #format('{0}~1', github.sha) is  the commit that is one before the current commit that triggered this workflow.
+          base: ${{ github.event.before || format('{0}~1', github.sha) }}
       - name: Apply Changes
         env:
           OS_NAMESPACE_SUFFIX: dev

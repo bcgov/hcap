@@ -66,7 +66,7 @@ jobs:
           filters: |
             src:
               - 'openshift/**'
-          base: ${{ format('{0}~1', github.sha) }} #The commit right before the current commit
+          base: 'HEAD^' #The commit right before the current commit
 
       - name: Dry run - Test
         env:
@@ -102,7 +102,7 @@ jobs:
           filters: |
             src:
               - 'openshift/**'
-          base: ${{ format('{0}~1', github.sha) }} #The commit right before the current commit
+          base: 'HEAD^' #The commit right before the current commit
 
       - name: Apply Changes
         env:

@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+      - dev-env
+      - test-env
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:

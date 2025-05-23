@@ -60,13 +60,17 @@ jobs:
       - name: Verify OpenShift CLI installation
         run: oc version
 
+      - name: Get previous commit
+        id: get-prev-commit
+        run: echo "prev_commit=$(git rev-parse HEAD^)" >> $GITHUB_OUTPUT
+
       - uses: dorny/paths-filter@v2
         id: changes
         with:
           filters: |
             src:
               - 'openshift/**'
-          base: 'HEAD~1' #The commit right before the latest commit on test-env
+          base: ${{ steps.get-prev-commit.outputs.prev_commit }} #The commit right before the current commit
 
       - name: Dry run - Test
         env:
@@ -96,13 +100,18 @@ jobs:
         with:
           ref: ${{ github.event.inputs.ref }}
           fetch-depth: 0
+
+      - name: Get previous commit
+        id: get-prev-commit
+        run: echo "prev_commit=$(git rev-parse HEAD^)" >> $GITHUB_OUTPUT
+
       - uses: dorny/paths-filter@v2
         id: changes
         with:
           filters: |
             src:
               - 'openshift/**'
-          base: 'HEAD~1' #The commit right before the latest commit on test-env
+          base: ${{ steps.get-prev-commit.outputs.prev_commit }} #The commit right before the current commit
 
       - name: Apply Changes
         env:

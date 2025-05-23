@@ -77,15 +77,19 @@ jobs:
         with:
           oc: latest
 
+      - name: Get previous commit
+        id: get-prev-commit
+        run: echo "prev_commit=$(git rev-parse HEAD^)" >> $GITHUB_OUTPUT
+
       - uses: dorny/paths-filter@v2
         id: changes
         with:
           filters: |
             src:
               - 'openshift/**'
-          #github.event.before is the SHA of the commit before the push event (only available during push events)
-          #HEAD~1 is the commit right before the latest commit on dev-env
-          base: ${{ github.event.before || 'HEAD~1' }}
+          # github.event.before is the SHA of the commit before the push event (only available during push events)
+          # steps.get-prev-commit.outputs.prev_commit contains the SHA of the parent commit (one before the current commit)
+          base: ${{ github.event.before || steps.get-prev-commit.outputs.prev_commit }}
       - name: Dry run - Dev
         env:
           OS_NAMESPACE_SUFFIX: dev
@@ -119,15 +123,20 @@ jobs:
         uses: redhat-actions/openshift-tools-installer@v1
         with:
           oc: latest
+
+      - name: Get previous commit
+        id: get-prev-commit
+        run: echo "prev_commit=$(git rev-parse HEAD^)" >> $GITHUB_OUTPUT
+
       - uses: dorny/paths-filter@v2
         id: changes
         with:
           filters: |
             src:
               - 'openshift/**'
-          #github.event.before is the SHA of the commit before the push event (only available during push events)
-          #HEAD~1 is the commit right before the latest commit on dev-env
-          base: ${{ github.event.before || 'HEAD~1' }}
+          # github.event.before is the SHA of the commit before the push event (only available during push events)
+          # steps.get-prev-commit.outputs.prev_commit contains the SHA of the parent commit (one before the current commit)
+          base: ${{ github.event.before || steps.get-prev-commit.outputs.prev_commit }}
       - name: Apply Changes
         env:
           OS_NAMESPACE_SUFFIX: dev

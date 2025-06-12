@@ -163,10 +163,10 @@ local-kc-arm-down:
 	@docker-compose -f docker-compose.arm.test.yml down --remove-orphans
 
 # Local Scripts
-extract-bceid-has:
+local-export-business-bceid-has:
 	@npx ts-node ./server/scripts/export-user-ha.ts
 
-extract-all-users-has:
+local-export-all-users-has:
 	@npx ts-node ./server/scripts/export-user-ha.ts --all
 
 # Branch-based deployment commands

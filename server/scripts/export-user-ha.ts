@@ -22,7 +22,7 @@ type UserWithHAArray = {
 const HA_VALUES = ['Fraser', 'Interior', 'Vancouver Island', 'Northern', 'Vancouver Coastal'];
 
 // Function to cache BCeID user roles and sites
-export const cacheUserBCeIDRoles = async (includeAll: boolean) => {
+export const exportUserHAs = async (includeAll: boolean) => {
   if (includeAll) {
     console.info('Extracting all users');
   }
@@ -39,12 +39,14 @@ export const cacheUserBCeIDRoles = async (includeAll: boolean) => {
   if (users.length > 0) {
     await dbClient.connect();
 
+    // Check if the database client is initialized correctly
     if (!('db' in dbClient) || !dbClient.db) throw new Error('Database failed to initialize!');
 
     // For all users with BCeID roles, get their sites and health authorities
     const usersWithSites: UserWithHAArray[] = await Promise.all(
       users.map(async (user) => {
-        if (!user.username.includes('bceid') && !includeAll) {
+        // Check if the user has a business BCeID or if we are including all users
+        if (!user.username.includes('@bceid_business') && !includeAll) {
           return null;
         }
         // Get all sites for the user
@@ -120,12 +122,14 @@ export const cacheUserBCeIDRoles = async (includeAll: boolean) => {
       .map((user) => `${user.username},${user.firstName},${user.lastName},${user.email},${user.HA}`)
       .join('\n');
     await fs.promises
-      .writeFile(path.join(__dirname, 'output/bceid-users.csv'), csv)
+      .writeFile(path.join(__dirname, 'output/business-bceid-users.csv'), csv)
       .then(() => {
-        console.info('BCeID users cached successfully to ./server/scripts/output/bceid-users.csv');
+        console.info(
+          'Business BCeID users cached successfully to ./server/scripts/output/business-bceid-users.csv'
+        );
       })
       .catch((err) => {
-        console.error('Error writing to ./server/scripts/output/bceid-users.csv:', err);
+        console.error('Error writing to ./server/scripts/output/business-bceid-users.csv:', err);
       });
   }
 };
@@ -134,6 +138,6 @@ export const cacheUserBCeIDRoles = async (includeAll: boolean) => {
   if (require.main === module) {
     const includeAll = process.argv.includes('--all');
     await keycloak.buildInternalIdMap();
-    await cacheUserBCeIDRoles(includeAll);
+    await exportUserHAs(includeAll);
   }
 })();

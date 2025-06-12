@@ -1,6 +1,7 @@
 /* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
 import { PromisePool } from '@supercharge/promise-pool';
 import fs from 'fs';
+import path from 'path';
 import { AllRoles } from '../constants';
 import keycloak from '../keycloak';
 import { dbClient } from '../db';
@@ -109,12 +110,12 @@ export const cacheUserBCeIDRoles = async (includeAll: boolean) => {
       .map((user) => `${user.username},${user.firstName},${user.lastName},${user.email},${user.HA}`)
       .join('\n');
     await fs.promises
-      .writeFile('./server/build/bceid-users.csv', csv)
+      .writeFile(path.join(__dirname, 'output/bceid-users.csv'), csv)
       .then(() => {
-        console.info('BCeID users cached successfully to ./server/build/bceid-users.csv');
+        console.info('BCeID users cached successfully to ./server/scripts/output/bceid-users.csv');
       })
       .catch((err) => {
-        console.error('Error writing to ./server/build/bceid-users.csv:', err);
+        console.error('Error writing to ./server/scripts/output/bceid-users.csv:', err);
       });
   }
 

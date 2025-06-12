@@ -21,6 +21,7 @@ type UserWithHAArray = {
 
 const HA_VALUES = ['Fraser', 'Interior', 'Vancouver Island', 'Northern', 'Vancouver Coastal'];
 
+// Function to cache BCeID user roles and sites
 export const cacheUserBCeIDRoles = async (includeAll: boolean) => {
   if (includeAll) {
     console.info('Extracting all users');
@@ -40,12 +41,15 @@ export const cacheUserBCeIDRoles = async (includeAll: boolean) => {
 
     if (!('db' in dbClient) || !dbClient.db) throw new Error('Database failed to initialize!');
 
+    // For all users with BCeID roles, get their sites and health authorities
     const usersWithSites: UserWithHAArray[] = await Promise.all(
       users.map(async (user) => {
         if (!user.username.includes('bceid') && !includeAll) {
           return null;
         }
+        // Get all sites for the user
         const userSites = await getUserSites(user.id);
+        // Get the HAs for those sites
         const HAs: string[] = userSites.map((site: EmployerSite) => site.healthAuthority);
         if (user.roles.includes('ministry_of_health')) {
           // If the user is a Ministry of Health user, they have access to all HAs
@@ -104,8 +108,12 @@ export const cacheUserBCeIDRoles = async (includeAll: boolean) => {
       });
     });
 
+    // Create output directory if it doesn't exist
+    if (!fs.existsSync(path.join(__dirname, 'output'))) {
+      fs.mkdirSync(path.join(__dirname, 'output'), { recursive: true });
+    }
     // Write to CSV file
-    // Format: id,roles
+    // Format: username,firstName,lastName,email,HA
     const csv = finalUserList
       .map((user) => `${user.username},${user.firstName},${user.lastName},${user.email},${user.HA}`)
       .join('\n');
@@ -118,8 +126,6 @@ export const cacheUserBCeIDRoles = async (includeAll: boolean) => {
         console.error('Error writing to ./server/scripts/output/bceid-users.csv:', err);
       });
   }
-
-  // find user's HA association
 };
 
 (async function main() {

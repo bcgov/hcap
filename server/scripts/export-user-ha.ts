@@ -94,6 +94,8 @@ export const cacheUserBCeIDRoles = async (includeAll: boolean) => {
         });
         return;
       }
+      // Generate a row for each health authority the user has access to
+      // This allows users with access to multiple HAs to have multiple rows in the CSV
       user.HA.forEach((ha) => {
         finalUserList.push({
           id: user.id,

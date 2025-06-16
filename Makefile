@@ -162,6 +162,13 @@ local-kc-arm-down:
 	@echo "Stopping local app container"
 	@docker-compose -f docker-compose.arm.test.yml down --remove-orphans
 
+# Local Scripts
+local-export-business-bceid-has:
+	@npx ts-node ./server/scripts/export-user-ha.ts
+
+local-export-all-users-has:
+	@npx ts-node ./server/scripts/export-user-ha.ts --all
+
 # Branch-based deployment commands
 deploy-to-dev: #deploy the code on current branch to DEV env via dev-env branch
 ifdef ticket

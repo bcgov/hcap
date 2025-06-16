@@ -16,6 +16,7 @@ server/*.pdf
 server/pdfs/*
 server/db/.migrate
 server/build
+server/scripts/output
 
 # Misc.
 Dockerrun.aws.json

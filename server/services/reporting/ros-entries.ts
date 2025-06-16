@@ -18,21 +18,14 @@ interface RosEntry {
       healthAuthority: string;
     };
   };
-  participantStatusJoin: {
-    status: string;
-    current: boolean;
-    data: {
-      type: string;
-      confirmed: boolean;
-      remainingInSectorOrRoleOrAnother: string;
-    };
-  };
   data: {
     date: Date | string;
     startDate: Date | string;
     positionType?: string;
     employmentType?: string;
   };
+  rosCompleted: string;
+  remainingInSectorOrRoleOrAnother: string;
 }
 
 export const mapRosEntries = (rosEntries: RosEntry[]) =>
@@ -48,11 +41,6 @@ export const mapRosEntries = (rosEntries: RosEntry[]) =>
     positionType: entry.data?.positionType || 'Unknown',
     healthRegion: entry.siteJoin?.body?.healthAuthority,
     employmentType: entry.data?.employmentType || 'Unknown',
-    rosCompleted:
-      entry.participantStatusJoin?.status === 'archived' &&
-      entry.participantStatusJoin?.data?.type === 'rosComplete' &&
-      entry.participantStatusJoin?.current &&
-      entry.participantStatusJoin?.data?.confirmed,
-    remainingInSectorOrRoleOrAnother:
-      entry.participantStatusJoin?.data?.remainingInSectorOrRoleOrAnother ?? 'Unknown',
+    rosCompleted: entry.rosCompleted,
+    remainingInSectorOrRoleOrAnother: entry.remainingInSectorOrRoleOrAnother,
   }));

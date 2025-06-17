@@ -1,5 +1,5 @@
 import { dbClient, collections } from '../../db';
-import { mapRosEntries } from './ros-entries';
+import { mapRosEntries, applyDistinct } from './ros-entries';
 import logger from '../../logger';
 
 export const getMohRosMilestonesReport = async () => {
@@ -68,7 +68,8 @@ export const getMohRosMilestonesReport = async () => {
       })
     );
 
-    return mapRosEntries(enhancedEntries);
+    const mappedEntries = mapRosEntries(enhancedEntries);
+    return applyDistinct(mappedEntries);
   } catch (error) {
     logger.error(`Error generating MoH ROS milestones report: ${error.message}`);
     throw error;
@@ -181,7 +182,8 @@ export const getHARosMilestonesReport = async (region: string) => {
       })
     );
 
-    return mapRosEntries(enhancedEntries);
+    const mappedEntries = mapRosEntries(enhancedEntries);
+    return applyDistinct(mappedEntries);
   } catch (error) {
     logger.error(
       `Error generating HA ROS milestones report for region ${region}: ${error.message}`

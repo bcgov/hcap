@@ -44,3 +44,34 @@ export const mapRosEntries = (rosEntries: RosEntry[]) =>
     rosCompleted: entry.rosCompleted,
     remainingInSectorOrRoleOrAnother: entry.remainingInSectorOrRoleOrAnother,
   }));
+
+//A helper for the DISTINCT logic
+export const applyDistinct = (entries) => {
+  const uniqueEntries = [];
+  const seenRecords = new Set();
+
+  entries.forEach((entry) => {
+    const distinctKey = JSON.stringify({
+      participantId: entry.participantId,
+      firstName: entry.firstName,
+      lastName: entry.lastName,
+      program: entry.program,
+      startDate: entry.startDate,
+      endDate: entry.endDate,
+      siteStartDate: entry.siteStartDate,
+      positionType: entry.positionType,
+      employmentType: entry.employmentType,
+      site: entry.site,
+      healthRegion: entry.healthRegion,
+      rosCompleted: entry.rosCompleted,
+      remainingInSectorOrRoleOrAnother: entry.remainingInSectorOrRoleOrAnother,
+    });
+
+    if (!seenRecords.has(distinctKey)) {
+      seenRecords.add(distinctKey);
+      uniqueEntries.push(entry);
+    }
+  });
+
+  return uniqueEntries;
+};

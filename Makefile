@@ -162,27 +162,22 @@ local-kc-arm-down:
 	@echo "Stopping local app container"
 	@docker-compose -f docker-compose.arm.test.yml down --remove-orphans
 
-# Git Tagging Aliases
+# Local Scripts
+local-export-business-bceid-has:
+	@npx ts-node ./server/scripts/export-user-ha.ts
 
-tag-dev:
-ifdef ticket
-	@git tag -fa dev -m "Deploy $(ticket) to DEV env"
-else
-	@echo -e '\nTicket name missing - Example :: make tag-dev ticket=HCAP-ABC \n'
-	@echo -e 'Falling Back to using branch name \n'
-	@git tag -fa dev -m "Deploy $(git rev-parse --abbrev-ref HEAD) to DEV env"
-endif
-	@git push --force origin refs/tags/dev:refs/tags/dev
+local-export-all-users-has:
+	@npx ts-node ./server/scripts/export-user-ha.ts --all
 
-tag-test:
+# Branch-based deployment commands
+deploy-to-dev: #deploy the code on current branch to DEV env via dev-env branch
 ifdef ticket
-	@git tag -fa test -m "Deploy $(ticket) to TEST env"
+	@echo "Deploying current branch to DEV with ticket $(ticket)"
+	@CURRENT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD) && \
+	git push origin $$CURRENT_BRANCH:dev-env -f
 else
-	@echo -e '\nTicket name missing - Example :: make tag-test ticket=HCAP-ABC \n'
-	@echo -e 'Falling Back to using branch name\n'
-	@git tag -fa test -m "Deploy $(git rev-parse --abbrev-ref HEAD) to TEST env"
+	@echo -e '\nTicket name missing - Example :: make deploy-to-dev ticket=BCMOHAM-12345 \n'
 endif
-	@git push --force origin refs/tags/test:refs/tags/test
 
 tag-prod:
 ifdef ticket

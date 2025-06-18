@@ -1,5 +1,5 @@
 import { dbClient, collections } from '../../db';
-import { mapRosEntries } from './ros-entries';
+import { mapRosEntries, applyDistinct } from './ros-entries';
 import logger from '../../logger';
 
 export const getMohRosMilestonesReport = async () => {
@@ -22,16 +22,6 @@ export const getMohRosMilestonesReport = async () => {
             id: 'site_id',
           },
         },
-        participantStatusJoin: {
-          type: 'LEFT OUTER',
-          decomposeTo: 'object',
-          relation: collections.PARTICIPANTS_STATUS,
-          on: {
-            participant_id: 'participant_id',
-            current: true,
-            'data.site': 'siteJoin.body.siteId',
-          },
-        },
       })
       .find(
         {},
@@ -48,42 +38,38 @@ export const getMohRosMilestonesReport = async () => {
     if (!entries || entries.length === 0) {
       return [];
     }
-    // Get the ROS completion status for each participant
-    const participantIds = entries.map((entry) => entry.participant_id);
 
-    const rosCompletionStatuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
-      participant_id: participantIds,
-      status: 'archived',
-      'data.type': 'rosComplete',
-      'data.confirmed': 'true',
-      current: true,
-    });
+    // Process each entry to get ROS completion status individually
+    const enhancedEntries = await Promise.all(
+      entries.map(async (entry) => {
+        // Get ROS completion status for this specific participant
+        const rosCompletionStatus = await dbClient.db[collections.PARTICIPANTS_STATUS].findOne(
+          {
+            participant_id: entry.participant_id,
+            status: 'archived',
+            'data.type': 'rosComplete',
+            'data.confirmed': 'true',
+            current: true,
+          },
+          {
+            order: [{ field: 'id', direction: 'desc' }],
+          }
+        );
 
-    // Create a map of participant IDs to their ROS completion status
-    const rosCompletionMap = new Map();
-    rosCompletionStatuses.forEach((status) => {
-      rosCompletionMap.set(status.participant_id, {
-        completed: true,
-        remainingInSectorOrRoleOrAnother:
-          status.data?.remainingInSectorOrRoleOrAnother || 'Unknown',
-      });
-    });
+        const rosCompleted = rosCompletionStatus ? 'TRUE' : 'FALSE';
+        const remainingInSectorOrRoleOrAnother =
+          rosCompletionStatus?.data?.remainingInSectorOrRoleOrAnother || 'Unknown';
 
-    // Enhance the entries with the ROS completion information
-    const enhancedEntries = entries.map((entry) => {
-      const rosCompletion = rosCompletionMap.get(entry.participant_id) || {
-        completed: false,
-        remainingInSectorOrRoleOrAnother: 'Unknown',
-      };
+        return {
+          ...entry,
+          rosCompleted,
+          remainingInSectorOrRoleOrAnother,
+        };
+      })
+    );
 
-      return {
-        ...entry,
-        rosCompleted: rosCompletion.completed ? 'TRUE' : 'FALSE',
-        remainingInSectorOrRoleOrAnother: rosCompletion.remainingInSectorOrRoleOrAnother,
-      };
-    });
-
-    return mapRosEntries(enhancedEntries);
+    const mappedEntries = mapRosEntries(enhancedEntries);
+    return applyDistinct(mappedEntries);
   } catch (error) {
     logger.error(`Error generating MoH ROS milestones report: ${error.message}`);
     throw error;
@@ -109,16 +95,6 @@ export const getHARosMilestonesReport = async (region: string) => {
             id: 'site_id',
           },
         },
-        participantStatusJoin: {
-          type: 'LEFT OUTER',
-          decomposeTo: 'object',
-          relation: collections.PARTICIPANTS_STATUS,
-          on: {
-            participant_id: 'participant_id',
-            current: true,
-            'data.site': 'siteJoin.body.siteId',
-          },
-        },
       })
       .find(
         {
@@ -139,6 +115,9 @@ export const getHARosMilestonesReport = async (region: string) => {
       return [];
     }
 
+    // Get the IDs of entries we already have to avoid duplicates
+    const existingEntryIds = new Set(sameSiteRosEntries.map((entry) => entry.id));
+
     // HAs need only see the participants in their health region + participants who changed their health region and now assigned to a site withing HAs view
     // select participants outside HAs region for changed sites
     const editedEntries = await dbClient.db[collections.ROS_STATUS]
@@ -158,16 +137,6 @@ export const getHARosMilestonesReport = async (region: string) => {
             id: 'site_id',
           },
         },
-        participantStatusJoin: {
-          type: 'LEFT OUTER',
-          decomposeTo: 'object',
-          relation: collections.PARTICIPANTS_STATUS,
-          on: {
-            participant_id: 'participant_id',
-            current: true,
-            'data.site': 'siteJoin.body.siteId',
-          },
-        },
       })
       .find({
         participant_id: sameSiteRosEntries.map((entry) => entry.participant_id),
@@ -175,51 +144,46 @@ export const getHARosMilestonesReport = async (region: string) => {
         'data.user <>': 'NULL',
       });
 
-    // see if we need to display this information for HA based on what participants are included
-    // if participants are already visible to HA - include information about their previous sites
+    // Filter out duplicates from editedEntries
+    const uniqueEditedEntries = editedEntries.filter((entry) => !existingEntryIds.has(entry.id));
+
     let rosEntries = sameSiteRosEntries;
-    if (editedEntries.length > 0) {
-      rosEntries = rosEntries.concat(editedEntries);
+    if (uniqueEditedEntries.length > 0) {
+      rosEntries = rosEntries.concat(uniqueEditedEntries);
       rosEntries.sort((a, b) => a.participant_id - b.participant_id);
     }
 
-    // Get all participant IDs from the combined entries
-    const participantIds = rosEntries.map((entry) => entry.participant_id);
+    // Process each entry to get ROS completion status individually
+    const enhancedEntries = await Promise.all(
+      rosEntries.map(async (entry) => {
+        // Get ROS completion status for this specific participant
+        const rosCompletionStatus = await dbClient.db[collections.PARTICIPANTS_STATUS].findOne(
+          {
+            participant_id: entry.participant_id,
+            status: 'archived',
+            'data.type': 'rosComplete',
+            'data.confirmed': 'true',
+            current: true,
+          },
+          {
+            order: [{ field: 'id', direction: 'desc' }], // Get the most recent one
+          }
+        );
 
-    // Get ROS completion statuses for these participants
-    const rosCompletionStatuses = await dbClient.db[collections.PARTICIPANTS_STATUS].find({
-      participant_id: participantIds,
-      status: 'archived',
-      'data.type': 'rosComplete',
-      'data.confirmed': 'true',
-      current: true,
-    });
+        const rosCompleted = rosCompletionStatus ? 'TRUE' : 'FALSE';
+        const remainingInSectorOrRoleOrAnother =
+          rosCompletionStatus?.data?.remainingInSectorOrRoleOrAnother || 'Unknown';
 
-    // Create a map of participant IDs to their ROS completion status
-    const rosCompletionMap = new Map();
-    rosCompletionStatuses.forEach((status) => {
-      rosCompletionMap.set(status.participant_id, {
-        completed: true,
-        remainingInSectorOrRoleOrAnother:
-          status.data?.remainingInSectorOrRoleOrAnother || 'Unknown',
-      });
-    });
+        return {
+          ...entry,
+          rosCompleted,
+          remainingInSectorOrRoleOrAnother,
+        };
+      })
+    );
 
-    // Enhance the entries with the ROS completion information
-    const enhancedEntries = rosEntries.map((entry) => {
-      const rosCompletion = rosCompletionMap.get(entry.participant_id) || {
-        completed: false,
-        remainingInSectorOrRoleOrAnother: 'Unknown',
-      };
-
-      return {
-        ...entry,
-        rosCompleted: rosCompletion.completed ? 'TRUE' : 'FALSE',
-        remainingInSectorOrRoleOrAnother: rosCompletion.remainingInSectorOrRoleOrAnother,
-      };
-    });
-
-    return mapRosEntries(enhancedEntries);
+    const mappedEntries = mapRosEntries(enhancedEntries);
+    return applyDistinct(mappedEntries);
   } catch (error) {
     logger.error(
       `Error generating HA ROS milestones report for region ${region}: ${error.message}`

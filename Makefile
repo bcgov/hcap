@@ -79,6 +79,14 @@ local-run: local-build
 	npm run update-apps
 	@docker-compose -f docker-compose.dev.yml up
 
+local-watch-server:
+	@echo "Running local app in watch mode"
+	@npm run watch --prefix server
+
+local-watch-client:
+	@echo "Running local app in watch mode"
+	@npm run start --prefix client
+
 local-kc-build:
 	@echo "Building test local app container"
 	@docker-compose -f docker-compose.test.yml build

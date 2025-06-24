@@ -10,7 +10,7 @@ import { FEATURE_KEYCLOAK_MIGRATION } from './services/feature-flags';
 import { sanitize } from './utils';
 
 const MAX_RETRY = 5;
-const options = ['bceid', 'bceid_business', 'idir', 'moh_idp'];
+const options = ['bceid', 'bceid_business', 'idir', 'moh_idp', 'phsa'];
 
 const regionMap = {
   region_fraser: 'Fraser',

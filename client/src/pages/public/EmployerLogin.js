@@ -117,7 +117,8 @@ export default () => {
             <Typography variant='h2'>Login</Typography>
             <Box my={2}>
               <Typography variant='body1' className={classes.loginText}>
-                Log in with your IDIR or BCeID to the Health Career Access Program Employer Portal.
+                Log in with your IDIR, HA ID or BCeID to the Health Career Access Program Employer
+                Portal.
               </Typography>
             </Box>
             <Box>

@@ -69,6 +69,13 @@ archive-withdrawn-participants:
 	@docker exec $(APP_NAME)-server npm run archive-withdrawn-participants
 
 # Local Development
+local-watch-server:
+	@echo "Running local app in watch mode"
+	@npm run watch --prefix server
+
+local-watch-client:
+	@echo "Running local app in watch mode"
+	@npm run start --prefix client
 
 local-build:
 	@echo "Building local app image"

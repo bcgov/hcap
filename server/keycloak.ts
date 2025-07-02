@@ -10,7 +10,7 @@ import { FEATURE_KEYCLOAK_MIGRATION } from './services/feature-flags';
 import { sanitize } from './utils';
 
 const MAX_RETRY = 5;
-const options = ['bceid', 'bceid_business', 'idir', 'moh_idp'];
+const options = ['bceid', 'bceid_business', 'idir', 'moh_idp', 'phsa'];
 
 const regionMap = {
   region_fraser: 'Fraser',
@@ -114,6 +114,7 @@ class Keycloak {
       ['dev', 'local'].includes(process.env.APP_ENV?.toLowerCase());
 
     if (isDevEnvironment) {
+      // eslint-disable-next-line global-require
       const https = require('https');
       this.axiosInstance = axios.create({
         baseURL: this.apiUrl,
@@ -170,7 +171,7 @@ class Keycloak {
         // if no email, user should not be in user_migration table
         const existingUser = await getUserMigration(username, email);
 
-        const type = username.split('@')[1];
+        const type = username.split('@').pop();
         const shouldSetRoles = !content?.resource_access && !existingUser && options.includes(type);
 
         if (shouldSetRoles) {

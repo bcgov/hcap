@@ -6,7 +6,7 @@
  * @param idpHint keycloak idp hint
  */
 export const createCustomLoginUrl = (kcInstance, route, idpHint) => {
-  const idps = ['idir', 'bceid_business', 'moh_idp'];
+  const idps = ['idir', 'bceid_business', 'moh_idp', 'phsa'];
 
   const loginUrl = kcInstance.createLoginUrl({
     idpHint,

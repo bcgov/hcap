@@ -70,11 +70,11 @@ archive-withdrawn-participants:
 
 # Local Development
 local-watch-server:
-	@echo "Running local app in watch mode"
+	@echo "Running local server in watch mode"
 	@npm run watch --prefix server
 
 local-watch-client:
-	@echo "Running local app in watch mode"
+	@echo "Running local client in watch mode"
 	@npm run start --prefix client
 
 local-build:

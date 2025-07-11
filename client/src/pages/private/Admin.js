@@ -13,8 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
   welcomeOverflow: {
     maxWidth: '320px',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
+    textAlign: 'center',
   },
 }));
 
@@ -23,7 +22,7 @@ export default () => {
   const classes = useStyles();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
-  const name = auth.user?.name || '';
+  const name = auth.user?.name || auth.user?.username || '';
 
   useEffect(() => {
     if (roles.includes(Role.Employer) || roles.includes(Role.MHSUEmployer))
@@ -55,12 +54,7 @@ export default () => {
         >
           <Box pb={4} pl={4} pr={4} pt={2}>
             <Grid container direction='column'>
-              <Typography
-                noWrap
-                variant='subtitle1'
-                gutterBottom
-                className={classes.welcomeOverflow}
-              >
+              <Typography variant='subtitle1' gutterBottom className={classes.welcomeOverflow}>
                 Welcome, {name}
               </Typography>
               <CheckPermissions permittedRoles={UserRoles}>

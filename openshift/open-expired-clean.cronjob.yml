@@ -1,4 +1,5 @@
 # Expires participants that have been open for > 6 months
+# Test comment for workflow validation
 kind: Template
 apiVersion: template.openshift.io/v1
 labels:

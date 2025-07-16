@@ -175,6 +175,7 @@ apiRouter.get(
     return res.json({
       roles: req.hcapUserInfo.roles,
       name: req.hcapUserInfo.name,
+      username: req.hcapUserInfo.username,
       sites,
       notifications,
     });

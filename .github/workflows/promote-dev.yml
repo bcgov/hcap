@@ -98,6 +98,7 @@ jobs:
           oc login --token="$SA_TOKEN" --server="$CLUSTER"
           cd "$GITHUB_WORKSPACE"
           make server-config-test
+          make cron-job-test
   confirm:
     name: Get Confirmation Dev Deployment
     runs-on: ubuntu-latest
@@ -145,6 +146,7 @@ jobs:
           oc login --token="$SA_TOKEN" --server="$CLUSTER"
           cd "$GITHUB_WORKSPACE"
           make server-config
+          make cron-job
   build:
     name: OpenShift Build & Deploy
     runs-on: ubuntu-latest

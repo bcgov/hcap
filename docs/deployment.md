@@ -22,6 +22,15 @@ Secret |Defines values that can be used by pods within in the same namespace. Wh
 
 The application uses a branch-based deployment strategy for development and test environments, and a tag-based approach for production.
 
+### Infrastructure Changes
+
+When making changes to OpenShift configuration files (in the `openshift/` directory), the deployment workflows automatically:
+
+1. **Test Phase**: Validate configurations using `make server-config-test` and `make cron-job-test`
+2. **Apply Phase**: Deploy server configurations and cronjobs using `make server-config` and `make cron-job`
+
+This ensures that both application deployment configurations and scheduled job configurations are properly tested and deployed together.
+
 ### Development Environment
 
 Deployments to the development environment can be triggered by these 3 approaches:
@@ -39,6 +48,8 @@ This command will:
 - Get your current branch name
 - Force push your current branch to the remote `dev-env` branch
 - Trigger the GitHub Actions workflow for deployment to dev
+
+**Automatic Infrastructure Updates**: When OpenShift configuration files are modified, the workflow will automatically test and apply both server configuration and cronjob changes to ensure consistency.
 
 ### Test Environment
 
@@ -61,6 +72,12 @@ Test deployments require:
 - Manual workflow trigger with proper documentation
 - Final environment approval in GitHub Actions
 
+**Infrastructure Change Handling**: If your deployment includes changes to files in the `openshift/` directory, the workflow will automatically:
+- Run validation tests (`server-config-test` and `cron-job-test`)
+- Apply server deployment configuration updates
+- Update scheduled cronjob configurations
+- Ensure all infrastructure changes are deployed consistently
+
 ### Production Environment (TODO)
 
 Production deployments use a tag-based approach:
@@ -74,6 +91,8 @@ This command will:
 - Create a tag named `prod` pointing to your current commit
 - Push it to the remote repository
 - Trigger the GitHub Actions workflow for deployment to production
+
+**Production Infrastructure Updates**: Production deployments also include automatic testing and deployment of OpenShift configuration changes, following the same validation process as dev and test environments.
 
 ## Dev/Test Certificate Creation
 

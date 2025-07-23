@@ -78,9 +78,9 @@ Test deployments require:
 - Update scheduled cronjob configurations
 - Ensure all infrastructure changes are deployed consistently
 
-### Production Environment (TODO)
+### Production Environment
 
-Production deployments use a tag-based approach:
+Production deployments use a tag-based approach and require environment approval:
 
 ```bash
 # Use the Makefile command
@@ -90,9 +90,23 @@ make tag-prod ticket=HCAP-123
 This command will:
 - Create a tag named `prod` pointing to your current commit
 - Push it to the remote repository
-- Trigger the GitHub Actions workflow for deployment to production
+- Trigger the "OpenShift Deploy/Promotion to Production" workflow
 
-**Production Infrastructure Updates**: Production deployments also include automatic testing and deployment of OpenShift configuration changes, following the same validation process as dev and test environments.
+**Production Deployment Process:**
+
+1. **Automatic Trigger**: Pushing the `prod` tag automatically starts the deployment workflow
+2. **Environment Protection**: The workflow requires approval from authorized production environment reviewers
+3. **Infrastructure Validation**: If OpenShift configuration files have changed, the workflow will:
+   - Run `make server-config-test` and `make cron-job-test` for validation
+   - Apply configuration changes using `make server-config` and `make cron-job`
+4. **Application Deployment**: Execute `make server-deploy` to deploy the tagged version
+5. **Notification**: Send deployment status to Microsoft Teams channel
+
+**Production deployments require:**
+- Authorized tag creation (typically restricted to senior developers/leads)
+- Environment approval from production reviewers
+- All OpenShift configuration changes are automatically tested and applied
+- Deployment timeout is limited to 6 minutes with concurrency controls
 
 ## Dev/Test Certificate Creation
 

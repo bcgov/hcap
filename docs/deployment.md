@@ -22,6 +22,15 @@ Secret |Defines values that can be used by pods within in the same namespace. Wh
 
 The application uses a branch-based deployment strategy for development and test environments, and a tag-based approach for production.
 
+### Infrastructure Changes
+
+When making changes to OpenShift configuration files (in the `openshift/` directory), the deployment workflows automatically:
+
+1. **Test Phase**: Validate configurations using `make server-config-test` and `make cron-job-test`
+2. **Apply Phase**: Deploy server configurations and cronjobs using `make server-config` and `make cron-job`
+
+This ensures that both application deployment configurations and scheduled job configurations are properly tested and deployed together.
+
 ### Development Environment
 
 Deployments to the development environment can be triggered by these 3 approaches:
@@ -39,6 +48,8 @@ This command will:
 - Get your current branch name
 - Force push your current branch to the remote `dev-env` branch
 - Trigger the GitHub Actions workflow for deployment to dev
+
+**Automatic Infrastructure Updates**: When OpenShift configuration files are modified, the workflow will automatically test and apply both server configuration and cronjob changes to ensure consistency.
 
 ### Test Environment
 
@@ -61,9 +72,15 @@ Test deployments require:
 - Manual workflow trigger with proper documentation
 - Final environment approval in GitHub Actions
 
-### Production Environment (TODO)
+**Infrastructure Change Handling**: If your deployment includes changes to files in the `openshift/` directory, the workflow will automatically:
+- Run validation tests (`server-config-test` and `cron-job-test`)
+- Apply server deployment configuration updates
+- Update scheduled cronjob configurations
+- Ensure all infrastructure changes are deployed consistently
 
-Production deployments use a tag-based approach:
+### Production Environment
+
+Production deployments use a tag-based approach and require environment approval:
 
 ```bash
 # Use the Makefile command
@@ -73,7 +90,23 @@ make tag-prod ticket=HCAP-123
 This command will:
 - Create a tag named `prod` pointing to your current commit
 - Push it to the remote repository
-- Trigger the GitHub Actions workflow for deployment to production
+- Trigger the "OpenShift Deploy/Promotion to Production" workflow
+
+**Production Deployment Process:**
+
+1. **Automatic Trigger**: Pushing the `prod` tag automatically starts the deployment workflow
+2. **Environment Protection**: The workflow requires approval from authorized production environment reviewers
+3. **Infrastructure Validation**: If OpenShift configuration files have changed, the workflow will:
+   - Run `make server-config-test` and `make cron-job-test` for validation
+   - Apply configuration changes using `make server-config` and `make cron-job`
+4. **Application Deployment**: Execute `make server-deploy` to deploy the tagged version
+5. **Notification**: Send deployment status to Microsoft Teams channel
+
+**Production deployments require:**
+- Authorized tag creation (typically restricted to senior developers/leads)
+- Environment approval from production reviewers
+- All OpenShift configuration changes are automatically tested and applied
+- Deployment timeout is limited to 6 minutes with concurrency controls
 
 ## Dev/Test Certificate Creation
 

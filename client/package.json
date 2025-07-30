@@ -45,6 +45,28 @@
     "webpack-dev-server": "^5.2.0",
     "yup": "0.29.3"
   },
+  "overrides": {
+    "@material-ui/core": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@material-ui/icons": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@material-ui/lab": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@material-ui/pickers": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "material-ui-dropzone": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    }
+  },
   "devDependencies": {
     "eslint": "^8.57.1",
     "eslint-config-react-app": "^7.0.1",

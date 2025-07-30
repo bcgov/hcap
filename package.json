@@ -12,7 +12,7 @@
     "update-apps": "run-p update:client update:server",
     "update:client": "npm i --prefix client",
     "update:server": "npm i --prefix server",
-    "prepare": "husky install",
+    "prepare": "husky",
     "cypress": "cypress open",
     "cypress-run": "cypress run --spec",
     "cypress-e2e": "cypress run --headless"

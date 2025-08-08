@@ -30,7 +30,6 @@ export const BackgroundInformationSection = ({
       industryHelpers.setValue('Other, please specify:');
       otherHelpers.setValue(otherValue);
     }
-     
   }, [industry, other]);
 
   return (

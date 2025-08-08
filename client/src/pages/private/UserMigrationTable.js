@@ -96,7 +96,6 @@ export const UserMigrationTable = () => {
 
   useEffect(() => {
     fetchUserMigrations();
-     
   }, []);
 
   return (

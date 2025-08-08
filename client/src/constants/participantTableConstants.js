@@ -347,5 +347,5 @@ export const columnsByRole = {
 
 export const tabsByRole = _.transform(
   columnsByRole,
-  (a, columns, role) => (a[role] = _.keys(columns))
+  (a, columns, role) => (a[role] = _.keys(columns)),
 );

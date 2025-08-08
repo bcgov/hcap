@@ -54,7 +54,7 @@ exports.up = async (pgm) => {
     END IF;
     RETURN NEW;
   END;
-  `
+  `,
   );
 
   await pgm.dropTrigger(collections.PARTICIPANTS, 'update_postal_code_p', { ifExists: true });
@@ -108,6 +108,6 @@ exports.up = async (pgm) => {
     END IF;
     RETURN NEW;
   END;
-  `
+  `,
   );
 };

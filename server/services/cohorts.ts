@@ -285,7 +285,7 @@ export const assignCohort = async ({ id, participantId }) => {
   return newParticipantCohort;
 };
 
-export const removeCohortParticipant = async (cohortId, participantId, meta = {}) => {
+export const removeCohortParticipant = async (cohortId, participantId) => {
   // Checking if the participant is assigned to a cohort
   const participantCohort = await dbClient.db[collections.COHORT_PARTICIPANTS].findOne({
     cohort_id: cohortId,

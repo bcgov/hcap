@@ -213,11 +213,10 @@ participantsRouter.get(
 
     // Handle statusFilters[] bracket notation and ensure it's always an array
     const statusFiltersRaw = req.query['statusFilters[]'] || req.query.statusFilters;
-    const statusFilters = statusFiltersRaw
-      ? Array.isArray(statusFiltersRaw)
-        ? statusFiltersRaw
-        : [statusFiltersRaw]
-      : [];
+    let statusFilters: string[] = [];
+    if (statusFiltersRaw) {
+      statusFilters = Array.isArray(statusFiltersRaw) ? statusFiltersRaw : [statusFiltersRaw];
+    }
 
     const result = await getParticipants(
       user,

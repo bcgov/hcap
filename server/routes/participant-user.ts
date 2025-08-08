@@ -44,7 +44,7 @@ router.get(
     } else {
       res.status(401).send('Unauthorized user: no bcsc user id');
     }
-  })
+  }),
 );
 
 // Participants with id
@@ -66,7 +66,7 @@ router.get(
     });
 
     return res.status(200).json(participants);
-  })
+  }),
 );
 
 // Update user info
@@ -83,7 +83,7 @@ router.patch(
   asyncMiddleware(async (req, res) => {
     const { user_id: userId, email } = req.user;
 
-    const changes: any = { ...patchObject(req.body, patchableFields) };
+    const changes: Record<string, unknown> = { ...patchObject(req.body, patchableFields) };
     await validate(UserParticipantEditSchema, changes);
 
     // get users PEOIs
@@ -102,7 +102,7 @@ router.patch(
           }
           const participantBody = createChangeHistory(participant, changes);
           updateResults.push(await updateParticipant({ ...participantBody, id: participant.id }));
-        })
+        }),
       );
 
       logger.info({
@@ -115,7 +115,7 @@ router.patch(
     } else {
       res.status(422).send(`No expression of interest found for this participant`);
     }
-  })
+  }),
 );
 
 router.patch(
@@ -141,7 +141,7 @@ router.patch(
     } else {
       res.status(422).send('No expression of interest found for this participant');
     }
-  })
+  }),
 );
 
 // Update withdraw
@@ -154,7 +154,7 @@ router.post(
     if (participants.length > 0) {
       const participant = participants[0];
       const isHired = participant.currentStatuses?.some(
-        (statusObj) => statusObj.status === ParticipantStatus.HIRED
+        (statusObj) => statusObj.status === ParticipantStatus.HIRED,
       );
       if (!isHired && !['no', 'withdrawn'].includes(participant.body?.interested)) {
         await withdrawParticipant({ ...participant.body, id });
@@ -172,7 +172,7 @@ router.post(
     } else {
       res.status(422).send('No expression of interest found for this participant');
     }
-  })
+  }),
 );
 
 router.post(
@@ -180,7 +180,7 @@ router.post(
   asyncMiddleware(async (req, res) => {
     await withdrawParticipantsByEmail(req.user.user_id, req.user.email);
     return res.status(204).send({});
-  })
+  }),
 );
 
 router.post(
@@ -201,7 +201,7 @@ router.post(
       id: participants.map((participant) => participant.id),
     });
     return res.status(201).send({ message: 'Reconfirm interest successful.' });
-  })
+  }),
 );
 
 export default router;

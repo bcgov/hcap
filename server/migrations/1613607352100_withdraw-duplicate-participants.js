@@ -11,6 +11,6 @@ exports.up = async () => {
   ];
   await dbClient.db[collections.PARTICIPANTS].updateDoc(
     { maximusId: duplicates.map((i) => `${i}`) }, // Cast to string
-    { interested: 'withdrawn' }
+    { interested: 'withdrawn' },
   );
 };

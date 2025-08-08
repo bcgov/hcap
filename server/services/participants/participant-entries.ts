@@ -25,7 +25,6 @@ import {
   participantFieldsForMoH,
 } from '../../constants';
 import { isPrivateEmployerOrMHSUEmployerOrHA, ParticipantsFinder } from '../participants-helper';
-import { response } from 'express';
 
 export const makeParticipant = async (participantData) => {
   const res = await dbClient.db.saveDoc(collections.PARTICIPANTS, participantData);
@@ -107,7 +106,7 @@ export const getParticipantsToAssign = async (
           OR postHireStatus.status = $1)
     `;
 
-      const queryParams: any[] = [postHireStatuses.cohortUnsuccessful];
+      const queryParams: unknown[] = [postHireStatuses.cohortUnsuccessful];
 
       if (lastName) {
         participantsQuery += ` AND LOWER(participants.body->>'lastName') LIKE $${

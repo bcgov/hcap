@@ -419,7 +419,6 @@ const ParticipantTable = () => {
   useEffect(() => {
     setSelectedParticipants([]);
     fetchParticipants();
-     
   }, [filter, pagination.page, pagination.pageSize, order, selectedTabStatuses, siteSelector]);
 
   const renderCell = (columnId, row) => {

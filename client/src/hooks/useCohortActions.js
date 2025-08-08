@@ -11,7 +11,7 @@ export const useCohortActions = (cohortId) => {
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
   const [allCohorts, setAllCohorts] = useState([]);
-   
+
   const [disableAssign, setDisableAssign] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 

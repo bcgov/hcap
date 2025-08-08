@@ -1,5 +1,5 @@
 import { app } from '../server';
-import { ParticipantStatus as ps, Program, Role } from '../constants';
+import { ParticipantStatus as ps, Program } from '../constants';
 
 import { saveSingleSite, getSitesForUser, getSiteByID, updateSite } from '../services/employers';
 import { createPhase } from '../services/phase';
@@ -127,7 +127,7 @@ describe('Employer Site Endpoints', () => {
           siteId: site.siteId,
           siteName: site.siteName,
         }),
-      ])
+      ]),
     );
   });
 

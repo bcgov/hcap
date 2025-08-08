@@ -45,7 +45,7 @@ export const mapRosEntries = (rosEntries: RosEntry[]) =>
     remainingInSectorOrRoleOrAnother: entry.remainingInSectorOrRoleOrAnother,
   }));
 
-//A helper for the DISTINCT logic
+// A helper for the DISTINCT logic
 export const applyDistinct = (entries) => {
   const uniqueEntries = [];
   const seenRecords = new Set();

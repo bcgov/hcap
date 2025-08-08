@@ -32,14 +32,14 @@ export const getEmployers = async (user: HcapUserInfo): Promise<EmployerSite[]> 
 
     // Check if employer_forms collection exists
     if (!dbClient.db[collections.EMPLOYER_FORMS]) {
-      console.log('employer_forms table does not exist yet - no forms have been submitted');
+      logger.info('employer_forms table does not exist yet - no forms have been submitted');
       return [];
     }
 
     return criteria ? await dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria) : [];
   } catch (error) {
     // Handle case where table doesn't exist or other database errors
-    console.log('Error fetching employer forms (table may not exist yet):', error.message);
+    logger.error('Error fetching employer forms (table may not exist yet):', error.message);
     return [];
   }
 };
@@ -48,13 +48,13 @@ export const getEmployerByID = async (id: number) => {
   try {
     // Check if employer_forms collection exists
     if (!dbClient.db[collections.EMPLOYER_FORMS]) {
-      console.log('employer_forms table does not exist yet - no forms have been submitted');
+      logger.info('employer_forms table does not exist yet - no forms have been submitted');
       return [];
     }
 
     return await dbClient.db[collections.EMPLOYER_FORMS].findDoc({ id });
   } catch (error) {
-    console.log('Error fetching employer form by ID (table may not exist yet):', error.message);
+    logger.error('Error fetching employer form by ID (table may not exist yet):', error.message);
     return [];
   }
 };

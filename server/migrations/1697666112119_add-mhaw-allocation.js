@@ -12,7 +12,7 @@ exports.up = async (pgm) => {
         default: 0,
       },
     },
-    { ifNotExists: true }
+    { ifNotExists: true },
   );
   await dbClient.db[collections.PARTICIPANTS_STATUS].updateDoc(
     {
@@ -20,7 +20,7 @@ exports.up = async (pgm) => {
       'data.nonHcapOpportunity::bool': true,
     },
     { program: Program.NonHCAP },
-    { body: 'data' }
+    { body: 'data' },
   );
   await dbClient.db[collections.PARTICIPANTS_STATUS].updateDoc(
     {
@@ -28,7 +28,7 @@ exports.up = async (pgm) => {
       or: [{ 'data.nonHcapOpportunity::bool !=': true }, { 'data.nonHcapOpportunity IS': null }],
     },
     { program: Program.HCA },
-    { body: 'data' }
+    { body: 'data' },
   );
 };
 

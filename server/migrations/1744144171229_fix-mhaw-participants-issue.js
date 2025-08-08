@@ -725,7 +725,7 @@ exports.up = async (pgm) => {
     WHERE id = ANY($1)
       AND body->>'program' = 'HCA';
   `,
-    [ids]
+    [ids],
   );
 };
 
@@ -1455,6 +1455,6 @@ exports.down = async (pgm) => {
     WHERE id = ANY($1)
       AND body->>'program' = 'MHAW';
   `,
-    [ids]
+    [ids],
   );
 };

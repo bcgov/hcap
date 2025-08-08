@@ -102,7 +102,6 @@ export default ({ sites }) => {
       fetchSites();
     }
     // This fetch sites is a dependency of this function. This needs to be reworked, but it is outside of the scope of the ticket
-     
   }, [location]);
 
   const openActionMenu = (event) => {

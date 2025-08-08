@@ -67,7 +67,7 @@ export const ParticipantTableDialogues = ({
         const response = await updateRosStatus(
           actionMenuParticipant?.id,
           values,
-          'assigned-new-site'
+          'assigned-new-site',
         );
         if (response.ok) {
           onClose();
@@ -101,7 +101,6 @@ export const ParticipantTableDialogues = ({
     if (allSites.length === 0) {
       fetchAllSites();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -143,7 +143,6 @@ export default () => {
   useEffect(() => {
     fetchUsers({ pending: location.pathname === Routes.UserPending });
     fetchSites();
-     
   }, [location]);
 
   return (

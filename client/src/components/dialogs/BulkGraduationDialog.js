@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog } from '@material-ui/core';
+import { Dialog } from '@mui/material';
 import { ManageGraduationForm } from '..//modal-forms/ManageGraduationForm';
 import { postHireStatuses } from '../../constants';
 

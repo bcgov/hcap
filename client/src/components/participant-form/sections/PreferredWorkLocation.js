@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Link } from '@material-ui/core';
+import { Grid, Link } from '@mui/material';
 import { FastField } from 'formik';
 import {
   VANCOUVER_COASTAL_GOV_LINK,

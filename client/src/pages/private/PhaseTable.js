@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 
 import { AuthContext } from '../../providers';
 import { CheckPermissions } from '../../components/generic';

@@ -1,4 +1,4 @@
-import store from 'store';
+import storage from '../utils/storage';
 import { API_URL } from '../constants';
 import { formatCohortDate } from '../utils';
 
@@ -9,7 +9,7 @@ export const getPsi = async () => {
   const response = await fetch(`${API_URL}/api/v1/psi/with-cohorts`, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -36,7 +36,7 @@ export const assignParticipantWithCohort = async ({ participantId, cohortId }) =
   const response = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}/assign/${participantId}`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -54,11 +54,11 @@ export const transferParticipantToNewCohort = async ({ participantId, cohortId, 
     {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${storage.get('TOKEN')}`,
         Accept: 'application/json',
         'Content-type': 'application/json',
       },
-    }
+    },
   );
   if (response.ok) {
     return await response.json();
@@ -80,7 +80,7 @@ export const sortPSI = ({ psiList = [], cohort = {} }) =>
 export const fetchPSI = async ({ psiId }) => {
   const response = await fetch(`${API_URL}/api/v1/psi/${psiId}`, {
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
     },
     method: 'GET',
   });
@@ -98,14 +98,14 @@ export const fetchPSI = async ({ psiId }) => {
   }
 
   throw new Error(
-    response.error || response.statusText || 'Unable to load post secondary institutes'
+    response.error || response.statusText || 'Unable to load post secondary institutes',
   );
 };
 
 export const fetchCohorts = async ({ psiId }) => {
   const response = await fetch(`${API_URL}/api/v1/psi/${psiId}/cohorts/`, {
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
     },
     method: 'GET',
   });
@@ -121,7 +121,7 @@ export const fetchCohorts = async ({ psiId }) => {
 export const fetchCohort = async ({ cohortId }) => {
   const response = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}`, {
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
     },
     method: 'GET',
   });
@@ -137,7 +137,7 @@ export const fetchCohort = async ({ cohortId }) => {
 export const fetchCohortParticipants = async ({ cohortId }) => {
   const res = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}/participants`, {
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
     },
     method: 'GET',
   });
@@ -154,7 +154,7 @@ export const fetchParticipantsToAssign = async (
   pageSize = 5,
   page = 0,
   lastName = '',
-  emailAddress = ''
+  emailAddress = '',
 ) => {
   let url = `${API_URL}/api/v1/cohorts/participants-to-assign?pageSize=${pageSize}&page=${page}`;
 
@@ -170,7 +170,7 @@ export const fetchParticipantsToAssign = async (
 
   const res = await fetch(url, {
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -189,7 +189,7 @@ export const addCohort = async ({ psiId, cohort }) => {
   const response = await fetch(`${API_URL}/api/v1/psi/${psiId}/cohorts/`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -208,7 +208,7 @@ export const editCohort = async ({ cohort, cohortId }) => {
   const response = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}`, {
     method: 'PATCH',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -242,7 +242,7 @@ export const createPSI = async ({ psi }) => {
     const response = await fetch(`${API_URL}/api/v1/psi`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${storage.get('TOKEN')}`,
         Accept: 'application/json',
         'Content-type': 'application/json',
       },
@@ -276,7 +276,7 @@ export const updatePSI = async ({ id, psi }) => {
   const resp = await fetch(`${API_URL}/api/v1/psi/${id}`, {
     method: 'PUT',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -302,7 +302,7 @@ export const removeCohortParticipantPSI = async (cohortId, participantId) => {
   const response = await fetch(`${API_URL}/api/v1/cohorts/${cohortId}/remove/${participantId}`, {
     method: 'DELETE',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -323,6 +323,6 @@ export const removeCohortParticipantPSI = async (cohortId, participantId) => {
 
   throw new Error(
     'Failed to remove participant from cohort',
-    response.error || response.statusText
+    response.error || response.statusText,
   );
 };

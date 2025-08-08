@@ -14,16 +14,20 @@ export const CreatePhaseSchema = yup.object().shape({
     .test('is-reasonable', errorDateIsReasonable, validateDateIsReasonable),
   endDate: yup
     .date()
-    .when('startDate', (startDate, schema) => {
-      if (startDate) {
-        return schema.test({
-          test: (endDate) =>
-            new Date(new Date(startDate).getTime() + 86400000) <= new Date(endDate),
+    .when('startDate', {
+      is: (startDate) => !!startDate,
+      then: (schema) =>
+        schema.test({
+          test: function (endDate) {
+            const startDate = this.parent.startDate;
+            if (startDate) {
+              return new Date(new Date(startDate).getTime() + 86400000) <= new Date(endDate);
+            }
+            return true;
+          },
           message: 'Invalid entry. End date must be at least 1 day after Start date',
-        });
-      } else {
-        return schema;
-      }
+        }),
+      otherwise: (schema) => schema,
     })
     .required(errorMessage)
     .typeError(errorMessage)
@@ -36,13 +40,15 @@ export const CreatePhaseSchema = yup.object().shape({
         end_date: yup.date(),
         start_date: yup.date(),
         id: yup.string(),
-      })
+      }),
     )
-    .when(['startDate', 'endDate', 'id'], (startDate, endDate, id, schema) => {
-      if (startDate && endDate) {
-        return schema.test({
+    .when(['startDate', 'endDate'], {
+      is: (startDate, endDate) => !!(startDate && endDate),
+      then: (schema) =>
+        schema.test({
           name: 'validate-date-overlap',
           test: function (value) {
+            const { startDate, endDate, id } = this.parent;
             // remove the currently edited phase from the array being used for validation
             const filteredPhases = value.filter((phase) => {
               return Number(phase.id) !== Number(id);
@@ -72,9 +78,7 @@ export const CreatePhaseSchema = yup.object().shape({
                 })
               : true;
           },
-        });
-      } else {
-        return schema;
-      }
+        }),
+      otherwise: (schema) => schema,
     }),
 });

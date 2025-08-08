@@ -72,7 +72,7 @@ export const deleteParticipant = async ({ email }) => {
         ( SELECT id FROM ${collections.PARTICIPANTS} 
           WHERE LOWER(body->>'emailAddress') = LOWER($1)
         );`,
-      [email]
+      [email],
     );
     // Delete actual entry
     await tnx[collections.PARTICIPANTS].destroy({
@@ -85,12 +85,12 @@ export const getParticipantsToAssign = async (
   limit: number,
   offset: number,
   lastName = '',
-  emailAddress = ''
+  emailAddress = '',
 ) => {
   try {
     const result = await dbClient.db.withTransaction(async (tnx) => {
       let participantsQuery = `
-        SELECT participants.*
+        SELECT DISTINCT participants.*
         FROM ${collections.PARTICIPANTS} participants
         LEFT OUTER JOIN ${collections.COHORT_PARTICIPANTS} cohortParticipant ON cohortParticipant.participant_id = participants.id
         LEFT OUTER JOIN ${collections.PARTICIPANT_POST_HIRE_STATUS} postHireStatus ON postHireStatus.participant_id = participants.id
@@ -99,7 +99,7 @@ export const getParticipantsToAssign = async (
     `;
 
       let countQuery = `
-        SELECT COUNT(participants.id) as total
+        SELECT COUNT(DISTINCT participants.id) as total
         FROM ${collections.PARTICIPANTS} participants
         LEFT OUTER JOIN ${collections.COHORT_PARTICIPANTS} cohortParticipant ON cohortParticipant.participant_id = participants.id
         LEFT OUTER JOIN ${collections.PARTICIPANT_POST_HIRE_STATUS} postHireStatus ON postHireStatus.participant_id = participants.id
@@ -160,7 +160,7 @@ export const updateParticipant = async (participantInfo) => {
         const { field, to } = change;
         return { ...acc, [field]: to };
       },
-      { history: participantInfo.history || [], userUpdatedAt: new Date().toJSON() }
+      { history: participantInfo.history || [], userUpdatedAt: new Date().toJSON() },
     );
     if (changes.interested === 'withdrawn') {
       const cohort = await getAssignCohort({ participantId: participantInfo.id });
@@ -171,7 +171,7 @@ export const updateParticipant = async (participantInfo) => {
       const graduationStatuses = statuses.filter(
         (item) =>
           item.status === postHireStatuses.postSecondaryEducationCompleted ||
-          item.status === postHireStatuses.cohortUnsuccessful
+          item.status === postHireStatuses.cohortUnsuccessful,
       );
       // ensure that a participant has a cohort before adding post hire status
       if (cohort && cohort.length > 0 && graduationStatuses.length === 0) {
@@ -188,7 +188,7 @@ export const updateParticipant = async (participantInfo) => {
       {
         id: participantInfo.id,
       },
-      changes
+      changes,
     );
 
     return participant;
@@ -206,7 +206,7 @@ export const updateSiteParticipants = async (participantStatusInfo) => {
         status: 'hired',
       },
       { hiredDate: participantStatusInfo.hiredDate },
-      { body: 'data' }
+      { body: 'data' },
     );
 
     return participant;
@@ -224,7 +224,7 @@ export const setParticipantLastUpdated = async (id) => {
     // Only change history if the interested column isn't yes
     if (participant.interested !== 'yes') {
       if (participant.history) {
-        participant.history.push({
+        participant.navigate({
           to: 'yes',
           from: participant.interested,
           field: 'interested',
@@ -249,7 +249,7 @@ export const setParticipantLastUpdated = async (id) => {
         interested: 'yes',
         history: participant.history,
         userUpdatedAt: new Date().toJSON(),
-      }
+      },
     );
   }
 };
@@ -286,7 +286,7 @@ export const getParticipants = async (
   programFilter?: ProgramFilter,
   livedLivingExperienceFilter?: LivedLivingExperienceFilter,
   interestedWorkingPeerSupportRoleFilter?: InterestedWorkingPeerSupportRoleFilter,
-  withdrawnParticipantsFilter?: WithdrawnParticipantsFilter
+  withdrawnParticipantsFilter?: WithdrawnParticipantsFilter,
 ) => {
   // Get user ids
   const participantsFinder = new ParticipantsFinder(dbClient, user);
@@ -326,7 +326,7 @@ export const getParticipants = async (
         ...participant,
         postHireStatuses: statuses || [],
       };
-    })
+    }),
   );
   if (user.isSuperUser || user.isMoH) {
     participants = participants.map((item) => {
@@ -404,7 +404,7 @@ export const getParticipants = async (
 
       // Archived by org
       const archivedByOrgStatus = item.statusInfos?.find(
-        (statusInfo) => statusInfo.status === ps.ARCHIVED && statusInfo.employerId !== user.id
+        (statusInfo) => statusInfo.status === ps.ARCHIVED && statusInfo.employerId !== user.id,
       );
 
       if (!user.isMoH) {
@@ -436,7 +436,7 @@ export const getParticipants = async (
         const statusInfos = item.statusInfos?.find(
           (statusInfo) =>
             statusInfo.employerId === user.id ||
-            (statusInfo.data && user.sites?.includes(statusInfo.data.site))
+            (statusInfo.data && user.sites?.includes(statusInfo.data.site)),
         );
 
         if (statusInfos) {
@@ -444,7 +444,7 @@ export const getParticipants = async (
 
           participant.statusInfos.unshift(statusInfos);
           const showContactInfo = participant.statusInfos.find((statusInfo) =>
-            [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, ps.HIRED].includes(statusInfo.status)
+            [ps.PROSPECTING, ps.INTERVIEWING, ps.OFFER_MADE, ps.HIRED].includes(statusInfo.status),
           );
           if (showContactInfo && !hiredByOtherOrg) {
             participant = {

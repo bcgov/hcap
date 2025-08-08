@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { Typography, Grid, Button, Box } from '@material-ui/core';
-import { Redirect, useParams, useLocation, useHistory } from 'react-router-dom';
-import { red } from '@material-ui/core/colors';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import store from 'store';
+import { styled } from '@mui/material/styles';
+import {
+  Typography,
+  Grid,
+  Button,
+  Box,
+  LinearProgress,
+  DialogActions,
+  DialogContent,
+} from '@mui/material';
+import { Navigate, useParams, useLocation, useNavigate } from 'react-router-dom';
+import { red } from '@mui/material/colors';
+import storage from '../../utils/storage';
 import { Routes, ToastStatus } from '../../constants';
 
 import { Page } from '../../components/generic';
@@ -18,22 +23,11 @@ import { Dialog } from '../../components/generic';
 const rootUrl = `${API_URL}/api/v1/participant-user/participant`;
 
 // Custom UI
-const DeleteButton = withStyles((theme) => ({
-  root: {
-    color: theme.palette.getContrastText(red[500]),
-    backgroundColor: red[500],
-    '&:hover': {
-      backgroundColor: red[700],
-    },
-  },
-}))(Button);
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    '& > * + *': {
-      marginTop: theme.spacing(2),
-    },
+const DeleteButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.getContrastText(red[500]),
+  backgroundColor: red[500],
+  '&:hover': {
+    backgroundColor: red[700],
   },
 }));
 
@@ -43,7 +37,7 @@ const fetchParticipant = async (id) => {
     const response = await fetch(`${rootUrl}/${id}`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${storage.get('TOKEN')}`,
         Accept: 'application/json',
         'Content-type': 'application/json',
       },
@@ -69,7 +63,7 @@ const updateParticipant = async (values, id) => {
   const resp = await fetch(`${rootUrl}/${id}`, {
     method: 'PATCH',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -83,7 +77,7 @@ const withdrawParticipant = async (id) => {
   const resp = await fetch(`${rootUrl}/${id}/withdraw`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -96,7 +90,7 @@ const submitConfirmInterestRequest = async (id) => {
   const resp = await fetch(`${rootUrl}/${id}/reconfirm_interest`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -116,8 +110,7 @@ export default () => {
   const location = useLocation();
   const pathName = location.pathname;
   const { openToast } = useToast();
-  const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   // States
   const [participant, setParticipant] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -160,7 +153,7 @@ export default () => {
   };
   const onEdit = () => {
     const pathToPush = isEditing ? pathName.split('/edit')[0] : `${pathName}/edit`;
-    history.push(pathToPush);
+    navigate(pathToPush);
   };
 
   const onConfirmInterest = async () => {
@@ -168,7 +161,7 @@ export default () => {
     setLoading(true);
     const success = await submitConfirmInterestRequest(id);
     if (success) {
-      history.push(Routes.ParticipantActionSuccess.replace(':id', id));
+      navigate(Routes.ParticipantActionSuccess.replace(':id', id));
       return;
     } else {
       openToast({
@@ -195,7 +188,7 @@ export default () => {
         message: 'Withdraw success',
       });
       setDisableWithdraw(true);
-      history.push(Routes.ParticipantWithdrawConfirm);
+      navigate(Routes.ParticipantWithdrawConfirm);
     } else {
       openToast({
         status: ToastStatus.Error,
@@ -205,7 +198,7 @@ export default () => {
   };
 
   // View
-  if (!id) return <Redirect to={Routes.ParticipantLanding} />;
+  if (!id) return <Navigate to={Routes.ParticipantLanding} replace />;
   if (loadingError)
     return (
       <>
@@ -218,7 +211,7 @@ export default () => {
               variant={'contained'}
               color={'primary'}
               onClick={() => {
-                history.push(Routes.ParticipantLanding);
+                navigate(Routes.ParticipantLanding);
               }}
             >
               Return to landing page
@@ -262,9 +255,16 @@ export default () => {
           </DialogActions>
         </Dialog>
         {loading && (
-          <div className={classes.root}>
+          <Box
+            sx={{
+              width: '100%',
+              '& > * + *': {
+                marginTop: 2,
+              },
+            }}
+          >
             <LinearProgress />
-          </div>
+          </Box>
         )}
         {participant && (
           <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>

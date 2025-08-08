@@ -5,6 +5,7 @@ import { formatDateSansTimezone } from '../utils';
 import { Allocation } from '../services/allocations';
 import { isPrivateEmployerOrMHSUEmployerOrHA } from './participants-helper';
 import { Program } from '../constants';
+import logger from '../logger';
 
 export interface EmployerSite {
   id: number; // Internal ID for site
@@ -25,13 +26,38 @@ export interface EmployerSite {
 }
 
 export const getEmployers = async (user: HcapUserInfo): Promise<EmployerSite[]> => {
-  const criteria =
-    user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'healthAuthority');
-  return criteria ? dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria) : [];
+  try {
+    const criteria =
+      user.isSuperUser || user.isMoH ? {} : userRegionQuery(user.regions, 'healthAuthority');
+
+    // Check if employer_forms collection exists
+    if (!dbClient.db[collections.EMPLOYER_FORMS]) {
+      console.log('employer_forms table does not exist yet - no forms have been submitted');
+      return [];
+    }
+
+    return criteria ? await dbClient.db[collections.EMPLOYER_FORMS].findDoc(criteria) : [];
+  } catch (error) {
+    // Handle case where table doesn't exist or other database errors
+    console.log('Error fetching employer forms (table may not exist yet):', error.message);
+    return [];
+  }
 };
 
-export const getEmployerByID = async (id: number) =>
-  dbClient.db[collections.EMPLOYER_FORMS].findDoc({ id });
+export const getEmployerByID = async (id: number) => {
+  try {
+    // Check if employer_forms collection exists
+    if (!dbClient.db[collections.EMPLOYER_FORMS]) {
+      console.log('employer_forms table does not exist yet - no forms have been submitted');
+      return [];
+    }
+
+    return await dbClient.db[collections.EMPLOYER_FORMS].findDoc({ id });
+  } catch (error) {
+    console.log('Error fetching employer form by ID (table may not exist yet):', error.message);
+    return [];
+  }
+};
 
 export const saveSingleSite = async (sitePayload) =>
   dbClient.db.saveDoc(collections.EMPLOYER_SITES, sitePayload);
@@ -42,7 +68,7 @@ export const updateSite = async (id: number, site) => {
       const { field, to } = change;
       return { ...acc, [field]: to };
     },
-    { history: site.history, userUpdatedAt: new Date().toJSON() }
+    { history: site.history, userUpdatedAt: new Date().toJSON() },
   );
 
   return dbClient.db[collections.EMPLOYER_SITES].updateDoc({ id }, changes);
@@ -57,7 +83,7 @@ export const getAllSites = async () =>
           field: 'body.siteName',
         },
       ],
-    }
+    },
   );
 
 const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams) => {
@@ -86,7 +112,7 @@ const getSitesWithCriteria = async (additionalCriteria, additionalCriteriaParams
   ORDER BY
     employer_sites.body -> 'siteName';
 `,
-    additionalCriteriaParams
+    additionalCriteriaParams,
   );
 
   // Transform and format dates - return data
@@ -119,7 +145,40 @@ export const getSitesForUser = async (user: HcapUserInfo): Promise<EmployerSite[
   if (!user.isSuperUser && !user.isMoH && !additionalCriteria.length) {
     return [];
   }
-  return getSitesWithCriteria(additionalCriteria, additionalCriteriaParams);
+
+  try {
+    const sites = await getSitesWithCriteria(additionalCriteria, additionalCriteriaParams);
+
+    // Log warning if user has assigned sites that don't exist in database
+    if (user.sites?.length > 0 && sites.length < user.sites.length) {
+      const foundSiteIds = sites.map((site) => site.siteId);
+      const missingSiteIds = user.sites.filter((siteId) => !foundSiteIds.includes(siteId));
+
+      logger.warn('User has assigned sites that do not exist in database', {
+        context: 'getSitesForUser',
+        username: user.username,
+        keycloakId: user.keycloakId,
+        assignedSites: user.sites,
+        foundSites: foundSiteIds,
+        missingSites: missingSiteIds,
+        message: 'This may indicate environment mismatch or missing site data',
+      });
+    }
+
+    return sites;
+  } catch (error) {
+    logger.error('Failed to get sites for user', {
+      context: 'getSitesForUser',
+      username: user.username,
+      keycloakId: user.keycloakId,
+      assignedSites: user.sites,
+      regions: user.regions,
+      error: error.message,
+    });
+
+    // Return empty array instead of throwing to prevent app crashes
+    return [];
+  }
 };
 
 /**
@@ -167,7 +226,7 @@ export const getSiteByID = async (id: number): Promise<EmployerSite> => {
         ) p ON p.id = spa.phase_id
       WHERE spa.site_id = $1;
     `,
-    [site[0].id]
+    [site[0].id],
   );
 
   /* eslint-disable camelcase */
@@ -185,7 +244,7 @@ export const getSiteByID = async (id: number): Promise<EmployerSite> => {
       AND ps.current
       AND TO_DATE(ps.data->>'hiredDate', 'YYYY/MM/DD') BETWEEN p.start_date AND p.end_date;
     `,
-      [site[0].siteId]
+      [site[0].siteId],
     );
 
   const hcaAllocation = allocations?.[0]?.allocation ?? 0;

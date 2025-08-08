@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react';
-import MenuItem from '@material-ui/core/MenuItem';
+import MenuItem from '@mui/material/MenuItem';
 import { ErrorMessage } from 'formik';
 
 import { InputFieldError, InputFieldLabel } from '../generic';
-import { Select } from '@material-ui/core';
+import { Select } from '@mui/material';
 
 export const RenderMultiSelectField = ({ field, form, label, options, placeholder, ...props }) => {
   const touched = form.touched[field.name];
@@ -12,7 +12,7 @@ export const RenderMultiSelectField = ({ field, form, label, options, placeholde
 
   const renderValue = (selecteds) => {
     const labels = selecteds.map(
-      (selected) => options.find((option) => option.value === selected)?.label
+      (selected) => options.find((option) => option.value === selected)?.label,
     );
     if (labels.length > 0) {
       return labels.map((item, index) => <div key={index}>{item}</div>);
@@ -22,7 +22,6 @@ export const RenderMultiSelectField = ({ field, form, label, options, placeholde
 
   const menuProps = {
     variant: 'menu',
-    getContentAnchorEl: null,
   };
 
   return (

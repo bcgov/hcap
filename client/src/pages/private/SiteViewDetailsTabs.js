@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography, Link } from '@material-ui/core';
+import { useNavigate } from 'react-router-dom';
+import Grid from '@mui/material/Grid';
+import { Box, Typography, Link } from '@mui/material';
 import {
   Table,
   Button,
@@ -43,7 +43,7 @@ const hiredColumns = [
 const tabs = SiteDetailTabContext.tabs;
 
 export default ({ id, siteId, fetchDetails, isLoading }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [order, setOrder] = useState('asc');
   const [actionMenuParticipant, setActionMenuParticipant] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
@@ -95,12 +95,12 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
   const sort = (array) => sortObjects(array, orderBy, order);
 
   const participantOnClick = (participantId) => {
-    const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
+    const participantDetailsPath = keyedString(Routes.ParticipantDetailsPath, {
       id: participantId,
       page: 'site-details',
       pageId: id,
     });
-    history.push(participantDetailsPath);
+    navigate(participantDetailsPath);
   };
 
   const archiveOnClick = async (participantId) => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import store from 'store';
+import storage from '../../utils/storage';
 
 import { sortObjects } from '../../utils';
 import { Button, Table } from '../../components/generic';
@@ -32,7 +32,7 @@ export const UserMigrationTable = () => {
     const response = await fetch(`${API_URL}/api/v1/user-migrations/${selectedUser.id}`, {
       method: 'PATCH',
       headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${storage.get('TOKEN')}`,
         Accept: 'application/json',
         'Content-type': 'application/json',
       },
@@ -72,7 +72,7 @@ export const UserMigrationTable = () => {
   const fetchUserMigrations = async () => {
     setLoading(true);
     const response = await fetch(`${API_URL}/api/v1/user-migrations`, {
-      headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+      headers: { Authorization: `Bearer ${storage.get('TOKEN')}` },
       method: 'GET',
     });
 
@@ -96,7 +96,7 @@ export const UserMigrationTable = () => {
 
   useEffect(() => {
     fetchUserMigrations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   return (

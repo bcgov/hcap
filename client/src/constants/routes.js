@@ -34,7 +34,10 @@ export default Object.freeze({
   CohortDetails: '/cohort/:id',
   ParticipantView: '/participant-view',
   ReportingView: '/reporting-view',
-  ParticipantDetails: '/participant-details/:page/:pageId/:id',
-  ParticipantDetailsTab: '/participant-details/:page/:pageId/:id/:tab',
+  ParticipantDetails: '/participant-details/:page/:pageId/:id/*',
+  ParticipantDetailsTab: '/participant-details/:page/:pageId/:id/:tab/*',
+  // URL generation patterns (without /* for clean URLs)
+  ParticipantDetailsPath: '/participant-details/:page/:pageId/:id',
+  ParticipantDetailsTabPath: '/participant-details/:page/:pageId/:id/:tab',
   PhaseView: '/phase-view',
 });

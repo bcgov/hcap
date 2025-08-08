@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, InputFieldError } from '../generic';
-import { Box, Checkbox, FormControl, FormControlLabel, Grid, Typography } from '@material-ui/core';
+import { Grid, Box, Checkbox, FormControl, FormControlLabel, Typography } from '@mui/material';
 import { RenderRadioGroup } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { IndigenousDeclarationSchema } from '../../constants';

@@ -94,7 +94,7 @@ export const filterCohortParticipantsForUser = (cohortParticipants, user) => {
     // Remove participants hired outside of HA's region
     // participant.siteJoin is joined based on hired status' siteId
     return cohortParticipants.filter((participant) =>
-      user.regions.includes(participant.siteJoin?.body?.healthAuthority)
+      user.regions.includes(participant.siteJoin?.body?.healthAuthority),
     );
   }
 
@@ -124,8 +124,8 @@ export const getCohortWithCalculatedFields = (cohort, participants) => {
       participant.postHireJoin?.find(
         (postHireStatus) =>
           postHireStatus.status === postHireStatuses.cohortUnsuccessful &&
-          postHireStatus.is_current === true
-      )
+          postHireStatus.is_current === true,
+      ),
     )?.length || 0;
 
   return cohortWithCalculatedFields;
@@ -170,7 +170,7 @@ export const getPSICohorts = async (psiID) => {
         cohort.participants.map((cohortParticipant) => [
           cohortParticipant.participant_id,
           cohortParticipant,
-        ])
+        ]),
       ).values(),
     ],
   }));
@@ -195,7 +195,7 @@ const mapDataToCohort = (cohort) => {
   // clean and remove undefined values
   const cleaned = Object.keys(temp).reduce(
     (acc, key) => (temp[key] ? { ...acc, [key]: temp[key] } : acc),
-    {}
+    {},
   );
 
   return cleaned;
@@ -243,25 +243,38 @@ export const getAssignCohort = async ({ participantId }) => {
             nulls: 'LAST',
           },
         ],
-      }
+      },
     );
 
   return cohorts;
 };
 
 export const assignCohort = async ({ id, participantId }) => {
+  // Check cohort capacity before assignment
+  const [cohort] = await getCohort(id);
+  if (!cohort) {
+    throw new Error('Cohort not found');
+  }
+
+  const participants = await getCohortParticipants(id);
+  const availableSeats = cohort.cohort_size - participants.length;
+
+  if (availableSeats <= 0) {
+    throw new Error('Cohort is at full capacity. No available seats.');
+  }
+
   // unassign pervious cohorts and update status
   await dbClient.db[collections.COHORT_PARTICIPANTS].update(
     { participant_id: participantId },
     {
       is_current: false,
-    }
+    },
   );
   await dbClient.db[collections.PARTICIPANT_POST_HIRE_STATUS].update(
     { participant_id: participantId },
     {
       is_current: false,
-    }
+    },
   );
 
   // assign a new cohort
@@ -293,7 +306,7 @@ export const removeCohortParticipant = async (cohortId, participantId, meta = {}
     // Update participant status
     await tnx[collections.PARTICIPANT_POST_HIRE_STATUS].update(
       { participant_id: participantId },
-      { is_current: false }
+      { is_current: false },
     );
   });
 
@@ -330,7 +343,7 @@ export const changeCohortParticipant = async (
     participantId: null,
     newCohortId: null,
     meta: {},
-  }
+  },
 ) => {
   // Get existing participant cohort map
   const participantCohort = await dbClient.db[collections.COHORT_PARTICIPANTS].findOne({
@@ -366,7 +379,7 @@ export const changeCohortParticipant = async (
       // Check participant is graduated or not
       isGraduated = participantPostHireStatuses.some(
         (postHireStatus) =>
-          postHireStatus.status === postHireStatuses.postSecondaryEducationCompleted
+          postHireStatus.status === postHireStatuses.postSecondaryEducationCompleted,
       );
       // Delete all post-hire graduations statuses
       // Delete Post-Hire Status

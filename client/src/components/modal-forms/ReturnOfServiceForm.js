@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import MuiAlert from '@material-ui/lab/Alert';
+import Grid from '@mui/material/Grid';
+import MuiAlert from '@mui/material/Alert';
 import { Button } from '../generic';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import {
   RenderDateField,
   RenderRadioGroup,
@@ -20,6 +19,7 @@ import {
   rosMaxStartDate,
 } from '../../constants';
 import { createReturnOfServiceStatus, getAllSites } from '../../services';
+import { dayUtils } from '../../utils';
 
 // Helpers
 const rosPositionTypeOptions = Object.values(rosPositionType);
@@ -62,13 +62,6 @@ const mapToOptions = (sites) =>
     label: `${site.siteName} - ${site.siteId}`,
   }));
 
-// Styles
-const useStyles = makeStyles({
-  bg: {
-    backgroundColor: '#e8e8e8',
-  },
-});
-
 // Post Cohort Assignment Form
 
 export const ReturnOfServiceForm = ({
@@ -85,8 +78,6 @@ export const ReturnOfServiceForm = ({
   participant,
   completionHandler,
 }) => {
-  // Style Classes
-  const classes = useStyles();
   // Show Error
   const [error, setError] = useState(null);
   // All sites
@@ -128,11 +119,11 @@ export const ReturnOfServiceForm = ({
                 name='date'
                 component={RenderDateField}
                 label='Return of Service Start Date'
-                maxDate={rosMaxStartDate}
+                maxDate={dayUtils(rosMaxStartDate)}
                 boldLabel
               />
               <br />
-              <Box className={classes.bg}>
+              <Box sx={{ backgroundColor: '#e8e8e8' }}>
                 <Box p={1}>
                   <Field
                     name='positionType'
@@ -202,7 +193,7 @@ export const ReturnOfServiceForm = ({
                 )}
               </>
               <br />
-              <Box className={classes.bg}>
+              <Box sx={{ backgroundColor: '#e8e8e8' }}>
                 <Box p={1}>
                   <Field
                     name='confirm'

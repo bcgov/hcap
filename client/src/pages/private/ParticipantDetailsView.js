@@ -3,9 +3,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 
-import { Box, Card, Grid, Link, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import EditIcon from '@material-ui/icons/Edit';
+import { Box, Card, Grid, Link, Typography } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 
 // Libs
 import { useToast } from '../../hooks';
@@ -32,18 +31,6 @@ import {
   EditRosSiteDialog,
 } from '../../components/participant-details';
 import { keyedString } from '../../utils';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginBottom: theme.spacing(2),
-    padding: theme.spacing(4),
-    minWidth: '1020px',
-  },
-  gridSection: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-  },
-}));
 
 // Helper
 const fetchData = ({
@@ -82,6 +69,7 @@ const fetchData = ({
 export default () => {
   // State
   const [error, setError] = useState(null);
+
   const [participant, setParticipant] = useState(null);
   const [actualParticipant, setActualParticipant] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -95,8 +83,7 @@ export default () => {
   const { auth } = AuthContext.useAuth();
   // Memo roles
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
-  // Style classes
-  const classes = useStyles();
+
   // Get param
   const { id, page, pageId } = useParams();
   // Breadcrumb name
@@ -213,7 +200,7 @@ export default () => {
         });
       } else {
         throw new Error(
-          response.message || response.error || response.statusText || EDIT_ERROR_MESSAGE
+          response.message || response.error || response.statusText || EDIT_ERROR_MESSAGE,
         );
       }
     } catch (err) {
@@ -245,7 +232,13 @@ export default () => {
         {error && <Alert severity='error'>{error}</Alert>}
         {!participant && !error && <Alert severity='info'>Loading participant details</Alert>}
         {participant && (
-          <Card className={classes.root}>
+          <Card
+            sx={{
+              marginBottom: 2,
+              padding: 4,
+              minWidth: '1020px',
+            }}
+          >
             <AssignCohortSiteDialog
               isOpen={selectedCohort !== null}
               participant={participant}
@@ -261,7 +254,7 @@ export default () => {
               / {participant.fullName}
             </Box>
             <Typography variant='h2'>Participant Details</Typography>
-            <Grid container spacing={2} className={classes.gridSection}>
+            <Grid container spacing={2} sx={{ pt: 4, pb: 4 }}>
               {Object.keys(keyLabelMap).map(
                 (key) =>
                   participant[key] && (
@@ -273,7 +266,7 @@ export default () => {
                         {participant[key]}
                       </Typography>
                     </Grid>
-                  )
+                  ),
               )}
             </Grid>
 
@@ -281,7 +274,7 @@ export default () => {
             {participant.ros && (
               <CheckPermissions permittedRoles={UserRoles}>
                 <Typography variant='h2'>Return of Service</Typography>
-                <Grid container spacing={2} className={classes.gridSection}>
+                <Grid container spacing={2} sx={{ pt: 4, pb: 4 }}>
                   {Object.keys(rosKeyMap).map((key) => {
                     const participantRos = participant.ros[key];
                     const rosKey = rosKeyMap[key];

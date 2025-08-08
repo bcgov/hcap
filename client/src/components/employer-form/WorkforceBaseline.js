@@ -1,11 +1,11 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import { FastField } from 'formik';
 
 import { Card, Divider } from '../generic';
 import { BaselineList } from './BaselineList';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 
 export const WorkforceBaseline = ({ isDisabled }) => {
   return (

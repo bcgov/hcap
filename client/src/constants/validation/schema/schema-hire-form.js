@@ -20,16 +20,16 @@ export const HireFormSchema = yup
       .test('is-true', 'Must acknowledge participant acceptance', (v) => v === true),
     positionTitle: yup.string().when('program', {
       is: Program.NonHCAP,
-      then: yup.string().required('Position title is required'),
-      otherwise: yup.string().nullable(),
+      then: (schema) => schema.required('Position title is required'),
+      otherwise: (schema) => schema.nullable(),
     }),
     positionType: yup.string().when('program', {
       is: Program.NonHCAP,
-      then: yup
-        .string()
-        .required('Position type is required')
-        .oneOf(['Full-Time', 'Part-Time', 'Casual'], 'Invalid position type'),
-      otherwise: yup.string().nullable(),
+      then: (schema) =>
+        schema
+          .required('Position type is required')
+          .oneOf(['Full-Time', 'Part-Time', 'Casual'], 'Invalid position type'),
+      otherwise: (schema) => schema.nullable(),
     }),
     site: yup.number().required('Site is required'),
   });

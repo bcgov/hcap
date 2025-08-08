@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
-import store from 'store';
+import { useNavigate } from 'react-router-dom';
+import Grid from '@mui/material/Grid';
+import { Box, Typography } from '@mui/material';
+import storage from '../../utils/storage';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
 import { Routes, regionLabelsMap, API_URL, healthAuthoritiesFilter, Role } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
@@ -30,13 +30,13 @@ export default () => {
 
   const [orderBy, setOrderBy] = useState(columns[0].id);
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setHealthAuthorities(
       roles.includes(Role.Superuser) || roles.includes(Role.MinistryOfHealth)
         ? Object.values(regionLabelsMap)
-        : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
+        : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean),
     );
   }, [roles]);
 
@@ -69,7 +69,7 @@ export default () => {
         const row = mapItemToColumns(item, columns);
         row.details = (
           <Button
-            onClick={() => history.push(`${Routes.EOIView}/details/${item.id}`)}
+            onClick={() => navigate(`${Routes.EOIView}/details/${item.id}`)}
             variant='outlined'
             size='small'
             text='Details'
@@ -82,28 +82,34 @@ export default () => {
 
     const getEOIs = async () => {
       setLoadingData(true);
-      const response = await fetch(`${API_URL}/api/v1/employer-form`, {
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-          Authorization: `Bearer ${store.get('TOKEN')}`,
-        },
-        method: 'GET',
-      });
 
-      let rows = [];
-      if (response.ok) {
-        const { data } = await response.json();
-        rows = filterData(data);
+      try {
+        const response = await fetch(`${API_URL}/api/v1/employer-form`, {
+          headers: {
+            Accept: 'application/json',
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${storage.get('TOKEN')}`,
+          },
+          method: 'GET',
+        });
+
+        let rows = [];
+        if (response.ok) {
+          const { data } = await response.json();
+          rows = filterData(data);
+        }
+
+        setFetchedRows(rows);
+        setRows(rows);
+      } catch (error) {
+        console.error('Failed to fetch employer data:', error);
+      } finally {
+        setLoadingData(false);
       }
-
-      setFetchedRows(rows);
-      setRows(rows);
-      setLoadingData(false);
     };
 
     getEOIs();
-  }, [columns, history]);
+  }, [columns, navigate]);
 
   return (
     <Page>

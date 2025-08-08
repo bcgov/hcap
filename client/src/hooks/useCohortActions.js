@@ -1,17 +1,17 @@
 import { useState, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Routes, ToastStatus } from '../constants';
 import { keyedString } from '../utils';
 import { useToast } from './';
 import { fetchParticipant, getPsi } from '../services';
 
 export const useCohortActions = (cohortId) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
   const [allCohorts, setAllCohorts] = useState([]);
-  // eslint-disable-next-line no-unused-vars
+   
   const [disableAssign, setDisableAssign] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,15 +19,15 @@ export const useCohortActions = (cohortId) => {
 
   const handleOpenParticipantDetails = useCallback(
     (participantId) => {
-      history.push(
-        keyedString(Routes.ParticipantDetails, {
+      navigate(
+        keyedString(Routes.ParticipantDetailsPath, {
           id: participantId,
           page: 'cohort-details',
           pageId: cohortId,
-        })
+        }),
       );
     },
-    [history, cohortId]
+    [navigate, cohortId],
   );
 
   const fetchTransferData = useCallback(
@@ -60,7 +60,7 @@ export const useCohortActions = (cohortId) => {
         setIsLoading(false);
       }
     },
-    [openToast]
+    [openToast],
   );
 
   const handleTransferParticipant = useCallback(
@@ -68,7 +68,7 @@ export const useCohortActions = (cohortId) => {
       setTransferModalOpen(true);
       fetchTransferData(participantId);
     },
-    [fetchTransferData]
+    [fetchTransferData],
   );
 
   return {

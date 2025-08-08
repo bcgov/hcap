@@ -2,14 +2,14 @@
   "scripts": {
     "check-format": "run-p check:*",
     "check:prettier": "prettier --check \"./client/**/*.{js,jsx,json,css,scss,md}\" \"./server/**/*.{js,jsx,json,css,scss,md}\" \"*.{js,jsx,json,css,scss,md}\"",
-    "check:lint-client": "eslint --ext js,jsx -c ./client/.eslintrc ./client",
+    "check:lint-client": "eslint --config ./client/eslint.config.js ./client/src",
     "check:lint-server": "eslint --ext js,jsx -c ./server/.eslintrc ./server",
     "format": "run-s format:*",
     "format:prettier": "prettier --write \"./client/**/*.{js,jsx,json,css,scss,md}\" \"./server/**/*.{js,jsx,json,css,scss,md}\" \"*.{js,jsx,json,css,scss,md}\"",
-    "format:lint-client": "eslint --ext js,jsx -c ./client/.eslintrc ./client --fix",
+    "format:lint-client": "eslint --config ./client/eslint.config.js ./client/src --fix",
     "format:lint-server": "eslint --ext js,jsx -c ./server/.eslintrc ./server --fix",
     "update-all": "npm i && run-p update:*",
-    "update-apps": "run-p update:client update:server",
+    "update-apps": "run-p 'update:client' 'update:server'",
     "update:client": "npm i --prefix client",
     "update:server": "npm i --prefix server",
     "prepare": "husky",
@@ -39,6 +39,6 @@
   },
   "name": "hcap",
   "lint-staged": {
-    "!(*spec).js": "eslint --cache --fix"
+    "client/src/**/*.{js,jsx}": "eslint --config ./client/eslint.config.js --fix"
   }
 }

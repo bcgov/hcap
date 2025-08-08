@@ -1,4 +1,4 @@
-import store from 'store';
+import storage from '../utils/storage';
 import { API_URL } from '../constants';
 
 /**
@@ -15,7 +15,7 @@ const mapPhasesResponse = async (data, columns) => {
         ...accumulator,
         [column.id]: row[column.id],
       }),
-      {}
+      {},
     );
     // Add additional props (user ID, button) to row
     return {
@@ -29,7 +29,7 @@ const mapPhasesResponse = async (data, columns) => {
 export const fetchPhases = async (queryString = null) => {
   const url = queryString ? `${API_URL}/api/v1/phase${queryString}` : `${API_URL}/api/v1/phase/`;
   const response = await fetch(url, {
-    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    headers: { Authorization: `Bearer ${storage.get('TOKEN')}` },
     method: 'GET',
   });
 
@@ -52,7 +52,7 @@ export const FetchMappedPhases = async (columns) => {
 
 export const fetchSitePhases = async (siteId) => {
   const response = await fetch(`${API_URL}/api/v1/phase/${siteId}`, {
-    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    headers: { Authorization: `Bearer ${storage.get('TOKEN')}` },
     method: 'GET',
   });
   if (response.ok) {
@@ -67,7 +67,7 @@ export const createPhase = async (phaseJson) => {
   const response = await fetch(`${API_URL}/api/v1/phase`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -80,7 +80,7 @@ export const updatePhase = async (phaseId, phaseJson) => {
   const response = await fetch(`${API_URL}/api/v1/phase/${phaseId}`, {
     method: 'PATCH',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },

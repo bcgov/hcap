@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { Grid } from '@material-ui/core';
 import { FastField, useField } from 'formik';
+import Grid from '@mui/material/Grid';
 import { Question } from '../Question';
 import { SectionHeader } from '../SectionHeader';
 import { RenderRadioGroup, RenderTextField } from '../../fields';
@@ -30,7 +30,7 @@ export const BackgroundInformationSection = ({
       industryHelpers.setValue('Other, please specify:');
       otherHelpers.setValue(otherValue);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [industry, other]);
 
   return (

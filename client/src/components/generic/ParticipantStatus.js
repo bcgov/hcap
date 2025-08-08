@@ -1,5 +1,5 @@
 import React from 'react';
-import InfoIcon from '@material-ui/icons/Info';
+import InfoIcon from '@mui/icons-material/Info';
 import { ComponentTooltip } from './ComponentTooltip';
 import { Button } from './Button';
 import { getParticipantStatusData } from '../../utils/prettifyStatus';
@@ -17,7 +17,7 @@ export const ParticipantStatus = ({
     status,
     tabValue,
     isMoH,
-    participantInfo
+    participantInfo,
   );
 
   const { showAcknowledgeButton, showArchiveButton, additional } = buttonData;

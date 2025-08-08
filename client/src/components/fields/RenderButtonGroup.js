@@ -1,25 +1,21 @@
 import React, { Fragment } from 'react';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import classNames from 'classnames';
-import { makeStyles } from '@material-ui/core/styles';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import { styled } from '@mui/material/styles';
 import { ErrorMessage, useField } from 'formik';
 
 import { InputFieldError, Button } from '../generic';
 
-const useStyles = makeStyles((theme) => ({
-  button: {
-    boxShadow: 'none',
-  },
-  buttonError: {
+const StyledButton = styled(Button)(({ theme, hasError }) => ({
+  boxShadow: 'none',
+  ...(hasError && {
     borderColor: theme.palette.error.main,
     '&:hover': {
       borderColor: theme.palette.error.main,
     },
-  },
+  }),
 }));
 
 export const RenderButtonGroup = ({ field, form, options, ...props }) => {
-  const classes = useStyles();
   const [, , helpers] = useField(field.name);
   const { setValue } = helpers;
   const error = form.errors[field.name];
@@ -27,8 +23,8 @@ export const RenderButtonGroup = ({ field, form, options, ...props }) => {
     <Fragment>
       <ButtonGroup orientation='vertical' fullWidth {...props}>
         {options.map((option) => (
-          <Button
-            className={classNames(classes.button, { [classes.buttonError]: !!error })}
+          <StyledButton
+            hasError={!!error}
             key={option.value}
             onClick={() => setValue(option.value)}
             variant={option.value === field.value ? 'contained' : 'outlined'}

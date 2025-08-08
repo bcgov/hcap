@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, lazy } from 'react';
-import store from 'store';
+import storage from '../../utils/storage';
 
-import { Box, Typography } from '@material-ui/core';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import { Box, Typography } from '@mui/material';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import { Page, CheckPermissions, Button, Dialog } from '../../components/generic';
 import { PSIForm, CohortForm } from '../../components/modal-forms';
@@ -53,7 +53,7 @@ export default () => {
     const response = await fetch(`${API_URL}/api/v1/psi/${selectedPSI}/cohorts/`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${storage.get('TOKEN')}`,
         Accept: 'application/json',
         'Content-type': 'application/json',
       },
@@ -74,7 +74,7 @@ export default () => {
   useEffect(() => {
     const fetchCohorts = async () => {
       const response = await fetch(`${API_URL}/api/v1/cohorts`, {
-        headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+        headers: { Authorization: `Bearer ${storage.get('TOKEN')}` },
         method: 'GET',
       });
       if (response.ok) {
@@ -91,7 +91,7 @@ export default () => {
   useEffect(() => {
     const fetchPSIs = async () => {
       const response = await fetch(`${API_URL}/api/v1/psi`, {
-        headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+        headers: { Authorization: `Bearer ${storage.get('TOKEN')}` },
         method: 'GET',
       });
       if (response.ok) {
@@ -106,7 +106,7 @@ export default () => {
             cohorts: rowCohorts.length,
             available_seats: rowCohorts.reduce(
               (sum, cohort) => sum + (cohort.cohort_size - cohort.participants.length),
-              0
+              0,
             ),
           };
         });

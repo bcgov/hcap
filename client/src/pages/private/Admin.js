@@ -1,40 +1,34 @@
 import React, { useEffect, useMemo } from 'react';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { useHistory } from 'react-router-dom';
+import { Grid, Box, Typography, styled } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { Page, Button, CheckPermissions } from '../../components/generic';
 import { Role, Routes, UserRoles } from '../../constants';
 import { AuthContext } from '../../providers';
 
-const useStyles = makeStyles((theme) => ({
-  button: {
-    marginTop: theme.spacing(3),
-  },
-  welcomeOverflow: {
-    maxWidth: '320px',
-    textAlign: 'center',
-  },
+const StyledButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(3),
 }));
 
+const WelcomeText = styled(Typography)({
+  maxWidth: '320px',
+  textAlign: 'center',
+});
+
 export default () => {
-  const history = useHistory();
-  const classes = useStyles();
+  const navigate = useNavigate();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
   const name = auth.user?.name || auth.user?.username || '';
 
   useEffect(() => {
-    if (roles.includes(Role.Employer) || roles.includes(Role.MHSUEmployer))
-      history.push(Routes.ParticipantView);
-  }, [roles, history]);
+    if (roles.includes(Role.Employer) || roles.includes(Role.MHSUEmployer)) {
+      navigate(Routes.ParticipantView);
+    }
+  }, [roles, navigate]);
 
   const renderAdminButton = (route, label) => (
-    <Button
-      className={classes.button}
-      onClick={async () => {
-        history.push(route);
-      }}
+    <StyledButton
+      onClick={() => navigate(route)}
       variant='contained'
       color='primary'
       fullWidth={false}
@@ -48,15 +42,15 @@ export default () => {
         <Grid
           container
           alignContent='center'
-          justify='center'
+          justifyContent='center'
           alignItems='center'
           direction='column'
         >
           <Box pb={4} pl={4} pr={4} pt={2}>
             <Grid container direction='column'>
-              <Typography variant='subtitle1' gutterBottom className={classes.welcomeOverflow}>
+              <WelcomeText variant='subtitle1' gutterBottom>
                 Welcome, {name}
-              </Typography>
+              </WelcomeText>
               <CheckPermissions permittedRoles={UserRoles}>
                 {renderAdminButton(Routes.ParticipantView, 'View Participants')}
               </CheckPermissions>

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import { Grid } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { FastField } from 'formik';
 import { Question } from '../Question';
 import { SectionHeader } from '../SectionHeader';

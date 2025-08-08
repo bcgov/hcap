@@ -1,12 +1,10 @@
-import React, { Suspense, lazy, useEffect, useState } from 'react';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
-import { useKeycloak, KeycloakProvider } from '@react-keycloak/web';
-import store from 'store';
-import Keycloak from 'keycloak-js';
+import React, { Suspense, lazy } from 'react';
+import LinearProgress from '@mui/material/LinearProgress';
+import { BrowserRouter, Route, Navigate, Routes as RouterRoutes } from 'react-router-dom';
+import { useKeycloak, KeycloakProvider } from '../providers/KeycloakProvider';
+import storage from '../utils/storage';
 
-import { API_URL, Routes } from '../constants';
-import { AuthContext } from '../providers';
+import { Routes } from '../constants';
 import PhaseView from '../pages/private/PhaseView';
 const ParticipantLogin = lazy(() => import('../pages/public/ParticipantLogin'));
 const Admin = lazy(() => import('../pages/private/Admin'));
@@ -29,8 +27,8 @@ const ConfirmInterest = lazy(() => import('../pages/public/ConfirmInterest'));
 const ParticipantLanding = lazy(() => import('../pages/private/ParticipantLanding'));
 const ParticipantEOI = lazy(() => import('../pages/private/ParticipantEOI'));
 const ParticipantEOIEdit = lazy(() => import('../pages/private/ParticipantEOI'));
-const ParticipantWithdrawConfirm = lazy(() =>
-  import('../pages/private/ParticipantWithdrawConfirm')
+const ParticipantWithdrawConfirm = lazy(
+  () => import('../pages/private/ParticipantWithdrawConfirm'),
 );
 const ParticipantFullWithdraw = lazy(() => import('../pages/private/ParticipantFullWithdrawPage'));
 const ParticipantActionSuccess = lazy(() => import('../pages/private/ParticipantActionSuccess'));
@@ -38,172 +36,134 @@ const ParticipantActionSuccess = lazy(() => import('../pages/private/Participant
 const ParticipantDetails = lazy(() => import('../pages/private/ParticipantDetailsView'));
 
 const EmployerLogin = lazy(() => import('../pages/public/EmployerLogin'));
+// const EmployerForm = lazy(() => import('../pages/public/EmployerForm'));
 
-const PrivateRoute = ({ component: Component, path, ...rest }) => {
-  const [keycloak] = useKeycloak();
-  return (
-    <Route
-      path={path}
-      {...rest}
-      render={(props) =>
-        keycloak.authenticated && !keycloak.loginRequired ? (
-          <Component {...props} />
-        ) : (
-          <Redirect
-            to={{
-              pathname: Routes.Login,
-              state: { redirectOnLogin: path },
-            }}
-          />
-        )
-      }
-    />
-  );
+const PrivateRoute = ({ component: Component }) => {
+  const { authenticated, loading } = useKeycloak();
+  // console.log('PrivateRoute check:', { authenticated, loading, Component: Component.name });
+
+  if (loading) {
+    return <LinearProgress />;
+  }
+
+  if (!authenticated) {
+    // console.log('PrivateRoute: Not authenticated, redirecting to login');
+    return <Navigate to={Routes.Login} replace />;
+  }
+
+  // console.log('PrivateRoute: Rendering component');
+  return <Component />;
 };
 
-// This function will either return a Switch for its child components or
+// This function will either return a Routes for its child components or
 // nothing, depending on whether the hostname matches the passed regex
-const RootUrlSwitch = ({ rootUrlRegExp, children }) =>
-  rootUrlRegExp.test(window.location.hostname) && <Switch>{children}</Switch>;
+const RootUrlSwitch = ({ rootUrlRegExp, children }) => {
+  const hostname = window.location.hostname;
+  const matches = rootUrlRegExp.test(hostname);
+  console.log('RootUrlSwitch:', {
+    hostname,
+    pattern: rootUrlRegExp.toString(),
+    matches,
+    href: window.location.href,
+  });
+  return matches ? <RouterRoutes>{children}</RouterRoutes> : null;
+};
 
 export default () => {
-  const [keycloakInfo, setKeycloakInfo] = useState();
-  const { dispatch } = AuthContext.useAuth();
-
-  const checkRolesAndRefreshToken = async (roles) => {
-    // if user's roles are updated on the keycloak by migration, refresh token
-    if (roles.some((role) => !keycloakInfo.hasResourceRole(role))) {
-      await keycloakInfo.updateToken(-1);
-    }
-  };
-
-  const getUserInfo = async (token) => {
-    dispatch({ action: AuthContext.USER_LOADING });
-    const response = await fetch(`${API_URL}/api/v1/user`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      method: 'GET',
-    });
-    if (response.ok) {
-      const payload = await response.json();
-      await checkRolesAndRefreshToken(payload.roles);
-
-      dispatch({ type: AuthContext.USER_LOADED, payload });
-    } else {
-      // logout, remove token if it's invalid
-      dispatch({ type: AuthContext.USER_LOADED, payload: null });
-      store.remove('TOKEN');
-      await keycloakInfo.logout({ redirectUri: window.location.origin });
-    }
-  };
-  const getKeycloakInfo = async () => {
-    const response = await fetch(`${API_URL}/api/v1/keycloak-realm-client-info`, {
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      method: 'GET',
-    });
-
-    const result = await response.json();
-    setKeycloakInfo(
-      new Keycloak({
-        realm: result.realm,
-        url: result.url,
-        clientId: result.clientId,
-      })
-    );
-    // Saving all received env variables to store
-    if (result.envVariables && Object.keys(result.envVariables).length > 0) {
-      for (const key of Object.keys(result.envVariables)) {
-        store.set(key, result.envVariables[key]);
-      }
-    }
-  };
-
-  useEffect(() => {
-    getKeycloakInfo();
-  }, []);
-  if (!keycloakInfo) {
-    return 'Server unavailable';
-  }
   const handleTokens = (tokens) => {
-    store.set('TOKEN', tokens.token);
-    getUserInfo(tokens.token);
+    storage.set('TOKEN', tokens.token);
   };
 
   return (
-    <KeycloakProvider
-      keycloak={keycloakInfo}
-      autoRefreshToken={true}
-      initConfig={{
-        pkceMethod: 'S256',
-        checkLoginIframe: false,
-      }}
-      onTokens={handleTokens}
-      LoadingComponent={<LinearProgress />}
-    >
-      <BrowserRouter>
+    <KeycloakProvider onTokens={handleTokens}>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <Suspense fallback={<LinearProgress />}>
           <RootUrlSwitch rootUrlRegExp={Routes.ParticipantHostname}>
+            <Route path={Routes.ParticipantConfirmation} element={<ParticipantConfirmation />} />
+            <Route path={Routes.Login} element={<ParticipantLogin />} />
+            <Route path={Routes.Base} element={<ParticipantForm />} />
+            <Route path={Routes.ParticipantForm} element={<ParticipantForm />} />
+            <Route path={Routes.ConfirmInterest} element={<ConfirmInterest />} />
             <Route
-              exact
-              path={Routes.ParticipantConfirmation}
-              component={ParticipantConfirmation}
-            />
-            <Route exact path={Routes.Login} component={ParticipantLogin} />
-            <Route exact path={Routes.Base} component={ParticipantForm} />
-            <Route exact path={Routes.ParticipantForm} component={ParticipantForm} />
-            <Route exact path={Routes.ConfirmInterest} component={ConfirmInterest} />
-            <PrivateRoute
-              exact
               path={Routes.ParticipantActionSuccess}
-              component={ParticipantActionSuccess}
+              element={<PrivateRoute component={ParticipantActionSuccess} />}
             />
-            <PrivateRoute exact path={Routes.ParticipantLanding} component={ParticipantLanding} />
-            <PrivateRoute exact path={Routes.ParticipantEOI} component={ParticipantEOI} />
-            <PrivateRoute exact path={Routes.ParticipantEOIEdit} component={ParticipantEOIEdit} />
-            <PrivateRoute
-              exact
+            <Route
+              path={Routes.ParticipantLanding}
+              element={<PrivateRoute component={ParticipantLanding} />}
+            />
+            <Route
+              path={Routes.ParticipantEOI}
+              element={<PrivateRoute component={ParticipantEOI} />}
+            />
+            <Route
+              path={Routes.ParticipantEOIEdit}
+              element={<PrivateRoute component={ParticipantEOIEdit} />}
+            />
+            <Route
               path={Routes.ParticipantWithdrawConfirm}
-              component={ParticipantWithdrawConfirm}
+              element={<PrivateRoute component={ParticipantWithdrawConfirm} />}
             />
-            <PrivateRoute
-              exact
+            <Route
               path={Routes.ParticipantFullWithdraw}
-              component={ParticipantFullWithdraw}
+              element={<PrivateRoute component={ParticipantFullWithdraw} />}
             />
-            <Redirect to={Routes.Base} />
+            <Route path='*' element={<Navigate to={Routes.Base} replace />} />
           </RootUrlSwitch>
           <RootUrlSwitch rootUrlRegExp={Routes.EmployerHostname}>
-            <Route exact path={Routes.Login} component={Login} />
-            <Route exact path={Routes.Keycloak} component={KeycloakRedirect} />
-            <PrivateRoute exact path={Routes.Admin} component={Admin} />
-            <Route exact path={Routes.EmployerConfirmation} component={EmployerConfirmation} />
-            <PrivateRoute exact path={Routes.UserPending} component={UserView} />
-            <PrivateRoute exact path={Routes.UserEdit} component={UserView} />
-            <PrivateRoute exact path={Routes.ReportingView} component={ReportingView} />
-            <PrivateRoute exact path={Routes.SiteView} component={SiteView} />
-            <PrivateRoute exact path={Routes.SiteViewDetails} component={SiteViewDetails} />
-            <PrivateRoute exact path={Routes.PSIView} component={PSIView} />
-            <PrivateRoute exact path={Routes.PSIViewDetails} component={PSIViewDetails} />
-            <PrivateRoute exact path={Routes.CohortDetails} component={CohortDetails} />
-            <PrivateRoute exact path={Routes.EOIView} component={EOIView} />
-            <PrivateRoute exact path={Routes.EOIViewDetails} component={EOIViewDetails} />
-            <PrivateRoute exact path={Routes.ParticipantView} component={ParticipantView} />
-            <PrivateRoute exact path={Routes.ParticipantDetails} component={ParticipantDetails} />
-            <PrivateRoute exact path={Routes.PhaseView} component={PhaseView} />
+            <Route path={Routes.Login} element={<Login />} />
+            <Route path={Routes.Keycloak} element={<KeycloakRedirect />} />
+            <Route path={Routes.Admin} element={<PrivateRoute component={Admin} />} />
+            <Route path={Routes.EmployerConfirmation} element={<EmployerConfirmation />} />
+            <Route path={Routes.UserPending} element={<PrivateRoute component={UserView} />} />
+            <Route path={Routes.UserEdit} element={<PrivateRoute component={UserView} />} />
+            <Route
+              path={Routes.ReportingView}
+              element={<PrivateRoute component={ReportingView} />}
+            />
+            <Route path={Routes.SiteView} element={<PrivateRoute component={SiteView} />} />
+            <Route
+              path={Routes.SiteViewDetails}
+              element={<PrivateRoute component={SiteViewDetails} />}
+            />
+            <Route path={Routes.PSIView} element={<PrivateRoute component={PSIView} />} />
+            <Route
+              path={Routes.PSIViewDetails}
+              element={<PrivateRoute component={PSIViewDetails} />}
+            />
+            <Route
+              path={Routes.CohortDetails}
+              element={<PrivateRoute component={CohortDetails} />}
+            />
+            <Route path={Routes.EOIView} element={<PrivateRoute component={EOIView} />} />
+            <Route
+              path={Routes.EOIViewDetails}
+              element={<PrivateRoute component={EOIViewDetails} />}
+            />
+            <Route
+              path={Routes.ParticipantView}
+              element={<PrivateRoute component={ParticipantView} />}
+            />
+            <Route
+              path={Routes.ParticipantDetails}
+              element={<PrivateRoute component={ParticipantDetails} />}
+            />
+            <Route path={Routes.PhaseView} element={<PrivateRoute component={PhaseView} />} />
             {/**
              * Adding this to support internal tab selection in global navigation
              */}
-            <PrivateRoute
-              exact
+            <Route
               path={Routes.ParticipantDetailsTab}
-              component={ParticipantDetails}
+              element={<PrivateRoute component={ParticipantDetails} />}
             />
-            <Route exact path={Routes.Base} component={EmployerLogin} />
-            <Redirect to={Routes.Base} />
+            {/* <Route path="/employer-form" element={<EmployerForm />} /> */}
+            <Route path={Routes.Base} element={<EmployerLogin />} />
+            <Route path='*' element={<Navigate to={Routes.Base} replace />} />
           </RootUrlSwitch>
         </Suspense>
       </BrowserRouter>

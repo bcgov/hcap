@@ -1,23 +1,19 @@
 import React from 'react';
 import { Button, Dialog } from '../generic';
-import { Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography, styled } from '@mui/material';
 import { RenderTextField, RenderSelectField, RenderRadioGroup } from '../fields';
 import { CreateSiteSchema, healthAuthorities, ToastStatus, siteTypeOptions } from '../../constants';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import Typography from '@material-ui/core/Typography';
 import { createSite } from '../../services/site';
 import { useToast } from '../../hooks';
 
-const useStyles = makeStyles(() => ({
-  formButton: {
-    maxWidth: '200px',
-  },
+const FormButton = styled(Button)(({ theme }) => ({
+  maxWidth: '200px',
 }));
 
 export const NewSiteDialog = ({ onSubmit, onClose, open }) => {
   const { openToast } = useToast();
-  const classes = useStyles();
+
   const initialValues = {
     siteId: '',
     siteName: '',
@@ -150,19 +146,8 @@ export const NewSiteDialog = ({ onSubmit, onClose, open }) => {
             </Box>
 
             <Box display='flex' justifyContent='space-between' my={3}>
-              <Button
-                className={classes.formButton}
-                onClick={onClose}
-                color='default'
-                text='Cancel'
-              />
-              <Button
-                className={classes.formButton}
-                onClick={submitForm}
-                variant='contained'
-                color='primary'
-                text='Submit'
-              />
+              <FormButton onClick={onClose} color='default' text='Cancel' />
+              <FormButton onClick={submitForm} variant='contained' color='primary' text='Submit' />
             </Box>
           </FormikForm>
         )}

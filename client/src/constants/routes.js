@@ -1,7 +1,7 @@
 export default Object.freeze({
   // Hostname
-  ParticipantHostname: RegExp('^(www\\.)?hcapparticipants\\..*'),
-  EmployerHostname: RegExp('^(www\\.)?hcapemployers\\..*'),
+  ParticipantHostname: RegExp('^(www\\.)?((?:dev|test)\\.)?hcapparticipants\\..*'),
+  EmployerHostname: RegExp('^(www\\.)?((?:dev|test)\\.)?hcapemployers\\..*'),
 
   // Public routes
   Login: '/login',

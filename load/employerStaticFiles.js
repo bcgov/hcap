@@ -25,7 +25,7 @@ export let options = {
 
 export default function () {
   let failed = false;
-  const indexRes = http.get(`https://hcapemployers.${__ENV.OS_NAMESPACE_SUFFIX}.freshworks.club/`);
+  const indexRes = http.get(`https://${__ENV.OS_NAMESPACE_SUFFIX}.hcapemployers.gov.bc.ca/`);
 
   if (indexRes.status != 200) {
     failed = true;
@@ -36,7 +36,7 @@ export default function () {
   for (const script of js) {
     const scriptPath = script.attr('src');
     const jsRes = http.get(
-      `https://hcapemployers.${__ENV.OS_NAMESPACE_SUFFIX}.freshworks.club${scriptPath}`
+      `https://${__ENV.OS_NAMESPACE_SUFFIX}.hcapemployers.gov.bc.ca${scriptPath}`,
     );
     if (jsRes.status != 200) {
       failed = true;

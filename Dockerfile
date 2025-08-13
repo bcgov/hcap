@@ -12,7 +12,7 @@ ENV HOME=/tmp
 RUN mkdir -p ${HOME_CLIENT}
 RUN chown -R 1008111001 ${HOME_CLIENT}
 WORKDIR ${HOME_CLIENT}
-COPY client/package*.json ./
+COPY client/package*.json client/.npmrc ./
 RUN chown -R 1008040000 .
 
 USER 1008040000

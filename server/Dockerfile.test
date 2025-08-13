@@ -1,5 +1,5 @@
 # Used for local testing with Keycloak, it includes hot reloading and uses ts-node for direct TypeScript execution
-FROM node:20-slim
+FROM node:24-slim
 
 # Allow node modules to be called directly
 ENV PATH=$PATH:/usr/src/app/node_modules/.bin

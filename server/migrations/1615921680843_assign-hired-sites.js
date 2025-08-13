@@ -44,8 +44,8 @@ exports.up = async () => {
   // This allows the migration to pass on dev and test
   changes = changes.filter((change) =>
     currentStatuses.includes(
-      (currentStatus) => currentStatus.participant_id === change.participantId
-    )
+      (currentStatus) => currentStatus.participant_id === change.participantId,
+    ),
   );
 
   const errors = changes
@@ -75,7 +75,7 @@ exports.up = async () => {
           status: 'hired',
         },
         { siteId: change.siteId, history: change.history },
-        { body: 'data' } // Participants status table is not a MassiveJS document table
+        { body: 'data' }, // Participants status table is not a MassiveJS document table
       );
     }
   });

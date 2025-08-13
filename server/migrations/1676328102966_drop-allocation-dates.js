@@ -22,6 +22,6 @@ exports.down = (pgm) => {
         notNull: false,
       },
     },
-    { ifNotExists: true }
+    { ifNotExists: true },
   );
 };

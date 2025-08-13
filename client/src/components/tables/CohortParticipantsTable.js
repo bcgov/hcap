@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, Button } from '../generic';
-import { Link } from '@material-ui/core';
+import { Link } from '@mui/material';
 import { getParticipantGraduationStatus } from '../../utils';
 import { Role, BUTTON_TEXTS } from '../../constants';
 

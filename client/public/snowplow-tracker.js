@@ -18,7 +18,7 @@
   document,
   'script',
   'https://www2.gov.bc.ca/StaticWebResources/static/sp/sp-2-14-0.js',
-  'snowplow'
+  'snowplow',
 );
 var collector = document.currentScript.getAttribute('collectorvariable');
 window.snowplow('newTracker', 'rt', collector, {

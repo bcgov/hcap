@@ -1,25 +1,26 @@
 import React from 'react';
 import { Button, Dialog } from '../generic';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography, styled } from '@mui/material';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { CreateAllocationSchema, ToastStatus } from '../../constants';
 import { createAllocation, updateAllocation } from '../../services';
 import { useToast } from '../../hooks';
 
-const useStyles = makeStyles(() => ({
-  formButton: {
-    maxWidth: '200px',
-  },
-  formRow: {
-    gap: '25px',
-  },
+const FormButton = styled(Button)(({ theme }) => ({
+  maxWidth: '200px',
+}));
+
+const FormRow = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  marginTop: theme.spacing(3),
+  marginBottom: theme.spacing(3),
+  gap: '25px',
 }));
 
 export const AllocationForm = ({ onSubmit, onClose, open, content, isNew, siteId }) => {
   const { openToast } = useToast();
-  const classes = useStyles();
   const initialValues = content
     ? {
         allocation: content.allocation ?? '',
@@ -78,27 +79,15 @@ export const AllocationForm = ({ onSubmit, onClose, open, content, isNew, siteId
         {({ submitForm }) => (
           <FormikForm>
             <Box>
-              <Box
-                display='flex'
-                justifyContent='space-between'
-                my={3}
-                style={{ gap: '25px' }}
-                className={classes.formRow}
-              >
+              <FormRow>
                 <Box flexGrow={1}>
                   <Field name='startDate' component={RenderDateField} label='Start date' disabled />
                 </Box>
                 <Box flexGrow={1}>
                   <Field name='endDate' component={RenderDateField} label='End date' disabled />
                 </Box>
-              </Box>
-              <Box
-                display='flex'
-                justifyContent='space-between'
-                my={3}
-                style={{ gap: '25px' }}
-                className={classes.formRow}
-              >
+              </FormRow>
+              <FormRow>
                 <Box flexGrow={1}>
                   <Field
                     name='allocation'
@@ -117,23 +106,12 @@ export const AllocationForm = ({ onSubmit, onClose, open, content, isNew, siteId
                     placeholder='Type MHAW allocation'
                   />
                 </Box>
-              </Box>
+              </FormRow>
             </Box>
 
             <Box display='flex' justifyContent='space-between' my={3}>
-              <Button
-                className={classes.formButton}
-                onClick={onClose}
-                color='default'
-                text='Cancel'
-              />
-              <Button
-                className={classes.formButton}
-                onClick={submitForm}
-                variant='contained'
-                color='primary'
-                text='Set'
-              />
+              <FormButton onClick={onClose} color='default' text='Cancel' />
+              <FormButton onClick={submitForm} variant='contained' color='primary' text='Set' />
             </Box>
           </FormikForm>
         )}

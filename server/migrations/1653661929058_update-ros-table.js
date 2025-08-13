@@ -13,7 +13,7 @@ exports.up = async (pgm) => {
         default: false,
       },
     },
-    { ifNotExists: true }
+    { ifNotExists: true },
   );
 };
 

@@ -65,6 +65,7 @@ const getAuthCodeFromLocation = (location) => {
       }
     }
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.log(e);
   }
   return '';
@@ -121,7 +122,7 @@ export const getKeycloakToken = async ({ username, password }: TestUser) => {
             username,
             password,
           }),
-          config
+          config,
         );
       })
       .then((resp) => {
@@ -172,6 +173,6 @@ export const approveUsers = async (...users: TestUser[]) => {
         sites: [1111, 4444, 7777],
         userInfo,
       });
-    })
+    }),
   );
 };

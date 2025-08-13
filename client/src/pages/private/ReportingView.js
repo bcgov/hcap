@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Box, Container, Typography, List, ListItem, ListItemText } from '@material-ui/core';
+import { Box, Container, Typography, List, ListItem, ListItemText } from '@mui/material';
 
 import { Page, Card, CheckPermissions, Button } from '../../components/generic';
 import { regionLabelsMap, Role } from '../../constants';

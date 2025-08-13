@@ -1,54 +1,53 @@
 import React from 'react';
 import { Field, Formik, Form as FormikForm } from 'formik';
-
-import { Box, Icon, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
+import { Box, Icon, Typography, styled } from '@mui/material';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 
 import { RenderTextField } from '../fields';
 import { Button } from '../generic';
 import { EmailSubmissionSchema, API_URL, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
 
-const useStyles = makeStyles((theme) => ({
-  submissionInputContainer: {
-    display: 'flex',
+const SubmissionForm = styled('form')(({ theme }) => ({
+  display: 'flex',
+  gap: '1rem',
+  alignItems: 'flex-start',
+  [theme.breakpoints.down('sm')]: {
+    width: 'auto',
+    margin: '1rem',
     flexDirection: 'column',
-    alignItems: 'flex-start',
-    flexGrow: '1',
-    width: '20rem',
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-    },
+    gap: 0,
   },
-  submissionForm: {
-    display: 'flex',
-    gap: '1rem',
-    alignItems: 'flex-start',
-    [theme.breakpoints.down('sm')]: {
-      width: 'auto',
-      margin: '1rem',
-      flexDirection: 'column',
-      gap: '0',
-    },
+}));
+
+const SubmissionInputContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  flexGrow: 1,
+  width: '20rem',
+  [theme.breakpoints.down('sm')]: {
+    width: '100%',
   },
-  submissionButton: {
-    marginTop: '1rem',
-    minWidth: '8.5rem',
-    whiteSpace: 'nowrap',
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-    },
+}));
+
+const SubmissionButton = styled(Button)(({ theme }) => ({
+  marginTop: '1rem',
+  minWidth: '8.5rem',
+  whiteSpace: 'nowrap',
+  [theme.breakpoints.down('sm')]: {
+    width: '100%',
   },
-  submissionHeader: {
-    color: '#1a5a96',
-    marginBottom: '1rem',
-    textAlign: 'center',
-    [theme.breakpoints.down('sm')]: {
-      margin: '0 1rem 1rem 1rem',
-      fontSize: '1.5rem',
-      lineHeight: '1.75rem',
-    },
+}));
+
+const SubmissionHeader = styled(Typography)(({ theme }) => ({
+  color: '#1a5a96',
+  marginBottom: '1rem',
+  textAlign: 'center',
+  [theme.breakpoints.down('sm')]: {
+    margin: '0 1rem 1rem 1rem',
+    fontSize: '1.5rem',
+    lineHeight: '1.75rem',
   },
 }));
 
@@ -75,7 +74,6 @@ const addEmailToWaitlist = async (email, openToast) => {
 };
 
 export const EmailSubmissionForm = () => {
-  const classes = useStyles();
   const { openToast } = useToast();
   const handleSubmit = async (values, { setSubmitting }) => {
     setSubmitting(true);
@@ -84,7 +82,7 @@ export const EmailSubmissionForm = () => {
     } catch (e) {
       openToast({
         status: ToastStatus.Error,
-        message: 'An error occured.',
+        message: 'An error occurred.',
       });
     }
     setSubmitting(false);
@@ -96,41 +94,38 @@ export const EmailSubmissionForm = () => {
       onSubmit={handleSubmit}
     >
       {({ isSubmitting }) => (
-        <FormikForm className={classes.submissionForm}>
-          <Box className={classes.submissionInputContainer}>
+        <SubmissionForm as={FormikForm}>
+          <SubmissionInputContainer>
             <Field
               name='email'
               component={RenderTextField}
               label='Email'
               placeholder='Type your email here'
             />
-          </Box>
-          <Button
+          </SubmissionInputContainer>
+          <SubmissionButton
             type='submit'
             variant='contained'
             color='primary'
             loading={isSubmitting}
-            className={classes.submissionButton}
             text={
               <Box display='flex' alignItems='center'>
-                <Icon component={NotificationsActiveIcon} style={{ marginRight: '.5rem' }} />
+                <Icon component={NotificationsActiveIcon} sx={{ marginRight: '.5rem' }} />
                 Notify me
               </Box>
             }
             fullWidth={false}
           />
-        </FormikForm>
+        </SubmissionForm>
       )}
     </Formik>
   );
 };
 
 export const EmailSubmissionHeader = () => {
-  const classes = useStyles();
-
   return (
-    <Typography variant='subtitle1' className={classes.submissionHeader}>
+    <SubmissionHeader variant='subtitle1'>
       Get notified when the submissions are open
-    </Typography>
+    </SubmissionHeader>
   );
 };

@@ -74,34 +74,6 @@ const randomizeDate = (d?: string) => {
   return addedDate;
 };
 
-/** *
- * Generate random amount of participant statuses and all relating statuses
- */
-export const randomizeParticipantStatus = async () => {
-  for (let i = 0; i < NUM_LOOPS; i++) {
-    participantId = randomize(499, true) + 1;
-    const randomIndex = randomize(particStatuses.length);
-    status = particStatuses[randomIndex];
-    site = sites[randomize(sites.length)];
-
-    randomizeDate();
-
-    generateFullStatusEntry(status);
-  }
-
-  await convertToCsv(psId, partStatusArray, 'participants_status.csv');
-  await convertToCsv(cId, cohortPartArray, 'cohort_participants.csv');
-  await convertToCsv(pphId, partPostHireArray, 'participant_post_hire_status.csv');
-  await convertToCsv(rosId, returnOfServiceArray, 'return_of_service_status.csv');
-};
-
-// generate 3 statuses required for a participant to get hired
-const generatePreHireStatuses = () => {
-  partStatusArray.push(generateProspectingEntry());
-  partStatusArray.push(generateInterviewingEntry());
-  partStatusArray.push(generateOfferMadeEntry());
-};
-
 /**
  * functions for generating each status and their expected data body
  */
@@ -188,21 +160,22 @@ const generateArchivedEntry = (current = false, t?: string) => {
 };
 
 const generateCohortPartEntry = (current = false, cohortId?: number) => {
-  if (!cohortId) {
-    cohortId = randomize(60) + 1;
-    while (cohortId === 16) {
-      cohortId = randomize(60) + 1;
+  let tempCohortId = cohortId;
+  if (!tempCohortId) {
+    tempCohortId = randomize(60) + 1;
+    while (tempCohortId === 16) {
+      tempCohortId = randomize(60) + 1;
     }
   }
   return {
-    cohort_id: cohortId,
+    cohort_id: tempCohortId,
     participant_id: participantId,
     is_current: current,
   };
 };
 
 const generatePartPostHireEntry = (current = false, s?: string) => {
-  let rowData: {};
+  let rowData: Record<string, unknown> = {};
 
   if (!s || s === postHireStatuses.postSecondaryEducationCompleted) {
     rowData = {
@@ -240,21 +213,28 @@ const generateReturnOfServiceEntry = (current = false, s?: string) => {
   };
 };
 
+// generate 3 statuses required for a participant to get hired
+const generatePreHireStatuses = () => {
+  partStatusArray.push(generateProspectingEntry());
+  partStatusArray.push(generateInterviewingEntry());
+  partStatusArray.push(generateOfferMadeEntry());
+};
+
 // loop through a status and add any related pre-statuses
-const generateFullStatusEntry = (status: string) => {
-  if (status === 'engaged') {
+const generateFullStatusEntry = (participantStatus: string) => {
+  if (participantStatus === 'engaged') {
     // assign current statuses
     partStatusArray.push(generateProspectingEntry(true));
-  } else if (status === 'interviewing') {
+  } else if (participantStatus === 'interviewing') {
     partStatusArray.push(generateProspectingEntry());
     // assign current statuses
     partStatusArray.push(generateInterviewingEntry(true));
-  } else if (status === 'offer_made') {
+  } else if (participantStatus === 'offer_made') {
     partStatusArray.push(generateProspectingEntry());
     partStatusArray.push(generateInterviewingEntry());
     // assign current statuses
     partStatusArray.push(generateOfferMadeEntry(true));
-  } else if (status === 'hired') {
+  } else if (participantStatus === 'hired') {
     randomizeHiredSite = sites[randomize(sites.length)];
     const chance = randomize(15);
     if (randomizeHiredSite === site) {
@@ -273,99 +253,62 @@ const generateFullStatusEntry = (status: string) => {
       // assign re-assigned cohort
       generatePreHireStatuses();
       // assign current statuses
-      partStatusArray.push(generateHiredEntry(true));
-      cohortPartArray.push(generateCohortPartEntry(true));
-      partPostHireArray.push(generatePartPostHireEntry(true, postHireStatuses.cohortUnsuccessful));
+      partStatusArray.push(generateHiredEntry(true, randomizeHiredSite));
       cohortPartArray.push(generateCohortPartEntry());
-      partPostHireArray.push(
-        generatePartPostHireEntry(undefined, postHireStatuses.postSecondaryEducationCompleted)
-      );
-    } else if (chance === 5) {
-      generatePreHireStatuses();
-      // assign current statuses
-      partStatusArray.push(generateHiredEntry(true));
       cohortPartArray.push(generateCohortPartEntry(true));
-      partPostHireArray.push(
-        generatePartPostHireEntry(true, postHireStatuses.postSecondaryEducationCompleted)
-      );
-      const secondChance = randomize(3);
-      if (secondChance === 2) {
-        // assign changed site after return of service
-        returnOfServiceArray.push(
-          generateReturnOfServiceEntry(undefined, returnOfServiceStatuses[0])
-        );
-        // assign current statuses
-        returnOfServiceArray.push(generateReturnOfServiceEntry(true, returnOfServiceStatuses[1]));
-      } else {
-        // assign return of service
-        returnOfServiceArray.push(generateReturnOfServiceEntry(true, returnOfServiceStatuses[0]));
-      }
+      returnOfServiceArray.push(generateReturnOfServiceEntry(true));
+      partPostHireArray.push(generatePartPostHireEntry(true));
     } else {
-      // hired at different site
+      // assign graduated
+      generatePreHireStatuses();
+      partStatusArray.push(generateHiredEntry());
+      partStatusArray.push(generateHiredEntry(true, randomizeHiredSite));
+      cohortPartArray.push(generateCohortPartEntry());
+      cohortPartArray.push(generateCohortPartEntry(true));
+      returnOfServiceArray.push(generateReturnOfServiceEntry(true));
+      partPostHireArray.push(generatePartPostHireEntry(true));
+    }
+  } else if (participantStatus === 'rejected') {
+    partStatusArray.push(generateProspectingEntry());
+    partStatusArray.push(generateInterviewingEntry());
+    partStatusArray.push(generateRejectedEntry(true));
+  } else if (participantStatus === 'peoi') {
+    partStatusArray.push(generateRejectedEntry());
+    // assign current statuses
+    partStatusArray.push(generateRejectedAcknowledgedEntry(true));
+  } else if (participantStatus === 'archived') {
+    if (randomize(3) === 1) {
+      partStatusArray.push(generateArchivedEntry(true, 'duplicate'));
+    } else {
       partStatusArray.push(generateProspectingEntry());
       partStatusArray.push(generateInterviewingEntry());
-      // assign current statuses
-      partStatusArray.push(generateOfferMadeEntry(true));
-      partStatusArray.push(generateHiredEntry(true, randomizeHiredSite));
-    }
-  } else if (status === 'archived') {
-    // archived AFTER hiring
-    if (randomize(7) % 2 === 0) {
-      const type = archivedType[randomize(archivedType.length)];
-      generatePreHireStatuses();
       partStatusArray.push(generateHiredEntry());
-      // assign current statuses
-      partStatusArray.push(generateArchivedEntry(true, type));
-      if (type === 'employmentEnded') {
-        partStatusArray.push(generateRejectedAcknowledgedEntry(true));
-        partStatusArray.push(generateRejectedEntry(true));
-      }
-    } else if (randomize(10) === 5) {
-      // generate completed HCAP requirements
-      generatePreHireStatuses();
-      partStatusArray.push(generateHiredEntry());
-      // assign current statuses
-      partStatusArray.push(generateArchivedEntry(true));
-      cohortPartArray.push(generateCohortPartEntry(true));
-      partPostHireArray.push(
-        generatePartPostHireEntry(true, postHireStatuses.postSecondaryEducationCompleted)
-      );
-      returnOfServiceArray.push(generateReturnOfServiceEntry(true, returnOfServiceStatuses[0]));
-    } else {
-      // archived BEFORE hiring
-      generatePreHireStatuses();
-      // assign current statuses
-      partStatusArray.push(generateRejectedAcknowledgedEntry(true));
-      partStatusArray.push(generateRejectedEntry(true));
+      partStatusArray.push(generateArchivedEntry(true, 'employmentEnded'));
     }
-  } else if (status === 'rejected') {
-    randomizeHiredSite = sites[randomize(sites.length)];
-    if (randomizeHiredSite === site) {
-      // participant hired at same site
-      generatePreHireStatuses();
-      // assign current statuses
-      partStatusArray.push(generateHiredEntry(true));
-    } else {
-      // hired at different site, set reject and reject_ack
-      generatePreHireStatuses();
-      // assign current statuses
-      partStatusArray.push(generateHiredEntry(true, randomizeHiredSite));
-      partStatusArray.push(generateRejectedAcknowledgedEntry(true));
-      partStatusArray.push(generateRejectedEntry(true));
-    }
-  } else if (status === 'unsuccessful_graduation') {
-    // create unsuccessful cohort
-    generatePreHireStatuses();
-    // assign current statuses
+  } else if (participantStatus === 'unsuccessful_graduation') {
+    partStatusArray.push(generateProspectingEntry());
     partStatusArray.push(generateHiredEntry(true));
-    cohortPartArray.push(generateCohortPartEntry(true));
     partPostHireArray.push(generatePartPostHireEntry(true, postHireStatuses.cohortUnsuccessful));
   }
 };
 
-(async () => {
-  console.log('---- Running');
-  console.log('------ Randomizing data');
-  await randomizeParticipantStatus();
-  console.log('---- Finished');
-})();
+/** *
+ * Generate random amount of participant statuses and all relating statuses
+ */
+export const randomizeParticipantStatus = async () => {
+  for (let i = 0; i < NUM_LOOPS; i += 1) {
+    participantId = randomize(499, true) + 1;
+    const randomIndex = randomize(particStatuses.length);
+    status = particStatuses[randomIndex];
+    site = sites[randomize(sites.length)];
+
+    randomizeDate();
+
+    generateFullStatusEntry(status);
+  }
+
+  await convertToCsv(psId, partStatusArray, 'participants_status.csv');
+  await convertToCsv(cId, cohortPartArray, 'cohort_participants.csv');
+  await convertToCsv(pphId, partPostHireArray, 'participant_post_hire_status.csv');
+  await convertToCsv(rosId, returnOfServiceArray, 'return_of_service_status.csv');
+};

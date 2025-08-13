@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { Box, Link } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Link } from '@mui/material';
 
 import {
   ACCESSABILITY_LINK,
@@ -12,25 +11,7 @@ import {
   COPYRIGHT_LINK,
 } from '../../constants';
 
-const useStyles = makeStyles((theme) => ({
-  toolbar: {
-    backgroundColor: theme.palette.primary.light,
-    width: '100%',
-    borderTop: `2px solid ${theme.palette.secondary.main}`,
-    marginTop: 'auto',
-  },
-  linkBox: {
-    borderRight: `1px solid ${theme.palette.default.white}`,
-  },
-  linkText: {
-    textDecoration: 'none',
-    color: theme.palette.default.white,
-    fontSize: '15px',
-  },
-}));
-
 export const Footer = () => {
-  const classes = useStyles();
   const links = [
     {
       name: 'Home',
@@ -60,10 +41,36 @@ export const Footer = () => {
 
   return (
     <React.Fragment>
-      <Box px={5} py={2} className={classes.toolbar} display='flex'>
+      <Box
+        px={5}
+        py={2}
+        display='flex'
+        sx={{
+          backgroundColor: 'primary.light',
+          width: '100%',
+          borderTop: 2,
+          borderTopColor: 'secondary.main',
+          marginTop: 'auto',
+        }}
+      >
         {links.map((link, ind) => (
-          <Box key={ind} px={2} className={ind === links.length - 1 ? '' : classes.linkBox}>
-            <Link className={classes.linkText} href={link.href} target='_blank'>
+          <Box
+            key={ind}
+            px={2}
+            sx={{
+              borderRight: ind === links.length - 1 ? 'none' : 1,
+              borderRightColor: 'default.white',
+            }}
+          >
+            <Link
+              href={link.href}
+              target='_blank'
+              sx={{
+                textDecoration: 'none',
+                color: 'default.white',
+                fontSize: '15px',
+              }}
+            >
               {link.name}
             </Link>
           </Box>

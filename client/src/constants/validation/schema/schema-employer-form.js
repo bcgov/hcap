@@ -48,39 +48,39 @@ export const EmployerFormSchema = yup
       .oneOf([...siteTypes, ''], 'Invalid site type'),
     otherSite: yup.string().when('siteType', {
       is: 'Other',
-      then: yup.string().nullable('Must specify other site type'),
-      otherwise: yup
-        .string()
-        .nullable()
-        .test('is-null', 'Other site type must be null', (v) => v == null || v === ''),
+      then: (schema) => schema.nullable('Must specify other site type'),
+      otherwise: (schema) =>
+        schema
+          .nullable()
+          .test('is-null', 'Other site type must be null', (v) => v == null || v === ''),
     }),
     numPublicLongTermCare: yup
       .number()
       .test(
         'validate-blank-or-number',
         'Must be a positive number',
-        validateBlankOrPositiveInteger
+        validateBlankOrPositiveInteger,
       ),
     numPrivateLongTermCare: yup
       .number()
       .test(
         'validate-blank-or-number',
         'Must be a positive number',
-        validateBlankOrPositiveInteger
+        validateBlankOrPositiveInteger,
       ),
     numPublicAssistedLiving: yup
       .number()
       .test(
         'validate-blank-or-number',
         'Must be a positive number',
-        validateBlankOrPositiveInteger
+        validateBlankOrPositiveInteger,
       ),
     numPrivateAssistedLiving: yup
       .number()
       .test(
         'validate-blank-or-number',
         'Must be a positive number',
-        validateBlankOrPositiveInteger
+        validateBlankOrPositiveInteger,
       ),
 
     // HCAP Request
@@ -89,7 +89,7 @@ export const EmployerFormSchema = yup
       .test(
         'validate-blank-or-number',
         'Must be a positive number',
-        validateBlankOrPositiveInteger
+        validateBlankOrPositiveInteger,
       ),
 
     // Workforce Baseline
@@ -105,46 +105,46 @@ export const EmployerFormSchema = yup
                 .test(
                   'validate-blank-or-number',
                   'Must be a positive number',
-                  validateBlankOrPositiveInteger
+                  validateBlankOrPositiveInteger,
                 ),
               currentPartTime: yup
                 .number()
                 .test(
                   'validate-blank-or-number',
                   'Must be a positive number',
-                  validateBlankOrPositiveInteger
+                  validateBlankOrPositiveInteger,
                 ),
               currentCasual: yup
                 .number()
                 .test(
                   'validate-blank-or-number',
                   'Must be a positive number',
-                  validateBlankOrPositiveInteger
+                  validateBlankOrPositiveInteger,
                 ),
               vacancyFullTime: yup
                 .number()
                 .test(
                   'validate-blank-or-number',
                   'Must be a positive number',
-                  validateBlankOrPositiveInteger
+                  validateBlankOrPositiveInteger,
                 ),
               vacancyPartTime: yup
                 .number()
                 .test(
                   'validate-blank-or-number',
                   'Must be a positive number',
-                  validateBlankOrPositiveInteger
+                  validateBlankOrPositiveInteger,
                 ),
               vacancyCasual: yup
                 .number()
                 .test(
                   'validate-blank-or-number',
                   'Must be a positive number',
-                  validateBlankOrPositiveInteger
+                  validateBlankOrPositiveInteger,
                 ),
             });
-        })
-      )
+        }),
+      ),
     ),
 
     // Staffing Challenges

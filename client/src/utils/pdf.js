@@ -1,8 +1,8 @@
-import domtoimage from 'dom-to-image';
+import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 
 export const convertElementToPDF = async (element, fileName, filter = () => true) => {
-  const dataUrl = await domtoimage.toPng(element, { filter });
+  const dataUrl = await toPng(element, { filter });
   const i = new Image();
   i.src = dataUrl;
   i.onload = () => {

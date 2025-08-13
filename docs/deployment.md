@@ -110,30 +110,6 @@ This command will:
 
 ## Dev/Test Certificate Creation
 
-Currently, the domains use a manually created lets encrypt certificate which is only valid for 90 days, this can easily be switched to a longer lived certificate from your favorite provider. Note: the foundrybc.ca certificate is valid for 1 year.
+Currently, the domain is a custom domain ordered from IMS. Please follow the renewal process outlined in [Request a domain renewal or transfer](https://www2.gov.bc.ca/gov/content/governments/services-for-government/service-experience-digital-delivery/digital-delivery/web-property-process) to renew the cert.
 
-### Install Certbot
-
-```
-brew install certbot
-```
-
-### Certificate Generation
-
-```
-sudo certbot certonly --manual
-```
-
-Will prompt you for domain you want to secure. You can use a wildcard to cover participants and employers:
-
-`*.<env>.freshworks.club`
-
-Once provided, certbot will ask you to perform DNS verification for the domains above. The domain is managed by Azure DNS. Follow the instructions provided by certbot.
-
-This will generate a couple of pem files (your new certificate)
-
-### Adding certificates to Openshift Routes
-
-Add the contents of `dev.freshworks.club/fullchain.pem` to the routes `hcap-participants` and `hcap-employers` at `spec.tls.certificate` and do the same for the contents of `dev.freshworks.club/privkey.pem` at `spec.tls.key`.
-
-Click save and the certificates should be updated.
+Dev and Test domains are bundled under the same cert, as in all dev.-prefixed URLs are ordered under the same CSR as Common Name (CN) and Subject Alternative Names (SANs). You only need to renew 1 cert for DEV and 1 cert for TEST.

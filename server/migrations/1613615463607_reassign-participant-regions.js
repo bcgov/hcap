@@ -41,7 +41,7 @@ exports.up = async () => {
   }));
 
   const currentParticipants = await dbClient.db[collections.PARTICIPANTS].findDoc(
-    { maximusId: changes.map((i) => `${i.id}`) } // Find all relevant participants to build history
+    { maximusId: changes.map((i) => `${i.id}`) }, // Find all relevant participants to build history
   );
 
   for (const change of changes) {
@@ -49,7 +49,7 @@ exports.up = async () => {
     // We could throw here if currentParticipant is undefined
     // Currently, this is allowed and will set participant history item from value to null
     change.history = currentParticipant?.history || [];
-    change.history.push({
+    change.navigate({
       timestamp: new Date(),
       changes: [
         {
@@ -65,7 +65,7 @@ exports.up = async () => {
     for (const change of changes) {
       await tx[collections.PARTICIPANTS].updateDoc(
         { maximusId: change.id },
-        { preferredLocation: change.preferredLocation, history: change.history }
+        { preferredLocation: change.preferredLocation, history: change.history },
       );
     }
   });

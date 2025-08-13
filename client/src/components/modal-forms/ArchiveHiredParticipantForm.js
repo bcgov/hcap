@@ -1,8 +1,7 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import { Box, Grid } from '@mui/material';
 import dayjs from 'dayjs';
-import { addYearToDate, formatOptions, getTodayDate } from '../../utils';
+import { addYearToDate, formatOptions, dayUtils } from '../../utils';
 import { Button } from '../generic';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderSelectField, RenderDateField, RenderCheckbox, RenderRadioGroup } from '../fields';
@@ -105,7 +104,7 @@ export const ArchiveHiredParticipantForm = ({ onSubmit, onClose, participant }) 
                 <Field
                   name='endDate'
                   component={RenderDateField}
-                  maxDate={getTodayDate()}
+                  maxDate={dayUtils()}
                   label='End Date'
                 />
                 <Field

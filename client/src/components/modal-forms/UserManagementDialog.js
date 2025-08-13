@@ -1,6 +1,6 @@
 import React from 'react';
 import { Field } from 'formik';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 
 import {
@@ -109,7 +109,7 @@ export const UserManagementDialog = ({
                     .filter((item) =>
                       values.role === 'health_authority'
                         ? values.regions.includes(item.healthAuthority)
-                        : true
+                        : true,
                     )
                     .map((item) => ({
                       value: item.siteId,

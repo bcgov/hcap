@@ -10,6 +10,6 @@ FROM
 LEFT OUTER JOIN participants_status AS ps
   ON p.id = ps.participant_id AND
 ps.current IS true
-GROUP BY p.id, p.body, p.search, p.created_at, p.updated_at`
+GROUP BY p.id, p.body, p.search, p.created_at, p.updated_at`,
   );
 };

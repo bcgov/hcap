@@ -1,8 +1,8 @@
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { RenderDateField, RenderRadioGroup } from '../fields';
 import React, { useMemo } from 'react';
-import { Box, Grid, Typography } from '@material-ui/core';
-import MuiAlert from '@material-ui/lab/Alert';
+import { Box, Grid, Typography } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 import { Button } from '../generic';
 import { AuthContext } from '../../providers';
 import { ParticipantPostHireStatusSchema, postHireStatuses, Role } from '../../constants';
@@ -24,7 +24,7 @@ export const ManageGraduationForm = ({
         onSubmit={onSubmit}
         validationSchema={ParticipantPostHireStatusSchema}
       >
-        {({ submitForm, values, setFieldValue, setFieldTouched }) => {
+        {({ submitForm, values, setFieldValue, setFieldTouched, errors, isValid }) => {
           const handleStatusChange = ({ target }) => {
             const { value } = target;
             setFieldValue('status', value);
@@ -131,7 +131,13 @@ export const ManageGraduationForm = ({
                     </Grid>
                     <Grid item>
                       <Button
-                        onClick={submitForm}
+                        onClick={async () => {
+                          if (isValid) {
+                            await onSubmit(values);
+                          } else {
+                            submitForm();
+                          }
+                        }}
                         variant='contained'
                         color='primary'
                         text='Submit'

@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useState, useMemo, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -8,9 +9,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
+  Alert,
+} from '@mui/material';
 
 import {
   BulkGraduationDialog,
@@ -35,21 +35,9 @@ import {
 import { useToast, useCohortData, useCohortActions, useCohortParticipantsTable } from '../../hooks';
 import { formatCohortDate } from '../../utils';
 
-const useStyles = makeStyles((theme) => ({
-  cardRoot: {
-    width: '1020px',
-  },
-  gridRoot: {
-    padding: theme.spacing(2),
-  },
-  notFoundBox: {
-    textAlign: 'center',
-    paddingTop: theme.spacing(3),
-  },
-}));
-
-export default ({ match }) => {
-  const cohortId = parseInt(match.params.id);
+export default () => {
+  const { id } = useParams();
+  const cohortId = parseInt(id);
   const {
     handleOpenParticipantDetails,
     handleTransferParticipant,
@@ -76,7 +64,7 @@ export default ({ match }) => {
     setFilter,
     handleChangePage,
     handleChangeRowsPerPage,
-    fetchCohortDetails,
+    refreshCohortDetails,
     fetchDataAddParticipantModal,
     setCurrentPage,
   } = useCohortData(cohortId);
@@ -84,7 +72,6 @@ export default ({ match }) => {
   const { selectedParticipants, setSelectedParticipants, sortConfig, handleRequestSort } =
     useCohortParticipantsTable(rows);
 
-  const classes = useStyles();
   const { openToast } = useToast();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
@@ -112,7 +99,7 @@ export default ({ match }) => {
     });
     setShowGraduationModal(false);
     setSelectedParticipants([]);
-    fetchCohortDetails();
+    refreshCohortDetails();
   };
 
   const resetPage = useCallback(() => {
@@ -127,7 +114,8 @@ export default ({ match }) => {
 
   const closeAddParticipantModal = useCallback(() => {
     setActiveModalForm(null);
-  }, []);
+    refreshCohortDetails();
+  }, [refreshCohortDetails]);
 
   const handleAssignParticipant = useCallback(
     async (participantId) => {
@@ -138,7 +126,7 @@ export default ({ match }) => {
           message: `Participant ${participantId} assigned to cohort ${cohortId} successfully`,
         });
         fetchDataAddParticipantModal();
-        fetchCohortDetails();
+        refreshCohortDetails();
       } catch (error) {
         openToast({
           status: ToastStatus.Error,
@@ -146,7 +134,7 @@ export default ({ match }) => {
         });
       }
     },
-    [cohortId, openToast, fetchDataAddParticipantModal, fetchCohortDetails]
+    [cohortId, openToast, fetchDataAddParticipantModal, refreshCohortDetails],
   );
 
   const sortedParticipantsToAssign = useMemo(() => {
@@ -202,7 +190,7 @@ export default ({ match }) => {
   const renderParticipantsContent = () => {
     if (isLoading) {
       return (
-        <Typography variant='subtitle1' className={classes.notFoundBox}>
+        <Typography variant='subtitle1' sx={{ textAlign: 'center', pt: 3 }}>
           Loading Participants...
         </Typography>
       );
@@ -222,7 +210,7 @@ export default ({ match }) => {
       );
     } else {
       return (
-        <Typography variant='subtitle1' className={classes.notFoundBox}>
+        <Typography variant='subtitle1' sx={{ textAlign: 'center', pt: 3 }}>
           No Participants in this Cohort
         </Typography>
       );
@@ -267,7 +255,7 @@ export default ({ match }) => {
           onClose={() => setTransferModalOpen(false)}
           selectedParticipant={selectedParticipant}
           allCohorts={allCohorts}
-          fetchCohortDetails={fetchCohortDetails}
+          fetchCohortDetails={refreshCohortDetails}
         />
       )}
 
@@ -275,7 +263,7 @@ export default ({ match }) => {
         permittedRoles={[Role.HealthAuthority, Role.MinistryOfHealth]}
         renderErrorMessage={true}
       >
-        <Card className={classes.cardRoot}>
+        <Card sx={{ width: '1020px' }}>
           <Box py={8} px={10}>
             <CohortHeader cohort={cohort} isHA={isHA} />
             <Grid container spacing={2}>
@@ -287,7 +275,7 @@ export default ({ match }) => {
                       color='primary'
                       onClick={handleAddParticipantClick}
                       text={BUTTON_TEXTS.ADD_PARTICIPANT}
-                      disabled={cohort?.availableCohortSeats === 0}
+                      disabled={cohort?.availableCohortSeats <= 0}
                     >
                       {DIALOG_TITLES.ADD_PARTICIPANT}
                     </Button>
@@ -298,7 +286,7 @@ export default ({ match }) => {
               <Grid item xs={12} sm={6}>
                 <CheckPermissions permittedRoles={[Role.MinistryOfHealth]}>
                   <Box>
-                    {cohort?.availableCohortSeats === 0 && (
+                    {cohort?.availableCohortSeats <= 0 && (
                       <Alert severity='error'>{ALERT_MESSAGES.NO_SEATS}</Alert>
                     )}
                   </Box>

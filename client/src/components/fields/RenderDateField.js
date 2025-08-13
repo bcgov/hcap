@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { KeyboardDatePicker } from '@material-ui/pickers';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { ErrorMessage, useField } from 'formik';
 
 import { formatShortDate, stringToDate } from '../../utils';
@@ -12,20 +12,19 @@ export const RenderDateField = ({ field, form, label, boldLabel, placeholder, ..
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} boldLabel={boldLabel} />}
-      <KeyboardDatePicker
+      <DatePicker
         format='YYYY/MM/DD'
         name={label.replace(/[ *]/g, '')}
         value={!field.value ? null : stringToDate(field.value)}
         onChange={(value) => setValue(formatShortDate(value))}
         onBlur={() => setTouched(true)}
-        invalidDateMessage={null}
-        minDateMessage={null}
-        maxDateMessage={null}
-        placeholder={placeholder || 'Please Select'}
-        openTo='date'
-        variant='dialog'
-        inputVariant='filled'
-        fullWidth
+        slotProps={{
+          textField: {
+            placeholder: placeholder || 'Please Select',
+            variant: 'filled',
+            fullWidth: true,
+          },
+        }}
         disabled={props.disabled ?? false}
         {...props}
       />

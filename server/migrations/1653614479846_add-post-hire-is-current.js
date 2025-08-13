@@ -14,7 +14,7 @@ exports.up = (pgm) => {
         default: true,
       },
     },
-    { ifNotExists: true }
+    { ifNotExists: true },
   );
 };
 

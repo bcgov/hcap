@@ -1,10 +1,10 @@
-import store from 'store';
+import storage from '../utils/storage';
 import { API_URL } from '../constants';
 
 export const fetchUserNotifications = async (dispatchFunction) => {
   const response = await fetch(`${API_URL}/api/v1/user-notifications`, {
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
     },
     method: 'GET',
   });

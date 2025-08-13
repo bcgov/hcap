@@ -1,8 +1,7 @@
 import React from 'react';
-import store from 'store';
-import Grid from '@material-ui/core/Grid';
+import storage from '../../utils/storage';
 import { Button } from '../generic';
-import { Box } from '@material-ui/core';
+import { Box, Grid } from '@mui/material';
 import { RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { API_URL, EditParticipantFormSchema } from '../../constants';
@@ -36,7 +35,7 @@ export const EditParticipantForm = ({ initialValues, onClose, submissionCallback
         const response = await fetch(`${API_URL}/api/v1/participant`, {
           method: 'PATCH',
           headers: {
-            Authorization: `Bearer ${store.get('TOKEN')}`,
+            Authorization: `Bearer ${storage.get('TOKEN')}`,
             Accept: 'application/json',
             'Content-type': 'application/json',
           },

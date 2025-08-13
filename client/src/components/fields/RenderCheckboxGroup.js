@@ -1,26 +1,20 @@
 import React, { Fragment } from 'react';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { ErrorMessage } from 'formik';
-import { makeStyles } from '@material-ui/core/styles';
 import { InputFieldLabel, InputFieldError } from '../generic';
 
-const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    justifyContent: 'left',
-  },
-});
-
 export const RenderCheckboxGroup = ({ field, form, label, options, ...props }) => {
-  const classes = useStyles();
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} />}
       {options.map((option) => (
         <FormControlLabel
           key={option.value}
-          classes={classes}
+          sx={{
+            display: 'flex',
+            justifyContent: 'left',
+          }}
           label={<InputFieldLabel label={option.label} />}
           control={
             <Checkbox

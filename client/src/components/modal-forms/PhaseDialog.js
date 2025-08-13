@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Dialog } from '../generic';
-import { Typography } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
+import { Typography, Box, styled } from '@mui/material';
+import Alert from '@mui/material/Alert';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { CreatePhaseSchema, ToastStatus } from '../../constants';
@@ -11,33 +9,37 @@ import { createPhase, updatePhase, fetchPhases } from '../../services/phases';
 import { useToast } from '../../hooks';
 import { formatLongDate } from '../../utils/date';
 
-const useStyles = makeStyles(() => ({
-  formButton: {
-    maxWidth: '200px',
-  },
-  formRow: {
-    gap: '25px',
-  },
-  list: {
-    overflow: 'auto',
-    maxHeight: '250px',
-    overflowX: 'hidden',
-  },
-  listItem: {
-    fontSize: '14px',
-    paddingTop: '0',
-    paddingBottom: '0',
-  },
+const FormButton = styled(Button)(({ theme }) => ({
+  maxWidth: '200px',
+}));
+
+const FormRow = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: '25px',
+  marginTop: theme.spacing(3),
+  marginBottom: theme.spacing(3),
+}));
+
+const List = styled('ul')(({ theme }) => ({
+  overflow: 'auto',
+  maxHeight: '250px',
+  overflowX: 'hidden',
+  paddingLeft: theme.spacing(2),
+}));
+
+const ListItem = styled('li')(({ theme }) => ({
+  fontSize: '14px',
+  paddingTop: 0,
+  paddingBottom: 0,
 }));
 
 export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false }) => {
   const { openToast } = useToast();
-  const classes = useStyles();
   const [phases, setPhases] = useState([]);
   const [isPendingRequests, setIsPendingRequests] = useState(true);
 
   useEffect(() => {
-    // reset state to re-fetch data if dialog is re-opened
     if (!open) {
       setIsPendingRequests(true);
     }
@@ -47,7 +49,6 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
         setPhases(phases);
         setIsPendingRequests(false);
       };
-
       fetchData();
     }
   }, [isPendingRequests, content, open]);
@@ -96,7 +97,6 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
         enableReinitialize={true}
       >
         {({ submitForm, errors }) => {
-          // yup error message is a string - convert to an array of Id's to allow for a dynamic error message
           const phaseErrors = errors?.phases?.split(',').map(Number) || [];
           return (
             <FormikForm>
@@ -108,13 +108,8 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
                   placeholder='Enter a phase name'
                   disabled={!isNew}
                 />
-                <Box
-                  display='flex'
-                  justifyContent='space-between'
-                  my={3}
-                  style={{ gap: '25px' }}
-                  className={classes.formRow}
-                >
+
+                <FormRow>
                   <Box flexGrow={1}>
                     <Field name='startDate' component={RenderDateField} label='* Start date' />
                     <p className='MuiFormHelperText-root Mui-error'>
@@ -127,7 +122,7 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
                       {errors?.phases ? 'Conflict with 1 or more phases' : ''}
                     </p>
                   </Box>
-                </Box>
+                </FormRow>
               </Box>
 
               {errors?.phases || phaseErrors.length > 0 ? (
@@ -136,24 +131,22 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
                     <Typography variant='body1'>
                       The dates selected overlap with the following phases:
                     </Typography>
-                    <ul className={classes.list}>
+                    <List>
                       {phases
                         .filter((phase) => phaseErrors.includes(phase.id))
                         .map((phase) => (
-                          <li key={phase.id} className={classes.listItem}>
+                          <ListItem key={phase.id}>
                             {phase.name}:{' '}
                             <b>
                               {formatLongDate(phase.start_date)} - {formatLongDate(phase.end_date)}
                             </b>
-                          </li>
+                          </ListItem>
                         ))}
-                    </ul>
+                    </List>
                     <Typography variant='body1'>
                       {isNew
-                        ? ` Note: The new phase cannot overlap with current or past phases. Please update
-                      the dates in the above phases before creating a new phase.`
-                        : `Note: The selected phase cannot overlap with current or past phases. Please update
-                      the dates in the above phases before editing`}
+                        ? `Note: The new phase cannot overlap with current or past phases. Please update the dates in the above phases before creating a new phase.`
+                        : `Note: The selected phase cannot overlap with current or past phases. Please update the dates in the above phases before editing.`}
                     </Typography>
                   </Alert>
                 </Box>
@@ -162,14 +155,8 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
               )}
 
               <Box display='flex' justifyContent='space-between' my={3}>
-                <Button
-                  className={classes.formButton}
-                  onClick={onClose}
-                  color='default'
-                  text='Cancel'
-                />
-                <Button
-                  className={classes.formButton}
+                <FormButton onClick={onClose} color='default' text='Cancel' />
+                <FormButton
                   onClick={submitForm}
                   variant='contained'
                   color='primary'

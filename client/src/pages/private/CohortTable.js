@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import { Box, Grid, Link } from '@material-ui/core';
+import { Box, Grid, Link } from '@mui/material';
 import { Table, Button } from '../../components/generic';
 import { formatCohortDate, keyedString, sortObjects } from '../../utils';
 import { Routes } from '../../constants';
@@ -16,7 +16,7 @@ const columns = [
 ];
 
 export default ({ cohorts, editCohortAction }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // States
   const [order, setOrder] = useState('asc');
@@ -38,7 +38,7 @@ export default ({ cohorts, editCohortAction }) => {
   const handleCohortNav = (row) => {
     const { id } = row;
     const cohortDetailsPath = keyedString(Routes.CohortDetails, { id });
-    history.push(cohortDetailsPath);
+    navigate(cohortDetailsPath);
   };
 
   // Helpers

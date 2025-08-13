@@ -1,47 +1,45 @@
 import React, { lazy, useEffect, useState, useMemo } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { Card, Page, CheckPermissions, Dialog } from '../../components/generic';
-import Button from '@material-ui/core/Button';
-import { Box, Grid, Link, Typography, makeStyles } from '@material-ui/core';
+import { Box, Grid, Typography, Button, Menu, MenuItem } from '@mui/material';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import MuiAlert from '@mui/material/Alert';
 import { scrollUp } from '../../utils';
-import routes from '../../constants/routes';
+import Routes from '../../constants/routes';
 import { PSIForm, CohortForm } from '../../components/modal-forms';
 import { useToast } from '../../hooks';
 import { ToastStatus, NewCohortSchema, Role } from '../../constants';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import MuiAlert from '@material-ui/lab/Alert';
 
 import { fetchPSI, fetchCohorts, addCohort, editCohort } from '../../services';
 
 const CohortTable = lazy(() => import('./CohortTable'));
 
 // Style
-// Custom style
-const customStyle = makeStyles({
+const customStyle = {
   rootContainer: {
     flexGrow: 1,
   },
   cardRoot: {
     minWidth: '1020px',
   },
-});
+};
 
 // Service layer
 
-export default ({ match }) => {
+export default () => {
   // States and params
+  const { id } = useParams();
   const { openToast } = useToast();
   const [psi, setPSI] = useState({});
   const [cohorts, setCohorts] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeModalForm, setActiveModalForm] = useState(null);
-  const psiID = parseInt(match.params.id, 10);
+  const psiID = parseInt(id, 10);
   const [error, setError] = useState(null);
   const [cohort, setCohort] = useState(null);
 
   // Style classes
-  const classes = customStyle();
+  const classes = customStyle;
 
   // Tiny internal hook
   const usePSIDetails = () => {
@@ -55,9 +53,9 @@ export default ({ match }) => {
       cohorts.filter(
         (cohort) =>
           cohort.cohort_size - cohort.participants.length > 0 &&
-          new Date(cohort.end_date) > new Date()
+          new Date(cohort.end_date) > new Date(),
       ).length,
-    [cohorts]
+    [cohorts],
   );
 
   const closedCohorts = useMemo(() => cohorts.length - openCohorts, [cohorts, openCohorts]);
@@ -162,8 +160,8 @@ export default ({ match }) => {
           activeModalForm === 'edit-psi'
             ? `Edit PSI (${psi.instituteName})`
             : cohort
-            ? `Edit Cohort (${cohort.cohort_name})`
-            : 'Create New Cohort'
+              ? `Edit Cohort (${cohort.cohort_name})`
+              : 'Create New Cohort'
         }
         open={activeModalForm != null}
         onClose={closeModal}
@@ -203,12 +201,12 @@ export default ({ match }) => {
         renderErrorMessage={true}
       >
         {error && <MuiAlert severity='error'>{error}</MuiAlert>}
-        <Card className={classes.cardRoot}>
+        <Card sx={classes.cardRoot}>
           <Box pt={4} pb={2} pl={4} pr={4}>
             <Box pb={4} pl={2}>
               <Box pb={2}>
                 <Typography variant='body1'>
-                  <Link href={routes.PSIView}>PSI</Link> / {psi.instituteName}
+                  <Link to={Routes.PSIView}>PSI</Link> / {psi.instituteName}
                 </Typography>
               </Box>
               <Grid container direction='row'>
@@ -253,7 +251,7 @@ export default ({ match }) => {
               </Grid>
               <br />
               <Box pt={4} pb={2} pl={4} pr={4} width='100%'>
-                <Grid className={classes.rootContainer} container spacing={2}>
+                <Grid sx={classes.rootContainer} container spacing={2}>
                   {/* Street Address */}
                   <Grid item xs={12} sm={6} xl={3}>
                     <Grid item xs={6}>

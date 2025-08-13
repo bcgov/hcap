@@ -23,15 +23,31 @@ export const ArchiveHiredParticipantSchema = yup.object().shape({
     .string()
     .oneOf(['duplicate', 'employmentEnded', 'rosComplete'], 'Please select a type')
     .required('Please select a type'),
-  reason: yup.string().when(['type'], (type, schema) => {
-    return typeValidationMap[type]
-      ? schema.required('Please include a reason').oneOf(typeValidationMap[type].reasons)
-      : schema.optional().nullable();
+  reason: yup.string().when('type', {
+    is: (type) => !!typeValidationMap[type],
+    then: (schema) =>
+      schema.test({
+        test: function (value) {
+          const type = this.parent.type;
+          if (!typeValidationMap[type]) return true;
+          return !!value && typeValidationMap[type].reasons.includes(value);
+        },
+        message: 'Please include a reason',
+      }),
+    otherwise: (schema) => schema.optional().nullable(),
   }),
-  status: yup.string().when(['type'], (type, schema) => {
-    return typeValidationMap[type]
-      ? schema.required('Please include a status').oneOf(typeValidationMap[type].statuses)
-      : schema.optional().nullable();
+  status: yup.string().when('type', {
+    is: (type) => !!typeValidationMap[type],
+    then: (schema) =>
+      schema.test({
+        test: function (value) {
+          const type = this.parent.type;
+          if (!typeValidationMap[type]) return true;
+          return !!value && typeValidationMap[type].statuses.includes(value);
+        },
+        message: 'Please include a status',
+      }),
+    otherwise: (schema) => schema.optional().nullable(),
   }),
   endDate: yup
     .date()
@@ -39,16 +55,16 @@ export const ArchiveHiredParticipantSchema = yup.object().shape({
     .test(
       'is-reasonable',
       'Invalid entry. Date must be after December 31st 1899.',
-      validateDateIsReasonable
+      validateDateIsReasonable,
     )
     .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
 
   remainingInSectorOrRoleOrAnother: yup.string().when('type', {
     is: (type) => [EmploymentEndedType.value, ROSCompletedType.value].includes(type),
-    then: yup
-      .string()
-      .oneOf(['Yes', 'No', `I don't know`], `Must be either Yes, No or I don't know.`)
-      .required("Must be either Yes, No or I don't know."),
+    then: (schema) =>
+      schema
+        .oneOf(['Yes', 'No', `I don't know`], `Must be either Yes, No or I don't know.`)
+        .required("Must be either Yes, No or I don't know."),
   }),
   confirmed: yup.boolean().test('is-true', 'Please confirm', (v) => v === true),
 });

@@ -1,6 +1,6 @@
 import React, { lazy, useEffect, useState, useCallback } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
+import { Box, Chip, Grid, Typography } from '@mui/material';
+import { useParams, Link } from 'react-router-dom';
 
 import { Button, Card, Dialog, Page, CheckPermissions } from '../../components/generic';
 import { scrollUp, addEllipsisMask } from '../../utils';
@@ -25,12 +25,6 @@ const columnIDs = [
   { id: 'reason', name: 'Reason' },
 ];
 
-const useStyles = makeStyles(() => ({
-  cardRoot: {
-    minWidth: '1020px',
-  },
-}));
-
 /**
  * Takes the data from the db and formats it for the table
  * @param {*} response: raw data from API call
@@ -54,7 +48,7 @@ const mapSiteParticipantsDataToRow = (response, columnIDs) => {
         ...accumulator,
         [column.id]: values[column.id],
       }),
-      {}
+      {},
     );
     // Add additional props (user ID, button) to row
     return {
@@ -64,14 +58,13 @@ const mapSiteParticipantsDataToRow = (response, columnIDs) => {
   });
 };
 
-export default ({ match }) => {
+export default () => {
+  const { id } = useParams();
   const { openToast } = useToast();
-  const classes = useStyles();
   const [site, setSite] = useState({});
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [hasFetched, setHasFetched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const id = match.params.id;
 
   const handleSiteEdit = async (site) => {
     const response = await updateSite(site, id);
@@ -198,12 +191,12 @@ export default ({ match }) => {
           renderErrorMessage={true}
         >
           <SiteDetailTabContext.TabProvider site={site}>
-            <Card className={classes.cardRoot}>
+            <Card sx={{ minWidth: '1020px' }}>
               <Box pt={4} pb={2} pl={4} pr={4}>
                 <Box pb={4} pl={2}>
                   <Box pb={2}>
                     <Typography variant='body1'>
-                      <Link href={Routes.SiteView}>View Sites</Link> /{' '}
+                      <Link to={Routes.SiteView}>View Sites</Link> /{' '}
                       {addEllipsisMask(site.siteName, MAX_LABEL_LENGTH)}
                     </Typography>
                   </Box>

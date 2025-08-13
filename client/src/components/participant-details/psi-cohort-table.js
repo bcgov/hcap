@@ -1,30 +1,27 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import { Button } from '@material-ui/core';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Button,
+  styled,
+} from '@mui/material';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { formatCohortDate } from '../../utils';
 
-const useStyles = makeStyles({
-  root: {
-    width: '100%',
-    overflowX: 'auto',
-  },
-  table: {
-    minWidth: 650,
-  },
-  innerRow: {
-    width: '100%',
-    paddingLeft: '100px',
-  },
-});
+const TableContainer = styled(Paper)(({ theme }) => ({
+  width: '100%',
+  overflowX: 'auto',
+}));
+
+const StyledTable = styled(Table)(({ theme }) => ({
+  minWidth: 650,
+}));
 
 const isDisabled = (endDate) => {
   const today = new Date();
@@ -78,7 +75,6 @@ const ExpandableTableRow = ({
 };
 
 export const PSICohortTable = ({ rows, assignAction, disabled }) => {
-  const classes = useStyles();
   return (
     <div
       className='ui container'
@@ -87,8 +83,8 @@ export const PSICohortTable = ({ rows, assignAction, disabled }) => {
         pointerEvents: disabled ? 'none' : 'initial',
       }}
     >
-      <Paper className={classes.root}>
-        <Table className={classes.table} aria-label='simple table'>
+      <TableContainer>
+        <StyledTable aria-label='simple table'>
           <TableHead>
             <TableRow>
               <TableCell padding='checkbox' />
@@ -120,8 +116,8 @@ export const PSICohortTable = ({ rows, assignAction, disabled }) => {
               </ExpandableTableRow>
             ))}
           </TableBody>
-        </Table>
-      </Paper>
+        </StyledTable>
+      </TableContainer>
     </div>
   );
 };

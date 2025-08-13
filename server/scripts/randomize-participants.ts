@@ -66,8 +66,11 @@ const generateParticipants = async (amount: number) => {
 };
 
 (async () => {
+  // eslint-disable-next-line no-console
   console.log('------ Running');
+  // eslint-disable-next-line no-console
   console.log('------ Generating Participants');
   await generateParticipants(NUM_PARTICIPANTS_TO_GENERATE);
+  // eslint-disable-next-line no-console
   console.log('---- Finished');
 })();

@@ -6,7 +6,7 @@ exports.up = async (pgm) => {
   pgm.sql(`DELETE FROM ${collections.PARTICIPANTS_DISTANCE};`);
 
   pgm.sql(
-    `CREATE UNIQUE INDEX IF NOT EXISTS unique_site_participant ON ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id);`
+    `CREATE UNIQUE INDEX IF NOT EXISTS unique_site_participant ON ${collections.PARTICIPANTS_DISTANCE} (participant_id, site_id);`,
   );
 
   await pgm.sql(`

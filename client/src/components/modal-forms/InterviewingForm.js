@@ -1,10 +1,9 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
+import { Grid, Box } from '@mui/material';
 import { Button } from '../generic';
-import { Box } from '@material-ui/core';
 import { RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { getTodayDate } from '../../utils';
+import { dayUtils } from '../../utils';
 
 export const InterviewingForm = ({ initialValues, validationSchema, onSubmit, onClose }) => {
   return (
@@ -15,7 +14,7 @@ export const InterviewingForm = ({ initialValues, validationSchema, onSubmit, on
             <Field
               name='contactedDate'
               component={RenderDateField}
-              maxDate={getTodayDate()}
+              maxDate={dayUtils()}
               label='* Contacted Date'
             />
           </Box>

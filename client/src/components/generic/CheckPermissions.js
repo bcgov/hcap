@@ -1,16 +1,9 @@
 import React, { Fragment } from 'react';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import { Box, Typography } from '@mui/material';
 import { Card } from '.';
 import { checkPermissions, checkPending } from '../../utils';
 import { AuthContext } from '../../providers';
-
-const useStyles = makeStyles(() => ({
-  message: {
-    textAlign: 'center',
-  },
-}));
 
 export const CheckPermissions = ({
   permittedRoles,
@@ -18,7 +11,6 @@ export const CheckPermissions = ({
   participant,
   renderErrorMessage = false,
 }) => {
-  const classes = useStyles();
   const { auth } = AuthContext.useAuth();
   const roles = auth.user?.roles || [];
   const isLoading = auth?.isLoading;
@@ -69,9 +61,15 @@ export const CheckPermissions = ({
 
   // Optional message displayed if access not granted by role(s)
   return (
-    <Grid container alignContent='center' justify='center' alignItems='center' direction='column'>
+    <Grid
+      container
+      alignContent='center'
+      justifyContent='center'
+      alignItems='center'
+      direction='column'
+    >
       <Box pb={4} pl={4} pr={4} pt={2} maxWidth={600}>
-        <Card className={classes.message}>
+        <Card sx={{ textAlign: 'center' }}>
           <Typography variant='subtitle1' gutterBottom>
             {message}
           </Typography>

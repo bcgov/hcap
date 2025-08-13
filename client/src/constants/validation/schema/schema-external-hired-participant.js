@@ -10,12 +10,12 @@ export const ExternalHiredParticipantSchema = yup
     eligibility: yup
       .string()
       .required(
-        "We're sorry, but current eligibility to work in Canada is a requirement to submit this form."
+        "We're sorry, but current eligibility to work in Canada is a requirement to submit this form.",
       )
       .test(
         'is-yes',
         "We're sorry, but current eligibility to work in Canada is a requirement to submit this form.",
-        (v) => v === 'Yes' || v === ''
+        (v) => v === 'Yes' || v === '',
       ),
     educationalRequirements: yup.string().required('Educational requirements is required'),
     firstName: yup.string().required('First Name is required'),
@@ -67,11 +67,11 @@ export const ExternalHiredParticipantSchema = yup
       .oneOf(['internal', 'other'], 'Invalid entry'),
     otherOrigin: yup.string().when('origin', {
       is: 'other',
-      then: yup.string().required('Please specify'),
-      otherwise: yup
-        .string()
-        .nullable()
-        .test('is-null', 'Other origin must be null', (v) => v == null || v === ''),
+      then: (schema) => schema.required('Please specify'),
+      otherwise: (schema) =>
+        schema
+          .nullable()
+          .test('is-null', 'Other origin must be null', (v) => v == null || v === ''),
     }),
     hcapOpportunity: yup.boolean().test('is-true', 'Must be HCAP opportunity', (v) => v === true),
     program: yup.string().required('Requires pathway').oneOf(['HCA', 'MHAW']),

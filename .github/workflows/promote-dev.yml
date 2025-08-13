@@ -36,7 +36,7 @@ env:
   SA_TOKEN: ${{ secrets.SA_TOKEN_CONFIG }}
   PROJECT: hcap
   HEALTH_CHECK_URL: https://hcap-server-f047a2-dev.apps.silver.devops.gov.bc.ca/api/v1/version
-  DEV_URL: https://hcapemployers.dev.freshworks.club
+  DEV_URL: https://dev.hcapemployers.gov.bc.ca
 
 jobs:
   audit:

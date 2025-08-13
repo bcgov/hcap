@@ -1,4 +1,4 @@
-import store from 'store';
+import storage from '../utils/storage';
 import { API_URL } from '../constants';
 import { handleReportDownloadResult } from '../utils';
 
@@ -24,7 +24,7 @@ const csvTitle = (reportType, region = null) => {
 export const fetchMilestoneReports = async () => {
   const response = await fetch(`${API_URL}/api/v1/milestone-report`, {
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
     },
     method: 'GET',
   });
@@ -42,7 +42,7 @@ export const downloadMilestoneReports = async (reportType, region = null) => {
     : `${API_URL}/api/v1/${reportURLHash[reportType]}`;
   const response = await fetch(url, {
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
     },
     method: 'GET',
   });
@@ -60,7 +60,7 @@ export const downloadReport = async (reportType) => {
   const url = `${API_URL}/api/v1/${reportURLHash[reportType]}`;
   const response = await fetch(url, {
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
     },
     method: 'GET',
   });

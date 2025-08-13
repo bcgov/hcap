@@ -1,51 +1,39 @@
 import React, { Fragment } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import SearchIcon from '@material-ui/icons/Search';
-import { makeStyles } from '@material-ui/core/styles';
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+import { styled } from '@mui/material/styles';
 
 import { RenderTextField } from '.';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    '& > .MuiOutlinedInput-adornedEnd': {
-      paddingRight: '0',
-    },
-  },
-  iconButton: {
-    paddingLeft: '10px',
-    paddingRight: '10px',
-    paddingTop: '9px',
-    paddingBottom: '9px',
-    borderTopRightRadius: '4px',
-    borderBottomRightRadius: '4px',
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  paddingLeft: '10px',
+  paddingRight: '10px',
+  paddingTop: '9px',
+  paddingBottom: '9px',
+  borderTopRightRadius: '4px',
+  borderBottomRightRadius: '4px',
+  backgroundColor: theme.palette.primary.main,
+  borderRadius: 0,
+  '&:hover': {
     backgroundColor: theme.palette.primary.main,
-    borderRadius: 0,
-    '&:hover': {
-      backgroundColor: theme.palette.primary.main,
-    },
-  },
-  searchIcon: {
-    color: '#FFFFFF',
   },
 }));
 
 export const RenderSearchField = ({ ...props }) => {
-  const classes = useStyles();
   return (
     <Fragment>
       <RenderTextField
-        className={classes.root}
+        sx={{
+          '& > .MuiOutlinedInput-adornedEnd': {
+            paddingRight: '0',
+          },
+        }}
         variant='outlined'
         InputProps={{
           endAdornment: (
-            <IconButton
-              centerRipple={false}
-              className={classes.iconButton}
-              color='inherit'
-              type='submit'
-            >
-              <SearchIcon className={classes.searchIcon} />
-            </IconButton>
+            <StyledIconButton centerRipple={false} color='inherit' type='submit'>
+              <SearchIcon sx={{ color: '#FFFFFF' }} />
+            </StyledIconButton>
           ),
         }}
         {...props}

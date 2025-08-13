@@ -36,6 +36,7 @@ const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
   // Process data in batches
   while (hasMore) {
     // Get one batch of data using pagination
+    // eslint-disable-next-line no-await-in-loop
     const results = await getHiredParticipantsReport(region, offset, batchSize);
 
     // If no results, we're done
@@ -45,7 +46,7 @@ const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
     }
 
     // Process this batch and write to CSV stream
-    for (const result of results) {
+    results.forEach((result) => {
       csvStream.write({
         'Participant ID': result.participantId,
         'First Name': result.firstName,
@@ -68,7 +69,7 @@ const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
         'Withdraw Date': result.withdrawDate,
         'Withdraw Reason': result.withdrawReason,
       });
-    }
+    });
 
     // Update counters
     totalProcessed += results.length;
@@ -83,6 +84,7 @@ const generateHiredReport = async (csvStream, region = DEFAULT_REGION_NAME) => {
     }
 
     // Add a small delay to prevent CPU hogging
+    // eslint-disable-next-line no-await-in-loop
     await new Promise((resolve) => setTimeout(resolve, 10));
   }
 
@@ -204,7 +206,7 @@ const generateReport = async (user, res, type, region = DEFAULT_REGION_NAME) => 
 router.get(
   '/',
   [keycloak.allowRolesMiddleware(Role.MinistryOfHealth)],
-  asyncMiddleware(async (req, res) => res.status(200).json({ data: await getReport() }))
+  asyncMiddleware(async (req, res) => res.status(200).json({ data: await getReport() })),
 );
 
 router.get(
@@ -214,7 +216,7 @@ router.get(
     const { hcapUserInfo: user } = req;
     res.attachment('report.csv');
     await generateReport(user, res, reportType.HIRED);
-  })
+  }),
 );
 
 router.get(
@@ -231,7 +233,7 @@ router.get(
     res.attachment('report.csv');
     await generateReport(user, res, reportType.HIRED, regionId);
     return res.status(200);
-  })
+  }),
 );
 
 router.get(
@@ -241,7 +243,7 @@ router.get(
     const { hcapUserInfo: user } = req;
     res.attachment('report.csv');
     await generateReport(user, res, reportType.ROS);
-  })
+  }),
 );
 
 router.get(
@@ -258,7 +260,7 @@ router.get(
     res.attachment('report.csv');
     await generateReport(user, res, reportType.ROS, regionId);
     return res.status(200);
-  })
+  }),
 );
 
 export default router;

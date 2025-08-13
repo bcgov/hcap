@@ -6,6 +6,7 @@ services:
     environment:
       - REACT_APP_API_URL=http://localhost:8080
       - DANGEROUSLY_DISABLE_HOST_CHECK=true
+      - DISABLE_ESLINT_PLUGIN=true
     build:
       context: ./client
       dockerfile: Dockerfile.dev

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box, Grid, Typography } from '@material-ui/core';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
+import { Box, Grid, Typography } from '@mui/material';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 
 import { Dialog, Button } from '../../generic';
 import { getCohortPsiName } from '../../../services';

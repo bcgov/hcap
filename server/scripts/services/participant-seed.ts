@@ -9,7 +9,7 @@ export const convertToCsv = async (incr: number, arr: unknown[], filename: strin
   let currentId = incr;
 
   arr.forEach((obj) => {
-    csvStream.write({ id: currentId, ...obj });
+    csvStream.write({ id: currentId, ...(obj as Record<string, unknown>) });
     currentId += 1;
   });
 

@@ -1,4 +1,4 @@
-import { collections } from '../db';
+const { collections } = require('../db');
 
 exports.up = async (pgm) => {
   await pgm.createIndex(collections.PARTICIPANTS_STATUS, 'status');

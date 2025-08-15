@@ -110,9 +110,10 @@ app.use(`${apiBaseUrl}`, apiRouter);
 // Client app
 
 if (process.env.NODE_ENV === 'production') {
-  app.get('/{*splat}', (req, res) =>
-    res.sendFile(path.join(__dirname, '../client/build', '/index.html')),
-  );
+  // serve index.html for any GET that doesn't start with /api/v1
+  app.get(/^(?!\/api\/v1).*/, (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+  });
 }
 
 app.use(errorHandler);

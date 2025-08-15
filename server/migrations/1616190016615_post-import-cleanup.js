@@ -1,5 +1,5 @@
 /* eslint-disable camelcase, no-console */
-import { dbClient, collections } from '../db';
+const { dbClient, collections } = require('../db');
 
 exports.up = async () => {
   await dbClient.db.withTransaction(async (tx) => {

@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-import { dbClient, schema } from '../db';
+const { dbClient, schema } = require('../db');
 
 exports.up = async () => {
   for (const schemaItem of schema.psiRelationalTables) {

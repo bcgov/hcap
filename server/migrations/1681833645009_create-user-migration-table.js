@@ -1,5 +1,5 @@
-import { collections } from '../db';
-import { Role } from '../constants';
+const { collections } = require('../db');
+const { Role } = require('../constants');
 
 exports.up = async (pgm) => {
   await pgm.db.query(`

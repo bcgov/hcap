@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-import { dbClient, collections } from '../db';
+const { dbClient, collections } = require('../db');
 
 exports.shorthands = 'migrate-phase-data';
 

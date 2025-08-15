@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop, max-len */
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { dbClient, collections } from '../db';
+const { readFileSync } = require('fs');
+const { join } = require('path');
+const { dbClient, collections } = require('../db');
 
 const readXlsxFile = require('node-xlsx').default;
 

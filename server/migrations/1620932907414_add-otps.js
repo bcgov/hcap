@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { dbClient, collections, schema } from '../db';
+const { dbClient, collections, schema } = require('../db');
 
 exports.up = async () => {
   const { PARTICIPANTS, CONFIRM_INTEREST, PARTICIPANTS_STATUS } = collections;

@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-import { dbClient, collections } from '../db';
-import { ParticipantStatus, Program } from '../constants';
+const { dbClient, collections } = require('../db');
+const { ParticipantStatus, Program } = require('../constants');
 
 exports.up = async (pgm) => {
   pgm.addColumn(

@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import { collections } from '../db';
+const { collections } = require('../db');
 
 exports.shorthands = 'add_is_current_post_hire_status';
 

@@ -45,7 +45,7 @@ class DBClient {
         databaseUrl: `postgres://${user}:${password}@${host}:${port}/${database}`,
         direction: 'up',
         migrationsTable: 'pgmigrations', // default, do not change
-        dir: 'migrations', // default, do not change
+        dir: process.env.NODE_ENV === 'production' ? 'build/migrations' : 'migrations',
       });
       await this.reload();
       return results;

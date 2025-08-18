@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -46,6 +46,11 @@
       window.addEventListener('load', function () {
         window.snowplow('refreshLinkClickTracking');
       });
+    </script>
+    <script nonce="__CSP_NONCE__">
+      window.__CSP_NONCE__ = '__CSP_NONCE__';
+      // Let webpack set the nonce on dynamic <script> tags:
+      __webpack_require__.nc = window.__CSP_NONCE__;
     </script>
   </head>
   <body>

@@ -42,15 +42,19 @@
     ></script>
     <!-- refresh the snowplow link tracker once page is loaded -->
     <!-- Causes issues with heavy javascript apps and SPA's, main problem here is to wait for anchor tags to load in -->
-    <script>
+    <script nonce="__CSP_NONCE__">
       window.addEventListener('load', function () {
         window.snowplow('refreshLinkClickTracking');
       });
     </script>
     <script nonce="__CSP_NONCE__">
       window.__CSP_NONCE__ = '__CSP_NONCE__';
-      // Let webpack set the nonce on dynamic <script> tags:
-      __webpack_require__.nc = window.__CSP_NONCE__;
+      // Set webpack nonce after webpack loads
+      window.addEventListener('DOMContentLoaded', function () {
+        if (typeof __webpack_require__ !== 'undefined') {
+          __webpack_require__.nc = window.__CSP_NONCE__;
+        }
+      });
     </script>
   </head>
   <body>

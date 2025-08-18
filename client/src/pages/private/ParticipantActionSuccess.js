@@ -16,7 +16,11 @@ export default () => {
   };
 
   return (
-    <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
+    <Page
+      hideEmployers={
+        !window.location.hostname.includes('dev.') && !window.location.hostname.includes('test.')
+      }
+    >
       <Box
         container
         justifyContent='center'

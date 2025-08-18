@@ -93,8 +93,8 @@ app.use((req, res, next) => {
  */
 app.use((req, res, next) => {
   stringReplace({
-    '<script': `<script nonce='${res.locals.cspNonce}'`,
-    '<style': `<style nonce='${res.locals.cspNonce}'`,
+    '<script': `<script nonce="${res.locals.cspNonce}"`,
+    '<style': `<style nonce="${res.locals.cspNonce}"`,
     __CSP_NONCE__: res.locals.cspNonce,
     __GOOGLE_VERIFICATION_CONTENT__: res.locals.googleVerificationContent,
     __COLLECTOR_VARIABLE__: res.locals.collectorVariable,

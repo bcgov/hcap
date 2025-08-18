@@ -62,7 +62,11 @@ app.use(
         ],
         'script-src-attr': ["'none'"],
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        'style-src': ["'self'", (req, res: any) => `'nonce-${res.locals.cspNonce}'`],
+        'style-src': [
+          "'self'",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (req, res: any) => `'nonce-${res.locals.cspNonce}'`,
+        ],
         'upgrade-insecure-requests': [],
         'form-action': ["'self'"],
       },

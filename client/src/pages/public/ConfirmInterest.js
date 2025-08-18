@@ -93,7 +93,11 @@ export default (props) => {
   };
 
   return (
-    <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
+    <Page
+      hideEmployers={
+        !window.location.hostname.includes('dev.') && !window.location.hostname.includes('test.')
+      }
+    >
       <StyledCard>
         <Box display='flex' flexDirection='column' height='100%' justifyContent='center'>
           {getIconComponent()}

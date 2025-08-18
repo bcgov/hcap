@@ -202,7 +202,12 @@ export default () => {
   if (loadingError)
     return (
       <>
-        <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
+        <Page
+          hideEmployers={
+            !window.location.hostname.includes('dev.') &&
+            !window.location.hostname.includes('test.')
+          }
+        >
           <Box mt={20} alignSelf='center'>
             <Typography variant={'h2'}>Unable to access participant</Typography>
           </Box>
@@ -222,7 +227,11 @@ export default () => {
     );
   return (
     <div id='participant-view'>
-      <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
+      <Page
+        hideEmployers={
+          !window.location.hostname.includes('dev.') && !window.location.hostname.includes('test.')
+        }
+      >
         <Dialog title='Confirm Withdraw' open={openWithdraw} onClose={onClose}>
           <DialogContent>
             <Typography variant='subtitle2'>

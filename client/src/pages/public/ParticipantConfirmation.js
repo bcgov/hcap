@@ -14,7 +14,11 @@ export default () => {
   if (!location.state) return <Navigate to={Routes.ParticipantForm} replace />;
   return (
     <div id='confirmation'>
-      <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
+      <Page
+        hideEmployers={
+          !window.location.hostname.includes('dev.') && !window.location.hostname.includes('test.')
+        }
+      >
         <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
           {/** Status */}
           <Box py={4} px={2}>

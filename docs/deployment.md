@@ -112,4 +112,32 @@ This command will:
 
 Currently, the domain is a custom domain ordered from IMS. Please follow the renewal process outlined in [Request a domain renewal or transfer](https://www2.gov.bc.ca/gov/content/governments/services-for-government/service-experience-digital-delivery/digital-delivery/web-property-process) to renew the cert.
 
+If a new cert is needed, please make sure to add CNAME of ```console.apps.silver.devops.gov.bc.ca``` for all required URL.
+
 Dev and Test domains are bundled under the same cert, as in all dev.-prefixed URLs are ordered under the same CSR as Common Name (CN) and Subject Alternative Names (SANs). You only need to renew 1 cert for DEV and 1 cert for TEST.
+
+After getting the certs from the renewal process, please use the following format for creating the Routes:
+
+```yml
+   tls:
+    termination: edge
+    certificate: |-
+      -----BEGIN CERTIFICATE-----
+      url.txt
+      -----END CERTIFICATE-----
+    key: |-
+      -----BEGIN PRIVATE KEY-----
+      .key
+      -----END PRIVATE KEY-----
+    caCertificate: |-
+      -----BEGIN CERTIFICATE-----
+      TLSChain.txt
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      TrustedRoot.txt
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      TLSRoot.txt
+      -----END CERTIFICATE-----
+    insecureEdgeTerminationPolicy: Redirect
+```

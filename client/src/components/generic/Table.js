@@ -70,22 +70,22 @@ const ActionButton = styled(Button)({
 
 const TablePaginationActions = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const { count, page, rowsPerPage, onChangePage } = props;
+  const { count, page, rowsPerPage, onPageChange } = props;
 
   const handleFirstPageButtonClick = (event) => {
-    onChangePage(event, 0);
+    onPageChange(event, 0);
   };
 
   const handleBackButtonClick = (event) => {
-    onChangePage(event, page - 1);
+    onPageChange(event, page - 1);
   };
 
   const handleNextButtonClick = (event) => {
-    onChangePage(event, page + 1);
+    onPageChange(event, page + 1);
   };
 
   const handleLastPageButtonClick = (event) => {
-    onChangePage(event, Math.max(0, Math.floor(count / rowsPerPage)));
+    onPageChange(event, Math.max(0, Math.floor(count / rowsPerPage)));
   };
 
   const handleClickListItem = (event) => {
@@ -93,7 +93,7 @@ const TablePaginationActions = (props) => {
   };
 
   const handleMenuItemClick = (event, index) => {
-    onChangePage(event, index);
+    onPageChange(event, index);
     setAnchorEl(null);
   };
 

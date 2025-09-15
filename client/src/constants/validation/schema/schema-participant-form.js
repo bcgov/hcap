@@ -50,6 +50,7 @@ export const ParticipantFormSchema = yup
     preferredLocation: yup
       .array()
       .required(errorMessage)
+      .min(1, errorMessage)
       .of(yup.string().oneOf(healthRegions, 'Invalid location'))
       .test('is-unique-array', 'Preferred locations must be unique', validateUniqueArray),
 
@@ -57,6 +58,7 @@ export const ParticipantFormSchema = yup
     reasonForFindingOut: yup
       .array()
       .required(errorMessage)
+      .min(1, errorMessage)
       .of(yup.string().oneOf(foundOutReasons, 'Invalid selection'))
       .test('is-unique-array', 'Each reason must be unique', validateUniqueArray),
 

@@ -60,12 +60,12 @@ const PrivateRoute = ({ component: Component }) => {
 const RootUrlSwitch = ({ rootUrlRegExp, children }) => {
   const hostname = window.location.hostname;
   const matches = rootUrlRegExp.test(hostname);
-  console.log('RootUrlSwitch:', {
-    hostname,
-    pattern: rootUrlRegExp.toString(),
-    matches,
-    href: window.location.href,
-  });
+  // console.log('RootUrlSwitch:', {
+  //   hostname,
+  //   pattern: rootUrlRegExp.toString(),
+  //   matches,
+  //   href: window.location.href,
+  // });
   return matches ? <RouterRoutes>{children}</RouterRoutes> : null;
 };
 

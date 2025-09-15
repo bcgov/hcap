@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import { Page, CheckPermissions } from '../../components/generic';
 import { Form } from '../../components/employer-form';
@@ -6,9 +7,9 @@ import { scrollUp } from '../../utils';
 import storage from '../../utils/storage';
 import { API_URL, Role } from '../../constants';
 
-export default ({ match }) => {
+export default () => {
   const [user, setUser] = useState(undefined);
-  const expressionID = match.params.id;
+  const { id: expressionID } = useParams();
 
   useEffect(() => {
     const fetchDetails = async () => {

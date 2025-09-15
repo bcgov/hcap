@@ -88,9 +88,10 @@ export const Header = ({ hideEmployers = false }) => {
     storage.remove('TOKEN');
 
     let redirectUri = window.location.origin;
-    if (keycloak?.authServerUrl?.includes('common-logon-dev')) {
-      redirectUri = `https://logondev7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=${redirectUri}`;
-    } else if (keycloak?.authServerUrl?.includes('common-logon-test')) {
+    if (
+      keycloak?.authServerUrl?.includes('common-logon-dev') ||
+      keycloak?.authServerUrl?.includes('common-logon-test')
+    ) {
       redirectUri = `https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=${redirectUri}`;
     } else if (keycloak?.authServerUrl?.includes('common-logon')) {
       redirectUri = `https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=${redirectUri}`;

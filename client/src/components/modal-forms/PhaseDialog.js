@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Dialog } from '../generic';
-import { Typography, Box, styled } from '@mui/material';
+import { Typography, Box, styled, List, ListItem, ListItemText } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
@@ -21,14 +21,14 @@ const FormRow = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(3),
 }));
 
-const List = styled('ul')(({ theme }) => ({
+const StyledList = styled(List)(({ theme }) => ({
   overflow: 'auto',
   maxHeight: '250px',
   overflowX: 'hidden',
   paddingLeft: theme.spacing(2),
 }));
 
-const ListItem = styled('li')(({ theme }) => ({
+const StyledListItem = styled(ListItem)(({ theme }) => ({
   fontSize: '14px',
   paddingTop: 0,
   paddingBottom: 0,
@@ -131,18 +131,25 @@ export const PhaseDialog = ({ onSubmit, onClose, open, content, isNew = false })
                     <Typography variant='body1'>
                       The dates selected overlap with the following phases:
                     </Typography>
-                    <List>
+                    <StyledList>
                       {phases
                         .filter((phase) => phaseErrors.includes(phase.id))
                         .map((phase) => (
-                          <ListItem key={phase.id}>
-                            {phase.name}:{' '}
-                            <b>
-                              {formatLongDate(phase.start_date)} - {formatLongDate(phase.end_date)}
-                            </b>
-                          </ListItem>
+                          <StyledListItem key={phase.id}>
+                            <ListItemText
+                              primary={
+                                <>
+                                  {phase.name}:{' '}
+                                  <b>
+                                    {formatLongDate(phase.start_date)} -{' '}
+                                    {formatLongDate(phase.end_date)}
+                                  </b>
+                                </>
+                              }
+                            />
+                          </StyledListItem>
                         ))}
-                    </List>
+                    </StyledList>
                     <Typography variant='body1'>
                       {isNew
                         ? `Note: The new phase cannot overlap with current or past phases. Please update the dates in the above phases before creating a new phase.`

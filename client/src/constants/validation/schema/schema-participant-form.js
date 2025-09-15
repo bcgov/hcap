@@ -29,7 +29,15 @@ export const ParticipantFormSchema = yup
       .string()
       .required(errorMessage)
       .matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
-    emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
+    emailAddress: yup
+      .string()
+      .required(errorMessage)
+      .email('Invalid email address')
+      .test(
+        'has-tld',
+        'Email must include a valid domain (e.g., example.com)',
+        (value) => value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+      ),
     postalCode: yup
       .string()
       .required(errorMessage)

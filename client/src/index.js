@@ -23,7 +23,6 @@ const createEmotionCache = () => {
       window.__CSP_NONCE__ ||
       document.querySelector('meta[property="csp-nonce"]')?.getAttribute('content') ||
       document.querySelector('script[nonce]')?.getAttribute('nonce');
-    // console.log('CSP Nonce for Emotion:', nonce); // Debug log
 
     // Set webpack nonce if available and not already set
     if (

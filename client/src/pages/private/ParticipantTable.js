@@ -218,14 +218,6 @@ const ParticipantTable = () => {
     if (!columns) return;
     setLoadingData(true);
 
-    // console.log('Fetching participants with params:', {
-    //   selectedTab,
-    //   selectedTabStatuses,
-    //   filter,
-    //   siteSelector,
-    //   userSites: auth.user?.sites,
-    // });
-
     const { data, pagination: newPagination } = await getParticipants({
       pagination,
       filter,
@@ -233,8 +225,6 @@ const ParticipantTable = () => {
       siteSelector,
       selectedTabStatuses,
     });
-
-    // console.log(`Fetched ${data.length} participants for tab "${selectedTab}":`, data);
 
     participantsDispatch({
       type: ParticipantsContext.types.UPDATE_PAGINATION,
@@ -284,14 +274,6 @@ const ParticipantTable = () => {
         additional: additionalParma,
       });
 
-      // Debug logging for engagement
-      // console.log('Engagement result:', {
-      //   requestedStatus: status,
-      //   returnedData: data,
-      //   participantId,
-      //   additionalParams: additionalParma,
-      // });
-
       const dispatchFunction = (notifications) =>
         dispatch({ type: AuthContext.USER_NOTIFICATIONS_UPDATED, payload: notifications });
       fetchUserNotifications(dispatchFunction);
@@ -326,7 +308,6 @@ const ParticipantTable = () => {
       setActiveModalForm(null);
     }
 
-    // console.log('Refreshing participant data after engagement...');
     fetchParticipants();
   };
 

@@ -136,18 +136,18 @@ function logFinalErrors(errors: InsertError[]) {
     const hasErrors = errors.filter((error) => error.level === 'error').length > 0;
     logWithLevel(
       'Warning: some tables failed to populate properly! Manual cleanup may be required.',
-      hasErrors ? 'error' : 'warn'
+      hasErrors ? 'error' : 'warn',
     );
     if (hasErrors) {
       logWithLevel(
         'Some of these errors were unexpected or critical - this may reflect an issue with your environment.',
-        'error'
+        'error',
       );
     } else {
       logWithLevel('Usually this is caused by an unclean database state.', 'warn');
       logWithLevel(
         "Try purging existing data (especially on tables marked with 'duplicate'), and try again.",
-        'warn'
+        'warn',
       );
     }
     errors.forEach(({ level, message, table }) => {
@@ -162,6 +162,11 @@ function logFinalErrors(errors: InsertError[]) {
  */
 export async function feedData(targetTables: TargetTable[], skipMissingTables = false) {
   const errors: InsertError[] = [];
+  // init db
+  await dbClient.connect();
+  // await for dbClient to be ready
+  if (!('db' in dbClient) || !dbClient.db) throw new Error('Database failed to initialize!');
+
   const tables = await dbClient.db.listTables();
 
   for (const table of targetTables) {
@@ -176,11 +181,11 @@ export async function feedData(targetTables: TargetTable[], skipMissingTables = 
       try {
         const results = await insertCSV(
           path.join(__dirname, dataDirectory, table.fileName),
-          table.table
+          table.table,
         );
         if (results.find((result) => result.status === InsertStatus.MISSING_FK)) {
           const missingCount = results.filter(
-            (result) => result.status === InsertStatus.MISSING_FK
+            (result) => result.status === InsertStatus.MISSING_FK,
           ).length;
           errors.push({
             table: table.table,
@@ -205,7 +210,7 @@ export async function feedData(targetTables: TargetTable[], skipMissingTables = 
   // Display final results
   logWithLevel(
     errors.length ? 'Data population complete, with errors.' : 'Data population complete!',
-    'info'
+    'info',
   );
   logFinalErrors(errors);
 

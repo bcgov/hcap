@@ -132,15 +132,26 @@ const TablePaginationActions = (props) => {
         <LastPageIcon />
       </IconButton>
       <List component='nav' aria-label='Page Selector'>
-        <ListItem
-          button
-          aria-haspopup='true'
-          aria-controls='page-select'
-          aria-label='go to page'
-          onClick={handleClickListItem}
-        >
-          <ListItemText primary='Skip to page...' />
-        </ListItem>
+        <li style={{ listStyle: 'none', padding: 0 }}>
+          <button
+            type='button'
+            style={{
+              width: '100%',
+              background: 'none',
+              border: 'none',
+              textAlign: 'left',
+              padding: '8px 16px',
+              cursor: 'pointer',
+              font: 'inherit',
+            }}
+            aria-haspopup='true'
+            aria-controls='page-select'
+            aria-label='go to page'
+            onClick={handleClickListItem}
+          >
+            Skip to page...
+          </button>
+        </li>
       </List>
       <Menu
         id='page-select'

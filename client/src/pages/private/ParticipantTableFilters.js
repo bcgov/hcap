@@ -22,14 +22,6 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   // Fetch user sites with full details for dropdown
   useEffect(() => {
     const fetchUserSites = async () => {
-      // console.log('ParticipantTableFilters site fetch debug:', {
-      //   isMoH,
-      //   authUser: auth.user,
-      //   userSites: auth.user?.sites,
-      //   userSitesLength: auth.user?.sites?.length,
-      //   condition: !isMoH && auth.user?.sites?.length > 0
-      // });
-
       if (!isMoH && auth.user?.sites?.length > 0) {
         try {
           const siteColumns = [{ id: 'siteId' }, { id: 'siteName' }];

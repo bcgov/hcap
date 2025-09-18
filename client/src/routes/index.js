@@ -40,18 +40,15 @@ const EmployerLogin = lazy(() => import('../pages/public/EmployerLogin'));
 
 const PrivateRoute = ({ component: Component }) => {
   const { authenticated, loading } = useKeycloak();
-  // console.log('PrivateRoute check:', { authenticated, loading, Component: Component.name });
 
   if (loading) {
     return <LinearProgress />;
   }
 
   if (!authenticated) {
-    // console.log('PrivateRoute: Not authenticated, redirecting to login');
     return <Navigate to={Routes.Login} replace />;
   }
 
-  // console.log('PrivateRoute: Rendering component');
   return <Component />;
 };
 
@@ -60,12 +57,6 @@ const PrivateRoute = ({ component: Component }) => {
 const RootUrlSwitch = ({ rootUrlRegExp, children }) => {
   const hostname = window.location.hostname;
   const matches = rootUrlRegExp.test(hostname);
-  console.log('RootUrlSwitch:', {
-    hostname,
-    pattern: rootUrlRegExp.toString(),
-    matches,
-    href: window.location.href,
-  });
   return matches ? <RouterRoutes>{children}</RouterRoutes> : null;
 };
 

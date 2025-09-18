@@ -46,8 +46,6 @@ export const KeycloakProvider = ({ children, onTokens }) => {
         throw new Error('Invalid Keycloak configuration received');
       }
 
-      // console.log('Keycloak config received:', result);
-
       // Create Keycloak instance
       const keycloakInstance = new Keycloak({
         realm: result.realm,
@@ -55,46 +53,22 @@ export const KeycloakProvider = ({ children, onTokens }) => {
         clientId: result.clientId,
       });
 
-      // console.log('Keycloak instance created, initializing...');
-
       // Initialize Keycloak
       const authenticated = await keycloakInstance.init({
         pkceMethod: 'S256',
         checkLoginIframe: false,
       });
 
-      // console.log('Keycloak initialized:', { authenticated, hasCreateLoginUrl: !!keycloakInstance.createLoginUrl });
-      // console.log('Is authenticated?', authenticated);
-
       if (authenticated) {
-        // console.log('User is authenticated, processing token...');
-        // console.log('Keycloak token info:', {
-        //   hasToken: !!keycloakInstance.token,
-        //   hasTokenParsed: !!keycloakInstance.tokenParsed,
-        //   tokenParsed: keycloakInstance.tokenParsed,
-        //   userInfo: keycloakInstance.userInfo
-        // });
-
         // Extract user data from Keycloak token
         const tokenParsed = keycloakInstance.tokenParsed;
 
         if (tokenParsed) {
-          // console.log('Token parsed successfully:', tokenParsed);
-          // console.log('Realm access:', tokenParsed.realm_access);
-          // console.log('Resource access:', tokenParsed.resource_access);
-
           // Check different possible locations for roles
           const realmRoles = tokenParsed.realm_access?.roles || [];
           const clientRoles = tokenParsed.resource_access?.[tokenParsed.aud]?.roles || [];
           const hcapClientRoles = tokenParsed.resource_access?.['HCAP-FE']?.roles || [];
           const allRoles = [...realmRoles, ...clientRoles, ...hcapClientRoles];
-
-          // console.log('Found roles:', {
-          //   realmRoles,
-          //   clientRoles,
-          //   hcapClientRoles,
-          //   allRoles
-          // });
 
           // Prepare basic user data from token
           const basicUserData = {
@@ -120,7 +94,6 @@ export const KeycloakProvider = ({ children, onTokens }) => {
 
             if (userResponse.ok) {
               const serverUserData = await userResponse.json();
-              // console.log('Server user data received:', serverUserData);
 
               // Merge token data with server data
               const completeUserData = {
@@ -129,8 +102,6 @@ export const KeycloakProvider = ({ children, onTokens }) => {
                 notifications: serverUserData.notifications || [],
                 // Any other properties from server
               };
-
-              // console.log('Complete user data for AuthContext:', completeUserData);
 
               dispatch({
                 type: USER_LOADED,
@@ -151,10 +122,10 @@ export const KeycloakProvider = ({ children, onTokens }) => {
             });
           }
         } else {
-          // console.log('No tokenParsed available, cannot extract user data');
+          console.log('No tokenParsed available, cannot extract user data');
         }
       } else {
-        // console.log('User is not authenticated');
+        console.log('User is not authenticated');
       }
 
       setKeycloak(keycloakInstance);

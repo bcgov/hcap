@@ -92,7 +92,7 @@ async function getEmails(limit) {
     },
     {
       limit,
-    }
+    },
   );
   console.log(`${colours.fg.green}${data.length} emails loaded.${colours.reset}`);
   return data;
@@ -164,7 +164,7 @@ const serialSend = async (emails, retryDelay, retryLimit, mailRate) => {
         printProgress(data.join('\t'));
         if (retryCounter > 0) {
           printProgress(
-            `${colours.fg.green}Retry Success on ${colours.reset}${email.email_address}\n`
+            `${colours.fg.green}Retry Success on ${colours.reset}${email.email_address}\n`,
           );
         }
         // exit loop
@@ -178,7 +178,7 @@ const serialSend = async (emails, retryDelay, retryLimit, mailRate) => {
           // unknown error, delay and retry `retryLimit` times
           retryCounter++;
           printProgress(
-            `${colours.fg.yellow}Unexpected error, waiting ${retryDelay}ms before resuming. Attempt ${retryCounter}/${retryLimit} on ${colours.reset}${email.email_address}\n`
+            `${colours.fg.yellow}Unexpected error, waiting ${retryDelay}ms before resuming. Attempt ${retryCounter}/${retryLimit} on ${colours.reset}${email.email_address}\n`,
           );
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
         }
@@ -215,7 +215,7 @@ function askQuestion(query, defaultValue) {
     rl.question(`${query} [${defaultValue}]: `, (ans) => {
       rl.close();
       resolve(ans ? parseInt(ans, 10) : defaultValue);
-    })
+    }),
   );
 }
 
@@ -229,7 +229,7 @@ function askQuestion(query, defaultValue) {
    * CHES Daily Limit = 10,000
    * https://github.com/bcgov/common-hosted-email-service/wiki/Best-Practices#rate-limits
    */
-  if (mailLimit > DAILY_MAIL_LIMIT) {
+  if (typeof mailLimit === 'number' && mailLimit > DAILY_MAIL_LIMIT) {
     console.log(`${colours.fg.red}Defaulting to 10,000 emails.${colours.reset}`);
     mailLimit = DAILY_MAIL_LIMIT;
   }

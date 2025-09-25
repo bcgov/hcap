@@ -91,7 +91,7 @@ services:
 
   mongodb:
     container_name: ${APP_NAME}-mongodb
-    image: mongo:3.6-xenial
+    image: mongo:4.4
     restart: always
     expose:
       - '27017'

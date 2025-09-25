@@ -19,16 +19,15 @@ const formatWithTimestamp = printf(({ level, message, label: _label, timestamp: 
 if (dbServer && process.env.NODE_ENV !== 'test') {
   winston.add(
     new winston.transports.MongoDB({
-      options: { useUnifiedTopology: true },
       db: `mongodb://${dbUser}:${dbPassword}@${dbServer}:${dbPort}/${dbName}?${queryParams}`,
-    })
+    }),
   );
 }
 
 winston.add(
   new winston.transports.Console({
     format: combine(timestamp(), formatWithTimestamp),
-  })
+  }),
 );
 
 export default winston;

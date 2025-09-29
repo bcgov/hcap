@@ -1,0 +1,74 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: mongodb-restore-template
+parameters:
+  - name: APP_NAME
+    description: App name
+    required: true
+  - name: BACKUP_NAME
+    description: Backup identifier to restore from
+    required: true
+objects:
+  - kind: Job
+    apiVersion: batch/v1
+    metadata:
+      name: ${APP_NAME}-mongo-restore-${BACKUP_NAME}
+      labels:
+        app: ${APP_NAME}
+        restore-from: ${BACKUP_NAME}
+    spec:
+      template:
+        spec:
+          containers:
+            - name: mongodb-restore
+              image: mongo:4.4
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  echo "Starting MongoDB restore from backup: ${BACKUP_NAME}"
+
+                  # Wait for new MongoDB 4.4 to be ready
+                  until mongosh --host ${APP_NAME}-mongo:27017 --username admin --password $MONGODB_ADMIN_PASSWORD --authenticationDatabase admin --eval "db.runCommand('ping')" > /dev/null 2>&1; do
+                    echo "Waiting for MongoDB 4.4 to be available..."
+                    sleep 10
+                  done
+
+                  echo "MongoDB 4.4 is ready. Starting restore..."
+
+                  # Restore all databases from backup
+                  mongorestore --host ${APP_NAME}-mongo:27017 \
+                              --username admin \
+                              --password $MONGODB_ADMIN_PASSWORD \
+                              --authenticationDatabase admin \
+                              --drop \
+                              /backup/${BACKUP_NAME}
+
+                  echo "✅ Data restore completed successfully!"
+
+                  # Verify data was restored
+                  echo "Verifying restored data..."
+                  mongosh --host ${APP_NAME}-mongo:27017 --username admin --password $MONGODB_ADMIN_PASSWORD --authenticationDatabase admin --eval "
+                    print('Available databases:');
+                    db.adminCommand('listDatabases').databases.forEach(db => print('- ' + db.name));
+                    print('');
+                    print('${APP_NAME} database collections:');
+                    db = db.getSiblingDB('${APP_NAME}');
+                    db.getCollectionNames().forEach(col => print('- ' + col));
+                  "
+              env:
+                - name: MONGODB_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: admin-password
+                      name: ${APP_NAME}-mongo
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backup
+          volumes:
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: ${APP_NAME}-mongo-backup-${BACKUP_NAME}
+          restartPolicy: Never
+      backoffLimit: 3

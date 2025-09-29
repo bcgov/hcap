@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker';
+import { faker } from '@faker-js/faker/locale/en_CA';
 import _ from 'lodash';
 import { convertToCsv } from './services/participant-seed';
 import { healthRegions, Program, yesOrNo } from '../constants';
@@ -6,7 +6,6 @@ import { industryOptions } from '../constants/industry-options';
 import { sampleWeighted } from '../tests/util/sample-weighted';
 
 // this is for canadian postal codes
-faker.locale = 'en_CA';
 
 const NUM_PARTICIPANTS_TO_GENERATE = 500;
 
@@ -21,9 +20,9 @@ const preferNotOptions = ['Yes', 'No', 'Prefer not to answer'];
  */
 const generateParticipants = async (amount: number) => {
   for (let i = 1; i < amount; i += 1) {
-    const pc = faker.address.zipCode();
-    const fn = faker.name.lastName();
-    const ln = faker.name.firstName();
+    const pc = faker.location.zipCode();
+    const fn = faker.person.lastName();
+    const ln = faker.person.firstName();
     let region = sampleWeighted(healthRegions, [2, 8, 1, 3, 1]);
     let program = ['Interior', 'Vancouver Island'].includes(region) ? Program.MHAW : Program.HCA;
     if (i === 480) {
@@ -44,8 +43,8 @@ const generateParticipants = async (amount: number) => {
         firstName: ln,
         postalCode: pc,
         postalCodeFsa: pc.slice(0, 3),
-        phoneNumber: faker.phone.number('##########'),
-        emailAddress: faker.internet.email(fn, ln),
+        phoneNumber: faker.phone.number({ style: 'human' }).replace(/\D/g, '').slice(0, 10),
+        emailAddress: faker.internet.email({ firstName: fn, lastName: ln }),
         preferredLocation: region,
         interested: 'yes',
         crcClear: 'yes',

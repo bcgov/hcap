@@ -48,8 +48,7 @@ exports.up = async () => {
     const currentParticipant = currentParticipants.find((i) => i.maximusId === change.id);
     // We could throw here if currentParticipant is undefined
     // Currently, this is allowed and will set participant history item from value to null
-    change.history = currentParticipant?.history || [];
-    change.navigate({
+    const historyItem = {
       timestamp: new Date(),
       changes: [
         {
@@ -58,13 +57,18 @@ exports.up = async () => {
           from: currentParticipant?.preferredLocation || null,
         },
       ],
-    });
+    };
+    // @ts-ignore - Dynamic property assignment in migration
+    change.history = currentParticipant?.history || [];
+    // @ts-ignore - Dynamic property assignment in migration
+    change.history.push(historyItem);
   }
 
   await dbClient.db.withTransaction(async (tx) => {
     for (const change of changes) {
       await tx[collections.PARTICIPANTS].updateDoc(
         { maximusId: change.id },
+        // @ts-ignore - Dynamic property assignment in migration
         { preferredLocation: change.preferredLocation, history: change.history },
       );
     }

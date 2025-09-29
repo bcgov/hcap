@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import inquirer from 'inquirer';
-import parser from 'fast-xml-parser';
+import { XMLParser } from 'fast-xml-parser';
 import _ from 'lodash';
 import asyncPool from 'tiny-async-pool';
 
@@ -39,14 +39,17 @@ const getDirContent = (pathString) => {
   }
 };
 
+const parser = new XMLParser();
 const fromXmlStrings = (xmlStrings) => parser.parse(xmlStrings);
 
 const getUserInput = async () => {
   // Prompt user for query, output format
   const { 'Select Endpoint': endpoint } = await inquirer.prompt([
-    { name: 'Select Endpoint', type: 'list', choices: endpoints },
+    { name: 'Select Endpoint', type: 'list', choices: endpoints, message: 'Select an endpoint:' },
   ]);
-  const { Proceed: proceed } = await inquirer.prompt([{ name: 'Proceed', type: 'confirm' }]);
+  const { Proceed: proceed } = await inquirer.prompt([
+    { name: 'Proceed', type: 'confirm', message: 'Proceed with operation?' },
+  ]);
   if (!proceed) throw Error('User cancelled operation');
   return { endpoint };
 };
@@ -67,7 +70,7 @@ const extractPreferredLocations = (preferredLocationString) => {
 
 const extractOrbeonId = (name) =>
   name.match(
-    /^Health Career Access Program - Expression of Interest - ([\w-]{16})( \([0-9]+\))?.xml$/
+    /^Health Career Access Program - Expression of Interest - ([\w-]{16})( \([0-9]+\))?.xml$/,
   )[1];
 
 const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint, d);
@@ -98,7 +101,7 @@ const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint
         emailAddress: _.get(jsonObj, 'form.contactInformation.grid-1.emailAddress'),
         postalCode: _.get(jsonObj, 'form.contactInformation.grid-1.postalCode'),
         preferredLocation: extractPreferredLocations(
-          _.get(jsonObj, 'form.locationPreference.grid-2.healthRegion')
+          _.get(jsonObj, 'form.locationPreference.grid-2.healthRegion'),
         ),
         consent: _.get(jsonObj, 'form.consent.grid-3.confirmed') === 'Yes',
       };
@@ -120,7 +123,7 @@ const makeTransactionIterator = (endpoint) => (d) => postHcapSubmission(endpoint
     if (validationErrors.length > 0) {
       console.error(`Found ${validationErrors.length} invalid file(s) of ${xmlStrings.length}.`);
       validationErrors.forEach((item) =>
-        console.error(`---\nFile: ${item.fileName}\nError: ${item.error}`)
+        console.error(`---\nFile: ${item.fileName}\nError: ${item.error}`),
       );
       return;
     }

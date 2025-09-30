@@ -9,7 +9,13 @@ export const EditSiteSchema = yup.object().shape({
     .string()
     .required(errorMessage)
     .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
-  siteContactEmail: yup.string().required(errorMessage).email('Invalid email address'),
+  siteContactEmail: yup
+    .string()
+    .required(errorMessage)
+    .matches(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      'Please enter a valid email address with a proper domain (e.g., user@example.com)',
+    ),
   siteName: yup
     .string()
     .required(errorMessage)
@@ -29,5 +35,11 @@ export const EditSiteSchema = yup.object().shape({
     .string()
     .required(errorMessage)
     .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
-  operatorEmail: yup.string().required(errorMessage).email('Invalid email address'),
+  operatorEmail: yup
+    .string()
+    .required(errorMessage)
+    .matches(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      'Please enter a valid email address with a proper domain (e.g., user@example.com)',
+    ),
 });

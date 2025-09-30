@@ -12,7 +12,13 @@ export const EmployerFormSchema = yup
     operatorName: yup.string().nullable(errorMessage),
     operatorContactFirstName: yup.string().nullable(errorMessage),
     operatorContactLastName: yup.string().nullable(errorMessage),
-    operatorEmail: yup.string().nullable(errorMessage).email('Invalid email address'),
+    operatorEmail: yup
+      .string()
+      .nullable(errorMessage)
+      .matches(
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        'Please enter a valid email address with a proper domain (e.g., user@example.com)',
+      ),
     operatorPhone: yup
       .string()
       .nullable(errorMessage)
@@ -39,7 +45,13 @@ export const EmployerFormSchema = yup
       .string()
       .nullable(errorMessage)
       .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
-    emailAddress: yup.string().nullable(errorMessage).email('Invalid email address'),
+    emailAddress: yup
+      .string()
+      .nullable(errorMessage)
+      .matches(
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        'Please enter a valid email address with a proper domain (e.g., user@example.com)',
+      ),
 
     // Site type and size info
     siteType: yup

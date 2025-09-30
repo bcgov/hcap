@@ -24,7 +24,13 @@ export const ExternalHiredParticipantSchema = yup
       .string()
       .required('Phone number is required')
       .matches(/^[0-9]{10}$/, 'Phone number must be provided as 10 digits'),
-    emailAddress: yup.string().required('Email address is required').email('Invalid email address'),
+    emailAddress: yup
+      .string()
+      .required('Email address is required')
+      .matches(
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        'Please enter a valid email address with a proper domain (e.g., user@example.com)',
+      ),
     postalCode: yup
       .string()
       .required('Postal code is required')

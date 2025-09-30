@@ -80,7 +80,7 @@ export const EditParticipantForm = ({ initialValues, onClose, submissionCallback
               type='email'
             />
             <Field
-              test-id={'editParticipantEmail'}
+              test-id={'editParticipantPostalCode'}
               name='postalCode'
               component={RenderTextField}
               label='* Postal Code'

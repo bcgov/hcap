@@ -294,15 +294,17 @@ export default ({ id, siteId, fetchDetails, isLoading }) => {
                     );
                   case 'edit':
                     return (
-                      <Button
-                        onClick={async () => {
-                          setCurrentSiteHiredParticipantRow(row);
-                          setActiveModalHiredParticipants('edit-site');
-                        }}
-                        variant='outlined'
-                        size='small'
-                        text='Edit'
-                      />
+                      <CheckPermissions roles={roles} permittedRoles={[Role.MinistryOfHealth]}>
+                        <Button
+                          onClick={async () => {
+                            setCurrentSiteHiredParticipantRow(row);
+                            setActiveModalHiredParticipants('edit-site');
+                          }}
+                          variant='outlined'
+                          size='small'
+                          text='Edit'
+                        />
+                      </CheckPermissions>
                     );
                   default:
                     return row[columnId] ?? 'N/A';

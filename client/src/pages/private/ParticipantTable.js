@@ -89,6 +89,15 @@ const filterData = (data, columns, isMoH = false) => {
       }
     });
 
+    // Ensure database timestamp fields are mapped for fallback
+    // Database fields come as snake_case from the participants_status_infos view
+    if (item.updated_at) {
+      row.updatedAt = item.updated_at;
+    }
+    if (item.created_at) {
+      row.createdAt = item.created_at;
+    }
+
     return row;
   };
 
@@ -482,7 +491,9 @@ const ParticipantTable = () => {
           />
         );
       case 'userUpdatedAt':
-        return dayUtils(row.userUpdatedAt).fromNow();
+        // Use userUpdatedAt if available, otherwise fall back to updatedAt, then createdAt from the database
+        const lastUpdated = row.userUpdatedAt || row.updatedAt || row.createdAt;
+        return lastUpdated ? dayUtils(lastUpdated).fromNow() : 'Unknown';
       case 'archive':
         return (
           <>

@@ -89,8 +89,6 @@ const filterData = (data, columns, isMoH = false) => {
       }
     });
 
-    // Ensure database timestamp fields are mapped for fallback
-    // Database fields come as snake_case from the participants_status_infos view
     if (item.updated_at) {
       row.updatedAt = item.updated_at;
     }

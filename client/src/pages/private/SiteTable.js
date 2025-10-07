@@ -86,18 +86,31 @@ export default ({ sites }) => {
   };
 
   useEffect(() => {
-    setHealthAuthorities(
+    const calculatedHealthAuthorities =
       roles.includes(Role.Superuser) || roles.includes(Role.MinistryOfHealth)
         ? Object.values(regionLabelsMap)
-        : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean),
-    );
+        : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean);
+
+    setHealthAuthorities(calculatedHealthAuthorities);
   }, [roles]);
+
+  // Update health authorities based on actual site data, not the user permissions only
+  useEffect(() => {
+    if (fetchedRows && fetchedRows.length > 0) {
+      const actualHealthAuthorities = [
+        ...new Set(fetchedRows.map((row) => row.healthAuthority).filter(Boolean)),
+      ];
+      setHealthAuthorities(actualHealthAuthorities);
+    }
+  }, [fetchedRows]);
 
   const sort = (array) => sortObjects(array, orderBy, order);
 
   useEffect(() => {
     if (sites) {
+      // Set both rows and fetchedRows so TableFilter has data to work with
       setRows(sites);
+      setFetchedRows(sites);
     } else {
       fetchSites();
     }
@@ -156,7 +169,7 @@ export default ({ sites }) => {
               Health Region:
             </FilterLabel>
             <TableFilter
-              onFilter={(filteredRows) => setRows(filteredRows)}
+              onFilter={setRows}
               values={healthAuthorities}
               rows={fetchedRows}
               label='Health Authority'

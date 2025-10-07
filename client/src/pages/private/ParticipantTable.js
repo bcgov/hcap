@@ -552,7 +552,7 @@ const ParticipantTable = () => {
               programs={programs}
             />
 
-            {selectedTab === 'Hired Candidates' && (
+            {selectedTab === 'Hired Candidates' && !isMoH && (
               <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
                 <Button
                   onClick={() => setActiveModalForm('new-participant')}

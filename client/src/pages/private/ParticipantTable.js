@@ -661,14 +661,6 @@ const ParticipantTable = () => {
                 Archive
               </MenuItem>
             )}
-            {actionMenuParticipant?.status === 'archived' &&
-              actionMenuParticipant?.rosStatuses?.length > 0 && (
-                <MenuItem
-                  onClick={() => openFormForParticipant(actionMenuParticipant?.id, 'change-site')}
-                >
-                  Change Site
-                </MenuItem>
-              )}
             {actionMenuParticipant?.status === 'ros' && (
               <MenuItem
                 onClick={() => openFormForParticipant(actionMenuParticipant?.id, 'change-site')}

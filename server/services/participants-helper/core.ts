@@ -23,7 +23,7 @@ export interface RunContext {
         direction: sortDir;
         nulls?: string;
         unshift?: { field: string; direction: sortDir };
-      }
+      },
     ];
     pagination?: Pagination;
   };
@@ -84,9 +84,16 @@ const scrubParticipantData = (participants, joinNames, sites) =>
         if (!participant[joinName]) return;
         statusInfos.push(...participant[joinName].map(decomposeStatusInfo));
       });
-      // Use hiring site instead of ROS site to see if user has permissions. For HA / employers only
+      // Use current ROS site to see if user has permissions. For HA / employers only
+      // This allows sites managing ROS participants to see their information
+      const currentRosSite = rosStatuses.find((ros) => ros.is_current)?.site_id;
       const hiredAt = participant.hiredGlobalJoin?.[0];
-      rosStatuses = sites.includes(hiredAt?.data.site) ? rosStatuses : [];
+
+      // Show ROS statuses if user has access to either the current ROS site OR the hiring site
+      const hasAccessToRosSite = currentRosSite && sites.includes(currentRosSite);
+      const hasAccessToHiringSite = hiredAt?.data.site && sites.includes(hiredAt.data.site);
+
+      rosStatuses = hasAccessToRosSite || hasAccessToHiringSite ? rosStatuses : [];
     } else {
       rosStatuses = participant.ros_infos ?? [];
       participant.status_infos?.forEach((statusInfo) => {
@@ -166,7 +173,7 @@ export const run = async (context: RunContext) => {
     participants = scrubParticipantData(
       participants,
       isPrivateEmployerOrMHSUEmployerOrHA(user) && [employerSpecificJoin, hiredGlobalJoin],
-      isPrivateEmployerOrMHSUEmployerOrHA(user) && (user.sites || [])
+      isPrivateEmployerOrMHSUEmployerOrHA(user) && (user.sites || []),
     );
     return participants;
   } catch (error) {

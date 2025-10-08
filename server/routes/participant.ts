@@ -41,6 +41,7 @@ import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware } from '../error-handler';
 import { expressRequestBodyValidator } from '../middleware/index';
+import { dbClient, collections } from '../db';
 
 import { ParticipantStatus, Role, UserRoles } from '../constants';
 
@@ -433,11 +434,25 @@ employerActionsRouter.post(
     if (!participant) {
       return res.status(400).json({ message: 'Could not find participant' });
     }
-    // Check site access
+
+    // Check site access - for ROS participants, check both hiring site and current ROS site
     if (site && !user.isMoH && !user.sites.includes(site)) {
-      return res.status(400).json({
-        message: 'User does not have access to this site',
+      // For ROS participants, also check if user has access to the current ROS site
+      const rosStatusQuery = await dbClient.db[collections.ROS_STATUS].find({
+        participant_id: participantId,
+        is_current: true,
       });
+
+      const hasROSAccess =
+        rosStatusQuery.length > 0 &&
+        rosStatusQuery[0].site_id &&
+        user.sites.includes(rosStatusQuery[0].site_id);
+
+      if (!hasROSAccess) {
+        return res.status(400).json({
+          message: 'User does not have access to this site',
+        });
+      }
     }
     const result = await setParticipantStatus(
       user.id,

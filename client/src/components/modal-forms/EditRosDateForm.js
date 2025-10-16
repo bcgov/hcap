@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { Formik, Form as FormikForm, FastField } from 'formik';
 
 import { FormButtons } from './form-components';

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import { Formik, Form as FormikForm } from 'formik';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import {
   API_URL,
@@ -28,7 +28,7 @@ export const Form = ({
   editMode,
   isSubmitted,
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { openToast } = useToast();
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -71,7 +71,7 @@ export const Form = ({
 
     if (response.ok) {
       const { id } = await response.json();
-      history.push(Routes.ParticipantConfirmation, { formValues: values, id });
+      navigate(Routes.ParticipantConfirmation, { state: { formValues: values, id } });
     } else {
       openToast({
         status: ToastStatus.Error,

@@ -1,9 +1,9 @@
-import store from 'store';
+import storage from '../utils/storage';
 import { API_URL } from '../constants';
 
 export const fetchSite = async (siteId) => {
   const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}`, {
-    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    headers: { Authorization: `Bearer ${storage.get('TOKEN')}` },
     method: 'GET',
   });
   return response;
@@ -11,7 +11,7 @@ export const fetchSite = async (siteId) => {
 
 export const fetchRegionSiteRows = async (columns) => {
   const response = await fetch(`${API_URL}/api/v1/employer-sites/region`, {
-    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    headers: { Authorization: `Bearer ${storage.get('TOKEN')}` },
     method: 'GET',
   });
   return mapSiteRowsResponse(response, columns);
@@ -19,7 +19,7 @@ export const fetchRegionSiteRows = async (columns) => {
 
 export const fetchSiteRows = async (columns) => {
   const response = await fetch(`${API_URL}/api/v1/employer-sites/user`, {
-    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    headers: { Authorization: `Bearer ${storage.get('TOKEN')}` },
     method: 'GET',
   });
   return mapSiteRowsResponse(response, columns);
@@ -40,7 +40,7 @@ const mapSiteRowsResponse = async (response, columns) => {
           ...accumulator,
           [column.id]: row[column.id],
         }),
-        {}
+        {},
       );
       // Add additional props (user ID, button) to row
       return {
@@ -59,7 +59,7 @@ export const createSite = async (siteJson) => {
   const response = await fetch(`${API_URL}/api/v1/employer-sites`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -72,7 +72,7 @@ export const updateSite = async (payload, siteId) => {
   const response = await fetch(`${API_URL}/api/v1/employer-sites/${siteId}`, {
     method: 'PATCH',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -83,7 +83,7 @@ export const updateSite = async (payload, siteId) => {
 
 export const fetchSiteParticipants = async (columnIDs, siteId) => {
   return fetch(`${API_URL}/api/v1/employer-sites/${siteId}/participants`, {
-    headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+    headers: { Authorization: `Bearer ${storage.get('TOKEN')}` },
     method: 'GET',
   });
 };
@@ -92,7 +92,7 @@ export const updateSiteParticipants = async (payload) => {
   const response = await fetch(`${API_URL}/api/v1/employer-sites/participant_status`, {
     method: 'PATCH',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -100,8 +100,25 @@ export const updateSiteParticipants = async (payload) => {
   });
 
   if (!response.ok) {
-    const errorResponse = await response.json();
-    console.error('Error response:', errorResponse);
+    // Clone the response so we can try both parsing methods
+    const responseClone = response.clone();
+
+    try {
+      // Try to parse as JSON first
+      const errorResponse = await response.json();
+      console.error('Error response:', errorResponse);
+      response.error = errorResponse.message || errorResponse.error || 'Server error';
+    } catch (_parseError) {
+      // If JSON parsing fails, get the text response from the clone
+      try {
+        const errorText = await responseClone.text();
+        console.error('Error response (text):', errorText);
+        response.error = errorText || `HTTP ${response.status}: ${response.statusText}`;
+      } catch (textError) {
+        console.error('Failed to read error response:', textError);
+        response.error = `HTTP ${response.status}: ${response.statusText}`;
+      }
+    }
   }
 
   return response;

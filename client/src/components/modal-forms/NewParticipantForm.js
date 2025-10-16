@@ -1,9 +1,9 @@
 import React from 'react';
-import store from 'store';
+import storage from '../../utils/storage';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { Button } from '../generic';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import {
   RenderDateField,
   RenderCheckbox,
@@ -12,7 +12,7 @@ import {
   RenderMultiSelectField,
 } from '../fields';
 import {
-  getTodayDate,
+  dayUtils,
   formatOptions,
   checkForFieldResets,
   showRoleInvolvesMentalHealthOrSubstanceUse,
@@ -75,7 +75,7 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
     const response = await fetch(`${API_URL}/api/v1/new-hired-participant`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${store.get('TOKEN')}`,
+        Authorization: `Bearer ${storage.get('TOKEN')}`,
         Accept: 'application/json',
         'Content-type': 'application/json',
       },
@@ -212,14 +212,14 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
                   'otherIndustry',
                   'Other, please specify:',
                   setFieldValue,
-                  setFieldTouched
+                  setFieldTouched,
                 );
                 // reset the value of roleInvolvesMentalHealthOrSubstanceUse if user changes currentOrMostRecentIndustry selection
                 // from a valid selection to show this question
                 if (
                   !showRoleInvolvesMentalHealthOrSubstanceUse(
                     values.program === 'MHAW',
-                    selectedValue
+                    selectedValue,
                   )
                 ) {
                   setFieldValue('roleInvolvesMentalHealthOrSubstanceUse', '');
@@ -233,7 +233,7 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
             )}
             {showRoleInvolvesMentalHealthOrSubstanceUse(
               values.program === 'MHAW',
-              values.currentOrMostRecentIndustry
+              values.currentOrMostRecentIndustry,
             ) && (
               <Field
                 name='roleInvolvesMentalHealthOrSubstanceUse'
@@ -267,13 +267,13 @@ export const NewParticipantForm = ({ submissionCallback, onClose, sites }) => {
             <Field
               name='contactedDate'
               component={RenderDateField}
-              maxDate={getTodayDate()}
+              maxDate={dayUtils()}
               label='* Date Contacted'
             />
             <Field
               name='hiredDate'
               component={RenderDateField}
-              maxDate={getTodayDate()}
+              maxDate={dayUtils()}
               label='* Date Offer Accepted'
             />
             <Field name='startDate' component={RenderDateField} label='* Start Date' />

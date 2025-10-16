@@ -1,5 +1,5 @@
 import express from 'express';
-import { Role, UserRoles, postHireStatuses } from '../constants';
+import { Role, UserRoles } from '../constants';
 import keycloak from '../keycloak';
 import logger from '../logger';
 import { asyncMiddleware, applyMiddleware } from '../error-handler';
@@ -45,7 +45,7 @@ router.get(
     } else {
       res.status(401).send('Unauthorized user');
     }
-  })
+  }),
 );
 
 // GET /participants-to-assign
@@ -63,7 +63,7 @@ router.get(
         limit,
         offset,
         lastName,
-        emailAddress
+        emailAddress,
       );
       logger.info({
         action: 'get_participants_to_assign',
@@ -79,7 +79,7 @@ router.get(
       logger.error('Failed to get participants to assign:', error);
       return res.status(500).send('Failed to get participants to assign');
     }
-  })
+  }),
 );
 
 // Get one cohort with its id
@@ -103,7 +103,7 @@ router.get(
 
       const filteredCohortParticipants = filterCohortParticipantsForUser(
         cohortParticipants,
-        req.hcapUserInfo
+        req.hcapUserInfo,
       );
 
       logger.info({
@@ -125,7 +125,7 @@ router.get(
       });
       throw err;
     }
-  })
+  }),
 );
 
 // Assign participant
@@ -157,7 +157,7 @@ router.post(
       return res.status(201).json(response);
     }
     return res.status(400).send('Cohort id and participant id required');
-  })
+  }),
 );
 
 // Transfer participant from current cohort to a new one
@@ -189,7 +189,7 @@ router.post(
       return res.status(201).json(response);
     }
     return res.status(400).send('Cohort id and participant id required');
-  })
+  }),
 );
 // Transfer participant from current cohort to a new one - V2
 router.post(
@@ -237,7 +237,7 @@ router.post(
       return res.status(201).json(response);
     }
     return res.status(400).send('Cohorts id and participant id required');
-  })
+  }),
 );
 
 // Get Assigned cohort for participant
@@ -264,7 +264,7 @@ router.get(
       participantId: participant.id,
     });
     return res.status(200).json(cohort);
-  })
+  }),
 );
 
 router.patch(
@@ -302,7 +302,7 @@ router.patch(
       return res.status(200).json(response);
     }
     return res.status(401).send('Unauthorized user');
-  })
+  }),
 );
 
 // Remove participant from cohort
@@ -322,7 +322,7 @@ router.delete(
       if (!cohort) {
         return res.status(400).send('Invalid cohort id');
       }
-      const response = await removeCohortParticipant(cohort.id, participant.id);
+      await removeCohortParticipant(cohort.id, participant.id);
       logger.info({
         action: 'cohort_participant_remove',
         performed_by: {
@@ -334,7 +334,7 @@ router.delete(
       return res.status(200).json({ success: true, message: 'Participant removed successfully' });
     }
     return res.status(400).send('Cohort id and participant id required');
-  })
+  }),
 );
 
 export default router;

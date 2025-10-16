@@ -1,6 +1,6 @@
 import React, { lazy } from 'react';
 import { Page, CheckPermissions } from '../../components/generic';
-import { Box, Typography, Link } from '@material-ui/core';
+import { Box, Typography, Link } from '@mui/material';
 import { Role, Routes } from '../../constants';
 
 const PhaseTable = lazy(() => import('./PhaseTable'));

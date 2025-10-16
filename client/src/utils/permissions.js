@@ -7,6 +7,7 @@ export const checkPermissions = (roles, permittedRoles, participant) => {
   ) {
     return false;
   }
+
   return roles.includes(Role.Superuser) || roles.some((i) => permittedRoles.includes(i));
 };
 

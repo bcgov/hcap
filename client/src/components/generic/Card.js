@@ -1,48 +1,30 @@
 import React from 'react';
 import classNames from 'classnames';
-import Typography from '@material-ui/core/Typography';
-import MuiCard from '@material-ui/core/Card';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    overflow: 'initial',
-    padding: theme.spacing(4),
-    borderRadius: '8px',
-    backgroundColor: '#FFFFFF',
-    boxShadow: '0 0 5px 0 #E5E9F2',
-    [theme.breakpoints.down('xs')]: {
-      padding: theme.spacing(2),
-    },
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: theme.spacing(3),
-  },
-  noPadding: {
-    padding: 0,
-  },
-  noShadow: {
-    boxShadow: 'none',
-  },
-}));
+import Typography from '@mui/material/Typography';
+import MuiCard from '@mui/material/Card';
 
 export const Card = ({ children, title, noPadding, noShadow, className, ...props }) => {
-  const classes = useStyles();
   return (
     <MuiCard
-      className={classNames(
-        classes.root,
-        {
-          [classes.noPadding]: noPadding,
-          [classes.noShadow]: noShadow,
-        },
-        className
-      )}
+      className={classNames(className)}
+      sx={{
+        overflow: 'initial',
+        padding: noPadding ? 0 : { xs: 2, sm: 4 },
+        borderRadius: '8px',
+        backgroundColor: '#FFFFFF',
+        boxShadow: noShadow ? 'none' : '0 0 5px 0 #E5E9F2',
+      }}
       {...props}
     >
       {title && (
-        <Typography className={classes.title} variant='h3' noWrap>
+        <Typography
+          variant='h3'
+          noWrap
+          sx={{
+            textAlign: 'center',
+            marginBottom: 3,
+          }}
+        >
           {title}
         </Typography>
       )}

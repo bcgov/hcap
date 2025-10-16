@@ -1,10 +1,10 @@
 import React, { Fragment } from 'react';
 import { useLocation } from 'react-router-dom';
-import Alert from '@material-ui/lab/Alert';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import EditIcon from '@material-ui/icons/Edit';
+import Alert from '@mui/material/Alert';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import EditIcon from '@mui/icons-material/Edit';
 
 import { Routes } from '../../constants';
 import { Card, Button } from '../generic';

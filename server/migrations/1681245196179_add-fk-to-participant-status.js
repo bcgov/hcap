@@ -5,7 +5,7 @@ exports.up = async (pgm) => {
   `);
   const { rows: users } = await pgm.db.query(`SELECT * FROM users`);
   const { rows: statuses } = await pgm.db.query(
-    `SELECT DISTINCT employer_id FROM participants_status`
+    `SELECT DISTINCT employer_id FROM participants_status`,
   );
   await Promise.all(
     statuses
@@ -17,33 +17,33 @@ exports.up = async (pgm) => {
             `UPDATE participants_status
              SET employer_id = ${user.id},
              old_employer_id = '${keycloakId}'
-             WHERE employer_id = '${keycloakId}'`
+             WHERE employer_id = '${keycloakId}'`,
           );
         }
         throw Error(`user with id '${keycloakId}' not found from 'users' table`);
-      })
+      }),
   );
 
   const { rows: hiddenStatuses } = await pgm.db.query(
-    `SELECT * FROM participants_status WHERE data->>'hiddenForUserIds' IS NOT NULL`
+    `SELECT * FROM participants_status WHERE data->>'hiddenForUserIds' IS NOT NULL`,
   );
   await Promise.all(
     hiddenStatuses.map((status) => {
       const { hiddenForUserIds } = status.data;
       const keycloakIds = Object.keys(hiddenForUserIds);
       const usersFromKeycloakIds = keycloakIds.map((keycloakId) =>
-        users.find((u) => u.body.keycloakId === keycloakId)
+        users.find((u) => u.body.keycloakId === keycloakId),
       );
       if (usersFromKeycloakIds.length === keycloakIds.length) {
         const userIds = usersFromKeycloakIds.map((u) => `"${u.id}": true`);
         return pgm.db.query(
           `UPDATE participants_status
              SET data = jsonb_set(data, '{hiddenForUserIds}', '{${userIds.join(',')}}')
-             WHERE id = ${status.id}`
+             WHERE id = ${status.id}`,
         );
       }
       throw Error(`unable to edit hiddenForUserIds for status ${status.id}`);
-    })
+    }),
   );
 
   await pgm.db.query(`
@@ -80,7 +80,7 @@ exports.down = async (pgm) => {
   const { rows: users } = await pgm.db.query(`SELECT * FROM users`);
 
   const { rows: hiddenStatuses } = await pgm.db.query(
-    `SELECT * FROM participants_status WHERE data->>'hiddenForUserIds' IS NOT NULL`
+    `SELECT * FROM participants_status WHERE data->>'hiddenForUserIds' IS NOT NULL`,
   );
   await Promise.all(
     hiddenStatuses.map((status) => {
@@ -92,15 +92,15 @@ exports.down = async (pgm) => {
         return pgm.db.query(
           `UPDATE participants_status
              SET data = jsonb_set(data, '{hiddenForUserIds}', '{${userIds.join(',')}}')
-             WHERE id = ${status.id}`
+             WHERE id = ${status.id}`,
         );
       }
       throw Error(`unable to edit hiddenForUserIds for status ${status.id}`);
-    })
+    }),
   );
 
   const { rows: statuses } = await pgm.db.query(
-    `SELECT DISTINCT employer_id FROM participants_status`
+    `SELECT DISTINCT employer_id FROM participants_status`,
   );
   await Promise.all(
     statuses
@@ -112,11 +112,11 @@ exports.down = async (pgm) => {
             `UPDATE participants_status
              SET employer_id = '${user.body.keycloakId}',
              old_employer_id = NULL
-             WHERE employer_id = '${id}'`
+             WHERE employer_id = '${id}'`,
           );
         }
         throw Error(`user with id '${id}' not found from 'users' table`);
-      })
+      }),
   );
   await pgm.db.query(`
     ALTER TABLE participants_status

@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { dbClient, collections } from '../db';
+const { dbClient, collections } = require('../db');
 
 exports.up = () => {
   dbClient.db.query(`

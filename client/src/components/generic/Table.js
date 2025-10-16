@@ -1,97 +1,91 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { FixedSizeList } from 'react-window';
+import { styled } from '@mui/material/styles';
 
-import Box from '@material-ui/core/Box';
-import MuiTable from '@material-ui/core/Table';
-import Checkbox from '@material-ui/core/Checkbox';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import { List, ListItem, ListItemText, Menu, MenuItem } from '@material-ui/core';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import TablePagination from '@material-ui/core/TablePagination';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Box from '@mui/material/Box';
+import MuiTable from '@mui/material/Table';
+import Checkbox from '@mui/material/Checkbox';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import { List, ListItem, ListItemText, Menu, MenuItem } from '@mui/material';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import TablePagination from '@mui/material/TablePagination';
+import Skeleton from '@mui/material/Skeleton';
 
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import FirstPageIcon from '@material-ui/icons/FirstPage';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import LastPageIcon from '@material-ui/icons/LastPage';
+import IconButton from '@mui/material/IconButton';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
 
 import { Button } from './';
 import { Program } from '../../constants';
 
-const StyledTableCell = withStyles((theme) => ({
-  head: {
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  '&.MuiTableCell-head': {
     ...theme.typography.body1,
     backgroundColor: theme.palette.common.white,
     color: '#333333',
   },
-  body: {
+  '&.MuiTableCell-body': {
     ...theme.typography.body1,
   },
-}))(TableCell);
+}));
 
-const StyledHeaderTableCell = withStyles((theme) => ({
-  head: {
+const StyledHeaderTableCell = styled(TableCell)(({ theme }) => ({
+  '&.MuiTableCell-head': {
     ...theme.typography.body1,
     backgroundColor: theme.palette.common.white,
     borderBottom: `2px solid ${theme.palette.secondary.main}`,
   },
-}))(TableCell);
+}));
 
-const StyledTableRow = withStyles((theme) => ({
-  root: {
-    '&:nth-child(1)': {
-      borderTop: `2px solid ${theme.palette.secondary.main}`,
-    },
-    '&:nth-of-type(odd)': {
-      backgroundColor: '#FAFAFA',
-    },
-    '&:nth-of-type(even)': {
-      backgroundColor: '#FFFFFF',
-    },
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(1)': {
+    borderTop: `2px solid ${theme.palette.secondary.main}`,
   },
-  hover: {
-    '&:hover': {
-      backgroundColor: '#F0F7FF !important',
-    },
+  '&:nth-of-type(odd)': {
+    backgroundColor: '#FAFAFA',
   },
-}))(TableRow);
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexShrink: 0,
-    marginLeft: theme.spacing(2.5),
+  '&:nth-of-type(even)': {
+    backgroundColor: '#FFFFFF',
   },
-  actionButton: {
-    maxWidth: '150px',
+  '&.MuiTableRow-hover:hover': {
+    backgroundColor: '#F0F7FF !important',
   },
 }));
 
+const PaginationRoot = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  flexShrink: 0,
+  marginLeft: theme.spacing(2.5),
+}));
+
+const ActionButton = styled(Button)({
+  maxWidth: '150px',
+});
+
 const TablePaginationActions = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const classes = useStyles();
-  const { count, page, rowsPerPage, onChangePage } = props;
+  const { count, page, rowsPerPage, onPageChange } = props;
 
   const handleFirstPageButtonClick = (event) => {
-    onChangePage(event, 0);
+    onPageChange(event, 0);
   };
 
   const handleBackButtonClick = (event) => {
-    onChangePage(event, page - 1);
+    onPageChange(event, page - 1);
   };
 
   const handleNextButtonClick = (event) => {
-    onChangePage(event, page + 1);
+    onPageChange(event, page + 1);
   };
 
   const handleLastPageButtonClick = (event) => {
-    onChangePage(event, Math.max(0, Math.floor(count / rowsPerPage)));
+    onPageChange(event, Math.max(0, Math.floor(count / rowsPerPage)));
   };
 
   const handleClickListItem = (event) => {
@@ -99,7 +93,7 @@ const TablePaginationActions = (props) => {
   };
 
   const handleMenuItemClick = (event, index) => {
-    onChangePage(event, index);
+    onPageChange(event, index);
     setAnchorEl(null);
   };
 
@@ -112,7 +106,7 @@ const TablePaginationActions = (props) => {
   const menuItemSize = 45;
 
   return (
-    <div className={classes.root}>
+    <PaginationRoot>
       <IconButton
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
@@ -138,15 +132,26 @@ const TablePaginationActions = (props) => {
         <LastPageIcon />
       </IconButton>
       <List component='nav' aria-label='Page Selector'>
-        <ListItem
-          button
-          aria-haspopup='true'
-          aria-controls='page-select'
-          aria-label='go to page'
-          onClick={handleClickListItem}
-        >
-          <ListItemText primary='Skip to page...' />
-        </ListItem>
+        <li style={{ listStyle: 'none', padding: 0 }}>
+          <button
+            type='button'
+            style={{
+              width: '100%',
+              background: 'none',
+              border: 'none',
+              textAlign: 'left',
+              padding: '8px 16px',
+              cursor: 'pointer',
+              font: 'inherit',
+            }}
+            aria-haspopup='true'
+            aria-controls='page-select'
+            aria-label='go to page'
+            onClick={handleClickListItem}
+          >
+            Skip to page...
+          </button>
+        </li>
       </List>
       <Menu
         id='page-select'
@@ -173,18 +178,16 @@ const TablePaginationActions = (props) => {
           )}
         </FixedSizeList>
       </Menu>
-    </div>
+    </PaginationRoot>
   );
 };
 
 const MultiSelectAction = (props) => {
-  const classes = useStyles();
   const { multiSelectAction, selected } = props;
 
   return (
     <Box pb={2}>
-      <Button
-        className={classes.actionButton}
+      <ActionButton
         size='small'
         variant='outlined'
         text='Bulk Engage'
@@ -225,8 +228,8 @@ export const Table = ({
         prevColumns.filter(
           (i) =>
             i.id !== 'experienceWithMentalHealthOrSubstanceUse' &&
-            i.id !== 'interestedWorkingPeerSupportRole'
-        )
+            i.id !== 'interestedWorkingPeerSupportRole',
+        ),
       );
     } else {
       setColumnState(columns);
@@ -361,8 +364,8 @@ export const Table = ({
           rowsPerPage={rowsPerPage}
           page={currentPage}
           SelectProps={{ 'test-id': 'pageSizeSelect' }}
-          onChangePage={handlePageChange}
-          onChangeRowsPerPage={handlePageSizeChange}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handlePageSizeChange}
           ActionsComponent={isLoading ? () => null : TablePaginationActions}
         />
       )}

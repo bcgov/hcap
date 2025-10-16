@@ -25,7 +25,7 @@ export const errorDateIsReasonable =
 
 export const validateUniqueArray = (a) => Array.isArray(a) && new Set(a).size === a.length;
 
-export const validateBlankOrPositiveInteger = (n) => (!!n ? Number.isInteger(n) && n > 0 : true);
+export const validateBlankOrPositiveInteger = (n) => (n ? Number.isInteger(n) && n > 0 : true);
 
 export const errorMessage = ({ path }) => {
   const errorMessages = {

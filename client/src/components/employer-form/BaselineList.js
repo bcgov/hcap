@@ -1,23 +1,23 @@
 import React, { Fragment } from 'react';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Typography from '@material-ui/core/Typography';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Typography from '@mui/material/Typography';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import { InputFieldError, InputFieldLabel } from '../generic';
-import { Divider, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+import { Divider, Grid, styled } from '@mui/material';
+import TextField from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
 
-const useStyles = makeStyles((theme) => ({
-  dividerSpacing: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(2),
-  },
-  dividerTextSpacing: {
-    marginTop: theme.spacing(2),
-  },
+const DividerSpacing = styled(Divider)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+  marginBottom: theme.spacing(2),
+}));
+
+const DividerTextSpacing = styled(Typography)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  variant: 'body1',
+  color: 'primary',
 }));
 
 export const BaselineList = ({
@@ -35,7 +35,6 @@ export const BaselineList = ({
     setFieldValue(name, mergedResult);
   };
 
-  const classes = useStyles();
   const error = form.errors[name];
 
   const sanitizeValue = (value) => {
@@ -68,7 +67,7 @@ export const BaselineList = ({
                 <Typography variant='body1' color='primary'>
                   Current Staff (Headcount)
                 </Typography>
-                <Divider className={classes.dividerSpacing} />
+                <DividerSpacing />
                 <Grid container justify='space-between'>
                   <Grid item>
                     <InputFieldLabel label='* Full Time' />
@@ -126,14 +125,8 @@ export const BaselineList = ({
                   </Grid>
                 </Grid>
                 <Grid container direction='column'>
-                  <Typography
-                    className={classes.dividerTextSpacing}
-                    variant='body1'
-                    color='primary'
-                  >
-                    Current Vacancies (Headcount)
-                  </Typography>
-                  <Divider className={classes.dividerSpacing} />
+                  <DividerTextSpacing>Current Vacancies (Headcount)</DividerTextSpacing>
+                  <DividerSpacing />
                   <Grid container justify='space-between'>
                     <Grid item>
                       <InputFieldLabel label='* Full Time' />

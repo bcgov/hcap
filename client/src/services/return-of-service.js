@@ -1,4 +1,4 @@
-import store from 'store';
+import storage from '../utils/storage';
 import dayjs from 'dayjs';
 import { API_URL } from '../constants';
 
@@ -13,7 +13,7 @@ export const createReturnOfServiceStatus = async ({ participantId, data, siteId 
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -36,7 +36,7 @@ export const getAllSites = async () => {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -68,7 +68,7 @@ export const updateRosStatus = async (participantId, newValues, status) => {
   return fetch(url, {
     method: 'PATCH',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },

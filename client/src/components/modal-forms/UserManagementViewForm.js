@@ -1,7 +1,7 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { Formik, Form as FormikForm } from 'formik';
 import { Button } from '../generic';
 

@@ -81,7 +81,8 @@ class Keycloak {
   }
 
   initialize() {
-    const isLocal = process.env.KEYCLOAK_AUTH_URL.includes('local');
+    const keycloakAuthUrl = process.env.KEYCLOAK_AUTH_URL || '';
+    const isLocal = keycloakAuthUrl.includes('local');
     this.realm = process.env.KEYCLOAK_REALM;
     this.apiUrl = isLocal
       ? `${process.env.KEYCLOAK_AUTH_URL}/admin/realms/${this.realm}`
@@ -129,8 +130,8 @@ class Keycloak {
       if (!this.access_token || !this.expiresAt || this.expiresAt < Date.now() / 1000 + 30) {
         await this.authenticateServiceAccount();
       }
-      const headers = { Authorization: `Bearer ${this.access_token}` };
-      return { ...config, headers };
+      config.headers.Authorization = `Bearer ${this.access_token}`;
+      return config;
     });
   }
 
@@ -316,7 +317,7 @@ class Keycloak {
           }/roles/${role}/users?briefRepresentation=true&max=1000000`;
           const response = await this.axiosInstance.get(url);
           return response.data.filter((user) => user.username !== 'service-account');
-        })
+        }),
       );
       return results.flat();
     } catch (error) {

@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop, no-console */
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { dbClient, collections } from '../db';
+const { readFileSync } = require('fs');
+const { join } = require('path');
+const { dbClient, collections } = require('../db');
 
 const readXlsxFile = require('node-xlsx').default;
 
@@ -43,7 +43,7 @@ exports.up = async () => {
   // Filter out changes for statuses that are not found in the DB
   // This allows the migration to pass on dev and test
   changes = changes.filter((change) =>
-    currentStatuses.some((currentStatus) => currentStatus.participant_id === change.participantId)
+    currentStatuses.some((currentStatus) => currentStatus.participant_id === change.participantId),
   );
 
   const errors = changes
@@ -73,7 +73,7 @@ exports.up = async () => {
           status: 'hired',
         },
         { site: change.site, history: change.history },
-        { body: 'data' } // Participants status table is not a MassiveJS document table
+        { body: 'data' }, // Participants status table is not a MassiveJS document table
       );
     }
   });

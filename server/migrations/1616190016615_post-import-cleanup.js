@@ -1,5 +1,5 @@
 /* eslint-disable camelcase, no-console */
-import { dbClient, collections } from '../db';
+const { dbClient, collections } = require('../db');
 
 exports.up = async () => {
   await dbClient.db.withTransaction(async (tx) => {
@@ -7,21 +7,21 @@ exports.up = async () => {
       {
         postalCode: 'Z1Z1Z1',
       },
-      { postalCode: '' }
+      { postalCode: '' },
     );
 
     await tx[collections.PARTICIPANTS].updateDoc(
       {
         nonHCAP: 'NULL',
       },
-      { nonHCAP: '' }
+      { nonHCAP: '' },
     );
 
     await tx[collections.PARTICIPANTS].updateDoc(
       {
         crcClear: 'NULL',
       },
-      { crcClear: '' }
+      { crcClear: '' },
     );
   });
 };

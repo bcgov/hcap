@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
 
 import LatoRegularFont from '../assets/fonts/Lato-Regular.ttf';
 import LatoMediumFont from '../assets/fonts/Lato-Medium.ttf';
@@ -22,7 +22,7 @@ const latoBold = {
   src: `url(${LatoBoldFont}) format('truetype')`,
 };
 
-export default createMuiTheme({
+export default createTheme({
   // Colors
   palette: {
     default: {
@@ -155,55 +155,83 @@ export default createMuiTheme({
   },
 
   // Component Overrides
-  overrides: {
+  components: {
     MuiCssBaseline: {
-      '@global': {
-        '@font-face': [latoRegular, latoMedium, latoBold],
+      styleOverrides: {
+        '@global': {
+          '@font-face': [latoRegular, latoMedium, latoBold],
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          fontFamily: 'Lato, Arial, sans-serif',
+          fontWeight: 400,
+        },
+        body1: {
+          fontWeight: 400,
+        },
+        body2: {
+          fontWeight: 400,
+        },
       },
     },
     MuiIconButton: {
-      root: {
-        padding: '8px',
+      styleOverrides: {
+        root: {
+          padding: '8px',
+        },
       },
     },
     MuiDrawer: {
-      paper: {
-        width: '80vw',
+      styleOverrides: {
+        paper: {
+          width: '80vw',
+        },
       },
     },
     MuiFilledInput: {
-      root: {
-        borderTopLeftRadius: '3px',
-        borderTopRightRadius: '3px',
-      },
-      input: {
-        paddingTop: '11px',
-        paddingBottom: '11px',
+      styleOverrides: {
+        root: {
+          borderTopLeftRadius: '3px',
+          borderTopRightRadius: '3px',
+        },
+        input: {
+          paddingTop: '11px',
+          paddingBottom: '11px',
+        },
       },
     },
     MuiOutlinedInput: {
-      root: {
-        backgroundColor: '#FFFFFF',
-        '&:hover > .MuiOutlinedInput-notchedOutline': {
-          borderColor: '#002C71',
+      styleOverrides: {
+        root: {
+          backgroundColor: '#FFFFFF',
+          '&:hover > .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#002C71',
+          },
+          '&.Mui-focused > .MuiOutlinedInput-notchedOutline': {
+            borderWidth: '1px',
+          },
         },
-        '&.Mui-focused > .MuiOutlinedInput-notchedOutline': {
-          borderWidth: '1px',
+        input: {
+          paddingTop: '11px',
+          paddingBottom: '11px',
         },
-      },
-      input: {
-        paddingTop: '11px',
-        paddingBottom: '11px',
       },
     },
-    MuiExpansionPanelDetails: {
-      root: {
-        display: 'block',
+    MuiAccordionDetails: {
+      styleOverrides: {
+        root: {
+          display: 'block',
+        },
       },
     },
     MuiLink: {
-      underlineHover: {
-        textDecoration: 'underline',
+      styleOverrides: {
+        underlineHover: {
+          textDecoration: 'underline',
+        },
       },
     },
   },

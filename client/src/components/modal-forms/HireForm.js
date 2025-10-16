@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
+import React, { useState } from 'react';
 import { Button } from '../generic';
-import { Box, Typography } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
+import { Grid, Box, Typography, Alert } from '@mui/material';
 import {
   RenderDateField,
   RenderCheckbox,
@@ -12,7 +10,7 @@ import {
 } from '../fields';
 import { fetchSitePhases } from '../../services/phases';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import { getTodayDate } from '../../utils';
+import { dayUtils } from '../../utils';
 import { HireFormSchema, Program } from '../../constants';
 
 const hireInitialValues = {
@@ -28,7 +26,6 @@ const hireInitialValues = {
 export const HireForm = ({ onSubmit, onClose, sites, participant }) => {
   const [phases, setPhases] = useState([]);
   const [currentPhase, setCurrentPhase] = useState(null);
-  const [formValues, setFormValues] = useState(hireInitialValues);
 
   const handleCurrentPhase = async (siteId) => {
     const site = sites.filter((site) => site.siteId === siteId)[0];
@@ -36,22 +33,29 @@ export const HireForm = ({ onSubmit, onClose, sites, participant }) => {
     setPhases(phases);
   };
 
-  useEffect(() => {
-    const { hiredDate, site } = formValues;
+  const handlePhaseCalculation = (values) => {
+    const { hiredDate, site } = values;
     if (hiredDate && site && phases.length) {
       const cPhase = phases?.filter(
         (phase) =>
           Date.parse(phase.startDate) <= Date.parse(hiredDate) &&
-          Date.parse(hiredDate) <= Date.parse(phase.endDate)
+          Date.parse(hiredDate) <= Date.parse(phase.endDate),
       )[0];
       setCurrentPhase(cPhase);
     }
-  }, [formValues, phases]);
+  };
 
   return (
-    <Formik initialValues={hireInitialValues} validationSchema={HireFormSchema} onSubmit={onSubmit}>
+    <Formik
+      initialValues={hireInitialValues}
+      validationSchema={HireFormSchema}
+      onSubmit={onSubmit}
+      validate={(values) => {
+        // Calculate phase during validation phase (not during render)
+        handlePhaseCalculation(values);
+      }}
+    >
       {({ submitForm, values, setFieldValue }) => {
-        setFormValues(values);
         return (
           <FormikForm>
             <Box>
@@ -96,7 +100,7 @@ export const HireForm = ({ onSubmit, onClose, sites, participant }) => {
               <Field
                 name='hiredDate'
                 component={RenderDateField}
-                maxDate={getTodayDate()}
+                maxDate={dayUtils()}
                 label='* Date Hired'
               />
               <Field name='startDate' component={RenderDateField} label='* Start Date' />

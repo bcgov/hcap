@@ -1,4 +1,4 @@
-import store from 'store';
+import storage from '../utils/storage';
 import { API_URL, postHireStatuses } from '../constants';
 
 export const getCohortPsiName = (cohort = {}) =>
@@ -44,7 +44,7 @@ export const fetchParticipant = async ({ id }) => {
   const resp = await fetch(url, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -73,7 +73,7 @@ export const fetchParticipantById = async (participantId) => {
     headers: {
       Accept: 'application/json',
       'Content-type': 'application/json',
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
     },
     method: 'GET',
   });
@@ -89,7 +89,7 @@ export const fetchParticipantPostHireStatus = async ({ id }) => {
   const resp = await fetch(url, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -108,7 +108,7 @@ export const fetchParticipantCohort = async ({ id }) => {
   const resp = await fetch(url, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -144,7 +144,7 @@ export const updateParticipant = async (values, participant) => {
   const response = await fetch(`${API_URL}/api/v1/participant`, {
     method: 'PATCH',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -188,7 +188,7 @@ export const getParticipants = async ({
     headers: {
       Accept: 'application/json',
       'Content-type': 'application/json',
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
     },
     method: 'GET',
   });
@@ -207,7 +207,7 @@ export const addParticipantStatus = async ({ participantId, status, additional }
   const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -242,7 +242,7 @@ export const acknowledgeParticipant = async ({ participantId, multiOrgHire, curr
   const response = await fetch(`${API_URL}/api/v1/employer-actions/acknowledgment`, {
     method: 'DELETE',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -270,7 +270,7 @@ export const createPostHireStatus = async ({ participantIds, status, data }) => 
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -292,7 +292,7 @@ export const archiveParticipant = async (participantId, siteId, additional) => {
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },

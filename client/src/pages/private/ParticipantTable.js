@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import _ from 'lodash';
 
-import Grid from '@material-ui/core/Grid';
-import { Box, Menu, MenuItem, Link } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import { Box, Menu, MenuItem, Link } from '@mui/material';
 
 import {
   ToastStatus,
@@ -89,6 +89,13 @@ const filterData = (data, columns, isMoH = false) => {
       }
     });
 
+    if (item.updated_at) {
+      row.updatedAt = item.updated_at;
+    }
+    if (item.created_at) {
+      row.createdAt = item.created_at;
+    }
+
     return row;
   };
 
@@ -111,14 +118,14 @@ const filterData = (data, columns, isMoH = false) => {
       row.siteName = item?.statusInfos?.[0]?.data?.siteName || 'Not Available';
     } else {
       const statusInfo = item?.statusInfos?.find(
-        ({ status }) => status === item.statusInfo?.toLowerCase()
+        ({ status }) => status === item.statusInfo?.toLowerCase(),
       );
       row.siteName = statusInfo?.data?.siteName || 'Not Available';
     }
     row.archiveReason = _.capitalize(
       item?.statusInfos?.[0]?.data?.final_status ||
         item?.statusInfos?.[0]?.data?.reason ||
-        'Not Available'
+        'Not Available',
     );
 
     if (
@@ -131,7 +138,7 @@ const filterData = (data, columns, isMoH = false) => {
           (statusInfo) =>
             statusInfo.status === 'withdrawn' ||
             statusInfo.status === 'pending_acknowledgement' ||
-            statusInfo.status === 'hired_by_peer'
+            statusInfo.status === 'hired_by_peer',
         ) ?? [];
       const otherStatuses = archivedStatuses.map((statusInfo) => statusInfo.status);
       row.status = ['ros', ...otherStatuses];
@@ -163,11 +170,11 @@ const filterData = (data, columns, isMoH = false) => {
     if (statusWithEmployerDetails.length > 0) {
       row.employerName = `${addEllipsisMask(
         statusWithEmployerDetails[0].employerInfo.firstName,
-        maxStrLen
+        maxStrLen,
       )} ${addEllipsisMask(statusWithEmployerDetails[0].employerInfo.lastName, maxStrLen)}`;
 
       const createdAtFormatted = dayUtils(statusWithEmployerDetails[0].createdAt).format(
-        'MMM DD, YYYY'
+        'MMM DD, YYYY',
       );
       row.lastEngagedDate = createdAtFormatted;
       row.lastEngagedBy = row.employerName;
@@ -181,7 +188,7 @@ const filterData = (data, columns, isMoH = false) => {
 };
 
 const ParticipantTable = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { openToast } = useToast();
   const [isLoadingData, setLoadingData] = useState(false);
   const [rows, setRows] = useState([]);
@@ -217,6 +224,7 @@ const ParticipantTable = () => {
   const fetchParticipants = async () => {
     if (!columns) return;
     setLoadingData(true);
+
     const { data, pagination: newPagination } = await getParticipants({
       pagination,
       filter,
@@ -224,6 +232,7 @@ const ParticipantTable = () => {
       siteSelector,
       selectedTabStatuses,
     });
+
     participantsDispatch({
       type: ParticipantsContext.types.UPDATE_PAGINATION,
       payload: newPagination,
@@ -271,6 +280,7 @@ const ParticipantTable = () => {
         status,
         additional: additionalParma,
       });
+
       const dispatchFunction = (notifications) =>
         dispatch({ type: AuthContext.USER_NOTIFICATIONS_UPDATED, payload: notifications });
       fetchUserNotifications(dispatchFunction);
@@ -288,7 +298,7 @@ const ParticipantTable = () => {
             ['already_hired', 'invalid_status_transition', 'invalid_archive'].includes(data?.status)
               ? data.status
               : status
-          ]
+          ],
         );
       }
     } catch (err) {
@@ -304,6 +314,7 @@ const ParticipantTable = () => {
       setActionMenuParticipant(null);
       setActiveModalForm(null);
     }
+
     fetchParticipants();
   };
 
@@ -378,7 +389,7 @@ const ParticipantTable = () => {
     // Either returns all location roles or a role mapping with a Boolean filter removes all undefined values
     const regions = Object.values(regionLabelsMap).filter((value) => value !== 'None');
     setLocations(
-      isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
+      isMoH || isSuperUser ? regions : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean),
     );
 
     if (isMoH || isSuperUser || isHA) {
@@ -396,7 +407,6 @@ const ParticipantTable = () => {
   useEffect(() => {
     setSelectedParticipants([]);
     fetchParticipants();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, pagination.page, pagination.pageSize, order, selectedTabStatuses, siteSelector]);
 
   const renderCell = (columnId, row) => {
@@ -413,12 +423,12 @@ const ParticipantTable = () => {
               variant='body2'
               onClick={() => {
                 const { id } = row;
-                const participantDetailsPath = keyedString(Routes.ParticipantDetails, {
+                const participantDetailsPath = keyedString(Routes.ParticipantDetailsPath, {
                   id,
                   page: 'participant',
                   pageId: 'none',
                 });
-                history.push(participantDetailsPath);
+                navigate(participantDetailsPath);
               }}
             >
               {row[columnId]}
@@ -479,7 +489,9 @@ const ParticipantTable = () => {
           />
         );
       case 'userUpdatedAt':
-        return dayUtils(row.userUpdatedAt).fromNow();
+        // Use userUpdatedAt if available, otherwise fall back to updatedAt, then createdAt from the database
+        const lastUpdated = row.userUpdatedAt || row.updatedAt || row.createdAt;
+        return lastUpdated ? dayUtils(lastUpdated).fromNow() : 'Unknown';
       case 'archive':
         return (
           <>
@@ -540,7 +552,7 @@ const ParticipantTable = () => {
               programs={programs}
             />
 
-            {selectedTab === 'Hired Candidates' && (
+            {selectedTab === 'Hired Candidates' && !isMoH && (
               <Grid container item xs={2} style={{ marginLeft: 'auto', marginRight: 20 }}>
                 <Button
                   onClick={() => setActiveModalForm('new-participant')}
@@ -613,9 +625,12 @@ const ParticipantTable = () => {
         {!isSuperUser && (
           <Menu
             keepMounted
-            open={actionMenuParticipant != null && activeModalForm == null}
+            open={actionMenuParticipant != null && activeModalForm == null && anchorElement != null}
             anchorEl={anchorElement}
-            onClose={() => setActionMenuParticipant(null)}
+            onClose={() => {
+              setActionMenuParticipant(null);
+              setAnchorElement(null);
+            }}
           >
             {actionMenuParticipant?.status === 'open' && (
               <MenuItem onClick={() => openParticipantSelectSite()}>Engage</MenuItem>
@@ -632,7 +647,7 @@ const ParticipantTable = () => {
               <MenuItem onClick={() => setActiveModalForm('hired')}>Hire</MenuItem>
             )}
             {['prospecting', 'interviewing', 'offer_made'].includes(
-              actionMenuParticipant?.status
+              actionMenuParticipant?.status,
             ) && <MenuItem onClick={() => setActiveModalForm('rejected')}>Archive</MenuItem>}
             {actionMenuParticipant?.status === 'rejected' && (
               <MenuItem onClick={() => handleEngage(actionMenuParticipant.id, 'prospecting')}>

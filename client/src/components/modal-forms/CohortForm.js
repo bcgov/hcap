@@ -1,7 +1,6 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
 import { Button } from '../generic';
-import { Box } from '@material-ui/core';
+import { Box, Grid } from '@mui/material';
 import { RenderTextField, RenderDateField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { NewCohortSchema } from '../../constants';
@@ -22,7 +21,7 @@ export const CohortForm = ({ cohort, onSubmit, onClose, schema }) => {
         if (cohort && values.cohortSize < cohort.participants.length) {
           setFieldError(
             'cohortSize',
-            `Cohort size must be greater than or equal to current allocation (${cohort.participants.length})`
+            `Cohort size must be greater than or equal to current allocation (${cohort.participants.length})`,
           );
         } else {
           onSubmit(values);

@@ -1,3 +1,7 @@
+# NOTE: This template is NOT currently used in production environments
+# Production MongoDB is deployed and managed via Helm using the Bitnami MongoDB chart
+# Current production: helm.sh/chart=mongodb-10.16.4 (MongoDB 4.4.6)
+# This file is kept for reference and potential future use in non-Helm deployments
 kind: Template
 apiVersion: v1
 labels:

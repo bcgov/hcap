@@ -42,7 +42,7 @@ export const archiveWithdrawnParticipants = async (ids: number[]) => {
       },
       {
         current: false,
-      }
+      },
     );
     await Promise.all(
       _.flatten(
@@ -50,7 +50,9 @@ export const archiveWithdrawnParticipants = async (ids: number[]) => {
           // eslint-disable-next-line camelcase
           ({ id, employer_id, participant_id, status, data }) => [
             tx[collections.PARTICIPANTS_STATUS].save({
+              // eslint-disable-next-line camelcase
               employer_id,
+              // eslint-disable-next-line camelcase
               participant_id,
               status: ParticipantStatus.REJECT_ACKNOWLEDGEMENT,
               current: true,
@@ -62,7 +64,9 @@ export const archiveWithdrawnParticipants = async (ids: number[]) => {
               },
             }),
             tx[collections.PARTICIPANTS_STATUS].save({
+              // eslint-disable-next-line camelcase
               employer_id,
+              // eslint-disable-next-line camelcase
               participant_id,
               status: ParticipantStatus.REJECTED,
               current: true,
@@ -71,9 +75,9 @@ export const archiveWithdrawnParticipants = async (ids: number[]) => {
                 final_status: 'withdrawn',
               },
             }),
-          ]
-        )
-      )
+          ],
+        ),
+      ),
     );
   });
 };

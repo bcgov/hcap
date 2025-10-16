@@ -4,6 +4,7 @@ import { HcapUserInfo } from '../keycloak';
 import { dayjs } from '../utils';
 import { ParticipantStatus as ps } from '../constants';
 import { isPrivateEmployerOrMHSUEmployerOrHA } from './participants-helper';
+import logger from '../logger';
 
 export const userRegionQuery = (regions: string[], target: string) => {
   if (regions.length === 0) return null;
@@ -52,7 +53,7 @@ const getROSEndedNotifications = async (sites: [id: number]) => {
  * @returns {Promise<*[]>}
  */
 export const getUserNotifications = async (
-  hcapUserInfo: HcapUserInfo & { sites: [id: number] }
+  hcapUserInfo: HcapUserInfo & { sites: [id: number] },
 ) => {
   const notifications = [];
   if (isPrivateEmployerOrMHSUEmployerOrHA(hcapUserInfo)) {
@@ -75,6 +76,43 @@ export const getUserSites = async (id: string) => {
   return dbClient.db[collections.EMPLOYER_SITES].findDoc({
     siteId: user.sites.map((item) => item.toString()),
   });
+};
+
+/**
+ * Safely check if a user has access to a specific site, handling cases where
+ * sites in the user record might not exist in the database
+ * @param user User with site access information
+ * @param siteId Site ID to check access for
+ * @returns Promise<boolean> True if user has access to the site and site exists
+ */
+export const userHasSiteAccess = async (
+  user: { sites?: number[]; isMoH?: boolean; isSuperUser?: boolean },
+  siteId: number,
+): Promise<boolean> => {
+  // Super users and MoH have access to all sites
+  if (user.isSuperUser || user.isMoH) {
+    return true;
+  }
+
+  // Check if user has the site in their assigned sites
+  if (!user.sites?.includes(siteId)) {
+    return false;
+  }
+
+  // Verify the site actually exists in the database
+  try {
+    const site = await dbClient.db[collections.EMPLOYER_SITES].findOne({
+      'body.siteId': siteId.toString(),
+    });
+    return !!site;
+  } catch (error) {
+    logger.error('Error checking site access', {
+      context: 'userHasSiteAccess',
+      siteId,
+      error: error.message,
+    });
+    return false;
+  }
 };
 
 export const getUserSiteIds = async (siteIds = []) =>

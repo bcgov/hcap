@@ -1,34 +1,30 @@
 import React from 'react';
-import { Tab, Tabs, withStyles } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import { Tab, Tabs } from '@mui/material';
 
-export const CustomTabs = withStyles((theme) => ({
-  root: {
-    borderTop: `1px solid ${theme.palette.gray.secondary}`,
-    borderBottom: `1px solid ${theme.palette.gray.secondary}`,
-    marginBottom: theme.spacing(2),
-  },
-  indicator: {
+export const CustomTabs = styled(Tabs)(({ theme }) => ({
+  borderTop: `1px solid ${theme.palette.gray.secondary}`,
+  borderBottom: `1px solid ${theme.palette.gray.secondary}`,
+  marginBottom: theme.spacing(2),
+  '& .MuiTabs-indicator': {
     backgroundColor: theme.palette.highlight.primary,
   },
-}))(Tabs);
+}));
 
-export const CustomTab = withStyles((theme) => ({
-  root: {
-    textTransform: 'none',
-    minWidth: 72,
-    fontWeight: theme.typography.fontWeightRegular,
-    marginRight: theme.spacing(4),
-    '&:hover': {
-      color: theme.palette.highlight.primary,
-      opacity: 1,
-    },
-    '&$selected': {
-      color: theme.palette.highlight.secondary,
-      fontWeight: theme.typography.fontWeightMedium,
-    },
-    '&:focus': {
-      color: theme.palette.highlight.primary,
-    },
+export const CustomTab = styled((props) => <Tab disableRipple {...props} />)(({ theme }) => ({
+  textTransform: 'none',
+  minWidth: 72,
+  fontWeight: theme.typography.fontWeightRegular,
+  marginRight: theme.spacing(4),
+  '&:hover': {
+    color: theme.palette.highlight.primary,
+    opacity: 1,
   },
-  selected: {},
-}))((props) => <Tab disableRipple {...props} />);
+  '&.Mui-selected': {
+    color: theme.palette.highlight.secondary,
+    fontWeight: theme.typography.fontWeightMedium,
+  },
+  '&:focus': {
+    color: theme.palette.highlight.primary,
+  },
+}));

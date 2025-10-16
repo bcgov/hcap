@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, InputFieldError } from '../generic';
-import { Box, Checkbox, FormControl, FormControlLabel, Grid, Typography } from '@material-ui/core';
+import { Grid, Box, Checkbox, FormControl, FormControlLabel, Typography } from '@mui/material';
 import { RenderRadioGroup } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { IndigenousDeclarationSchema } from '../../constants';
@@ -93,7 +93,7 @@ export const IndigenousDeclarationForm = ({ handleSubmit }) => {
                       .map((item) => (
                         // Not useing RenderCheckbox because I don't want it's errors here
                         <Field name={item.value} key={item.value}>
-                          {({ field }) => (
+                          {({ field, form }) => (
                             <FormControlLabel
                               label={item.label}
                               labelPlacement='end'
@@ -103,9 +103,12 @@ export const IndigenousDeclarationForm = ({ handleSubmit }) => {
                                   size='small'
                                   color='primary'
                                   checked={field.value === true}
+                                  onChange={(event) => {
+                                    form.setFieldValue(field.name, event.target.checked);
+                                  }}
+                                  name={field.name}
                                 />
                               }
-                              {...field}
                             />
                           )}
                         </Field>

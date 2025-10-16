@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import MuiAlert from '@material-ui/lab/Alert';
+import { Grid, Alert as MuiAlert, Box, Typography } from '@mui/material';
 import { Button } from '../generic';
-import { Box, Typography } from '@material-ui/core';
 import { RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { ParticipantAssignCohortSchema } from '../../constants';

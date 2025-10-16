@@ -1,5 +1,5 @@
 # Client
-FROM node:20-slim AS client
+FROM node:24-slim AS client
 
 # Build client
 ENV HOME_CLIENT=/opt/app-root/src/app/client
@@ -12,7 +12,7 @@ ENV HOME=/tmp
 RUN mkdir -p ${HOME_CLIENT}
 RUN chown -R 1008111001 ${HOME_CLIENT}
 WORKDIR ${HOME_CLIENT}
-COPY client/package*.json ./
+COPY client/package*.json client/.npmrc ./
 RUN chown -R 1008040000 .
 
 USER 1008040000
@@ -22,7 +22,7 @@ COPY client/. .
 RUN INLINE_RUNTIME_CHUNK=false npm run build
 
 # Server build stage
-FROM node:20-slim AS server-builder
+FROM node:24-slim AS server-builder
 ENV HOME_SERVER=/opt/app-root/src/app/server
 USER root
 
@@ -42,7 +42,7 @@ RUN mkdir -p build/migrations/assets && \
     cp -r migrations/assets/* build/migrations/assets/ 2>/dev/null || true
 
 # Server runtime stage
-FROM node:20-slim AS server
+FROM node:24-slim AS server
 # Static env vars
 ARG VERSION
 ENV VERSION=$VERSION

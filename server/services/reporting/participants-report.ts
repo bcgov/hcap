@@ -206,7 +206,7 @@ export const getParticipantsReport = async () => {
 export const getHiredParticipantsReport = async (
   region = DEFAULT_REGION_NAME,
   offset = null,
-  limit = null
+  limit = null,
 ) => {
   const searchOptions = {
     status: [ps.HIRED],
@@ -261,8 +261,8 @@ export const getHiredParticipantsReport = async (
   // If pagination is requested, use it
   if (limit !== null && offset !== null) {
     hiredEntries = await query.find(searchOptions, {
-      limit: limit,
-      offset: offset,
+      limit,
+      offset,
       order: [{ field: 'participant_id', direction: 'asc' }],
     });
   } else {
@@ -319,7 +319,7 @@ export const getRejectedParticipantsReport = async () => {
           ...user,
           email: entry.employerJoin?.[0]?.body.userInfo.email,
           regions: user.sites.map(
-            (site) => sites.find((item) => item.siteId === site).healthAuthority
+            (site) => sites.find((item) => item.siteId === site).healthAuthority,
           ),
         },
         rejection: entry.data,
@@ -347,7 +347,7 @@ export const getNoOfferParticipantsReport = async () => {
     });
 
   const noOffer = participants.filter((participant) =>
-    participant.statusJoin.every((status) => ![ps.HIRED, ps.OFFER_MADE].includes(status.status))
+    participant.statusJoin.every((status) => ![ps.HIRED, ps.OFFER_MADE].includes(status.status)),
   );
 
   return noOffer.map((participant) => ({

@@ -1,7 +1,7 @@
-import { Grid, Typography, Dialog, Box } from '@material-ui/core';
+import { Grid, Typography, Dialog, Box } from '@mui/material';
 import { Button } from '../../components/generic/Button';
 import { ArchiveHiredParticipantForm } from '../modal-forms';
-import store from 'store';
+import storage from '../../utils/storage';
 import { ManageGraduationForm } from '../modal-forms/ManageGraduationForm';
 import { AssignCohortForm } from '../modal-forms/AssignCohort';
 import React, { useEffect, useState } from 'react';
@@ -27,12 +27,12 @@ const handleArchive = async (
   dispatchFunction,
   additional = {},
   siteId = null,
-  currentStatusId = null
+  currentStatusId = null,
 ) => {
   const response = await fetch(`${API_URL}/api/v1/employer-actions`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${store.get('TOKEN')}`,
+      Authorization: `Bearer ${storage.get('TOKEN')}`,
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
@@ -118,6 +118,8 @@ export const TrackGraduation = (props) => {
                 variant='contained'
                 text='Update status'
                 disabled={isEmployer && !cohort?.id}
+                fullWidth={false}
+                size='medium'
                 onClick={() => {
                   setShowEditModal(true);
                 }}
@@ -203,7 +205,7 @@ export const TrackGraduation = (props) => {
                 onSubmit={async (values) => {
                   setShowArchiveModal(false);
                   const hiredStatus = props?.participant?.latestStatuses?.find(
-                    (status) => status.status === participantStatus.HIRED
+                    (status) => status.status === participantStatus.HIRED,
                   );
                   await handleArchive(
                     props?.participant?.id,
@@ -211,7 +213,7 @@ export const TrackGraduation = (props) => {
                     dispatchFunction,
                     values,
                     hiredStatus?.siteId,
-                    hiredStatus?.id
+                    hiredStatus?.id,
                   );
                   fetchData();
                 }}

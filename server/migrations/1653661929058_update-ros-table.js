@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { collections } from '../db';
+const { collections } = require('../db');
 
 exports.shorthands = 'update-ros-table';
 
@@ -13,7 +13,7 @@ exports.up = async (pgm) => {
         default: false,
       },
     },
-    { ifNotExists: true }
+    { ifNotExists: true },
   );
 };
 

@@ -1,6 +1,6 @@
 /* eslint-disable max-len, quotes, no-console */
-import { dbClient, collections } from '../db';
-import { getPointsFromPostalCodes } from '../services/geocodes';
+const { dbClient, collections } = require('../db');
+const { getPointsFromPostalCodes } = require('../services/geocodes');
 
 exports.up = async () => {
   const participants = await dbClient.db[collections.PARTICIPANTS].findDoc({});
@@ -20,7 +20,7 @@ exports.up = async () => {
     }
 
     return dbClient.runRawQuery(
-      `UPDATE participants SET body = jsonb_insert(body::jsonb, '{location}', null) where id=${participant.id}`
+      `UPDATE participants SET body = jsonb_insert(body::jsonb, '{location}', null) where id=${participant.id}`,
     );
   });
 
@@ -32,7 +32,7 @@ exports.up = async () => {
     }
 
     return dbClient.runRawQuery(
-      `UPDATE employer_sites SET body = jsonb_insert(body::jsonb, '{location}', null) where id=${site.id}`
+      `UPDATE employer_sites SET body = jsonb_insert(body::jsonb, '{location}', null) where id=${site.id}`,
     );
   });
 

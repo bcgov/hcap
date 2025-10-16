@@ -1,24 +1,10 @@
 import React, { Fragment } from 'react';
 
-import { Box, Divider, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Divider, Typography } from '@mui/material';
 
 import { Button } from '../generic';
 import { useAuth } from '../../providers/AuthContext';
 import { Role } from '../../constants';
-
-const useStyles = makeStyles((theme) => ({
-  formText: {
-    fontWeight: 400,
-  },
-  formButton: {
-    maxWidth: '200px',
-  },
-  formDivider: {
-    marginBottom: theme.spacing(2),
-    marginTop: theme.spacing(4),
-  },
-}));
 
 const getConfirmMessage = (hasMultipleParticipants, isMoH) => {
   let message = hasMultipleParticipants ? ` participants have` : ' has';
@@ -32,23 +18,22 @@ const getConfirmMessage = (hasMultipleParticipants, isMoH) => {
 export const ProspectingForm = ({ name, participantsCount, onClose, onSubmit }) => {
   const { auth } = useAuth();
   const isMoH = auth?.user?.roles?.includes(Role.MinistryOfHealth);
-  const classes = useStyles();
   const hasMultipleParticipants = participantsCount > 1;
 
   return (
     <Fragment>
-      <Typography variant='subtitle2' className={classes.formText}>
+      <Typography variant='subtitle2' sx={{ fontWeight: 400 }}>
         <b>{hasMultipleParticipants ? participantsCount : name}</b>
         {getConfirmMessage(hasMultipleParticipants, isMoH)}
       </Typography>
 
-      <Divider className={classes.formDivider} />
+      <Divider sx={{ my: 2, mt: 4 }} />
 
       <Box display='flex' justifyContent={!isMoH ? 'space-between' : 'center'}>
-        <Button className={classes.formButton} onClick={onClose} variant='outlined' text='Close' />
+        <Button sx={{ maxWidth: '200px' }} onClick={onClose} variant='outlined' text='Close' />
         {!isMoH && (
           <Button
-            className={classes.formButton}
+            sx={{ maxWidth: '200px' }}
             onClick={onSubmit}
             variant='contained'
             color='primary'

@@ -32,8 +32,8 @@ export const createParticipantUserMap = async (userId: string, email: string, tr
       transaction[collections.USER_PARTICIPANT_MAP].save({
         user_id: userId,
         participant_id: participant.id,
-      })
-    )
+      }),
+    ),
   );
   return participants;
 };
@@ -95,7 +95,7 @@ export const withdrawParticipantsByEmail = async (userId: string, email: string)
       };
       const newHistory =
         participant.history && participant.history.push
-          ? participant.history.push(historyObj)
+          ? participant.navigate(historyObj)
           : [historyObj];
       await tx[collections.PARTICIPANTS].updateDoc(
         { id: participant.id },
@@ -103,7 +103,7 @@ export const withdrawParticipantsByEmail = async (userId: string, email: string)
           history: newHistory,
           interested: 'withdrawn',
           userUpdatedAt: new Date().toJSON(),
-        }
+        },
       );
     });
   });

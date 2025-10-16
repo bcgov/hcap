@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { dbClient, collections } from '../db';
+const { dbClient, collections } = require('../db');
 
 exports.up = async () => {
   const inList = [
@@ -41,17 +41,17 @@ exports.up = async () => {
 
   await dbClient.db.withTransaction(async (tx) => {
     await tx.query(
-      `ALTER TABLE ${collections.PARTICIPANTS} DISABLE TRIGGER public_participants_updated`
+      `ALTER TABLE ${collections.PARTICIPANTS} DISABLE TRIGGER public_participants_updated`,
     );
 
     await tx.query('UPDATE participants SET updated_at=created_at WHERE updated_at IS NULL');
 
     await tx.query(
-      "UPDATE participants SET body=jsonb_set(body, '{userUpdatedAt}', ('\"' || (updated_at::TEXT) || '\"')::JSONB)"
+      "UPDATE participants SET body=jsonb_set(body, '{userUpdatedAt}', ('\"' || (updated_at::TEXT) || '\"')::JSONB)",
     );
 
     await tx.query(
-      `ALTER TABLE ${collections.PARTICIPANTS} ENABLE TRIGGER public_participants_updated`
+      `ALTER TABLE ${collections.PARTICIPANTS} ENABLE TRIGGER public_participants_updated`,
     );
 
     await tx[collections.PARTICIPANTS].updateDoc({}, { callbackStatus: false });
@@ -59,14 +59,14 @@ exports.up = async () => {
     await tx[collections.PARTICIPANTS].updateDoc(
       { 'created_at <': '2021-01-01' },
       { callbackStatus: true },
-      { body: 'body' } // Forces MassiveJS to query as non-document table https://massivejs.org/docs/working-with-documents#updatedoc
+      { body: 'body' }, // Forces MassiveJS to query as non-document table https://massivejs.org/docs/working-with-documents#updatedoc
     );
 
     await tx[collections.PARTICIPANTS].updateDoc(
       {
         'maximusId::int': inList,
       },
-      { callbackStatus: true }
+      { callbackStatus: true },
     );
   });
 };

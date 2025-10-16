@@ -10,35 +10,13 @@ import {
   List,
   ListItem,
   ListItemText,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
 import { FastField, Formik, Form as FormikForm } from 'formik';
 
 import { RenderSelectField } from '../fields';
 import { Button } from '../generic';
 import { addEllipsisMask } from '../../utils';
 import { MAX_LABEL_LENGTH } from '../../constants';
-
-const useStyles = makeStyles((theme) => ({
-  formButton: {
-    maxWidth: '200px',
-  },
-  formDivider: {
-    marginBottom: theme.spacing(2),
-    marginTop: theme.spacing(2),
-  },
-  formLabel: {
-    marginBottom: theme.spacing(1),
-    fontWeight: 700,
-    color: theme.palette.headerText.secondary,
-  },
-  collapseList: {
-    backgroundColor: theme.palette.background.light,
-    borderRadius: '4px',
-    maxHeight: '250px',
-    overflowY: 'scroll',
-  },
-}));
 
 export const SelectProspectingSiteForm = ({
   isMultiSelect,
@@ -50,7 +28,6 @@ export const SelectProspectingSiteForm = ({
 }) => {
   const { auth } = AuthContext.useAuth();
   const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
-  const classes = useStyles();
   const [areParticipantsVisible, setParticipantsVisible] = useState(false);
 
   const canSeeMultiSelect = isMultiSelect && selected?.length > 1;
@@ -63,7 +40,10 @@ export const SelectProspectingSiteForm = ({
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
       {({ submitForm }) => (
         <FormikForm>
-          <Typography className={classes.formLabel} variant='subtitle2'>
+          <Typography
+            sx={{ mb: 1, fontWeight: 700, color: 'headerText.secondary' }}
+            variant='subtitle2'
+          >
             {`Please select the site ${
               canSeeMultiSelect
                 ? `for ${selected?.length} participants`
@@ -93,7 +73,15 @@ export const SelectProspectingSiteForm = ({
               </Link>
 
               <Collapse in={areParticipantsVisible} timeout='auto' unmountOnExit>
-                <Box mt={2} className={classes.collapseList}>
+                <Box
+                  mt={2}
+                  sx={{
+                    backgroundColor: 'background.light',
+                    borderRadius: '4px',
+                    maxHeight: '250px',
+                    overflowY: 'scroll',
+                  }}
+                >
                   <List>
                     {selected.map((participant, index) => (
                       <ListItem key={`p${index}`}>
@@ -108,21 +96,11 @@ export const SelectProspectingSiteForm = ({
             </Box>
           )}
 
-          <Divider className={classes.formDivider} />
+          <Divider sx={{ my: 2 }} />
 
           <Box display='flex' justifyContent='space-between'>
-            <Button
-              className={classes.formButton}
-              onClick={onClose}
-              variant='outlined'
-              text='Cancel'
-            />
-            <Button
-              type='submit'
-              className={classes.formButton}
-              onClick={submitForm}
-              text='Confirm'
-            />
+            <Button sx={{ maxWidth: '200px' }} onClick={onClose} variant='outlined' text='Cancel' />
+            <Button type='submit' sx={{ maxWidth: '200px' }} onClick={submitForm} text='Confirm' />
           </Box>
         </FormikForm>
       )}

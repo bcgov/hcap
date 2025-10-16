@@ -82,7 +82,7 @@ apiRouter.get(`/keycloak-realm-client-info`, (req, res) =>
       APP_ENV: process.env.APP_ENV,
       ...featureFlags,
     },
-  })
+  }),
 );
 
 // Get pending users from Keycloak
@@ -92,7 +92,7 @@ apiRouter.get(
   asyncMiddleware(async (req, res) => {
     const users = await keycloak.getPendingUsers();
     return res.json({ data: scrubUsers(users) });
-  })
+  }),
 );
 
 // Get users from Keycloak
@@ -102,7 +102,7 @@ apiRouter.get(
   asyncMiddleware(async (req, res) => {
     const users = await keycloak.getUsers(UserRoles);
     return res.json({ data: scrubUsers(users) });
-  })
+  }),
 );
 
 // Get users to be migrated
@@ -112,7 +112,7 @@ apiRouter.get(
   asyncMiddleware(async (req, res) => {
     const users = await getUserMigrations();
     return res.json({ data: users });
-  })
+  }),
 );
 
 // Update user in user migration table
@@ -125,7 +125,7 @@ apiRouter.patch(
 
     await updateUserForMigration(id, { username, email });
     return res.json({});
-  })
+  }),
 );
 
 apiRouter.post(
@@ -137,7 +137,7 @@ apiRouter.post(
     await keycloak.setUserRoleWithRegions(
       sanitize(req.body.userId),
       sanitize(req.body.role),
-      req.body.regions
+      req.body.regions,
     );
     const userInfo = await keycloak.getUser(sanitize(req.body.username));
     await dbClient.db?.saveDoc(collections.USERS, {
@@ -160,7 +160,7 @@ apiRouter.post(
     });
 
     return res.status(201).json({});
-  })
+  }),
 );
 
 // Get user info from token
@@ -179,7 +179,7 @@ apiRouter.get(
       sites,
       notifications,
     });
-  })
+  }),
 );
 
 apiRouter.get(
@@ -191,17 +191,19 @@ apiRouter.get(
     return res.json({
       notifications,
     });
-  })
+  }),
 );
 
 // Version number
 apiRouter.get(`/version`, (req, res) => res.json({ version: process.env.VERSION }));
 
 // Health check
-export default apiRouter.get(
+apiRouter.get(
   `/healthcheck`,
   asyncMiddleware(async (req, res) => {
     const health = await healthCheck();
     res.status(200).json(health);
-  })
+  }),
 );
+
+export default apiRouter;

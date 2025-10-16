@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box, Grid, Typography, Link } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
+import { Box, Grid, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
+import Alert from '@mui/material/Alert';
 import dayjs from 'dayjs';
 import { Routes, ALERT_MESSAGES } from '../../constants';
 /**
@@ -12,7 +13,7 @@ const CohortHeader = ({ cohort, isHA }) => {
   return (
     <>
       <Typography variant='body1'>
-        <Link href={Routes.PSIView}>PSI</Link> / Cohorts / {cohort?.cohort_name}
+        <Link to={Routes.PSIView}>PSI</Link> / Cohorts / {cohort?.cohort_name}
       </Typography>
 
       <Box py={2}>

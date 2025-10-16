@@ -1,73 +1,62 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import Alert from '@material-ui/lab/Alert';
-import { Button as MuiButton, Box, Typography, Link } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import Alert from '@mui/material/Alert';
+import { Button as MuiButton, Box, Typography, Link } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 import { Page, Button } from '../../components/generic';
 import { Routes, HCAP_LINK, PEOI_LINK, HCAP_INFO_EMAIL } from '../../constants';
 import backgroundImage from '../../assets/images/emp_login_bg.jpg';
 
-const useStyles = makeStyles((theme) => ({
-  blueText: {
-    color: theme.palette.primary.light,
-  },
-  titleText: {
-    fontSize: '40px',
-    lineHeight: '56px',
-    fontWeight: 700,
-  },
-  mainText: {
-    fontSize: '17px',
-    lineHeight: '24px',
-    fontWeight: 400,
-  },
-  loginText: {
-    fontSize: '20px',
-    lineHeight: '38px',
-    fontWeight: 400,
-  },
-  buttonLink: {
-    color: theme.palette.primary.lighter,
-    textDecoration: 'underline',
-    fontSize: '17px',
-    fontWeight: 700,
-  },
-  employerLoginBox: {
-    backgroundImage: `url(${backgroundImage})`,
-    backgroundSize: 'cover',
-    backgroundPosition: '55% 50%',
-  },
-  employerAlert: {
-    fontSize: '17px',
-    lineHeight: '24px',
-    fontWeight: 400,
-    backgroundColor: theme.palette.default.white,
-    boxShadow: '0px 4px 7px rgba(0, 0, 0, 0.15)',
-    borderRadius: '4px',
-  },
+const StyledMuiButton = styled(MuiButton)(({ theme }) => ({
+  color: theme.palette.primary.lighter,
+  textDecoration: 'underline',
+  fontSize: '17px',
+  fontWeight: 700,
+}));
+
+const StyledEmployerLoginBox = styled(Box)(() => ({
+  backgroundImage: `url(${backgroundImage})`,
+  backgroundSize: 'cover',
+  backgroundPosition: '55% 50%',
+}));
+
+const StyledEmployerAlert = styled(Alert)(({ theme }) => ({
+  fontSize: '17px',
+  lineHeight: '24px',
+  fontWeight: 400,
+  backgroundColor: theme.palette.default.white,
+  boxShadow: '0px 4px 7px rgba(0, 0, 0, 0.15)',
+  borderRadius: '4px',
 }));
 
 export default () => {
-  const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
 
-  const redirectToLogin = () => history.push(Routes.Login);
+  const redirectToLogin = () => {
+    console.log('Login button clicked, navigating to:', Routes.Login);
+    navigate(Routes.Login);
+  };
 
   return (
     <Page>
       <Box display='flex'>
         <Box p={12} maxWidth='60%'>
-          <Typography variant='subtitle1' className={classes.blueText}>
+          <Typography variant='subtitle1' sx={{ color: 'primary.light' }}>
             Health Career Access Program
           </Typography>
 
-          <Typography className={classes.titleText}>Welcome to the Employer Portal</Typography>
+          <Typography sx={{ fontSize: '40px', lineHeight: '56px', fontWeight: 700 }}>
+            Welcome to the Employer Portal
+          </Typography>
 
           <Box my={2}>
-            <Typography variant='body1' className={classes.mainText}>
+            <Typography
+              variant='body1'
+              sx={{ fontSize: '17px', lineHeight: '24px', fontWeight: 400 }}
+            >
               The Health Career Access Program (HCAP) provides a path for applicants with little to
               no sector experience to get hired and receive paid training as part of their
               employment. There are two pathways, one to train as a health care assistant and
@@ -77,7 +66,10 @@ export default () => {
             </Typography>
           </Box>
           <Box my={2}>
-            <Typography variant='body1' className={classes.mainText}>
+            <Typography
+              variant='body1'
+              sx={{ fontSize: '17px', lineHeight: '24px', fontWeight: 400 }}
+            >
               HCAP has many benefits for employers who will have the opportunity to access new
               provincially funded staffing and training resources and play a key role in building
               capacity in the BC health sector and care economy. Participating employers will be
@@ -86,7 +78,10 @@ export default () => {
             </Typography>
           </Box>
           <Box my={2}>
-            <Typography variant='body1' className={classes.mainText}>
+            <Typography
+              variant='body1'
+              sx={{ fontSize: '17px', lineHeight: '24px', fontWeight: 400 }}
+            >
               HCAP will roll out as a partnership between candidates and employers to work through
               onboarding, orientation, employer-based training, and the employer- sponsored training
               program.
@@ -94,17 +89,12 @@ export default () => {
           </Box>
 
           <Box my={2}>
-            <MuiButton
-              className={classes.buttonLink}
-              href={HCAP_LINK}
-              target='_blank'
-              endIcon={<ArrowForwardIcon />}
-            >
+            <StyledMuiButton href={HCAP_LINK} target='_blank' endIcon={<ArrowForwardIcon />}>
               Learn more about the program
-            </MuiButton>
+            </StyledMuiButton>
           </Box>
 
-          <Alert severity='info' className={classes.mainText}>
+          <Alert severity='info' sx={{ fontSize: '17px', lineHeight: '24px', fontWeight: 400 }}>
             If you have any questions, please contact the Health Career Access Program at:&nbsp;
             <b>
               <Link href={`mailto:${HCAP_INFO_EMAIL}`}>{HCAP_INFO_EMAIL}</Link>
@@ -112,11 +102,14 @@ export default () => {
           </Alert>
         </Box>
 
-        <Box p={12} className={classes.employerLoginBox}>
+        <StyledEmployerLoginBox p={12}>
           <Box mt={'30%'}>
             <Typography variant='h2'>Login</Typography>
             <Box my={2}>
-              <Typography variant='body1' className={classes.loginText}>
+              <Typography
+                variant='body1'
+                sx={{ fontSize: '20px', lineHeight: '38px', fontWeight: 400 }}
+              >
                 Log in with your IDIR, HA ID or BCeID to the Health Career Access Program Employer
                 Portal.
               </Typography>
@@ -133,7 +126,7 @@ export default () => {
           </Box>
 
           <Box mt='40%'>
-            <Alert severity='info' className={classes.employerAlert}>
+            <StyledEmployerAlert severity='info'>
               If you're a participant,&nbsp;
               <b>
                 <Link href={PEOI_LINK} target='_blank'>
@@ -141,9 +134,9 @@ export default () => {
                 </Link>
               </b>
               &nbsp;to login to the participant portal
-            </Alert>
+            </StyledEmployerAlert>
           </Box>
-        </Box>
+        </StyledEmployerLoginBox>
       </Box>
     </Page>
   );

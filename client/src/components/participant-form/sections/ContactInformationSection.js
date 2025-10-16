@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
 import { FastField } from 'formik';
 import { RenderTextField } from '../../fields';
 import { SectionHeader } from '../SectionHeader';

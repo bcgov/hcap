@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import AddIcon from '@material-ui/icons/Add';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography, Link } from '@material-ui/core';
+import { useNavigate } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add';
+import Grid from '@mui/material/Grid';
+import { Box, Typography, Link } from '@mui/material';
 import { Table, Button } from '../../components/generic';
 import { Routes } from '../../constants';
 import { TableFilter } from '../../components/generic/TableFilter';
@@ -29,7 +29,7 @@ export default ({ PSIs, handleAddCohortClick }) => {
     'Vancouver Island',
     'Northern',
   ];
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -41,9 +41,9 @@ export default ({ PSIs, handleAddCohortClick }) => {
     setRows(
       PSIs.filter((row) =>
         ['Interior', 'Fraser', 'Vancouver Coastal', 'Vancouver Island', 'Northern'].includes(
-          row.health_authority
-        )
-      )
+          row.health_authority,
+        ),
+      ),
     );
   }, [PSIs]);
 
@@ -95,7 +95,10 @@ export default ({ PSIs, handleAddCohortClick }) => {
             renderCell={(columnId, row) => {
               if (columnId === 'institute_name')
                 return (
-                  <Link onClick={() => history.push(Routes.PSIView + `/${row.id}`)}>
+                  <Link
+                    onClick={() => navigate(Routes.PSIView + `/${row.id}`)}
+                    sx={{ cursor: 'pointer' }}
+                  >
                     {row.institute_name}
                   </Link>
                 );

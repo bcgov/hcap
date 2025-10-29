@@ -194,7 +194,7 @@ export class FieldsFilteredParticipantsFinder {
 
       // Attach external tables
       this.context.table = this.context.table.join(
-        this.joinTables({ siteIdDistance, user, isOpen, isInProgress })
+        this.joinTables({ siteIdDistance, user, isOpen, isInProgress }),
       );
 
       // Apply filtering logic
@@ -261,8 +261,33 @@ export class FieldsFilteredParticipantsFinder {
             }
           : criteria;
 
-      // ROS: Selecting participants with ros enabled
-      criteria = isRos ? { ...criteria, [`${rosStatuses}.participant_id <>`]: null } : criteria;
+      // ROS: Selecting participants with ros enabled and accessible by user
+      const rosQuery = {
+        and: [
+          // Must have ROS status
+          { [`${rosStatuses}.participant_id <>`]: null },
+          // Must NOT be archived (exclude archived ROS participants)
+          { [`${employerSpecificJoin}.status <>`]: archived },
+          // Must have access to EITHER hiring site OR current ROS site
+          {
+            or: [
+              // User has access to the hiring site (original logic)
+              {
+                and: [
+                  {
+                    [`${employerSpecificJoin}.employer_id`]: user.id,
+                    [`${employerSpecificJoin}.data.site`]: null,
+                  },
+                ],
+              },
+              { [`${employerSpecificJoin}.data.site IN`]: user.sites },
+              // User has access to the current ROS site (new logic)
+              { [`${rosStatuses}.site_id IN`]: user.sites },
+            ],
+          },
+        ],
+      };
+      criteria = isRos ? { ...criteria, ...rosQuery } : criteria;
 
       // Inprogress statuses: only user specific
       const inProgressStatusQuery = {
@@ -301,7 +326,7 @@ export class FieldsFilteredParticipantsFinder {
             ? {
                 'status_infos::text ilike': `%{%"status": "${status}"%}%`,
               }
-            : { status_infos: null }
+            : { status_infos: null },
         );
 
         this.context.criteria = {

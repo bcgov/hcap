@@ -21,6 +21,7 @@ export const getUser = async (keycloakId: string) => {
 
 /**
  * Returns all ROS statuses for given sites that are currently 'hired' (not archived) that started a year ago or more
+ * Now filters by ROS site (current site) instead of hiring site for better permission management
  * @param sites
  * @returns [ROS_STATUS join to PARTICIPANTS_STATUS]
  */
@@ -41,7 +42,7 @@ const getROSEndedNotifications = async (sites: [id: number]) => {
       is_current: true,
       'participantStatus.current': true,
       'participantStatus.status': ps.HIRED,
-      'participantStatus.data.site': sites,
+      site_id: sites, // Filter by ROS site (current site) instead of hiring site
     });
 };
 

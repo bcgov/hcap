@@ -1,21 +1,6 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
-import {
-  Box,
-  Dialog as MuiDialog,
-  DialogTitle,
-  IconButton,
-  DialogContent,
-} from '@material-ui/core';
-
-const useStyles = makeStyles((theme) => ({
-  dialogHeader: {
-    fontWeight: 400,
-    fontSize: '24px',
-    color: theme.palette.primary.light,
-  },
-}));
+import CloseIcon from '@mui/icons-material/Close';
+import { Box, Dialog as MuiDialog, DialogTitle, IconButton, DialogContent } from '@mui/material';
 
 export const Dialog = ({
   open,
@@ -25,18 +10,25 @@ export const Dialog = ({
   showDivider = false,
   maxDialogWidth = 'sm',
 }) => {
-  const classes = useStyles();
   return (
     <MuiDialog
       fullWidth
       maxWidth={maxDialogWidth}
       open={open}
       onClose={onClose}
-      disableBackdropClick
+      disableEscapeKeyDown={false}
+      disableScrollLock={true}
     >
       <DialogTitle>
         <Box display='flex'>
-          <Box flexGrow={1} className={classes.dialogHeader}>
+          <Box
+            flexGrow={1}
+            sx={{
+              fontWeight: 400,
+              fontSize: '24px',
+              color: 'primary.light',
+            }}
+          >
             {title}
           </Box>
           {onClose && (

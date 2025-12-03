@@ -12,8 +12,8 @@ const KC_USER = {
 };
 
 const GET_ROUTES = [
-  `https://hcapparticipants.${__ENV.OS_NAMESPACE_SUFFIX}.freshworks.club/api/v1/user`,
-  `https://hcapparticipants.${__ENV.OS_NAMESPACE_SUFFIX}.freshworks.club/api/v1/participant-user/participants`,
+  `https://${__ENV.OS_NAMESPACE_SUFFIX}.hcapparticipants.gov.bc.ca/api/v1/user`,
+  `https://${__ENV.OS_NAMESPACE_SUFFIX}.hcapparticipants.gov.bc.ca/api/v1/participant-user/participants`,
 ];
 
 const authUrl = `https://${__ENV.OS_NAMESPACE_SUFFIX}.oidc.gov.bc.ca/auth/realms/${__ENV.KEYCLOAK_REALM}/protocol/openid-connect/token`;

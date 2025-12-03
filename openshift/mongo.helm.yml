@@ -14,7 +14,9 @@ arbiter:
 
 architecture: replicaset
 image:
-  registry: 'public.ecr.aws'
+  registry: docker.io
+  repository: mongo
+  tag: '4.4.29'
 
 auth:
   username: hcap

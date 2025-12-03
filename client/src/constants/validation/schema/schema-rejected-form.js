@@ -9,6 +9,6 @@ export const RejectedFormSchema = yup
       .required('Participant final status is required')
       .oneOf(
         ['withdrawn', 'position filled', 'not qualified', 'not responsive'],
-        'Invalid final status'
+        'Invalid final status',
       ),
   });

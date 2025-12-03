@@ -1,9 +1,9 @@
 import React from 'react';
-import { Dialog, DialogTitle, DialogContent, Box, Typography } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent, Box, Typography } from '@mui/material';
 import { ParticipantCohortTableFilters } from '../../pages/private/ParticipantCohortTableFilters';
 import { Table as GenericTable, Button } from '../generic';
-import { TablePagination } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
+import { TablePagination } from '@mui/material';
+import Alert from '@mui/material/Alert';
 
 export const AddParticipantDialog = ({
   open,
@@ -114,8 +114,8 @@ export const AddParticipantDialog = ({
             count={parseInt(totalParticipants, 10)}
             rowsPerPage={rowsPerPage}
             page={currentPage}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Box>
       </DialogContent>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { Button } from '../generic';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
 import { CreatePSISchema } from '../../constants';

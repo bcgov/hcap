@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo } from 'react';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography, TextField, MenuItem, Checkbox, FormLabel } from '@material-ui/core';
+import React, { useEffect, useMemo, useState } from 'react';
+import Grid from '@mui/material/Grid';
+import { Box, Typography, TextField, MenuItem, Checkbox, FormLabel } from '@mui/material';
 import { CheckPermissions } from '../../components/generic';
 import { DebounceTextField } from '../../components/generic/DebounceTextField';
 import { AuthContext, ParticipantsContext } from '../../providers';
 import { FILTERABLE_FIELDS, Program, Role } from '../../constants';
+import { fetchSiteRows } from '../../services/site';
 
 export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   const {
@@ -13,10 +14,45 @@ export const ParticipantTableFilters = ({ loading, locations, programs }) => {
   } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
-  const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
+  const [sites, setSites] = useState([]);
 
   const isMoH = roles.includes(Role.MinistryOfHealth);
   const hideLastNameAndEmailFilter = !isMoH && selectedTab === 'Archived Candidates';
+
+  // Fetch user sites with full details for dropdown
+  useEffect(() => {
+    const fetchUserSites = async () => {
+      if (!isMoH && auth.user?.sites?.length > 0) {
+        try {
+          const siteColumns = [{ id: 'siteId' }, { id: 'siteName' }];
+          const userSites = await fetchSiteRows(siteColumns);
+
+          // Log information about site loading for debugging environment mismatches
+          if (userSites.length < auth.user.sites.length) {
+            const foundSiteIds = userSites.map((site) => site.siteId);
+            const missingSiteIds = auth.user.sites.filter(
+              (siteId) => !foundSiteIds.includes(siteId),
+            );
+            console.warn('Some assigned sites not found in database:', {
+              assignedSites: auth.user.sites,
+              foundSites: foundSiteIds,
+              missingSites: missingSiteIds,
+              message: 'This may indicate environment mismatch between Keycloak and database',
+            });
+          }
+
+          setSites(userSites);
+        } catch (error) {
+          console.error('Failed to fetch user sites:', error);
+          setSites([]);
+        }
+      } else {
+        setSites([]);
+      }
+    };
+
+    fetchUserSites();
+  }, [isMoH, auth.user]);
 
   const setFilter = (key, value) => {
     dispatch({

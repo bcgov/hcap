@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import Collapse from '@material-ui/core/Collapse';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import Collapse from '@mui/material/Collapse';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
 import { FastField } from 'formik';
-import { Checkbox, FormControl, FormControlLabel } from '@material-ui/core';
+import { Checkbox, FormControl, FormControlLabel } from '@mui/material';
 import { isNil } from 'lodash';
 
 import { Card, Divider } from '../generic';
@@ -25,28 +25,10 @@ import { PreferredWorkLocation } from './sections/PreferredWorkLocation';
 import { MarketingSection } from './sections/MarketingSection';
 import { BackgroundInformationSection } from './sections/BackgroundInformationSection';
 
-const useStyles = makeStyles((theme) => ({
-  info: {
-    color: 'rgb(13, 60, 97)',
-    backgroundColor: 'rgb(232, 244, 253)',
-    borderRadius: '4px',
-    border: '1px solid rgb(175, 217, 252)',
-  },
-  infoHeader: {
-    fontSize: '16px',
-    marginBottom: theme.spacing(1),
-    fontWeight: 'bold',
-  },
-  infoIcon: {
-    color: 'rgb(21, 153, 222)',
-    fontSize: '80px',
-    marginRight: theme.spacing(2),
-  },
-  line: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-    borderTop: '2px solid rgb(204, 204, 204)',
-  },
+const StyledLine = styled('hr')(({ theme }) => ({
+  marginTop: theme.spacing(3),
+  marginBottom: theme.spacing(3),
+  borderTop: '2px solid rgb(204, 204, 204)',
 }));
 
 export const Fields = ({
@@ -57,9 +39,8 @@ export const Fields = ({
   values,
   isSubmitted,
 }) => {
-  const classes = useStyles();
   const [isCollectionNoticeExpanded, setCollectionNoticeExpanded] = useState(
-    window.innerWidth > 750
+    window.innerWidth > 750,
   );
 
   const checkFieldDisability = (key) =>
@@ -173,7 +154,7 @@ export const Fields = ({
         <Grid container spacing={2}>
           {isSubmitted && isNonPortalHire && isNil(values.consent) ? null : (
             <Grid item xs={12}>
-              <hr className={classes.line} />
+              <StyledLine />
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <FastField

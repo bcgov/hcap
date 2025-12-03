@@ -36,7 +36,7 @@ env:
   SA_TOKEN: ${{ secrets.SA_TOKEN_CONFIG }}
   PROJECT: hcap
   HEALTH_CHECK_URL: https://hcap-server-f047a2-dev.apps.silver.devops.gov.bc.ca/api/v1/version
-  DEV_URL: https://hcapemployers.dev.freshworks.club
+  DEV_URL: https://dev.hcapemployers.gov.bc.ca
 
 jobs:
   audit:
@@ -55,7 +55,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: NPM Audit
         run: |
@@ -98,6 +98,7 @@ jobs:
           oc login --token="$SA_TOKEN" --server="$CLUSTER"
           cd "$GITHUB_WORKSPACE"
           make server-config-test
+          make cron-job-test
   confirm:
     name: Get Confirmation Dev Deployment
     runs-on: ubuntu-latest
@@ -145,6 +146,7 @@ jobs:
           oc login --token="$SA_TOKEN" --server="$CLUSTER"
           cd "$GITHUB_WORKSPACE"
           make server-config
+          make cron-job
   build:
     name: OpenShift Build & Deploy
     runs-on: ubuntu-latest

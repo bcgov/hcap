@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '../../components/generic';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { fetchPhases } from '../../services/phases';
 
 import { BulkAllocationForm } from '../../components/modal-forms/BulkAllocationForm';

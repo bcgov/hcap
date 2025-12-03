@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { Grid, Typography, MenuItem, Menu, Box } from '@material-ui/core';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Grid, Box } from '@mui/material';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { Table, Button, CheckPermissions } from '../../components/generic';
 import { NewSiteDialog, PhaseDialog } from '../../components/modal-forms';
@@ -13,7 +13,13 @@ import { TableFilter } from '../../components/generic/TableFilter';
 import { sortObjects } from '../../utils';
 import { AuthContext } from '../../providers';
 import { fetchRegionSiteRows, fetchSiteRows } from '../../services/site';
-import { useTableStyles } from '../../components/tables/DataTable';
+import {
+  RootItem,
+  TableItem,
+  FilterLabel,
+  StyledMenu,
+  StyledMenuItem,
+} from '../../components/tables/DataTable';
 import { SiteTableAllocation } from './SiteTableAllocation';
 import { SetBulkAllocation } from './SetBulkAllocation';
 
@@ -36,7 +42,6 @@ const columns = [
 ];
 
 export default ({ sites }) => {
-  const classes = useTableStyles();
   const [activeModalForm, setActiveModalForm] = useState(null);
   const [order, setOrder] = useState('asc');
   const [isLoadingData, setLoadingData] = useState(false);
@@ -54,7 +59,7 @@ export default ({ sites }) => {
   const roles = useMemo(() => auth.user?.roles || [], [auth.user]);
   const isHA = roles?.includes(Role.HealthAuthority) || false;
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const isActionMenuOpen = Boolean(actionMenuAnchorEl);
@@ -81,24 +86,36 @@ export default ({ sites }) => {
   };
 
   useEffect(() => {
-    setHealthAuthorities(
+    const calculatedHealthAuthorities =
       roles.includes(Role.Superuser) || roles.includes(Role.MinistryOfHealth)
         ? Object.values(regionLabelsMap)
-        : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean)
-    );
+        : roles.map((loc) => regionLabelsMap[loc]).filter(Boolean);
+
+    setHealthAuthorities(calculatedHealthAuthorities);
   }, [roles]);
+
+  // Update health authorities based on actual site data, not the user permissions only
+  useEffect(() => {
+    if (fetchedRows && fetchedRows.length > 0) {
+      const actualHealthAuthorities = [
+        ...new Set(fetchedRows.map((row) => row.healthAuthority).filter(Boolean)),
+      ];
+      setHealthAuthorities(actualHealthAuthorities);
+    }
+  }, [fetchedRows]);
 
   const sort = (array) => sortObjects(array, orderBy, order);
 
   useEffect(() => {
     if (sites) {
+      // Set both rows and fetchedRows so TableFilter has data to work with
       setRows(sites);
+      setFetchedRows(sites);
     } else {
       fetchSites();
     }
     // This fetch sites is a dependency of this function. This needs to be reworked, but it is outside of the scope of the ticket
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history, location]);
+  }, [location]);
 
   const openActionMenu = (event) => {
     setActionMenuAnchorEl(event.currentTarget);
@@ -146,95 +163,93 @@ export default ({ sites }) => {
         alignItems='center'
         direction='row'
       >
-        <Grid className={classes.rootItem} item xs={2}>
-          <Typography variant='body1' className={classes.filterLabel} gutterBottom>
-            Health Region:
-          </Typography>
-          <TableFilter
-            onFilter={(filteredRows) => setRows(filteredRows)}
-            values={healthAuthorities}
-            rows={fetchedRows}
-            label='Health Authority'
-            filterField='healthAuthority'
-          />
+        <Grid item xs={2}>
+          <RootItem>
+            <FilterLabel variant='body1' gutterBottom>
+              Health Region:
+            </FilterLabel>
+            <TableFilter
+              onFilter={setRows}
+              values={healthAuthorities}
+              rows={fetchedRows}
+              label='Health Authority'
+              filterField='healthAuthority'
+            />
+          </RootItem>
         </Grid>
 
         <CheckPermissions roles={roles} permittedRoles={[Role.MinistryOfHealth]}>
           <Grid item xs={7} />
-          <Grid className={classes.rootItem} item xs={3}>
-            <Box px={2} display='flex' justifyContent='space-evenly'>
-              <SetBulkAllocation sites={selectedSites} handleFormSubmit={handleFormSubmit} />
-              <Button
-                onClick={openActionMenu}
-                endIcon={isActionMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                aria-controls='simple-menu'
-                aria-haspopup='true'
-                text='Action'
-                variant='contained'
-                fullWidth={false}
-              />
-              <Menu
-                id='action-menu'
-                anchorEl={actionMenuAnchorEl}
-                open={Boolean(actionMenuAnchorEl)}
-                onClose={closeActionMenu}
-                getContentAnchorEl={null}
-                anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-                transformOrigin={{ horizontal: 'left', vertical: 'top' }}
-                classes={{ paper: classes.actionMenuPaper }}
-              >
-                <MenuItem onClick={openNewSiteModal} className={classes.menuItem}>
-                  Create new site
-                </MenuItem>
-                <MenuItem onClick={openNewPhaseModal} className={classes.menuItem}>
-                  Create new phase
-                </MenuItem>
-                <MenuItem
-                  onClick={() => history.push(Routes.PhaseView)}
-                  className={classes.menuItem}
+          <Grid item xs={3}>
+            <RootItem>
+              <Box px={2} display='flex' justifyContent='space-evenly'>
+                <SetBulkAllocation sites={selectedSites} handleFormSubmit={handleFormSubmit} />
+                <Button
+                  onClick={openActionMenu}
+                  endIcon={isActionMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  aria-controls='simple-menu'
+                  aria-haspopup='true'
+                  text='Action'
+                  variant='contained'
+                  fullWidth={false}
+                />
+                <StyledMenu
+                  id='action-menu'
+                  anchorEl={actionMenuAnchorEl}
+                  open={Boolean(actionMenuAnchorEl)}
+                  onClose={closeActionMenu}
+                  getContentAnchorEl={null}
+                  anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+                  transformOrigin={{ horizontal: 'left', vertical: 'top' }}
                 >
-                  View phase list
-                </MenuItem>
-              </Menu>
-            </Box>
+                  <StyledMenuItem onClick={openNewSiteModal}>Create new site</StyledMenuItem>
+                  <StyledMenuItem onClick={openNewPhaseModal}>Create new phase</StyledMenuItem>
+                  <StyledMenuItem onClick={() => navigate(Routes.PhaseView)}>
+                    View phase list
+                  </StyledMenuItem>
+                </StyledMenu>
+              </Box>
+            </RootItem>
           </Grid>
         </CheckPermissions>
 
         {roles.includes(Role.Superuser) && <Grid item xs={8} />}
 
         {isPendingRequests && (
-          <Grid className={classes.tableItem} item xs={12}>
-            <Table
-              columns={columns}
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={handleRequestSort}
-              rows={sort(rows)}
-              isMultiSelect={roles.includes(Role.MinistryOfHealth)}
-              selectedRows={selectedSites}
-              updateSelectedRows={setSelectedSites}
-              isLoading={isLoadingData}
-              renderCell={(columnId, row) => {
-                if (columnObj(columnId).customComponent)
-                  return columnObj(columnId).customComponent(row);
-                if (columnObj(columnId).isHidden) return;
-                if (columnId === 'details')
-                  return (
-                    <CheckPermissions
-                      roles={roles}
-                      permittedRoles={[Role.HealthAuthority, Role.MinistryOfHealth]}
-                    >
-                      <Button
-                        onClick={() => history.push(Routes.SiteView + `/${row.id}`)}
-                        variant='outlined'
-                        size='small'
-                        text='details'
-                      />
-                    </CheckPermissions>
-                  );
-                return row[columnId];
-              }}
-            />
+          <Grid item xs={12}>
+            <TableItem>
+              <Table
+                columns={columns}
+                order={order}
+                orderBy={orderBy}
+                onRequestSort={handleRequestSort}
+                rows={sort(rows)}
+                isMultiSelect={roles.includes(Role.MinistryOfHealth)}
+                selectedRows={selectedSites}
+                updateSelectedRows={setSelectedSites}
+                isLoading={isLoadingData}
+                renderCell={(columnId, row) => {
+                  if (columnObj(columnId).customComponent)
+                    return columnObj(columnId).customComponent(row);
+                  if (columnObj(columnId).isHidden) return;
+                  if (columnId === 'details')
+                    return (
+                      <CheckPermissions
+                        roles={roles}
+                        permittedRoles={[Role.HealthAuthority, Role.MinistryOfHealth]}
+                      >
+                        <Button
+                          onClick={() => navigate(Routes.SiteView + `/${row.id}`)}
+                          variant='outlined'
+                          size='small'
+                          text='details'
+                        />
+                      </CheckPermissions>
+                    );
+                  return row[columnId];
+                }}
+              />
+            </TableItem>
           </Grid>
         )}
       </Grid>

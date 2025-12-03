@@ -6,6 +6,7 @@ services:
     environment:
       - REACT_APP_API_URL=http://localhost:8080
       - DANGEROUSLY_DISABLE_HOST_CHECK=true
+      - DISABLE_ESLINT_PLUGIN=true
     build:
       context: ./client
       dockerfile: Dockerfile.dev
@@ -90,7 +91,7 @@ services:
 
   mongodb:
     container_name: ${APP_NAME}-mongodb
-    image: mongo:3.6-xenial
+    image: mongo:4.4
     restart: always
     expose:
       - '27017'

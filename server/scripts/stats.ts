@@ -27,6 +27,7 @@ const toPostgresDate = (date) => dayjs.utc(date).format('YYYY-MM-DD HH:mm:ssZ');
         {
           name: 'Start Date',
           type: 'input',
+          message: 'Start Date:',
           default: dayjs().format('YYYY-MM-DD'),
         },
       ]);
@@ -35,6 +36,7 @@ const toPostgresDate = (date) => dayjs.utc(date).format('YYYY-MM-DD HH:mm:ssZ');
         {
           name: 'End Date (not inclusive)',
           type: 'input',
+          message: 'End Date (not inclusive):',
           default: dayjs().add(1, 'day').format('YYYY-MM-DD'),
         },
       ]);
@@ -59,8 +61,8 @@ const toPostgresDate = (date) => dayjs.utc(date).format('YYYY-MM-DD HH:mm:ssZ');
       console.log(
         `Total submissions: ${healthAuthorityCount.reduce(
           (total, item) => item.submissions + total,
-          0
-        )}`
+          0,
+        )}`,
       );
       console.log('------------------');
 

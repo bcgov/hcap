@@ -1,41 +1,26 @@
 import { Page } from '../../components/generic';
 import React from 'react';
-import { Button, Typography, Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Button, Typography, Box } from '@mui/material';
 import { Routes } from '../../constants';
-import { useHistory, useParams } from 'react-router-dom';
-
-const useStyles = makeStyles((theme) => ({
-  button: {
-    backgroundColor: '#009BDD',
-    marginTop: '10px',
-    color: 'white',
-    padding: '25px',
-    paddingTop: '10px',
-    paddingBottom: '10px',
-  },
-  buttonBoxes: {
-    alignSelf: 'center',
-  },
-  textBoxes: {
-    marginTop: '200px',
-  },
-}));
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default () => {
-  const classes = useStyles();
   const { id } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
   const handleBackClick = () => {
     if (id) {
-      return history.push(Routes.ParticipantEOI.replace(':id', id));
+      return navigate(Routes.ParticipantEOI.replace(':id', id));
     } else {
-      return history.push(Routes.ParticipantLanding);
+      return navigate(Routes.ParticipantLanding);
     }
   };
 
   return (
-    <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
+    <Page
+      hideEmployers={
+        !window.location.hostname.includes('dev.') && !window.location.hostname.includes('test.')
+      }
+    >
       <Box
         container
         justifyContent='center'
@@ -58,7 +43,18 @@ export default () => {
             You have successfully confirmed your interest and status with HCAP
           </Typography>
         </Box>
-        <Button className={classes.button} variant={'contained'} onClick={handleBackClick}>
+        <Button
+          sx={{
+            backgroundColor: '#009BDD',
+            marginTop: '10px',
+            color: 'white',
+            padding: '25px',
+            paddingTop: '10px',
+            paddingBottom: '10px',
+          }}
+          variant={'contained'}
+          onClick={handleBackClick}
+        >
           Go Back
         </Button>
       </Box>

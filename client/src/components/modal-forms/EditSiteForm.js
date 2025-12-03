@@ -1,19 +1,14 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
+import { Box, Typography, CircularProgress, Grid, styled } from '@mui/material';
 import { Button } from '../generic';
-import { Box, makeStyles } from '@material-ui/core';
 import { siteTypeOptions } from '../../constants';
 import { RenderRadioGroup, RenderTextField, RenderSelectField } from '../fields';
 import { Field, Formik, Form as FormikForm } from 'formik';
-import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    '& > * + *': {
-      marginLeft: theme.spacing(2),
-    },
+const LoadingContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  '& > * + *': {
+    marginLeft: theme.spacing(2),
   },
 }));
 
@@ -24,7 +19,6 @@ export const EditSiteForm = ({
   onClose,
   isLoading = false,
 }) => {
-  const classes = useStyles();
   return (
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
       {({ submitForm }) => (
@@ -84,15 +78,15 @@ export const EditSiteForm = ({
             <Field name='operatorEmail' component={RenderTextField} label='* Email address' />
           </Box>
           <Box mt={3}>
-            <Grid container spacing={2} justify='flex-end'>
+            <Grid container spacing={2} justifyContent='flex-end'>
               <Grid item>
                 <Button onClick={onClose} color='default' text='Cancel' />
               </Grid>
               <Grid item>
                 {isLoading ? (
-                  <div className={classes.root}>
+                  <LoadingContainer>
                     <CircularProgress />
-                  </div>
+                  </LoadingContainer>
                 ) : (
                   <Button onClick={submitForm} variant='contained' color='primary' text='Submit' />
                 )}

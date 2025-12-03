@@ -3,7 +3,7 @@ import { stringReplace } from 'string-replace-middleware';
 import express from 'express';
 import helmet from 'helmet';
 import { v4 as uuidv4 } from 'uuid';
-import bodyParser from 'body-parser';
+
 import path from 'path';
 import apiRouter from './routes';
 import { errorHandler } from './error-handler';
@@ -57,6 +57,7 @@ app.use(
         'script-src': [
           "'self'",
           'https://www2.gov.bc.ca',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (req, res: any) => `'nonce-${res.locals.cspNonce}'`,
         ],
         'script-src-attr': ["'none'"],
@@ -66,7 +67,7 @@ app.use(
         'form-action': ["'self'"],
       },
     },
-  })
+  }),
 );
 
 // Adding cache control header and xss-protection header
@@ -92,8 +93,6 @@ app.use((req, res, next) => {
  */
 app.use((req, res, next) => {
   stringReplace({
-    '<script': `<script nonce='${res.locals.cspNonce}'`,
-    '<style': `<style nonce='${res.locals.cspNonce}'`,
     __CSP_NONCE__: res.locals.cspNonce,
     __GOOGLE_VERIFICATION_CONTENT__: res.locals.googleVerificationContent,
     __COLLECTOR_VARIABLE__: res.locals.collectorVariable,
@@ -102,13 +101,17 @@ app.use((req, res, next) => {
 
 app.use(expressAccessLogger);
 app.use(express.static(path.join(__dirname, '../client/build')));
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(`${apiBaseUrl}`, apiRouter);
 
 // Client app
 
 if (process.env.NODE_ENV === 'production') {
-  app.get('/*', (req, res) => res.sendFile(path.join(__dirname, '../client/build', '/index.html')));
+  // serve index.html for any GET that doesn't start with /api/v1
+  app.get(/^(?!\/api\/v1).*/, (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+  });
 }
 
 app.use(errorHandler);

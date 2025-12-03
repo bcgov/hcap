@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import { collections } from '../db';
+const { collections } = require('../db');
 
 exports.shorthands = 'add_created_at_date_for_cohort';
 
@@ -19,7 +19,7 @@ exports.up = (pgm) => {
         default: true,
       },
     },
-    { ifNotExists: true }
+    { ifNotExists: true },
   );
 };
 

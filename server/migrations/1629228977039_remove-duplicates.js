@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import { dbClient } from '../db';
+const { dbClient } = require('../db');
 
 exports.up = async () => {
   await dbClient.db.query(`

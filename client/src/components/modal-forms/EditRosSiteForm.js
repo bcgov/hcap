@@ -1,7 +1,5 @@
 import React from 'react';
-
-import Alert from '@material-ui/lab/Alert';
-import { Box } from '@material-ui/core';
+import { Alert, Box } from '@mui/material';
 import { Formik, Form as FormikForm, FastField } from 'formik';
 
 import { FormButtons } from './form-components';

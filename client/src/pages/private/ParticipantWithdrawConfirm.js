@@ -1,13 +1,17 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { Typography, Button, Box } from '@material-ui/core';
+import { useNavigate } from 'react-router-dom';
+import { Typography, Button, Box } from '@mui/material';
 import { Page } from '../../components/generic';
 import { Routes } from '../../constants';
 
 export default () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   return (
-    <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
+    <Page
+      hideEmployers={
+        !window.location.hostname.includes('dev.') && !window.location.hostname.includes('test.')
+      }
+    >
       <Box
         container
         justifyContent='center'
@@ -31,7 +35,7 @@ export default () => {
         <Button
           color='secondary'
           variant='contained'
-          onClick={() => history.push(Routes.ParticipantLanding)}
+          onClick={() => navigate(Routes.ParticipantLanding)}
         >
           Return Home
         </Button>

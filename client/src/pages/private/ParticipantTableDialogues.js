@@ -37,10 +37,15 @@ export const ParticipantTableDialogues = ({
 }) => {
   const { dispatch: participantsDispatch } = ParticipantsContext.useParticipantsContext();
   const { auth } = AuthContext.useAuth();
-  const sites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
+  const userSites = useMemo(() => auth.user?.sites || [], [auth.user?.sites]);
   const { openToast } = useToast();
   const [allSites, setAllSites] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // For MoH and SuperUser, use all sites. For others, use their assigned sites
+  const isMoH = auth?.user?.roles?.includes('ministry_of_health');
+  const isSuperUser = auth?.user?.roles?.includes('superuser');
+  const sites = (isMoH || isSuperUser) && allSites.length > 0 ? allSites : userSites;
 
   const getParticipantName = (participant) => {
     return participant ? `${participant?.firstName} ${participant?.lastName}` : '';
@@ -67,7 +72,7 @@ export const ParticipantTableDialogues = ({
         const response = await updateRosStatus(
           actionMenuParticipant?.id,
           values,
-          'assigned-new-site'
+          'assigned-new-site',
         );
         if (response.ok) {
           onClose();
@@ -101,7 +106,6 @@ export const ParticipantTableDialogues = ({
     if (allSites.length === 0) {
       fetchAllSites();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

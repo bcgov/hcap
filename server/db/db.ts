@@ -8,18 +8,20 @@ import logger from '../logger';
  * to easily interact with a Postgres database
  */
 class DBClient {
+  // eslint-disable-next-line no-use-before-define
+  static instance: DBClient;
+
   settings: {
     host: string;
     port: number;
     database: string;
     user: string;
     password: string;
+    // eslint-disable-next-line camelcase
     query_timeout?: number;
   };
 
   db?: massive.Database;
-
-  static instance: DBClient;
 
   constructor() {
     this.settings = {
@@ -43,7 +45,7 @@ class DBClient {
         databaseUrl: `postgres://${user}:${password}@${host}:${port}/${database}`,
         direction: 'up',
         migrationsTable: 'pgmigrations', // default, do not change
-        dir: 'migrations', // default, do not change
+        dir: process.env.NODE_ENV === 'production' ? 'build/migrations' : 'migrations',
       });
       await this.reload();
       return results;
@@ -78,7 +80,7 @@ class DBClient {
    */
   async runRawQuery(
     query: string | massive.Select | massive.Insert | massive.Update | massive.Delete,
-    queryParams?: massive.QueryParams
+    queryParams?: massive.QueryParams,
   ) {
     if (!query) return [];
     const res = await this.db.query(query, queryParams);

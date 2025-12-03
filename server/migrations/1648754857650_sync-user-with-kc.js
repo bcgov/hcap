@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { syncUser } from '../services/sync-user';
+const { syncUser } = require('../services/sync-user');
 
 exports.shorthands = 'sync_user_with_kc';
 

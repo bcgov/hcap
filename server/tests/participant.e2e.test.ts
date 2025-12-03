@@ -3,13 +3,7 @@ import request from 'supertest';
 import { app } from '../server';
 
 import { startDB, closeDB } from './util/db';
-import {
-  getKeycloakToken,
-  healthAuthority,
-  ministryOfHealth,
-  employer,
-  superuser,
-} from './util/keycloak';
+import { getKeycloakToken, healthAuthority, ministryOfHealth, employer } from './util/keycloak';
 import { makeTestParticipant } from './util/integrationTestData';
 
 describe('e2e tests for /participant route', () => {

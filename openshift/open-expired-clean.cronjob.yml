@@ -1,6 +1,7 @@
 # Expires participants that have been open for > 6 months
+# Test comment for workflow validation
 kind: Template
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 labels:
   app: ${APP_NAME}
 parameters:
@@ -21,13 +22,13 @@ objects:
   - kind: CronJob
     apiVersion: batch/v1
     metadata:
-      name: ${APP_NAME}-clean-expired-cronjob
+      name: ${APP_NAME}-clean-stale-open-cronjob
     spec:
-      schedule: '0 9 * * 0'
+      schedule: '0 9 1 * *'
       concurrencyPolicy: 'Replace'
       startingDeadlineSeconds: 10
       successfulJobsHistoryLimit: 3
-      failedJobsHistoryLimit: 3
+      failedJobsHistoryLimit: 1
       jobTemplate:
         spec:
           template:
@@ -36,11 +37,10 @@ objects:
                 parent: 'cronjobpi'
             spec:
               containers:
-                - name: ${APP_NAME}-cron-runner
+                - name: ${APP_NAME}-crone-runner
                   image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
-                  imagePullPolicy: Always
+                  imagePullPolicy: IfNotPresent
                   command:
-                    - container-entrypoint
                     - bash
                     - '-c'
                     - 'npm run clean-stale-open-cronjob'

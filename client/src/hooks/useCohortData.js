@@ -50,6 +50,23 @@ export const useCohortData = (cohortId) => {
     }
   }, [cohortId, openToast]);
 
+  const refreshCohortDetails = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const cohortData = await fetchCohort({ cohortId });
+      setCohort(cohortData.cohort);
+      setRows(cohortData.participants);
+    } catch (err) {
+      console.error('Error refreshing cohort details:', err);
+      openToast({
+        status: ToastStatus.Error,
+        message: err.message || 'Failed to refresh cohort details',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [cohortId, openToast]);
+
   const fetchDataAddParticipantModal = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -57,7 +74,7 @@ export const useCohortData = (cohortId) => {
         rowsPerPage,
         currentPage,
         filter.lastName,
-        filter.emailAddress
+        filter.emailAddress,
       );
       const participants = response.participants;
       const total = response.total;
@@ -88,9 +105,8 @@ export const useCohortData = (cohortId) => {
         status: ToastStatus.Success,
         message: 'Participant removed from cohort successfully',
       });
-      // Manually fetch updated data
-      hasInitiallyFetched.current = false;
-      fetchCohortDetails();
+      // Refresh updated data
+      refreshCohortDetails();
     } catch (error) {
       openToast({
         status: ToastStatus.Error,
@@ -100,7 +116,7 @@ export const useCohortData = (cohortId) => {
       setOpenConfirmDialog(false);
       setParticipantToRemove(null);
     }
-  }, [cohortId, participantToRemove, openToast, fetchCohortDetails]);
+  }, [cohortId, participantToRemove, openToast, refreshCohortDetails]);
 
   // Initial fetch of cohort details - ONLY ONCE
   useEffect(() => {
@@ -125,6 +141,7 @@ export const useCohortData = (cohortId) => {
     handleChangePage,
     handleChangeRowsPerPage,
     fetchCohortDetails,
+    refreshCohortDetails,
     fetchDataAddParticipantModal,
     setCurrentPage,
     confirmRemoveParticipant,

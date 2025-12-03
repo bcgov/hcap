@@ -7,7 +7,7 @@ export const mapTableRows = (columns, row, button) => {
       ...accumulator,
       [column.id]: addEllipsisMask(row[column.id], 100),
     }),
-    {}
+    {},
   );
   // Add additional props (user ID, button) to row
   return {

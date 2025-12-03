@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
 import {
   HEALTH_CARE_ASSISTANT_LINK,
   MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK,
@@ -19,24 +19,24 @@ const Summary = () => {
       <br />
       <Typography variant='body1'>
         There are two different HCAP pathways available, to train as either a:
-        <ol>
-          <li>
-            <Link href={HEALTH_CARE_ASSISTANT_LINK} target='__blank' rel='noreferrer noopener'>
-              Health Care Assistant
-            </Link>{' '}
-            or
-          </li>
-          <li>
-            <Link
-              href={MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK}
-              target='__blank'
-              rel='noreferrer noopener'
-            >
-              Mental Health and Addictions Worker
-            </Link>
-          </li>
-        </ol>
       </Typography>
+      <ol>
+        <li>
+          <Link href={HEALTH_CARE_ASSISTANT_LINK} target='__blank' rel='noreferrer noopener'>
+            Health Care Assistant
+          </Link>{' '}
+          or
+        </li>
+        <li>
+          <Link
+            href={MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK}
+            target='__blank'
+            rel='noreferrer noopener'
+          >
+            Mental Health and Addictions Worker
+          </Link>
+        </li>
+      </ol>
       <Typography variant='body1'>
         Click on the links above to review the background and eligibility criteria for the specific
         pathway you're applying for. If interested, use this expression of interest form to apply.

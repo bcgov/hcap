@@ -1,38 +1,43 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-
+import { Grid } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import { Table, Button } from '../../components/generic';
-
 import dayjs from 'dayjs';
-
 import { sortObjects } from '../../utils';
 
-export const useTableStyles = makeStyles((theme) => ({
-  rootItem: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-  },
-  tableItem: {
-    paddingTop: theme.spacing(4),
-    paddingRight: theme.spacing(2),
-    paddingBottom: theme.spacing(4),
-    paddingLeft: theme.spacing(2),
-  },
-  filterLabel: {
-    color: theme.palette.gray.dark,
-    fontWeight: 700,
-  },
-  actionMenuPaper: {
+export const RootItem = styled(Box)(({ theme }) => ({
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(1),
+}));
+
+export const TableItem = styled(Box)(({ theme }) => ({
+  paddingTop: theme.spacing(4),
+  paddingRight: theme.spacing(2),
+  paddingBottom: theme.spacing(4),
+  paddingLeft: theme.spacing(2),
+}));
+
+export const FilterLabel = styled(Typography)(({ theme }) => ({
+  color: theme.palette.gray?.dark || '#666', // fallback in case `gray` is not defined
+  fontWeight: 700,
+}));
+
+export const StyledMenu = styled(Menu)(({ theme }) => ({
+  '& .MuiPaper-root': {
     minWidth: '220px',
   },
-  menuItem: {
-    padding: '.75rem',
-    fontSize: '17px',
-  },
+}));
+
+export const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
+  padding: '0.75rem',
+  fontSize: '17px',
 }));
 
 /**
@@ -80,8 +85,6 @@ export const useTableStyles = makeStyles((theme) => ({
  * @returns {JSX.Element}
  */
 export const DataTable = ({ columns, fetchData, data, defaultSortColumn, sortOrder }) => {
-  const classes = useTableStyles();
-
   // Sorting settings
   const [order, setOrder] = useState(sortOrder ?? 'asc');
   const [orderBy, setOrderBy] = useState(defaultSortColumn ?? columns[0].id);
@@ -132,8 +135,8 @@ export const DataTable = ({ columns, fetchData, data, defaultSortColumn, sortOrd
     Object.fromEntries(
       columns
         .filter((column) => column.button && column.button.modal)
-        .map((column) => [column.id, { open: false, content: {} }])
-    )
+        .map((column) => [column.id, { open: false, content: {} }]),
+    ),
   );
 
   /**
@@ -167,7 +170,7 @@ export const DataTable = ({ columns, fetchData, data, defaultSortColumn, sortOrd
         column.button.callback = (row) => openModal(column.id, row);
       }
       return [column.id, column.button];
-    })
+    }),
   );
 
   return (
@@ -190,7 +193,7 @@ export const DataTable = ({ columns, fetchData, data, defaultSortColumn, sortOrd
         direction='row'
       >
         {hasData && (
-          <Grid className={classes.tableItem} item xs={12}>
+          <TableItem item xs={12}>
             <Table
               columns={columns}
               order={order}
@@ -215,7 +218,7 @@ export const DataTable = ({ columns, fetchData, data, defaultSortColumn, sortOrd
                 return row[columnId];
               }}
             />
-          </Grid>
+          </TableItem>
         )}
       </Grid>
     </>

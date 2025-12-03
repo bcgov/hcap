@@ -1,22 +1,9 @@
 import React, { Fragment } from 'react';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import { ErrorMessage } from 'formik';
 
 import { InputFieldError, InputFieldLabel } from '../generic';
-
-const useStyles = makeStyles({
-  inputRoot: {
-    paddingTop: '0 !important',
-  },
-  option: {
-    backgroundColor: 'white !important',
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.04) !important',
-    },
-  },
-});
 
 export const RenderAutocomplete = ({
   field: { value, name },
@@ -26,7 +13,6 @@ export const RenderAutocomplete = ({
   boldLabel,
   onItemChange,
 }) => {
-  const classes = useStyles();
   const touched = form.touched[name];
   const error = form.errors[name];
   const { setFieldValue } = form;
@@ -35,10 +21,20 @@ export const RenderAutocomplete = ({
     <Fragment>
       {label && <InputFieldLabel label={label} boldLabel={boldLabel} />}
       <Autocomplete
-        classes={classes}
+        sx={{
+          '& .MuiInputBase-root': {
+            paddingTop: '0 !important',
+          },
+          '& .MuiAutocomplete-option': {
+            backgroundColor: 'white !important',
+            '&:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.04) !important',
+            },
+          },
+        }}
         options={options}
         getOptionLabel={(option) => option?.label || ''}
-        getOptionSelected={(option, value) => value === '' || option.value === value.value}
+        isOptionEqualToValue={(option, value) => value === '' || option.value === value.value}
         value={options.find((option) => option.value === value) || ''}
         onChange={(e, val) => {
           setFieldValue(name, val?.value || '');

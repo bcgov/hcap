@@ -29,7 +29,15 @@ export const ParticipantFormSchema = yup
       .string()
       .required(errorMessage)
       .matches(/^\d{10}$/, 'Phone number must be provided as 10 digits'),
-    emailAddress: yup.string().required(errorMessage).email('Invalid email address'),
+    emailAddress: yup
+      .string()
+      .required(errorMessage)
+      .email('Invalid email address')
+      .test(
+        'has-tld',
+        'Email must include a valid domain (e.g., example.com)',
+        (value) => value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+      ),
     postalCode: yup
       .string()
       .required(errorMessage)
@@ -50,6 +58,7 @@ export const ParticipantFormSchema = yup
     preferredLocation: yup
       .array()
       .required(errorMessage)
+      .min(1, errorMessage)
       .of(yup.string().oneOf(healthRegions, 'Invalid location'))
       .test('is-unique-array', 'Preferred locations must be unique', validateUniqueArray),
 
@@ -57,6 +66,7 @@ export const ParticipantFormSchema = yup
     reasonForFindingOut: yup
       .array()
       .required(errorMessage)
+      .min(1, errorMessage)
       .of(yup.string().oneOf(foundOutReasons, 'Invalid selection'))
       .test('is-unique-array', 'Each reason must be unique', validateUniqueArray),
 

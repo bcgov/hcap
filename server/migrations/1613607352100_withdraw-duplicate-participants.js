@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { dbClient, collections } from '../db';
+const { dbClient, collections } = require('../db');
 
 exports.up = async () => {
   const duplicates = [
@@ -11,6 +11,6 @@ exports.up = async () => {
   ];
   await dbClient.db[collections.PARTICIPANTS].updateDoc(
     { maximusId: duplicates.map((i) => `${i}`) }, // Cast to string
-    { interested: 'withdrawn' }
+    { interested: 'withdrawn' },
   );
 };

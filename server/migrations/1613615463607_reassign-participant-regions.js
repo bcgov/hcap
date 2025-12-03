@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop, max-len */
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { dbClient, collections } from '../db';
+const { readFileSync } = require('fs');
+const { join } = require('path');
+const { dbClient, collections } = require('../db');
 
 const readXlsxFile = require('node-xlsx').default;
 
@@ -41,15 +41,14 @@ exports.up = async () => {
   }));
 
   const currentParticipants = await dbClient.db[collections.PARTICIPANTS].findDoc(
-    { maximusId: changes.map((i) => `${i.id}`) } // Find all relevant participants to build history
+    { maximusId: changes.map((i) => `${i.id}`) }, // Find all relevant participants to build history
   );
 
   for (const change of changes) {
     const currentParticipant = currentParticipants.find((i) => i.maximusId === change.id);
     // We could throw here if currentParticipant is undefined
     // Currently, this is allowed and will set participant history item from value to null
-    change.history = currentParticipant?.history || [];
-    change.history.push({
+    const historyItem = {
       timestamp: new Date(),
       changes: [
         {
@@ -58,14 +57,19 @@ exports.up = async () => {
           from: currentParticipant?.preferredLocation || null,
         },
       ],
-    });
+    };
+    // @ts-ignore - Dynamic property assignment in migration
+    change.history = currentParticipant?.history || [];
+    // @ts-ignore - Dynamic property assignment in migration
+    change.history.push(historyItem);
   }
 
   await dbClient.db.withTransaction(async (tx) => {
     for (const change of changes) {
       await tx[collections.PARTICIPANTS].updateDoc(
         { maximusId: change.id },
-        { preferredLocation: change.preferredLocation, history: change.history }
+        // @ts-ignore - Dynamic property assignment in migration
+        { preferredLocation: change.preferredLocation, history: change.history },
       );
     }
   });

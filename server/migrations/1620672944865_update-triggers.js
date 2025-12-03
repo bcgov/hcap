@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import { collections } from '../db';
+const { collections } = require('../db');
 
 exports.up = async (pgm) => {
   await pgm.dropTrigger(collections.EMPLOYER_SITES, 'update_postal_code_s', { ifExists: true });
@@ -54,7 +54,7 @@ exports.up = async (pgm) => {
     END IF;
     RETURN NEW;
   END;
-  `
+  `,
   );
 
   await pgm.dropTrigger(collections.PARTICIPANTS, 'update_postal_code_p', { ifExists: true });
@@ -108,6 +108,6 @@ exports.up = async (pgm) => {
     END IF;
     RETURN NEW;
   END;
-  `
+  `,
   );
 };

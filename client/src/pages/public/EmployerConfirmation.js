@@ -1,8 +1,8 @@
 import React from 'react';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { useLocation, Redirect } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { useLocation, Navigate } from 'react-router-dom';
 import { Routes } from '../../constants';
 
 import { Page } from '../../components/generic';
@@ -10,7 +10,7 @@ import { Form } from '../../components/employer-form';
 
 export default () => {
   const location = useLocation();
-  if (!location.state) return <Redirect to={Routes.EmployerForm} />;
+  if (!location.state) return <Navigate to={Routes.EmployerForm} replace />;
   return (
     <div id='confirmation'>
       <Page>

@@ -1,14 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Typography, Box } from '@material-ui/core';
-import {
-  Route,
-  useRouteMatch,
-  Switch,
-  useHistory,
-  useParams,
-  BrowserRouter as Router,
-  Redirect,
-} from 'react-router-dom';
+import { Typography, Box } from '@mui/material';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../providers';
 
 import { postHireStatuses, Role } from '../../constants';
@@ -22,13 +14,8 @@ import { TrackGraduation } from './track-graduation';
 import { CustomTab, CustomTabs } from '../generic';
 
 const tabKeyForPath = (tabDetails, path) => {
-  const tabKey = Object.keys(tabDetails).find((key) => tabDetails[key].path === path);
+  const tabKey = Object.keys(tabDetails).find((key) => path.endsWith(tabDetails[key].path));
   return { tabKey, tabInfo: tabDetails[tabKey] };
-};
-
-const defaultPath = (tabDetails) => {
-  const tabKey = Object.keys(tabDetails)[0];
-  return tabDetails[tabKey].path;
 };
 
 // Smaller standalone components
@@ -55,11 +42,18 @@ const TabContentTrackGraduation = ({ participant, fetchData }) => {
 };
 
 const canAssignCohort = (participant) => {
-  if (!participant || !participant.cohort) return false;
+  if (!participant) return false;
 
+  // Allow assignment if participant has no cohort
+  if (!participant.cohort) return true;
+
+  // Allow assignment if cohort is empty object
+  if (Object.keys(participant.cohort).length === 0) return true;
+
+  // Allow assignment if previous cohort was unsuccessful
   const hasUnsuccessfulCohort =
     participant.postHireStatus?.status === postHireStatuses.cohortUnsuccessful;
-  return hasUnsuccessfulCohort || Object.keys(participant.cohort).length === 0;
+  return hasUnsuccessfulCohort;
 };
 
 const PSIRouteTabs = ({
@@ -70,18 +64,28 @@ const PSIRouteTabs = ({
   tabDetails,
   fetchData,
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
+  const params = useParams();
   const [isLoadingData] = useState(false);
   const [tab, setTab] = useState(selectedTab);
   const disabled = !canAssignCohort(participant);
 
+  const location = useLocation();
+
   useEffect(() => {
-    const { pathname: path } = history.location;
+    const path = location.pathname;
     const { tabKey } = tabKeyForPath(tabDetails, path);
-    if (tabKey !== tab) {
+    const defaultTabKey = Object.keys(tabDetails)[0];
+
+    if (tabKey && tabKey !== tab) {
       setTab(tabKey);
+    } else if (!tabKey) {
+      // If no tab is detected from URL, navigate to the default tab
+      const basePath = `/participant-details/${params.page}/${params.pageId}/${params.id}`;
+      const defaultPath = `${basePath}/${tabDetails[defaultTabKey]?.path}`;
+      navigate(defaultPath, { replace: true });
     }
-  }, [tab, setTab, tabDetails, history]);
+  }, [tab, tabDetails, location, params, navigate]);
 
   return (
     <>
@@ -89,7 +93,10 @@ const PSIRouteTabs = ({
         value={tab}
         onChange={(_, prop) => {
           setTab(prop);
-          history.push(tabDetails[prop]?.path);
+          // Construct the correct path by replacing any existing tab segment
+          const basePath = `/participant-details/${params.page}/${params.pageId}/${params.id}`;
+          const newPath = `${basePath}/${tabDetails[prop]?.path}`;
+          navigate(newPath);
         }}
       >
         {Object.keys(tabDetails).map((key) => (
@@ -101,52 +108,43 @@ const PSIRouteTabs = ({
           ></CustomTab>
         ))}
       </CustomTabs>
-      <Switch>
-        {tabDetails.trackGraduation && (
-          <Route exact path={tabDetails.trackGraduation.path}>
-            <TabContentTrackGraduation
-              tab={tab}
-              setTab={setTab}
-              participant={participant}
-              fetchData={fetchData}
-            />
-          </Route>
-        )}
+      {/* Render content based on active tab instead of nested routes */}
+      {tab === 'trackGraduation' && tabDetails.trackGraduation && (
+        <TabContentTrackGraduation
+          tab={tab}
+          setTab={setTab}
+          participant={participant}
+          fetchData={fetchData}
+        />
+      )}
 
-        {tabDetails.assignCohort && (
-          <Route exact path={tabDetails.assignCohort.path}>
-            <TabContentAssignCohort
-              tab={tab}
-              setTab={setTab}
-              fetchData={fetchData}
-              assignAction={assignAction}
-              disabled={disabled}
-              psiList={psiList}
-            />
-          </Route>
-        )}
-        <Redirect to={defaultPath(tabDetails)} />
-      </Switch>
+      {tab === 'assignCohort' && tabDetails.assignCohort && (
+        <TabContentAssignCohort
+          tab={tab}
+          setTab={setTab}
+          fetchData={fetchData}
+          assignAction={assignAction}
+          disabled={disabled}
+          psiList={psiList}
+        />
+      )}
     </>
   );
 };
 
 export const PSICohortView = ({ psiList = [], assignAction, participant, fetchData }) => {
-  const match = useRouteMatch();
-  const { tab } = useParams();
   const { auth } = AuthContext.useAuth();
   const roles = useMemo(() => auth.user?.roles || [], [auth.user?.roles]);
-  const baseUrl = match.url.split(tab)[0];
   const sortedList = sortPSI({ psiList, cohort: participant ? participant.cohort : {} });
 
   // Determine the tags depending on user role
   const assignCohort = {
     label: 'Assign Cohort',
-    path: '/assign-cohort',
+    path: 'assign-cohort',
   };
   const trackGraduation = {
     label: 'Track Graduation',
-    path: '/track-graduation',
+    path: 'track-graduation',
   };
   let tabDetails = { trackGraduation };
   if (roles.includes(Role.HealthAuthority) || roles.includes(Role.MinistryOfHealth)) {
@@ -156,16 +154,14 @@ export const PSICohortView = ({ psiList = [], assignAction, participant, fetchDa
 
   return (
     <Box p={4}>
-      <Router basename={baseUrl}>
-        <PSIRouteTabs
-          selectedTab={tabKey}
-          psiList={sortedList}
-          assignAction={assignAction}
-          participant={participant}
-          fetchData={fetchData}
-          tabDetails={tabDetails}
-        ></PSIRouteTabs>
-      </Router>
+      <PSIRouteTabs
+        selectedTab={tabKey}
+        psiList={sortedList}
+        assignAction={assignAction}
+        participant={participant}
+        fetchData={fetchData}
+        tabDetails={tabDetails}
+      ></PSIRouteTabs>
     </Box>
   );
 };

@@ -5,10 +5,10 @@
  * @param route custom route portion of redirect
  * @param idpHint keycloak idp hint
  */
-export const createCustomLoginUrl = (kcInstance, route, idpHint) => {
-  const idps = ['idir', 'bceid_business', 'moh_idp'];
+export const createCustomLoginUrl = async (kcInstance, route, idpHint) => {
+  const idps = ['idir', 'bceid_business', 'moh_idp', 'phsa'];
 
-  const loginUrl = kcInstance.createLoginUrl({
+  const loginUrl = await kcInstance.createLoginUrl({
     idpHint,
     redirectUri: `${window.location.origin}${route}`,
   });

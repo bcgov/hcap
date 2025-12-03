@@ -13,11 +13,17 @@ export const NewCohortSchema = yup.object().shape({
     .required(errorMessage)
     .notOneOf([''], 'End Date is required')
     .test('is-reasonable', 'Invalid year, must be between 1900 and 2100', validateDateIsReasonable)
-    .when('startDate', (startDate, schema) => {
-      return schema.test({
-        test: (endDate) => !!startDate && startDate < endDate,
-        message: 'End Date must be after Start Date',
-      });
+    .when('startDate', {
+      is: (startDate) => !!startDate,
+      then: (schema) =>
+        schema.test({
+          test: function (endDate) {
+            const startDate = this.parent.startDate;
+            return !!startDate && startDate < endDate;
+          },
+          message: 'End Date must be after Start Date',
+        }),
+      otherwise: (schema) => schema,
     })
     .typeError('End Date is required'),
   cohortSize: yup

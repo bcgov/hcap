@@ -1,33 +1,20 @@
 import React from 'react';
-
 import dayjs from 'dayjs';
-import { Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles((theme) => ({
-  allocation: {
-    fontWeight: 700,
-  },
-  dates: {
-    color: '#272833',
-    fontWeight: 400,
-  },
-}));
+import { Box, Typography } from '@mui/material';
 
 export const SiteTableAllocation = ({ row }) => {
-  const classes = useStyles();
   const formattedDate = (date) => dayjs(row[date]).format('MMM D YYYY');
 
   return (
     <>
       <Box>
-        <div className={classes.allocation}>
+        <Typography sx={{ fontWeight: 700 }}>
           {row['allocation'] || row['allocation'] === 0 ? row['allocation'] : 'N/A'}
-        </div>
+        </Typography>
         {row['startDate'] ? (
-          <div className={classes.dates}>
+          <Typography sx={{ color: '#272833', fontWeight: 400 }}>
             {formattedDate('startDate')} - {formattedDate('endDate')}
-          </div>
+          </Typography>
         ) : (
           <div />
         )}

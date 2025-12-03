@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import { Box, Typography } from '@material-ui/core';
-import store from 'store';
+import Grid from '@mui/material/Grid';
+import { Box, Typography } from '@mui/material';
+import storage from '../../utils/storage';
 
 import { useToast } from '../../hooks';
 import { Button, Page, Table, CheckPermissions } from '../../components/generic';
@@ -36,7 +35,6 @@ export default () => {
 
   const [orderBy, setOrderBy] = useState(columns[4].id);
 
-  const history = useHistory();
   const location = useLocation();
   const { openToast } = useToast();
 
@@ -54,11 +52,11 @@ export default () => {
       {
         headers: {
           'Content-type': 'application/json',
-          Authorization: `Bearer ${store.get('TOKEN')}`,
+          Authorization: `Bearer ${storage.get('TOKEN')}`,
         },
         method: isUserAccessRequest ? 'POST' : 'PATCH',
         body: JSON.stringify({ ...values, userId: selectedUserId, username: selectedUserName }),
-      }
+      },
     );
     setLoadingData(false);
     if (response.ok) {
@@ -85,7 +83,7 @@ export default () => {
           if (!pending) {
             setLoadingData(true);
             const response = await fetch(`${API_URL}/api/v1/user-details?id=${row.id}`, {
-              headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+              headers: { Authorization: `Bearer ${storage.get('TOKEN')}` },
               method: 'GET',
             });
             setLoadingData(false);
@@ -108,7 +106,7 @@ export default () => {
   const fetchUsers = async ({ pending }) => {
     setLoadingData(true);
     const response = await fetch(`${API_URL}/api/v1/${pending ? 'pending-users' : 'users'}`, {
-      headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+      headers: { Authorization: `Bearer ${storage.get('TOKEN')}` },
       method: 'GET',
     });
 
@@ -129,7 +127,7 @@ export default () => {
   const fetchSites = async () => {
     setLoadingData(true);
     const response = await fetch(`${API_URL}/api/v1/employer-sites/user`, {
-      headers: { Authorization: `Bearer ${store.get('TOKEN')}` },
+      headers: { Authorization: `Bearer ${storage.get('TOKEN')}` },
       method: 'GET',
     });
 
@@ -145,8 +143,7 @@ export default () => {
   useEffect(() => {
     fetchUsers({ pending: location.pathname === Routes.UserPending });
     fetchSites();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history, location]);
+  }, [location]);
 
   return (
     <Page>

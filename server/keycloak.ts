@@ -10,7 +10,7 @@ import { FEATURE_KEYCLOAK_MIGRATION } from './services/feature-flags';
 import { sanitize } from './utils';
 
 const MAX_RETRY = 5;
-const options = ['bceid', 'bceid_business', 'idir', 'moh_idp'];
+const options = ['bceid', 'bceid_business', 'idir', 'moh_idp', 'phsa'];
 
 const regionMap = {
   region_fraser: 'Fraser',
@@ -81,7 +81,8 @@ class Keycloak {
   }
 
   initialize() {
-    const isLocal = process.env.KEYCLOAK_AUTH_URL.includes('local');
+    const keycloakAuthUrl = process.env.KEYCLOAK_AUTH_URL || '';
+    const isLocal = keycloakAuthUrl.includes('local');
     this.realm = process.env.KEYCLOAK_REALM;
     this.apiUrl = isLocal
       ? `${process.env.KEYCLOAK_AUTH_URL}/admin/realms/${this.realm}`
@@ -114,6 +115,7 @@ class Keycloak {
       ['dev', 'local'].includes(process.env.APP_ENV?.toLowerCase());
 
     if (isDevEnvironment) {
+      // eslint-disable-next-line global-require
       const https = require('https');
       this.axiosInstance = axios.create({
         baseURL: this.apiUrl,
@@ -128,8 +130,8 @@ class Keycloak {
       if (!this.access_token || !this.expiresAt || this.expiresAt < Date.now() / 1000 + 30) {
         await this.authenticateServiceAccount();
       }
-      const headers = { Authorization: `Bearer ${this.access_token}` };
-      return { ...config, headers };
+      config.headers.Authorization = `Bearer ${this.access_token}`;
+      return config;
     });
   }
 
@@ -170,7 +172,7 @@ class Keycloak {
         // if no email, user should not be in user_migration table
         const existingUser = await getUserMigration(username, email);
 
-        const type = username.split('@')[1];
+        const type = username.split('@').pop();
         const shouldSetRoles = !content?.resource_access && !existingUser && options.includes(type);
 
         if (shouldSetRoles) {
@@ -315,7 +317,7 @@ class Keycloak {
           }/roles/${role}/users?briefRepresentation=true&max=1000000`;
           const response = await this.axiosInstance.get(url);
           return response.data.filter((user) => user.username !== 'service-account');
-        })
+        }),
       );
       return results.flat();
     } catch (error) {

@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { dbClient, views } from '../db';
+const { dbClient, views } = require('../db');
 
 exports.shorthands = 'update-participant-status-infos';
 

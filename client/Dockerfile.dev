@@ -1,5 +1,5 @@
 # Used for local development
-FROM node:20-slim
+FROM node:24-slim
 
 # Allow node modules to be called directly
 ENV PATH=$PATH:/client/node_modules/.bin

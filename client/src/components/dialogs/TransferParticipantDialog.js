@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Dialog, DialogTitle, DialogContent } from '@material-ui/core';
-import { Typography } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Typography } from '@mui/material';
 import { PSICohortTable } from '../participant-details/psi-cohort-table';
 import { sortPSI, transferParticipantToNewCohort } from '../../services';
 import { useToast } from '../../hooks';
@@ -28,12 +28,13 @@ export const TransferParticipantDialog = ({
   }, [selectedParticipant, allCohorts]);
 
   const handleTransfer = async (selectedCohort) => {
-    await transferParticipantToNewCohort({
-      participantId: selectedParticipant.id,
-      cohortId: selectedParticipant.cohort.id,
-      newCohortId: selectedCohort.id,
-    });
     try {
+      await transferParticipantToNewCohort({
+        participantId: selectedParticipant.id,
+        cohortId: selectedParticipant.cohort.id,
+        newCohortId: selectedCohort.id,
+      });
+
       openToast({
         status: 'success',
         message: `Participant successfully transferred to ${selectedCohort.cohort_name}`,

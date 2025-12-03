@@ -1,18 +1,18 @@
 import React, { Fragment, useState } from 'react';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import mapValues from 'lodash/mapValues';
 import { Formik, Form as FormikForm } from 'formik';
-import { useHistory } from 'react-router-dom';
-import Stepper from '@material-ui/core/Stepper';
-import MobileStepper from '@material-ui/core/MobileStepper';
-import Step from '@material-ui/core/Step';
-import StepButton from '@material-ui/core/StepButton';
-import StepLabel from '@material-ui/core/StepLabel';
-import Hidden from '@material-ui/core/Hidden';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import Typography from '@material-ui/core/Typography';
+import { useNavigate } from 'react-router-dom';
+import Stepper from '@mui/material/Stepper';
+import MobileStepper from '@mui/material/MobileStepper';
+import Step from '@mui/material/Step';
+import StepButton from '@mui/material/StepButton';
+import StepLabel from '@mui/material/StepLabel';
+import Hidden from '@mui/material/Hidden';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import Typography from '@mui/material/Typography';
 
 import { API_URL, EmployerFormSchema, Routes, ToastStatus } from '../../constants';
 import { useToast } from '../../hooks';
@@ -117,7 +117,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
     // Collection certification
     doesCertify: false,
   };
-  const history = useHistory();
+  const navigate = useNavigate();
   const { openToast } = useToast();
   const [submitLoading, setSubmitLoading] = useState(false);
   const [formValues, setFormValues] = useState(defaultValues);
@@ -157,7 +157,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
     });
 
     if (response.ok) {
-      history.push(Routes.EmployerConfirmation, { formValues: values });
+      navigate(Routes.EmployerConfirmation, { formValues: values });
     } else {
       openToast({
         status: ToastStatus.Error,
@@ -176,7 +176,7 @@ export const Form = ({ hideCollectionNotice, initialValues, isDisabled }) => {
     const fieldsToTouch = mapObjectProps(filtered, () => true);
     const errors = await setTouched(fieldsToTouch);
     const hasOutstandingErrors = Object.keys(errors).some((key) =>
-      fieldsForCurrentStep.includes(key)
+      fieldsForCurrentStep.includes(key),
     );
     if (!hasOutstandingErrors) {
       setActiveStep(index);

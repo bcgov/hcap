@@ -1,0 +1,39 @@
+/* Lato Font Faces */
+@font-face {
+  font-family: 'Lato';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('./Lato-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Lato';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('./Lato-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Lato';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('./Lato-Bold.ttf') format('truetype');
+}
+
+/* Ensure normal text doesn't appear bold */
+body,
+p,
+div,
+span {
+  font-weight: 400 !important;
+}
+
+/* Only explicitly bold elements should be bold */
+b,
+strong,
+.bold {
+  font-weight: 700 !important;
+}

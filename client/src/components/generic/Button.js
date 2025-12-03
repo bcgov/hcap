@@ -1,31 +1,35 @@
 import React from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import MuiButton from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@mui/material/CircularProgress';
+import MuiButton from '@mui/material/Button';
 
-const useStyles = makeStyles(() => ({
-  root: {
-    height: '42px',
-  },
-  small: {
-    height: '30px',
-    fontSize: '13px',
-    lineHeight: '16px',
-  },
-  large: {
-    height: '52px',
-  },
-}));
+export const Button = ({ text, loading, disabled, size, fullWidth = true, ...props }) => {
+  const getSizeStyles = (size) => {
+    switch (size) {
+      case 'small':
+        return {
+          height: '30px',
+          fontSize: '13px',
+          lineHeight: '16px',
+        };
+      case 'large':
+        return {
+          height: '52px',
+        };
+      default:
+        return {
+          height: '42px',
+        };
+    }
+  };
 
-export const Button = ({ text, loading, disabled, ...props }) => {
-  const classes = useStyles();
   return (
     <MuiButton
-      classes={{ root: classes.root, sizeSmall: classes.small, sizeLarge: classes.large }}
       disabled={loading || disabled}
       variant='contained'
       color='primary'
-      fullWidth
+      fullWidth={fullWidth}
+      size={size}
+      sx={getSizeStyles(size)}
       {...props}
     >
       {loading ? <CircularProgress size={24} /> : text}

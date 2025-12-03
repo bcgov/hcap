@@ -81,7 +81,7 @@ participantRouter.get(
       },
     });
     return res.status(200).json({ participant });
-  })
+  }),
 );
 
 // GET participant/
@@ -105,7 +105,7 @@ participantRouter.get(
       },
     });
     return res.json(result);
-  })
+  }),
 );
 
 // Update participant data
@@ -130,7 +130,7 @@ participantRouter.patch(
   asyncMiddleware(async (req, res) => {
     req.body = Object.keys(req.body).reduce(
       (o, k) => (patchableFields.includes(k) ? { ...o, [k]: req.body[k] } : o),
-      {}
+      {},
     );
     await validate(ParticipantEditSchema, req.body);
     const user = req.hcapUserInfo;
@@ -143,7 +143,7 @@ participantRouter.patch(
       },
     });
     return res.json(result);
-  })
+  }),
 );
 
 // GET participants/confirm-interest
@@ -157,7 +157,7 @@ participantsRouter.get(
     }
 
     return res.status(400).send('Invalid Confirmation ID');
-  })
+  }),
 );
 
 participantsRouter.post(
@@ -168,7 +168,7 @@ participantsRouter.post(
       return res.status(201).send({ message: 'Success' });
     }
     return res.status(409).send({ message: 'Email already exists' });
-  })
+  }),
 );
 // POST participants/confirm-interest
 participantsRouter.post(
@@ -181,7 +181,7 @@ participantsRouter.post(
     }
 
     return res.status(400).send('Invalid Confirmation ID');
-  })
+  }),
 );
 
 // GET participants/
@@ -204,13 +204,20 @@ participantsRouter.get(
       lastNameFilter,
       emailFilter,
       siteSelector,
-      statusFilters,
       isIndigenousFilter,
       programFilter,
       livedLivingExperienceFilter,
       interestedWorkingPeerSupportRoleFilter,
       withdrawnParticipantsFilter,
     } = req.query;
+
+    // Handle statusFilters[] bracket notation and ensure it's always an array
+    const statusFiltersRaw = req.query['statusFilters[]'] || req.query.statusFilters;
+    let statusFilters: string[] = [];
+    if (statusFiltersRaw) {
+      statusFilters = Array.isArray(statusFiltersRaw) ? statusFiltersRaw : [statusFiltersRaw];
+    }
+
     const result = await getParticipants(
       user,
       {
@@ -230,7 +237,7 @@ participantsRouter.get(
       programFilter,
       livedLivingExperienceFilter,
       interestedWorkingPeerSupportRoleFilter,
-      withdrawnParticipantsFilter
+      withdrawnParticipantsFilter,
     );
     logger.info({
       action: 'participant_get',
@@ -242,7 +249,7 @@ participantsRouter.get(
       ids_viewed: result.data.slice(0, 10).map((person) => person.id),
     });
     return res.json(result);
-  })
+  }),
 );
 
 // POST participants/
@@ -286,7 +293,7 @@ participantsRouter.post(
     } catch (excp) {
       return res.status(500).send('Failed to create participant');
     }
-  })
+  }),
 );
 
 if (process.env.APP_ENV === 'local') {
@@ -308,7 +315,7 @@ if (process.env.APP_ENV === 'local') {
       } else {
         res.status(400).send('Required a valid email address');
       }
-    })
+    }),
   );
 }
 
@@ -373,7 +380,7 @@ newHiredParticipantRouter.post(
     } catch (excp) {
       return res.status(400).send(`${excp}`);
     }
-  })
+  }),
 );
 // POST ha-actions/withdraw
 // Withdraw a participant
@@ -388,7 +395,7 @@ employerActionsRouter.post(
       req.body.site,
       req.body.participantId,
       req.body.data,
-      user.id
+      user.id,
     );
     if (!success) {
       return res.status(400).json({ message: 'Could not find user' });
@@ -403,7 +410,7 @@ employerActionsRouter.post(
       status: 'archived',
     });
     return res.status(201).json({ message: 'success' });
-  })
+  }),
 );
 
 // POST employer-actions/
@@ -414,7 +421,7 @@ employerActionsRouter.post(
     Role.MinistryOfHealth,
     Role.HealthAuthority,
     Role.Employer,
-    Role.MHSUEmployer
+    Role.MHSUEmployer,
   ),
   keycloak.getUserInfoMiddleware(),
   asyncMiddleware(async (req, res) => {
@@ -438,7 +445,7 @@ employerActionsRouter.post(
       status,
       { site, ...data },
       user,
-      currentStatusId
+      currentStatusId,
     );
     logger.info({
       action: 'employer-actions_post',
@@ -452,13 +459,13 @@ employerActionsRouter.post(
     let returnStatus = 201;
     if (
       [ALREADY_HIRED, INVALID_ARCHIVE, INVALID_STATUS, INVALID_STATUS_TRANSITION].includes(
-        result.status
+        result.status,
       )
     ) {
       returnStatus = 400;
     }
     return res.status(returnStatus).json({ data: result });
-  })
+  }),
 );
 
 employerActionsRouter.delete(
@@ -505,7 +512,7 @@ employerActionsRouter.delete(
       participantId,
     });
     return res.status(200).json({ message });
-  })
+  }),
 );
 
 /**
@@ -532,5 +539,5 @@ employerActionsRouter.post(
       ids: body.participants,
     });
     return res.status(201).json(result);
-  })
+  }),
 );

@@ -1,9 +1,9 @@
 import React from 'react';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
-import { useLocation, Redirect } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import { useLocation, Navigate } from 'react-router-dom';
 import { Routes, PEOI_LINK } from '../../constants';
 
 import { PDFButton, Divider, Page } from '../../components/generic';
@@ -11,10 +11,14 @@ import { Form } from '../../components/participant-form';
 
 export default () => {
   const location = useLocation();
-  if (!location.state) return <Redirect to={Routes.ParticipantForm} />;
+  if (!location.state) return <Navigate to={Routes.ParticipantForm} replace />;
   return (
     <div id='confirmation'>
-      <Page hideEmployers={!window.location.hostname.includes('freshworks.club')}>
+      <Page
+        hideEmployers={
+          !window.location.hostname.includes('dev.') && !window.location.hostname.includes('test.')
+        }
+      >
         <Grid item xs={12} sm={11} md={10} lg={8} xl={6}>
           {/** Status */}
           <Box py={4} px={2}>

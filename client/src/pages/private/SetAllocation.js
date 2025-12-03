@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '../../components/generic';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 
 import { AllocationForm } from '../../components/modal-forms/AllocationForm';
 

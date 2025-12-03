@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-import { dbClient, collections } from '../db';
+const { dbClient, collections } = require('../db');
 
 exports.up = async (pgm) => {
   await dbClient.runRawQuery('CREATE EXTENSION IF NOT EXISTS POSTGIS;');
@@ -56,7 +56,7 @@ exports.up = async (pgm) => {
     END IF;
     RETURN NEW;
   END;
-  `
+  `,
   );
 
   await pgm.dropTrigger(collections.PARTICIPANTS, 'update_postal_code_p', { ifExists: true });
@@ -105,7 +105,7 @@ exports.up = async (pgm) => {
     END IF;
     RETURN NEW;
   END;
-  `
+  `,
   );
 
   await pgm.dropTrigger(collections.PARTICIPANTS, 'delete_participant_distance_p', {
@@ -126,7 +126,7 @@ exports.up = async (pgm) => {
     DELETE FROM participants_distance WHERE participant_id=OLD.id;
     RETURN OLD;
   END;
-  `
+  `,
   );
 
   await pgm.dropTrigger(collections.EMPLOYER_SITES, 'delete_participant_distance_s', {
@@ -147,6 +147,6 @@ exports.up = async (pgm) => {
     DELETE FROM participants_distance WHERE site_id=(site.body->>'siteId')::int;
     RETURN OLD;
   END;
-  `
+  `,
   );
 };

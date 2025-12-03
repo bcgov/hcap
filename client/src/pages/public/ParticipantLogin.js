@@ -1,63 +1,55 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { Page, Button } from '../../components/generic';
-import { useKeycloak } from '@react-keycloak/web';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
+import { useKeycloak } from '../../providers/KeycloakProvider';
+import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
 import { Routes, BC_SERVICES_CARD_LINK } from '../../constants';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const useStyles = makeStyles((theme) => ({
-  blueText: {
-    color: theme.palette.primary.light,
+const StyledPageContainer = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.down('md')]: {
+    flexDirection: 'column',
   },
-  blueBox: {
-    backgroundColor: '#EDF6FF',
-    maxWidth: 554,
-  },
-  pageContainer: {
-    [theme.breakpoints.down('md')]: {
-      flexDirection: 'column',
-    },
-    [theme.breakpoints.up('md')]: {
-      flexDirection: 'row',
-    },
-  },
-  rightContainer: {
-    padding: '10%',
-    [theme.breakpoints.up('md')]: {
-      width: '50%',
-    },
-    backgroundColor: '#FFFFFF',
-  },
-  leftContainer: {
-    padding: '10%',
-    [theme.breakpoints.up('md')]: {
-      width: '50%',
-    },
+  [theme.breakpoints.up('md')]: {
+    flexDirection: 'row',
   },
 }));
 
-export default () => {
-  const classes = useStyles();
-  const [keycloak] = useKeycloak();
+const StyledLeftContainer = styled(Box)(({ theme }) => ({
+  padding: '10%',
+  [theme.breakpoints.up('md')]: {
+    width: '50%',
+  },
+}));
 
-  const history = useHistory();
+const StyledRightContainer = styled(Box)(({ theme }) => ({
+  padding: '10%',
+  [theme.breakpoints.up('md')]: {
+    width: '50%',
+  },
+  backgroundColor: '#FFFFFF',
+}));
+
+export default () => {
+  const { keycloak } = useKeycloak();
+
+  const navigate = useNavigate();
 
   const redirectToLogin = () => {
-    keycloak.login({
+    keycloak?.login({
       idpHint: 'bcsc_hcap',
       redirectUri: `${window.location.origin}${Routes.ParticipantLanding}`,
     });
   };
   const redirectToForm = () => {
-    history.push(Routes.ParticipantForm);
+    navigate(Routes.ParticipantForm);
   };
 
   return (
     <Page hideEmployers={true}>
-      <Box container display='flex' minHeight='100%' className={classes.pageContainer}>
-        <Box className={classes.leftContainer}>
+      <StyledPageContainer container display='flex' minHeight='100%'>
+        <StyledLeftContainer>
           <Box mb={3}>
             <Typography variant='h2'>
               <b>Login</b>
@@ -71,7 +63,6 @@ export default () => {
           </Box>
           <Box mb={2}>
             <Button
-              className={classes.button}
               onClick={redirectToLogin}
               fullWidth={false}
               variant='contained'
@@ -84,9 +75,9 @@ export default () => {
             A <a href={BC_SERVICES_CARD_LINK}>BC Services Card</a> provides secure access to
             government services.
           </Typography>
-        </Box>
-        <Box className={classes.rightContainer}>
-          <Typography variant='subtitle1' color='' className={classes.blueText}>
+        </StyledLeftContainer>
+        <StyledRightContainer>
+          <Typography variant='subtitle1' sx={{ color: 'primary.light' }}>
             Work in the health care sector
           </Typography>
           <Box mb={3}>
@@ -99,8 +90,8 @@ export default () => {
             get hired and receive paid employer sponsored health care assistant training as part of
             their employment.
           </Typography>
-          <Box p={4} mt={2} className={classes.blueBox}>
-            <Typography variant={'subtitle2'} className={classes.blueText}>
+          <Box p={4} mt={2} sx={{ backgroundColor: '#EDF6FF', maxWidth: 554 }}>
+            <Typography variant={'subtitle2'} sx={{ color: 'primary.light' }}>
               Don't have an account yet?
             </Typography>
             <Box mb={2}>
@@ -110,7 +101,6 @@ export default () => {
               </Typography>
             </Box>
             <Button
-              className={classes.button}
               variant='contained'
               color='primary'
               fullWidth={false}
@@ -119,8 +109,8 @@ export default () => {
               m={2}
             />
           </Box>
-        </Box>
-      </Box>
+        </StyledRightContainer>
+      </StyledPageContainer>
     </Page>
   );
 };

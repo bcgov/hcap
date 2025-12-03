@@ -1,5 +1,5 @@
 kind: Template
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 labels:
   app: ${APP_NAME}
 parameters:
@@ -39,7 +39,6 @@ objects:
                   image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${APP_NAME}-server:${IMAGE_TAG}
                   imagePullPolicy: Always
                   command:
-                    - container-entrypoint
                     - bash
                     - '-c'
                     - 'npm run clean-stale-cronjob'

@@ -12,7 +12,7 @@ export const ReturnOfServiceSchema = yup
       .test(
         'is-reasonable',
         'Invalid entry. Date must be after December 31st 1899 and before January 1st 2100.',
-        validateDateIsReasonable
+        validateDateIsReasonable,
       )
       .typeError('Invalid Date, must be in the format YYYY/MM/DD'),
     positionType: yup.string().required('Position Type is required').oneOf(rosPositionTypeValues),
@@ -29,7 +29,9 @@ export const ReturnOfServiceSchema = yup
       .typeError('Confirmation is boolean')
       .required('Please confirm')
       .test('is-true', 'Please confirm', (v) => v === true),
-    site: yup.number('Site should be number').when(['sameSite'], (sameSite, schema) => {
-      return !sameSite ? schema.required('Site is required') : schema.optional().nullable();
+    site: yup.number('Site should be number').when('sameSite', {
+      is: (sameSite) => !sameSite,
+      then: (schema) => schema.required('Site is required'),
+      otherwise: (schema) => schema.optional().nullable(),
     }),
   });

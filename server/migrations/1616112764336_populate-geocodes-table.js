@@ -1,9 +1,9 @@
 /* eslint-disable camelcase, no-restricted-syntax, no-await-in-loop, no-console */
-import fs from 'fs';
-import { join } from 'path';
-import readline from 'readline';
-import { dbClient, collections, schema } from '../db';
-import logger from '../logger';
+const fs = require('fs');
+const { join } = require('path');
+const readline = require('readline');
+const { dbClient, collections, schema } = require('../db');
+const logger = require('../logger').default;
 
 const objectMap = (row) => {
   const split_row = row.split('\t');

@@ -29,7 +29,7 @@ export const EditRosSiteDialog = ({ isOpen, onClose, onSubmit, rosData }) => {
   });
 
   return (
-    <Dialog title='Edit RoS Current Site' open={isOpen}>
+    <Dialog title='Edit RoS Current Site' open={isOpen} onClose={onClose}>
       <EditRosSiteForm
         initialValues={{
           startDate: undefined,

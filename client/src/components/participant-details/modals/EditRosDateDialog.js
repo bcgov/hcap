@@ -7,7 +7,7 @@ import { formatShortDate } from '../../../utils';
 
 export const EditRosDateDialog = ({ isOpen, onClose, onSubmit, rosData }) => {
   return (
-    <Dialog title='Edit Start Date' open={isOpen}>
+    <Dialog title='Edit Start Date' open={isOpen} onClose={onClose}>
       <EditRosDateForm
         initialValues={{ date: formatShortDate(rosData?.date) }}
         validationSchema={EditRosDateSchema}

@@ -45,7 +45,7 @@ export const getParticipantStatusData = (status, tabValue, isMoH, participantInf
     isWithdrawn,
     isArchived,
     isRejectedByPeer,
-    statusInfo
+    statusInfo,
   );
 
   const rejectData = {
@@ -90,7 +90,7 @@ const getStatusText = (
   isWithdrawn,
   isArchived,
   isRejectedByPeer,
-  statusInfo
+  statusInfo,
 ) => {
   let statusText = getParticipantStatus(isMoH, statusValue);
   if (isWithdrawn) {

@@ -33,6 +33,12 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Install docker-compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@v3
@@ -101,7 +107,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '24'
+
+      - name: Install docker-compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
 
       - name: Cache node modules
         id: cache-npm
@@ -134,11 +146,7 @@ jobs:
           EOF
 
       - name: Build and Run
-        run: |
-          alias docker-compose='docker compose'
-          make local-kc-run
+        run: make local-kc-run
 
       - name: Jest run
-        run: |
-          alias docker-compose='docker compose'
-          make local-server-tests
+        run: make local-server-tests

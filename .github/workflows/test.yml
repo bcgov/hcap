@@ -134,7 +134,11 @@ jobs:
           EOF
 
       - name: Build and Run
-        run: make local-kc-run
+        run: |
+          alias docker-compose='docker compose'
+          make local-kc-run
 
       - name: Jest run
-        run: make local-server-tests
+        run: |
+          alias docker-compose='docker compose'
+          make local-server-tests

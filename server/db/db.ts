@@ -1,4 +1,5 @@
 import massive from 'massive';
+import migrationRunner from 'node-pg-migrate';
 import { ERROR_DUPLICATED } from './common';
 import logger from '../logger';
 
@@ -38,7 +39,6 @@ class DBClient {
     const { host, port, database, user, password } = this.settings;
     logger.info('Running db migrations');
     try {
-      const { runner: migrationRunner } = await import('node-pg-migrate');
       const results = await migrationRunner({
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         log: () => {}, // Silence migrations for test suites

@@ -47,23 +47,54 @@ export const KeycloakProvider = ({ children, onTokens }) => {
       }
 
       // Create Keycloak instance
-      const keycloakInstance = new Keycloak({
+      let keycloakInstance = new Keycloak({
         realm: result.realm,
         url: result.url,
         clientId: result.clientId,
       });
 
       // Initialize Keycloak
-      const authenticated = await keycloakInstance.init({
-        pkceMethod: 'S256',
-        checkLoginIframe: false,
-      });
+      let authenticated;
+      try {
+        authenticated = await keycloakInstance.init({
+          pkceMethod: 'S256',
+          checkLoginIframe: true,
+          checkLoginIframeInterval: 30, // Check every 30 seconds
+          messageReceiveTimeout: 10000, // Wait up to 10 seconds for iframe
+        });
+      } catch (initError) {
+        console.warn(
+          'Keycloak iframe initialization failed, falling back to token-only mode:',
+          initError,
+        );
+        // Create a new instance for fallback since Keycloak can only be initialized once
+        keycloakInstance = new Keycloak({
+          realm: result.realm,
+          url: result.url,
+          clientId: result.clientId,
+        });
+        authenticated = await keycloakInstance.init({
+          pkceMethod: 'S256',
+          checkLoginIframe: false,
+        });
+      }
 
       if (authenticated) {
         // Extract user data from Keycloak token
         const tokenParsed = keycloakInstance.tokenParsed;
 
         if (tokenParsed) {
+          // Debug token expiration times
+          const now = Math.floor(Date.now() / 1000);
+          const tokenExp = tokenParsed.exp;
+          const tokenMinutesLeft = Math.floor((tokenExp - now) / 60);
+          console.log('=== TOKEN DEBUG INFO ===');
+          console.log('Current time:', new Date(now * 1000).toLocaleTimeString());
+          console.log('Token expires at:', new Date(tokenExp * 1000).toLocaleTimeString());
+          console.log('Token valid for:', tokenMinutesLeft, 'minutes');
+          console.log('checkLoginIframe enabled:', !keycloakInstance.checkLoginIframe === false);
+          console.log('========================');
+
           // Check different possible locations for roles
           const realmRoles = tokenParsed.realm_access?.roles || [];
           const clientRoles = tokenParsed.resource_access?.[tokenParsed.aud]?.roles || [];
@@ -131,6 +162,42 @@ export const KeycloakProvider = ({ children, onTokens }) => {
       setKeycloak(keycloakInstance);
       setAuthenticated(authenticated);
 
+      // Set up global fetch interceptor for 401 errors
+      if (authenticated) {
+        const originalFetch = window.fetch;
+        window.fetch = async (...args) => {
+          try {
+            const response = await originalFetch(...args);
+
+            // If we get 401 Unauthorized, session has expired
+            if (response.status === 401 && storage.get('TOKEN')) {
+              console.error('401 Unauthorized - clearing session');
+              storage.remove('TOKEN');
+              setAuthenticated(false);
+              alert('Your session has expired. Please login again.');
+              keycloakInstance.login();
+              return response;
+            }
+
+            return response;
+          } catch (error) {
+            // Handle network errors (CORS, network failure, etc.)
+            // These often happen when token is expired and server rejects the request
+            if (
+              storage.get('TOKEN') &&
+              (error.message.includes('Failed to fetch') || error.message.includes('CORS'))
+            ) {
+              console.error('Network error with expired token - clearing session');
+              storage.remove('TOKEN');
+              setAuthenticated(false);
+              alert('Your session has expired. Please login again.');
+              keycloakInstance.login();
+            }
+            throw error; // Re-throw for other types of errors
+          }
+        };
+      }
+
       // Set up token refresh
       if (authenticated) {
         const tokens = {
@@ -160,12 +227,26 @@ export const KeycloakProvider = ({ children, onTokens }) => {
                 if (onTokens) {
                   onTokens(newTokens);
                 }
+                storage.set('TOKEN', keycloakInstance.token);
               }
             })
             .catch(() => {
-              console.error('Failed to refresh token');
+              console.error('Failed to refresh token - session expired');
+              // Clear stored token to prevent further API calls with expired token
+              storage.remove('TOKEN');
+              // Alert user and redirect to login
+              alert('Your session has expired. You will be redirected to login.');
               keycloakInstance.login();
             });
+        };
+
+        // Monitor SSO session state when checkLoginIframe is enabled
+        keycloakInstance.onAuthLogout = () => {
+          console.log('SSO logout detected');
+          storage.remove('TOKEN');
+          setAuthenticated(false);
+          alert('You have been logged out. Please login again.');
+          window.location.reload();
         };
       }
 
@@ -178,6 +259,9 @@ export const KeycloakProvider = ({ children, onTokens }) => {
     } catch (err) {
       console.error('Failed to initialize Keycloak:', err);
       setError(err.message);
+      // Set a fallback null keycloak to prevent crashes
+      setKeycloak(null);
+      setAuthenticated(false);
     } finally {
       setLoading(false);
     }

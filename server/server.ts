@@ -49,12 +49,6 @@ app.use(
         'base-uri': ["'self'"],
         'block-all-mixed-content': [],
         'font-src': ["'self'"],
-        'frame-src': [
-          "'self'",
-          'https://common-logon-dev.hlth.gov.bc.ca',
-          'https://common-logon-test.hlth.gov.bc.ca',
-          'https://common-logon.hlth.gov.bc.ca',
-        ],
         'frame-ancestors': ["'self'"],
         'img-src': ["'self'", 'data:'],
         'object-src': ["'none'"],

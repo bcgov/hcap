@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import Keycloak from 'keycloak-js';
 import LinearProgress from '@mui/material/LinearProgress';
 import { API_URL } from '../constants';
@@ -21,8 +21,16 @@ export const KeycloakProvider = ({ children, onTokens }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { dispatch } = useAuth();
+  const initialized = useRef(false);
+  const refreshTimerRef = useRef(null);
 
   const initKeycloak = useCallback(async () => {
+    // Prevent re-initialization
+    if (initialized.current) {
+      return;
+    }
+    initialized.current = true;
+
     try {
       setLoading(true);
       setError(null);
@@ -54,29 +62,43 @@ export const KeycloakProvider = ({ children, onTokens }) => {
       });
 
       // Initialize Keycloak
+      // Disable iframe check on localhost to avoid CORS/iframe issues
+      const isLocalhost =
+        window.location.hostname.includes('localhost') ||
+        window.location.hostname.includes('127.0.0.1');
+
       let authenticated;
-      try {
-        authenticated = await keycloakInstance.init({
-          pkceMethod: 'S256',
-          checkLoginIframe: true,
-          checkLoginIframeInterval: 30, // Check every 30 seconds
-          messageReceiveTimeout: 10000, // Wait up to 10 seconds for iframe
-        });
-      } catch (initError) {
-        console.warn(
-          'Keycloak iframe initialization failed, falling back to token-only mode:',
-          initError,
-        );
-        // Create a new instance for fallback since Keycloak can only be initialized once
-        keycloakInstance = new Keycloak({
-          realm: result.realm,
-          url: result.url,
-          clientId: result.clientId,
-        });
+
+      if (isLocalhost) {
+        console.log('Running on localhost - disabling iframe check');
         authenticated = await keycloakInstance.init({
           pkceMethod: 'S256',
           checkLoginIframe: false,
         });
+      } else {
+        try {
+          authenticated = await keycloakInstance.init({
+            pkceMethod: 'S256',
+            checkLoginIframe: true,
+            checkLoginIframeInterval: 30, // Check every 30 seconds
+            messageReceiveTimeout: 10000, // Wait up to 10 seconds for iframe
+          });
+        } catch (initError) {
+          console.warn(
+            'Keycloak iframe initialization failed, falling back to token-only mode:',
+            initError,
+          );
+          // Create a new instance for fallback since Keycloak can only be initialized once
+          keycloakInstance = new Keycloak({
+            realm: result.realm,
+            url: result.url,
+            clientId: result.clientId,
+          });
+          authenticated = await keycloakInstance.init({
+            pkceMethod: 'S256',
+            checkLoginIframe: false,
+          });
+        }
       }
 
       if (authenticated) {
@@ -175,7 +197,9 @@ export const KeycloakProvider = ({ children, onTokens }) => {
               storage.remove('TOKEN');
               setAuthenticated(false);
               alert('Your session has expired. Please login again.');
-              keycloakInstance.login();
+              keycloakInstance.login({
+                redirectUri: window.location.href,
+              });
               return response;
             }
 
@@ -191,7 +215,9 @@ export const KeycloakProvider = ({ children, onTokens }) => {
               storage.remove('TOKEN');
               setAuthenticated(false);
               alert('Your session has expired. Please login again.');
-              keycloakInstance.login();
+              keycloakInstance.login({
+                redirectUri: window.location.href,
+              });
             }
             throw error; // Re-throw for other types of errors
           }
@@ -210,15 +236,13 @@ export const KeycloakProvider = ({ children, onTokens }) => {
           onTokens(tokens);
         }
 
-        // Also call user info loading here if needed
-        // You can pass a getUserInfo callback through props
-
-        // Set up automatic token refresh
-        keycloakInstance.onTokenExpired = () => {
+        // Helper function to handle token refresh
+        const refreshToken = () => {
           keycloakInstance
-            .updateToken(30)
+            .updateToken(60) // Refresh if token expires in less than 60 seconds
             .then((refreshed) => {
               if (refreshed) {
+                console.log('Token refreshed successfully');
                 const newTokens = {
                   token: keycloakInstance.token,
                   refreshToken: keycloakInstance.refreshToken,
@@ -228,21 +252,71 @@ export const KeycloakProvider = ({ children, onTokens }) => {
                   onTokens(newTokens);
                 }
                 storage.set('TOKEN', keycloakInstance.token);
+
+                // Schedule next refresh after successful refresh
+                scheduleTokenRefresh();
+              } else {
+                console.log('Token not refreshed, still valid');
+                // Token still valid, check again in 10 seconds
+                // This prevents tight loops when token is close to but not within refresh threshold
+                refreshTimerRef.current = setTimeout(() => {
+                  refreshToken();
+                }, 10000);
               }
             })
-            .catch(() => {
-              console.error('Failed to refresh token - session expired');
+            .catch((error) => {
+              console.error('Failed to refresh token - session expired', error);
               // Clear stored token to prevent further API calls with expired token
               storage.remove('TOKEN');
               // Alert user and redirect to login
               alert('Your session has expired. You will be redirected to login.');
-              keycloakInstance.login();
+              keycloakInstance.login({
+                redirectUri: window.location.href,
+              });
             });
+        };
+
+        // Schedule token refresh before expiration
+        const scheduleTokenRefresh = () => {
+          // Clear any existing timer
+          if (refreshTimerRef.current) {
+            clearTimeout(refreshTimerRef.current);
+          }
+
+          // Calculate when to refresh (e.g., 1 minute before expiration)
+          const tokenParsed = keycloakInstance.tokenParsed;
+          if (tokenParsed && tokenParsed.exp) {
+            const now = Math.floor(Date.now() / 1000);
+            const tokenExp = tokenParsed.exp;
+            const timeUntilExpiry = tokenExp - now;
+
+            // Refresh 60 seconds before expiration
+            // Add minimum delay of 10 seconds to prevent tight loops
+            const refreshTime = Math.max(10000, (timeUntilExpiry - 60) * 1000);
+
+            console.log(`Next token refresh check in ${Math.floor(refreshTime / 1000)} seconds`);
+
+            refreshTimerRef.current = setTimeout(() => {
+              refreshToken();
+            }, refreshTime);
+          }
+        };
+
+        // Start the refresh schedule
+        scheduleTokenRefresh();
+
+        // Set up automatic token refresh as fallback (in case timer misses)
+        keycloakInstance.onTokenExpired = () => {
+          console.warn('Token expired - refreshing immediately (fallback handler)');
+          refreshToken();
         };
 
         // Monitor SSO session state when checkLoginIframe is enabled
         keycloakInstance.onAuthLogout = () => {
           console.log('SSO logout detected');
+          if (refreshTimerRef.current) {
+            clearTimeout(refreshTimerRef.current);
+          }
           storage.remove('TOKEN');
           setAuthenticated(false);
           alert('You have been logged out. Please login again.');
@@ -269,11 +343,20 @@ export const KeycloakProvider = ({ children, onTokens }) => {
 
   useEffect(() => {
     initKeycloak();
+
+    // Cleanup function to clear refresh timer
+    return () => {
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current);
+      }
+    };
   }, [initKeycloak]);
 
   const login = useCallback(() => {
     if (keycloak) {
-      keycloak.login();
+      keycloak.login({
+        redirectUri: window.location.href,
+      });
     }
   }, [keycloak]);
 

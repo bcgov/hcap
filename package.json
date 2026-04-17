@@ -18,7 +18,7 @@
     "cypress-e2e": "cypress run --headless"
   },
   "engines": {
-    "node": ">=24.0.0",
+    "node": ">=24.14.1",
     "npm": ">=10.0.0"
   },
   "devDependencies": {

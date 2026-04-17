@@ -1,5 +1,5 @@
 # Used for local testing with Keycloak
-FROM node:24.12.0-trixie-slim
+FROM node:24-trixie-slim
 
 # Allow node modules to be called directly
 ENV PATH=$PATH:/client/node_modules/.bin

@@ -1,5 +1,5 @@
 # Client
-FROM node:24.12.0-trixie-slim AS client
+FROM node:24-trixie-slim AS client
 
 # Build client
 ENV HOME_CLIENT=/opt/app-root/src/app/client

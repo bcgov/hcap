@@ -1,6 +1,5 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import Typography from '@mui/material/Typography';
 import { FastField } from 'formik';
 import { Question } from '../Question';
 import { SectionHeader } from '../SectionHeader';
@@ -8,7 +7,7 @@ import { RenderRadioGroup } from '../../fields';
 import { YesNo, YesNoPreferNot } from '../../../constants';
 import { PleaseNoteBanner } from '../PleaseNoteBanner';
 
-export const OtherSection = ({ checkFieldDisability, isMHAWProgram }) => {
+export const OtherSection = ({ checkFieldDisability }) => {
   return (
     <>
       <SectionHeader text='Other' />
@@ -41,53 +40,6 @@ export const OtherSection = ({ checkFieldDisability, isMHAWProgram }) => {
           options={YesNoPreferNot}
         />
       </Grid>
-      {/** Q11 lived or experienced mental health or substance use challenges */}
-      {/** only show if Q1 is Mental Health and Addictions Worker*/}
-      {isMHAWProgram && (
-        <>
-          <Question
-            text='11. Do you have lived or living experience of mental health and/or substance use
-                    challenges?'
-          />
-          <Grid item xs={12}>
-            <FastField
-              name='experienceWithMentalHealthOrSubstanceUse'
-              component={RenderRadioGroup}
-              disabled={checkFieldDisability('experienceWithMentalHealthOrSubstanceUse')}
-              setTouched
-              row
-              options={YesNoPreferNot}
-            />
-          </Grid>
-        </>
-      )}
-      {/** Q11A Interest in working in a peer support role */}
-      {/** only show if Q1 is Mental Health and Addictions Worker*/}
-      {isMHAWProgram && (
-        <>
-          <Question text='11A. Are you interested working in a peer support role?' />
-          <Grid item xs={12}>
-            {' '}
-            <Typography>
-              <i>
-                In a peer support role, a person uses their lived or living experience of mental
-                health and/or substance use challenges, to inform how they carry out their job
-                duties.
-              </i>
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <FastField
-              name='interestedWorkingPeerSupportRole'
-              component={RenderRadioGroup}
-              disabled={checkFieldDisability('interestedWorkingPeerSupportRole')}
-              setTouched
-              row
-              options={YesNoPreferNot}
-            />
-          </Grid>
-        </>
-      )}
     </>
   );
 };

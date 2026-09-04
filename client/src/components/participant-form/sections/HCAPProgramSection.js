@@ -11,8 +11,7 @@ export const HCAPProgramSection = ({ checkFieldDisability }) => {
   return (
     <>
       <SectionHeader text='HCAP Program' />
-      <PleaseNoteBanner text='Please submit a separate application for each program if you are interested in both.' />
-      <Question text='1. * Which pathway are you applying for:' />
+      <Question text='1. * Please confirm the HCAP program you are applying for:' />
       <Grid item xs={12}>
         <FastField
           name='program'

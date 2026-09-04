@@ -20,10 +20,7 @@ export const HCAPProgramSection = ({ checkFieldDisability }) => {
           disabled={checkFieldDisability('program')}
           setTouched
           row
-          options={[
-            { value: Program.HCA, label: 'Health Care Assistant - HCAP' },
-            { value: Program.MHAW, label: 'Mental Health and Addictions Worker - HCAP' },
-          ]}
+          options={[{ value: Program.HCA, label: 'Health Care Assistant - HCAP' }]}
         />
       </Grid>
     </>

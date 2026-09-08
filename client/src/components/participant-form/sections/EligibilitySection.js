@@ -4,11 +4,7 @@ import { FastField } from 'formik';
 import { RenderRadioGroup } from '../../fields';
 import { Question } from '../Question';
 import { SectionHeader } from '../SectionHeader';
-import {
-  HEALTH_CARE_ASSISTANT_LINK,
-  MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK,
-  YesNoDontKnow,
-} from '../../../constants';
+import { HEALTH_CARE_ASSISTANT_LINK, YesNoDontKnow } from '../../../constants';
 import { PleaseNoteBanner } from '../PleaseNoteBanner';
 
 export const EligibilitySection = ({ checkFieldDisability }) => {
@@ -44,15 +40,7 @@ export const EligibilitySection = ({ checkFieldDisability }) => {
             <Link href={HEALTH_CARE_ASSISTANT_LINK} target='__blank' rel='noreferrer noopener'>
               Health Care Assistant
             </Link>{' '}
-            or{' '}
-            <Link
-              href={MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK}
-              target='__blank'
-              rel='noreferrer noopener'
-            >
-              Mental Health and Addictions Worker
-            </Link>{' '}
-            pages for more information.
+            page for more information.
           </i>
         </Typography>
       </Grid>

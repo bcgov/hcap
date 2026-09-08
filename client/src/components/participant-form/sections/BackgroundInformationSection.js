@@ -4,21 +4,12 @@ import Grid from '@mui/material/Grid';
 import { Question } from '../Question';
 import { SectionHeader } from '../SectionHeader';
 import { RenderRadioGroup, RenderTextField } from '../../fields';
-import { YesNo, currentOrMostRecentIndustryOptions } from '../../../constants';
-import {
-  formatOptions,
-  showRoleInvolvesMentalHealthOrSubstanceUse,
-  isOtherSelected,
-} from '../../../utils';
+import { currentOrMostRecentIndustryOptions } from '../../../constants';
+import { formatOptions, isOtherSelected } from '../../../utils';
 
-export const BackgroundInformationSection = ({
-  checkFieldDisability,
-  isMHAWProgram,
-  selectedOption,
-}) => {
+export const BackgroundInformationSection = ({ checkFieldDisability, selectedOption }) => {
   const [industry, , industryHelpers] = useField('currentOrMostRecentIndustry');
   const [other, , otherHelpers] = useField('otherIndustry');
-  const [, , involvesMentalHealthHelpers] = useField('roleInvolvesMentalHealthOrSubstanceUse');
 
   useEffect(() => {
     if (
@@ -36,7 +27,7 @@ export const BackgroundInformationSection = ({
     <>
       <SectionHeader text='Background Information' />
       <Question
-        text='14. What industry do you currently or most recently work in? Please select the most
+        text='13. What industry do you currently or most recently work in? Please select the most
               applicable option.'
       />
       <Grid item xs={12}>
@@ -53,12 +44,6 @@ export const BackgroundInformationSection = ({
               otherHelpers.setValue('');
               otherHelpers.setTouched(false);
             }
-            // reset the value of roleInvolvesMentalHealthOrSubstanceUse if user changes currentOrMostRecentIndustry selection
-            // to a value that should not show the question
-            if (!showRoleInvolvesMentalHealthOrSubstanceUse(isMHAWProgram, selectedValue)) {
-              involvesMentalHealthHelpers.setValue('');
-              involvesMentalHealthHelpers.setTouched(false);
-            }
           }}
         />
       </Grid>
@@ -70,26 +55,6 @@ export const BackgroundInformationSection = ({
             disabled={checkFieldDisability('otherIndustry')}
           />
         </Grid>
-      )}
-      {/** Q15 does/ did this rolee involve delivering mental health/ substance use services */}
-      {/** only show if Q1 is MHAW and Q14 is one of 3 below options */}
-      {showRoleInvolvesMentalHealthOrSubstanceUse(isMHAWProgram, selectedOption) && (
-        <>
-          <Question
-            text='15. Does/did this role involve delivering mental health and/or substance use
-                    services?'
-          />
-          <Grid item xs={12}>
-            <FastField
-              name='roleInvolvesMentalHealthOrSubstanceUse'
-              component={RenderRadioGroup}
-              disabled={checkFieldDisability('roleInvolvesMentalHealthOrSubstanceUse')}
-              setTouched
-              row
-              options={YesNo}
-            />
-          </Grid>
-        </>
       )}
     </>
   );

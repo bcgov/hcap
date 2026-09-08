@@ -28,7 +28,7 @@ export const OtherSection = ({ checkFieldDisability, isMHAWProgram }) => {
       {/** Q10 do you self identify as indigenous */}
       <PleaseNoteBanner
         text='The following information is collected as some employers may
-              prioritize hiring of indigenous candidates and/or lived or living experience.'
+              prioritize hiring of indigenous candidates.'
       />
       <Question text='10. Do you self-identify as First Nation, Métis, Inuk (Inuit) or Urban Indigenous?' />
       <Grid item xs={12}>

@@ -36,16 +36,12 @@ export default () => {
                 </Typography>
                 <Typography variant='body1' paragraph>
                   <b>
-                    Please submit only one expression of interest per HCAP pathway:{' '}
+                    Please submit only one expression of interest to{' '}
                     <Link href={'/'} target='__blank' rel='noreferrer noopener'>
                       Health Care Assistant
                     </Link>{' '}
-                    and/or{' '}
-                    <Link href={'/'} target='__blank' rel='noreferrer noopener'>
-                      Mental Health and Addictions Worker.
-                    </Link>{' '}
-                    Multiple submissions per HCAP pathway will not increase your chances of being
-                    selected and can slow down the process of hiring.
+                    Multiple submissions will not increase your chances of being selected and can
+                    slow down the process of hiring.
                   </b>
                 </Typography>
                 <Typography variant='body1' paragraph>
@@ -81,14 +77,6 @@ export default () => {
               <Box my={2}>
                 <Typography variant='body1' paragraph>
                   Your form has been submitted.
-                </Typography>
-              </Box>
-              <Box mb={2}>
-                <Typography variant='body1'>
-                  To submit an application for the other pathway, please click{' '}
-                  <Link href='/'>
-                    <b>here</b>
-                  </Link>
                 </Typography>
               </Box>
             </Grid>

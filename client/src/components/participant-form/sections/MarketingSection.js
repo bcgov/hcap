@@ -10,9 +10,9 @@ import { formatOptions } from '../../../utils';
 export const MarketingSection = ({ checkFieldDisability }) => {
   return (
     <>
-      {/** Q13 How did you learn about HCAP */}
+      {/** Q12 How did you learn about HCAP */}
       <SectionHeader text='Marketing' />
-      <Question text='13. * How did you learn about HCAP?' />
+      <Question text='12. * How did you learn about HCAP?' />
       <Grid item xs={12}>
         <Typography>Please select all that apply</Typography>
       </Grid>

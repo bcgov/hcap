@@ -12,34 +12,21 @@ const Summary = () => {
       <Typography variant='h2' color='primary' gutterBottom>
         Health Career Access Program - Expression of Interest
       </Typography>
+
       <Typography variant='body1' gutterBottom>
         The Health Career Access Program (HCAP) is a fully funded route for applicants with little
-        to no health care experience to enter the health care sector.
+        to no health care experience to enter the health care sector and train as a{' '}
+        <Link href={HEALTH_CARE_ASSISTANT_LINK} target='__blank' rel='noreferrer noopener'>
+          Health Care Assistant
+        </Link>
+        .
       </Typography>
+
       <br />
+
       <Typography variant='body1'>
-        There are two different HCAP pathways available, to train as either a:
-      </Typography>
-      <ol>
-        <li>
-          <Link href={HEALTH_CARE_ASSISTANT_LINK} target='__blank' rel='noreferrer noopener'>
-            Health Care Assistant
-          </Link>{' '}
-          or
-        </li>
-        <li>
-          <Link
-            href={MENTAL_HEALTH_AND_ADDICTIONS_WORKER_LINK}
-            target='__blank'
-            rel='noreferrer noopener'
-          >
-            Mental Health and Addictions Worker
-          </Link>
-        </li>
-      </ol>
-      <Typography variant='body1'>
-        Click on the links above to review the background and eligibility criteria for the specific
-        pathway you're applying for. If interested, use this expression of interest form to apply.
+        Click the link above to review the background and eligibility criteria for the program. If
+        interested, use this expression of interest form to apply.
       </Typography>
     </Fragment>
   );

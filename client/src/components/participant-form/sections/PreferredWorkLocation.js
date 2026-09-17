@@ -17,7 +17,7 @@ export const PreferredWorkLocation = ({ checkFieldDisability }) => {
   return (
     <>
       <SectionHeader text='Select Your Preferred Work Location(s)' />
-      <Question text='12. * Please select your preferred health region(s)' />
+      <Question text='11. * Please select your preferred health region(s)' />
       <Grid item xs={12}>
         <FastField
           name='preferredLocation'
